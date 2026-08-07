@@ -1,0 +1,17 @@
+{
+  "$comment": "BYOA asset manifest. Lists source assets the project needs but does NOT ship (copyright). `npm run fetch-assets` downloads them into assets/<type>/ on the user's machine and verifies sha256. See docs/assets.md. Set `url` to a direct download link; leave the placeholder to require a manual drop. Fill sha256 via `npm run hash-assets`.",
+  "typeDirs": {
+    "sheet": "assets/sheets",
+    "audio": "assets/audio",
+    "background": "assets/backgrounds"
+  },
+  "assets": [
+    {
+      "type": "sheet",
+      "name": "goku.png",
+      "source": "https://www.spriters-resource.com/snes/dragonballzhyperdimension/",
+      "url": "TODO: direct download URL for the exact Goku sheet",
+      "sha256": "8a6a96652ae8651a1bc7b29414d079716e082ef232b437ad78b123b891bc47e4"
+    }
+  ]
+}

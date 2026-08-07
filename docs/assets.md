@@ -21,8 +21,25 @@ from their own copy; the tool loads it locally. This is the model that keeps
 projects like OpenRA / ScummVM / DevilutionX legally distributable.
 
 To keep our coordinates valid across machines we pin to a **canonical source
-sheet** (documented source URL + expected hash) per character; an optional
-`fetch-assets` helper can download the canonical sheets on the user's behalf.
+asset** (documented source URL + expected sha256) per entry.
+
+**Asset layout** — one gitignored root for all BYOA source assets, split by type
+so new kinds (audio, backgrounds, …) have an obvious home:
+
+```
+assets/            # all BYOA source assets (gitignored)
+  sheets/          # character sprite sheets (the editor reads these)
+  audio/           # (future) sfx / music
+  backgrounds/     # (future) stage art
+```
+
+**`assets.manifest.json`** (committed) lists each asset as
+`{ type, name, source, url, sha256 }`; `typeDirs` maps a `type` to its folder.
+`npm run fetch-assets` downloads present-but-missing assets into
+`assets/<type>/` and verifies the sha256; when there's no direct `url` it prints
+exactly where to place the file and the expected hash. `npm run hash-assets`
+prints local files' sha256 to help fill the manifest. Adding an asset = one
+manifest entry (the copyrighted bytes still never enter the repo).
 
 (Note: practical common-practice reasoning, not legal advice.)
 

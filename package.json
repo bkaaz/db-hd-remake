@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "editor": "vite --port 5174 --open /tools/sprite-editor/",
+    "fetch-assets": "node scripts/fetch-assets.mjs",
+    "hash-assets": "node scripts/fetch-assets.mjs --print-hashes",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"

@@ -17,9 +17,13 @@ Decisions that are settled. Newest first.
 - **Distribution:** a committed `assets.manifest.json` (name → source URL +
   sha256) plus `npm run fetch-assets` downloads canonical sheets from their
   public source on the user's machine (we ship a pointer, not the bytes).
-- **File layout:** input `sprite-sheets/<name>.png` (gitignored); committed
-  `public/characters/<name>.character.json`; runtime keyed atlas
+- **File layout:** all BYOA source assets under one gitignored `assets/` root,
+  split by type (`assets/sheets/`, `assets/audio/`, `assets/backgrounds/`, …);
+  committed `public/characters/<name>.character.json`; runtime keyed atlas
   `public/atlases/<name>.png` (gitignored, regenerated locally).
+- **Fetch built:** `assets.manifest.json` (committed) + `npm run fetch-assets`
+  (download/verify by sha256, manual-placement guidance) + `npm run hash-assets`.
+- **History verified clean:** no image/asset blob has ever been committed.
 - **Atlas = whole keyed sheet** for now (frames reference rects); tight repacking
   deferred.
 

@@ -59,8 +59,8 @@ without reworking the editor or exporter.
 ## Repo-integrated I/O
 
 Replacing upload/download with direct repo file access, since the editor is
-always used against a specific sheet in this repo. **Core implemented**
-(`npm run editor`); `fetch-assets`/manifest still to do.
+always used against a specific sheet in this repo. **Implemented**
+(`npm run editor`, `npm run fetch-assets`).
 
 - **Mechanism:** a **Vite dev-server plugin** (`configureServer`, dev-only) with
   endpoints:
@@ -71,20 +71,19 @@ always used against a specific sheet in this repo. **Core implemented**
 - **Command:** `npm run editor` (dedicated port; optional `?sheet=` preselect).
 - **UI:** sheet dropdown + Load (hydrates from existing JSON) instead of upload;
   Save (writes to repo) instead of download. Upload/download kept as fallback.
-- **Layout:** input `sprite-sheets/<name>.png` (gitignored); committed
+- **Layout:** input `assets/sheets/<name>.png` (gitignored); committed
   `public/characters/<name>.character.json`; runtime keyed atlas
   `public/atlases/<name>.png` (gitignored, regenerated locally).
-- **Storage = BYOA:** only our code + JSON are committed; images are gitignored
-  and never enter git history. A committed `assets.manifest.json` (name → URL +
-  sha256) + `npm run fetch-assets` fetch canonical sheets from their public
-  source on the user's machine (⬜ not built yet). See [`assets.md`](./assets.md)
-  and [`decisions.md`](./decisions.md).
+- **Storage = BYOA:** only our code + JSON + the manifest are committed; images
+  are gitignored and never enter git history. A committed `assets.manifest.json`
+  + `npm run fetch-assets` fetch/verify source assets on the user's machine. See
+  [`assets.md`](./assets.md) and [`decisions.md`](./decisions.md).
 
 **Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet`, `/api/character`
 GET/POST); ✅ dropdown Load from repo + hydrate existing JSON; ✅ Save writes
-`public/characters/*.json` + keyed `public/atlases/*.png`. Verified end-to-end on
-a real sheet (load → detect → save → reload → hydrate). ⬜ `fetch-assets` +
-manifest next.
+`public/characters/*.json` + keyed `public/atlases/*.png`; ✅ `assets.manifest.json`
++ `npm run fetch-assets` / `hash-assets`. Verified end-to-end on a real sheet
+(load → detect → save → reload → hydrate) and the missing-asset guidance path.
 
 ## Existing tools — landscape (for reference)
 

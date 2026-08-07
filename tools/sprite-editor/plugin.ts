@@ -13,7 +13,7 @@ import path from "node:path";
  * committed. See docs/assets.md.
  */
 
-const SHEETS_DIR = "sprite-sheets";
+const SHEETS_DIR = path.join("assets", "sheets");
 const CHARACTERS_DIR = path.join("public", "characters");
 const ATLASES_DIR = path.join("public", "atlases");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
