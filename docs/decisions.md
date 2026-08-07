@@ -2,6 +2,21 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-07 — Editor becomes the Actor Editor
+
+- The tool generalizes from "sprite editor" to **Actor Editor**: authors a whole
+  game entity (sprites, animations, hitboxes, sounds, inputs, states). "Actor" is
+  generic (fighters now, projectiles/objects later). Full plan in
+  [`actor-editor.md`](./actor-editor.md).
+- **Rename:** data `character` → `actor`; files `*.character.json` →
+  `*.actor.json`; tool `tools/sprite-editor/` → `tools/actor-editor/`; dir
+  `public/characters/` → `public/actors/`.
+- **States model:** hybrid — mostly data-driven (visual), with a small scripting
+  escape hatch for unusual behavior.
+- **Editor + engine co-evolve**: each phase is a vertical slice
+  (data + editor + engine + verify in game).
+- **Start with Phase A** (rename + tab restructure, no new features).
+
 ## 2026-08-07 — Editor I/O (repo-integrated) + BYOA storage
 
 - **Repo-integrated editor** instead of upload/download. A **Vite dev-server
