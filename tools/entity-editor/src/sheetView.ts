@@ -99,7 +99,7 @@ export class SheetView {
       // Magic click: detect the sprite under the cursor as one frame.
       const rect = detectAt(p.x, p.y, {
         gap: state.detectGap,
-        minArea: state.detectMinArea,
+        minSide: state.detectMinSide,
       });
       if (rect) {
         const frame = addFrameFromRect(rect);

@@ -101,7 +101,7 @@ bgPickBtn.addEventListener("click", () => {
 
 detectAllBtn.addEventListener("click", () => {
   if (!state.image) return;
-  const rects = detectAll({ gap: state.detectGap, minArea: state.detectMinArea });
+  const rects = detectAll({ gap: state.detectGap, minSide: state.detectMinSide });
   // Skip rects that exactly match an existing frame, so repeats don't duplicate.
   const seen = new Set(state.frames.map((f) => `${f.x},${f.y},${f.w},${f.h}`));
   for (const r of rects) {
@@ -129,7 +129,7 @@ detectGap.addEventListener("change", () => {
 });
 detectMin.addEventListener("change", () => {
   const v = parseInt(detectMin.value, 10);
-  state.detectMinArea = Number.isFinite(v) && v >= 1 ? v : 1;
+  state.detectMinSide = Number.isFinite(v) && v >= 1 ? v : 1;
   emitChange();
 });
 
@@ -269,7 +269,7 @@ function render(): void {
   bgPickBtn.classList.toggle("active", state.mode === "bg");
   detectClickBtn.classList.toggle("active", state.mode === "detect");
   detectGap.value = String(state.detectGap);
-  detectMin.value = String(state.detectMinArea);
+  detectMin.value = String(state.detectMinSide);
   bgEnabled.checked = state.bgKeyEnabled;
   bgTol.value = String(state.bgTolerance);
   bgSwatch.style.background = state.bgColor

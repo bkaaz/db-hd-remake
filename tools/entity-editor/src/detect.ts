@@ -9,7 +9,9 @@ import { getKeyedImageData } from "./imageProcess";
  * pixels stays one frame — implemented as a dilation of radius floor(gap/2)
  * before labeling (two fragments separated by up to `gap` px merge). Bounding
  * boxes are still measured from the *original* opaque pixels, so they stay tight
- * to the real sprite. `minArea` drops specks/noise.
+ * to the real sprite. `minSide` drops a frame whose width OR height is below it
+ * (kills 1px slivers and small noise). Applies to "detect all" only — a magic
+ * click is explicit and always makes a frame.
  */
 
 export interface Rect {
@@ -21,7 +23,7 @@ export interface Rect {
 
 export interface DetectOptions {
   gap: number;
-  minArea: number;
+  minSide: number;
 }
 
 interface Mask {
@@ -138,7 +140,7 @@ export function detectAll(opts: DetectOptions): Rect[] {
     if (!mask.dil[start] || labels[start] !== 0) continue;
     label++;
     const rect = floodBBox(mask, start, labels, label);
-    if (rect && rect.w * rect.h >= opts.minArea) rects.push(rect);
+    if (rect && rect.w >= opts.minSide && rect.h >= opts.minSide) rects.push(rect);
   }
 
   rects.sort((a, b) => a.y - b.y || a.x - b.x);
@@ -155,7 +157,6 @@ export function detectAt(ix: number, iy: number, opts: DetectOptions): Rect | nu
   const start = sy * mask.w + sx;
   if (!mask.dil[start]) return null; // clicked on background
   const labels = new Int32Array(mask.dil.length);
-  const rect = floodBBox(mask, start, labels, 1);
-  if (rect && rect.w * rect.h >= opts.minArea) return rect;
-  return rect; // even below minArea, honor an explicit click
+  // Magic click is explicit — always return the clicked region (min not applied).
+  return floodBBox(mask, start, labels, 1);
 }

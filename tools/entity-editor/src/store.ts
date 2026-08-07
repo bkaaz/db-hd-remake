@@ -63,8 +63,9 @@ export interface EditorState {
   bgKeyEnabled: boolean;
   /** Auto-detection: max transparent gap (px) to still merge fragments. */
   detectGap: number;
-  /** Auto-detection: minimum bounding-box area (px²) to keep a frame. */
-  detectMinArea: number;
+  /** Auto-detection: minimum side (px); a frame narrower OR shorter than this is
+   * dropped by "detect all" (kills 1px slivers). Magic click ignores it. */
+  detectMinSide: number;
   /** Index of the selected animation step (for box editing). */
   selectedStepIndex: number | null;
   /** Index of the selected box within the selected step. */
@@ -87,7 +88,7 @@ export const state: EditorState = {
   bgTolerance: 0,
   bgKeyEnabled: false,
   detectGap: 2,
-  detectMinArea: 12,
+  detectMinSide: 4,
   selectedStepIndex: null,
   selectedBoxIndex: null,
   boxType: "hurt",

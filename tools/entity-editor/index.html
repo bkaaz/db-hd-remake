@@ -43,8 +43,8 @@
         <button id="detect-all" title="Detect all sprites as frames">All</button>
         <button id="detect-click" title="Magic click: click a sprite to make it a frame">Magic click</button>
         <button id="frames-clear" class="danger" title="Clear all frames and animations">Clear</button>
-        <label>gap <input id="detect-gap" type="number" class="dur" value="2" min="0" max="8" /></label>
-        <label>min <input id="detect-min" type="number" class="dur" value="12" min="1" /></label>
+        <label title="Detect all: merge fragments separated by up to this many transparent px">gap <input id="detect-gap" type="number" class="dur" value="2" min="0" max="8" /></label>
+        <label title="Detect all: drop frames whose width OR height is below this (kills 1px slivers). Magic click ignores it.">min side <input id="detect-min" type="number" class="dur" value="4" min="1" /></label>
       </div>
       <div class="group">
         <button id="save">Save to repo</button>
