@@ -167,6 +167,18 @@ export class SheetView {
       ctx.moveTo(ax, ay - 5);
       ctx.lineTo(ax, ay + 5);
       ctx.stroke();
+
+      // Frame number label (fixed screen size, dark backing for legibility).
+      const label = f.id.startsWith("frame_") ? f.id.slice(6) : f.id;
+      ctx.font = "10px monospace";
+      ctx.textBaseline = "top";
+      const tw = ctx.measureText(label).width;
+      const lx = f.x * s;
+      const ly = f.y * s;
+      ctx.fillStyle = "rgba(0, 0, 0, 0.72)";
+      ctx.fillRect(lx, ly, tw + 4, 12);
+      ctx.fillStyle = selected ? "#ffcc00" : "#00e0ff";
+      ctx.fillText(label, lx + 2, ly + 1);
     }
 
     if (this.dragRect) {

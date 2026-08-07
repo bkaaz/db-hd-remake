@@ -4,6 +4,7 @@ import {
   onChange,
   deleteFrame,
   addFrameFromRect,
+  clearAll,
   loadEntity,
   type EntityFileIn,
 } from "./store";
@@ -116,6 +117,10 @@ detectClickBtn.addEventListener("click", () => {
     state.mode = "detect";
     emitChange();
   }
+});
+byId("frames-clear").addEventListener("click", () => {
+  clearAll();
+  emitChange();
 });
 detectGap.addEventListener("change", () => {
   const v = parseInt(detectGap.value, 10);

@@ -136,6 +136,17 @@ export function nextFrameId(): string {
   return id;
 }
 
+/** Clear all frames and animations, and reset numbering to 0. */
+export function clearAll(): void {
+  state.frames = [];
+  state.anims = [];
+  state.selectedFrameId = null;
+  state.selectedAnimName = null;
+  state.selectedStepIndex = null;
+  state.selectedBoxIndex = null;
+  frameCounter = 0;
+}
+
 /** Create a frame from a detected rect, with a default bottom-center anchor. */
 export function addFrameFromRect(r: {
   x: number;
