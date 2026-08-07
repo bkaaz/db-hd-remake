@@ -198,11 +198,13 @@ async function boot(): Promise<void> {
 
   // =====================================================================
   // TEMPORARY input + movement — placeholder to see walking.
-  // Left/Right arrows move the character and play the "walk" animation,
-  // facing the movement direction; releasing them returns to idle.
+  // Left/Right arrows move the character and play the "walk" animation;
+  // releasing them returns to idle. A fighter keeps a FIXED facing (it faces
+  // its opponent) — moving away = walking backward, no turn. Facing will flip
+  // only when crossing to the opponent's other side (no opponent yet).
   // This is throwaway glue: it will be replaced by the proper command +
   // state-machine systems (docs/entity-editor.md, phases D/E) — input ->
-  // command -> a "walk" state that owns the animation, velocity, etc.
+  // command -> a "walk" state that owns the animation, velocity, facing, etc.
   // =====================================================================
   let left = false;
   let right = false;
@@ -218,8 +220,8 @@ async function boot(): Promise<void> {
 
       const dir = (right ? 1 : 0) - (left ? 1 : 0);
       if (dir !== 0 && hasWalk) {
+        // Facing stays fixed (opponent-relative, added later); just move.
         setAnim("walk");
-        sprite.scale.x = dir < 0 ? -SCALE : SCALE; // face the movement direction
         sprite.x = clampX(sprite.x + dir * WALK_SPEED);
         drawBoxes();
       } else {
