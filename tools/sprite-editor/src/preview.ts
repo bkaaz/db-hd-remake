@@ -1,4 +1,5 @@
 import { state, selectedAnim } from "./store";
+import { getSource } from "./imageProcess";
 
 /**
  * Plays the currently selected animation in the small preview canvas.
@@ -106,8 +107,9 @@ export class Preview {
     const s = this.scale;
     const dx = canvas.width / 2 - frame.anchor[0] * s;
     const dy = baseY - frame.anchor[1] * s;
+    const source = getSource() ?? state.image;
     ctx.drawImage(
-      state.image,
+      source,
       frame.x,
       frame.y,
       frame.w,

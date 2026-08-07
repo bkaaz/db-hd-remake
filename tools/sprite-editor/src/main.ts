@@ -3,6 +3,7 @@ import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
 import { renderFrames, renderAnims } from "./panels";
 import { downloadJSON, downloadAtlas } from "./exporter";
+import { setImage, pickColorAt, rebuildKeyed } from "./imageProcess";
 
 function byId<T extends HTMLElement>(id: string): T {
   const node = document.getElementById(id);
@@ -22,6 +23,10 @@ const statusEl = byId("status");
 const dropZone = byId("sheet-wrap");
 const modeFrameBtn = byId("mode-frame");
 const modeAnchorBtn = byId("mode-anchor");
+const bgEnabled = byId<HTMLInputElement>("bg-enabled");
+const bgSwatch = byId("bg-swatch");
+const bgTol = byId<HTMLInputElement>("bg-tol");
+const bgPickBtn = byId("bg-pick");
 
 const sheet = new SheetView(sheetCanvas);
 const preview = new Preview(previewCanvas);
@@ -53,6 +58,24 @@ byId("zoom-in").addEventListener("click", () => {
 byId("zoom-out").addEventListener("click", () => {
   state.scale = Math.max(0.25, state.scale / 2);
   emitChange();
+});
+
+bgEnabled.addEventListener("change", () => {
+  state.bgKeyEnabled = bgEnabled.checked;
+  rebuildKeyed();
+  emitChange();
+});
+bgTol.addEventListener("change", () => {
+  const v = parseInt(bgTol.value, 10);
+  state.bgTolerance = Number.isFinite(v) && v >= 0 ? v : 0;
+  rebuildKeyed();
+  emitChange();
+});
+bgPickBtn.addEventListener("click", () => {
+  if (state.image) {
+    state.mode = "bg";
+    emitChange();
+  }
 });
 
 byId("export-json").addEventListener("click", () => downloadJSON());
@@ -89,6 +112,18 @@ function loadImageFile(file: File): void {
     state.image = img;
     state.atlasFilename = file.name;
     atlasNameInput.value = file.name;
+    // If the sheet already has transparency, leave it alone; otherwise
+    // auto-detect the background from the top-left corner and key it out.
+    const hasAlpha = setImage(img);
+    if (hasAlpha) {
+      state.bgKeyEnabled = false;
+      state.bgColor = null;
+    } else {
+      pickColorAt(0, 0);
+      state.bgTolerance = 0;
+      state.bgKeyEnabled = true;
+    }
+    rebuildKeyed();
     emitChange();
   };
   img.onerror = () => {
@@ -105,6 +140,12 @@ function render(): void {
 
   modeFrameBtn.classList.toggle("active", state.mode === "frame");
   modeAnchorBtn.classList.toggle("active", state.mode === "anchor");
+  bgPickBtn.classList.toggle("active", state.mode === "bg");
+  bgEnabled.checked = state.bgKeyEnabled;
+  bgTol.value = String(state.bgTolerance);
+  bgSwatch.style.background = state.bgColor
+    ? `rgb(${state.bgColor[0]}, ${state.bgColor[1]}, ${state.bgColor[2]})`
+    : "transparent";
   zoomLabel.textContent = `${Math.round(state.scale * 100)}%`;
   statusEl.textContent = state.image
     ? `${state.image.width}x${state.image.height}px · ${state.frames.length} frames · ${state.anims.length} anims · mode: ${state.mode}`

@@ -5,6 +5,7 @@ import {
   selectedFrame,
   type FrameDef,
 } from "./store";
+import { getSource, pickColorAt, rebuildKeyed } from "./imageProcess";
 
 /**
  * The left-hand sheet canvas: draws the loaded sprite sheet with frame
@@ -42,6 +43,16 @@ export class SheetView {
   private onDown(e: MouseEvent): void {
     if (!state.image) return;
     const p = this.toImage(e);
+
+    if (state.mode === "bg") {
+      // Eyedropper: pick the background color, enable keying, return to framing.
+      pickColorAt(p.x, p.y);
+      state.bgKeyEnabled = true;
+      rebuildKeyed();
+      state.mode = "frame";
+      emitChange();
+      return;
+    }
 
     if (state.mode === "anchor") {
       const f = selectedFrame();
@@ -122,7 +133,8 @@ export class SheetView {
 
     const s = state.scale;
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(state.image, 0, 0, canvas.width, canvas.height);
+    const source = getSource() ?? state.image;
+    ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
 
     for (const f of state.frames) {
       const selected = f.id === state.selectedFrameId;

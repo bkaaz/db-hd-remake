@@ -7,7 +7,7 @@
  * into the on-disk `*.character.json`.
  */
 
-export type EditorMode = "frame" | "anchor";
+export type EditorMode = "frame" | "anchor" | "bg";
 
 export interface FrameDef {
   id: string;
@@ -42,6 +42,12 @@ export interface EditorState {
   /** Sheet-view zoom factor. */
   scale: number;
   mode: EditorMode;
+  /** Background color to key out to transparency, or null for none. */
+  bgColor: [number, number, number] | null;
+  /** Per-channel tolerance for the background color match (0 = exact). */
+  bgTolerance: number;
+  /** Whether background color-keying is applied. */
+  bgKeyEnabled: boolean;
 }
 
 export const state: EditorState = {
@@ -54,6 +60,9 @@ export const state: EditorState = {
   selectedAnimName: null,
   scale: 2,
   mode: "frame",
+  bgColor: null,
+  bgTolerance: 0,
+  bgKeyEnabled: false,
 };
 
 // --- change notification -------------------------------------------------

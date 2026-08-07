@@ -1,4 +1,5 @@
 import { state } from "./store";
+import { getSource } from "./imageProcess";
 
 /**
  * Builds the on-disk character file (docs/data-format.md) from editor state
@@ -56,16 +57,20 @@ export function downloadJSON(): void {
   );
 }
 
-/** Re-encode the loaded sheet as the atlas PNG, so it ships next to the JSON. */
+/**
+ * Export the atlas PNG (keyed source, so background transparency is baked in),
+ * so it ships next to the JSON.
+ */
 export function downloadAtlas(): void {
-  if (!state.image) return;
+  const source = getSource();
+  if (!source) return;
   const c = document.createElement("canvas");
-  c.width = state.image.width;
-  c.height = state.image.height;
+  c.width = source.width;
+  c.height = source.height;
   const ctx = c.getContext("2d");
   if (!ctx) return;
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(state.image, 0, 0);
+  ctx.drawImage(source, 0, 0);
   c.toBlob((blob) => {
     if (blob) triggerDownload(blob, state.atlasFilename);
   });

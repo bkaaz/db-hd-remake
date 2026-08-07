@@ -30,6 +30,13 @@
         <button id="zoom-in">＋</button>
       </div>
       <div class="group">
+        <span class="lbl">BG:</span>
+        <label><input id="bg-enabled" type="checkbox" /> transparent</label>
+        <span id="bg-swatch" class="swatch" title="Background color"></span>
+        <button id="bg-pick" title="Eyedropper: click the sheet to pick the background color">Pick</button>
+        <label>tol <input id="bg-tol" type="number" class="dur" value="0" min="0" max="255" /></label>
+      </div>
+      <div class="group">
         <button id="export-json">Export JSON</button>
         <button id="export-atlas">Export atlas</button>
       </div>
