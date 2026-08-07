@@ -1,5 +1,6 @@
 import { state, selectedAnim } from "./store";
 import { getSource } from "./imageProcess";
+import { BOX_COLORS } from "./boxEditor";
 
 /**
  * Plays the currently selected animation in the small preview canvas.
@@ -119,5 +120,13 @@ export class Preview {
       frame.w * s,
       frame.h * s,
     );
+
+    // Boxes overlaid at the anchor (canvas.width/2, baseY).
+    const ax = canvas.width / 2;
+    for (const b of step.boxes) {
+      ctx.strokeStyle = BOX_COLORS[b.type] ?? "#fff";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(ax + b.x * s + 0.5, baseY + b.y * s + 0.5, b.w * s, b.h * s);
+    }
   }
 }

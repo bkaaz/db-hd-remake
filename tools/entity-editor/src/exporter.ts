@@ -1,4 +1,4 @@
-import { state } from "./store";
+import { state, type Box } from "./store";
 import { getSource } from "./imageProcess";
 
 /**
@@ -17,6 +17,7 @@ interface FrameOut {
 interface StepOut {
   frame: string;
   dur: number;
+  boxes?: Box[];
 }
 interface AnimOut {
   loop: boolean;
@@ -38,7 +39,11 @@ export function buildEntity(): EntityOut {
   for (const a of state.anims) {
     animations[a.name] = {
       loop: a.loop,
-      steps: a.steps.map((s) => ({ frame: s.frame, dur: s.dur })),
+      steps: a.steps.map((s) => {
+        const out: StepOut = { frame: s.frame, dur: s.dur };
+        if (s.boxes.length) out.boxes = s.boxes.map((b) => ({ ...b }));
+        return out;
+      }),
     };
   }
   return {

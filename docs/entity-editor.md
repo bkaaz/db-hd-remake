@@ -56,7 +56,7 @@ behaviors that don't fit. More power than pure data, without a full DSL.
 | Tab | Purpose | Status |
 |---|---|---|
 | **Sprites** | load sheet, background key, auto-detect, frames + anchors | ✅ exists |
-| **Animations** | timed steps + **hit/hurt/push box layer** + preview | 🟡 anim yes, boxes no |
+| **Animations** | timed steps + hit/hurt/push box layer + preview | ✅ |
 | **States** | state machine: state ↔ animation, physics, transitions, `hit` | ⬜ |
 | **Commands** | input motions (e.g. QCF+P) | ⬜ |
 | **Sounds** | import + assign clips | ⬜ |
@@ -72,7 +72,7 @@ Authored data is meaningless until the engine executes it. So every phase is a
 | Phase | Editor | Engine | Unlocks |
 |---|---|---|---|
 | **A. Rename + tabs** | reorganize existing; `sprite-editor`→`entity-editor`; `*.character.json`→`*.entity.json` | loader path update | clean base, no new features |
-| **B. Hitboxes** | box layer in Animations | render + overlap test | hit detection |
+| **B. Hitboxes** ✅ | box layer in Animations (draw/select/delete) | box overlay (toggle B) | boxes authored + shown; overlap test next |
 | **C. Attributes** | constants form | use HP/speeds | health HUD |
 | **D. States (core)** | state list + transitions (+ small script) | state-machine runner | idle/walk/attack from data |
 | **E. Commands/Input** | command editor | input buffer + motion recognition | specials |

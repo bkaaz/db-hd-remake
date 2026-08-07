@@ -9,7 +9,8 @@ import {
 } from "./store";
 import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
-import { renderFrames, renderAnims } from "./panels";
+import { BoxEditor } from "./boxEditor";
+import { renderFrames, renderAnims, renderBoxes } from "./panels";
 import { downloadJSON, downloadAtlas, saveToRepo } from "./exporter";
 import { setImage, pickColorAt, rebuildKeyed } from "./imageProcess";
 import { detectAll } from "./detect";
@@ -24,6 +25,8 @@ const sheetCanvas = byId<HTMLCanvasElement>("sheet");
 const previewCanvas = byId<HTMLCanvasElement>("preview");
 const framesPanel = byId("frames-panel");
 const animsPanel = byId("anims-panel");
+const boxesPanel = byId("boxes-panel");
+const boxCanvas = byId<HTMLCanvasElement>("box-canvas");
 const fileInput = byId<HTMLInputElement>("file");
 const sheetSelect = byId<HTMLSelectElement>("sheet-select");
 const sheetLoadBtn = byId("sheet-load");
@@ -46,6 +49,7 @@ const detectMin = byId<HTMLInputElement>("detect-min");
 
 const sheet = new SheetView(sheetCanvas);
 const preview = new Preview(previewCanvas);
+const boxEditor = new BoxEditor(boxCanvas);
 
 entityNameInput.value = state.entityName;
 atlasNameInput.value = state.atlasFilename;
@@ -252,6 +256,8 @@ function render(): void {
   sheet.redraw();
   renderFrames(framesPanel);
   renderAnims(animsPanel);
+  renderBoxes(boxesPanel);
+  boxEditor.redraw();
 
   modeFrameBtn.classList.toggle("active", state.mode === "frame");
   modeAnchorBtn.classList.toggle("active", state.mode === "anchor");

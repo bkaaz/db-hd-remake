@@ -51,7 +51,7 @@ without reworking the editor or exporter.
     into export).
   - ✅ Auto-slice via connected-component detection ("Detect all" + "Magic
     click"), with a gap-close slider to merge fragments and a min-area filter.
-  - ⬜ Hitbox/hurtbox/push layer.
+  - ✅ Hitbox/hurtbox/push layer (per-step boxes; editor canvas + game overlay).
   - ⬜ Tight atlas repacking; more UX polish.
 - **Phase 3 (parked):** MUGEN importer — `.air` parser first (cheap, high
   value), then `.sff` parser.

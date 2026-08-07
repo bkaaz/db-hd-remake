@@ -140,6 +140,23 @@ input.dur { width: 52px; }
 
 .frame-row.selected { outline: 1px solid var(--accent); border-radius: 4px; }
 .step-row .idx { width: 16px; color: var(--muted); text-align: right; }
+.step-row.selected { outline: 1px solid var(--accent); border-radius: 4px; }
+.box-row.selected { outline: 1px solid var(--accent); border-radius: 4px; }
+
+#box-canvas {
+  display: block;
+  image-rendering: pixelated;
+  background: #202028;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+/* Box type buttons/selects tinted by type. */
+.boxtype.hit, .boxtype-sel.hit { border-color: #ff3b3b; color: #ff8a8a; }
+.boxtype.hurt, .boxtype-sel.hurt { border-color: #4be04b; color: #8fe08f; }
+.boxtype.push, .boxtype-sel.push { border-color: #4b9bff; color: #8fbdff; }
+.boxtype.active { background: #3a3a48; }
 
 #status {
   padding: 5px 12px;

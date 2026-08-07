@@ -14,10 +14,24 @@ interface FrameDef {
   h: number;
   anchor: [number, number];
 }
+interface Box {
+  type: "hit" | "hurt" | "push";
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
 interface Step {
   frame: string;
   dur: number;
+  boxes?: Box[];
 }
+
+const BOX_COLORS: Record<string, number> = {
+  hit: 0xff3b3b,
+  hurt: 0x4be04b,
+  push: 0x4b9bff,
+};
 interface Anim {
   loop: boolean;
   steps: Step[];
@@ -82,6 +96,22 @@ async function boot(): Promise<void> {
   sprite.scale.set(SCALE);
   app.stage.addChild(sprite);
 
+  // Collision-box overlay (toggle with B).
+  const boxG = new Graphics();
+  app.stage.addChild(boxG);
+  let showBoxes = true;
+  let currentStep: Step | null = null;
+
+  const drawBoxes = (): void => {
+    boxG.clear();
+    if (!showBoxes || !currentStep?.boxes) return;
+    for (const b of currentStep.boxes) {
+      boxG
+        .rect(sprite.x + b.x * SCALE, sprite.y + b.y * SCALE, b.w * SCALE, b.h * SCALE)
+        .stroke({ color: BOX_COLORS[b.type] ?? 0xffffff, width: 1 });
+    }
+  };
+
   let groundY = 0;
   const place = (): void => {
     sprite.x = app.screen.width / 2;
@@ -92,6 +122,7 @@ async function boot(): Promise<void> {
       .moveTo(0, groundY)
       .lineTo(app.screen.width, groundY)
       .stroke({ color: 0x333340, width: 1 });
+    drawBoxes();
   };
   place();
   app.renderer.on("resize", place);
@@ -120,6 +151,8 @@ async function boot(): Promise<void> {
   let remaining = stepDur();
   let acc = 0;
   applyFrame(anim.steps[stepIndex].frame);
+  currentStep = anim.steps[stepIndex];
+  drawBoxes();
 
   app.ticker.add((ticker) => {
     acc += ticker.deltaMS / 1000;
@@ -135,12 +168,21 @@ async function boot(): Promise<void> {
         }
         remaining = stepDur();
         applyFrame(anim.steps[stepIndex].frame);
+        currentStep = anim.steps[stepIndex];
+        drawBoxes();
       }
     }
   });
 
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "b" || e.key === "B") {
+      showBoxes = !showBoxes;
+      drawBoxes();
+    }
+  });
+
   const label = new Text({
-    text: `${data.name} — "${animName}" (${anim.steps.length} steps, ${Object.keys(data.frames).length} frames)`,
+    text: `${data.name} — "${animName}" (${anim.steps.length} steps, ${Object.keys(data.frames).length} frames) · [B] boxes`,
     style: { fill: "#88aa88", fontFamily: "monospace", fontSize: 14 },
   });
   label.x = 8;

@@ -2,12 +2,14 @@ import {
   state,
   emitChange,
   selectedAnim,
+  selectedStep,
   selectedFrame,
   addAnim,
   renameAnim,
   removeAnim,
   renameFrame,
   deleteFrame,
+  type BoxType,
 } from "./store";
 
 /** Tiny typed DOM helper. */
@@ -58,7 +60,7 @@ export function renderFrames(container: HTMLElement): void {
     addBtn.addEventListener("click", () => {
       const anim = selectedAnim();
       if (anim) {
-        anim.steps.push({ frame: f.id, dur: 4 });
+        anim.steps.push({ frame: f.id, dur: 4, boxes: [] });
         emitChange();
       }
     });
@@ -101,6 +103,8 @@ export function renderAnims(container: HTMLElement): void {
   }
   select.addEventListener("change", () => {
     state.selectedAnimName = select.value;
+    state.selectedStepIndex = null;
+    state.selectedBoxIndex = null;
     emitChange();
   });
   container.append(el("div", { className: "row" }, [el("label", { textContent: "Animation:" }), select]));
@@ -139,8 +143,19 @@ export function renderAnims(container: HTMLElement): void {
   }
 
   anim.steps.forEach((step, i) => {
-    const row = el("div", { className: "row step-row" });
-    row.append(el("span", { className: "idx", textContent: String(i) }));
+    const selected = state.selectedStepIndex === i;
+    const row = el("div", { className: "row step-row" + (selected ? " selected" : "") });
+
+    // Clicking the index selects this step for box editing.
+    const idx = el("span", { className: "idx", textContent: String(i) });
+    idx.style.cursor = "pointer";
+    idx.title = "Select this step for box editing";
+    idx.addEventListener("click", () => {
+      state.selectedStepIndex = i;
+      state.selectedBoxIndex = null;
+      emitChange();
+    });
+    row.append(idx);
 
     const frameSel = el("select");
     for (const f of state.frames) {
@@ -181,7 +196,12 @@ export function renderAnims(container: HTMLElement): void {
       emitChange();
     });
 
-    row.append(frameSel, el("label", { textContent: "dur" }), dur, up, down, rm);
+    const boxCount = el("span", {
+      className: "dims",
+      textContent: step.boxes.length ? `▢${step.boxes.length}` : "",
+    });
+
+    row.append(frameSel, el("label", { textContent: "dur" }), dur, up, down, rm, boxCount);
     container.append(row);
   });
 
@@ -189,9 +209,85 @@ export function renderAnims(container: HTMLElement): void {
   addStep.addEventListener("click", () => {
     const target = selectedFrame() ?? state.frames[0];
     if (target) {
-      anim.steps.push({ frame: target.id, dur: 4 });
+      anim.steps.push({ frame: target.id, dur: 4, boxes: [] });
       emitChange();
     }
   });
   container.append(addStep);
+}
+
+// --- Boxes panel ---------------------------------------------------------
+
+const BOX_TYPES: BoxType[] = ["hit", "hurt", "push"];
+
+/** Panel for the selected animation step's collision boxes. */
+export function renderBoxes(container: HTMLElement): void {
+  container.replaceChildren();
+
+  // Type picker for new boxes.
+  const typeRow = el("div", { className: "row" });
+  typeRow.append(el("span", { className: "lbl", textContent: "Draw:" }));
+  for (const t of BOX_TYPES) {
+    const b = el("button", {
+      className: "boxtype " + t + (state.boxType === t ? " active" : ""),
+      textContent: t,
+    });
+    b.addEventListener("click", () => {
+      state.boxType = t;
+      emitChange();
+    });
+    typeRow.append(b);
+  }
+  container.append(typeRow);
+
+  const step = selectedStep();
+  if (!step) {
+    container.append(
+      el("p", {
+        className: "hint",
+        textContent: "Select a step (click its number in Animations) to edit its boxes. Then drag on the canvas.",
+      }),
+    );
+    return;
+  }
+
+  if (step.boxes.length === 0) {
+    container.append(el("p", { className: "hint", textContent: "No boxes. Drag on the canvas to add one." }));
+  }
+
+  step.boxes.forEach((box, i) => {
+    const row = el("div", { className: "row box-row" + (state.selectedBoxIndex === i ? " selected" : "") });
+
+    const sel = el("select", { className: "boxtype-sel " + box.type });
+    for (const t of BOX_TYPES) {
+      const opt = el("option", { value: t, textContent: t });
+      if (t === box.type) opt.selected = true;
+      sel.append(opt);
+    }
+    sel.addEventListener("change", () => {
+      box.type = sel.value as BoxType;
+      emitChange();
+    });
+
+    const dims = el("span", {
+      className: "dims",
+      textContent: `${box.w}×${box.h} @${box.x},${box.y}`,
+    });
+
+    const selectBtn = el("button", { textContent: "select" });
+    selectBtn.addEventListener("click", () => {
+      state.selectedBoxIndex = i;
+      emitChange();
+    });
+
+    const rm = el("button", { className: "danger", textContent: "✕" });
+    rm.addEventListener("click", () => {
+      step.boxes.splice(i, 1);
+      if (state.selectedBoxIndex === i) state.selectedBoxIndex = null;
+      emitChange();
+    });
+
+    row.append(sel, dims, selectBtn, rm);
+    container.append(row);
+  });
 }

@@ -9,6 +9,17 @@
 
 export type EditorMode = "frame" | "anchor" | "bg" | "detect";
 
+export type BoxType = "hit" | "hurt" | "push";
+
+/** A collision box on an animation step, in px relative to the frame's anchor. */
+export interface Box {
+  type: BoxType;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export interface FrameDef {
   id: string;
   x: number;
@@ -23,6 +34,8 @@ export interface StepDef {
   frame: string;
   /** Duration in game frames at 60 FPS. */
   dur: number;
+  /** Collision boxes active on this step. */
+  boxes: Box[];
 }
 
 export interface AnimDef {
@@ -52,6 +65,12 @@ export interface EditorState {
   detectGap: number;
   /** Auto-detection: minimum bounding-box area (px²) to keep a frame. */
   detectMinArea: number;
+  /** Index of the selected animation step (for box editing). */
+  selectedStepIndex: number | null;
+  /** Index of the selected box within the selected step. */
+  selectedBoxIndex: number | null;
+  /** Box type used when drawing a new box. */
+  boxType: BoxType;
 }
 
 export const state: EditorState = {
@@ -69,6 +88,9 @@ export const state: EditorState = {
   bgKeyEnabled: false,
   detectGap: 2,
   detectMinArea: 12,
+  selectedStepIndex: null,
+  selectedBoxIndex: null,
+  boxType: "hurt",
 };
 
 // --- change notification -------------------------------------------------
@@ -92,6 +114,14 @@ export function selectedFrame(): FrameDef | null {
 
 export function selectedAnim(): AnimDef | null {
   return state.anims.find((a) => a.name === state.selectedAnimName) ?? null;
+}
+
+/** The animation step currently selected for box editing, or null. */
+export function selectedStep(): StepDef | null {
+  const anim = selectedAnim();
+  const i = state.selectedStepIndex;
+  if (!anim || i === null || i < 0 || i >= anim.steps.length) return null;
+  return anim.steps[i];
 }
 
 // --- frame mutations -----------------------------------------------------
@@ -183,7 +213,7 @@ export interface EntityFileIn {
   >;
   animations: Record<
     string,
-    { loop: boolean; steps: { frame: string; dur: number }[] }
+    { loop: boolean; steps: { frame: string; dur: number; boxes?: Box[] }[] }
   >;
 }
 
@@ -200,10 +230,16 @@ export function loadEntity(json: EntityFileIn): void {
   state.anims = Object.entries(json.animations).map(([name, a]) => ({
     name,
     loop: a.loop,
-    steps: a.steps.map((s) => ({ frame: s.frame, dur: s.dur })),
+    steps: a.steps.map((s) => ({
+      frame: s.frame,
+      dur: s.dur,
+      boxes: (s.boxes ?? []).map((b) => ({ ...b })),
+    })),
   }));
   state.selectedFrameId = null;
   state.selectedAnimName = state.anims[0]?.name ?? null;
+  state.selectedStepIndex = null;
+  state.selectedBoxIndex = null;
   state.entityName = json.name;
   state.atlasFilename = json.atlas;
 }
