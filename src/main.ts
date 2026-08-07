@@ -1,7 +1,7 @@
 import { Application, Texture, Rectangle, Sprite, Text, Graphics } from "pixi.js";
 
 /**
- * Game entry point. Loads a character produced by the sprite editor
+ * Game entry point. Loads an entity produced by the entity editor
  * (docs/data-format.md) — atlas + frame rects + timed animations — and plays it
  * in PixiJS. This is the first real rendering of our authored data; combat logic
  * comes later.
@@ -22,14 +22,14 @@ interface Anim {
   loop: boolean;
   steps: Step[];
 }
-interface ActorFile {
+interface EntityFile {
   name: string;
   atlas: string;
   frames: Record<string, FrameDef>;
   animations: Record<string, Anim>;
 }
 
-const CHARACTER = "goku";
+const ENTITY = "goku";
 const SCALE = 3; // SNES sprites are small — scale up, nearest-neighbour.
 
 interface FrameTex {
@@ -47,18 +47,18 @@ async function boot(): Promise<void> {
   if (!mount) throw new Error("Missing #app mount element");
   mount.appendChild(app.canvas);
 
-  let data: ActorFile;
+  let data: EntityFile;
   try {
-    const res = await fetch(`/api/actor?name=${CHARACTER}`);
+    const res = await fetch(`/api/entity?name=${ENTITY}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    data = ((await res.json()) as { actor: ActorFile }).actor;
+    data = ((await res.json()) as { entity: EntityFile }).entity;
   } catch (e) {
-    showMessage(app, `Could not load actor "${CHARACTER}".\nSave it from the actor editor first (npm run editor).\n${String(e)}`);
+    showMessage(app, `Could not load entity "${ENTITY}".\nSave it from the entity editor first (npm run editor).\n${String(e)}`);
     return;
   }
 
   const atlasImg = new Image();
-  atlasImg.src = `/api/atlas?name=${CHARACTER}`;
+  atlasImg.src = `/api/atlas?name=${ENTITY}`;
   await atlasImg.decode();
   const atlas = Texture.from(atlasImg);
   atlas.source.scaleMode = "nearest";

@@ -4,8 +4,8 @@ import {
   onChange,
   deleteFrame,
   addFrameFromRect,
-  loadActor,
-  type ActorFileIn,
+  loadEntity,
+  type EntityFileIn,
 } from "./store";
 import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
@@ -28,7 +28,7 @@ const fileInput = byId<HTMLInputElement>("file");
 const sheetSelect = byId<HTMLSelectElement>("sheet-select");
 const sheetLoadBtn = byId("sheet-load");
 const saveBtn = byId("save");
-const actorNameInput = byId<HTMLInputElement>("actor-name");
+const entityNameInput = byId<HTMLInputElement>("entity-name");
 const atlasNameInput = byId<HTMLInputElement>("atlas-name");
 const zoomLabel = byId("zoom-label");
 const statusEl = byId("status");
@@ -47,11 +47,11 @@ const detectMin = byId<HTMLInputElement>("detect-min");
 const sheet = new SheetView(sheetCanvas);
 const preview = new Preview(previewCanvas);
 
-actorNameInput.value = state.actorName;
+entityNameInput.value = state.entityName;
 atlasNameInput.value = state.atlasFilename;
 
-actorNameInput.addEventListener("change", () => {
-  state.actorName = actorNameInput.value.trim() || "actor";
+entityNameInput.addEventListener("change", () => {
+  state.entityName = entityNameInput.value.trim() || "entity";
   emitChange();
 });
 atlasNameInput.addEventListener("change", () => {
@@ -173,7 +173,7 @@ function applyNewImage(img: HTMLImageElement, fileName: string): void {
 
   state.image = img;
   state.atlasFilename = fileName;
-  state.actorName = fileName.replace(/\.[^.]+$/, "") || "actor";
+  state.entityName = fileName.replace(/\.[^.]+$/, "") || "entity";
 
   const hasAlpha = setImage(img);
   if (hasAlpha) {
@@ -186,7 +186,7 @@ function applyNewImage(img: HTMLImageElement, fileName: string): void {
   }
   rebuildKeyed();
 
-  actorNameInput.value = state.actorName;
+  entityNameInput.value = state.entityName;
   atlasNameInput.value = state.atlasFilename;
 }
 
@@ -202,24 +202,24 @@ function loadImageFile(file: File): void {
   img.src = URL.createObjectURL(file);
 }
 
-/** Load a sheet from the repo, and hydrate any existing actor JSON. */
+/** Load a sheet from the repo, and hydrate any existing entity JSON. */
 function loadFromRepo(fileName: string): void {
   if (!fileName) return;
   const img = new Image();
   img.onload = async () => {
     applyNewImage(img, fileName);
-    const base = state.actorName;
+    const base = state.entityName;
     try {
-      const res = await fetch(`/api/actor?name=${encodeURIComponent(base)}`);
+      const res = await fetch(`/api/entity?name=${encodeURIComponent(base)}`);
       if (res.ok) {
-        const data = (await res.json()) as { actor: ActorFileIn };
-        loadActor(data.actor);
+        const data = (await res.json()) as { entity: EntityFileIn };
+        loadEntity(data.entity);
         rebuildKeyed();
-        actorNameInput.value = state.actorName;
+        entityNameInput.value = state.entityName;
         atlasNameInput.value = state.atlasFilename;
-        statusEl.textContent = `Loaded ${fileName} + existing actor data.`;
+        statusEl.textContent = `Loaded ${fileName} + existing entity data.`;
       } else {
-        statusEl.textContent = `Loaded ${fileName} (new actor).`;
+        statusEl.textContent = `Loaded ${fileName} (new entity).`;
       }
     } catch {
       statusEl.textContent = `Loaded ${fileName}.`;

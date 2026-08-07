@@ -4,17 +4,17 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 
 /**
- * Dev-server plugin backing the repo-integrated actor editor. Adds endpoints so
+ * Dev-server plugin backing the repo-integrated entity editor. Adds endpoints so
  * the browser tool (and the game) can list sheets from `assets/sheets/`,
- * read/write our actor JSON in `content/actors/`, and read/write the keyed atlas
+ * read/write our entity JSON in `content/entities/`, and read/write the keyed atlas
  * in `assets/atlases/`. Dev-only (`apply: "serve"`); never part of a build.
  *
- * BYOA: source sheets and atlases are gitignored; only content/actors/*.json are
+ * BYOA: source sheets and atlases are gitignored; only content/entities/*.json are
  * committed. See docs/assets.md.
  */
 
 const SHEETS_DIR = path.join("assets", "sheets");
-const ACTORS_DIR = path.join("content", "actors");
+const ENTITIES_DIR = path.join("content", "entities");
 const ATLASES_DIR = path.join("assets", "atlases");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
 
@@ -50,9 +50,9 @@ async function readBody(req: IncomingMessage): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-export function actorEditorServer(): Plugin {
+export function entityEditorServer(): Plugin {
   return {
-    name: "actor-editor-server",
+    name: "entity-editor-server",
     apply: "serve",
     configureServer(server: ViteDevServer) {
       const root = server.config.root;
@@ -84,7 +84,7 @@ export function actorEditorServer(): Plugin {
         }
       });
 
-      // Stream a generated keyed atlas by actor name (used by the game).
+      // Stream a generated keyed atlas by entity name (used by the game).
       server.middlewares.use("/api/atlas", async (req, res) => {
         const url = new URL(req.url ?? "", "http://localhost");
         const name = sanitizeName(url.searchParams.get("name") ?? "");
@@ -101,16 +101,16 @@ export function actorEditorServer(): Plugin {
         }
       });
 
-      // Read (GET ?name=) or write (POST) an actor.
-      server.middlewares.use("/api/actor", async (req, res) => {
+      // Read (GET ?name=) or write (POST) an entity.
+      server.middlewares.use("/api/entity", async (req, res) => {
         if (req.method === "GET") {
           const url = new URL(req.url ?? "", "http://localhost");
           const name = sanitizeName(url.searchParams.get("name") ?? "");
           if (!name) return sendJson(res, 400, { error: "name required" });
-          const file = path.join(root, ACTORS_DIR, `${name}.actor.json`);
+          const file = path.join(root, ENTITIES_DIR, `${name}.entity.json`);
           try {
             const txt = await fs.readFile(file, "utf8");
-            sendJson(res, 200, { actor: JSON.parse(txt) });
+            sendJson(res, 200, { entity: JSON.parse(txt) });
           } catch {
             sendJson(res, 404, { error: "not found" });
           }
@@ -121,18 +121,18 @@ export function actorEditorServer(): Plugin {
           try {
             const body = JSON.parse(await readBody(req)) as {
               name?: string;
-              actor?: unknown;
+              entity?: unknown;
               atlasPngBase64?: string;
             };
             const name = sanitizeName(body.name ?? "");
-            if (!name || !body.actor) {
-              return sendJson(res, 400, { error: "name and actor required" });
+            if (!name || !body.entity) {
+              return sendJson(res, 400, { error: "name and entity required" });
             }
 
-            await fs.mkdir(path.join(root, ACTORS_DIR), { recursive: true });
+            await fs.mkdir(path.join(root, ENTITIES_DIR), { recursive: true });
             await fs.writeFile(
-              path.join(root, ACTORS_DIR, `${name}.actor.json`),
-              JSON.stringify(body.actor, null, 2) + "\n",
+              path.join(root, ENTITIES_DIR, `${name}.entity.json`),
+              JSON.stringify(body.entity, null, 2) + "\n",
             );
 
             let atlasWritten = false;

@@ -1,4 +1,4 @@
-# Tooling — asset pipeline (actor editor)
+# Tooling — asset pipeline (entity editor)
 
 How we turn sprite sheets into game-ready data. We build our own small
 browser-based tool rather than gluing several existing ones together.
@@ -13,7 +13,7 @@ we'd end up hand-shuffling data and converting at the end anyway.
 for sprite sheets first.
 
 **Implementation note:** the editor is built with **plain Canvas 2D + TS**
-(under `tools/actor-editor/`), not PixiJS — drawing frame/anchor/box overlays
+(under `tools/entity-editor/`), not PixiJS — drawing frame/anchor/box overlays
 on an image is native Canvas 2D work. PixiJS is reserved for the game runtime.
 The editor shares the project's Vite toolchain as a second page.
 
@@ -42,9 +42,9 @@ without reworking the editor or exporter.
 
 ## Phases
 
-- **Phase 1 — MVP (small):** ✅ done — `tools/actor-editor/`. Load image →
+- **Phase 1 — MVP (small):** ✅ done — `tools/entity-editor/`. Load image →
   manual rectangle frame selection → per-frame anchor → animations with timing →
-  playback preview → export `*.actor.json` + atlas. Verified end-to-end
+  playback preview → export `*.entity.json` + atlas. Verified end-to-end
   (draw frames → build animation → export matches `data-format.md`).
 - **Phase 2 (in progress):**
   - ✅ Background color-keying (auto-detect + eyedropper + tolerance; alpha baked
@@ -65,23 +65,23 @@ always used against a specific sheet in this repo. **Implemented**
 - **Mechanism:** a **Vite dev-server plugin** (`configureServer`, dev-only) with
   endpoints:
   - `GET /api/sheets` — list `assets/sheets/`.
-  - `GET /api/actor?name=` — read existing character JSON (to keep editing).
-  - `POST /api/actor` — write JSON + keyed atlas PNG to repo files.
+  - `GET /api/entity?name=` — read existing character JSON (to keep editing).
+  - `POST /api/entity` — write JSON + keyed atlas PNG to repo files.
   - Source images are served by Vite directly (`/assets/sheets/<name>.png`).
 - **Command:** `npm run editor` (dedicated port; optional `?sheet=` preselect).
 - **UI:** sheet dropdown + Load (hydrates from existing JSON) instead of upload;
   Save (writes to repo) instead of download. Upload/download kept as fallback.
 - **Layout:** input `assets/sheets/<name>.png` (gitignored); committed
-  `content/actors/<name>.actor.json`; runtime keyed atlas
+  `content/entities/<name>.entity.json`; runtime keyed atlas
   `assets/atlases/<name>.png` (gitignored, regenerated locally).
 - **Storage = BYOA:** only our code + JSON + the manifest are committed; images
   are gitignored and never enter git history. A committed `assets.manifest.json`
   + `npm run fetch-assets` fetch/verify source assets on the user's machine. See
   [`assets.md`](./assets.md) and [`decisions.md`](./decisions.md).
 
-**Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet`, `/api/actor`
+**Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet`, `/api/entity`
 GET/POST); ✅ dropdown Load from repo + hydrate existing JSON; ✅ Save writes
-`content/actors/*.json` + keyed `assets/atlases/*.png`; ✅ `assets.manifest.json`
+`content/entities/*.json` + keyed `assets/atlases/*.png`; ✅ `assets.manifest.json`
 + `npm run fetch-assets` / `hash-assets`. Verified end-to-end on a real sheet
 (load → detect → save → reload → hydrate) and the missing-asset guidance path.
 

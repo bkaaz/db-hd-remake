@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
-import { actorEditorServer } from "./tools/actor-editor/plugin";
+import { entityEditorServer } from "./tools/entity-editor/plugin";
 
 // Minimal Vite config. We keep the pixel-art rendering crisp by leaving
 // image optimization defaults alone for now; revisit when we add real assets.
 export default defineConfig({
-  plugins: [actorEditorServer()],
+  plugins: [entityEditorServer()],
   server: {
     open: true,
   },
@@ -13,8 +13,8 @@ export default defineConfig({
       input: {
         // The game itself.
         game: "index.html",
-        // The actor editor tool (see docs/actor-editor.md).
-        actorEditor: "tools/actor-editor/index.html",
+        // The entity editor tool (see docs/entity-editor.md).
+        entityEditor: "tools/entity-editor/index.html",
       },
     },
   },

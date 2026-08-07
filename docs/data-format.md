@@ -1,6 +1,6 @@
 # Data format — character files (v0)
 
-The format the actor editor **exports** and the game **loads**. One file per
+The format the entity editor **exports** and the game **loads**. One file per
 character. This is the contract that ties the tool to the engine.
 
 Accepted 2026-08-07.
@@ -24,7 +24,7 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
 ## Example
 
 ```jsonc
-// goku.actor.json
+// goku.entity.json
 {
   "name": "goku",
   "atlas": "goku.png",              // packed atlas of frames

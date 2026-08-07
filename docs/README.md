@@ -11,10 +11,10 @@ collect what we want to build **before** writing gameplay code.
   automated (research findings).
 - [`tooling.md`](./tooling.md) — the asset pipeline: our own browser sprite
   editor (sprite-sheet-first; MUGEN import parked).
-- [`actor-editor.md`](./actor-editor.md) — plan to grow the editor into a full
-  Actor Editor (sprites, animations, hitboxes, sounds, inputs, states).
+- [`entity-editor.md`](./entity-editor.md) — plan to grow the editor into a full
+  Entity Editor (sprites, animations, hitboxes, sounds, inputs, states).
 - [`data-format.md`](./data-format.md) — the character file format (the contract
-  between the actor editor and the engine).
+  between the entity editor and the engine).
 - [`tech-stack.md`](./tech-stack.md) — technology choices and why.
 - [`roadmap.md`](./roadmap.md) — rough phases, from setup toward a playable
   prototype.

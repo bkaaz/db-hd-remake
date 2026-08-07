@@ -1,10 +1,10 @@
 /**
  * Central editor state and mutation helpers.
  *
- * The exported shapes mirror the actor data format
+ * The exported shapes mirror the entity data format
  * (see docs/data-format.md): frames carry a rect + anchor, animations are
  * ordered timed steps. The editor holds a working copy; `exporter.ts` turns it
- * into the on-disk `*.actor.json`.
+ * into the on-disk `*.entity.json`.
  */
 
 export type EditorMode = "frame" | "anchor" | "bg" | "detect";
@@ -34,7 +34,7 @@ export interface AnimDef {
 export interface EditorState {
   image: HTMLImageElement | null;
   atlasFilename: string;
-  actorName: string;
+  entityName: string;
   frames: FrameDef[];
   anims: AnimDef[];
   selectedFrameId: string | null;
@@ -57,7 +57,7 @@ export interface EditorState {
 export const state: EditorState = {
   image: null,
   atlasFilename: "atlas.png",
-  actorName: "actor",
+  entityName: "entity",
   frames: [],
   anims: [],
   selectedFrameId: null,
@@ -172,9 +172,9 @@ export function removeAnim(name: string): void {
   }
 }
 
-// --- loading an existing actor file ----------------------------------
+// --- loading an existing entity file ----------------------------------
 
-export interface ActorFileIn {
+export interface EntityFileIn {
   name: string;
   atlas: string;
   frames: Record<
@@ -187,8 +187,8 @@ export interface ActorFileIn {
   >;
 }
 
-/** Hydrate editor state from a saved actor file (reverse of the exporter). */
-export function loadActor(json: ActorFileIn): void {
+/** Hydrate editor state from a saved entity file (reverse of the exporter). */
+export function loadEntity(json: EntityFileIn): void {
   state.frames = Object.entries(json.frames).map(([id, f]) => ({
     id,
     x: f.x,
@@ -204,6 +204,6 @@ export function loadActor(json: ActorFileIn): void {
   }));
   state.selectedFrameId = null;
   state.selectedAnimName = state.anims[0]?.name ?? null;
-  state.actorName = json.name;
+  state.entityName = json.name;
   state.atlasFilename = json.atlas;
 }

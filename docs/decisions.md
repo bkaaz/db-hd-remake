@@ -2,15 +2,26 @@
 
 Decisions that are settled. Newest first.
 
-## 2026-08-07 — Editor becomes the Actor Editor
+## 2026-08-07 — Naming: Entity (final); storage content/ + assets/ (no public/)
 
-- The tool generalizes from "sprite editor" to **Actor Editor**: authors a whole
-  game entity (sprites, animations, hitboxes, sounds, inputs, states). "Actor" is
+- Final name: **Entity** (chosen over Actor / Character / Fighter). Rationale:
+  "entity" is the common term in hand-rolled game code (ECS lineage), generic for
+  future non-character objects, and clean in TS. Tool = **Entity Editor**
+  (`tools/entity-editor/`); files `*.entity.json`; API `/api/entity`.
+- **Storage (supersedes the `public/…` paths in older entries below):** our data
+  in `content/entities/` (committed); BYOA images in `assets/` (gitignored:
+  `assets/sheets/`, `assets/atlases/`). **No `public/`.** Game and editor load
+  via the dev-server plugin (`/api/entity`, `/api/atlas`, `/api/sheet(s)`).
+
+## 2026-08-07 — Editor becomes the Entity Editor
+
+- The tool generalizes from "sprite editor" to **Entity Editor**: authors a whole
+  game entity (sprites, animations, hitboxes, sounds, inputs, states). "Entity" is
   generic (fighters now, projectiles/objects later). Full plan in
-  [`actor-editor.md`](./actor-editor.md).
-- **Rename:** data `character` → `actor`; files `*.character.json` →
-  `*.actor.json`; tool `tools/sprite-editor/` → `tools/actor-editor/`; dir
-  `public/characters/` → `public/actors/`.
+  [`entity-editor.md`](./entity-editor.md).
+- **Rename:** data `character` → `entity`; files `*.character.json` →
+  `*.entity.json`; tool `tools/sprite-editor/` → `tools/entity-editor/`; dir
+  `public/characters/` → `public/entities/`.
 - **States model:** hybrid — mostly data-driven (visual), with a small scripting
   escape hatch for unusual behavior.
 - **Editor + engine co-evolve**: each phase is a vertical slice

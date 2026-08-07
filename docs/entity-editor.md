@@ -1,19 +1,19 @@
-# Actor Editor — plan
+# Entity Editor — plan
 
-Evolving the (formerly "sprite") editor into an **Actor Editor**: the single tool
+Evolving the (formerly "sprite") editor into an **Entity Editor**: the single tool
 that authors a complete game entity — sprites, animations, hitboxes, sounds,
-inputs, and states. "Actor" is generic on purpose: it covers fighters now and
+inputs, and states. "Entity" is generic on purpose: it covers fighters now and
 projectiles / stage objects later.
 
 Decided 2026-08-07. Supersedes the narrow "sprite editor" framing in
 [`tooling.md`](./tooling.md).
 
-## The Actor data model (target)
+## The Entity data model (target)
 
-One file per actor: `<name>.actor.json` (was `*.character.json`).
+One file per entity: `<name>.entity.json` (was `*.character.json`).
 
 ```
-actor.json
+entity.json
   meta:        name, atlas
   attributes:  health, walkSpeed, jumpSpeed, gravity, …     # constants (MUGEN: CNS const)
   frames:      id → { rect, anchor }                         # sprites   (MUGEN: SFF)
@@ -32,11 +32,11 @@ actor.json
 ```
 
 **States are the core.** A state binds an animation + physics + sound + input
-into one node; the actor is a state machine. This mirrors the MUGEN mental model
+into one node; the entity is a state machine. This mirrors the MUGEN mental model
 (StateDef + controllers + triggers + HitDef) but as **data, not a scripting
 language**, edited visually.
 
-**Inter-actor events** (the "on hit, opponent enters hurt state" behavior):
+**Inter-entity events** (the "on hit, opponent enters hurt state" behavior):
 > attacker's *active hit box* ∩ defender's *hurt box* + attacker state's `hit`
 > → engine applies damage and forces the defender into its `hurt` state
 > (trigger `onGotHit`).
@@ -51,7 +51,7 @@ are pure data edited visually; a compact expression/hook handles the rare
 behaviors that don't fit. More power than pure data, without a full DSL.
 (Exact trigger/effect vocabulary + script surface designed in Phase D.)
 
-## Editor structure: tabs over one Actor object
+## Editor structure: tabs over one Entity object
 
 | Tab | Purpose | Status |
 |---|---|---|
@@ -71,7 +71,7 @@ Authored data is meaningless until the engine executes it. So every phase is a
 
 | Phase | Editor | Engine | Unlocks |
 |---|---|---|---|
-| **A. Rename + tabs** | reorganize existing; `sprite-editor`→`actor-editor`; `*.character.json`→`*.actor.json` | loader path update | clean base, no new features |
+| **A. Rename + tabs** | reorganize existing; `sprite-editor`→`entity-editor`; `*.character.json`→`*.entity.json` | loader path update | clean base, no new features |
 | **B. Hitboxes** | box layer in Animations | render + overlap test | hit detection |
 | **C. Attributes** | constants form | use HP/speeds | health HUD |
 | **D. States (core)** | state list + transitions (+ small script) | state-machine runner | idle/walk/attack from data |
