@@ -105,9 +105,12 @@ async function boot(): Promise<void> {
   const drawBoxes = (): void => {
     boxG.clear();
     if (!showBoxes || !currentStep?.boxes) return;
+    const facingLeft = sprite.scale.x < 0;
     for (const b of currentStep.boxes) {
+      // Mirror box X around the anchor when the sprite faces left.
+      const bx = facingLeft ? sprite.x - (b.x + b.w) * SCALE : sprite.x + b.x * SCALE;
       boxG
-        .rect(sprite.x + b.x * SCALE, sprite.y + b.y * SCALE, b.w * SCALE, b.h * SCALE)
+        .rect(bx, sprite.y + b.y * SCALE, b.w * SCALE, b.h * SCALE)
         .stroke({ color: BOX_COLORS[b.type] ?? 0xffffff, width: 1 });
     }
   };
@@ -134,13 +137,7 @@ async function boot(): Promise<void> {
     sprite.anchor.set(ft.anchor[0] / ft.w, ft.anchor[1] / ft.h);
   };
 
-  // Pick the animation to play: ?anim=<name> if present, else the first one.
-  const wanted = new URL(location.href).searchParams.get("anim");
-  const animName =
-    wanted && data.animations[wanted] ? wanted : Object.keys(data.animations)[0];
-  const anim = animName ? data.animations[animName] : null;
-
-  if (!anim || anim.steps.length === 0) {
+  if (Object.keys(data.animations).length === 0) {
     // No animation — just show the first frame so the sprite is visible.
     const first = Object.keys(data.frames)[0];
     if (first) applyFrame(first);
@@ -148,14 +145,69 @@ async function boot(): Promise<void> {
     return;
   }
 
-  // Fixed 60 FPS animation player driven off the render ticker.
+  // --- Animation player that can switch animations at runtime ------------
+  let curAnim: Anim | null = null;
+  let curName = "";
   let stepIndex = 0;
-  const stepDur = (): number => Math.max(1, anim.steps[Math.min(stepIndex, anim.steps.length - 1)].dur);
-  let remaining = stepDur();
+  let remaining = 0;
   let acc = 0;
-  applyFrame(anim.steps[stepIndex].frame);
-  currentStep = anim.steps[stepIndex];
-  drawBoxes();
+
+  const stepDur = (): number =>
+    curAnim ? Math.max(1, curAnim.steps[Math.min(stepIndex, curAnim.steps.length - 1)].dur) : 0;
+
+  const applyStep = (): void => {
+    if (!curAnim || curAnim.steps.length === 0) return;
+    const step = curAnim.steps[Math.min(stepIndex, curAnim.steps.length - 1)];
+    applyFrame(step.frame);
+    currentStep = step;
+    drawBoxes();
+  };
+
+  const setAnim = (name: string): void => {
+    if (name === curName || !data.animations[name]) return;
+    curName = name;
+    curAnim = data.animations[name];
+    stepIndex = 0;
+    remaining = stepDur();
+    acc = 0;
+    applyStep();
+  };
+
+  const advanceAnim = (): void => {
+    if (!curAnim || curAnim.steps.length === 0) return;
+    remaining -= 1;
+    if (remaining <= 0) {
+      stepIndex += 1;
+      if (stepIndex >= curAnim.steps.length) {
+        stepIndex = curAnim.loop ? 0 : curAnim.steps.length - 1;
+      }
+      remaining = stepDur();
+      applyStep();
+    }
+  };
+
+  const animKeys = Object.keys(data.animations);
+  // Idle = ?anim override, else the first non-"walk" animation, else the first.
+  const wanted = new URL(location.href).searchParams.get("anim");
+  const idleName =
+    wanted && data.animations[wanted]
+      ? wanted
+      : (animKeys.find((k) => k !== "walk") ?? animKeys[0]);
+  const hasWalk = !!data.animations["walk"];
+  setAnim(idleName);
+
+  // =====================================================================
+  // TEMPORARY input + movement — placeholder to see walking.
+  // Left/Right arrows move the character and play the "walk" animation,
+  // facing the movement direction; releasing them returns to idle.
+  // This is throwaway glue: it will be replaced by the proper command +
+  // state-machine systems (docs/entity-editor.md, phases D/E) — input ->
+  // command -> a "walk" state that owns the animation, velocity, etc.
+  // =====================================================================
+  let left = false;
+  let right = false;
+  const WALK_SPEED = 2.5; // screen px per game frame (~150 px/s at 60 FPS)
+  const clampX = (x: number): number => Math.max(40, Math.min(app.screen.width - 40, x));
 
   app.ticker.add((ticker) => {
     acc += ticker.deltaMS / 1000;
@@ -163,29 +215,36 @@ async function boot(): Promise<void> {
     let guard = 0;
     while (acc >= frameTime && guard++ < 600) {
       acc -= frameTime;
-      remaining -= 1;
-      if (remaining <= 0) {
-        stepIndex += 1;
-        if (stepIndex >= anim.steps.length) {
-          stepIndex = anim.loop ? 0 : anim.steps.length - 1;
-        }
-        remaining = stepDur();
-        applyFrame(anim.steps[stepIndex].frame);
-        currentStep = anim.steps[stepIndex];
+
+      const dir = (right ? 1 : 0) - (left ? 1 : 0);
+      if (dir !== 0 && hasWalk) {
+        setAnim("walk");
+        sprite.scale.x = dir < 0 ? -SCALE : SCALE; // face the movement direction
+        sprite.x = clampX(sprite.x + dir * WALK_SPEED);
         drawBoxes();
+      } else {
+        setAnim(idleName);
       }
+
+      advanceAnim();
     }
   });
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "b" || e.key === "B") {
+    if (e.key === "ArrowLeft") left = true;
+    else if (e.key === "ArrowRight") right = true;
+    else if (e.key === "b" || e.key === "B") {
       showBoxes = !showBoxes;
       drawBoxes();
     }
   });
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "ArrowLeft") left = false;
+    else if (e.key === "ArrowRight") right = false;
+  });
 
   const label = new Text({
-    text: `${data.name} — "${animName}" (${anim.steps.length} steps, ${Object.keys(data.frames).length} frames) · [B] boxes`,
+    text: `${data.name} · [←/→] walk · [B] boxes`,
     style: { fill: "#88aa88", fontFamily: "monospace", fontSize: 14 },
   });
   label.x = 8;
