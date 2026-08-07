@@ -1,8 +1,10 @@
 import { defineConfig } from "vite";
+import { spriteEditorServer } from "./tools/sprite-editor/plugin";
 
 // Minimal Vite config. We keep the pixel-art rendering crisp by leaving
 // image optimization defaults alone for now; revisit when we add real assets.
 export default defineConfig({
+  plugins: [spriteEditorServer()],
   server: {
     open: true,
   },

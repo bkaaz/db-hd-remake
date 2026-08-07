@@ -6,6 +6,7 @@
   "description": "Fan remake (browser, TypeScript) of Dragon Ball Z: Hyper Dimension (SNES, 1996). Non-commercial.",
   "scripts": {
     "dev": "vite",
+    "editor": "vite --port 5174 --open /tools/sprite-editor/",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
@@ -14,6 +15,7 @@
     "pixi.js": "^8.6.6"
   },
   "devDependencies": {
+    "@types/node": "^22.10.5",
     "typescript": "^5.7.3",
     "vite": "^6.0.7"
   }

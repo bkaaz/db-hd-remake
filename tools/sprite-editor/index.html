@@ -9,8 +9,10 @@
   <body>
     <header id="toolbar">
       <div class="group">
-        <label class="filebtn">
-          Load sheet
+        <select id="sheet-select" title="Sheets in sprite-sheets/"></select>
+        <button id="sheet-load">Load</button>
+        <label class="filebtn" title="Load a sheet from your computer instead">
+          Upload
           <input id="file" type="file" accept="image/*" hidden />
         </label>
       </div>
@@ -44,8 +46,9 @@
         <label>min <input id="detect-min" type="number" class="dur" value="12" min="1" /></label>
       </div>
       <div class="group">
-        <button id="export-json">Export JSON</button>
-        <button id="export-atlas">Export atlas</button>
+        <button id="save">Save to repo</button>
+        <button id="export-json" title="Fallback: download JSON">Export JSON</button>
+        <button id="export-atlas" title="Fallback: download atlas">Export atlas</button>
       </div>
     </header>
 

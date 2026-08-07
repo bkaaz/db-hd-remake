@@ -171,3 +171,39 @@ export function removeAnim(name: string): void {
     state.selectedAnimName = state.anims[0]?.name ?? null;
   }
 }
+
+// --- loading an existing character file ----------------------------------
+
+export interface CharacterFileIn {
+  name: string;
+  atlas: string;
+  frames: Record<
+    string,
+    { x: number; y: number; w: number; h: number; anchor: [number, number] }
+  >;
+  animations: Record<
+    string,
+    { loop: boolean; steps: { frame: string; dur: number }[] }
+  >;
+}
+
+/** Hydrate editor state from a saved character file (reverse of the exporter). */
+export function loadCharacter(json: CharacterFileIn): void {
+  state.frames = Object.entries(json.frames).map(([id, f]) => ({
+    id,
+    x: f.x,
+    y: f.y,
+    w: f.w,
+    h: f.h,
+    anchor: [f.anchor[0], f.anchor[1]],
+  }));
+  state.anims = Object.entries(json.animations).map(([name, a]) => ({
+    name,
+    loop: a.loop,
+    steps: a.steps.map((s) => ({ frame: s.frame, dur: s.dur })),
+  }));
+  state.selectedFrameId = null;
+  state.selectedAnimName = state.anims[0]?.name ?? null;
+  state.charName = json.name;
+  state.atlasFilename = json.atlas;
+}

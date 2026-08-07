@@ -76,6 +76,43 @@ export function downloadAtlas(): void {
   });
 }
 
+/** The keyed atlas as a PNG data URL (for saving to the repo). */
+export function getAtlasDataURL(): string | null {
+  const source = getSource();
+  if (!source) return null;
+  const c = document.createElement("canvas");
+  c.width = source.width;
+  c.height = source.height;
+  const ctx = c.getContext("2d");
+  if (!ctx) return null;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(source, 0, 0);
+  return c.toDataURL("image/png");
+}
+
+/** Save the character JSON + keyed atlas to the repo via the dev-server API. */
+export async function saveToRepo(): Promise<{ ok: boolean; message: string }> {
+  const character = buildCharacter();
+  const atlasPngBase64 = getAtlasDataURL();
+  try {
+    const res = await fetch("/api/character", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: state.charName, character, atlasPngBase64 }),
+    });
+    const data = (await res.json()) as { error?: string; atlasWritten?: boolean };
+    if (!res.ok) return { ok: false, message: data.error ?? "save failed" };
+    return {
+      ok: true,
+      message:
+        `Saved public/characters/${state.charName}.character.json` +
+        (data.atlasWritten ? ` + public/atlases/${state.charName}.png` : ""),
+    };
+  } catch (e) {
+    return { ok: false, message: `No editor server (run npm run editor) — ${String(e)}` };
+  }
+}
+
 function triggerDownload(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

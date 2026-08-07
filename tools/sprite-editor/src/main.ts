@@ -1,8 +1,16 @@
-import { state, emitChange, onChange, deleteFrame, addFrameFromRect } from "./store";
+import {
+  state,
+  emitChange,
+  onChange,
+  deleteFrame,
+  addFrameFromRect,
+  loadCharacter,
+  type CharacterFileIn,
+} from "./store";
 import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
 import { renderFrames, renderAnims } from "./panels";
-import { downloadJSON, downloadAtlas } from "./exporter";
+import { downloadJSON, downloadAtlas, saveToRepo } from "./exporter";
 import { setImage, pickColorAt, rebuildKeyed } from "./imageProcess";
 import { detectAll } from "./detect";
 
@@ -17,6 +25,9 @@ const previewCanvas = byId<HTMLCanvasElement>("preview");
 const framesPanel = byId("frames-panel");
 const animsPanel = byId("anims-panel");
 const fileInput = byId<HTMLInputElement>("file");
+const sheetSelect = byId<HTMLSelectElement>("sheet-select");
+const sheetLoadBtn = byId("sheet-load");
+const saveBtn = byId("save");
 const charNameInput = byId<HTMLInputElement>("char-name");
 const atlasNameInput = byId<HTMLInputElement>("atlas-name");
 const zoomLabel = byId("zoom-label");
@@ -118,6 +129,13 @@ byId("export-atlas").addEventListener("click", () => downloadAtlas());
 byId("play").addEventListener("click", () => preview.play());
 byId("stop").addEventListener("click", () => preview.stop());
 
+sheetLoadBtn.addEventListener("click", () => loadFromRepo(sheetSelect.value));
+saveBtn.addEventListener("click", async () => {
+  statusEl.textContent = "Saving…";
+  const result = await saveToRepo();
+  statusEl.textContent = result.message;
+});
+
 fileInput.addEventListener("change", () => {
   const file = fileInput.files?.[0];
   if (file) loadImageFile(file);
@@ -141,38 +159,92 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+/**
+ * Apply a freshly-loaded image as the current sheet. A new sheet invalidates
+ * existing frames/animations (they reference the previous sheet's coordinates),
+ * so we start fresh, then auto-key the background.
+ */
+function applyNewImage(img: HTMLImageElement, fileName: string): void {
+  state.frames = [];
+  state.anims = [];
+  state.selectedFrameId = null;
+  state.selectedAnimName = null;
+  state.mode = "frame";
+
+  state.image = img;
+  state.atlasFilename = fileName;
+  state.charName = fileName.replace(/\.[^.]+$/, "") || "character";
+
+  const hasAlpha = setImage(img);
+  if (hasAlpha) {
+    state.bgKeyEnabled = false;
+    state.bgColor = null;
+  } else {
+    pickColorAt(0, 0);
+    state.bgTolerance = 0;
+    state.bgKeyEnabled = true;
+  }
+  rebuildKeyed();
+
+  charNameInput.value = state.charName;
+  atlasNameInput.value = state.atlasFilename;
+}
+
 function loadImageFile(file: File): void {
   const img = new Image();
   img.onload = () => {
-    // A new sheet invalidates existing frames/animations (they reference the
-    // previous sheet's coordinates), so start fresh.
-    state.frames = [];
-    state.anims = [];
-    state.selectedFrameId = null;
-    state.selectedAnimName = null;
-    state.mode = "frame";
-
-    state.image = img;
-    state.atlasFilename = file.name;
-    atlasNameInput.value = file.name;
-    // If the sheet already has transparency, leave it alone; otherwise
-    // auto-detect the background from the top-left corner and key it out.
-    const hasAlpha = setImage(img);
-    if (hasAlpha) {
-      state.bgKeyEnabled = false;
-      state.bgColor = null;
-    } else {
-      pickColorAt(0, 0);
-      state.bgTolerance = 0;
-      state.bgKeyEnabled = true;
-    }
-    rebuildKeyed();
+    applyNewImage(img, file.name);
     emitChange();
   };
   img.onerror = () => {
     statusEl.textContent = "Failed to load image.";
   };
   img.src = URL.createObjectURL(file);
+}
+
+/** Load a sheet from the repo, and hydrate any existing character JSON. */
+function loadFromRepo(fileName: string): void {
+  if (!fileName) return;
+  const img = new Image();
+  img.onload = async () => {
+    applyNewImage(img, fileName);
+    const base = state.charName;
+    try {
+      const res = await fetch(`/api/character?name=${encodeURIComponent(base)}`);
+      if (res.ok) {
+        const data = (await res.json()) as { character: CharacterFileIn };
+        loadCharacter(data.character);
+        rebuildKeyed();
+        charNameInput.value = state.charName;
+        atlasNameInput.value = state.atlasFilename;
+        statusEl.textContent = `Loaded ${fileName} + existing character data.`;
+      } else {
+        statusEl.textContent = `Loaded ${fileName} (new character).`;
+      }
+    } catch {
+      statusEl.textContent = `Loaded ${fileName}.`;
+    }
+    emitChange();
+  };
+  img.onerror = () => {
+    statusEl.textContent = `Failed to load ${fileName} from repo.`;
+  };
+  img.src = `/api/sheet?name=${encodeURIComponent(fileName)}`;
+}
+
+async function refreshSheetList(): Promise<void> {
+  try {
+    const res = await fetch("/api/sheets");
+    const data = (await res.json()) as { sheets: string[] };
+    sheetSelect.replaceChildren();
+    if (data.sheets.length === 0) {
+      sheetSelect.append(new Option("(none in sprite-sheets/)", ""));
+    } else {
+      for (const name of data.sheets) sheetSelect.append(new Option(name, name));
+    }
+  } catch {
+    sheetSelect.replaceChildren(new Option("(editor server not running)", ""));
+  }
 }
 
 function render(): void {
@@ -200,3 +272,17 @@ function render(): void {
 
 onChange(render);
 render();
+
+// Populate the sheet dropdown; optionally auto-load a sheet from ?sheet=.
+void refreshSheetList().then(() => {
+  const preselect = new URL(location.href).searchParams.get("sheet");
+  if (preselect) {
+    const match = [...sheetSelect.options].find(
+      (o) => o.value === preselect || o.value === `${preselect}.png`,
+    );
+    if (match) {
+      sheetSelect.value = match.value;
+      loadFromRepo(match.value);
+    }
+  }
+});

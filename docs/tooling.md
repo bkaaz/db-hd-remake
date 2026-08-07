@@ -56,10 +56,11 @@ without reworking the editor or exporter.
 - **Phase 3 (parked):** MUGEN importer — `.air` parser first (cheap, high
   value), then `.sff` parser.
 
-## Repo-integrated I/O (planned)
+## Repo-integrated I/O
 
 Replacing upload/download with direct repo file access, since the editor is
-always used against a specific sheet in this repo.
+always used against a specific sheet in this repo. **Core implemented**
+(`npm run editor`); `fetch-assets`/manifest still to do.
 
 - **Mechanism:** a **Vite dev-server plugin** (`configureServer`, dev-only) with
   endpoints:
@@ -76,8 +77,14 @@ always used against a specific sheet in this repo.
 - **Storage = BYOA:** only our code + JSON are committed; images are gitignored
   and never enter git history. A committed `assets.manifest.json` (name → URL +
   sha256) + `npm run fetch-assets` fetch canonical sheets from their public
-  source on the user's machine. See [`assets.md`](./assets.md) and
-  [`decisions.md`](./decisions.md).
+  source on the user's machine (⬜ not built yet). See [`assets.md`](./assets.md)
+  and [`decisions.md`](./decisions.md).
+
+**Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet`, `/api/character`
+GET/POST); ✅ dropdown Load from repo + hydrate existing JSON; ✅ Save writes
+`public/characters/*.json` + keyed `public/atlases/*.png`. Verified end-to-end on
+a real sheet (load → detect → save → reload → hydrate). ⬜ `fetch-assets` +
+manifest next.
 
 ## Existing tools — landscape (for reference)
 
