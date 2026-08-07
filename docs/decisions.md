@@ -2,14 +2,14 @@
 
 Decisions that are settled. Newest first.
 
-## 2026-08-07 — Naming: Entity (final); storage content/ + assets/ (no public/)
+## 2026-08-07 — Naming: Entity (final); storage data/ + assets/ (no public/)
 
 - Final name: **Entity** (chosen over Actor / Character / Fighter). Rationale:
   "entity" is the common term in hand-rolled game code (ECS lineage), generic for
   future non-character objects, and clean in TS. Tool = **Entity Editor**
   (`tools/entity-editor/`); files `*.entity.json`; API `/api/entity`.
 - **Storage (supersedes the `public/…` paths in older entries below):** our data
-  in `content/entities/` (committed); BYOA images in `assets/` (gitignored:
+  in `data/entities/` (committed); BYOA images in `assets/` (gitignored:
   `assets/sheets/`, `assets/atlases/`). **No `public/`.** Game and editor load
   via the dev-server plugin (`/api/entity`, `/api/atlas`, `/api/sheet(s)`).
 

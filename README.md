@@ -45,7 +45,7 @@ npm run editor           # asset pipeline tool at /tools/entity-editor/
 ```
 
 Load a sheet from `assets/sheets/`, frame it, build animations, and Save — it
-writes `content/entities/<name>.entity.json` (committed) plus a keyed
+writes `data/entities/<name>.entity.json` (committed) plus a keyed
 `assets/atlases/<name>.png` (gitignored).
 
 ## Docs

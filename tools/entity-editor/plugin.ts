@@ -6,15 +6,15 @@ import path from "node:path";
 /**
  * Dev-server plugin backing the repo-integrated entity editor. Adds endpoints so
  * the browser tool (and the game) can list sheets from `assets/sheets/`,
- * read/write our entity JSON in `content/entities/`, and read/write the keyed atlas
+ * read/write our entity JSON in `data/entities/`, and read/write the keyed atlas
  * in `assets/atlases/`. Dev-only (`apply: "serve"`); never part of a build.
  *
- * BYOA: source sheets and atlases are gitignored; only content/entities/*.json are
+ * BYOA: source sheets and atlases are gitignored; only data/entities/*.json are
  * committed. See docs/assets.md.
  */
 
 const SHEETS_DIR = path.join("assets", "sheets");
-const ENTITIES_DIR = path.join("content", "entities");
+const ENTITIES_DIR = path.join("data", "entities");
 const ATLASES_DIR = path.join("assets", "atlases");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
 

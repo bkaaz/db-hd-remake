@@ -105,7 +105,7 @@ export async function saveToRepo(): Promise<{ ok: boolean; message: string }> {
     return {
       ok: true,
       message:
-        `Saved content/entities/${state.entityName}.entity.json` +
+        `Saved data/entities/${state.entityName}.entity.json` +
         (data.atlasWritten ? ` + assets/atlases/${state.entityName}.png` : ""),
     };
   } catch (e) {

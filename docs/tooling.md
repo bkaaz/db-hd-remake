@@ -72,7 +72,7 @@ always used against a specific sheet in this repo. **Implemented**
 - **UI:** sheet dropdown + Load (hydrates from existing JSON) instead of upload;
   Save (writes to repo) instead of download. Upload/download kept as fallback.
 - **Layout:** input `assets/sheets/<name>.png` (gitignored); committed
-  `content/entities/<name>.entity.json`; runtime keyed atlas
+  `data/entities/<name>.entity.json`; runtime keyed atlas
   `assets/atlases/<name>.png` (gitignored, regenerated locally).
 - **Storage = BYOA:** only our code + JSON + the manifest are committed; images
   are gitignored and never enter git history. A committed `assets.manifest.json`
@@ -81,7 +81,7 @@ always used against a specific sheet in this repo. **Implemented**
 
 **Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet`, `/api/entity`
 GET/POST); ✅ dropdown Load from repo + hydrate existing JSON; ✅ Save writes
-`content/entities/*.json` + keyed `assets/atlases/*.png`; ✅ `assets.manifest.json`
+`data/entities/*.json` + keyed `assets/atlases/*.png`; ✅ `assets.manifest.json`
 + `npm run fetch-assets` / `hash-assets`. Verified end-to-end on a real sheet
 (load → detect → save → reload → hydrate) and the missing-asset guidance path.
 
