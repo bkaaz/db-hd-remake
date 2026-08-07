@@ -5,5 +5,7 @@ dist/
 .vite/
 .playwright-mcp/
 
-# Local ripped/original assets — kept out of the repo (see docs/assets.md)
+# BYOA: copyrighted source assets and generated atlases stay out of the repo
+# (see docs/assets.md). Only our code + characters/*.json are committed.
 sprite-sheets/
+public/atlases/

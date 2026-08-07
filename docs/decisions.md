@@ -2,6 +2,27 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-07 — Editor I/O (repo-integrated) + BYOA storage
+
+- **Repo-integrated editor** instead of upload/download. A **Vite dev-server
+  plugin** exposes `/api/...` endpoints (Node fs) to list sheets and read/write
+  character JSON directly to repo files. Chosen over File System Access API and a
+  separate server. Details/plan in [`tooling.md`](./tooling.md).
+- **Storage = BYOA (Bring Your Own Assets).** We keep the project publishable:
+  commit **only our work** — engine code + `characters/*.character.json`.
+  Copyrighted images/audio are **gitignored** and never enter git history; the
+  user supplies the source sheet from their own copy. Considered but rejected
+  "commit everything, repo private forever" (blocks publication + pollutes git
+  history). See [`assets.md`](./assets.md).
+- **Distribution:** a committed `assets.manifest.json` (name → source URL +
+  sha256) plus `npm run fetch-assets` downloads canonical sheets from their
+  public source on the user's machine (we ship a pointer, not the bytes).
+- **File layout:** input `sprite-sheets/<name>.png` (gitignored); committed
+  `public/characters/<name>.character.json`; runtime keyed atlas
+  `public/atlases/<name>.png` (gitignored, regenerated locally).
+- **Atlas = whole keyed sheet** for now (frames reference rects); tight repacking
+  deferred.
+
 ## 2026-08-07 — Character data format v0 accepted
 
 - Accepted the v0 character file format (atlas + frames/anchors + timed

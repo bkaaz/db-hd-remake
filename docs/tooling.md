@@ -56,6 +56,29 @@ without reworking the editor or exporter.
 - **Phase 3 (parked):** MUGEN importer — `.air` parser first (cheap, high
   value), then `.sff` parser.
 
+## Repo-integrated I/O (planned)
+
+Replacing upload/download with direct repo file access, since the editor is
+always used against a specific sheet in this repo.
+
+- **Mechanism:** a **Vite dev-server plugin** (`configureServer`, dev-only) with
+  endpoints:
+  - `GET /api/sheets` — list `sprite-sheets/`.
+  - `GET /api/character?name=` — read existing character JSON (to keep editing).
+  - `POST /api/character` — write JSON + keyed atlas PNG to repo files.
+  - Source images are served by Vite directly (`/sprite-sheets/<name>.png`).
+- **Command:** `npm run editor` (dedicated port; optional `?sheet=` preselect).
+- **UI:** sheet dropdown + Load (hydrates from existing JSON) instead of upload;
+  Save (writes to repo) instead of download. Upload/download kept as fallback.
+- **Layout:** input `sprite-sheets/<name>.png` (gitignored); committed
+  `public/characters/<name>.character.json`; runtime keyed atlas
+  `public/atlases/<name>.png` (gitignored, regenerated locally).
+- **Storage = BYOA:** only our code + JSON are committed; images are gitignored
+  and never enter git history. A committed `assets.manifest.json` (name → URL +
+  sha256) + `npm run fetch-assets` fetch canonical sheets from their public
+  source on the user's machine. See [`assets.md`](./assets.md) and
+  [`decisions.md`](./decisions.md).
+
 ## Existing tools — landscape (for reference)
 
 | Tool | Does | Missing for us |
