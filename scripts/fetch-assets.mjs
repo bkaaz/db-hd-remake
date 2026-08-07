@@ -71,8 +71,17 @@ async function printHashes(manifest) {
   }
 }
 
-async function download(url) {
-  const res = await fetch(url, { redirect: "follow" });
+async function download(url, referer) {
+  // A browser-like User-Agent (+ Referer) is needed for hosts behind Cloudflare
+  // such as The Spriters Resource.
+  const res = await fetch(url, {
+    redirect: "follow",
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      ...(referer ? { Referer: referer } : {}),
+    },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return Buffer.from(await res.arrayBuffer());
 }
@@ -104,7 +113,7 @@ async function fetchAll(manifest) {
     // Missing — try to download, else guide the user.
     if (urlIsReal(asset.url)) {
       try {
-        const buf = await download(asset.url);
+        const buf = await download(asset.url, asset.source);
         const got = createHash("sha256").update(buf).digest("hex");
         if (want && got !== want) {
           console.log(`${RED}✗${RESET} ${rel} downloaded but sha256 mismatch (not saved)`);
