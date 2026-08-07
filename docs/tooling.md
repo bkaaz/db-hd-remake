@@ -46,8 +46,13 @@ without reworking the editor or exporter.
   manual rectangle frame selection → per-frame anchor → animations with timing →
   playback preview → export `*.character.json` + atlas. Verified end-to-end
   (draw frames → build animation → export matches `data-format.md`).
-- **Phase 2:** auto-slice (blob detection) + hitbox/hurtbox layer + multiple
-  animations + UX polish.
+- **Phase 2 (in progress):**
+  - ✅ Background color-keying (auto-detect + eyedropper + tolerance; alpha baked
+    into export).
+  - ✅ Auto-slice via connected-component detection ("Detect all" + "Magic
+    click"), with a gap-close slider to merge fragments and a min-area filter.
+  - ⬜ Hitbox/hurtbox/push layer.
+  - ⬜ Tight atlas repacking; more UX polish.
 - **Phase 3 (parked):** MUGEN importer — `.air` parser first (cheap, high
   value), then `.sff` parser.
 

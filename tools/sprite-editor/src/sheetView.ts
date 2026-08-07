@@ -3,9 +3,11 @@ import {
   emitChange,
   nextFrameId,
   selectedFrame,
+  addFrameFromRect,
   type FrameDef,
 } from "./store";
 import { getSource, pickColorAt, rebuildKeyed } from "./imageProcess";
+import { detectAt } from "./detect";
 
 /**
  * The left-hand sheet canvas: draws the loaded sprite sheet with frame
@@ -51,6 +53,20 @@ export class SheetView {
       rebuildKeyed();
       state.mode = "frame";
       emitChange();
+      return;
+    }
+
+    if (state.mode === "detect") {
+      // Magic click: detect the sprite under the cursor as one frame.
+      const rect = detectAt(p.x, p.y, {
+        gap: state.detectGap,
+        minArea: state.detectMinArea,
+      });
+      if (rect) {
+        const frame = addFrameFromRect(rect);
+        state.selectedFrameId = frame.id;
+        emitChange();
+      }
       return;
     }
 

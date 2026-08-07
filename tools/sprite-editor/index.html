@@ -37,6 +37,13 @@
         <label>tol <input id="bg-tol" type="number" class="dur" value="0" min="0" max="255" /></label>
       </div>
       <div class="group">
+        <span class="lbl">Detect:</span>
+        <button id="detect-all" title="Detect all sprites as frames">All</button>
+        <button id="detect-click" title="Magic click: click a sprite to make it a frame">Magic click</button>
+        <label>gap <input id="detect-gap" type="number" class="dur" value="2" min="0" max="8" /></label>
+        <label>min <input id="detect-min" type="number" class="dur" value="12" min="1" /></label>
+      </div>
+      <div class="group">
         <button id="export-json">Export JSON</button>
         <button id="export-atlas">Export atlas</button>
       </div>

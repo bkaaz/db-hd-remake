@@ -96,3 +96,11 @@ export function rebuildKeyed(): void {
 export function getSource(): HTMLCanvasElement | null {
   return keyed;
 }
+
+/** Pixel data of the keyed canvas (used by auto-detection). */
+export function getKeyedImageData(): ImageData | null {
+  if (!keyed) return null;
+  const ctx = keyed.getContext("2d");
+  if (!ctx) return null;
+  return ctx.getImageData(0, 0, keyed.width, keyed.height);
+}

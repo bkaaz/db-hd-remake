@@ -7,7 +7,7 @@
  * into the on-disk `*.character.json`.
  */
 
-export type EditorMode = "frame" | "anchor" | "bg";
+export type EditorMode = "frame" | "anchor" | "bg" | "detect";
 
 export interface FrameDef {
   id: string;
@@ -48,6 +48,10 @@ export interface EditorState {
   bgTolerance: number;
   /** Whether background color-keying is applied. */
   bgKeyEnabled: boolean;
+  /** Auto-detection: max transparent gap (px) to still merge fragments. */
+  detectGap: number;
+  /** Auto-detection: minimum bounding-box area (px²) to keep a frame. */
+  detectMinArea: number;
 }
 
 export const state: EditorState = {
@@ -63,6 +67,8 @@ export const state: EditorState = {
   bgColor: null,
   bgTolerance: 0,
   bgKeyEnabled: false,
+  detectGap: 2,
+  detectMinArea: 12,
 };
 
 // --- change notification -------------------------------------------------
@@ -98,6 +104,25 @@ export function nextFrameId(): string {
     id = `frame_${frameCounter++}`;
   } while (state.frames.some((f) => f.id === id));
   return id;
+}
+
+/** Create a frame from a detected rect, with a default bottom-center anchor. */
+export function addFrameFromRect(r: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}): FrameDef {
+  const frame: FrameDef = {
+    id: nextFrameId(),
+    x: r.x,
+    y: r.y,
+    w: r.w,
+    h: r.h,
+    anchor: [Math.round(r.w / 2), r.h],
+  };
+  state.frames.push(frame);
+  return frame;
 }
 
 export function deleteFrame(id: string): void {

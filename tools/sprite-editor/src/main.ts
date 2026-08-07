@@ -1,9 +1,10 @@
-import { state, emitChange, onChange, deleteFrame } from "./store";
+import { state, emitChange, onChange, deleteFrame, addFrameFromRect } from "./store";
 import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
 import { renderFrames, renderAnims } from "./panels";
 import { downloadJSON, downloadAtlas } from "./exporter";
 import { setImage, pickColorAt, rebuildKeyed } from "./imageProcess";
+import { detectAll } from "./detect";
 
 function byId<T extends HTMLElement>(id: string): T {
   const node = document.getElementById(id);
@@ -27,6 +28,10 @@ const bgEnabled = byId<HTMLInputElement>("bg-enabled");
 const bgSwatch = byId("bg-swatch");
 const bgTol = byId<HTMLInputElement>("bg-tol");
 const bgPickBtn = byId("bg-pick");
+const detectAllBtn = byId("detect-all");
+const detectClickBtn = byId("detect-click");
+const detectGap = byId<HTMLInputElement>("detect-gap");
+const detectMin = byId<HTMLInputElement>("detect-min");
 
 const sheet = new SheetView(sheetCanvas);
 const preview = new Preview(previewCanvas);
@@ -78,6 +83,36 @@ bgPickBtn.addEventListener("click", () => {
   }
 });
 
+detectAllBtn.addEventListener("click", () => {
+  if (!state.image) return;
+  const rects = detectAll({ gap: state.detectGap, minArea: state.detectMinArea });
+  // Skip rects that exactly match an existing frame, so repeats don't duplicate.
+  const seen = new Set(state.frames.map((f) => `${f.x},${f.y},${f.w},${f.h}`));
+  for (const r of rects) {
+    const key = `${r.x},${r.y},${r.w},${r.h}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    addFrameFromRect(r);
+  }
+  emitChange();
+});
+detectClickBtn.addEventListener("click", () => {
+  if (state.image) {
+    state.mode = "detect";
+    emitChange();
+  }
+});
+detectGap.addEventListener("change", () => {
+  const v = parseInt(detectGap.value, 10);
+  state.detectGap = Number.isFinite(v) && v >= 0 ? v : 0;
+  emitChange();
+});
+detectMin.addEventListener("change", () => {
+  const v = parseInt(detectMin.value, 10);
+  state.detectMinArea = Number.isFinite(v) && v >= 1 ? v : 1;
+  emitChange();
+});
+
 byId("export-json").addEventListener("click", () => downloadJSON());
 byId("export-atlas").addEventListener("click", () => downloadAtlas());
 byId("play").addEventListener("click", () => preview.play());
@@ -109,6 +144,14 @@ window.addEventListener("keydown", (e) => {
 function loadImageFile(file: File): void {
   const img = new Image();
   img.onload = () => {
+    // A new sheet invalidates existing frames/animations (they reference the
+    // previous sheet's coordinates), so start fresh.
+    state.frames = [];
+    state.anims = [];
+    state.selectedFrameId = null;
+    state.selectedAnimName = null;
+    state.mode = "frame";
+
     state.image = img;
     state.atlasFilename = file.name;
     atlasNameInput.value = file.name;
@@ -141,6 +184,9 @@ function render(): void {
   modeFrameBtn.classList.toggle("active", state.mode === "frame");
   modeAnchorBtn.classList.toggle("active", state.mode === "anchor");
   bgPickBtn.classList.toggle("active", state.mode === "bg");
+  detectClickBtn.classList.toggle("active", state.mode === "detect");
+  detectGap.value = String(state.detectGap);
+  detectMin.value = String(state.detectMinArea);
   bgEnabled.checked = state.bgKeyEnabled;
   bgTol.value = String(state.bgTolerance);
   bgSwatch.style.background = state.bgColor
