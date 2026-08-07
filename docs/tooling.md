@@ -64,26 +64,29 @@ always used against a specific sheet in this repo. **Implemented**
 
 - **Mechanism:** a **Vite dev-server plugin** (`configureServer`, dev-only) with
   endpoints:
-  - `GET /api/sheets` — list `assets/sheets/`.
-  - `GET /api/entity?name=` — read existing character JSON (to keep editing).
-  - `POST /api/entity` — write JSON + keyed atlas PNG to repo files.
-  - Source images are served by Vite directly (`/assets/sheets/<name>.png`).
+  - `GET /api/sheets` — list `assets/sheets/`; `GET /api/sheet?name=` streams one.
+  - `GET /api/entity?name=` — assemble all section files in the entity's dir.
+  - `POST /api/section {name, section, data, atlasPngBase64?}` — write ONE
+    section file (+ atlas).
+  - `GET /api/atlas?name=` — stream the keyed atlas (used by the game).
 - **Command:** `npm run editor` (dedicated port; optional `?sheet=` preselect).
-- **UI:** sheet dropdown + Load (hydrates from existing JSON) instead of upload;
-  Save (writes to repo) instead of download. Upload/download kept as fallback.
-- **Layout:** input `assets/sheets/<name>.png` (gitignored); committed
-  `data/entities/<name>.entity.json`; runtime keyed atlas
+- **UI:** sheet dropdown + Load (hydrates from existing data) instead of upload;
+  **Save saves only the active tab's section** (Sprites → `frames.json` + atlas,
+  Animations → `animations.json`). Upload/download kept as fallback.
+- **Layout:** input `assets/sheets/<name>.png` (gitignored); committed section
+  files `data/entities/<name>/{frames,animations,...}.json`; runtime keyed atlas
   `assets/atlases/<name>.png` (gitignored, regenerated locally).
 - **Storage = BYOA:** only our code + JSON + the manifest are committed; images
   are gitignored and never enter git history. A committed `assets.manifest.json`
   + `npm run fetch-assets` fetch/verify source assets on the user's machine. See
   [`assets.md`](./assets.md) and [`decisions.md`](./decisions.md).
 
-**Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet`, `/api/entity`
-GET/POST); ✅ dropdown Load from repo + hydrate existing JSON; ✅ Save writes
-`data/entities/*.json` + keyed `assets/atlases/*.png`; ✅ `assets.manifest.json`
-+ `npm run fetch-assets` / `hash-assets`. Verified end-to-end on a real sheet
-(load → detect → save → reload → hydrate) and the missing-asset guidance path.
+**Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet`, `/api/entity` assemble,
+`/api/section` write, `/api/atlas`); ✅ dropdown Load + hydrate; ✅ per-section
+Save (`data/entities/<name>/<section>.json`) + keyed `assets/atlases/*.png`;
+✅ `assets.manifest.json` + `npm run fetch-assets` / `hash-assets`. Verified
+end-to-end (load → detect → per-section save → reload → hydrate; the game
+assembles + renders).
 
 ## Existing tools — landscape (for reference)
 

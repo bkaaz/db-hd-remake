@@ -2,6 +2,25 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-08 — Entity data split into per-section files; per-section save
+
+- An entity is a **directory** of section files, not one blob:
+  `data/entities/<name>/frames.json`, `animations.json` (later: `states.json`,
+  `commands.json`, `sounds.json`, `attributes.json`).
+- The dev-server plugin **assembles** all `<section>.json` in the dir for
+  `GET /api/entity` (so the game/editor still see one object), and writes ONE
+  section via `POST /api/section {name, section, data, atlasPngBase64?}`.
+- The editor **Save button saves only the active tab's section** (Sprites →
+  `frames.json` + atlas; Animations → `animations.json`), so editing one section
+  never clobbers another. Label reflects the section.
+- Rationale: the model keeps growing; monolithic save risked overwriting
+  sections you didn't touch, and per-section files give cleaner diffs.
+
+## 2026-08-08 — Never auto-commit
+
+- Do not run `git commit` on your own. The owner reviews the diff and commits on
+  explicit request. Recorded in `CLAUDE.md`.
+
 ## 2026-08-07 — Naming: Entity (final); storage data/ + assets/ (no public/)
 
 - Final name: **Entity** (chosen over Actor / Character / Fighter). Rationale:

@@ -1,9 +1,15 @@
-# Data format — character files (v0)
+# Data format — entity files (v0)
 
-The format the entity editor **exports** and the game **loads**. One file per
-character. This is the contract that ties the tool to the engine.
+The format the entity editor **exports** and the game **loads** — the contract
+that ties the tool to the engine.
 
-Accepted 2026-08-07.
+**On-disk layout (updated 2026-08-08):** an entity is a *directory of section
+files*, not one blob: `data/entities/<name>/frames.json`, `animations.json`
+(later `states.json`, etc.). The dev-server plugin assembles them into the single
+object below for `GET /api/entity`; the editor saves one section at a time via
+`POST /api/section`. The assembled shape (below) is unchanged.
+
+Accepted 2026-08-07 · split into sections 2026-08-08.
 
 ## Model
 

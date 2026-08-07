@@ -101,58 +101,80 @@ export function entityEditorServer(): Plugin {
         }
       });
 
-      // Read (GET ?name=) or write (POST) an entity.
+      // Read an entity by assembling every section file in its directory:
+      // data/entities/<name>/<section>.json -> { name, atlas, <section>: ... }.
       server.middlewares.use("/api/entity", async (req, res) => {
-        if (req.method === "GET") {
-          const url = new URL(req.url ?? "", "http://localhost");
-          const name = sanitizeName(url.searchParams.get("name") ?? "");
-          if (!name) return sendJson(res, 400, { error: "name required" });
-          const file = path.join(root, ENTITIES_DIR, `${name}.entity.json`);
+        if (req.method !== "GET") {
+          return sendJson(res, 405, { error: "method not allowed" });
+        }
+        const url = new URL(req.url ?? "", "http://localhost");
+        const name = sanitizeName(url.searchParams.get("name") ?? "");
+        if (!name) return sendJson(res, 400, { error: "name required" });
+
+        const dir = path.join(root, ENTITIES_DIR, name);
+        let files: string[];
+        try {
+          files = (await fs.readdir(dir)).filter((f) => f.endsWith(".json"));
+        } catch {
+          return sendJson(res, 404, { error: "not found" });
+        }
+
+        const entity: Record<string, unknown> = {
+          name,
+          atlas: `${name}.png`,
+          frames: {},
+          animations: {},
+        };
+        for (const f of files) {
+          const key = f.slice(0, -".json".length);
           try {
-            const txt = await fs.readFile(file, "utf8");
-            sendJson(res, 200, { entity: JSON.parse(txt) });
+            entity[key] = JSON.parse(await fs.readFile(path.join(dir, f), "utf8"));
           } catch {
-            sendJson(res, 404, { error: "not found" });
+            /* skip a malformed section rather than failing the whole read */
           }
-          return;
         }
+        sendJson(res, 200, { entity });
+      });
 
-        if (req.method === "POST") {
-          try {
-            const body = JSON.parse(await readBody(req)) as {
-              name?: string;
-              entity?: unknown;
-              atlasPngBase64?: string;
-            };
-            const name = sanitizeName(body.name ?? "");
-            if (!name || !body.entity) {
-              return sendJson(res, 400, { error: "name and entity required" });
-            }
+      // Write ONE section: data/entities/<name>/<section>.json (+ optional atlas).
+      server.middlewares.use("/api/section", async (req, res) => {
+        if (req.method !== "POST") {
+          return sendJson(res, 405, { error: "method not allowed" });
+        }
+        try {
+          const body = JSON.parse(await readBody(req)) as {
+            name?: string;
+            section?: string;
+            data?: unknown;
+            atlasPngBase64?: string;
+          };
+          const name = sanitizeName(body.name ?? "");
+          const section = sanitizeName(body.section ?? "");
+          if (!name || !section || body.data === undefined) {
+            return sendJson(res, 400, { error: "name, section and data required" });
+          }
 
-            await fs.mkdir(path.join(root, ENTITIES_DIR), { recursive: true });
+          const dir = path.join(root, ENTITIES_DIR, name);
+          await fs.mkdir(dir, { recursive: true });
+          await fs.writeFile(
+            path.join(dir, `${section}.json`),
+            JSON.stringify(body.data, null, 2) + "\n",
+          );
+
+          let atlasWritten = false;
+          if (body.atlasPngBase64) {
+            await fs.mkdir(path.join(root, ATLASES_DIR), { recursive: true });
+            const base64 = body.atlasPngBase64.split(",").pop() ?? "";
             await fs.writeFile(
-              path.join(root, ENTITIES_DIR, `${name}.entity.json`),
-              JSON.stringify(body.entity, null, 2) + "\n",
+              path.join(root, ATLASES_DIR, `${name}.png`),
+              Buffer.from(base64, "base64"),
             );
-
-            let atlasWritten = false;
-            if (body.atlasPngBase64) {
-              await fs.mkdir(path.join(root, ATLASES_DIR), { recursive: true });
-              const base64 = body.atlasPngBase64.split(",").pop() ?? "";
-              await fs.writeFile(
-                path.join(root, ATLASES_DIR, `${name}.png`),
-                Buffer.from(base64, "base64"),
-              );
-              atlasWritten = true;
-            }
-            sendJson(res, 200, { ok: true, atlasWritten });
-          } catch (err) {
-            sendJson(res, 500, { error: String(err) });
+            atlasWritten = true;
           }
-          return;
+          sendJson(res, 200, { ok: true, atlasWritten });
+        } catch (err) {
+          sendJson(res, 500, { error: String(err) });
         }
-
-        sendJson(res, 405, { error: "method not allowed" });
       });
     },
   };

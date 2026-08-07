@@ -219,19 +219,19 @@ export function removeAnim(name: string): void {
 export interface EntityFileIn {
   name: string;
   atlas: string;
-  frames: Record<
+  frames?: Record<
     string,
     { x: number; y: number; w: number; h: number; anchor: [number, number] }
   >;
-  animations: Record<
+  animations?: Record<
     string,
     { loop: boolean; steps: { frame: string; dur: number; boxes?: Box[] }[] }
   >;
 }
 
-/** Hydrate editor state from a saved entity file (reverse of the exporter). */
+/** Hydrate editor state from an assembled entity (reverse of the exporter). */
 export function loadEntity(json: EntityFileIn): void {
-  state.frames = Object.entries(json.frames).map(([id, f]) => ({
+  state.frames = Object.entries(json.frames ?? {}).map(([id, f]) => ({
     id,
     x: f.x,
     y: f.y,
@@ -239,7 +239,7 @@ export function loadEntity(json: EntityFileIn): void {
     h: f.h,
     anchor: [f.anchor[0], f.anchor[1]],
   }));
-  state.anims = Object.entries(json.animations).map(([name, a]) => ({
+  state.anims = Object.entries(json.animations ?? {}).map(([name, a]) => ({
     name,
     loop: a.loop,
     steps: a.steps.map((s) => ({

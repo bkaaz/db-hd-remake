@@ -19,6 +19,8 @@ The project owner wants to go **slowly and deliberately**:
   unclear, ask rather than assume — especially details about the original game's
   mechanics, roster, or feel.
 - Prefer small, reviewable steps over large jumps.
+- **Never commit on your own.** The owner reviews changes first. Make and verify
+  the changes, then stop — commit only when the owner explicitly says to.
 - The primary conversation language with the owner is **Polish**. Code,
   comments, commits, and docs are in **English**.
 

@@ -30,11 +30,17 @@ interface EntityOut {
   animations: Record<string, AnimOut>;
 }
 
-export function buildEntity(): EntityOut {
+/** The `frames` section: id -> rect + anchor. */
+export function buildFrames(): Record<string, FrameOut> {
   const frames: Record<string, FrameOut> = {};
   for (const f of state.frames) {
     frames[f.id] = { x: f.x, y: f.y, w: f.w, h: f.h, anchor: f.anchor };
   }
+  return frames;
+}
+
+/** The `animations` section: name -> { loop, steps }. */
+export function buildAnimations(): Record<string, AnimOut> {
   const animations: Record<string, AnimOut> = {};
   for (const a of state.anims) {
     animations[a.name] = {
@@ -46,11 +52,16 @@ export function buildEntity(): EntityOut {
       }),
     };
   }
+  return animations;
+}
+
+/** The whole entity (used for the Export-JSON fallback download). */
+export function buildEntity(): EntityOut {
   return {
     name: state.entityName,
     atlas: state.atlasFilename,
-    frames,
-    animations,
+    frames: buildFrames(),
+    animations: buildAnimations(),
   };
 }
 
@@ -95,27 +106,39 @@ export function getAtlasDataURL(): string | null {
   return c.toDataURL("image/png");
 }
 
-/** Save the entity JSON + keyed atlas to the repo via the dev-server API. */
-export async function saveToRepo(): Promise<{ ok: boolean; message: string }> {
-  const entity = buildEntity();
-  const atlasPngBase64 = getAtlasDataURL();
+/** Write a single section file (data/entities/<name>/<section>.json). */
+async function saveSection(
+  section: string,
+  data: unknown,
+  atlasPngBase64?: string,
+): Promise<{ ok: boolean; message: string }> {
   try {
-    const res = await fetch("/api/entity", {
+    const res = await fetch("/api/section", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: state.entityName, entity, atlasPngBase64 }),
+      body: JSON.stringify({ name: state.entityName, section, data, atlasPngBase64 }),
     });
-    const data = (await res.json()) as { error?: string; atlasWritten?: boolean };
-    if (!res.ok) return { ok: false, message: data.error ?? "save failed" };
+    const resp = (await res.json()) as { error?: string; atlasWritten?: boolean };
+    if (!res.ok) return { ok: false, message: resp.error ?? "save failed" };
     return {
       ok: true,
       message:
-        `Saved data/entities/${state.entityName}.entity.json` +
-        (data.atlasWritten ? ` + assets/atlases/${state.entityName}.png` : ""),
+        `Saved data/entities/${state.entityName}/${section}.json` +
+        (resp.atlasWritten ? ` + assets/atlases/${state.entityName}.png` : ""),
     };
   } catch (e) {
     return { ok: false, message: `No editor server (run npm run editor) — ${String(e)}` };
   }
+}
+
+/** Save the `frames` section (+ the keyed atlas the frames index into). */
+export function saveFrames(): Promise<{ ok: boolean; message: string }> {
+  return saveSection("frames", buildFrames(), getAtlasDataURL() ?? undefined);
+}
+
+/** Save the `animations` section. */
+export function saveAnimations(): Promise<{ ok: boolean; message: string }> {
+  return saveSection("animations", buildAnimations());
 }
 
 function triggerDownload(blob: Blob, filename: string): void {
