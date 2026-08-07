@@ -1,0 +1,20 @@
+{
+  "name": "db-hd-remake",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Fan remake (browser, TypeScript) of Dragon Ball Z: Hyper Dimension (SNES, 1996). Non-commercial.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pixi.js": "^8.6.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}

@@ -1,0 +1,67 @@
+# Tooling — asset pipeline (sprite editor)
+
+How we turn sprite sheets into game-ready data. We build our own small
+browser-based tool rather than gluing several existing ones together.
+
+## Decision: build our own, sprite-sheet-first
+
+No existing tool does all of what we need (browser + slice ripped sheets +
+fighting-game hitboxes + export to **our** format). Each covers only a slice, so
+we'd end up hand-shuffling data and converting at the end anyway.
+
+**MUGEN import is parked** (see below) — not part of the active plan. We build
+for sprite sheets first.
+
+## Architecture: one data model, multiple importers
+
+The tool is built around a single internal data model:
+
+```
+model = frames + anchors + animations (timing) + hitboxes/hurtboxes
+```
+
+Around it:
+
+- **Importer — sprite sheet (active):** load a PNG → cut into frames (manual
+  rectangles first; auto blob-detection later) → set per-frame anchor → group
+  frames into named animations with timing → author hitboxes/hurtboxes.
+- **Importer — MUGEN (parked):** slot kept open. Later, parsing `.air` (text)
+  fills frames/timing/anchors/hitboxes almost for free; `.sff` provides images.
+- **Exporter — our format:** PixiJS atlas (PNG + JSON) + animation/hitbox data.
+
+The same primitives ("draw a rectangle", "set a point") serve frame selection,
+anchors, and hitboxes — so the code is smaller than it sounds.
+
+Keeping this clean model means the parked MUGEN importer can slot in later
+without reworking the editor or exporter.
+
+## Phases
+
+- **Phase 1 — MVP (small):** load image → manual rectangle frame selection →
+  per-frame anchor → one animation with timing → playback preview → export
+  JSON + atlas.
+- **Phase 2:** auto-slice (blob detection) + hitbox/hurtbox layer + multiple
+  animations + UX polish.
+- **Phase 3 (parked):** MUGEN importer — `.air` parser first (cheap, high
+  value), then `.sff` parser.
+
+## Existing tools — landscape (for reference)
+
+| Tool | Does | Missing for us |
+|---|---|---|
+| Leshy SpriteSheet Tool (browser, free) | slices sheets (auto), export | no hitboxes / MUGEN / our format |
+| ShoeBox (free, Adobe AIR) | extract sprites (blob detection) | dated; no hitboxes / MUGEN / our format |
+| Aseprite (desktop, paid) | edit/animate, JSON export | poor at slicing packed rips; no fighting hitboxes; no MUGEN |
+| TexturePacker / Free Texture Packer | pack individual PNGs → atlas | reverse direction; no hitboxes |
+| Fighter Factory (desktop) | reads/visualizes MUGEN SFF/AIR + Clsn boxes | desktop; outputs MUGEN format; no sheet slicing |
+
+**Fighter Factory** is kept as a *reference/validation* tool for MUGEN data, not
+for production.
+
+## Parked: MUGEN as a future accelerator
+
+If hand-authoring frames/hitboxes gets too slow, MUGEN characters built on Hyper
+Dimension sprites (e.g. Kamekaze's pack) are a documented shortcut: their `.air`
+files already contain frame grouping, timing, anchors (offsets) and
+hitboxes/hurtboxes (Clsn1/Clsn2) as parseable data. See [`assets.md`](./assets.md)
+for sources and the ⚠️ "Hyper Dragon Ball Z (Z2) is different sprites" caveat.
