@@ -6,4 +6,14 @@ export default defineConfig({
   server: {
     open: true,
   },
+  build: {
+    rollupOptions: {
+      input: {
+        // The game itself.
+        game: "index.html",
+        // The asset pipeline tool (see docs/tooling.md).
+        spriteEditor: "tools/sprite-editor/index.html",
+      },
+    },
+  },
 });

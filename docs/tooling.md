@@ -12,6 +12,11 @@ we'd end up hand-shuffling data and converting at the end anyway.
 **MUGEN import is parked** (see below) — not part of the active plan. We build
 for sprite sheets first.
 
+**Implementation note:** the editor is built with **plain Canvas 2D + TS**
+(under `tools/sprite-editor/`), not PixiJS — drawing frame/anchor/box overlays
+on an image is native Canvas 2D work. PixiJS is reserved for the game runtime.
+The editor shares the project's Vite toolchain as a second page.
+
 ## Architecture: one data model, multiple importers
 
 The tool is built around a single internal data model:
@@ -37,9 +42,10 @@ without reworking the editor or exporter.
 
 ## Phases
 
-- **Phase 1 — MVP (small):** load image → manual rectangle frame selection →
-  per-frame anchor → one animation with timing → playback preview → export
-  JSON + atlas.
+- **Phase 1 — MVP (small):** ✅ done — `tools/sprite-editor/`. Load image →
+  manual rectangle frame selection → per-frame anchor → animations with timing →
+  playback preview → export `*.character.json` + atlas. Verified end-to-end
+  (draw frames → build animation → export matches `data-format.md`).
 - **Phase 2:** auto-slice (blob detection) + hitbox/hurtbox layer + multiple
   animations + UX polish.
 - **Phase 3 (parked):** MUGEN importer — `.air` parser first (cheap, high
