@@ -2,9 +2,9 @@ import { state } from "./store";
 import { getSource } from "./imageProcess";
 
 /**
- * Builds the on-disk character file (docs/data-format.md) from editor state
- * and downloads it. For this MVP the loaded sheet *is* the atlas — frames
- * reference rects straight into it — so no repacking happens yet.
+ * Builds the on-disk actor file (docs/data-format.md) from editor state and
+ * downloads it. For now the loaded sheet *is* the atlas — frames reference rects
+ * straight into it — so no repacking happens yet.
  */
 
 interface FrameOut {
@@ -22,14 +22,14 @@ interface AnimOut {
   loop: boolean;
   steps: StepOut[];
 }
-interface CharacterOut {
+interface ActorOut {
   name: string;
   atlas: string;
   frames: Record<string, FrameOut>;
   animations: Record<string, AnimOut>;
 }
 
-export function buildCharacter(): CharacterOut {
+export function buildActor(): ActorOut {
   const frames: Record<string, FrameOut> = {};
   for (const f of state.frames) {
     frames[f.id] = { x: f.x, y: f.y, w: f.w, h: f.h, anchor: f.anchor };
@@ -42,7 +42,7 @@ export function buildCharacter(): CharacterOut {
     };
   }
   return {
-    name: state.charName,
+    name: state.actorName,
     atlas: state.atlasFilename,
     frames,
     animations,
@@ -50,10 +50,10 @@ export function buildCharacter(): CharacterOut {
 }
 
 export function downloadJSON(): void {
-  const json = JSON.stringify(buildCharacter(), null, 2);
+  const json = JSON.stringify(buildActor(), null, 2);
   triggerDownload(
     new Blob([json], { type: "application/json" }),
-    `${state.charName}.character.json`,
+    `${state.actorName}.actor.json`,
   );
 }
 
@@ -90,23 +90,23 @@ export function getAtlasDataURL(): string | null {
   return c.toDataURL("image/png");
 }
 
-/** Save the character JSON + keyed atlas to the repo via the dev-server API. */
+/** Save the actor JSON + keyed atlas to the repo via the dev-server API. */
 export async function saveToRepo(): Promise<{ ok: boolean; message: string }> {
-  const character = buildCharacter();
+  const actor = buildActor();
   const atlasPngBase64 = getAtlasDataURL();
   try {
-    const res = await fetch("/api/character", {
+    const res = await fetch("/api/actor", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: state.charName, character, atlasPngBase64 }),
+      body: JSON.stringify({ name: state.actorName, actor, atlasPngBase64 }),
     });
     const data = (await res.json()) as { error?: string; atlasWritten?: boolean };
     if (!res.ok) return { ok: false, message: data.error ?? "save failed" };
     return {
       ok: true,
       message:
-        `Saved public/characters/${state.charName}.character.json` +
-        (data.atlasWritten ? ` + public/atlases/${state.charName}.png` : ""),
+        `Saved content/actors/${state.actorName}.actor.json` +
+        (data.atlasWritten ? ` + assets/atlases/${state.actorName}.png` : ""),
     };
   } catch (e) {
     return { ok: false, message: `No editor server (run npm run editor) — ${String(e)}` };

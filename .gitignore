@@ -6,7 +6,6 @@ dist/
 .playwright-mcp/
 
 # BYOA: copyrighted source assets and generated atlases stay out of the repo
-# (see docs/assets.md). Only our code + characters/*.json + the manifest are
-# committed.
+# (see docs/assets.md). Our authored data lives in content/ (committed); only
+# code + content/ + the manifest are committed.
 assets/
-public/atlases/

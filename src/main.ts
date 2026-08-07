@@ -1,4 +1,4 @@
-import { Application, Assets, Texture, Rectangle, Sprite, Text, Graphics } from "pixi.js";
+import { Application, Texture, Rectangle, Sprite, Text, Graphics } from "pixi.js";
 
 /**
  * Game entry point. Loads a character produced by the sprite editor
@@ -22,7 +22,7 @@ interface Anim {
   loop: boolean;
   steps: Step[];
 }
-interface CharacterFile {
+interface ActorFile {
   name: string;
   atlas: string;
   frames: Record<string, FrameDef>;
@@ -47,17 +47,20 @@ async function boot(): Promise<void> {
   if (!mount) throw new Error("Missing #app mount element");
   mount.appendChild(app.canvas);
 
-  let data: CharacterFile;
+  let data: ActorFile;
   try {
-    const res = await fetch(`/characters/${CHARACTER}.character.json`);
+    const res = await fetch(`/api/actor?name=${CHARACTER}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    data = (await res.json()) as CharacterFile;
+    data = ((await res.json()) as { actor: ActorFile }).actor;
   } catch (e) {
-    showMessage(app, `Could not load /characters/${CHARACTER}.character.json\nSave it from the sprite editor first.\n${String(e)}`);
+    showMessage(app, `Could not load actor "${CHARACTER}".\nSave it from the actor editor first (npm run editor).\n${String(e)}`);
     return;
   }
 
-  const atlas = await Assets.load<Texture>(`/atlases/${data.atlas}`);
+  const atlasImg = new Image();
+  atlasImg.src = `/api/atlas?name=${CHARACTER}`;
+  await atlasImg.decode();
+  const atlas = Texture.from(atlasImg);
   atlas.source.scaleMode = "nearest";
 
   // Build a sub-texture per frame.

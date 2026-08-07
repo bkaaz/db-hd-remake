@@ -38,15 +38,15 @@ npm run hash-assets      # print local files' sha256 (to fill the manifest)
 If an asset has no direct download URL, the command prints exactly where to get
 it and where to place it. See [`docs/assets.md`](./docs/assets.md).
 
-## Sprite editor
+## Actor editor
 
 ```bash
-npm run editor           # asset pipeline tool at /tools/sprite-editor/
+npm run editor           # asset pipeline tool at /tools/actor-editor/
 ```
 
 Load a sheet from `assets/sheets/`, frame it, build animations, and Save — it
-writes `public/characters/<name>.character.json` (committed) plus a keyed
-`public/atlases/<name>.png` (gitignored).
+writes `content/actors/<name>.actor.json` (committed) plus a keyed
+`assets/atlases/<name>.png` (gitignored).
 
 ## Docs
 

@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sprite Editor — DBZ:HD Remake</title>
+    <title>Actor Editor — DBZ:HD Remake</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <header id="toolbar">
       <div class="group">
-        <select id="sheet-select" title="Sheets in sprite-sheets/"></select>
+        <select id="sheet-select" title="Sheets in assets/sheets/"></select>
         <button id="sheet-load">Load</button>
         <label class="filebtn" title="Load a sheet from your computer instead">
           Upload
@@ -17,7 +17,7 @@
         </label>
       </div>
       <div class="group">
-        <label>Character <input id="char-name" type="text" size="10" /></label>
+        <label>Actor <input id="actor-name" type="text" size="10" /></label>
         <label>Atlas <input id="atlas-name" type="text" size="12" /></label>
       </div>
       <div class="group">
@@ -58,25 +58,37 @@
       </section>
 
       <aside id="side">
-        <div class="card">
-          <h3>Preview</h3>
-          <canvas id="preview" width="240" height="240"></canvas>
-          <div class="row">
-            <button id="play">▶ Play</button>
-            <button id="stop">■ Stop</button>
+        <nav id="tabs">
+          <button class="tab" data-tab="sprites">Sprites</button>
+          <button class="tab" data-tab="animations">Animations</button>
+          <button class="tab" disabled title="Coming soon">States</button>
+          <button class="tab" disabled title="Coming soon">Commands</button>
+          <button class="tab" disabled title="Coming soon">Sounds</button>
+          <button class="tab" disabled title="Coming soon">Attributes</button>
+        </nav>
+
+        <div class="tab-pane" data-pane="sprites">
+          <div class="card">
+            <h3>Frames</h3>
+            <p class="hint">Drag a rectangle on the sheet to create a frame.
+              In <em>Anchor</em> mode, click inside the selected frame to set its pivot.</p>
+            <div id="frames-panel"></div>
           </div>
         </div>
 
-        <div class="card">
-          <h3>Frames</h3>
-          <p class="hint">Drag a rectangle on the sheet to create a frame.
-            In <em>Anchor</em> mode, click inside the selected frame to set its pivot.</p>
-          <div id="frames-panel"></div>
-        </div>
-
-        <div class="card">
-          <h3>Animations</h3>
-          <div id="anims-panel"></div>
+        <div class="tab-pane" data-pane="animations">
+          <div class="card">
+            <h3>Preview</h3>
+            <canvas id="preview" width="240" height="240"></canvas>
+            <div class="row">
+              <button id="play">▶ Play</button>
+              <button id="stop">■ Stop</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Animations</h3>
+            <div id="anims-panel"></div>
+          </div>
         </div>
       </aside>
     </main>

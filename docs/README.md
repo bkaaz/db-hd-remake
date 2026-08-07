@@ -14,7 +14,7 @@ collect what we want to build **before** writing gameplay code.
 - [`actor-editor.md`](./actor-editor.md) — plan to grow the editor into a full
   Actor Editor (sprites, animations, hitboxes, sounds, inputs, states).
 - [`data-format.md`](./data-format.md) — the character file format (the contract
-  between the sprite editor and the engine).
+  between the actor editor and the engine).
 - [`tech-stack.md`](./tech-stack.md) — technology choices and why.
 - [`roadmap.md`](./roadmap.md) — rough phases, from setup toward a playable
   prototype.

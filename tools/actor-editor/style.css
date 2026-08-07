@@ -61,6 +61,28 @@ main {
   gap: 10px;
 }
 
+#tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.tab {
+  border-radius: 4px 4px 0 0;
+}
+.tab:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.tab-pane {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+.tab-pane.active {
+  display: flex;
+}
+
 .card {
   background: var(--panel2);
   border: 1px solid var(--line);

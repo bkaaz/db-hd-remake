@@ -4,18 +4,18 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 
 /**
- * Dev-server plugin backing the repo-integrated sprite editor. Adds endpoints so
- * the browser tool can list sheets from `sprite-sheets/`, read/write our
- * character JSON in `public/characters/`, and write the keyed atlas to
- * `public/atlases/`. Dev-only (`apply: "serve"`); never part of a build.
+ * Dev-server plugin backing the repo-integrated actor editor. Adds endpoints so
+ * the browser tool (and the game) can list sheets from `assets/sheets/`,
+ * read/write our actor JSON in `content/actors/`, and read/write the keyed atlas
+ * in `assets/atlases/`. Dev-only (`apply: "serve"`); never part of a build.
  *
- * BYOA: source sheets and atlases are gitignored; only characters/*.json are
+ * BYOA: source sheets and atlases are gitignored; only content/actors/*.json are
  * committed. See docs/assets.md.
  */
 
 const SHEETS_DIR = path.join("assets", "sheets");
-const CHARACTERS_DIR = path.join("public", "characters");
-const ATLASES_DIR = path.join("public", "atlases");
+const ACTORS_DIR = path.join("content", "actors");
+const ATLASES_DIR = path.join("assets", "atlases");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
 
 function sanitizeName(name: string): string {
@@ -50,9 +50,9 @@ async function readBody(req: IncomingMessage): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-export function spriteEditorServer(): Plugin {
+export function actorEditorServer(): Plugin {
   return {
-    name: "sprite-editor-server",
+    name: "actor-editor-server",
     apply: "serve",
     configureServer(server: ViteDevServer) {
       const root = server.config.root;
@@ -84,16 +84,33 @@ export function spriteEditorServer(): Plugin {
         }
       });
 
-      // Read (GET ?name=) or write (POST) a character.
-      server.middlewares.use("/api/character", async (req, res) => {
+      // Stream a generated keyed atlas by actor name (used by the game).
+      server.middlewares.use("/api/atlas", async (req, res) => {
+        const url = new URL(req.url ?? "", "http://localhost");
+        const name = sanitizeName(url.searchParams.get("name") ?? "");
+        if (!name) return sendJson(res, 400, { error: "name required" });
+        const file = path.join(root, ATLASES_DIR, `${name}.png`);
+        try {
+          const buf = await fs.readFile(file);
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "image/png");
+          res.end(buf);
+        } catch {
+          res.statusCode = 404;
+          res.end();
+        }
+      });
+
+      // Read (GET ?name=) or write (POST) an actor.
+      server.middlewares.use("/api/actor", async (req, res) => {
         if (req.method === "GET") {
           const url = new URL(req.url ?? "", "http://localhost");
           const name = sanitizeName(url.searchParams.get("name") ?? "");
           if (!name) return sendJson(res, 400, { error: "name required" });
-          const file = path.join(root, CHARACTERS_DIR, `${name}.character.json`);
+          const file = path.join(root, ACTORS_DIR, `${name}.actor.json`);
           try {
             const txt = await fs.readFile(file, "utf8");
-            sendJson(res, 200, { character: JSON.parse(txt) });
+            sendJson(res, 200, { actor: JSON.parse(txt) });
           } catch {
             sendJson(res, 404, { error: "not found" });
           }
@@ -104,18 +121,18 @@ export function spriteEditorServer(): Plugin {
           try {
             const body = JSON.parse(await readBody(req)) as {
               name?: string;
-              character?: unknown;
+              actor?: unknown;
               atlasPngBase64?: string;
             };
             const name = sanitizeName(body.name ?? "");
-            if (!name || !body.character) {
-              return sendJson(res, 400, { error: "name and character required" });
+            if (!name || !body.actor) {
+              return sendJson(res, 400, { error: "name and actor required" });
             }
 
-            await fs.mkdir(path.join(root, CHARACTERS_DIR), { recursive: true });
+            await fs.mkdir(path.join(root, ACTORS_DIR), { recursive: true });
             await fs.writeFile(
-              path.join(root, CHARACTERS_DIR, `${name}.character.json`),
-              JSON.stringify(body.character, null, 2) + "\n",
+              path.join(root, ACTORS_DIR, `${name}.actor.json`),
+              JSON.stringify(body.actor, null, 2) + "\n",
             );
 
             let atlasWritten = false;

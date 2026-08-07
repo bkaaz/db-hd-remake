@@ -4,8 +4,8 @@ import {
   onChange,
   deleteFrame,
   addFrameFromRect,
-  loadCharacter,
-  type CharacterFileIn,
+  loadActor,
+  type ActorFileIn,
 } from "./store";
 import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
@@ -28,7 +28,7 @@ const fileInput = byId<HTMLInputElement>("file");
 const sheetSelect = byId<HTMLSelectElement>("sheet-select");
 const sheetLoadBtn = byId("sheet-load");
 const saveBtn = byId("save");
-const charNameInput = byId<HTMLInputElement>("char-name");
+const actorNameInput = byId<HTMLInputElement>("actor-name");
 const atlasNameInput = byId<HTMLInputElement>("atlas-name");
 const zoomLabel = byId("zoom-label");
 const statusEl = byId("status");
@@ -47,11 +47,11 @@ const detectMin = byId<HTMLInputElement>("detect-min");
 const sheet = new SheetView(sheetCanvas);
 const preview = new Preview(previewCanvas);
 
-charNameInput.value = state.charName;
+actorNameInput.value = state.actorName;
 atlasNameInput.value = state.atlasFilename;
 
-charNameInput.addEventListener("change", () => {
-  state.charName = charNameInput.value.trim() || "character";
+actorNameInput.addEventListener("change", () => {
+  state.actorName = actorNameInput.value.trim() || "actor";
   emitChange();
 });
 atlasNameInput.addEventListener("change", () => {
@@ -173,7 +173,7 @@ function applyNewImage(img: HTMLImageElement, fileName: string): void {
 
   state.image = img;
   state.atlasFilename = fileName;
-  state.charName = fileName.replace(/\.[^.]+$/, "") || "character";
+  state.actorName = fileName.replace(/\.[^.]+$/, "") || "actor";
 
   const hasAlpha = setImage(img);
   if (hasAlpha) {
@@ -186,7 +186,7 @@ function applyNewImage(img: HTMLImageElement, fileName: string): void {
   }
   rebuildKeyed();
 
-  charNameInput.value = state.charName;
+  actorNameInput.value = state.actorName;
   atlasNameInput.value = state.atlasFilename;
 }
 
@@ -202,24 +202,24 @@ function loadImageFile(file: File): void {
   img.src = URL.createObjectURL(file);
 }
 
-/** Load a sheet from the repo, and hydrate any existing character JSON. */
+/** Load a sheet from the repo, and hydrate any existing actor JSON. */
 function loadFromRepo(fileName: string): void {
   if (!fileName) return;
   const img = new Image();
   img.onload = async () => {
     applyNewImage(img, fileName);
-    const base = state.charName;
+    const base = state.actorName;
     try {
-      const res = await fetch(`/api/character?name=${encodeURIComponent(base)}`);
+      const res = await fetch(`/api/actor?name=${encodeURIComponent(base)}`);
       if (res.ok) {
-        const data = (await res.json()) as { character: CharacterFileIn };
-        loadCharacter(data.character);
+        const data = (await res.json()) as { actor: ActorFileIn };
+        loadActor(data.actor);
         rebuildKeyed();
-        charNameInput.value = state.charName;
+        actorNameInput.value = state.actorName;
         atlasNameInput.value = state.atlasFilename;
-        statusEl.textContent = `Loaded ${fileName} + existing character data.`;
+        statusEl.textContent = `Loaded ${fileName} + existing actor data.`;
       } else {
-        statusEl.textContent = `Loaded ${fileName} (new character).`;
+        statusEl.textContent = `Loaded ${fileName} (new actor).`;
       }
     } catch {
       statusEl.textContent = `Loaded ${fileName}.`;
@@ -269,6 +269,19 @@ function render(): void {
     ? `${state.image.width}x${state.image.height}px · ${state.frames.length} frames · ${state.anims.length} anims · mode: ${state.mode}`
     : "Load a sprite sheet to begin.";
 }
+
+// Tab switching (Sprites / Animations; more tabs are placeholders for now).
+const tabButtons = document.querySelectorAll<HTMLButtonElement>("#tabs .tab");
+const tabPanes = document.querySelectorAll<HTMLElement>(".tab-pane");
+function setTab(name: string): void {
+  tabButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  tabPanes.forEach((p) => p.classList.toggle("active", p.dataset.pane === name));
+}
+tabButtons.forEach((b) => {
+  const name = b.dataset.tab;
+  if (!b.disabled && name) b.addEventListener("click", () => setTab(name));
+});
+setTab("sprites");
 
 onChange(render);
 render();

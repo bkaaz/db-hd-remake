@@ -14,7 +14,7 @@ Project is **non-commercial** and aims to stay **publishable**. Original assets
 are property of Bandai / Toei / Bird Studio.
 
 **Storage policy — Bring Your Own Assets (BYOA):** we commit **only our own
-work** — the engine code and our authored `*.character.json` (frame rects,
+work** — the engine code and our authored `*.actor.json` (frame rects,
 anchors, animations, hitboxes). **Copyrighted images/audio are never committed**
 (gitignored) and never enter git history. The user supplies the source sheet
 from their own copy; the tool loads it locally. This is the model that keeps
@@ -85,7 +85,7 @@ fighting game* and cannot be automated away by any approach.
 ## Primary path: sprite sheets + our own editor
 
 Active plan: use ripped **sprite sheets** and process them with our own
-browser-based sprite editor. See [`tooling.md`](./tooling.md).
+browser-based actor editor. See [`tooling.md`](./tooling.md).
 
 ### MUGEN — parked (future accelerator)
 
