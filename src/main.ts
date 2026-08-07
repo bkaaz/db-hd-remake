@@ -134,7 +134,10 @@ async function boot(): Promise<void> {
     sprite.anchor.set(ft.anchor[0] / ft.w, ft.anchor[1] / ft.h);
   };
 
-  const animName = Object.keys(data.animations)[0];
+  // Pick the animation to play: ?anim=<name> if present, else the first one.
+  const wanted = new URL(location.href).searchParams.get("anim");
+  const animName =
+    wanted && data.animations[wanted] ? wanted : Object.keys(data.animations)[0];
   const anim = animName ? data.animations[animName] : null;
 
   if (!anim || anim.steps.length === 0) {
