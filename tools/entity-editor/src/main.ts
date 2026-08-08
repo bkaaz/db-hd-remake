@@ -11,7 +11,7 @@ import {
 import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
 import { BoxEditor } from "./boxEditor";
-import { renderFrames, renderAnims, renderBoxes } from "./panels";
+import { renderFrames, renderAnims, renderBoxes, renderStates } from "./panels";
 import { downloadJSON, downloadAtlas, saveFrames, saveAnimations } from "./exporter";
 import { setImage, pickColorAt, rebuildKeyed } from "./imageProcess";
 import { detectAll } from "./detect";
@@ -27,11 +27,12 @@ const previewCanvas = byId<HTMLCanvasElement>("preview");
 const framesPanel = byId("frames-panel");
 const animsPanel = byId("anims-panel");
 const boxesPanel = byId("boxes-panel");
+const statesPanel = byId("states-panel");
 const boxCanvas = byId<HTMLCanvasElement>("box-canvas");
 const fileInput = byId<HTMLInputElement>("file");
 const sheetSelect = byId<HTMLSelectElement>("sheet-select");
 const sheetLoadBtn = byId("sheet-load");
-const saveBtn = byId("save");
+const saveBtn = byId<HTMLButtonElement>("save");
 const entityNameInput = byId<HTMLInputElement>("entity-name");
 const atlasNameInput = byId<HTMLInputElement>("atlas-name");
 const zoomLabel = byId("zoom-label");
@@ -180,6 +181,7 @@ window.addEventListener("keydown", (e) => {
 function applyNewImage(img: HTMLImageElement, fileName: string): void {
   state.frames = [];
   state.anims = [];
+  state.states = null;
   state.selectedFrameId = null;
   state.selectedAnimName = null;
   state.mode = "frame";
@@ -266,6 +268,7 @@ function render(): void {
   renderFrames(framesPanel);
   renderAnims(animsPanel);
   renderBoxes(boxesPanel);
+  renderStates(statesPanel);
   boxEditor.redraw();
 
   modeFrameBtn.classList.toggle("active", state.mode === "frame");
@@ -285,15 +288,24 @@ function render(): void {
     : "Load a sprite sheet to begin.";
 }
 
-// Tab switching (Sprites / Animations; more tabs are placeholders for now).
-// The Save button saves only the active tab's section, and its label reflects it.
+// Tab switching (Sprites / Animations / States; the rest are placeholders).
+// The Save button saves only the active tab's section, and its label reflects
+// it. States is read-only, so there Save is disabled rather than misleading.
 const tabButtons = document.querySelectorAll<HTMLButtonElement>("#tabs .tab");
 const tabPanes = document.querySelectorAll<HTMLElement>(".tab-pane");
 function setTab(name: string): void {
   activeTab = name;
   tabButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
   tabPanes.forEach((p) => p.classList.toggle("active", p.dataset.pane === name));
-  saveBtn.textContent = name === "animations" ? "Save animations" : "Save frames";
+
+  const readOnly = name === "states";
+  saveBtn.disabled = readOnly;
+  saveBtn.title = readOnly ? "States are hand-authored in data/entities/<name>/states.json" : "";
+  saveBtn.textContent = readOnly
+    ? "Read-only"
+    : name === "animations"
+      ? "Save animations"
+      : "Save frames";
 }
 tabButtons.forEach((b) => {
   const name = b.dataset.tab;

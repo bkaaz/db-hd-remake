@@ -1,6 +1,7 @@
 import { Application, Graphics, Text } from "pixi.js";
 import { Entity, NO_INPUT } from "./entity";
 import { loadEntityDef, type EntityDef } from "./entityDef";
+import { validateStates } from "./states";
 
 /**
  * Game entry point. Loads an entity authored in the entity editor
@@ -39,6 +40,20 @@ async function boot(): Promise<void> {
   if (Object.keys(def.animations).length === 0) {
     showMessage(app, `${def.name}: ${def.frames.size} frames, no animation`, true);
     return;
+  }
+
+  // states.json is hand-authored, so a broken cross-reference must be loud
+  // rather than a console warning nobody reads. We still run, so the rest of
+  // the entity stays inspectable.
+  if (def.states) {
+    const { errors, warnings } = validateStates(def.states, Object.keys(def.animations));
+    for (const w of warnings) console.warn(`[states] ${w}`);
+    if (errors.length > 0) {
+      for (const e of errors) console.error(`[states] ${e}`);
+      const shown = errors.slice(0, 5).join("\n");
+      const rest = errors.length > 5 ? `\n…and ${errors.length - 5} more (see console)` : "";
+      showMessage(app, `states.json — ${errors.length} problem(s):\n${shown}${rest}`);
+    }
   }
 
   const ground = new Graphics();

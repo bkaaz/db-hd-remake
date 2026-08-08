@@ -138,6 +138,23 @@ input.dur { width: 52px; }
   background: transparent;
 }
 
+/* States tab (read-only view of states.json). */
+.state-row { margin-top: 8px; gap: 8px; }
+.trans-row { margin: 2px 0 2px 16px; gap: 6px; }
+.trans-row .idx { width: 12px; color: var(--muted); text-align: right; }
+.badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #04222a;
+  background: var(--accent);
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+.err { color: #ff8a8a; }
+.warn { color: #e0c46b; }
+.msg { margin: 2px 0; font-size: 11px; }
+
 .frame-row.selected { outline: 1px solid var(--accent); border-radius: 4px; }
 .step-row .idx { width: 16px; color: var(--muted); text-align: right; }
 .step-row.selected { outline: 1px solid var(--accent); border-radius: 4px; }

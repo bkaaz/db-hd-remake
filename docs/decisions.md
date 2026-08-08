@@ -2,6 +2,48 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-08 — Vitest now; tests live in the repo, never in a scratch script
+
+- **Vitest is in** (`npm test`), starting with `src/states.test.ts` — 18 cases
+  covering the validator and the state-machine runner, including one that
+  validates the entity data actually committed under `data/entities/`.
+- **Brought forward from Phase E.** Three things changed: dropping the States
+  editor froze the states format, so tests written now will not be rewritten;
+  the validator is a *safety net*, and when a safety net breaks silently it
+  looks exactly like "no problems"; and the test content already existed as a
+  throwaway script.
+- **The rule this replaces:** verifying logic by running a one-off script in a
+  temp directory. That checks the code once, by eye, and leaves nothing that can
+  fail later. If a check is worth running, it is worth committing.
+- **A test that cannot fail is not a test:** new tests are confirmed against a
+  deliberately broken version of the code before being kept. Done here — the
+  trigger check and the one-transition-per-frame rule were each broken on
+  purpose, and the suite caught both.
+- Recorded in `CLAUDE.md` under the verification protocol.
+
+## 2026-08-08 — States stay hand-authored; validator instead of a States editor
+
+- **Phase D2 (a full States tab) is dropped for now.** The editor earns its keep
+  on **spatial and timing** data — framing sprites, anchors, hitboxes, animation
+  preview — where text is guesswork. States are **relational** data ("this state
+  plays that animation and goes there when X"), which reads and edits well as
+  text, and beats a form at copy-paste between characters, find & replace and
+  git diffs. MUGEN splits the same way: sprites/boxes in a tool, states in text.
+- **The real risk of hand-editing is a silent typo** in a cross-reference, not
+  tedium. So we bought exactly that: `validateStates()` in `src/states.ts`
+  (pure, no PixiJS) checks `initial`, that every `anim` and every transition
+  target exists, that triggers are known, that `vel` is two numbers, and warns
+  about states unreachable from `initial`.
+- **One validator, two callers:** the game runs it at load and shows the
+  problems on screen (previously a `console.warn` nobody reads); the editor's
+  **States tab shows the machine read-only** with the same problems flagged.
+  Save is disabled there rather than misleading.
+- **Timing argument:** the states format is still moving (`hit`, `onEnter`, the
+  script hook arrive with combat). Building the editing UI now means building it
+  against v0 and reworking it at every extension.
+- **Revisit when** a character passes ~15 states, or once combat has settled the
+  format — then we will know what the tab should actually contain.
+
 ## 2026-08-08 — Working process: verification, servers, unit tests
 
 - **Never drive a browser (Playwright) unasked** — not even a smoke check. After
@@ -13,11 +55,11 @@ Decisions that are settled. Newest first.
 - **The dev server (5173) and editor (5174) are always running** — the owner
   starts them. Never start/restart/kill them or spawn background processes;
   report a dead port instead.
-- **Unit tests (Vitest) land at Phase E**, not before: today's state machine is
-  small enough to eyeball, and Phase D2 will still reshape the format, whereas
-  the input buffer and motion recognition in E are combinatorial and invisible to
-  the eye. Pure logic (`src/states.ts` and successors) stays PixiJS-free so it
-  can be tested in Node.
+- ~~**Unit tests (Vitest) land at Phase E**, not before~~ — **superseded the
+  same day**, see the entry below. The reasoning rested on Phase D2 reshaping the
+  states format; D2 as an editing UI was then dropped, so the format stopped
+  moving and the argument for waiting went with it. Pure logic
+  (`src/states.ts` and successors) stays PixiJS-free either way.
 
 ## 2026-08-08 — `vel` is authored in sprite pixels (unit fix)
 

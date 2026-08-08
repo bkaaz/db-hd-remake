@@ -11,6 +11,7 @@ import {
   deleteFrame,
   type BoxType,
 } from "./store";
+import { validateStates } from "../../../src/states";
 
 /** Tiny typed DOM helper. */
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -214,6 +215,83 @@ export function renderAnims(container: HTMLElement): void {
     }
   });
   container.append(addStep);
+}
+
+// --- States panel (read-only) --------------------------------------------
+
+/**
+ * Shows `states.json` and flags broken references. Deliberately read-only:
+ * states are relational data that reads and edits well as text, so we buy the
+ * part that text cannot give us — validation — and skip the editing UI until
+ * the format settles (see docs/decisions.md).
+ */
+export function renderStates(container: HTMLElement): void {
+  container.replaceChildren();
+
+  const file = state.states;
+  if (!file) {
+    container.append(
+      el("p", {
+        className: "hint",
+        textContent:
+          "No states.json for this entity. Load a sheet whose entity has one, or author it by hand — see docs/data-format.md.",
+      }),
+    );
+    return;
+  }
+
+  const animNames = state.anims.map((a) => a.name);
+  const known = new Set(animNames);
+  const { errors, warnings } = validateStates(file, animNames);
+
+  const summary = el("p", {
+    className: errors.length > 0 ? "err" : "hint",
+    textContent:
+      errors.length > 0
+        ? `${errors.length} problem(s) — the state machine will not behave as authored:`
+        : `${Object.keys(file.states).length} states, no problems found.`,
+  });
+  container.append(summary);
+  for (const e of errors) container.append(el("p", { className: "err msg", textContent: `• ${e}` }));
+  for (const w of warnings) container.append(el("p", { className: "warn msg", textContent: `• ${w}` }));
+
+  for (const [name, def] of Object.entries(file.states)) {
+    const head = el("div", { className: "row state-row" });
+    head.append(el("strong", { textContent: name }));
+    if (name === file.initial) head.append(el("span", { className: "badge", textContent: "initial" }));
+
+    const animOk = !!def.anim && known.has(def.anim);
+    head.append(
+      el("span", {
+        className: animOk ? "dims" : "err",
+        textContent: `anim: ${def.anim || "—"}`,
+      }),
+    );
+    const vel = def.vel ?? [0, 0];
+    if (vel[0] !== 0 || vel[1] !== 0) {
+      head.append(el("span", { className: "dims", textContent: `vel ${vel[0]},${vel[1]}` }));
+    }
+    if (def.turn) head.append(el("span", { className: "dims", textContent: "turn" }));
+    container.append(head);
+
+    const transitions = def.transitions ?? [];
+    if (transitions.length === 0) {
+      container.append(el("div", { className: "row trans-row dims", textContent: "no transitions" }));
+    }
+    transitions.forEach((t, i) => {
+      const row = el("div", { className: "row trans-row" });
+      row.append(el("span", { className: "idx", textContent: String(i) }));
+      row.append(el("span", { className: "dims", textContent: t.when }));
+      row.append(el("span", { className: "dims", textContent: "→" }));
+      row.append(
+        el("span", {
+          className: file.states[t.to] ? "dims" : "err",
+          textContent: t.to || "—",
+        }),
+      );
+      container.append(row);
+    });
+  }
 }
 
 // --- Boxes panel ---------------------------------------------------------

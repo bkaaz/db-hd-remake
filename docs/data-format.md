@@ -141,6 +141,13 @@ rules**; the entity is a state machine and the engine runs it every game frame.
 Deliberately **not** in v0 (later slices): `onEnter` effects, `hit` data
 (damage/hitstun/knockback), the scripting escape hatch, jump/gravity.
 
+**This file is hand-authored** (the editor's States tab is a read-only view —
+see [`decisions.md`](./decisions.md)), so `validateStates()` in `src/states.ts`
+checks it in both places: the game reports problems on screen at load, the
+editor flags them in the States tab. It catches a missing/unknown `initial`, an
+`anim` or `to` that does not exist, an unknown trigger, a malformed `vel`, and
+warns about states unreachable from `initial`.
+
 ## Notes / open for later
 
 - Versioning: add a top-level `"version"` when the schema first changes.

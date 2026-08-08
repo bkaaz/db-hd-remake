@@ -44,6 +44,9 @@ export interface InputSnapshot {
   back: boolean;
 }
 
+/** Every trigger the runner understands, for validation and editor UI. */
+export const TRIGGERS = ["held:fwd", "held:back", "animEnd"] as const;
+
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
 
 const warned = new Set<string>();
@@ -107,4 +110,91 @@ export class StateMachine {
     }
     return null;
   }
+}
+
+// --- validation ----------------------------------------------------------
+
+export interface Validation {
+  /** Broken data: the state machine will not behave as authored. */
+  errors: string[];
+  /** Suspicious but runnable — usually a typo somewhere else. */
+  warnings: string[];
+}
+
+/**
+ * Check a hand-authored `states.json` against the entity's animations.
+ *
+ * States are authored as text for now (see docs/decisions.md), so the one real
+ * risk is a silent typo in a cross-reference: an animation or target state that
+ * does not exist. Both the game (at load) and the editor's States tab run this,
+ * so the same mistake is reported the same way in both places.
+ */
+export function validateStates(file: StatesFile, animNames: readonly string[]): Validation {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const states = file?.states ?? {};
+  const names = Object.keys(states);
+  const anims = new Set(animNames);
+
+  if (names.length === 0) {
+    errors.push("no states defined");
+    return { errors, warnings };
+  }
+
+  if (!file.initial) {
+    errors.push(`"initial" is missing (expected one of: ${names.join(", ")})`);
+  } else if (!states[file.initial]) {
+    errors.push(`initial state "${file.initial}" does not exist`);
+  }
+
+  for (const [name, def] of Object.entries(states)) {
+    const where = `state "${name}"`;
+
+    if (!def.anim) {
+      errors.push(`${where}: no "anim"`);
+    } else if (!anims.has(def.anim)) {
+      errors.push(`${where}: unknown animation "${def.anim}"`);
+    }
+
+    if (
+      def.vel !== undefined &&
+      (!Array.isArray(def.vel) || def.vel.length !== 2 || def.vel.some((v) => typeof v !== "number"))
+    ) {
+      errors.push(`${where}: "vel" must be two numbers, e.g. [0.83, 0]`);
+    }
+
+    (def.transitions ?? []).forEach((t, i) => {
+      const at = `${where}, transition ${i}`;
+      const key = t.when?.startsWith("!") ? t.when.slice(1) : t.when;
+      if (!key) {
+        errors.push(`${at}: no "when" trigger`);
+      } else if (!(TRIGGERS as readonly string[]).includes(key)) {
+        errors.push(`${at}: unknown trigger "${key}" (known: ${TRIGGERS.join(", ")})`);
+      }
+      if (!t.to) {
+        errors.push(`${at}: no "to" state`);
+      } else if (!states[t.to]) {
+        errors.push(`${at}: unknown target state "${t.to}"`);
+      }
+    });
+  }
+
+  // A state nothing can reach is usually a typo in some transition's target.
+  if (file.initial && states[file.initial]) {
+    const seen = new Set<string>([file.initial]);
+    const queue = [file.initial];
+    for (let cur = queue.pop(); cur !== undefined; cur = queue.pop()) {
+      for (const t of states[cur]?.transitions ?? []) {
+        if (states[t.to] && !seen.has(t.to)) {
+          seen.add(t.to);
+          queue.push(t.to);
+        }
+      }
+    }
+    for (const n of names) {
+      if (!seen.has(n)) warnings.push(`state "${n}" is unreachable from "${file.initial}"`);
+    }
+  }
+
+  return { errors, warnings };
 }

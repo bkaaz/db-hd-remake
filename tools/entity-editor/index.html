@@ -62,7 +62,7 @@
         <nav id="tabs">
           <button class="tab" data-tab="sprites">Sprites</button>
           <button class="tab" data-tab="animations">Animations</button>
-          <button class="tab" disabled title="Coming soon">States</button>
+          <button class="tab" data-tab="states">States</button>
           <button class="tab" disabled title="Coming soon">Commands</button>
           <button class="tab" disabled title="Coming soon">Sounds</button>
           <button class="tab" disabled title="Coming soon">Attributes</button>
@@ -94,6 +94,16 @@
             <h3>Boxes</h3>
             <canvas id="box-canvas" width="280" height="300"></canvas>
             <div id="boxes-panel"></div>
+          </div>
+        </div>
+
+        <div class="tab-pane" data-pane="states">
+          <div class="card">
+            <h3>States</h3>
+            <p class="hint">Read-only view of <code>states.json</code>. States are
+              hand-authored for now; this tab shows the machine and flags broken
+              references (unknown animation, unknown target state, unknown trigger).</p>
+            <div id="states-panel"></div>
           </div>
         </div>
       </aside>

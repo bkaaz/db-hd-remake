@@ -7,6 +7,8 @@
  * into the on-disk `*.entity.json`.
  */
 
+import type { StatesFile } from "../../../src/states";
+
 export type EditorMode = "frame" | "anchor" | "bg" | "detect";
 
 export type BoxType = "hit" | "hurt" | "push";
@@ -50,6 +52,12 @@ export interface EditorState {
   entityName: string;
   frames: FrameDef[];
   anims: AnimDef[];
+  /**
+   * `states.json` as loaded from disk. The States tab is **read-only** — states
+   * are hand-authored for now (see docs/decisions.md), so the editor shows and
+   * validates them but never writes them.
+   */
+  states: StatesFile | null;
   selectedFrameId: string | null;
   selectedAnimName: string | null;
   /** Sheet-view zoom factor. */
@@ -80,6 +88,7 @@ export const state: EditorState = {
   entityName: "entity",
   frames: [],
   anims: [],
+  states: null,
   selectedFrameId: null,
   selectedAnimName: null,
   scale: 2,
@@ -227,6 +236,7 @@ export interface EntityFileIn {
     string,
     { loop: boolean; steps: { frame: string; dur: number; boxes?: Box[] }[] }
   >;
+  states?: StatesFile;
 }
 
 /** Hydrate editor state from an assembled entity (reverse of the exporter). */
@@ -248,6 +258,7 @@ export function loadEntity(json: EntityFileIn): void {
       boxes: (s.boxes ?? []).map((b) => ({ ...b })),
     })),
   }));
+  state.states = json.states ?? null;
   state.selectedFrameId = null;
   state.selectedAnimName = state.anims[0]?.name ?? null;
   state.selectedStepIndex = null;
