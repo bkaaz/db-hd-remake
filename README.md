@@ -11,11 +11,16 @@ TypeScript · PixiJS v8 · Vite
 
 ```bash
 npm install
+npm run fetch-assets     # sprite sheets are not in this repo — see below
 npm run dev
 ```
 
 Then open the URL Vite prints (it opens the browser automatically). You should
-see a dark canvas with a placeholder label — the game itself isn't built yet.
+see two Goku sprites facing each other on a ground line: **←/→** walks the left
+one, **B** toggles the collision-box overlay. That is as far as the game goes
+today — no attacks yet.
+
+Without the assets step the page reports that the entity could not be loaded.
 
 ## Assets (Bring Your Own Assets)
 
@@ -44,9 +49,11 @@ it and where to place it. See [`docs/assets.md`](./docs/assets.md).
 npm run editor           # asset pipeline tool at /tools/entity-editor/
 ```
 
-Load a sheet from `assets/sheets/`, frame it, build animations, and Save — it
-writes `data/entities/<name>.entity.json` (committed) plus a keyed
-`assets/atlases/<name>.png` (gitignored).
+Load a sheet from `assets/sheets/`, frame it, build animations, and Save. An
+entity is a **directory of section files** — `data/entities/<name>/frames.json`,
+`animations.json`, `states.json`, … (committed) — and Save writes the section
+belonging to the active tab, plus a keyed `assets/atlases/<name>.png`
+(gitignored). See [`docs/data-format.md`](./docs/data-format.md).
 
 ## Docs
 

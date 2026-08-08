@@ -1,33 +1,48 @@
 # Roadmap (rough)
 
 High-level phases. Deliberately loose — we go slowly and confirm scope as we go.
-Nothing past Phase 0 is committed yet.
 
-## Phase 0 — Setup ✅ (in progress)
+> **One phase numbering, not two.** Day-to-day work follows the lettered phases
+> **A–F** in [`entity-editor.md`](./entity-editor.md) — each is a vertical slice
+> (data model + editor + engine + verification). This file is only the wider arc
+> around them.
 
-- [x] Repo, tooling (TS + Vite + PixiJS), runnable empty boot
+## Stage 0 — Setup ✅ done
+
+- [x] Repo, tooling (TS + Vite + PixiJS), runnable boot
 - [x] Docs skeleton
-- [ ] `npm install` verified, dev server runs and renders the placeholder
+- [x] Dev server + editor run locally
 
-## Phase 1 — Design on paper (next)
+## Stage 1 — Asset pipeline ✅ done
 
-- [ ] Confirm the game's facts (roster, mechanics) — fill in the **(TBC)** gaps
-- [ ] Decide remake scope: faithful vs. reimagined vs. minimal slice
-- [ ] Define the **first playable slice** (e.g. one stage, two placeholder
-      fighters, move + jump + block)
+- [x] Entity Editor: sheet loading, background color-key, auto-detection,
+      frames + anchors, timed animations, hit/hurt/push boxes
+- [x] Repo-integrated I/O (Vite dev-server plugin, per-section save)
+- [x] BYOA asset strategy + `fetch-assets` / `hash-assets`
+- [x] Entity data format v0 ([`data-format.md`](./data-format.md))
 
-## Phase 2 — Core engine skeleton
+## Stage 2 — Fighting core 🟡 in progress
 
-- [ ] Fixed-timestep game loop
-- [ ] Scene/state management (menu, match)
-- [ ] Input system (keyboard first)
-- [ ] Placeholder fighter that moves on a stage
+Tracked in detail as phases A–F in [`entity-editor.md`](./entity-editor.md).
 
-## Phase 3 — Fighting core
+- [x] Rendering authored animations in the game (60 FPS, per-step duration)
+- [x] Hitbox/hurtbox/push authoring + in-game overlay (phase B)
+- [x] State machine: `states.json`, opponent-relative facing, idle/walk (D1)
+- [ ] States tab in the editor (D2)
+- [ ] Commands / input buffer / motion recognition (E) — plus unit tests
+- [ ] Attributes: HP, speeds, gravity (C)
+- [ ] Attacks: hit detection, damage, hitstun, blockstun, knockback
+- [ ] Jumping + gravity; push-box collision between fighters
+- [ ] Sounds (F)
 
-- [ ] Character state machine (idle/walk/jump/attack/hit/block)
-- [ ] Hitboxes / hurtboxes, collision, frame data
-- [ ] Health + energy resources
-- [ ] One special move end-to-end
+## Stage 3 — A match
 
-_Later phases (art, audio, full roster, modes) intentionally left undefined._
+- [ ] Two fighters, both player-controlled (same keyboard)
+- [ ] Health/Ki bar (the original's single shared resource)
+- [ ] Round rules, win/lose, a stage
+
+## Still undecided
+
+Scope of the remake (faithful / reimagined / minimal slice) and what defines the
+first playable milestone — see [`open-questions.md`](./open-questions.md) Q1–Q2.
+Art, audio, full roster and modes are intentionally left undefined.

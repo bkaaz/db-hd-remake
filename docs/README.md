@@ -9,10 +9,11 @@ collect what we want to build **before** writing gameplay code.
   know for sure, and what still needs confirming.
 - [`assets.md`](./assets.md) — where graphics/audio come from and how much can be
   automated (research findings).
-- [`tooling.md`](./tooling.md) — the asset pipeline: our own browser sprite
-  editor (sprite-sheet-first; MUGEN import parked).
-- [`entity-editor.md`](./entity-editor.md) — plan to grow the editor into a full
-  Entity Editor (sprites, animations, hitboxes, sounds, inputs, states).
+- [`tooling.md`](./tooling.md) — the asset pipeline: our own browser editor
+  (sprite-sheet-first; MUGEN import parked) and its repo-integrated I/O.
+- [`entity-editor.md`](./entity-editor.md) — **the active plan**: the Entity
+  Editor (sprites, animations, hitboxes, sounds, inputs, states) and the
+  lettered phases A–F we work through. Start here for "what's next".
 - [`data-format.md`](./data-format.md) — the character file format (the contract
   between the entity editor and the engine).
 - [`tech-stack.md`](./tech-stack.md) — technology choices and why.

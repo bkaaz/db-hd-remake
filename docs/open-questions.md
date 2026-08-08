@@ -25,4 +25,8 @@ Move resolved ones into [`decisions.md`](./decisions.md).
 ## Technical
 
 - **Q7 — Logical resolution:** target internal resolution and scaling approach.
+  Now has a concrete consequence: entities' world positions are kept in screen px
+  at a fixed `SCALE`, while authored data (boxes, `vel`) is in sprite px. Moving
+  the world to a logical resolution changes the engine only — authored data
+  keeps its meaning. Decide before the world grows (stages, camera).
 - **Q8 — Multiplayer:** local only, or eventual online? (Affects architecture.)
