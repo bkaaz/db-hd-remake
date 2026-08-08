@@ -1,0 +1,91 @@
+import { Rectangle, Texture } from "pixi.js";
+import type { StatesFile } from "./states";
+
+/**
+ * Loading side of the entity data format (docs/data-format.md). The dev-server
+ * plugin assembles `data/entities/<name>/*.json` into one object at
+ * `/api/entity`; here we turn that into an `EntityDef` — the immutable
+ * definition (textures, animations, states) shared by every live `Entity`.
+ */
+
+export interface FrameDef {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  anchor: [number, number];
+}
+
+export interface Box {
+  type: "hit" | "hurt" | "push";
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface Step {
+  frame: string;
+  dur: number;
+  boxes?: Box[];
+}
+
+export interface Anim {
+  loop: boolean;
+  steps: Step[];
+}
+
+interface EntityFile {
+  name: string;
+  atlas: string;
+  frames: Record<string, FrameDef>;
+  animations: Record<string, Anim>;
+  /** Section file `states.json`, absent until authored. */
+  states?: StatesFile;
+}
+
+/** One frame ready to draw: sub-texture plus its pivot. */
+export interface FrameTex {
+  tex: Texture;
+  anchor: [number, number];
+  w: number;
+  h: number;
+}
+
+/** An authored entity, loaded and ready to instantiate. */
+export interface EntityDef {
+  name: string;
+  frames: Map<string, FrameTex>;
+  animations: Record<string, Anim>;
+  states: StatesFile | null;
+}
+
+/** Fetch an entity plus its keyed atlas and build per-frame textures. */
+export async function loadEntityDef(name: string): Promise<EntityDef> {
+  const res = await fetch(`/api/entity?name=${name}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = ((await res.json()) as { entity: EntityFile }).entity;
+
+  const atlasImg = new Image();
+  atlasImg.src = `/api/atlas?name=${name}`;
+  await atlasImg.decode();
+  const atlas = Texture.from(atlasImg);
+  atlas.source.scaleMode = "nearest";
+
+  const frames = new Map<string, FrameTex>();
+  for (const [id, f] of Object.entries(data.frames ?? {})) {
+    frames.set(id, {
+      tex: new Texture({ source: atlas.source, frame: new Rectangle(f.x, f.y, f.w, f.h) }),
+      anchor: f.anchor,
+      w: f.w,
+      h: f.h,
+    });
+  }
+
+  return {
+    name: data.name,
+    frames,
+    animations: data.animations ?? {},
+    states: data.states ?? null,
+  };
+}

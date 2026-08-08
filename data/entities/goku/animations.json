@@ -1,0 +1,32 @@
+{
+  "idle": {
+    "loop": true,
+    "steps": [
+      {
+        "frame": "frame_8",
+        "dur": 16
+      },
+      {
+        "frame": "frame_6",
+        "dur": 16
+      },
+      {
+        "frame": "frame_7",
+        "dur": 16
+      }
+    ]
+  },
+  "walk": {
+    "loop": true,
+    "steps": [
+      {
+        "frame": "frame_9",
+        "dur": 12
+      },
+      {
+        "frame": "frame_10",
+        "dur": 12
+      }
+    ]
+  }
+}

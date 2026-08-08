@@ -2,6 +2,57 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-08 — Working process: verification, servers, unit tests
+
+- **Never drive a browser (Playwright) unasked** — not even a smoke check. After
+  a change: typecheck/build, then *offer* verification options with "no check"
+  as the default. Rationale: the owner keeps the game open beside the session and
+  usually already sees the result, so unsolicited screenshot requests cost their
+  time; browser automation is also weak at exactly what matters (timing, feel).
+  Recorded in `CLAUDE.md`.
+- **The dev server (5173) and editor (5174) are always running** — the owner
+  starts them. Never start/restart/kill them or spawn background processes;
+  report a dead port instead.
+- **Unit tests (Vitest) land at Phase E**, not before: today's state machine is
+  small enough to eyeball, and Phase D2 will still reshape the format, whereas
+  the input buffer and motion recognition in E are combinatorial and invisible to
+  the eye. Pure logic (`src/states.ts` and successors) stays PixiJS-free so it
+  can be tested in Node.
+
+## 2026-08-08 — `vel` is authored in sprite pixels (unit fix)
+
+- Box coordinates were in sprite px while `vel` was in screen px — two scales in
+  one entity. Changing the render scale would have silently changed every
+  authored speed relative to the sprites.
+- **`vel` is now in sprite px**, like boxes; `Entity` multiplies by the render
+  scale. Goku retuned to keep the same feel: `2.5 → 0.83`, `1.8 → 0.6`.
+- Fixed while only three values existed. An entity's world position is still in
+  screen px — a fixed logical resolution is open question **Q7**, and when it
+  lands the authored `vel` values keep their meaning.
+
+## 2026-08-08 — Phase D1: states v0 (engine first), facing is opponent-relative
+
+- Phase D is split: **D1 = data format + engine runner** (`states.json` written by
+  hand), **D2 = the States tab in the editor**. The JSON is small enough that a UI
+  first would have been the slower path.
+- **State = animation + velocity + transitions.** Format in
+  [`data-format.md`](./data-format.md#states-v0-added-2026-08-08).
+- **Velocity X is facing-relative** (+ = forward), matching the box-coordinate
+  convention — one rule for both, no world-space special cases.
+- **Facing belongs to the engine, not the data:** `sign(opponentX − selfX)`,
+  applied only in states with `"turn": true`, so an attack cannot turn around
+  mid-swing. Movement input is translated to `fwd`/`back` through facing.
+- **Trigger vocabulary v0 is tiny on purpose:** `held:fwd`, `held:back`,
+  `animEnd`, each negatable with `!`. Transitions are ordered, first match wins,
+  **one transition per frame**. `onEnter`, `hit` and the script escape hatch wait
+  for later slices.
+- **The temporary arrow-key walk is gone.** The game now runs `idle` /
+  `walk_fwd` / `walk_back` from `data/entities/goku/states.json`.
+- A **second Goku** stands in as a training dummy so facing has an opponent. It
+  runs the same state machine with no input. **No push collision yet** — the two
+  walk through each other.
+- Goku's animation `anim` renamed to **`idle`**.
+
 ## 2026-08-08 — Entity data split into per-section files; per-section save
 
 - An entity is a **directory** of section files, not one blob:
@@ -23,6 +74,14 @@ Decisions that are settled. Newest first.
 
 ## 2026-08-07 — Naming: Entity (final); storage data/ + assets/ (no public/)
 
+- **Amended 2026-08-08 — definition vs instance:** the engine needs both the
+  authored thing and a live instance of it. Both keep the agreed word: **`EntityDef`**
+  = the loaded definition (frame textures + animations + states), **`Entity`** =
+  one live instance in the world (sprite, position, facing, state machine). Two
+  Gokus on screen are two `Entity` objects sharing one `EntityDef`. The suffix
+  carries the distinction — **do not reintroduce "Actor"**, which this entry
+  rejected. `-Def` also matches the existing `FrameDef` / `AnimDef` / `StepDef`
+  / `StateDef` convention.
 - Final name: **Entity** (chosen over Actor / Character / Fighter). Rationale:
   "entity" is the common term in hand-rolled game code (ECS lineage), generic for
   future non-character objects, and clean in TS. Tool = **Entity Editor**

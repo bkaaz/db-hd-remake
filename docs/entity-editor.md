@@ -57,7 +57,7 @@ behaviors that don't fit. More power than pure data, without a full DSL.
 |---|---|---|
 | **Sprites** | load sheet, background key, auto-detect, frames + anchors | ✅ exists |
 | **Animations** | timed steps + hit/hurt/push box layer + preview | ✅ |
-| **States** | state machine: state ↔ animation, physics, transitions, `hit` | ⬜ |
+| **States** | state machine: state ↔ animation, physics, transitions, `hit` | ⬜ (engine side done — D1) |
 | **Commands** | input motions (e.g. QCF+P) | ⬜ |
 | **Sounds** | import + assign clips | ⬜ |
 | **Attributes** | constants (HP, speeds, gravity) | ⬜ |
@@ -74,8 +74,9 @@ Authored data is meaningless until the engine executes it. So every phase is a
 | **A. Rename + tabs** | reorganize existing; `sprite-editor`→`entity-editor`; `*.character.json`→`*.entity.json` | loader path update | clean base, no new features |
 | **B. Hitboxes** ✅ | box layer in Animations (draw/select/delete) | box overlay (toggle B) | boxes authored + shown; overlap test next |
 | **C. Attributes** | constants form | use HP/speeds | health HUD |
-| **D. States (core)** | state list + transitions (+ small script) | state-machine runner | idle/walk/attack from data |
-| **E. Commands/Input** | command editor | input buffer + motion recognition | specials |
+| **D1. States — engine** ✅ | — (`states.json` hand-written) | state-machine runner, opponent-relative facing | idle/walk from data; temp walk removed |
+| **D2. States — editor** | state list + transitions (+ small script) | — | states authored visually |
+| **E. Commands/Input** | command editor | input buffer + motion recognition; Vitest unit tests for the pure logic | specials |
 | **F. Sounds** | assign + trigger | audio playback | polish |
 
 Slow and deliberate; each phase verified in the running game.

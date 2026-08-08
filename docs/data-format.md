@@ -89,6 +89,58 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
       - `type` — `hit` | `hurt` | `push`.
       - `x, y, w, h` — rectangle in px, relative to the frame's anchor, Y-down.
 
+## States (v0, added 2026-08-08)
+
+Section file `states.json`. A state binds an **animation + velocity + transition
+rules**; the entity is a state machine and the engine runs it every game frame.
+
+```jsonc
+// data/entities/goku/states.json
+{
+  "initial": "idle",
+  "states": {
+    "idle": {
+      "anim": "idle",
+      "vel": [0, 0],
+      "turn": true,
+      "transitions": [
+        { "when": "held:fwd",  "to": "walk_fwd" },
+        { "when": "held:back", "to": "walk_back" }
+      ]
+    },
+    "walk_fwd": {
+      "anim": "walk",
+      "vel": [0.83, 0],
+      "turn": true,
+      "transitions": [ { "when": "!held:fwd", "to": "idle" } ]
+    }
+  }
+}
+```
+
+- **`initial`** — state entered on spawn.
+- **`anim`** — animation played while in the state (restarts on entry).
+- **`vel`** — `[x, y]` per game frame, in **sprite pixels** — the same unit as
+  box coordinates, so display scale never changes what the data means (the
+  engine multiplies by the render scale). **X is facing-relative** (+ = forward).
+  **Y is reserved** and ignored until gravity exists.
+  > Caveat: an entity's world position is still kept in *screen* px. Moving the
+  > whole world to a fixed logical resolution is open question **Q7**; when it
+  > lands, authored `vel` values keep their meaning — only the engine changes.
+- **`turn`** — may the entity turn to face its opponent while in this state?
+  Facing is engine-owned (`sign(opponentX − selfX)`), so attacks set `turn:false`
+  and cannot spin around mid-swing.
+- **`transitions[]`** — evaluated **in order, first match wins**, and **at most
+  one fires per frame** (predictable, no state loops).
+  - `when` — trigger, optionally negated with a leading `!`. v0 vocabulary:
+    - `held:fwd` / `held:back` — movement input, facing-relative.
+    - `animEnd` — a non-looping animation reached its last frame (latched until
+      the animation changes).
+  - `to` — target state.
+
+Deliberately **not** in v0 (later slices): `onEnter` effects, `hit` data
+(damage/hitstun/knockback), the scripting escape hatch, jump/gravity.
+
 ## Notes / open for later
 
 - Versioning: add a top-level `"version"` when the schema first changes.
