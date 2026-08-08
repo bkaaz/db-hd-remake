@@ -54,8 +54,8 @@ the session and can see for themselves; unsolicited screenshot requests waste
 their time. Browser automation is also poor at what matters here — timing and
 feel — because of seconds of latency between a synthetic keypress and a capture.
 
-After a change, run typecheck/build, then **offer these options and let the
-owner choose** (the first is the default):
+After a change, run typecheck/build **and `npm test`**, then **offer these
+options and let the owner choose** (the first is the default):
 
 1. **No check** — the owner already sees it works, or trusts the change.
 2. **The owner tests** — hand over a short list of concrete things to look at;
@@ -66,10 +66,23 @@ owner choose** (the first is the default):
 Browser automation stays available for bugs the owner reports and for
 reproduction work — but the owner picks it; you only offer it.
 
-Pure logic (state machine, later input buffer and collisions) is written free of
-PixiJS so it can be verified in Node instead of a browser. **Unit tests (Vitest)
-are agreed for Phase E** — where input buffering and motion recognition become
-combinatorial — not before.
+### Unit tests — how pure logic gets verified
+
+Pure logic (the state machine and its validator; later the input buffer and
+collision resolution) is written free of PixiJS so it can be tested in Node.
+
+- **`npm test`** (Vitest, `*.test.ts` next to the source) — run it after any
+  change to that logic, and before handing work back.
+- **Tests live in the repo. Never "verify" logic with a throwaway script in a
+  temp directory** — that checks the code once, by eye, and leaves nothing
+  behind that can fail later. If a check is worth running, it is worth
+  committing as a test.
+- Assert on behaviour, not on logs. A test that cannot fail is not a test:
+  when adding one, confirm it fails against a deliberately broken version of
+  the code before keeping it.
+- New pure logic ships **with** its tests in the same slice, not "later".
+- What tests do **not** cover: how anything looks, animation timing, feel. That
+  stays with the owner (see above).
 
 ## Tech stack
 
@@ -87,6 +100,7 @@ npm run dev       # game dev server (5173) — normally already running
 npm run editor    # entity editor (5174)   — normally already running
 npm run build     # typecheck + production build
 npm run typecheck # typecheck only
+npm test          # Vitest, run once (npm run test:watch to keep it running)
 npm run fetch-assets   # download/verify source sheets from assets.manifest.json
 npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ```

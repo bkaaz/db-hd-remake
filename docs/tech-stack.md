@@ -10,7 +10,7 @@
 | Build / dev     | Vite          | Fast dev server + bundler; a dev-only plugin serves the editor's `/api/*`. |
 | Package manager | npm           | Default. |
 | Art             | Ripped HD sprites | Real sprite sheets supplied by the owner under BYOA (see [`assets.md`](./assets.md)); no placeholders anymore. |
-| Tests           | Vitest (planned) | For PixiJS-free logic, in Node. Agreed to land at phase E, not before. |
+| Tests           | Vitest        | `npm test`. For PixiJS-free logic, in Node — `*.test.ts` beside the source. Visual/feel checks stay manual. |
 
 ## Why PixiJS (not Phaser / raw Canvas)
 
