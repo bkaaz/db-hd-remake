@@ -2,6 +2,37 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — A frame catalogue: what each sprite is, written down once
+
+- **Problem:** which sprite is which pose lived only in the owner's head and was
+  re-asked for every animation. That does not scale to ~10 characters, and it
+  had already produced one mis-described set of frames.
+- **`data/entities/<name>/descriptions.json`** — a section file with `groups`
+  (frames per move, non-exclusive) and `frames` (a line per sprite). A leading
+  `?` marks a guess, to be settled when the move is built rather than argued
+  about up front. Group name matches the animation name when the group is one
+  move, so the link needs no field.
+- **Descriptions are written from looking**, via `npm run sheet` — a contact
+  sheet with the frame numbers **burnt into the image**, because "count from the
+  left" is exactly how a description lands on the wrong frame. Uses the PNG
+  encoder added alongside the existing decoder; still no dependency.
+- **Described on demand**, for the range being worked on. Describing all 219
+  frames up front would produce text nobody verifies, that gets re-read anyway.
+- **Rejected: a `sequence` field in the catalogue.** It would duplicate
+  `animations.json` *and* be stale by construction, since the owner tunes the
+  animation afterwards — turning the catalogue into both an input and a rotting
+  copy of an output. Multiple use of a frame (a guard pose is the wind-up *and*
+  the recovery: `32 → 33 → 32`) is recorded as prose in that frame's
+  description instead.
+- **Honest limit:** a sheet holds poses, not a recording. Which frames form a
+  move, and roughly in what order, can be read off it; the true order and timing
+  cannot. Those stay the owner's knowledge. Derived timings are never presented
+  as Hyper Dimension frame data.
+- **`npm run anim` now keeps existing durations** when the frame list is
+  unchanged. It had twice overwritten timings the owner had tuned by hand; the
+  script writes blindly where the editor asks first. When the frame list does
+  change, defaults return and the previous values are printed.
+
 ## 2026-08-09 — Frame numbering: reading order, plain numbers, renumber by hand
 
 - **Detection numbered frames by top edge**, so a taller pose starting a few

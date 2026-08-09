@@ -23,12 +23,59 @@ and *saying which parts are guesses* beats being slow.
 **Never read `frames.json` into context to compute boxes.** It is thousands of
 lines and the result is deterministic. That is what the script is for.
 
+## The frame catalogue
+
+`data/entities/<name>/descriptions.json` records **what each sprite is** — the
+memory that would otherwise live only in the owner's head and be re-asked every
+time.
+
+```jsonc
+{
+  "groups": { "punch_light": { "desc": "…", "frames": ["32", "33"] } },
+  "frames": { "33": "straight punch fully extended — the active frame" }
+}
+```
+
+- **A leading `?`** marks a guess. Do not agonise over them: they get settled
+  when the move is actually built and someone looks at it in motion.
+- **Groups are not exclusive.** A frame can belong to several moves.
+- **A frame can appear more than once in one animation.** A guard pose is
+  usually both the wind-up and the recovery (`32 → 33 → 32`). When you notice
+  it, write it into that frame's description — this is exactly the knowledge
+  that is expensive to rediscover.
+- **Order and timing are NOT in the catalogue.** They live in
+  `animations.json`. A sheet is a set of poses, not a recording: the return to
+  `32` cannot be read off it. Keeping a second copy of the order here would
+  simply go stale, because the owner tunes the animation afterwards.
+- **Group name = animation name** when the group is one move, so nothing has to
+  store the link.
+- **Describe on demand**, the range you are about to work on — not the whole
+  sheet. Descriptions written months before use are unverified and are re-read
+  anyway.
+
+To see the sprites, render a labelled contact sheet and look at it:
+
+```bash
+npm run sheet -- goku --frames 31-45        # → assets/contact/ (gitignored)
+```
+
+The numbers are burnt into the image because "count from the left" is how a
+description ends up on the wrong frame.
+
+**What this cannot give you:** whether a reconstruction is faithful to the
+original game. The sheet fixes which poses exist, roughly in order; the real
+sequence and timing are the owner's knowledge. Never present derived timings as
+Hyper Dimension frame data.
+
 ## Procedure
 
 ### 1. Get the frames
 
-If the owner has not given frame numbers, ask. `npm run anim -- <entity> --list`
-shows what animations already exist without loading any JSON into context.
+Check the catalogue first. If the range is not described yet, render a contact
+sheet, describe it, and only then build. If the frames for the move are not
+obvious, ask — never guess which pose is which.
+`npm run anim -- <entity> --list` shows the existing animations and runs the
+validator, without loading any JSON into context.
 
 ### 2. Generate the animation
 
@@ -43,6 +90,10 @@ npm run anim -- goku punch --frames 42,43,44,45 --kind attack
 - `--dur N` overrides every step; `--inset N` shrinks hurt boxes (useful when
   spiky hair or aura should not be hittable); `--no-hit` skips the hit box;
   `--dry-run` prints without writing.
+- **Existing timings are kept** when the frame list is unchanged — the owner
+  tunes durations by hand and rebuilding for boxes must not undo that. If the
+  frame list changed, defaults come back and the script prints the old values.
+  `--retime` forces defaults.
 - `--hurt-boxes N` (default 3) — how many boxes are fitted to the silhouette per
   frame. The script reads `assets/atlases/<entity>.png`, takes each row's
   horizontal extent and merges neighbouring rows into N bands, so the boxes hug

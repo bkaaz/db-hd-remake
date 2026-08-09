@@ -92,8 +92,16 @@ There will be many entities and hundreds of animations, so the split is fixed:
   by hand or by eye. Hurt boxes, an attack's active frame, default timings all
   come from the sprite rectangles — deterministic, identical every time, and
   free of context. Never pull `frames.json` into context to do arithmetic.
-- **The owner names which frames are which pose.** Never guess that; a wrong
-  frame is a silent, expensive mistake. Ask for the list.
+- **What each sprite is gets written down**, in
+  `data/entities/<name>/descriptions.json` — groups of frames per move, plus a
+  line per frame, with `?` marking a guess. Render `npm run sheet` and look at
+  the sprites rather than inventing descriptions. Describe the range you are
+  working on, not the whole sheet.
+- **Never guess which pose is which** when it matters and the catalogue is
+  silent — ask. A wrong frame is a silent, expensive mistake.
+- **Order and timing are not derivable from a sheet.** It holds poses, not a
+  recording; a frame often appears twice in one animation (guard → strike →
+  guard). That knowledge comes from the owner and lives in `animations.json`.
 - **What you produce is a skeleton the owner then adjusts** in the editor. Being
   roughly right and clearly labelling the guesses beats being slow. Always
   separate what was *computed* from what was *guessed* when reporting.
@@ -123,6 +131,8 @@ npm run typecheck # typecheck only
 npm test          # Vitest, run once (npm run test:watch to keep it running)
 npm run anim -- <entity> <anim> --frames 1,2,3 --kind attack|loop|hurt
                   # build an animation with derived boxes/timing (--list, --dry-run)
+npm run sheet -- <entity> --frames 0-30
+                  # labelled contact sheet into assets/contact/ (gitignored)
 npm run fetch-assets   # download/verify source sheets from assets.manifest.json
 npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ```
@@ -140,7 +150,8 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 │   ├── hit.ts                    #   box → world, overlap, hit detection (no PixiJS)
 │   └── boxes.ts                  #   derive boxes/timing from sprites (no PixiJS)
 ├── scripts/anim.ts               # build an animation from a frame list
-├── scripts/png.ts                #   minimal PNG reader (silhouette → hurt boxes)
+├── scripts/sheet.ts              # labelled contact sheet of frames, to look at
+├── scripts/png.ts                #   minimal PNG read/write (no dependency)
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/entity-editor/          # the authoring tool (Canvas 2D)
 │   ├── plugin.ts                 #   Vite dev-server plugin: /api/* endpoints
