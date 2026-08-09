@@ -1,5 +1,27 @@
 import { describe, expect, it } from "vitest";
-import { activeIndex, durations, hitBox, hurtBox, reach, type FrameRect } from "./boxes";
+import {
+  activeIndex,
+  durations,
+  hitBox,
+  hurtBox,
+  hurtBoxesFromMask,
+  reach,
+  type FrameRect,
+} from "./boxes";
+
+/** Build a mask + frame from ASCII art; `#` is an opaque pixel. */
+function sprite(rows: string[], anchor?: [number, number]) {
+  const w = rows[0].length;
+  const h = rows.length;
+  const mask = new Uint8Array(w * h);
+  rows.forEach((row, y) => {
+    [...row].forEach((c, x) => {
+      if (c === "#") mask[y * w + x] = 1;
+    });
+  });
+  const frame: FrameRect = { x: 0, y: 0, w, h, anchor: anchor ?? [Math.floor(w / 2), h] };
+  return { mask, frame };
+}
 
 /** A 32x58 sprite, anchor between the feet. */
 const rest: FrameRect = { x: 0, y: 0, w: 32, h: 58, anchor: [16, 58] };
@@ -22,6 +44,73 @@ describe("hurtBox", () => {
   it("follows an off-centre anchor", () => {
     const leaning: FrameRect = { x: 0, y: 0, w: 32, h: 58, anchor: [8, 58] };
     expect(hurtBox(leaning)).toEqual({ type: "hurt", x: -8, y: -58, w: 32, h: 58 });
+  });
+});
+
+describe("hurtBoxesFromMask", () => {
+  // A fighter with one arm out: narrow head, wide arm band, narrow legs.
+  const punching = sprite(
+    [
+      "..##.....",
+      "..##.....",
+      ".#######.",
+      ".########",
+      "..####...",
+      "..#..#...",
+      "..#..#...",
+    ],
+    [3, 7],
+  );
+
+  it("follows the body instead of boxing the whole sprite", () => {
+    const boxes = hurtBoxesFromMask(punching.mask, punching.frame, 3);
+    expect(boxes).toHaveLength(3);
+    // Head band: two columns wide, nowhere near the width of the arm.
+    expect(boxes[0].w).toBe(2);
+    // The widest band is the one containing the arm.
+    expect(Math.max(...boxes.map((b) => b.w))).toBe(8);
+    // Legs stay narrow even though the arm above them is wide.
+    expect(boxes[boxes.length - 1].w).toBeLessThanOrEqual(4);
+  });
+
+  it("beats a single box on wasted area", () => {
+    const one = hurtBoxesFromMask(punching.mask, punching.frame, 1);
+    const three = hurtBoxesFromMask(punching.mask, punching.frame, 3);
+    const area = (bs: { w: number; h: number }[]) => bs.reduce((n, b) => n + b.w * b.h, 0);
+    expect(area(three)).toBeLessThan(area(one));
+  });
+
+  it("collapses to the silhouette's bounding box when asked for one", () => {
+    const [box] = hurtBoxesFromMask(punching.mask, punching.frame, 1);
+    expect(box).toEqual({ type: "hurt", x: -2, y: -7, w: 8, h: 7 });
+  });
+
+  it("returns boxes top to bottom, relative to the anchor", () => {
+    const boxes = hurtBoxesFromMask(punching.mask, punching.frame, 3);
+    expect(boxes.map((b) => b.y)).toEqual([...boxes.map((b) => b.y)].sort((a, b) => a - b));
+    expect(boxes[0].y).toBe(-7); // top of the sprite, anchor is at its foot
+  });
+
+  it("ignores blank rows above and below the sprite", () => {
+    const { mask, frame } = sprite(["....", ".##.", ".##.", "...."], [2, 4]);
+    const [box] = hurtBoxesFromMask(mask, frame, 1);
+    expect(box).toEqual({ type: "hurt", x: -1, y: -3, w: 2, h: 2 });
+  });
+
+  it("shrinks every band when inset", () => {
+    const { mask, frame } = sprite(["####", "####", "####", "####"], [2, 4]);
+    const [box] = hurtBoxesFromMask(mask, frame, 1, 1);
+    expect(box).toEqual({ type: "hurt", x: -1, y: -3, w: 2, h: 2 });
+  });
+
+  it("drops bands that an inset would turn inside out", () => {
+    const { mask, frame } = sprite(["#", "#"], [0, 2]);
+    expect(hurtBoxesFromMask(mask, frame, 2, 1)).toEqual([]);
+  });
+
+  it("returns nothing for an empty mask", () => {
+    const { mask, frame } = sprite(["..", ".."]);
+    expect(hurtBoxesFromMask(mask, frame, 3)).toEqual([]);
   });
 });
 

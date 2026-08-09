@@ -43,6 +43,14 @@ npm run anim -- goku punch --frames 42,43,44,45 --kind attack
 - `--dur N` overrides every step; `--inset N` shrinks hurt boxes (useful when
   spiky hair or aura should not be hittable); `--no-hit` skips the hit box;
   `--dry-run` prints without writing.
+- `--hurt-boxes N` (default 3) — how many boxes are fitted to the silhouette per
+  frame. The script reads `assets/atlases/<entity>.png`, takes each row's
+  horizontal extent and merges neighbouring rows into N bands, so the boxes hug
+  the body: narrow head, wide torso where the arms are, narrow legs. `1` gives
+  the old single bounding box, which an outstretched arm makes far too wide.
+  More boxes means a tighter fit and more of them to check by hand.
+  **Without the atlas** (it is gitignored — run `npm run fetch-assets`) it falls
+  back to one bounding box per frame and says so.
 
 The script prints a table separating **computed** (hurt boxes) from
 **placeholder** (hit box, timing). Read that table — it is your report source.

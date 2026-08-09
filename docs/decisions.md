@@ -2,6 +2,28 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Hurt boxes are fitted to the silhouette, not the frame rect
+
+- **Problem:** deriving a hurt box from the frame rectangle gives one box around
+  the *whole* sprite, so an outstretched arm makes the legs as wide as the
+  punch. On Goku's punch frame that box was 100% of the bounding area.
+- **Now:** the script reads the atlas, takes each row's horizontal extent from
+  the alpha mask, and greedily merges neighbouring rows — always the pair adding
+  the least empty area — into `--hurt-boxes N` bands (default 3). The result
+  hugs the body: narrow head, wide torso where the arms are, narrow legs. Same
+  punch frame: 60% of the bounding area, in three boxes.
+- **PNG decoding uses the built-in `node:zlib`** rather than a dependency: the
+  atlas is written by the editor's canvas, so it is always 8-bit non-interlaced
+  RGB(A). The decoder refuses anything else loudly instead of misreading it, and
+  is round-trip tested against an encoder in the test file that exercises all
+  five row filters.
+- **The fitting itself is pure and testable** (`hurtBoxesFromMask` in
+  `src/boxes.ts`, driven by ASCII-art masks in the tests); only the decoding
+  lives in `scripts/`.
+- Falls back to the single bounding box, with a message, when the atlas is
+  missing — it is gitignored (BYOA), so a fresh clone has none until
+  `npm run fetch-assets`.
+
 ## 2026-08-09 — Authoring pipeline: scripts compute, the owner adjusts
 
 There will be ~10 entities × ~20 animations, so how an animation gets made

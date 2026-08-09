@@ -140,6 +140,7 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 │   ├── hit.ts                    #   box → world, overlap, hit detection (no PixiJS)
 │   └── boxes.ts                  #   derive boxes/timing from sprites (no PixiJS)
 ├── scripts/anim.ts               # build an animation from a frame list
+├── scripts/png.ts                #   minimal PNG reader (silhouette → hurt boxes)
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/entity-editor/          # the authoring tool (Canvas 2D)
 │   ├── plugin.ts                 #   Vite dev-server plugin: /api/* endpoints

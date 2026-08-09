@@ -43,6 +43,79 @@ export function hurtBox(frame: FrameRect, inset = 0): DerivedBox | null {
   return { type: "hurt", x: -frame.anchor[0] + inset, y: -frame.anchor[1] + inset, w, h };
 }
 
+interface Band {
+  top: number;
+  bottom: number;
+  min: number;
+  max: number;
+}
+
+const bandArea = (b: Band): number => (b.bottom - b.top + 1) * (b.max - b.min + 1);
+
+const merged = (a: Band, b: Band): Band => ({
+  top: Math.min(a.top, b.top),
+  bottom: Math.max(a.bottom, b.bottom),
+  min: Math.min(a.min, b.min),
+  max: Math.max(a.max, b.max),
+});
+
+/**
+ * Hurt boxes that follow the body, from the sprite's opacity mask.
+ *
+ * One box per frame is too coarse: a frame's rectangle is the bounding box of
+ * the whole silhouette, so an outstretched arm makes the legs as wide as the
+ * punch. Instead, take each row's horizontal extent and merge neighbouring rows
+ * greedily — always the pair that adds the least empty area — until `count`
+ * bands remain. The result hugs the shape: a narrow head, a wide torso where
+ * the arms are, narrow legs.
+ *
+ * `mask` is 1 per opaque pixel, `frame.w * frame.h`, row-major.
+ */
+export function hurtBoxesFromMask(
+  mask: Uint8Array,
+  frame: FrameRect,
+  count = 3,
+  inset = 0,
+): DerivedBox[] {
+  const bands: Band[] = [];
+  for (let y = 0; y < frame.h; y++) {
+    let min = -1;
+    let max = -1;
+    for (let x = 0; x < frame.w; x++) {
+      if (mask[y * frame.w + x]) {
+        if (min < 0) min = x;
+        max = x;
+      }
+    }
+    if (min >= 0) bands.push({ top: y, bottom: y, min, max });
+  }
+  if (bands.length === 0) return [];
+
+  while (bands.length > Math.max(1, count)) {
+    let at = 0;
+    let cheapest = Infinity;
+    for (let i = 0; i + 1 < bands.length; i++) {
+      const cost = bandArea(merged(bands[i], bands[i + 1])) - bandArea(bands[i]) - bandArea(bands[i + 1]);
+      if (cost < cheapest) {
+        cheapest = cost;
+        at = i;
+      }
+    }
+    bands.splice(at, 2, merged(bands[at], bands[at + 1]));
+  }
+
+  const [ax, ay] = frame.anchor;
+  return bands
+    .map((b) => ({
+      type: "hurt" as const,
+      x: b.min - ax + inset,
+      y: b.top - ay + inset,
+      w: b.max - b.min + 1 - 2 * inset,
+      h: b.bottom - b.top + 1 - 2 * inset,
+    }))
+    .filter((b) => b.w > 0 && b.h > 0);
+}
+
 /** How far a frame's silhouette reaches in front of its anchor. */
 export function reach(frame: FrameRect): number {
   return frame.w - frame.anchor[0];

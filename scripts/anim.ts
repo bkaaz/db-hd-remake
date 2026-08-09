@@ -22,11 +22,13 @@ import {
   durations,
   hitBox,
   hurtBox,
+  hurtBoxesFromMask,
   type AnimKind,
   type DerivedBox,
   type FrameRect,
 } from "../src/boxes.ts";
 import { validateStates, type StatesFile } from "../src/states.ts";
+import { alphaMask, decodePng, type Rgba } from "./png.ts";
 
 interface Step {
   frame: string;
@@ -52,6 +54,8 @@ interface Options {
   kind: AnimKind;
   dur?: number;
   inset: number;
+  /** How many hurt boxes to fit to the silhouette per frame (1 = bounding box). */
+  hurtBoxes: number;
   loop?: boolean;
   hit: boolean;
   dryRun: boolean;
@@ -65,6 +69,7 @@ function parseArgs(argv: string[]): Options {
     frames: [],
     kind: "loop",
     inset: 0,
+    hurtBoxes: 3,
     hit: true,
     dryRun: false,
     list: false,
@@ -91,6 +96,9 @@ function parseArgs(argv: string[]): Options {
         break;
       case "--inset":
         opts.inset = Number(next());
+        break;
+      case "--hurt-boxes":
+        opts.hurtBoxes = Math.max(1, Number(next()));
         break;
       case "--loop":
         opts.loop = true;
@@ -137,6 +145,22 @@ function resolveFrameId(token: string, frames: Record<string, FrameRect>): strin
 const fmtBox = (b: DerivedBox | null | undefined): string =>
   b ? `${b.x},${b.y} ${b.w}x${b.h}` : "—";
 
+const fmtBoxes = (bs: DerivedBox[]): string => (bs.length ? bs.map(fmtBox).join(" | ") : "—");
+
+/**
+ * Hurt boxes for one frame. With the atlas available they are fitted to the
+ * sprite's actual silhouette in horizontal bands; without it, all we know is
+ * the frame's bounding box — one coarse rectangle.
+ */
+function hurtFor(atlas: Rgba | null, frame: FrameRect, count: number, inset: number): DerivedBox[] {
+  if (atlas) {
+    const boxes = hurtBoxesFromMask(alphaMask(atlas, frame), frame, count, inset);
+    if (boxes.length > 0) return boxes;
+  }
+  const box = hurtBox(frame, inset);
+  return box ? [box] : [];
+}
+
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   const dir = path.join(process.cwd(), "data", "entities", opts.entity);
@@ -182,10 +206,20 @@ async function main(): Promise<void> {
   const durs = durations(opts.kind, ids.length, active, opts.dur);
   const guess = opts.kind === "attack" && opts.hit ? hitBox(rects, active) : null;
 
+  // Hurt boxes are fitted to the sprite itself, so the atlas is read here.
+  const atlasFile = path.join(process.cwd(), "assets", "atlases", `${opts.entity}.png`);
+  let atlas: Rgba | null = null;
+  try {
+    atlas = decodePng(await fs.readFile(atlasFile));
+  } catch (e) {
+    console.log(
+      `  note: ${path.relative(process.cwd(), atlasFile)} unreadable (${String(e)}) —\n` +
+        "        hurt boxes fall back to one bounding box per frame",
+    );
+  }
+
   const steps: Step[] = ids.map((id, i) => {
-    const boxes: DerivedBox[] = [];
-    const hurt = hurtBox(rects[i], opts.inset);
-    if (hurt) boxes.push(hurt);
+    const boxes: DerivedBox[] = hurtFor(atlas, rects[i], opts.hurtBoxes, opts.inset);
     if (guess && i === active) boxes.push(guess.box);
     return { frame: id, dur: durs[i], ...(boxes.length ? { boxes } : {}) };
   });
@@ -195,14 +229,18 @@ async function main(): Promise<void> {
   animations[name] = { loop, steps };
 
   // Report: computed values on the left, guesses called out on the right.
-  console.log(`${opts.entity} · ${name} · kind=${opts.kind} · loop=${loop}`);
-  console.log("  #  frame          dur  hurt (computed)        hit (placeholder)");
+  console.log(
+    `${opts.entity} · ${name} · kind=${opts.kind} · loop=${loop} · ` +
+      `hurt boxes ${atlas ? `${opts.hurtBoxes}/frame, fitted to the sprite` : "1/frame (no atlas)"}`,
+  );
   steps.forEach((s, i) => {
-    const hit = s.boxes?.find((b) => b.type === "hit");
     const mark = i === active && opts.kind === "attack" ? "*" : " ";
+    const hurt = (s.boxes ?? []).filter((b) => b.type === "hurt");
+    const hit = s.boxes?.find((b) => b.type === "hit");
     console.log(
-      `${mark}${String(i).padStart(2)}  ${s.frame.padEnd(14)}${String(s.dur).padStart(3)}  ` +
-        `${fmtBox(s.boxes?.find((b) => b.type === "hurt")).padEnd(22)} ${fmtBox(hit)}`,
+      `${mark}${String(i).padStart(2)} ${s.frame.padEnd(10)} dur ${String(s.dur).padStart(2)}` +
+        `  hurt ${fmtBoxes(hurt)}` +
+        (hit ? `\n       hit  ${fmtBox(hit)}` : ""),
     );
   });
   console.log(
