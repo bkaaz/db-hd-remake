@@ -2,6 +2,33 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-10 — Blocking is decided at contact, not held as a stance
+
+- **There is no guard state to stand in.** Holding away from the opponent is
+  already `walk_back`, so a blocking stance would compete with walking for the
+  same input. Instead the engine asks, at the moment a blow connects, whether
+  the defender is holding away — and if so the blow is blocked. This is also how
+  the genre has always worked: the guard pose only ever appears on an attack
+  that actually arrives, never as something you stand around in.
+- **`onGuard`, the mirror of `onGotHit`.** One top-level field naming the block
+  reaction; a fighter without it simply cannot block. Both count as entry points
+  for the unreachable-state check, since neither is ever transitioned into.
+- **No blocking in the air.** A jump-in that can be blocked for free removes the
+  reason to jump in at all.
+- **A blocked blow costs nothing** and only pushes — about a third of what a
+  light hit gives back. Chip damage belongs to specials, which do not exist:
+  a block you cannot afford to hold is not a block.
+- **The dummy needed to swing, and that is a fixture, not an AI.** You cannot
+  practise blocking against someone who never attacks, but the answer is not to
+  start writing an opponent. `T` toggles a plain timer that throws each of the
+  four attacks in turn, so every reaction, spark and knockback can be seen. It
+  is labelled as a test fixture in the code, deliberately: a half-built AI is
+  the kind of thing that survives for years. The real answer is a second player
+  on the same keyboard, which is Stage 3.
+- **The guard animation is a reaction, not a loop.** The looping three-frame
+  stance was built first and thrown away the same hour: with no stance to stand
+  in, an idling guard has nobody to play it.
+
 ## 2026-08-10 — Health and damage: the fourth thing a blow decides
 
 - **`damage` on the attack state**, falling back to a `damage` attribute —

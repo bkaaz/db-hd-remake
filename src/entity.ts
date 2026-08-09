@@ -60,6 +60,8 @@ export class Entity {
   private vx = 0;
   /** Latched on touching the ground; cleared when the state changes. */
   private landed = false;
+  /** Whether this entity was holding away from its opponent last frame. */
+  private holdingBack = false;
 
   readonly view = new Container();
   private readonly sprite = new Sprite();
@@ -155,6 +157,20 @@ export class Entity {
     return this.sm?.def.hitstop ?? this.hitstop;
   }
 
+  /**
+   * Is this fighter blocking *right now*?
+   *
+   * There is no guard stance to stand in: holding away is already how you walk
+   * backwards, so a blocking state would fight with `walk_back`. Instead the
+   * block is decided at the moment of contact, which is also how the genre has
+   * always worked — the guard pose only ever appears on a blow that arrives.
+   * Not in the air: a fighter who can block a jump-in for free has removed the
+   * point of jumping in.
+   */
+  get guarding(): boolean {
+    return this.holdingBack && !this.airborne && !!this.def.states?.onGuard;
+  }
+
   /** Health this entity's current attack takes off. */
   get attackDamage(): number {
     return this.sm?.def.damage ?? this.baseDamage;
@@ -194,6 +210,12 @@ export class Entity {
    * own default. Returns false when neither names a state that exists — the
    * hit still landed, it just has nothing to show for it.
    */
+  /** Enter this entity's block reaction. False when it cannot block at all. */
+  guardHit(): boolean {
+    const state = this.def.states?.onGuard;
+    return state !== undefined && this.forceState(state);
+  }
+
   /** Take damage. Health floors at zero; nothing happens there yet. */
   hurtBy(amount: number): void {
     this.hp = Math.max(0, this.hp - amount);
@@ -273,6 +295,7 @@ export class Entity {
 
     const fwd = this.facing > 0 ? input.right : input.left;
     const back = this.facing > 0 ? input.left : input.right;
+    this.holdingBack = back;
     // Live conditions, not latches: true only while they hold. `falling` turns
     // on at the apex; `nearGround` narrows that to the last stretch before
     // touchdown, where the landing pose belongs.

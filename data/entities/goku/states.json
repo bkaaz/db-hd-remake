@@ -1,6 +1,7 @@
 {
   "initial": "idle",
   "onGotHit": "hurt",
+  "onGuard": "guard_hit",
   "states": {
     "idle": {
       "anim": "idle",
@@ -121,6 +122,14 @@
     "hurt": {
       "anim": "hurt",
       "vel": [-1.4, 0],
+      "turn": false,
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "guard_hit": {
+      "anim": "guard_hit",
+      "vel": [-2.0, 0],
       "turn": false,
       "transitions": [
         { "when": "animEnd", "to": "idle" }

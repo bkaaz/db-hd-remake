@@ -131,6 +131,15 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   it was doing at the time. One field instead of every state remembering to
   handle being hit (MUGEN's GetHit state does the same). The engine also treats
   it as an entry point, so it is never reported "unreachable".
+- **`onGuard`** *(optional, top level)* — the state forced on this entity when
+  it **blocks** a blow. There is no guard stance to stand in: holding away is
+  already how you walk backwards, so a blocking state would fight with
+  `walk_back`. The block is decided at the moment of contact instead — the
+  defender counts as guarding if it is grounded and holding away from its
+  opponent — which is also how the genre has always worked, with the guard pose
+  appearing only on a blow that actually arrives. Omit the field and the fighter
+  cannot block. Blocking in the air is refused: a jump-in blocked for free
+  removes the point of jumping in.
 - **`anim`** — animation played while in the state (restarts on entry).
 - **`vel`** — `[x, y]` per game frame, in **sprite pixels** — the same unit as
   box coordinates, so display scale never changes what the data means (the

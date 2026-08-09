@@ -62,8 +62,11 @@ queue.
   in `roadmap.md`.
 - **Walk speeds out of `states.json`** and into attributes, with the rest of the
   tunable numbers.
-- **Blocking**, and blockstun. Not in A–J above; the exchange being built is an
-  unblocked one.
+- **Chip damage and a guard break.** Blocking exists and costs nothing, which is
+  right while every attack is a normal; specials should chip, and holding guard
+  forever should eventually fail. Both wait for specials.
+- **A crouching guard.** Standing blocking works; low blocking needs a pose our
+  sheet does not have — see `decisions.md` for the three ways out.
 - **Commands / input buffer / motion recognition** (was phase E) — the
   prerequisite for specials, and for combos before that. **Hitstop currently
   eats inputs:** the loop clears the attack edge every frame while a frozen

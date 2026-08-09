@@ -80,6 +80,12 @@ export interface StatesFile {
    * no state has to remember to handle being hit.
    */
   onGotHit?: string;
+  /**
+   * State forced on this entity when it blocks a blow: the same idea as
+   * `onGotHit`, for the case where the defender was holding back at the moment
+   * of contact. Absent means this fighter cannot block at all.
+   */
+  onGuard?: string;
   states: Record<string, StateDef>;
 }
 
@@ -292,6 +298,10 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
     errors.push(`onGotHit state "${file.onGotHit}" does not exist`);
   }
 
+  if (file.onGuard !== undefined && !states[file.onGuard]) {
+    errors.push(`onGuard state "${file.onGuard}" does not exist`);
+  }
+
   for (const [name, def] of Object.entries(states)) {
     const where = `state "${name}"`;
 
@@ -374,6 +384,7 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
   if (file.initial && states[file.initial]) {
     const roots = [file.initial];
     if (file.onGotHit && states[file.onGotHit]) roots.push(file.onGotHit);
+    if (file.onGuard && states[file.onGuard]) roots.push(file.onGuard);
     for (const def of Object.values(states)) {
       if (def.onHit && states[def.onHit] && !roots.includes(def.onHit)) roots.push(def.onHit);
     }

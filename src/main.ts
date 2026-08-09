@@ -161,6 +161,17 @@ async function boot(): Promise<void> {
   // it does not machine-gun. Keyboard layout follows the ZSNES default
   // (A=X, B=Z, X=S, Y=A, L=C, R=D), in the usual diamond: top row punches, bottom
   // row kicks, left column light, right column heavy. Remapping comes later.
+  // The dummy has no input, so nothing it does can be seen — you cannot practise
+  // blocking against someone who never swings. This is a **training fixture,
+  // not an opponent**: on a timer it throws each attack in turn, so every
+  // reaction, spark and knockback shows up without pretending to be an AI.
+  // A real second player on the same keyboard is Stage 3.
+  const dummyAttacks = ["punch", "kick", "punchHeavy", "kickHeavy"] as const;
+  let dummyOn = false;
+  let dummyTimer = 0;
+  let dummyNext = 0;
+  const DUMMY_PERIOD = 90;
+
   const held = {
     left: false,
     right: false,
@@ -198,8 +209,14 @@ async function boot(): Promise<void> {
     );
     if (!where) return;
     attacker.markHit();
-    defender.hurtBy(attacker.attackDamage);
-    defender.gotHit(attacker.attackReaction);
+    // A blocked blow costs nothing and only moves you. Chip damage belongs to
+    // specials, which do not exist yet, so a normal attack on guard is free to
+    // eat — deliberately, since a block you cannot afford is not a block.
+    const blocked = defender.guarding && defender.guardHit();
+    if (!blocked) {
+      defender.hurtBy(attacker.attackDamage);
+      defender.gotHit(attacker.attackReaction);
+    }
     // The spark belongs at the deepest point of the blow, not at either
     // fighter's anchor and not at the middle of the overlap — see impactPoint.
     const at = impactPoint(where, attacker.facing);
@@ -222,7 +239,13 @@ async function boot(): Promise<void> {
         armed[b] = false;
       }
       player.update(held, dummy ? dummy.x : null, bounds);
-      dummy?.update(NO_INPUT, player.x, bounds);
+      const dummyInput = { ...NO_INPUT };
+      if (dummy && dummyOn && ++dummyTimer >= DUMMY_PERIOD) {
+        dummyTimer = 0;
+        dummyInput[dummyAttacks[dummyNext]] = true;
+        dummyNext = (dummyNext + 1) % dummyAttacks.length;
+      }
+      dummy?.update(dummyInput, player.x, bounds);
       if (dummy) {
         // Bodies cannot overlap — but only on the ground, so a jump can carry
         // you over the opponent instead of being blocked by them. A hit pause
@@ -258,7 +281,7 @@ async function boot(): Promise<void> {
     for (const fx of effects) fx.render(false);
     label.text = previewing
       ? `${def.name} · anim ${preview} · [B] boxes`
-      : `${def.name} · [←/→] walk · [↑] jump · [A/S] punch · [Z/X] kick · [B] boxes · state: ${player.state} · facing ${player.facing > 0 ? "→" : "←"}`;
+      : `${def.name} · [←/→] walk · [↑] jump · [↓] crouch · [A/S] punch · [Z/X] kick · [B] boxes · [T] dummy attacks: ${dummyOn ? "on" : "off"} · state: ${player.state}`;
   });
 
   window.addEventListener("keydown", (e) => {
@@ -275,6 +298,9 @@ async function boot(): Promise<void> {
       if (!e.repeat) armed.punchHeavy = true;
     } else if (e.key === "x" || e.key === "X") {
       if (!e.repeat) armed.kickHeavy = true;
+    } else if (e.key === "t" || e.key === "T") {
+      dummyOn = !dummyOn;
+      dummyTimer = 0;
     } else if (e.key === "b" || e.key === "B") showBoxes = !showBoxes;
   });
   window.addEventListener("keyup", (e) => {

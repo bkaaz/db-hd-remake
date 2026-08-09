@@ -50,13 +50,12 @@
       ]
     },
     "lunge": {
-      "desc": "? Forward-committed poses: deep stances, rear leg extended, arms leading. Could be a dash, an attack wind-up, or both — needs naming.",
+      "desc": "? Forward-committed poses: deep stances, rear leg extended, arms leading. Could be a dash, an attack wind-up, or both — needs naming. 28 used to be lumped in here and is in fact the block.",
       "frames": [
         "24",
         "25",
         "26",
-        "27",
-        "28"
+        "27"
       ]
     },
     "powerup": {
@@ -180,7 +179,7 @@
       ]
     },
     "guard_stand": {
-      "desc": "? Standing guard: upright, both forearms crossed in front of the chest, feet planted. Three near-identical frames that read as breathing, like the idle. Previously mis-filed as a crouch — they are not crouched at all.",
+      "desc": "? Upright with the forearms crossed in front of the chest, three near-identical frames. NOT the block — that is 28. What they actually are is unconfirmed.",
       "frames": [
         "11",
         "12",
@@ -192,6 +191,12 @@
       "frames": [
         "17",
         "18"
+      ]
+    },
+    "guard": {
+      "desc": "The block, confirmed by the owner: 28. Held as a reaction to a blow that arrives, not as a stance you stand in.",
+      "frames": [
+        "28"
       ]
     }
   },
@@ -223,7 +228,7 @@
     "25": "? low lunge, rear leg extended far back, lead arm forward",
     "26": "? mid-stride, leaning, both arms raised",
     "27": "? deep forward lunge, both arms extended, very low centre of gravity",
-    "28": "? upright, hands raised near the face",
+    "28": "the block: braced, arms up and across, taking a blow rather than throwing one. Confirmed by the owner",
     "29": "SSJ charging: fists clenched low, bright aura flaring around the whole body",
     "30": "SSJ charging: same pose, larger aura",
     "31": "SSJ charging: same pose, aura at its largest",

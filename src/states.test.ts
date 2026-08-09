@@ -208,6 +208,19 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
+  it("reports an onGuard state that does not exist", () => {
+    const f = machine();
+    f.onGuard = "gaurd";
+    expect(validateStates(f, ANIMS).errors).toContain('onGuard state "gaurd" does not exist');
+  });
+
+  it("does not call the onGuard state unreachable — the engine forces it too", () => {
+    const f = machine();
+    f.states.hurt = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
+    f.onGuard = "hurt";
+    expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
+  });
+
   it("reports an onGotHit state that does not exist", () => {
     const f = machine();
     f.onGotHit = "hrut";
