@@ -2,6 +2,64 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Jumping: impulse + gravity, and variants without new syntax
+
+- **`vel` was a constant per state, which a jump cannot be.** Two fields carry
+  it instead: **`launch`** — a velocity applied once on entering a state — and
+  **`airborne`** — while true, gravity accumulates and the velocity carries as
+  momentum rather than being re-applied. A state without `launch` leaves the
+  velocity alone, which is what lets a take-off state hand its momentum to the
+  airborne state that follows.
+- **Gravity is an entity attribute, not a constant in code.** Opens
+  `attributes.json` (phase C) with a single field rather than hard-coding it.
+- **Four new triggers:** `held:up`, `falling`, `nearGround` and `landed`.
+  `StateMachine.update` now takes a `Signals` object instead of a lone boolean —
+  that list will keep growing. `falling` (past the apex) exists because a rise
+  animation is shorter than the climb, so `animEnd` would fire while still going
+  up: the phase boundaries come from the arc, not from animation lengths, and
+  survive a change of jump height.
+- **Jump direction needs no compound trigger.** The walking states already
+  encode the held direction, so `idle → held:up` is a neutral jump while
+  `walk_fwd → held:up` is a forward one. Held, not an edge, on purpose: an edge
+  would be consumed by the frame that enters `walk_fwd` and the jump would
+  vanish. Holding up to hop repeatedly comes out for free.
+- **Phases are separate states**, because one animation cannot play a take-off
+  once and then hand over: a travelling jump is take-off → somersault → fall →
+  land, each its own state, chained by the triggers above.
+- Numbers after tuning against the original: `launch [0, -9.5]`, `gravity 0.3`
+  — 63 frames in the air, peaking at 150 sprite px. Height goes as `v²/2g`, so
+  raising it is a matter of scaling the impulse. Worth knowing: at this height
+  the head leaves a window shorter than ~870 px, which will matter when the
+  camera arrives.
+- **Every jump runs the same arc** — rise → `falling` → fall pose →
+  `nearGround` → landing pose → `landed`. Only the rise differs: the vertical
+  jump plays 14→15→16 and mirrors it back 16→15→14 on the way down (timed so
+  the tuck happens at the apex, and seamless because both halves meet on 16);
+  the travelling jumps play a take-off frame and **one** somersault, then hold
+  the fall pose. The original does one rotation, not a spin loop.
+- **The falling pose is the extended one (14), the landing pose the tucked one
+  (15)** — legs dangling on the way down, knees drawn up to absorb. The reverse
+  was tried first and read wrong.
+- **Landing starts in the air.** A landing pose entered on touchdown is a
+  flicker nobody sees, so `nearGround` (falling, and within the `landCue`
+  attribute) hands over on the way down. `landCue` is a distance, but what it
+  buys is frames, and that depends on the jump: 60 px is ~7 frames of this one.
+  The landing state is itself `airborne` — still falling — and ends on `landed`.
+- **Anchors decide whether a transition pops.** Frame 14 sat 93 px below its
+  head and frame 15 only 77, so switching between them jumped the character by
+  16 px. Anchors are per-frame offsets, so the fix is arithmetic: align the head
+  (both now 77) and accept that 14's extended legs hang below the reference
+  point, which is what an airborne pose should do anyway.
+- **Somersault anchors were re-centred.** Auto-detection puts an anchor at the
+  bottom of the frame, which for a rotating body means swinging around the feet
+  and jittering between frames. The four spin frames now anchor on the
+  silhouette's centre of mass, offset downward by the same distance the standing
+  pose has between its centre of mass and its feet (38.7 px) — so the body
+  rotates in place and keeps a consistent height.
+- Frames confirmed against the contact sheet: rise 14, tuck 15 → 16, forward
+  take-off 19, somersault 20→23 (and reversed for the back jump). The owner's
+  first list, from memory, had the tuck frames wrong — the catalogue caught it.
+
 ## 2026-08-09 — A frame catalogue: what each sprite is, written down once
 
 - **Problem:** which sprite is which pose lived only in the owner's head and was

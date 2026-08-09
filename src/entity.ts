@@ -14,11 +14,12 @@ import { StateMachine } from "./states";
 export interface WorldInput {
   left: boolean;
   right: boolean;
+  up: boolean;
   /** Attack button went down **this frame** (edge, not held). */
   attack: boolean;
 }
 
-export const NO_INPUT: WorldInput = { left: false, right: false, attack: false };
+export const NO_INPUT: WorldInput = { left: false, right: false, up: false, attack: false };
 
 const BOX_COLORS: Record<string, number> = {
   hit: 0xff3b3b,
@@ -27,11 +28,21 @@ const BOX_COLORS: Record<string, number> = {
 };
 
 export class Entity {
-  /** Ground position: x = world px, y = the ground line the anchor sits on. */
+  /** World x of the anchor, in screen px. */
   x = 0;
+  /** The ground line this entity stands on; set by the world. */
+  groundY = 0;
+  /** Current y of the anchor — equal to `groundY` unless airborne. */
   y = 0;
   /** +1 = facing right, −1 = facing left. */
   facing: 1 | -1 = 1;
+
+  /** Vertical velocity in sprite px per frame, negative upward. */
+  private vy = 0;
+  /** Horizontal velocity while airborne, facing-relative (momentum). */
+  private vx = 0;
+  /** Latched on touching the ground; cleared when the state changes. */
+  private landed = false;
 
   readonly view = new Container();
   private readonly sprite = new Sprite();
@@ -54,10 +65,15 @@ export class Entity {
    */
   private spent = false;
 
+  private readonly gravity: number;
+  private readonly landCue: number;
+
   constructor(
     private readonly def: EntityDef,
     private readonly scale: number,
   ) {
+    this.gravity = def.attributes.gravity;
+    this.landCue = def.attributes.landCue;
     this.sprite.scale.set(scale);
     this.view.addChild(this.sprite, this.boxG);
     this.sm = def.states ? new StateMachine(def.states) : null;
@@ -94,6 +110,7 @@ export class Entity {
     if (!this.sm?.force(name)) return false;
     this.setAnim(this.sm.def.anim);
     this.spent = false;
+    this.landed = false;
     return true;
   }
 
@@ -119,16 +136,49 @@ export class Entity {
 
     const fwd = this.facing > 0 ? input.right : input.left;
     const back = this.facing > 0 ? input.left : input.right;
-    if (this.sm.update({ fwd, back, attack: input.attack }, this.animEnded)) {
+    // Live conditions, not latches: true only while they hold. `falling` turns
+    // on at the apex; `nearGround` narrows that to the last stretch before
+    // touchdown, where the landing pose belongs.
+    const airborne = !!this.sm.def.airborne;
+    const falling = airborne && this.vy > 0;
+    const nearGround = falling && this.groundY - this.y <= this.landCue * this.scale;
+
+    const changed = this.sm.update(
+      { fwd, back, up: input.up, attack: input.attack },
+      { animEnded: this.animEnded, falling, nearGround, landed: this.landed },
+    );
+    if (changed) {
       this.setAnim(this.sm.def.anim);
       this.spent = false;
+      this.landed = false;
+      // A launch is an impulse, applied once on entry; without one the entity
+      // keeps whatever velocity it had, which is what carries a jump through
+      // its take-off state into the airborne one.
+      const launch = this.sm.def.launch;
+      if (launch) {
+        this.vx = launch[0];
+        this.vy = launch[1];
+      }
     }
 
-    // Velocity is authored in sprite pixels, like box coordinates, and is
+    // Velocities are authored in sprite pixels, like box coordinates, and X is
     // facing-relative (+ = forward); scaling to screen px happens here so the
-    // data stays independent of SCALE. Velocity Y waits for gravity.
-    const vx = (this.sm.def.vel?.[0] ?? 0) * this.scale;
-    if (vx !== 0) this.x = Math.max(bounds.min, Math.min(bounds.max, this.x + this.facing * vx));
+    // data stays independent of SCALE.
+    if (this.sm.def.airborne) {
+      this.x += this.facing * this.vx * this.scale;
+      this.y += this.vy * this.scale;
+      this.vy += this.gravity;
+      if (this.y >= this.groundY) {
+        this.y = this.groundY;
+        this.vy = 0;
+        this.vx = 0;
+        this.landed = true;
+      }
+    } else {
+      this.y = this.groundY;
+      this.x += this.facing * (this.sm.def.vel?.[0] ?? 0) * this.scale;
+    }
+    this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
 
     this.advanceAnim();
   }

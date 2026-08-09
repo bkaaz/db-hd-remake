@@ -135,6 +135,14 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   > Caveat: an entity's world position is still kept in *screen* px. Moving the
   > whole world to a fixed logical resolution is open question **Q7**; when it
   > lands, authored `vel` values keep their meaning — only the engine changes.
+- **`launch`** — `[x, y]` velocity set **once, on entering** the state, in sprite
+  px per frame; X facing-relative, Y **negative is up**. This is how a jump
+  starts. A state without `launch` leaves the velocity alone, which is what
+  carries momentum from a take-off state into the airborne one that follows.
+- **`airborne`** — while true the entity is off the ground: gravity is added to
+  its vertical velocity every frame and its horizontal velocity carries, instead
+  of `vel` being re-applied. Landing (reaching the ground line) zeroes the
+  velocity and fires the `landed` trigger.
 - **`turn`** — may the entity turn to face its opponent while in this state?
   Facing is engine-owned (`sign(opponentX − selfX)`), so attacks set `turn:false`
   and cannot spin around mid-swing.
@@ -142,11 +150,41 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   one fires per frame** (predictable, no state loops).
   - `when` — trigger, optionally negated with a leading `!`. v0 vocabulary:
     - `held:fwd` / `held:back` — movement input, facing-relative.
+    - `held:up` — up is a **world** direction, not facing-relative. Held rather
+      than an edge, deliberately: see "jump variants" below.
     - `pressed:attack` — attack button went down **this frame** (an edge, so
       holding the key does not repeat the move).
     - `animEnd` — a non-looping animation reached its last frame (latched until
       the animation changes).
+    - `falling` — moving downward, i.e. past the apex. The signal the arc gives
+      you: a rise animation is shorter than the climb, so `animEnd` would fire
+      while still going up.
+    - `nearGround` — falling and within `landCue` of the ground. A landing pose
+      started at touchdown is a flicker; this starts it on the way down so it
+      finishes as the feet arrive.
+    - `landed` — the entity touched the ground (latched until the state
+      changes).
   - `to` — target state.
+
+**Jump variants without compound triggers.** "Up **and** forward" is a
+conjunction, and triggers are single conditions — but no new syntax is needed,
+because the walking states already encode the held direction:
+
+```
+idle      → held:fwd → walk_fwd,  held:up → jump_up
+walk_fwd  → held:up  → jump_fwd
+walk_back → held:up  → jump_back
+```
+
+Holding up alone gives a neutral jump; holding forward and then up spends one
+frame in `walk_fwd` and jumps forward from there — 16 ms late, imperceptible.
+This is also why the trigger is `held:up` and not an edge: an edge would be
+consumed by the frame that enters `walk_fwd`, and the jump would be swallowed.
+Holding up to hop repeatedly then falls out for free, as in most fighters.
+
+A travelling jump is two states: a take-off (`launch`, one-frame animation,
+`animEnd → …_air`) followed by an airborne state looping the somersault until
+`landed`. One animation cannot both play a take-off once and loop afterwards.
 
 **Attacks and hitstun.** An attack is an ordinary state: a non-looping animation
 with `hit` boxes on its active steps, `turn: false` so it cannot spin mid-swing,
@@ -168,6 +206,33 @@ editor flags them in the States tab. It catches a missing/unknown `initial` or
 malformed `vel`; it warns about unreachable states, states with no way out, and
 the classic slip — a state whose only exit is `animEnd` playing a **looping**
 animation, which can never be left.
+
+## Attributes (added 2026-08-09)
+
+Section file `attributes.json` — constants that belong to the fighter rather
+than to any one state. So far one:
+
+```jsonc
+{
+  "gravity": 0.3,    // sprite px per game frame, squared
+  "landCue": 50      // sprite px above the ground where the landing pose starts
+}
+```
+
+`landCue` is a distance, but what matters is how many frames it buys before
+touchdown — and that depends on the jump. For Goku's 150 px jump: 24 px is
+about 2.5 frames, 40 px about 4.5, 60 px about 7, 80 px about 10.
+
+An airborne sequence therefore reads: rise → `falling` → fall pose →
+`nearGround` → landing pose → `landed`.
+
+Missing values fall back to engine defaults (`src/entityDef.ts`), so the file is
+optional — but **anything meant to be tuned is written out explicitly anyway**.
+A value you are expected to adjust should be visible where you would look for
+it, not hidden in a default.
+
+Missing values fall back to engine defaults, so the file is optional. Health,
+walk speeds and the rest arrive with phase C.
 
 ## Notes / open for later
 

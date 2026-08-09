@@ -36,9 +36,13 @@ function machine(): StatesFile {
   };
 }
 
-const NONE = { fwd: false, back: false, attack: false };
-const FWD = { fwd: true, back: false, attack: false };
-const ATTACK = { fwd: false, back: false, attack: true };
+const NONE = { fwd: false, back: false, up: false, attack: false };
+const FWD = { ...NONE, fwd: true };
+const ATTACK = { ...NONE, attack: true };
+const UP = { ...NONE, up: true };
+
+/** Nothing happened to the entity this frame. */
+const QUIET = { animEnded: false, falling: false, nearGround: false, landed: false };
 
 describe("validateStates", () => {
   it("accepts a well-formed machine", () => {
@@ -197,14 +201,14 @@ describe("StateMachine", () => {
 
   it("walks forward while the input is held and returns to idle on release", () => {
     const sm = new StateMachine(machine());
-    expect(sm.update(FWD, false)).toBe("walk_fwd");
-    expect(sm.update(FWD, false)).toBeNull(); // already there — no repeated change
-    expect(sm.update(NONE, false)).toBe("idle");
+    expect(sm.update(FWD, QUIET)).toBe("walk_fwd");
+    expect(sm.update(FWD, QUIET)).toBeNull(); // already there — no repeated change
+    expect(sm.update(NONE, QUIET)).toBe("idle");
   });
 
   it("exposes the current state's data", () => {
     const sm = new StateMachine(machine());
-    sm.update(FWD, false);
+    sm.update(FWD, QUIET);
     expect(sm.def.anim).toBe("walk");
     expect(sm.def.vel).toEqual([0.83, 0]);
   });
@@ -219,7 +223,7 @@ describe("StateMachine", () => {
       },
     };
     const sm = new StateMachine(f);
-    sm.update(FWD, false);
+    sm.update(FWD, QUIET);
     expect(sm.current).toBe("b"); // not "c", even though b's trigger also fires
   });
 
@@ -230,7 +234,7 @@ describe("StateMachine", () => {
       { when: "held:fwd", to: "idle" },
     ];
     const sm = new StateMachine(f);
-    sm.update(FWD, false);
+    sm.update(FWD, QUIET);
     expect(sm.current).toBe("walk_fwd");
   });
 
@@ -238,7 +242,7 @@ describe("StateMachine", () => {
     const f = machine();
     f.states.idle.transitions = [{ when: "held:fwd", to: "ghost" }];
     const sm = new StateMachine(f);
-    expect(sm.update(FWD, false)).toBeNull();
+    expect(sm.update(FWD, QUIET)).toBeNull();
     expect(sm.current).toBe("idle");
   });
 
@@ -247,8 +251,8 @@ describe("StateMachine", () => {
     f.states.punch = { anim: "idle", transitions: [{ when: "animEnd", to: "idle" }] };
     f.states.idle.transitions = [{ when: "pressed:attack", to: "punch" }];
     const sm = new StateMachine(f);
-    expect(sm.update(NONE, false)).toBeNull();
-    expect(sm.update(ATTACK, false)).toBe("punch");
+    expect(sm.update(NONE, QUIET)).toBeNull();
+    expect(sm.update(ATTACK, QUIET)).toBe("punch");
   });
 
   it("force() enters a state regardless of transitions", () => {
@@ -261,6 +265,88 @@ describe("StateMachine", () => {
     expect(sm.current).toBe("hurt");
   });
 
+  it("jumps on up, and the direction comes from the state you are in", () => {
+    // No compound triggers: holding forward already puts you in walk_fwd, and
+    // that state is what turns "up" into a forward jump.
+    const f = machine();
+    f.states.jump_up = { anim: "idle", transitions: [{ when: "landed", to: "idle" }] };
+    f.states.jump_fwd = { anim: "idle", transitions: [{ when: "landed", to: "idle" }] };
+    f.states.idle.transitions = [
+      { when: "held:fwd", to: "walk_fwd" },
+      { when: "held:up", to: "jump_up" },
+    ];
+    f.states.walk_fwd.transitions = [
+      { when: "held:up", to: "jump_fwd" },
+      { when: "!held:fwd", to: "idle" },
+    ];
+
+    const neutral = new StateMachine(f);
+    expect(neutral.update(UP, QUIET)).toBe("jump_up");
+
+    const forward = new StateMachine(f);
+    expect(forward.update({ ...UP, fwd: true }, QUIET)).toBe("walk_fwd");
+    expect(forward.update({ ...UP, fwd: true }, QUIET)).toBe("jump_fwd");
+  });
+
+  it("leaves an airborne state on landing, not before", () => {
+    const f = machine();
+    f.states.jump_up = { anim: "idle", airborne: true, transitions: [{ when: "landed", to: "idle" }] };
+    f.states.idle.transitions = [{ when: "held:up", to: "jump_up" }];
+    const sm = new StateMachine(f);
+    sm.update(UP, QUIET);
+    expect(sm.current).toBe("jump_up");
+    expect(sm.update(NONE, QUIET)).toBeNull();
+    expect(sm.update(NONE, { ...QUIET, landed: true })).toBe("idle");
+  });
+
+  it("switches to the falling pose at the apex, not when the rise animation ends", () => {
+    // The rise animation is shorter than the climb, so animEnd would fire while
+    // still going up. `falling` is the arc's own signal.
+    const f = machine();
+    f.states.jump_up = {
+      anim: "idle",
+      airborne: true,
+      transitions: [{ when: "falling", to: "fall" }],
+    };
+    f.states.fall = { anim: "idle", airborne: true, transitions: [{ when: "landed", to: "idle" }] };
+    const sm = new StateMachine(f);
+    sm.force("jump_up");
+    expect(sm.update(NONE, { ...QUIET, animEnded: true })).toBeNull(); // still rising
+    expect(sm.update(NONE, { ...QUIET, falling: true })).toBe("fall");
+  });
+
+  it("starts the landing pose before touchdown, not after it", () => {
+    // The landing animation is only worth playing if it is visible: nearGround
+    // fires on the way down, so it finishes as the feet arrive.
+    const f = machine();
+    f.states.jump_up = {
+      anim: "idle",
+      airborne: true,
+      transitions: [
+        { when: "nearGround", to: "land" },
+        { when: "landed", to: "land" },
+      ],
+    };
+    f.states.land = { anim: "idle", airborne: true, transitions: [{ when: "landed", to: "idle" }] };
+    const sm = new StateMachine(f);
+    sm.force("jump_up");
+    expect(sm.update(NONE, QUIET)).toBeNull();
+    expect(sm.update(NONE, { ...QUIET, nearGround: true })).toBe("land");
+    expect(sm.update(NONE, { ...QUIET, nearGround: true })).toBeNull();
+    expect(sm.update(NONE, { ...QUIET, landed: true })).toBe("idle");
+  });
+
+  it("carries a launch impulse on the state that starts the jump", () => {
+    const f = machine();
+    f.states.jump_fwd = { anim: "idle", launch: [2.3, -6.5], airborne: true };
+    const sm = new StateMachine(f);
+    sm.force("jump_fwd");
+    expect(sm.def.launch).toEqual([2.3, -6.5]);
+    expect(sm.def.airborne).toBe(true);
+    // The airborne state it continues into has no launch, so nothing re-fires.
+    expect(machine().states.idle.launch).toBeUndefined();
+  });
+
   it("fires animEnd only when the animation has ended", () => {
     const f: StatesFile = {
       initial: "punch",
@@ -270,7 +356,7 @@ describe("StateMachine", () => {
       },
     };
     const sm = new StateMachine(f);
-    expect(sm.update(NONE, false)).toBeNull();
-    expect(sm.update(NONE, true)).toBe("idle");
+    expect(sm.update(NONE, QUIET)).toBeNull();
+    expect(sm.update(NONE, { ...QUIET, animEnded: true })).toBe("idle");
   });
 });

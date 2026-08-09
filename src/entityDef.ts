@@ -35,6 +35,20 @@ export interface Anim {
   steps: Step[];
 }
 
+/** Section file `attributes.json` — constants that belong to the fighter. */
+export interface Attributes {
+  /** Downward acceleration in sprite px per game frame, squared. */
+  gravity: number;
+  /**
+   * How far above the ground, in sprite px, a falling entity starts its landing
+   * pose. Roughly the distance covered by the landing animation, so the pose
+   * finishes as the feet touch instead of flashing after the fact.
+   */
+  landCue: number;
+}
+
+export const DEFAULT_ATTRIBUTES: Attributes = { gravity: 0.3, landCue: 50 };
+
 interface EntityFile {
   name: string;
   atlas: string;
@@ -42,6 +56,7 @@ interface EntityFile {
   animations: Record<string, Anim>;
   /** Section file `states.json`, absent until authored. */
   states?: StatesFile;
+  attributes?: Partial<Attributes>;
 }
 
 /** One frame ready to draw: sub-texture plus its pivot. */
@@ -58,6 +73,7 @@ export interface EntityDef {
   frames: Map<string, FrameTex>;
   animations: Record<string, Anim>;
   states: StatesFile | null;
+  attributes: Attributes;
 }
 
 /** Fetch an entity plus its keyed atlas and build per-frame textures. */
@@ -87,5 +103,6 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
     frames,
     animations: data.animations ?? {},
     states: data.states ?? null,
+    attributes: { ...DEFAULT_ATTRIBUTES, ...(data.attributes ?? {}) },
   };
 }

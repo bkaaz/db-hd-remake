@@ -53,6 +53,8 @@ interface Options {
   frames: string[];
   kind: AnimKind;
   dur?: number;
+  /** Explicit duration per step, when the phases differ in length. */
+  durs?: number[];
   inset: number;
   /** How many hurt boxes to fit to the silhouette per frame (1 = bounding box). */
   hurtBoxes: number;
@@ -96,6 +98,9 @@ function parseArgs(argv: string[]): Options {
       }
       case "--dur":
         opts.dur = Number(next());
+        break;
+      case "--durs":
+        opts.durs = next().split(",").map((n) => Math.max(1, Number(n.trim())));
         break;
       case "--inset":
         opts.inset = Number(next());
@@ -218,10 +223,14 @@ async function main(): Promise<void> {
     existing !== undefined &&
     existing.steps.length === ids.length &&
     existing.steps.every((s, i) => s.frame === ids[i]);
-  const keepTiming = sameFrames && !opts.retime && opts.dur === undefined;
+  const keepTiming =
+    sameFrames && !opts.retime && opts.dur === undefined && opts.durs === undefined;
+  if (opts.durs && opts.durs.length !== ids.length) {
+    die(`--durs has ${opts.durs.length} values but there are ${ids.length} frames`);
+  }
   const durs = keepTiming
     ? existing.steps.map((s) => s.dur)
-    : durations(opts.kind, ids.length, active, opts.dur);
+    : (opts.durs ?? durations(opts.kind, ids.length, active, opts.dur));
   const guess = opts.kind === "attack" && opts.hit ? hitBox(rects, active) : null;
 
   // Hurt boxes are fitted to the sprite itself, so the atlas is read here.

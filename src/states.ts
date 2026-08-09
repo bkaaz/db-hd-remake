@@ -22,6 +22,17 @@ export interface StateDef {
   /** Animation played while in this state. */
   anim: string;
   /**
+   * Velocity set **on entering** the state, as an impulse: X facing-relative
+   * (+ = forward), Y negative = upward. This is how a jump starts; from then on
+   * physics owns the velocity.
+   */
+  launch?: [number, number];
+  /**
+   * While true the entity is off the ground: gravity pulls on it every frame
+   * and its velocity carries (momentum), instead of `vel` being re-applied.
+   */
+  airborne?: boolean;
+  /**
    * Velocity in px per game frame, X measured **in the facing direction**
    * (+ = forward, − = backward), like box coordinates. Y is reserved until
    * gravity exists and is ignored for now.
@@ -48,18 +59,44 @@ export interface StatesFile {
 export interface InputSnapshot {
   fwd: boolean;
   back: boolean;
+  /** Up is a world direction, not facing-relative — it starts a jump. */
+  up: boolean;
   /** Attack button went down **this frame** (edge, not held). */
   attack: boolean;
 }
 
+/** Things that happened to the entity this frame, rather than being asked for. */
+export interface Signals {
+  /** A non-looping animation reached its end (latched until it changes). */
+  animEnded: boolean;
+  /** Moving downward — true from the apex of a jump onward. */
+  falling: boolean;
+  /**
+   * Falling and within `landCue` of the ground — the cue to start a landing
+   * pose *before* touching down, so it is visible rather than a flicker.
+   */
+  nearGround: boolean;
+  /** The entity touched the ground (latched until the state changes). */
+  landed: boolean;
+}
+
 /** Every trigger the runner understands, for validation and editor UI. */
-export const TRIGGERS = ["held:fwd", "held:back", "pressed:attack", "animEnd"] as const;
+export const TRIGGERS = [
+  "held:fwd",
+  "held:back",
+  "held:up",
+  "pressed:attack",
+  "animEnd",
+  "falling",
+  "nearGround",
+  "landed",
+] as const;
 
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
 
 const warned = new Set<string>();
 
-function evaluate(trigger: string, input: InputSnapshot, animEnded: boolean): boolean {
+function evaluate(trigger: string, input: InputSnapshot, signals: Signals): boolean {
   const negated = trigger.startsWith("!");
   const key = negated ? trigger.slice(1) : trigger;
   let value: boolean;
@@ -70,11 +107,23 @@ function evaluate(trigger: string, input: InputSnapshot, animEnded: boolean): bo
     case "held:back":
       value = input.back;
       break;
+    case "held:up":
+      value = input.up;
+      break;
     case "pressed:attack":
       value = input.attack;
       break;
     case "animEnd":
-      value = animEnded;
+      value = signals.animEnded;
+      break;
+    case "falling":
+      value = signals.falling;
+      break;
+    case "nearGround":
+      value = signals.nearGround;
+      break;
+    case "landed":
+      value = signals.landed;
       break;
     default:
       if (!warned.has(key)) {
@@ -116,9 +165,9 @@ export class StateMachine {
    *
    * @returns the new state's name if it changed, else null.
    */
-  update(input: InputSnapshot, animEnded: boolean): string | null {
+  update(input: InputSnapshot, signals: Signals): string | null {
     for (const t of this.def.transitions ?? []) {
-      if (!evaluate(t.when, input, animEnded)) continue;
+      if (!evaluate(t.when, input, signals)) continue;
       if (!this.file.states[t.to]) {
         if (!warned.has(t.to)) {
           warned.add(t.to);

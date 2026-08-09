@@ -75,8 +75,8 @@ async function boot(): Promise<void> {
   const place = (first: boolean): void => {
     groundY = Math.round(app.screen.height * 0.8);
     bounds = { min: EDGE_MARGIN, max: Math.max(EDGE_MARGIN, app.screen.width - EDGE_MARGIN) };
-    player.y = groundY;
-    if (dummy) dummy.y = groundY;
+    player.groundY = groundY;
+    if (dummy) dummy.groundY = groundY;
     if (first) {
       player.x = app.screen.width * (dummy ? 0.35 : 0.5);
       if (dummy) dummy.x = app.screen.width * 0.65;
@@ -102,7 +102,7 @@ async function boot(): Promise<void> {
   // it does not machine-gun. Keyboard layout follows the ZSNES default
   // (A=X, B=Z, X=S, Y=A, L=C, R=D); for now only SNES Y — the weak punch — is
   // wired, and remapping comes with a proper config screen.
-  const held = { left: false, right: false, attack: false };
+  const held = { left: false, right: false, up: false, attack: false };
   let attackArmed = false;
   let showBoxes = true;
 
@@ -151,12 +151,13 @@ async function boot(): Promise<void> {
     dummy?.render(showBoxes);
     label.text = previewing
       ? `${def.name} · anim ${preview} · [B] boxes`
-      : `${def.name} · [←/→] walk · [A] attack · [B] boxes · state: ${player.state} · facing ${player.facing > 0 ? "→" : "←"}`;
+      : `${def.name} · [←/→] walk · [↑] jump · [A] attack · [B] boxes · state: ${player.state} · facing ${player.facing > 0 ? "→" : "←"}`;
   });
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft") held.left = true;
     else if (e.key === "ArrowRight") held.right = true;
+    else if (e.key === "ArrowUp") held.up = true;
     else if (e.key === "a" || e.key === "A") {
       // Auto-repeat must not re-arm: one press, one attack.
       if (!e.repeat) attackArmed = true;
@@ -165,6 +166,7 @@ async function boot(): Promise<void> {
   window.addEventListener("keyup", (e) => {
     if (e.key === "ArrowLeft") held.left = false;
     else if (e.key === "ArrowRight") held.right = false;
+    else if (e.key === "ArrowUp") held.up = false;
   });
 }
 
