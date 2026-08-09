@@ -58,6 +58,8 @@ interface Options {
   hurtBoxes: number;
   loop?: boolean;
   hit: boolean;
+  /** Recompute durations even when the frame list is unchanged. */
+  retime: boolean;
   dryRun: boolean;
   list: boolean;
 }
@@ -71,6 +73,7 @@ function parseArgs(argv: string[]): Options {
     inset: 0,
     hurtBoxes: 3,
     hit: true,
+    retime: false,
     dryRun: false,
     list: false,
   };
@@ -108,6 +111,9 @@ function parseArgs(argv: string[]): Options {
         break;
       case "--no-hit":
         opts.hit = false;
+        break;
+      case "--retime":
+        opts.retime = true;
         break;
       case "--dry-run":
         opts.dryRun = true;
@@ -201,7 +207,21 @@ async function main(): Promise<void> {
   const ids = opts.frames.map((t) => resolveFrameId(t, frames));
   const rects = ids.map((id) => frames[id]);
   const active = activeIndex(rects);
-  const durs = durations(opts.kind, ids.length, active, opts.dur);
+
+  // Timing is tuned by hand in the editor, and rebuilding an animation to
+  // recompute its boxes must not throw that away. If the frame list is the same
+  // as what is on disk, the existing durations are kept; if it changed, the
+  // steps no longer line up, so defaults come back — loudly, with the old
+  // values printed so nothing disappears in silence.
+  const existing = animations[name];
+  const sameFrames =
+    existing !== undefined &&
+    existing.steps.length === ids.length &&
+    existing.steps.every((s, i) => s.frame === ids[i]);
+  const keepTiming = sameFrames && !opts.retime && opts.dur === undefined;
+  const durs = keepTiming
+    ? existing.steps.map((s) => s.dur)
+    : durations(opts.kind, ids.length, active, opts.dur);
   const guess = opts.kind === "attack" && opts.hit ? hitBox(rects, active) : null;
 
   // Hurt boxes are fitted to the sprite itself, so the atlas is read here.
@@ -245,6 +265,12 @@ async function main(): Promise<void> {
     `  total ${steps.reduce((n, s) => n + s.dur, 0)} frames` +
       (opts.kind === "attack" ? ` · active step ${active} (*)` : ""),
   );
+  if (keepTiming) {
+    console.log("  kept the existing durations (same frames) — --retime to recompute");
+  } else if (existing) {
+    const was = existing.steps.map((s) => `${s.frame}:${s.dur}`).join(" ");
+    console.log(`  durations RESET to defaults — previous timing was  ${was}`);
+  }
   if (guess) {
     console.log(
       guess.from === "extension"
