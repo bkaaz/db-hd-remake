@@ -143,6 +143,17 @@ byId("play").addEventListener("click", () => preview.play());
 byId("stop").addEventListener("click", () => preview.stop());
 
 sheetLoadBtn.addEventListener("click", () => loadFromRepo(sheetSelect.value));
+byId("reload-data").addEventListener("click", async () => {
+  statusEl.textContent = "Reloading…";
+  try {
+    statusEl.textContent = (await hydrateFromRepo())
+      ? `Reloaded data/entities/${state.entityName}/ from disk.`
+      : `No data for "${state.entityName}" on disk.`;
+  } catch (e) {
+    statusEl.textContent = `Reload failed — ${String(e)}`;
+  }
+  emitChange();
+});
 saveBtn.addEventListener("click", async () => {
   statusEl.textContent = "Saving…";
   // Save only the current tab's section (frames or animations).
@@ -182,6 +193,7 @@ function applyNewImage(img: HTMLImageElement, fileName: string): void {
   state.frames = [];
   state.anims = [];
   state.states = null;
+  state.sectionMtimes = {};
   state.selectedFrameId = null;
   state.selectedAnimName = null;
   state.mode = "frame";
@@ -217,21 +229,31 @@ function loadImageFile(file: File): void {
   img.src = URL.createObjectURL(file);
 }
 
+/**
+ * Pull the entity's section files from the repo into editor state, remembering
+ * each section's mtime so a later save can tell it would overwrite a newer file.
+ * Used both after loading a sheet and by "Reload data" (which keeps the image).
+ */
+async function hydrateFromRepo(): Promise<boolean> {
+  const res = await fetch(`/api/entity?name=${encodeURIComponent(state.entityName)}`);
+  if (!res.ok) return false;
+  const data = (await res.json()) as { entity: EntityFileIn; mtimes?: Record<string, number> };
+  loadEntity(data.entity);
+  state.sectionMtimes = data.mtimes ?? {};
+  entityNameInput.value = state.entityName;
+  atlasNameInput.value = state.atlasFilename;
+  return true;
+}
+
 /** Load a sheet from the repo, and hydrate any existing entity JSON. */
 function loadFromRepo(fileName: string): void {
   if (!fileName) return;
   const img = new Image();
   img.onload = async () => {
     applyNewImage(img, fileName);
-    const base = state.entityName;
     try {
-      const res = await fetch(`/api/entity?name=${encodeURIComponent(base)}`);
-      if (res.ok) {
-        const data = (await res.json()) as { entity: EntityFileIn };
-        loadEntity(data.entity);
+      if (await hydrateFromRepo()) {
         rebuildKeyed();
-        entityNameInput.value = state.entityName;
-        atlasNameInput.value = state.atlasFilename;
         statusEl.textContent = `Loaded ${fileName} + existing entity data.`;
       } else {
         statusEl.textContent = `Loaded ${fileName} (new entity).`;

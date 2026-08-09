@@ -58,6 +58,12 @@ export interface EditorState {
    * validates them but never writes them.
    */
   states: StatesFile | null;
+  /**
+   * Per-section file mtime as of the last load/save. The editor is not the only
+   * writer (scripts generate animations and states), so this is what lets a save
+   * notice it would overwrite a newer file.
+   */
+  sectionMtimes: Record<string, number>;
   selectedFrameId: string | null;
   selectedAnimName: string | null;
   /** Sheet-view zoom factor. */
@@ -89,6 +95,7 @@ export const state: EditorState = {
   frames: [],
   anims: [],
   states: null,
+  sectionMtimes: {},
   selectedFrameId: null,
   selectedAnimName: null,
   scale: 2,

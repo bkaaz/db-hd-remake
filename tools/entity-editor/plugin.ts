@@ -125,15 +125,37 @@ export function entityEditorServer(): Plugin {
           frames: {},
           animations: {},
         };
+        // Last-write times per section, so a client can tell whether the data
+        // it loaded is still current before it saves over someone else's work.
+        const mtimes: Record<string, number> = {};
         for (const f of files) {
           const key = f.slice(0, -".json".length);
+          const file = path.join(dir, f);
           try {
-            entity[key] = JSON.parse(await fs.readFile(path.join(dir, f), "utf8"));
+            entity[key] = JSON.parse(await fs.readFile(file, "utf8"));
+            mtimes[key] = (await fs.stat(file)).mtimeMs;
           } catch {
             /* skip a malformed section rather than failing the whole read */
           }
         }
-        sendJson(res, 200, { entity });
+        sendJson(res, 200, { entity, mtimes });
+      });
+
+      // Section mtimes only — a cheap "did this change under me?" check.
+      server.middlewares.use("/api/section-mtimes", async (req, res) => {
+        const url = new URL(req.url ?? "", "http://localhost");
+        const name = sanitizeName(url.searchParams.get("name") ?? "");
+        if (!name) return sendJson(res, 400, { error: "name required" });
+        const dir = path.join(root, ENTITIES_DIR, name);
+        const mtimes: Record<string, number> = {};
+        try {
+          for (const f of (await fs.readdir(dir)).filter((n) => n.endsWith(".json"))) {
+            mtimes[f.slice(0, -".json".length)] = (await fs.stat(path.join(dir, f))).mtimeMs;
+          }
+        } catch {
+          /* no directory yet — nothing has been written, so nothing is stale */
+        }
+        sendJson(res, 200, { mtimes });
       });
 
       // Write ONE section: data/entities/<name>/<section>.json (+ optional atlas).
@@ -156,10 +178,9 @@ export function entityEditorServer(): Plugin {
 
           const dir = path.join(root, ENTITIES_DIR, name);
           await fs.mkdir(dir, { recursive: true });
-          await fs.writeFile(
-            path.join(dir, `${section}.json`),
-            JSON.stringify(body.data, null, 2) + "\n",
-          );
+          const file = path.join(dir, `${section}.json`);
+          await fs.writeFile(file, JSON.stringify(body.data, null, 2) + "\n");
+          const mtime = (await fs.stat(file)).mtimeMs;
 
           let atlasWritten = false;
           if (body.atlasPngBase64) {
@@ -171,7 +192,7 @@ export function entityEditorServer(): Plugin {
             );
             atlasWritten = true;
           }
-          sendJson(res, 200, { ok: true, atlasWritten });
+          sendJson(res, 200, { ok: true, atlasWritten, mtime });
         } catch (err) {
           sendJson(res, 500, { error: String(err) });
         }
