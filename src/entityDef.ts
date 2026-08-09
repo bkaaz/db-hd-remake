@@ -56,6 +56,17 @@ export interface Attributes {
    * An attack state may override it with its own `hitstop`.
    */
   hitstop: number;
+  /**
+   * How much punishment the fighter takes before falling. A round lasts about a
+   * dozen clean hits: roughly 16 light punches or 7 uppercuts.
+   */
+  health: number;
+  /**
+   * Damage an attack does when its own state does not say. A blow that forgot
+   * to state its worth should still cost something, or a missing field would
+   * silently make a move free.
+   */
+  damage: number;
 }
 
 export const DEFAULT_ATTRIBUTES: Attributes = {
@@ -63,6 +74,8 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   landCue: 50,
   pushWidth: 30,
   hitstop: 6,
+  health: 100,
+  damage: 6,
 };
 
 interface EntityFile {

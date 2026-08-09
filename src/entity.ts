@@ -86,6 +86,10 @@ export class Entity {
   private readonly landCue: number;
   private readonly pushWidth: number;
   private readonly hitstop: number;
+  private readonly maxHealth: number;
+  private readonly baseDamage: number;
+  /** What is left of this fighter, in health points. */
+  private hp = 0;
   /** Game frames left of a hit pause; while it lasts nothing about the entity moves. */
   private freezeFrames = 0;
 
@@ -97,6 +101,9 @@ export class Entity {
     this.landCue = def.attributes.landCue;
     this.pushWidth = def.attributes.pushWidth;
     this.hitstop = def.attributes.hitstop;
+    this.maxHealth = def.attributes.health;
+    this.baseDamage = def.attributes.damage;
+    this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
     this.view.addChild(this.sprite, this.boxG);
     this.sm = def.states ? new StateMachine(def.states) : null;
@@ -148,6 +155,21 @@ export class Entity {
     return this.sm?.def.hitstop ?? this.hitstop;
   }
 
+  /** Health this entity's current attack takes off. */
+  get attackDamage(): number {
+    return this.sm?.def.damage ?? this.baseDamage;
+  }
+
+  /** How much of this fighter is left, 0..1 — what a health bar draws. */
+  get healthFraction(): number {
+    return this.maxHealth > 0 ? this.hp / this.maxHealth : 0;
+  }
+
+  /** True once there is nothing left. Round rules do not exist yet. */
+  get defeated(): boolean {
+    return this.hp <= 0;
+  }
+
   /** Effect entity this entity's current attack leaves at the point of contact. */
   get attackFx(): string {
     return this.sm?.def.hitFx ?? "fx_hit";
@@ -172,6 +194,11 @@ export class Entity {
    * own default. Returns false when neither names a state that exists — the
    * hit still landed, it just has nothing to show for it.
    */
+  /** Take damage. Health floors at zero; nothing happens there yet. */
+  hurtBy(amount: number): void {
+    this.hp = Math.max(0, this.hp - amount);
+  }
+
   gotHit(reaction: string | undefined): boolean {
     if (!this.def.states) return false;
     const state = reactionFor(reaction, this.def.states);

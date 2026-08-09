@@ -62,6 +62,12 @@ export interface StateDef {
    * stops, and what the impact looks like. Defaults to the engine's `fx_hit`.
    */
   hitFx?: string;
+  /**
+   * Health this state's attack takes off, overriding the entity's `damage`
+   * attribute. The fourth of the same family: the blow decides how it is taken,
+   * how long the game stops, what it looks like and what it costs.
+   */
+  damage?: number;
   /** Evaluated in order; the first firing transition wins. */
   transitions?: Transition[];
 }
@@ -333,6 +339,10 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
     if (def.hitstop !== undefined && (typeof def.hitstop !== "number" || def.hitstop < 0)) {
       errors.push(`${where}: "hitstop" must be a number of game frames, 0 or more`);
+    }
+
+    if (def.damage !== undefined && (typeof def.damage !== "number" || def.damage < 0)) {
+      errors.push(`${where}: "damage" must be a number, 0 or more`);
     }
 
     if (

@@ -2,5 +2,7 @@
   "gravity": 0.3,
   "landCue": 45,
   "pushWidth": 30,
-  "hitstop": 6
+  "hitstop": 6,
+  "health": 100,
+  "damage": 6
 }

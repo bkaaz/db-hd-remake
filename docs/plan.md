@@ -54,9 +54,14 @@ Real work, carried over from the checklists this file replaced. It gets slotted
 into the sequence above when its turn comes, rather than living in a second
 queue.
 
-- **Attributes + health** (was phase C): HP and damage per attack, the shared
-  health/Ki bar, walk speeds moved out of `states.json`. Hits currently cost
-  nothing.
+- **Ki, and the bar it shares with health.** The original spends one resource
+  for both, so a special costs the same pool that damage eats. Health and damage
+  exist now; the shared half waits for specials to exist at all.
+- **A KO.** Health floors at zero and nothing happens there — no defeat state,
+  no round. `Entity.defeated` is there and unused. Round rules belong to Stage 3
+  in `roadmap.md`.
+- **Walk speeds out of `states.json`** and into attributes, with the rest of the
+  tunable numbers.
 - **Blocking**, and blockstun. Not in A–J above; the exchange being built is an
   unblocked one.
 - **Commands / input buffer / motion recognition** (was phase E) — the

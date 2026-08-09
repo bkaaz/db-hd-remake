@@ -50,6 +50,7 @@
       "vel": [0, 0],
       "turn": false,
       "onHit": "hurt",
+      "damage": 6,
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -59,6 +60,7 @@
       "vel": [0, 0],
       "turn": false,
       "onHit": "hurt",
+      "damage": 7,
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -68,6 +70,7 @@
       "vel": [0, 0],
       "turn": false,
       "onHit": "knockdown",
+      "damage": 14,
       "hitFx": "fx_hit_heavy",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
@@ -78,6 +81,7 @@
       "vel": [0, 0],
       "turn": false,
       "onHit": "hurt_heavy",
+      "damage": 12,
       "hitFx": "fx_hit_heavy",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
@@ -97,6 +101,7 @@
       "vel": [0, 0],
       "turn": false,
       "onHit": "hurt",
+      "damage": 7,
       "transitions": [
         { "when": "animEnd", "to": "crouch" }
       ]
@@ -106,6 +111,7 @@
       "airborne": true,
       "turn": false,
       "onHit": "hurt",
+      "damage": 8,
       "transitions": [
         { "when": "landed", "to": "idle" },
         { "when": "nearGround", "to": "land" },

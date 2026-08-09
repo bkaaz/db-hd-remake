@@ -150,6 +150,10 @@ rules**; the entity is a state machine and the engine runs it every game frame.
 - **`turn`** — may the entity turn to face its opponent while in this state?
   Facing is engine-owned (`sign(opponentX − selfX)`), so attacks set `turn:false`
   and cannot spin around mid-swing.
+- **`damage`** — health this state's attack takes off, overriding the entity's
+  `damage` attribute. The fourth field of one family, with `onHit`, `hitstop`
+  and `hitFx`: the blow decides how it is taken, how long the game stops, what
+  it looks like and what it costs.
 - **`onHit`** — the reaction this state's attack forces on whoever it hits: the
   name of a state **on the defender**, not in this file. The blow decides how it
   is taken, which is what separates a jab from a smash. When a state names
@@ -235,7 +239,9 @@ than to any one state. So far one:
   "gravity": 0.3,    // sprite px per game frame, squared
   "landCue": 60,     // sprite px above the ground where the landing pose starts
   "pushWidth": 30,   // body width for push collision, centred on the anchor
-  "hitstop": 6       // game frames both fighters freeze for on a connecting hit
+  "hitstop": 6,      // game frames both fighters freeze for on a connecting hit
+  "health": 100,     // what the fighter can take before there is nothing left
+  "damage": 6        // what an attack costs when its own state does not say
 }
 ```
 

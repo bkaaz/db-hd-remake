@@ -72,6 +72,28 @@ async function boot(): Promise<void> {
   const ground = new Graphics();
   app.stage.addChild(ground);
 
+  // Health bars drain toward the centre, the way fighters have always drawn
+  // them, so the gap between the two reads as who is winning.
+  const bars = new Graphics();
+  app.stage.addChild(bars);
+  const drawBars = (): void => {
+    const w = Math.min(320, app.screen.width / 2 - 30);
+    const h = 14;
+    const y = 24;
+    bars.clear();
+    const bar = (x: number, frac: number, fromLeft: boolean): void => {
+      bars.rect(x, y, w, h).fill({ color: 0x201820 }).stroke({ color: 0x6a6a7a, width: 1 });
+      const fill = Math.max(0, Math.round(w * frac));
+      if (fill > 0) {
+        bars
+          .rect(fromLeft ? x : x + w - fill, y, fill, h)
+          .fill({ color: frac > 0.3 ? 0xf0c040 : 0xd04030 });
+      }
+    };
+    bar(20, player.healthFraction, false);
+    if (dummy) bar(app.screen.width - 20 - w, dummy.healthFraction, true);
+  };
+
   /** Live effects, removed as they finish. */
   const effects: Entity[] = [];
 
@@ -176,6 +198,7 @@ async function boot(): Promise<void> {
     );
     if (!where) return;
     attacker.markHit();
+    defender.hurtBy(attacker.attackDamage);
     defender.gotHit(attacker.attackReaction);
     // The spark belongs at the deepest point of the blow, not at either
     // fighter's anchor and not at the middle of the overlap — see impactPoint.
@@ -229,6 +252,7 @@ async function boot(): Promise<void> {
         }
       }
     }
+    drawBars();
     player.render(showBoxes);
     dummy?.render(showBoxes);
     for (const fx of effects) fx.render(false);

@@ -2,6 +2,25 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-10 — Health and damage: the fourth thing a blow decides
+
+- **`damage` on the attack state**, falling back to a `damage` attribute —
+  exactly the shape `onHit`, `hitstop` and `hitFx` already have. Four fields,
+  one idea: the blow decides how it is taken, how long the game stops, what it
+  looks like and what it costs. The entity-wide fallback exists so an attack
+  that forgets to state its worth still costs something, rather than silently
+  being free.
+- **100 health, and a round is about a dozen good hits.** Light attacks take 6–8
+  (punch 6, kicks 7–8), the heavy kick 12 and the uppercut 14 — so roughly 16
+  jabs or 7 uppercuts. Deliberately not a faithful figure: Hyper Dimension's own
+  values are undocumented, like every timing in this project.
+- **Health floors at zero and nothing happens.** No KO state, no round, no
+  reset — those are Stage 3, and inventing half of them now would mean redoing
+  them. `Entity.defeated` exists so the engine has somewhere to ask later.
+- **Bars drain toward the centre**, which is how fighters have drawn them since
+  the arcades: the gap between the two is the score, readable without reading a
+  number. Colour flips to red under 30%.
+
 ## 2026-08-09 — Air attacks: one state, reachable from every airborne state
 
 - **The air kick (46–47) is a normal attack state with `airborne: true`** and no

@@ -192,6 +192,22 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
+  it("reports damage that is not a number", () => {
+    const f = machine();
+    f.states.punch = { anim: "punch", damage: -3, transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    expect(validateStates(f, ANIMS).errors).toContain(
+      'state "punch": "damage" must be a number, 0 or more',
+    );
+  });
+
+  it("accepts damage of zero — an attack that only moves the opponent", () => {
+    const f = machine();
+    f.states.punch = { anim: "punch", damage: 0, transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    expect(validateStates(f, ANIMS).errors).toEqual([]);
+  });
+
   it("reports an onGotHit state that does not exist", () => {
     const f = machine();
     f.onGotHit = "hrut";
