@@ -50,19 +50,52 @@ export function overlaps(a: WorldRect, b: WorldRect): boolean {
   return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 }
 
+/** The rectangle two boxes share. Only meaningful when they overlap. */
+export function intersection(a: WorldRect, b: WorldRect): WorldRect {
+  const x = Math.max(a.x, b.x);
+  const y = Math.max(a.y, b.y);
+  return {
+    x,
+    y,
+    w: Math.min(a.x + a.w, b.x + b.w) - x,
+    h: Math.min(a.y + a.h, b.y + b.h) - y,
+  };
+}
+
 /**
- * True if any of the attacker's hit boxes reaches any of the defender's hurt
- * boxes. Both sides pass the boxes active on their current animation step.
+ * Where an attacker's hit box first meets a defender's hurt box, or null if it
+ * does not. The overlap rectangle rather than a plain yes/no, because a hit
+ * spark belongs at the point of contact — and the first overlapping pair is the
+ * right one: boxes are authored in the order they matter.
  */
-export function connects(
+export function contact(
   attacker: { boxes: readonly BoxLike[]; at: Placement },
   defender: { boxes: readonly BoxLike[]; at: Placement },
-): boolean {
+): WorldRect | null {
   for (const hit of attacker.boxes) {
     const h = boxToWorld(hit, attacker.at);
     for (const hurt of defender.boxes) {
-      if (overlaps(h, boxToWorld(hurt, defender.at))) return true;
+      const d = boxToWorld(hurt, defender.at);
+      if (overlaps(h, d)) return intersection(h, d);
     }
   }
-  return false;
+  return null;
 }
+
+/**
+ * Where the impact should be drawn, given the overlap and which way the blow
+ * travels: the **leading edge** of the overlap, at its mid height.
+ *
+ * Not the middle of the overlap. A fist box is narrow and sits entirely inside
+ * the body it strikes, so the overlap *is* the fist — and its centre lands on
+ * the attacker's forearm, which reads as a spark stuck to the puncher rather
+ * than something happening to the fighter being hit. The far edge is the
+ * deepest point the blow reaches, which is where a fist meets a body.
+ */
+export function impactPoint(overlap: WorldRect, facing: 1 | -1): { x: number; y: number } {
+  return {
+    x: facing > 0 ? overlap.x + overlap.w : overlap.x,
+    y: overlap.y + overlap.h / 2,
+  };
+}
+

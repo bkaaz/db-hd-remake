@@ -12,6 +12,7 @@ TypeScript · PixiJS v8 · Vite
 ```bash
 npm install
 npm run fetch-assets     # sprite sheets are not in this repo — see below
+npm run fx               # generate the effect sprites (we draw those ourselves)
 npm run dev
 ```
 
@@ -60,8 +61,19 @@ belonging to the active tab, plus a keyed `assets/atlases/<name>.png`
 Design notes, roadmap, and open questions live in [`docs/`](./docs). Start with
 [`docs/README.md`](./docs/README.md).
 
+## Credits
+
+This project would not be practical without the people who ripped the game's
+graphics and published them. The sheets it reads are theirs, not ours.
+
+Every sheet the project uses is listed, with whoever ripped it and where it came
+from, in [`assets.manifest.json`](./assets.manifest.json) — one file, which is
+the credit list as well as the download list. Add the ripper and the source
+whenever you add a sheet, and keep the list to sheets actually in use.
+
 ## Legal
 
 This is a non-commercial fan project. _Dragon Ball Z_ and _Hyper Dimension_ are
 properties of their respective owners (Bandai / Bird Studio / Toei / Nintendo).
-No original game assets are distributed in this repository.
+No original game assets are distributed in this repository — only pointers to
+where they can be found, and the code and data we wrote ourselves.

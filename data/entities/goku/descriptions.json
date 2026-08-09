@@ -84,16 +84,8 @@
         "33"
       ]
     },
-    "kick": {
-      "desc": "? Kicks at three heights — mid (36), high (39) and low (42). Whether these are three separate moves or one move's arc is unconfirmed; the wind-up and recovery poses around them are not yet identified.",
-      "frames": [
-        "36",
-        "39",
-        "42"
-      ]
-    },
     "crouch_attack": {
-      "desc": "? Crouched with an arm driving forward — reads as a low attack from a crouch.",
+      "desc": "? Crouched with the lead arm driving forward — an attack from a low stance, but which one is unconfirmed. 47, 49 and 53 used to be lumped in here and turned out to belong to the air kick, the flying kick and the crouching kick.",
       "frames": [
         "44",
         "45"
@@ -132,6 +124,70 @@
         "80",
         "81"
       ]
+    },
+    "ki_blast": {
+      "desc": "? A projectile attack: 54 gathers both hands in front of the chest, 55 thrusts one arm out — the charge and the release. 56-60 are the projectile itself, not poses. Whether this is the Kamehameha or a smaller ki blast is unconfirmed.",
+      "frames": [
+        "54",
+        "55",
+        "56",
+        "57",
+        "58",
+        "59",
+        "60"
+      ]
+    },
+    "kick_basic": {
+      "desc": "The basic kick: 34, 35, 36. Confirmed by the owner. 36 is the extended frame, at hip height.",
+      "frames": [
+        "34",
+        "35",
+        "36"
+      ]
+    },
+    "kick_heavy": {
+      "desc": "The heavy kick: 37, 38, 39. Confirmed by the owner. 39 is the extended frame, the highest of the three kicks.",
+      "frames": [
+        "37",
+        "38",
+        "39"
+      ]
+    },
+    "kick_combo": {
+      "desc": "A kick used inside a combination rather than on its own: 40, 41, 42. Confirmed by the owner. 42 is the extended frame, along the ground.",
+      "frames": [
+        "40",
+        "41",
+        "42"
+      ]
+    },
+    "kick_air": {
+      "desc": "A kick thrown while airborne: 46, 47. Confirmed by the owner.",
+      "frames": [
+        "46",
+        "47"
+      ]
+    },
+    "flying_kick": {
+      "desc": "A special attack from the air, the flying kick: 48, 49. Confirmed by the owner. Not being built yet — specials come after the basic moves.",
+      "frames": [
+        "48",
+        "49"
+      ]
+    },
+    "uppercut": {
+      "desc": "A blow struck upward into the chin: 50, 51. Confirmed by the owner.",
+      "frames": [
+        "50",
+        "51"
+      ]
+    },
+    "kick_crouch": {
+      "desc": "A kick thrown from a crouch: 52, 53. Confirmed by the owner.",
+      "frames": [
+        "52",
+        "53"
+      ]
     }
   },
   "frames": {
@@ -168,18 +224,33 @@
     "31": "SSJ charging: same pose, aura at its largest",
     "32": "square guard: feet planted, both fists up at chest height — the light punch starts here AND returns here, so it appears twice in that animation",
     "33": "straight punch fully extended, lead fist out at shoulder height, body turned into it — the active frame",
-    "34": "? standing, fists closed at chest, feet apart — a stance, close to 32 but not identical",
-    "35": "? standing turned side-on, torso leaning back, near arm bent across the body",
-    "36": "mid kick: lead leg extended straight forward at hip height, arms up for balance",
-    "37": "? torso leaning back, knee lifted, arms drawn in — reads as the wind-up or recovery around a kick",
-    "38": "? leaning forward off the back foot, one arm trailing behind",
-    "39": "high kick: leg extended forward and upward, body leaning well back",
-    "40": "? upright, lead fist forward at chest height, rear fist low — a jab or a ready pose",
-    "41": "? knees bent, both fists up, compact — a low guard",
-    "42": "low kick: leg extended forward near the ground, body leaning far back",
-    "43": "? standing tall, one arm raised overhead — reads as an upward or overhead swing",
-    "44": "? crouched low, lead arm driving forward",
-    "45": "? crouched low, arm extended further forward than 44",
+    "34": "basic kick: standing with both fists up near the shoulders, feet apart, no leg committed yet",
+    "35": "basic kick: side-on, torso leaning back, lead knee lifted",
+    "36": "basic kick, the extended frame: lead leg straight forward at hip height, arms up for balance",
+    "37": "heavy kick, the wind-up: torso leaning back, knee lifted, arms drawn in. Confirmed by the owner",
+    "38": "heavy kick, the strike being delivered: leaning forward off the back foot with one arm trailing behind. Confirmed by the owner",
+    "39": "heavy kick, the extended frame: leg extended forward and upward, body leaning well back — the highest of the three kicks",
+    "40": "combination kick: upright, lead fist forward at chest height, rear fist low",
+    "41": "combination kick: knees bent, both fists up, compact",
+    "42": "combination kick, the extended frame: leg extended forward near the ground, body leaning far back — the lowest of the three kicks",
+    "43": "? standing tall with one arm swung up overhead, body stretched — an overhead attack of some kind; NOT the uppercut, which is 50/51",
+    "44": "? crouched low with the lead arm driving forward",
+    "45": "? crouched low, arm extended further forward than 44 — the same attack one frame on",
+    "46": "air kick: body compact and leaning back, fists up, legs gathered — the frame before the leg goes out",
+    "47": "air kick, the extended frame: lead leg out low and forward, body leaning back to counterbalance",
+    "48": "flying kick (special, not built yet): body tucked tight, arms in front — the launch of a committed airborne charge",
+    "49": "flying kick (special, not built yet), the extended frame: body stretched out nearly horizontal behind the leading leg",
+    "50": "uppercut: crouched with both fists up in front of the chest — the compression before rising into the blow",
+    "51": "uppercut, the extended frame: driving upright with one fist high above the head, the other at the chest",
+    "52": "crouching kick: crouched and turned away, arms drawn tight to the body — the frame before the leg goes out",
+    "53": "crouching kick, the extended frame: leg extended forward along the ground, body leaning well back",
+    "54": "? standing with the feet wide and both hands brought together in front of the chest — the charge of a projectile attack",
+    "55": "? the same wide stance with one arm thrust forward, hand open — the release that follows 54",
+    "56": "? projectile sprite, not a pose: an elongated bolt of energy with a trailing tail, the largest of the set",
+    "57": "? projectile sprite: the same bolt, shorter",
+    "58": "? projectile sprite: a small flattened blob of energy — the smallest of the set",
+    "59": "? projectile sprite: a long bolt with a bright head, close to 56 in size",
+    "60": "? projectile sprite: a round ball of energy, no tail — probably a different attack from the bolts in 56-59",
     "68": "impact effect: a compact ball of flame with short spikes around it — an effect sprite, not a pose",
     "69": "impact effect: the same burst, larger and breaking up into flames at the bottom — the next step of 68",
     "70": "? impact effect: a thin arc of orange sparks, nothing else — the dying end of 68/69, or a separate small effect",

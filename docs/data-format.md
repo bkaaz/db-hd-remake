@@ -164,8 +164,10 @@ rules**; the entity is a state machine and the engine runs it every game frame.
     - `held:fwd` / `held:back` — movement input, facing-relative.
     - `held:up` — up is a **world** direction, not facing-relative. Held rather
       than an edge, deliberately: see "jump variants" below.
-    - `pressed:attack` — attack button went down **this frame** (an edge, so
-      holding the key does not repeat the move).
+    - `pressed:punch` / `pressed:kick` — that attack button went down **this
+      frame** (an edge, so holding the key does not repeat the move). One
+      trigger per button rather than a generic `pressed:attack`, which stopped
+      meaning anything once there was more than one.
     - `animEnd` — a non-looping animation reached its last frame (latched until
       the animation changes).
     - `falling` — moving downward, i.e. past the apex. The signal the arc gives

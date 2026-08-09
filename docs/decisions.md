@@ -2,6 +2,152 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Two buttons: one trigger per button, not a generic "attack"
+
+- **`pressed:attack` became `pressed:punch` and `pressed:kick`.** A generic
+  attack trigger stops meaning anything the moment there is more than one
+  button, and renaming was cheap while exactly one attack existed. Triggers are
+  named for what the button *does* rather than for the SNES key it sits on
+  (`Y`, `B`), because `states.json` is read by people, not by the pad.
+- **Layout follows the ZSNES default and the usual diamond:** SNES `Y` = punch
+  (keyboard `A`), SNES `B` = kick (keyboard `Z`). Top row punches, bottom row
+  kicks; the heavy versions take `X` and `A` when they arrive.
+- **Both attacks ask for the same reaction** (`onHit: "hurt"`). The kick is the
+  *basic* one — the owner's naming, matching the sheet — so `hurt_heavy`,
+  `fx_hit_heavy` and the `kick_heavy` animation all stay built and unused until
+  a heavy attack exists. The validator says so out loud, which is correct.
+- **Frames came from the catalogue, not from a guess:** basic kick 34→35→36
+  (36 extended, hip height), heavy kick 37→38→39 (37 wind-up, 38 the delivery,
+  39 extended). Hurt boxes fitted to the silhouette by `npm run anim`; timings
+  and hit boxes are the usual generic skeleton for the owner to tune.
+
+## 2026-08-09 — Effects are generated, not ripped — and the rules that keep them native
+
+- **No hit spark exists to rip.** Sprite Database's complete listing for the game
+  is ten character sheets, an "Ending" sheet and two backgrounds; The Spriters
+  Resource blocks automated reads but searches surfaced only characters,
+  portraits and backgrounds. A separate **objects/effects sheet** does exist
+  (ripped by `Locke_gb7`) — auras, beams,
+  explosions, smoke — but it has no small impact flash for a basic hit, so it
+  is not carried in the manifest: we ship pointers only to sheets we use.
+- **So we draw our own, with a script** (`npm run fx`, `src/fx.ts` pure +
+  tested). Not a stopgap: being able to make effects that fit the game is worth
+  having on its own, and the owner's judgement is that the original's effects
+  are the weakest part of its art, limited by the hardware rather than chosen.
+- **Four rules keep generated art from reading as "modern engine glued onto 1996
+  sprites"** — the mismatch is never the shape, it is the softness:
+  **one pixel is one sprite pixel** (drawn on a small integer grid, scaled up
+  nearest-neighbour); **no antialiasing and no alpha ramp** — every pixel is one
+  palette index or nothing; **the palette is the game's**, sampled from the
+  ripped effects sheet so it cannot drift; and **edges are dithered, not
+  blended** — the same checkerboard the SNES used to fake sprite transparency,
+  visible on Goku's own frames 0, 2, 82 and 83.
+- **Seeded, so regenerating never silently changes the art.** The script owns the
+  whole entity — atlas *and* `frames.json` / `animations.json` — because it knows
+  where every pixel went; there is no sheet to frame and no editor round-trip.
+  Effects are therefore derived like the atlas: gitignored, rebuilt by command.
+- **Size came from the screenshots, not from taste.** The dither in the
+  background gives the capture's scale away (3×), which puts the original's
+  flash at ~18 sprite px — about a quarter of a fighter's height. Light and
+  heavy sparks are the same generator at two reaches, matching the two reactions
+  an attack can already ask for.
+- **First attempt was too lacy** — a wide dither band ate the silhouette and it
+  read as confetti. The reference is a solid white blob with a thin yellow
+  fringe, so the dither is now half a pixel wide and the bright frames are white
+  through the body, with yellow only at the rim.
+- **A spark is not a small explosion, and the difference is timing and colour
+  rather than shape.** The second attempt had the silhouette right — the mask
+  pulled straight off a screenshot is a solid irregular white mass ~20 px across
+  — and still read as a detonation, because it bloomed from nothing, cooled
+  through orange and ended as a ring, over 15 game frames. A spark instead
+  arrives at most of full size, stays white, thins into rays and is gone in 8
+  frames (~130 ms). One parameter carries most of the look: `taper`, how sharply
+  an arm narrows — low values bulge into an explosion, high values pull out into
+  rays. Its tail must **thin**, not shrink: a small dense blob reads as an
+  object stuck to the fighter.
+- **The spark arrives at full size and goes out — it does not grow.** A growth
+  phase was tried and dropped, for a reason specific to this engine rather than
+  to taste: **hitstop freezes effects too**, so the first frame is held for the
+  entire pause — the exact moment the player is looking at the impact. A spark
+  that bloomed spent that moment showing its smallest, dimmest frame and only
+  flashed once the freeze was over, which is backwards.
+- **Second reason: a long spark drifts away from what it hit.** The effect is
+  pinned where it spawned while knockback slides the defender off it — 16.8 px
+  over a light reaction. At 10 game frames the tail hung visibly beside the
+  fighter; at 6 the drift is about 5 px. Heavy knockback (46.8 px) would have
+  made it worse.
+- **What survives from growing is the opening.** It empties from the middle
+  outwards and widens slightly as it disperses, which is the part that read
+  well; the bloom is what went. Consequence for testing: it covers **fewer**
+  pixels as it opens, so anything about its size must be measured on the
+  outline, not on a pixel count.
+- **Variety comes from baked variants, not from transforming the sprite.** Four
+  sparks are drawn squashed along different axes and the engine picks one per
+  hit, so a combo does not look like the same stamp printed repeatedly. The
+  tempting shortcut — one sprite, rotated and scaled at spawn — was rejected:
+  a pixel rotated by anything but a right angle stops being square, which is
+  precisely the tell we spend the rest of this entry avoiding. Squashing is
+  therefore a **change of coordinates inside the generator**, applied before the
+  shape is rasterised, so every variant is native to the grid.
+- **Angles are spread evenly, not drawn at random.** With four variants random
+  angles clump and half of them look alike; an even spread guarantees each reads
+  as a different direction of impact. The randomness belongs at the moment of
+  the hit, not in the art. The spread covers 180°, because a squash axis repeats
+  every half turn.
+- **A squash axis alone was too subtle**, so each variant became a character of
+  its own: size, ray count, how flat, and — the one that changes the read most —
+  whether it has a middle at all (`open`, which eats the core and lifts the
+  shell, so a variant can be a ring from its first frame rather than only
+  becoming one as it dies).
+- **The whole method is written down as the `add-effect` skill**, not left in
+  this log. There will be many more effects, and the expensive knowledge is the
+  procedure — measure the reference off a screenshot, mind that hitstop holds
+  frame 0, bake variety instead of transforming sprites — plus the three ways
+  the tests here have already been wrong.
+- **Squashing may not stretch** (values above 1 are clamped): the sprite grid is
+  sized for `reach`, so a stretched burst would silently lose its tips in the
+  atlas.
+- **A random horizontal mirror doubles the variety for free**, and unlike a
+  rotation it is exact — it moves whole pixels and resamples nothing. Four
+  variants therefore give eight distinct-looking impacts.
+- **An effect's animations are interchangeable variants** as far as the engine
+  is concerned; it picks one at random. Adding a fifth spark is a data change,
+  with no code to touch.
+- **Both generators are kept in code, but only sparks are generated.**
+  `explosion` is wrong for a punch and right for a ki blast, so the function and
+  its tests stay; no entity is written for it until something spawns one, because
+  dead data costs more than a missing line. The tests pin the three properties
+  that separate the two — arrives at size, never uses the orange half of the
+  palette, stays short.
+- **An effect is an entity with no states** — one animation, played once, then
+  destroyed. No new class was needed: `Entity` already runs animation-only when
+  it has no state machine, which is exactly what an effect is. It has no input,
+  no opponent, no physics and no boxes.
+- **The spark goes where the boxes met**, so `connects()` grew into `contact()`,
+  which returns the overlap rectangle instead of a yes/no. Spawning on either
+  fighter's anchor would put the flash at their feet — the difference between a
+  hit *landing* and a hit merely *happening*.
+- **But not at the *middle* of the overlap** — at its **leading edge**
+  (`impactPoint`). A fist box is narrow and sits entirely inside the body it
+  strikes, so the overlap *is* the fist, and its centre falls on the attacker's
+  forearm: the spark looked stuck to the puncher instead of happening to the
+  fighter being hit. The far edge is the deepest point the blow reached, which
+  is where a fist meets a body. Height still comes from the overlap's middle.
+- **Sparks were half the size they should have been.** The measurement was
+  right (~20 px, a quarter of a fighter's height) but only the *heavy* effect
+  got it; the light one — the one a punch actually spawns — was drawn at 14.
+- **Which effect is the blow's choice too**, via `hitFx` on the attack state,
+  next to `onHit` and `hitstop`. Three fields, one idea: the blow decides how it
+  is taken, how long the game stops, and what the impact looks like.
+- **Hitstop freezes effects as well.** A spark that kept animating through the
+  pause would be the one thing on screen giving the freeze away.
+- **A test that could not fail was rewritten.** The first "ragged edge" test
+  passed against a version with dithering removed *and* arm lengths made
+  uniform. It now counts the notches dither leaves in the outline, which
+  separates cleanly. A second test, for uneven arm lengths, was **dropped rather
+  than shipped**: measured spread was 0.44 against 0.33 for uniform arms, i.e.
+  inside rasterisation noise — a threshold there would pin an accident.
+
 ## 2026-08-09 — Hitstop: both fighters stop dead, and the blow sets for how long
 
 - **A connecting hit freezes *both* fighters**, not just the one taking it.

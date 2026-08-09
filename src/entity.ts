@@ -15,11 +15,19 @@ export interface WorldInput {
   left: boolean;
   right: boolean;
   up: boolean;
-  /** Attack button went down **this frame** (edge, not held). */
-  attack: boolean;
+  /** Punch button went down **this frame** (edge, not held). */
+  punch: boolean;
+  /** Kick button went down **this frame** (edge, not held). */
+  kick: boolean;
 }
 
-export const NO_INPUT: WorldInput = { left: false, right: false, up: false, attack: false };
+export const NO_INPUT: WorldInput = {
+  left: false,
+  right: false,
+  up: false,
+  punch: false,
+  kick: false,
+};
 
 const BOX_COLORS: Record<string, number> = {
   hit: 0xff3b3b,
@@ -131,6 +139,11 @@ export class Entity {
     return this.sm?.def.hitstop ?? this.hitstop;
   }
 
+  /** Effect entity this entity's current attack leaves at the point of contact. */
+  get attackFx(): string {
+    return this.sm?.def.hitFx ?? "fx_hit";
+  }
+
   /**
    * Stop dead for `frames` game frames: no state changes, no movement, no
    * animation. The pause on a connecting hit, applied to both fighters so they
@@ -165,10 +178,19 @@ export class Entity {
     return true;
   }
 
-  /** Preview a single animation, bypassing the state machine (`?anim=`). */
+  /**
+   * Play a single animation and nothing else — no state machine, no physics.
+   * Used by `?anim=` to inspect a move, and by effects, which *are* entities
+   * with no states: one animation, played once, then gone.
+   */
   preview(name: string): void {
     this.previewing = true;
     this.setAnim(name);
+  }
+
+  /** A non-looping animation has reached its end — for effects, time to go. */
+  get finished(): boolean {
+    return this.animEnded;
   }
 
   /** Advance one game frame (60 FPS): facing, state, movement, animation. */
@@ -202,7 +224,7 @@ export class Entity {
     const nearGround = falling && this.groundY - this.y <= this.landCue * this.scale;
 
     const changed = this.sm.update(
-      { fwd, back, up: input.up, attack: input.attack },
+      { fwd, back, up: input.up, punch: input.punch, kick: input.kick },
       { animEnded: this.animEnded, falling, nearGround, landed: this.landed },
     );
     if (changed) {

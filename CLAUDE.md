@@ -117,6 +117,11 @@ Procedure, flags and pitfalls: the **`add-animation` skill**
 (`.claude/skills/add-animation/`), loaded on demand so it costs nothing in
 sessions that are about something else.
 
+**Effects are generated, not ripped** (`npm run fx`): no hit spark exists to rip,
+and the rules that keep generated pixel art from looking bolted onto 1996
+sprites are narrow and easy to break. Read the **`add-effect` skill**
+(`.claude/skills/add-effect/`) before touching anything that draws an effect.
+
 ## Tech stack
 
 - **Language:** TypeScript (strict mode)
@@ -138,6 +143,8 @@ npm run anim -- <entity> <anim> --frames 1,2,3 --kind attack|loop|hurt
                   # build an animation with derived boxes/timing (--list, --dry-run)
 npm run sheet -- <entity> --frames 0-30
                   # labelled contact sheet into assets/contact/ (gitignored)
+npm run fx        # generate the effect entities (atlas + frames + animations)
+                  # from src/fx.ts — no ripped hit spark exists (--dry-run)
 npm run fetch-assets   # download/verify source sheets from assets.manifest.json
 npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ```

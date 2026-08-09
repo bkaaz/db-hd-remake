@@ -1,5 +1,5 @@
 {
-  "$comment": "BYOA asset manifest. Lists source assets the project needs but does NOT ship (copyright). `npm run fetch-assets` downloads them into assets/<type>/ on the user's machine and verifies sha256. See docs/assets.md. Set `url` to a direct download link; leave the placeholder to require a manual drop. Fill sha256 via `npm run hash-assets`.",
+  "$comment": "BYOA asset manifest. Lists source assets the project needs but does NOT ship (copyright). `npm run fetch-assets` downloads them into assets/<type>/ on the user's machine and verifies sha256. See docs/assets.md. `credit` names whoever ripped the sheet — this file is the project's credit list as well as its download list, so fill it in. Set `url` to a direct download link; leave the placeholder to require a manual drop. Fill sha256 via `npm run hash-assets`.",
   "typeDirs": {
     "sheet": "assets/sheets",
     "audio": "assets/audio",
@@ -11,7 +11,8 @@
       "name": "goku.png",
       "source": "https://www.spriters-resource.com/snes/dragonballzhyperdimension/asset/45315/",
       "url": "https://www.spriters-resource.com/media/assets/42/45315.png",
-      "sha256": "8a6a96652ae8651a1bc7b29414d079716e082ef232b437ad78b123b891bc47e4"
+      "sha256": "8a6a96652ae8651a1bc7b29414d079716e082ef232b437ad78b123b891bc47e4",
+      "credit": "The Spriters Resource contributors"
     }
   ]
 }

@@ -7,7 +7,8 @@
       "vel": [0, 0],
       "turn": true,
       "transitions": [
-        { "when": "pressed:attack", "to": "punch" },
+        { "when": "pressed:punch", "to": "punch" },
+        { "when": "pressed:kick", "to": "kick" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" },
         { "when": "held:up", "to": "jump_up" }
@@ -18,7 +19,8 @@
       "vel": [1.4, 0],
       "turn": true,
       "transitions": [
-        { "when": "pressed:attack", "to": "punch" },
+        { "when": "pressed:punch", "to": "punch" },
+        { "when": "pressed:kick", "to": "kick" },
         { "when": "held:up", "to": "jump_fwd" },
         { "when": "!held:fwd", "to": "idle" }
       ]
@@ -28,7 +30,8 @@
       "vel": [-1.0, 0],
       "turn": true,
       "transitions": [
-        { "when": "pressed:attack", "to": "punch" },
+        { "when": "pressed:punch", "to": "punch" },
+        { "when": "pressed:kick", "to": "kick" },
         { "when": "held:up", "to": "jump_back" },
         { "when": "!held:back", "to": "idle" }
       ]
@@ -38,21 +41,35 @@
       "vel": [0, 0],
       "turn": false,
       "onHit": "hurt",
-      "transitions": [{ "when": "animEnd", "to": "idle" }]
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "kick": {
+      "anim": "kick",
+      "vel": [0, 0],
+      "turn": false,
+      "onHit": "hurt",
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
     },
     "hurt": {
       "anim": "hurt",
       "vel": [-1.4, 0],
       "turn": false,
-      "transitions": [{ "when": "animEnd", "to": "idle" }]
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
     },
     "hurt_heavy": {
       "anim": "hurt_heavy",
       "vel": [-3.9, 0],
       "turn": false,
-      "transitions": [{ "when": "animEnd", "to": "idle" }]
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
     },
-
     "jump_up": {
       "anim": "jump_up",
       "launch": [0, -7.8],
@@ -128,7 +145,9 @@
       "anim": "land",
       "airborne": true,
       "turn": false,
-      "transitions": [{ "when": "landed", "to": "idle" }]
+      "transitions": [
+        { "when": "landed", "to": "idle" }
+      ]
     }
   }
 }

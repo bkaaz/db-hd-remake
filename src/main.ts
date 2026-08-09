@@ -1,7 +1,7 @@
 import { Application, Graphics, Text } from "pixi.js";
 import { Entity, NO_INPUT } from "./entity";
 import { loadEntityDef, type EntityDef } from "./entityDef";
-import { connects } from "./hit";
+import { contact, impactPoint } from "./hit";
 import { separate } from "./push";
 import { validateStates } from "./states";
 
@@ -10,9 +10,8 @@ import { validateStates } from "./states";
  * (docs/data-format.md) and runs it as a state machine (Phase D, docs/entity-editor.md):
  * arrow keys drive the player's states, which own the animation and velocity.
  *
- * The second Goku is a static training dummy — it exists so facing can be
- * opponent-relative. There is no collision between them yet (push boxes are
- * authored but not resolved), so you can walk through it and watch both turn.
+ * The second Goku is an input-less training dummy: it exists so facing has an
+ * opponent, it pushes back, and it takes hits.
  */
 
 const ENTITY = "goku";
@@ -58,8 +57,45 @@ async function boot(): Promise<void> {
     }
   }
 
+  // Effects are entities with no states: one animation, played once, then gone.
+  // They are generated (`npm run fx`), so a clone that has not run it yet is
+  // missing their atlas — the game says so once and carries on without sparks.
+  const fxDefs = new Map<string, EntityDef>();
+  for (const name of ["fx_hit", "fx_hit_heavy"]) {
+    try {
+      fxDefs.set(name, await loadEntityDef(name));
+    } catch (e) {
+      console.warn(`[fx] no "${name}" — run \`npm run fx\` to generate it. ${String(e)}`);
+    }
+  }
+
   const ground = new Graphics();
   app.stage.addChild(ground);
+
+  /** Live effects, removed as they finish. */
+  const effects: Entity[] = [];
+
+  /**
+   * Put an effect on screen, centred on a point in the world.
+   *
+   * An effect's animations are interchangeable variants, so one is picked at
+   * random: four squashed sparks stop a combo looking like the same stamp
+   * printed over and over. The mirror doubles that for free and, unlike a
+   * rotation, is exact — it moves whole pixels, so nothing is resampled.
+   */
+  const spawnFx = (name: string, x: number, y: number): void => {
+    const fxDef = fxDefs.get(name);
+    if (!fxDef) return;
+    const variants = Object.keys(fxDef.animations);
+    if (variants.length === 0) return;
+    const fx = new Entity(fxDef, SCALE);
+    fx.preview(variants[Math.floor(Math.random() * variants.length)]);
+    fx.facing = Math.random() < 0.5 ? 1 : -1;
+    fx.x = x;
+    fx.y = y;
+    app.stage.addChild(fx.view);
+    effects.push(fx);
+  };
 
   // `?anim=<name>` previews one animation instead of running the state machine.
   const preview = new URL(location.href).searchParams.get("anim");
@@ -101,10 +137,10 @@ async function boot(): Promise<void> {
 
   // Attack is edge-triggered: pressing the key arms one game frame, so holding
   // it does not machine-gun. Keyboard layout follows the ZSNES default
-  // (A=X, B=Z, X=S, Y=A, L=C, R=D); for now only SNES Y — the weak punch — is
-  // wired, and remapping comes with a proper config screen.
-  const held = { left: false, right: false, up: false, attack: false };
-  let attackArmed = false;
+  // (A=X, B=Z, X=S, Y=A, L=C, R=D): SNES Y is the punch (keyboard A) and SNES B
+  // the kick (keyboard Z). The heavy versions and remapping come later.
+  const held = { left: false, right: false, up: false, punch: false, kick: false };
+  const armed = { punch: false, kick: false };
   let showBoxes = true;
 
   const label = new Text({
@@ -125,11 +161,17 @@ async function boot(): Promise<void> {
     if (!attacker.canHit) return;
     const boxes = attacker.boxes("hit");
     if (boxes.length === 0) return;
-    if (!connects({ boxes, at: attacker.placement }, { boxes: defender.boxes("hurt"), at: defender.placement })) {
-      return;
-    }
+    const where = contact(
+      { boxes, at: attacker.placement },
+      { boxes: defender.boxes("hurt"), at: defender.placement },
+    );
+    if (!where) return;
     attacker.markHit();
     defender.gotHit(attacker.attackReaction);
+    // The spark belongs at the deepest point of the blow, not at either
+    // fighter's anchor and not at the middle of the overlap — see impactPoint.
+    const at = impactPoint(where, attacker.facing);
+    spawnFx(attacker.attackFx, at.x, at.y);
     // Both sides pause, not just the one taking it: freezing only the defender
     // lets the attacker walk on through the moment of contact.
     const stop = attacker.attackHitstop;
@@ -143,8 +185,10 @@ async function boot(): Promise<void> {
     let guard = 0;
     while (acc >= FRAME_TIME && guard++ < 600) {
       acc -= FRAME_TIME;
-      held.attack = attackArmed;
-      attackArmed = false;
+      held.punch = armed.punch;
+      held.kick = armed.kick;
+      armed.punch = false;
+      armed.kick = false;
       player.update(held, dummy ? dummy.x : null, bounds);
       dummy?.update(NO_INPUT, player.x, bounds);
       if (dummy) {
@@ -163,12 +207,25 @@ async function boot(): Promise<void> {
         resolveHit(player, dummy);
         resolveHit(dummy, player);
       }
+      // Effects run on the same fixed step as the fighters, and a hit pause
+      // holds them too — a spark that kept animating through hitstop would be
+      // the one thing on screen giving the freeze away.
+      const paused = player.frozen || !!dummy?.frozen;
+      for (let i = effects.length - 1; i >= 0; i--) {
+        const fx = effects[i];
+        if (!paused) fx.update(NO_INPUT, null, bounds);
+        if (fx.finished) {
+          fx.view.destroy({ children: true });
+          effects.splice(i, 1);
+        }
+      }
     }
     player.render(showBoxes);
     dummy?.render(showBoxes);
+    for (const fx of effects) fx.render(false);
     label.text = previewing
       ? `${def.name} · anim ${preview} · [B] boxes`
-      : `${def.name} · [←/→] walk · [↑] jump · [A] attack · [B] boxes · state: ${player.state} · facing ${player.facing > 0 ? "→" : "←"}`;
+      : `${def.name} · [←/→] walk · [↑] jump · [A] punch · [Z] kick · [B] boxes · state: ${player.state} · facing ${player.facing > 0 ? "→" : "←"}`;
   });
 
   window.addEventListener("keydown", (e) => {
@@ -177,7 +234,9 @@ async function boot(): Promise<void> {
     else if (e.key === "ArrowUp") held.up = true;
     else if (e.key === "a" || e.key === "A") {
       // Auto-repeat must not re-arm: one press, one attack.
-      if (!e.repeat) attackArmed = true;
+      if (!e.repeat) armed.punch = true;
+    } else if (e.key === "z" || e.key === "Z") {
+      if (!e.repeat) armed.kick = true;
     } else if (e.key === "b" || e.key === "B") showBoxes = !showBoxes;
   });
   window.addEventListener("keyup", (e) => {

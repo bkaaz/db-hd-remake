@@ -36,9 +36,9 @@ function machine(): StatesFile {
   };
 }
 
-const NONE = { fwd: false, back: false, up: false, attack: false };
+const NONE = { fwd: false, back: false, up: false, punch: false, kick: false };
 const FWD = { ...NONE, fwd: true };
-const ATTACK = { ...NONE, attack: true };
+const ATTACK = { ...NONE, punch: true };
 const UP = { ...NONE, up: true };
 
 /** Nothing happened to the entity this frame. */
@@ -117,7 +117,7 @@ describe("validateStates", () => {
     // The classic authoring slip: forgetting to untick "loop" on an attack.
     const f = machine();
     f.states.punch = { anim: "walk", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
     expect(validateStates(f, ANIMS).warnings).toContain(
       'state "punch": can never be left — animation "walk" loops, so animEnd never fires',
     );
@@ -126,7 +126,7 @@ describe("validateStates", () => {
   it("accepts the same state once its animation stops looping", () => {
     const f = machine();
     f.states.punch = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
@@ -170,7 +170,7 @@ describe("validateStates", () => {
   it("reports a hitstop that is not a frame count", () => {
     const f = machine();
     f.states.punch = { anim: "punch", hitstop: -1, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "punch": "hitstop" must be a number of game frames, 0 or more',
     );
@@ -179,7 +179,7 @@ describe("validateStates", () => {
   it("accepts a hitstop of zero — an attack that deliberately does not pause", () => {
     const f = machine();
     f.states.punch = { anim: "punch", hitstop: 0, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
@@ -195,7 +195,7 @@ describe("validateStates", () => {
     // silently — the attack connects and nothing visible happens.
     const f = machine();
     f.states.punch = { anim: "punch", onHit: "hrut", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
     const { errors, warnings } = validateStates(f, ANIMS);
     expect(errors).toEqual([]);
     expect(warnings).toContain(
@@ -208,7 +208,7 @@ describe("validateStates", () => {
     const f = machine();
     f.states.punch = { anim: "punch", onHit: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
     f.states.hurt = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
@@ -306,7 +306,7 @@ describe("StateMachine", () => {
   it("enters an attack on the button edge, not while it is held", () => {
     const f = machine();
     f.states.punch = { anim: "idle", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions = [{ when: "pressed:attack", to: "punch" }];
+    f.states.idle.transitions = [{ when: "pressed:punch", to: "punch" }];
     const sm = new StateMachine(f);
     expect(sm.update(NONE, QUIET)).toBeNull();
     expect(sm.update(ATTACK, QUIET)).toBe("punch");

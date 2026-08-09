@@ -56,6 +56,12 @@ export interface StateDef {
    * pause, and that belongs to the blow rather than to either body.
    */
   hitstop?: number;
+  /**
+   * Effect entity spawned where this state's attack connects. Same idea as
+   * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
+   * stops, and what the impact looks like. Defaults to the engine's `fx_hit`.
+   */
+  hitFx?: string;
   /** Evaluated in order; the first firing transition wins. */
   transitions?: Transition[];
 }
@@ -77,8 +83,10 @@ export interface InputSnapshot {
   back: boolean;
   /** Up is a world direction, not facing-relative — it starts a jump. */
   up: boolean;
-  /** Attack button went down **this frame** (edge, not held). */
-  attack: boolean;
+  /** Punch button went down **this frame** (edge, not held). */
+  punch: boolean;
+  /** Kick button went down **this frame** (edge, not held). */
+  kick: boolean;
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -101,7 +109,8 @@ export const TRIGGERS = [
   "held:fwd",
   "held:back",
   "held:up",
-  "pressed:attack",
+  "pressed:punch",
+  "pressed:kick",
   "animEnd",
   "falling",
   "nearGround",
@@ -126,8 +135,11 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "held:up":
       value = input.up;
       break;
-    case "pressed:attack":
-      value = input.attack;
+    case "pressed:punch":
+      value = input.punch;
+      break;
+    case "pressed:kick":
+      value = input.kick;
       break;
     case "animEnd":
       value = signals.animEnded;

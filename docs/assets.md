@@ -106,8 +106,8 @@ with original, custom-drawn HD art, not Hyper Dimension's SNES sprites.
 
 ## Reference material
 
-- [Spriters Resource — DBZ: Hyper Dimension](https://www.spriters-resource.com/snes/dragonballzhyperdimension/)
-- [Sprite Database — DBZ: Hyper Dimension](https://spritedatabase.net/game/382)
+- Spriters Resource — DBZ: Hyper Dimension
+- Sprite Database — DBZ: Hyper Dimension
 - [Wikipedia — DBZ: Hyper Dimension](https://en.wikipedia.org/wiki/Dragon_Ball_Z:_Hyper_Dimension)
 - [Mesen-S — Script Window / Lua API](https://www.mesen.ca/snes/docs/debugging/scriptwindow.html)
 - [Romhacking.net — DBZ: Hyper Dimension](https://www.romhacking.net/games/284/)
