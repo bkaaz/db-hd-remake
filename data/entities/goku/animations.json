@@ -90,7 +90,7 @@
     "steps": [
       {
         "frame": "9",
-        "dur": 12,
+        "dur": 7,
         "boxes": [
           {
             "type": "hurt",
@@ -117,7 +117,7 @@
       },
       {
         "frame": "10",
-        "dur": 12,
+        "dur": 7,
         "boxes": [
           {
             "type": "hurt",
@@ -301,7 +301,7 @@
     "steps": [
       {
         "frame": "14",
-        "dur": 18,
+        "dur": 14,
         "boxes": [
           {
             "type": "hurt",
@@ -328,7 +328,7 @@
       },
       {
         "frame": "15",
-        "dur": 7,
+        "dur": 6,
         "boxes": [
           {
             "type": "hurt",
@@ -355,7 +355,7 @@
       },
       {
         "frame": "16",
-        "dur": 7,
+        "dur": 6,
         "boxes": [
           {
             "type": "hurt",
@@ -741,7 +741,7 @@
     "steps": [
       {
         "frame": "16",
-        "dur": 8,
+        "dur": 7,
         "boxes": [
           {
             "type": "hurt",
@@ -768,7 +768,7 @@
       },
       {
         "frame": "15",
-        "dur": 8,
+        "dur": 6,
         "boxes": [
           {
             "type": "hurt",
@@ -795,7 +795,7 @@
       },
       {
         "frame": "14",
-        "dur": 8,
+        "dur": 6,
         "boxes": [
           {
             "type": "hurt",
