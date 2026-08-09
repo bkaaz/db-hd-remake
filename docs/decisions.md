@@ -2,6 +2,45 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Impact: the blow names the reaction, and pushes you back
+
+- **`onHit` on the attack state names a state on the *defender*.** The blow
+  decides how it is taken, which is what separates a jab from a smash; the
+  alternative — the defender inspecting what hit it — puts the knowledge in the
+  wrong place and grows with every attack in the game. The defender's
+  `onGotHit` survives as the fallback, so `onHit` overrides a default rather
+  than replacing the mechanism, and an attack that says nothing still produces
+  a reaction instead of silence.
+- **Reaction names are a shared vocabulary** (`hurt`, `hurt_heavy`, later
+  `knockdown`) implemented per fighter. The validator can therefore only check
+  the attacker's own states, so an unknown name is a **warning**, not an error —
+  and `onHit` targets count as entry points when hunting unreachable states,
+  because nothing ever *transitions* into a reaction.
+- **The precedence lives in one pure function** (`reactionFor`), so the rule is
+  stated once and tested, rather than being an `??` buried in the render loop.
+- **Light and heavy share their first frame.** Goku's 74 alone is a flinch;
+  74 → 75 continues that same flinch into a real recoil. Two animations that
+  begin identically read as one reaction of two magnitudes, which is what they
+  are — and it is the owner's reading of the sheet, not the two-separate-poses
+  guess that preceded it. Frame 76 (a blow to the stomach) is left unused: a
+  high/low distinction costs one reaction per fighter across the roster and buys
+  nothing until attacks exist that must hit low. Revisit at crouching.
+- **Knockback is plain `vel` on the reaction state**, not new machinery. Facing
+  is toward the attacker in a reaction, so negative X is away — the existing
+  facing-relative rule already means "backwards" without a special case.
+- **Both numbers are derived from numbers we already had**, in one go rather
+  than guessed and re-guessed: a **light** hit pushes at exactly walking speed
+  (1.4 px/frame), so an opponent who walks straight back in neither gains nor
+  loses ground during the reaction; a **heavy** hit travels one whole `pushWidth`
+  (30 px) further than the light one, so the gap it opens fits a fighter.
+  Over the 12-frame reactions that is 16.8 px against 46.8 px.
+- **The slide is linear and stops dead** when the animation ends. An impulse
+  plus friction was considered and deferred: it needs a new attribute and
+  grounded momentum, and constant velocity over 200 ms may well read fine.
+  Revisit by feel, not in advance.
+- **Hitstop is deliberately not part of this** — it is the next item, and
+  bundling it would hide which of the two changes produced the feel.
+
 ## 2026-08-09 — One queue: `docs/plan.md`, and finished items are deleted
 
 - **The work queue is a single file, `docs/plan.md`.** Three documents were

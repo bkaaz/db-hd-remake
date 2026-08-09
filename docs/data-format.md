@@ -203,7 +203,9 @@ with `hit` boxes on its active steps, `turn: false` so it cannot spin mid-swing,
 and `{ "when": "animEnd", "to": "idle" }` to recover. A hit connects when an
 attacker's `hit` box overlaps a defender's `hurt` box; it lands **once per entry
 into the state**, however many frames the box stays out. The defender is then
-forced into the attack's `onHit` state, or its own `onGotHit`. There is no `hitstun`
+forced into the attack's `onHit` state, or its own `onGotHit`. **Knockback needs
+no field of its own:** a reaction state faces the attacker, so a negative `vel`
+X is "backwards, away" — the reaction slides for as long as it lasts. There is no `hitstun`
 field yet — the reaction lasts as long as the `onGotHit` state's non-looping
 animation, which is authored in the editor anyway. Damage and health wait for
 `attributes.json`.

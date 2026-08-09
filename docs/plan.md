@@ -22,21 +22,10 @@ detail that gets rewritten before it is read.
 **The order is the point.** A–D build **one complete exchange** — a hit that
 costs something, has weight and is visible — before any move is multiplied.
 Four buttons × three stances is twelve attacks, and re-tuning how a hit feels
-afterwards would mean redoing all of them.
+afterwards would mean redoing all of them. **A is done**: a blow now names how
+it is taken and pushes the defender back.
 
 ---
-
-## A. Impact — a hit that costs something
-
-Today a hit swaps the defender's animation and nothing else. This makes it an
-event with a direction and a magnitude.
-
-- **A3 — knockback.** The reaction state moves the defender backwards. Start
-  with plain `vel` on the reaction state — facing is toward the attacker, so
-  negative X is away, and no new machinery is needed. *Open:* whether that reads
-  right, or whether it wants an impulse plus friction (a new attribute).
-  *Done when:* a heavy hit visibly separates the fighters, and push collision
-  still keeps them out of each other.
 
 ## B. Hitstop — a hit that has weight
 

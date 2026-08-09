@@ -42,13 +42,13 @@
     },
     "hurt": {
       "anim": "hurt",
-      "vel": [0, 0],
+      "vel": [-1.4, 0],
       "turn": false,
       "transitions": [{ "when": "animEnd", "to": "idle" }]
     },
     "hurt_heavy": {
       "anim": "hurt_heavy",
-      "vel": [0, 0],
+      "vel": [-3.9, 0],
       "turn": false,
       "transitions": [{ "when": "animEnd", "to": "idle" }]
     },
