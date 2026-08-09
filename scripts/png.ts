@@ -1,4 +1,4 @@
-import { inflateSync } from "node:zlib";
+import { deflateSync, inflateSync } from "node:zlib";
 
 /**
  * Just enough PNG decoding to read our own atlases.
@@ -120,6 +120,48 @@ export function decodePng(buffer: Buffer): Rgba {
     data[j + 3] = 255;
   }
   return { width, height, data };
+}
+
+function crc32(buf: Buffer): number {
+  let c = ~0;
+  for (const byte of buf) {
+    c ^= byte;
+    for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xedb88320 & -(c & 1));
+  }
+  return ~c >>> 0;
+}
+
+function chunk(type: string, data: Buffer): Buffer {
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.length);
+  const body = Buffer.concat([Buffer.from(type, "ascii"), data]);
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(crc32(body));
+  return Buffer.concat([length, body, crc]);
+}
+
+/** Write RGBA pixels as a PNG. Unfiltered rows — these are throwaway views. */
+export function encodePng(image: Rgba): Buffer {
+  const stride = image.width * 4;
+  const raw = Buffer.alloc((stride + 1) * image.height);
+  for (let y = 0; y < image.height; y++) {
+    raw[y * (stride + 1)] = 0; // filter: none
+    Buffer.from(image.data.subarray(y * stride, (y + 1) * stride)).copy(
+      raw,
+      y * (stride + 1) + 1,
+    );
+  }
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(image.width, 0);
+  ihdr.writeUInt32BE(image.height, 4);
+  ihdr[8] = 8; // bit depth
+  ihdr[9] = 6; // RGBA
+  return Buffer.concat([
+    Buffer.from(SIGNATURE),
+    chunk("IHDR", ihdr),
+    chunk("IDAT", deflateSync(raw)),
+    chunk("IEND", Buffer.alloc(0)),
+  ]);
 }
 
 /**

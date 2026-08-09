@@ -1,6 +1,6 @@
 import { deflateSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
-import { alphaMask, decodePng } from "./png";
+import { alphaMask, decodePng, encodePng } from "./png";
 
 /**
  * The decoder is hand-rolled, so it is tested by round-trip: encode a known
@@ -27,7 +27,12 @@ function chunk(type: string, data: Buffer): Buffer {
 }
 
 /** Encode RGBA pixels, applying one filter type to every row. */
-function encodePng(width: number, height: number, rgba: number[], filter: 0 | 1 | 2 | 3 | 4): Buffer {
+function encodeWithFilter(
+  width: number,
+  height: number,
+  rgba: number[],
+  filter: 0 | 1 | 2 | 3 | 4,
+): Buffer {
   const bpp = 4;
   const stride = width * bpp;
   const raw = Buffer.alloc((stride + 1) * height);
@@ -82,7 +87,7 @@ const PIXELS = [
 describe("decodePng", () => {
   for (const filter of [0, 1, 2, 3, 4] as const) {
     it(`round-trips pixels through row filter ${filter}`, () => {
-      const image = decodePng(encodePng(W, H, PIXELS, filter));
+      const image = decodePng(encodeWithFilter(W, H, PIXELS, filter));
       expect(image.width).toBe(W);
       expect(image.height).toBe(H);
       expect([...image.data]).toEqual(PIXELS);
@@ -94,14 +99,39 @@ describe("decodePng", () => {
   });
 });
 
+describe("encodePng", () => {
+  it("survives a round trip through our own decoder", () => {
+    const image = { width: W, height: H, data: new Uint8Array(PIXELS) };
+    const back = decodePng(encodePng(image));
+    expect(back.width).toBe(W);
+    expect(back.height).toBe(H);
+    expect([...back.data]).toEqual(PIXELS);
+  });
+
+  it("handles a single-pixel image", () => {
+    const one = { width: 1, height: 1, data: new Uint8Array([1, 2, 3, 4]) };
+    expect([...decodePng(encodePng(one)).data]).toEqual([1, 2, 3, 4]);
+  });
+
+  it("keeps rows in order — a wrong stride would transpose the image", () => {
+    // Two rows that differ, so a stride slip cannot pass unnoticed.
+    const rows = {
+      width: 2,
+      height: 2,
+      data: new Uint8Array([10, 0, 0, 255, 20, 0, 0, 255, 30, 0, 0, 255, 40, 0, 0, 255]),
+    };
+    expect([...decodePng(encodePng(rows)).data]).toEqual([...rows.data]);
+  });
+});
+
 describe("alphaMask", () => {
   it("marks the pixels that are not fully transparent", () => {
-    const image = decodePng(encodePng(W, H, PIXELS, 0));
+    const image = decodePng(encodeWithFilter(W, H, PIXELS, 0));
     expect([...alphaMask(image, { x: 0, y: 0, w: W, h: H })]).toEqual([1, 1, 0, 1, 0, 1]);
   });
 
   it("reads only the requested rectangle", () => {
-    const image = decodePng(encodePng(W, H, PIXELS, 4));
+    const image = decodePng(encodeWithFilter(W, H, PIXELS, 4));
     // Bottom-left 2x1: blue (opaque), then a transparent pixel.
     expect([...alphaMask(image, { x: 0, y: 1, w: 2, h: 1 })]).toEqual([1, 0]);
   });
