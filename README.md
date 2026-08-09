@@ -1,11 +1,29 @@
-# DBZ: Hyper Dimension — Remake
+# A 2D fighting engine, and the tool that authors it
 
-A browser-based, TypeScript fan remake of **Dragon Ball Z: Hyper Dimension**
-(SNES / Super Famicom, 1996). Non-commercial fan project — work in progress.
+A browser fighting-game engine written from scratch in TypeScript, together with
+the editor that authors its content — sprites, animations, collision boxes and
+state machines. It is demonstrated on **Dragon Ball Z: Hyper Dimension**
+(SNES / Super Famicom, 1996): a non-commercial fan project, work in progress.
+
+What is actually built here:
+
+- **An engine** — a data-driven state machine per entity, hit/hurt/push
+  collision, gravity and jump arcs, hitstop, knockback and knockdown, all
+  authored as JSON rather than hard-coded.
+- **An entity editor** — a Canvas 2D tool that cuts sprite sheets into frames,
+  sets anchors, builds timed animations and draws collision boxes.
+- **Authoring tools that compute instead of guess** — hurt boxes fitted to the
+  silhouette from the sprite's alpha, labelled contact sheets, and a seeded
+  pixel-art generator that draws the game's effects from code.
+- **Tests over the parts that can be tested** — the state machine, its
+  validator, collision and the generators run in Node, free of PixiJS.
+
+The reasoning behind every decision, including the ones that were tried and
+dropped, is in [`docs/decisions.md`](./docs/decisions.md).
 
 ## Stack
 
-TypeScript · PixiJS v8 · Vite
+TypeScript · PixiJS v8 · Vite · Vitest
 
 ## Getting started
 
@@ -58,8 +76,13 @@ belonging to the active tab, plus a keyed `assets/atlases/<name>.png`
 
 ## Docs
 
-Design notes, roadmap, and open questions live in [`docs/`](./docs). Start with
-[`docs/README.md`](./docs/README.md).
+- [`docs/decisions.md`](./docs/decisions.md) — the decision log, newest first.
+  The most useful file here if you want to see how the thing was reasoned about.
+- [`docs/plan.md`](./docs/plan.md) — the work queue, and the only one. Finished
+  items are deleted from it, so it only ever shrinks.
+- [`docs/data-format.md`](./docs/data-format.md) — the contract between the
+  editor and the engine.
+- [`docs/`](./docs) — everything else; start at [`docs/README.md`](./docs/README.md).
 
 ## Credits
 

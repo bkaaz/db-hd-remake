@@ -15,6 +15,8 @@ export interface WorldInput {
   left: boolean;
   right: boolean;
   up: boolean;
+  /** Down arrow — held, like up. */
+  down: boolean;
   /** Punch button went down **this frame** (edge, not held). */
   punch: boolean;
   /** Kick button went down **this frame** (edge, not held). */
@@ -29,6 +31,7 @@ export const NO_INPUT: WorldInput = {
   left: false,
   right: false,
   up: false,
+  down: false,
   punch: false,
   kick: false,
   punchHeavy: false,
@@ -255,6 +258,7 @@ export class Entity {
         fwd,
         back,
         up: input.up,
+        down: input.down,
         punch: input.punch,
         kick: input.kick,
         punchHeavy: input.punchHeavy,

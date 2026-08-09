@@ -26,16 +26,6 @@
         "10"
       ]
     },
-    "crouch_low": {
-      "desc": "? Low stances: progressively deeper knee bend with the arms drawn in. Likely crouch and/or crouching guard, but which is which is unconfirmed.",
-      "frames": [
-        "11",
-        "12",
-        "13",
-        "17",
-        "18"
-      ]
-    },
     "jump_up": {
       "desc": "? Vertical jump: rise with the body upright and legs extended, then tuck. See the note on 17 — the tucked pair looks like 15/16 rather than 17/15.",
       "frames": [
@@ -188,6 +178,21 @@
         "52",
         "53"
       ]
+    },
+    "guard_stand": {
+      "desc": "? Standing guard: upright, both forearms crossed in front of the chest, feet planted. Three near-identical frames that read as breathing, like the idle. Previously mis-filed as a crouch — they are not crouched at all.",
+      "frames": [
+        "11",
+        "12",
+        "13"
+      ]
+    },
+    "crouch": {
+      "desc": "The low stance, confirmed by the owner: 17 is the transition down into it, 18 is the neutral crouch held at the bottom. A crouching guard exists in the game but is not on this sheet.",
+      "frames": [
+        "17",
+        "18"
+      ]
     }
   },
   "frames": {
@@ -201,14 +206,14 @@
     "8": "SSJ idle, third breathing frame",
     "9": "SSJ walk, legs apart mid-stride, guard held",
     "10": "SSJ walk, opposite leg leading, wider stride",
-    "11": "? knees bent, torso leaning forward, arms drawn low and back",
-    "12": "? deeper crouch, arms tucked against the body",
-    "13": "? deep crouch, forearms crossed low in front",
+    "11": "? standing guard: upright, forearms crossed in front of the chest, weight even",
+    "12": "? standing guard, second frame — near-identical to 11, the pair reads as breathing",
+    "13": "? standing guard, third frame — the arms sit fractionally lower than in 11",
     "14": "airborne: body upright, arms out to the sides, legs extended straight down — the rise",
     "15": "airborne: compact, knees drawn up, arms bent in — tuck",
     "16": "airborne: tighter tuck, forearms crossed at the chest",
-    "17": "? low stance, knees bent, fists up in front — looks grounded rather than airborne",
-    "18": "? knees bent with forearms crossed in front of the chest — reads as a block",
+    "17": "crouch, going down: knees bending, fists up in front of the face, back still fairly upright — the transition, not the held pose",
+    "18": "crouch, held: settled at the bottom, arms drawn in tight. This is the neutral crouch",
     "19": "airborne diagonal: one fist raised, torso angled, legs trailing behind — forward take-off",
     "20": "airborne somersault, curled tight, head to the right",
     "21": "airborne somersault, rotated further, feet uppermost",

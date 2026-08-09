@@ -13,7 +13,8 @@
         { "when": "pressed:kickHeavy", "to": "kick_heavy" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" },
-        { "when": "held:up", "to": "jump_up" }
+        { "when": "held:up", "to": "jump_up" },
+        { "when": "held:down", "to": "crouch" }
       ]
     },
     "walk_fwd": {
@@ -26,7 +27,8 @@
         { "when": "pressed:punchHeavy", "to": "uppercut" },
         { "when": "pressed:kickHeavy", "to": "kick_heavy" },
         { "when": "held:up", "to": "jump_fwd" },
-        { "when": "!held:fwd", "to": "idle" }
+        { "when": "!held:fwd", "to": "idle" },
+        { "when": "held:down", "to": "crouch" }
       ]
     },
     "walk_back": {
@@ -39,7 +41,8 @@
         { "when": "pressed:punchHeavy", "to": "uppercut" },
         { "when": "pressed:kickHeavy", "to": "kick_heavy" },
         { "when": "held:up", "to": "jump_back" },
-        { "when": "!held:back", "to": "idle" }
+        { "when": "!held:back", "to": "idle" },
+        { "when": "held:down", "to": "crouch" }
       ]
     },
     "punch": {
@@ -78,6 +81,24 @@
       "hitFx": "fx_hit_heavy",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "crouch": {
+      "anim": "crouch",
+      "vel": [0, 0],
+      "turn": true,
+      "transitions": [
+        { "when": "pressed:kick", "to": "kick_crouch" },
+        { "when": "!held:down", "to": "idle" }
+      ]
+    },
+    "kick_crouch": {
+      "anim": "kick_crouch",
+      "vel": [0, 0],
+      "turn": false,
+      "onHit": "hurt",
+      "transitions": [
+        { "when": "animEnd", "to": "crouch" }
       ]
     },
     "hurt": {

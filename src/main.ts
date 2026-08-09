@@ -143,6 +143,7 @@ async function boot(): Promise<void> {
     left: false,
     right: false,
     up: false,
+    down: false,
     punch: false,
     kick: false,
     punchHeavy: false,
@@ -240,6 +241,7 @@ async function boot(): Promise<void> {
     if (e.key === "ArrowLeft") held.left = true;
     else if (e.key === "ArrowRight") held.right = true;
     else if (e.key === "ArrowUp") held.up = true;
+    else if (e.key === "ArrowDown") held.down = true;
     else if (e.key === "a" || e.key === "A") {
       // Auto-repeat must not re-arm: one press, one attack.
       if (!e.repeat) armed.punch = true;
@@ -253,6 +255,7 @@ async function boot(): Promise<void> {
   });
   window.addEventListener("keyup", (e) => {
     if (e.key === "ArrowLeft") held.left = false;
+    else if (e.key === "ArrowDown") held.down = false;
     else if (e.key === "ArrowRight") held.right = false;
     else if (e.key === "ArrowUp") held.up = false;
   });

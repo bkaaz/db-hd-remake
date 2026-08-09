@@ -97,6 +97,35 @@ active plan**; kept documented so we can reach for it later.
 ⚠️ Do not confuse with **"Hyper Dragon Ball Z" (Team Z2)** — a different game
 with original, custom-drawn HD art, not Hyper Dimension's SNES sprites.
 
+## What may live in the repo, and what may not
+
+The rule is **not** "code yes, images no". Copyright attaches to the expression,
+not to the file format: the same sprite written as a PNG, a base64 string or a
+TypeScript array of pixels is the same work in a different container.
+
+The line is whether the repo carries the expression or only points at it. One
+test settles it:
+
+> **If the source sheet were deleted, would this file still produce the sprite?**
+>
+> - **Yes** → it *is* the artwork, whatever its extension. Keep it out.
+> - **No, it needs the sheet** → it is a pointer or a recipe. Fine to commit.
+
+By that test: `frames.json` is coordinates into somebody else's image and is
+useless without it — fine. A recipe that composes a missing pose out of two
+existing frames carries no pixels and only works for someone who already has the
+sheet — fine. A pixel array of a ripped sprite fails, however it is encoded.
+
+**Art drawn from scratch is yours** and may be committed in any form — our
+generated effects are the example. It is still a derivative of a protected
+character design, so it does not make the project free of the original rights;
+what it does is avoid the one clear-cut act, which is redistributing extracted
+assets.
+
+That is the whole point of BYOA. It was never a claim of legal cover for a fan
+remake — it removes the single unambiguous risk at a cost of nothing, and keeps
+git history clean, which is a property you lose exactly once.
+
 ## Tools
 
 - **Mesen-S** — SNES emulator with debugger, OAM/tile viewers, PNG export, and a

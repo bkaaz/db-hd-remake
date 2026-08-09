@@ -2,6 +2,38 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — One sheet stays ours; a fuller rip was measured and rejected
+
+- **A second, much larger rip exists** (Sprite Database, 1043×5179 against our
+  720×2304 — 3.3× the area, and it includes the black-haired base form we barely
+  have). Measured rather than guessed: a single sprite on it uses 18 colours,
+  so it is a clean native rip, and its palette values match ours exactly, which
+  means the same poses are pixel-identical between the two.
+- **That made migration cheap in principle, and it was still refused.** Because
+  the sprites match pixel for pixel, a script could have hashed each of our 219
+  frames, found it on the new sheet and rewritten every frame id, carrying
+  anchors, boxes and hand-tuned durations across; `states.json` refers to
+  animations, not frames, so it would not have been touched at all.
+- **The reason for refusing is what the rip bakes in:** drop shadows and effects
+  are painted into the sprites. Neither can be subtracted. A shadow welded to a
+  frame cannot be put under a fighter who is in the air, and an aura welded into
+  a pose cannot be switched off — which is the opposite of the direction this
+  project has taken, where effects are separate entities we generate ourselves.
+- **So: one sheet, the one we have.** Gaps are filled another way rather than by
+  swapping the foundation. Swapping it would also have to happen *before*
+  authoring animations, not after twenty-two of them.
+- **First known gap: the crouching guard.** Three ways out, none chosen yet
+  because nothing is blocked — blocking does not exist as a state at all:
+  rip the pose from the ROM with Mesen-S (already the documented gap-filler, and
+  it yields sprites free of both shadow and effects, since those are separate
+  OAM objects); compose it from the standing guard's torso and the crouch's
+  legs, where the **recipe** is committable even though the pixels are not; or
+  simply ship standing-only blocking first.
+- **The composite is sound engineering at the wrong scale for now.** The hard
+  part is the seam, not the cut, and it cannot be judged until the tool exists.
+  At one frame, drawing it by hand wins; at five or more across the roster, the
+  script pays for itself.
+
 ## 2026-08-09 — A state must mean the same thing however you entered it
 
 - **Bug: a knockdown never left the ground.** `launch` was applied on one of the

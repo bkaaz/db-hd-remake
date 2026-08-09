@@ -40,6 +40,7 @@ const NONE = {
   fwd: false,
   back: false,
   up: false,
+  down: false,
   punch: false,
   kick: false,
   punchHeavy: false,

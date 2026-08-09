@@ -33,8 +33,10 @@ heavy kick puts a fighter on the floor.
 
 ## G. Crouch, and crouch attacks
 
-Frames settled: the crouching kick is 52–53. The neutral crouch and a crouching
-guard are still `?`, in the `crouch_low` group (11–13, 17–18).
+Frames settled: 17 is the way down, 18 the held crouch, and the crouching kick
+is 52–53 — all built. **A crouching guard is not on our sheet** and is the first
+known gap; the standing guard is 11–13. It blocks nothing today, because
+blocking does not exist as a state. Options are recorded in `decisions.md`.
 
 *Open:* whether a low blow needs its own reaction. Frame 76 is a hit to the
 stomach, so the sprite exists — the question is whether the fight reads better

@@ -83,6 +83,8 @@ export interface InputSnapshot {
   back: boolean;
   /** Up is a world direction, not facing-relative — it starts a jump. */
   up: boolean;
+  /** Down is a world direction too — it starts a crouch. */
+  down: boolean;
   /** Punch button went down **this frame** (edge, not held). */
   punch: boolean;
   /** Kick button went down **this frame** (edge, not held). */
@@ -113,6 +115,7 @@ export const TRIGGERS = [
   "held:fwd",
   "held:back",
   "held:up",
+  "held:down",
   "pressed:punch",
   "pressed:kick",
   "pressed:punchHeavy",
@@ -140,6 +143,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "held:up":
       value = input.up;
+      break;
+    case "held:down":
+      value = input.down;
       break;
     case "pressed:punch":
       value = input.punch;
