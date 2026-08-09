@@ -119,6 +119,11 @@ rules**; the entity is a state machine and the engine runs it every game frame.
 ```
 
 - **`initial`** — state entered on spawn.
+- **`onGotHit`** *(optional, top level)* — the state the engine **forces** on
+  this entity when an opponent's hit box reaches one of its hurt boxes, whatever
+  it was doing at the time. One field instead of every state remembering to
+  handle being hit (MUGEN's GetHit state does the same). The engine also treats
+  it as an entry point, so it is never reported "unreachable".
 - **`anim`** — animation played while in the state (restarts on entry).
 - **`vel`** — `[x, y]` per game frame, in **sprite pixels** — the same unit as
   box coordinates, so display scale never changes what the data means (the
@@ -134,9 +139,20 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   one fires per frame** (predictable, no state loops).
   - `when` — trigger, optionally negated with a leading `!`. v0 vocabulary:
     - `held:fwd` / `held:back` — movement input, facing-relative.
+    - `pressed:attack` — attack button went down **this frame** (an edge, so
+      holding the key does not repeat the move).
     - `animEnd` — a non-looping animation reached its last frame (latched until
       the animation changes).
   - `to` — target state.
+
+**Attacks and hitstun.** An attack is an ordinary state: a non-looping animation
+with `hit` boxes on its active steps, `turn: false` so it cannot spin mid-swing,
+and `{ "when": "animEnd", "to": "idle" }` to recover. A hit connects when an
+attacker's `hit` box overlaps a defender's `hurt` box; it lands **once per entry
+into the state**, however many frames the box stays out. There is no `hitstun`
+field yet — the reaction lasts as long as the `onGotHit` state's non-looping
+animation, which is authored in the editor anyway. Damage and health wait for
+`attributes.json`.
 
 Deliberately **not** in v0 (later slices): `onEnter` effects, `hit` data
 (damage/hitstun/knockback), the scripting escape hatch, jump/gravity.
@@ -144,9 +160,11 @@ Deliberately **not** in v0 (later slices): `onEnter` effects, `hit` data
 **This file is hand-authored** (the editor's States tab is a read-only view —
 see [`decisions.md`](./decisions.md)), so `validateStates()` in `src/states.ts`
 checks it in both places: the game reports problems on screen at load, the
-editor flags them in the States tab. It catches a missing/unknown `initial`, an
-`anim` or `to` that does not exist, an unknown trigger, a malformed `vel`, and
-warns about states unreachable from `initial`.
+editor flags them in the States tab. It catches a missing/unknown `initial` or
+`onGotHit`, an `anim` or `to` that does not exist, an unknown trigger and a
+malformed `vel`; it warns about unreachable states, states with no way out, and
+the classic slip — a state whose only exit is `animEnd` playing a **looping**
+animation, which can never be left.
 
 ## Notes / open for later
 

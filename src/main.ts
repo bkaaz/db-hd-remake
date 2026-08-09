@@ -1,6 +1,7 @@
 import { Application, Graphics, Text } from "pixi.js";
 import { Entity, NO_INPUT } from "./entity";
 import { loadEntityDef, type EntityDef } from "./entityDef";
+import { connects } from "./hit";
 import { validateStates } from "./states";
 
 /**
@@ -46,7 +47,7 @@ async function boot(): Promise<void> {
   // rather than a console warning nobody reads. We still run, so the rest of
   // the entity stays inspectable.
   if (def.states) {
-    const { errors, warnings } = validateStates(def.states, Object.keys(def.animations));
+    const { errors, warnings } = validateStates(def.states, def.animations);
     for (const w of warnings) console.warn(`[states] ${w}`);
     if (errors.length > 0) {
       for (const e of errors) console.error(`[states] ${e}`);
@@ -97,7 +98,12 @@ async function boot(): Promise<void> {
     showMessage(app, `${def.name}: no states.json — showing the first animation`, true);
   }
 
-  const held = { left: false, right: false };
+  // Attack is edge-triggered: pressing the key arms one game frame, so holding
+  // it does not machine-gun. Keyboard layout follows the ZSNES default
+  // (A=X, B=Z, X=S, Y=A, L=C, R=D); for now only SNES Y — the weak punch — is
+  // wired, and remapping comes with a proper config screen.
+  const held = { left: false, right: false, attack: false };
+  let attackArmed = false;
   let showBoxes = true;
 
   const label = new Text({
@@ -108,26 +114,53 @@ async function boot(): Promise<void> {
   label.y = noStates ? 28 : 8;
   app.stage.addChild(label);
 
+  const onGotHit = def.states?.onGotHit;
+
+  /**
+   * An attacker's active hit boxes against a defender's hurt boxes. On a
+   * connection the defender is forced into the entity's `onGotHit` state and
+   * the attack is spent, so one swing lands once however long its box is out.
+   */
+  const resolveHit = (attacker: Entity, defender: Entity): void => {
+    if (!onGotHit || !attacker.canHit) return;
+    const boxes = attacker.boxes("hit");
+    if (boxes.length === 0) return;
+    if (!connects({ boxes, at: attacker.placement }, { boxes: defender.boxes("hurt"), at: defender.placement })) {
+      return;
+    }
+    attacker.markHit();
+    defender.forceState(onGotHit);
+  };
+
   let acc = 0;
   app.ticker.add((ticker) => {
     acc += ticker.deltaMS / 1000;
     let guard = 0;
     while (acc >= FRAME_TIME && guard++ < 600) {
       acc -= FRAME_TIME;
+      held.attack = attackArmed;
+      attackArmed = false;
       player.update(held, dummy ? dummy.x : null, bounds);
       dummy?.update(NO_INPUT, player.x, bounds);
+      if (dummy) {
+        resolveHit(player, dummy);
+        resolveHit(dummy, player);
+      }
     }
     player.render(showBoxes);
     dummy?.render(showBoxes);
     label.text = previewing
       ? `${def.name} · anim ${preview} · [B] boxes`
-      : `${def.name} · [←/→] walk · [B] boxes · state: ${player.state} · facing ${player.facing > 0 ? "→" : "←"}`;
+      : `${def.name} · [←/→] walk · [A] attack · [B] boxes · state: ${player.state} · facing ${player.facing > 0 ? "→" : "←"}`;
   });
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft") held.left = true;
     else if (e.key === "ArrowRight") held.right = true;
-    else if (e.key === "b" || e.key === "B") showBoxes = !showBoxes;
+    else if (e.key === "a" || e.key === "A") {
+      // Auto-repeat must not re-arm: one press, one attack.
+      if (!e.repeat) attackArmed = true;
+    } else if (e.key === "b" || e.key === "B") showBoxes = !showBoxes;
   });
   window.addEventListener("keyup", (e) => {
     if (e.key === "ArrowLeft") held.left = false;

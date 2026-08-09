@@ -1,5 +1,6 @@
 import { Container, Graphics, Sprite } from "pixi.js";
-import type { Anim, EntityDef, Step } from "./entityDef";
+import type { Anim, Box, EntityDef, Step } from "./entityDef";
+import { boxToWorld, type Placement } from "./hit";
 import { StateMachine } from "./states";
 
 /**
@@ -13,9 +14,11 @@ import { StateMachine } from "./states";
 export interface WorldInput {
   left: boolean;
   right: boolean;
+  /** Attack button went down **this frame** (edge, not held). */
+  attack: boolean;
 }
 
-export const NO_INPUT: WorldInput = { left: false, right: false };
+export const NO_INPUT: WorldInput = { left: false, right: false, attack: false };
 
 const BOX_COLORS: Record<string, number> = {
   hit: 0xff3b3b,
@@ -44,6 +47,12 @@ export class Entity {
   private remaining = 0;
   /** Latched once a non-looping animation reaches its end (drives `animEnd`). */
   private animEnded = false;
+  /**
+   * Whether this entity's current attack already landed. An attack's hit box is
+   * active for several frames, but it may only connect once per entry into the
+   * state — cleared whenever the state changes.
+   */
+  private spent = false;
 
   constructor(
     private readonly def: EntityDef,
@@ -58,6 +67,34 @@ export class Entity {
 
   get state(): string {
     return this.sm?.current ?? this.animName;
+  }
+
+  /** Where this entity is, for placing authored boxes in the world. */
+  get placement(): Placement {
+    return { x: this.x, y: this.y, facing: this.facing, scale: this.scale };
+  }
+
+  /** Boxes of one type active on the current animation step. */
+  boxes(type: Box["type"]): Box[] {
+    return (this.currentStep()?.boxes ?? []).filter((b) => b.type === type);
+  }
+
+  /** True while this entity's current attack can still land. */
+  get canHit(): boolean {
+    return !this.spent;
+  }
+
+  /** Record that the current attack connected; it cannot land again. */
+  markHit(): void {
+    this.spent = true;
+  }
+
+  /** Enter a state because something happened *to* this entity (being hit). */
+  forceState(name: string): boolean {
+    if (!this.sm?.force(name)) return false;
+    this.setAnim(this.sm.def.anim);
+    this.spent = false;
+    return true;
   }
 
   /** Preview a single animation, bypassing the state machine (`?anim=`). */
@@ -82,7 +119,10 @@ export class Entity {
 
     const fwd = this.facing > 0 ? input.right : input.left;
     const back = this.facing > 0 ? input.left : input.right;
-    if (this.sm.update({ fwd, back }, this.animEnded)) this.setAnim(this.sm.def.anim);
+    if (this.sm.update({ fwd, back, attack: input.attack }, this.animEnded)) {
+      this.setAnim(this.sm.def.anim);
+      this.spent = false;
+    }
 
     // Velocity is authored in sprite pixels, like box coordinates, and is
     // facing-relative (+ = forward); scaling to screen px happens here so the
@@ -102,12 +142,11 @@ export class Entity {
     this.boxG.clear();
     const boxes = showBoxes ? this.currentStep()?.boxes : undefined;
     if (!boxes) return;
+    // Same conversion the collision uses, so the overlay shows what actually hits.
+    const at = this.placement;
     for (const b of boxes) {
-      // Mirror box X around the anchor when facing left.
-      const bx = this.facing < 0 ? this.x - (b.x + b.w) * this.scale : this.x + b.x * this.scale;
-      this.boxG
-        .rect(bx, this.y + b.y * this.scale, b.w * this.scale, b.h * this.scale)
-        .stroke({ color: BOX_COLORS[b.type] ?? 0xffffff, width: 1 });
+      const r = boxToWorld(b, at);
+      this.boxG.rect(r.x, r.y, r.w, r.h).stroke({ color: BOX_COLORS[b.type] ?? 0xffffff, width: 1 });
     }
   }
 

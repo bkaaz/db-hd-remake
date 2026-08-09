@@ -35,6 +35,12 @@ export interface StateDef {
 
 export interface StatesFile {
   initial: string;
+  /**
+   * State forced on the entity when an attack connects, whatever it was doing.
+   * MUGEN does the same with its GetHit state; keeping it a single field means
+   * no state has to remember to handle being hit.
+   */
+  onGotHit?: string;
   states: Record<string, StateDef>;
 }
 
@@ -42,10 +48,12 @@ export interface StatesFile {
 export interface InputSnapshot {
   fwd: boolean;
   back: boolean;
+  /** Attack button went down **this frame** (edge, not held). */
+  attack: boolean;
 }
 
 /** Every trigger the runner understands, for validation and editor UI. */
-export const TRIGGERS = ["held:fwd", "held:back", "animEnd"] as const;
+export const TRIGGERS = ["held:fwd", "held:back", "pressed:attack", "animEnd"] as const;
 
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
 
@@ -61,6 +69,9 @@ function evaluate(trigger: string, input: InputSnapshot, animEnded: boolean): bo
       break;
     case "held:back":
       value = input.back;
+      break;
+    case "pressed:attack":
+      value = input.attack;
       break;
     case "animEnd":
       value = animEnded;
@@ -86,6 +97,17 @@ export class StateMachine {
   /** Definition of the current state (a harmless empty state if unknown). */
   get def(): StateDef {
     return this.file.states[this.current] ?? FALLBACK_STATE;
+  }
+
+  /**
+   * Enter a state regardless of transitions — the engine's override, used when
+   * something happens *to* the entity (getting hit). Returns false if the state
+   * does not exist.
+   */
+  force(name: string): boolean {
+    if (!this.file.states[name]) return false;
+    this.current = name;
+    return true;
   }
 
   /**
@@ -129,12 +151,17 @@ export interface Validation {
  * does not exist. Both the game (at load) and the editor's States tab run this,
  * so the same mistake is reported the same way in both places.
  */
-export function validateStates(file: StatesFile, animNames: readonly string[]): Validation {
+/** What the validator needs to know about an animation. */
+export interface AnimInfo {
+  loop: boolean;
+  steps?: readonly { boxes?: readonly { type: string }[] }[];
+}
+
+export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>): Validation {
   const errors: string[] = [];
   const warnings: string[] = [];
   const states = file?.states ?? {};
   const names = Object.keys(states);
-  const anims = new Set(animNames);
 
   if (names.length === 0) {
     errors.push("no states defined");
@@ -147,13 +174,42 @@ export function validateStates(file: StatesFile, animNames: readonly string[]): 
     errors.push(`initial state "${file.initial}" does not exist`);
   }
 
+  if (file.onGotHit !== undefined && !states[file.onGotHit]) {
+    errors.push(`onGotHit state "${file.onGotHit}" does not exist`);
+  }
+
   for (const [name, def] of Object.entries(states)) {
     const where = `state "${name}"`;
 
+    const anim = def.anim ? anims[def.anim] : undefined;
     if (!def.anim) {
       errors.push(`${where}: no "anim"`);
-    } else if (!anims.has(def.anim)) {
+    } else if (!anim) {
       errors.push(`${where}: unknown animation "${def.anim}"`);
+    }
+
+    // A step with no hurt box is a hole in the fighter: for those frames it
+    // cannot be hit at all, and nothing on screen says so.
+    const naked = (anim?.steps ?? [])
+      .map((s, i) => (s.boxes?.some((b) => b.type === "hurt") ? -1 : i))
+      .filter((i) => i >= 0);
+    if (anim?.steps && naked.length > 0) {
+      const which = naked.length === anim.steps.length ? "every step" : `step ${naked.join(", ")}`;
+      warnings.push(
+        `${where}: animation "${def.anim}" has no hurt box on ${which} — cannot be hit there`,
+      );
+    }
+
+    // A state whose only way out is animEnd, playing a looping animation, is a
+    // soft-lock: the animation never ends, so the entity never leaves. Easy to
+    // create by forgetting to untick "loop" on an attack or a hit reaction.
+    const exits = def.transitions ?? [];
+    if (exits.length === 0) {
+      warnings.push(`${where}: no transitions — nothing can leave it`);
+    } else if (anim?.loop && exits.every((t) => t.when === "animEnd")) {
+      warnings.push(
+        `${where}: can never be left — animation "${def.anim}" loops, so animEnd never fires`,
+      );
     }
 
     if (
@@ -180,9 +236,12 @@ export function validateStates(file: StatesFile, animNames: readonly string[]): 
   }
 
   // A state nothing can reach is usually a typo in some transition's target.
+  // The engine can force onGotHit from anywhere, so it counts as an entry point.
   if (file.initial && states[file.initial]) {
-    const seen = new Set<string>([file.initial]);
-    const queue = [file.initial];
+    const roots = [file.initial];
+    if (file.onGotHit && states[file.onGotHit]) roots.push(file.onGotHit);
+    const seen = new Set<string>(roots);
+    const queue = [...roots];
     for (let cur = queue.pop(); cur !== undefined; cur = queue.pop()) {
       for (const t of states[cur]?.transitions ?? []) {
         if (states[t.to] && !seen.has(t.to)) {
@@ -192,7 +251,7 @@ export function validateStates(file: StatesFile, animNames: readonly string[]): 
       }
     }
     for (const n of names) {
-      if (!seen.has(n)) warnings.push(`state "${n}" is unreachable from "${file.initial}"`);
+      if (!seen.has(n)) warnings.push(`state "${n}" is unreachable (no transition leads to it)`);
     }
   }
 

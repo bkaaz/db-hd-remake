@@ -240,9 +240,11 @@ export function renderStates(container: HTMLElement): void {
     return;
   }
 
-  const animNames = state.anims.map((a) => a.name);
-  const known = new Set(animNames);
-  const { errors, warnings } = validateStates(file, animNames);
+  const known = new Set(state.anims.map((a) => a.name));
+  const byName = Object.fromEntries(
+    state.anims.map((a) => [a.name, { loop: a.loop, steps: a.steps }]),
+  );
+  const { errors, warnings } = validateStates(file, byName);
 
   const summary = el("p", {
     className: errors.length > 0 ? "err" : "hint",

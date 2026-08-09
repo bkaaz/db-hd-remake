@@ -2,6 +2,70 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Authoring pipeline: scripts compute, the owner adjusts
+
+There will be ~10 entities × ~20 animations, so how an animation gets made
+matters more than any single animation.
+
+- **No approval gates.** The owner supplies the frame list; Claude produces the
+  whole animation and state in one go; the owner verifies and edits later, on
+  their own schedule. Gates were considered and dropped — they serialise the two
+  sides for no gain, since the output is explicitly a *skeleton to adjust*, not
+  a finished move.
+- **Anything derivable is computed by a script**, not reasoned about. Frames are
+  cut tight around the silhouette, so a hurt box *is* the frame rect relative to
+  the anchor; the active frame of an attack is the one reaching furthest in
+  front of the anchor. `src/boxes.ts` (pure, tested) + `scripts/anim.ts`
+  (`npm run anim`). Rationale is as much about cost as correctness: doing this
+  in-context means pulling a 2000-line `frames.json` in per animation, for
+  arithmetic that is deterministic — and a script gives the same answer every
+  time, which a model does not.
+- **The owner names which frames are which pose.** Never inferred.
+- **Reports separate computed from guessed** (hurt boxes vs hit box, timing,
+  choice of active frame), so the owner knows where to look.
+- **Default timings** (wind-up 4 / active 2 / recovery 5; loops 6; reaction ~12
+  total) are generic fighting-game values, **not** Hyper Dimension frame data,
+  which is undocumented. Tunable by feel, never presented as faithful.
+- **Editor is no longer the only writer**, so a stale save could silently
+  destroy generated data. `/api/entity` now returns per-section mtimes, the
+  editor remembers them, and a save that would overwrite a newer file asks
+  first. Added a **Reload data** button (re-reads sections, keeps the sheet).
+- **New validator warning:** a state whose animation has steps without a hurt
+  box — frames where the fighter cannot be hit and nothing says so.
+- **Procedure lives in a skill** (`.claude/skills/add-animation/`), not in
+  `CLAUDE.md`: it is loaded on demand, so it costs nothing in sessions about
+  something else. `CLAUDE.md` keeps only the principles and points at it.
+- **Rejected:** rewriting the editor in Vue (the bottleneck was never the UI
+  toolkit — it was the round-trip, which the new flow removes), a separate
+  review tool (would duplicate the canvas and box code), and a PNG frame
+  exporter for Claude to eyeball hit boxes (bought accuracy that a skeleton
+  does not need; hurt boxes are the tedious part and they are computable).
+
+## 2026-08-09 — Attacks: hit detection, `onGotHit`, keyboard layout
+
+- **An attack is an ordinary state**, not a new concept: non-looping animation,
+  `hit` boxes on its active steps, `turn: false`, recovery via
+  `animEnd → idle`. New trigger **`pressed:attack`** — an *edge*, so holding the
+  key does not machine-gun.
+- **Getting hit is a single top-level field, `onGotHit`.** The engine forces
+  that state on the defender whatever it was doing, instead of every state
+  having to declare how it reacts. Same shape as MUGEN's GetHit state.
+- **No `hitstun` field yet.** The reaction lasts as long as the `onGotHit`
+  state's non-looping animation — timing you author in the editor regardless.
+  An explicit field can come later if the animation length turns out to be the
+  wrong knob. Damage and health wait for `attributes.json` (phase C): without a
+  health bar there is nothing to see.
+- **One hit per entry into the attack state**, tracked by the engine, so a hit
+  box that stays out for several frames still lands once.
+- **Collision lives in `src/hit.ts`** — pure, unit-tested, and used by the box
+  overlay too, so what is drawn is exactly what collides.
+- **Keyboard = the ZSNES default layout:** SNES `A`=`X`, `B`=`Z`, `X`=`S`,
+  `Y`=`A`, `L`=`C`, `R`=`D`, directions on the arrow keys. Only SNES `Y`
+  (keyboard `A`, the weak punch) is wired for now; the remaining buttons and a
+  remapping screen come later.
+- **Still out:** blocking, knockback, push-box collision between bodies (the
+  fighters still walk through each other), hit sparks and sounds.
+
 ## 2026-08-08 — Vitest now; tests live in the repo, never in a scratch script
 
 - **Vitest is in** (`npm test`), starting with `src/states.test.ts` — 18 cases
