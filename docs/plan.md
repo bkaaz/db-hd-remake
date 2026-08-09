@@ -22,17 +22,10 @@ detail that gets rewritten before it is read.
 **The order is the point.** A–D build **one complete exchange** — a hit that
 costs something, has weight and is visible — before any move is multiplied.
 Four buttons × three stances is twelve attacks, and re-tuning how a hit feels
-afterwards would mean redoing all of them. **A is done**: a blow now names how
-it is taken and pushes the defender back.
+afterwards would mean redoing all of them. **A and B are done**: a blow names
+how it is taken, pushes the defender back, and pauses on contact.
 
 ---
-
-## B. Hitstop — a hit that has weight
-
-- **B1 — freeze both entities for a few frames on contact.** Animation and
-  movement both stop. *Open:* where the number lives — a `hitstop` field on the
-  attack state (heavy hits want more) falling back to an entity attribute.
-  *Done when:* a hit bites, and the number is tunable in one place.
 
 ## C. Catalogue pass over the attack region (~frames 32–60)
 
@@ -94,7 +87,18 @@ queue.
 - **Blocking**, and blockstun. Not in A–J above; the exchange being built is an
   unblocked one.
 - **Commands / input buffer / motion recognition** (was phase E) — the
-  prerequisite for specials.
+  prerequisite for specials, and for combos before that. **Hitstop currently
+  eats inputs:** the loop clears the attack edge every frame while a frozen
+  `update()` returns before reading it, so a button pressed during the 6-frame
+  pause is lost — and that pause is exactly when a player presses the next
+  attack, having just seen the hit land. Without a buffer the combo failures
+  will look like a timing problem rather than a swallowed press.
+- **An explicit `hitstun`.** Today a reaction lasts as long as its animation,
+  which is enough while there is one reaction. Combos need to tune how long the
+  defender is helpless independently of how many frames the pose takes — that
+  difference against the attacker's recovery *is* the combo. Hitstop does not
+  enter into it: freezing both sides equally leaves frame advantage unchanged,
+  which is why it is symmetric.
 - **The rest of the keyboard layout** and a remapping screen. Only SNES `Y`
   (keyboard `A`) is wired.
 - **A camera**, and a stage. Round rules and a second player belong to Stage 3

@@ -50,9 +50,20 @@ export interface Attributes {
    * Deliberately one number rather than per-frame boxes — see src/push.ts.
    */
   pushWidth: number;
+  /**
+   * Game frames both fighters are frozen for when a blow connects — the pause
+   * that makes a hit feel like it met something instead of passing through.
+   * An attack state may override it with its own `hitstop`.
+   */
+  hitstop: number;
 }
 
-export const DEFAULT_ATTRIBUTES: Attributes = { gravity: 0.3, landCue: 50, pushWidth: 30 };
+export const DEFAULT_ATTRIBUTES: Attributes = {
+  gravity: 0.3,
+  landCue: 50,
+  pushWidth: 30,
+  hitstop: 6,
+};
 
 interface EntityFile {
   name: string;

@@ -1,5 +1,6 @@
 {
   "gravity": 0.3,
   "landCue": 45,
-  "pushWidth": 30
+  "pushWidth": 30,
+  "hitstop": 6
 }

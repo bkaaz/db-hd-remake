@@ -167,6 +167,22 @@ describe("validateStates", () => {
     );
   });
 
+  it("reports a hitstop that is not a frame count", () => {
+    const f = machine();
+    f.states.punch = { anim: "punch", hitstop: -1, transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    expect(validateStates(f, ANIMS).errors).toContain(
+      'state "punch": "hitstop" must be a number of game frames, 0 or more',
+    );
+  });
+
+  it("accepts a hitstop of zero — an attack that deliberately does not pause", () => {
+    const f = machine();
+    f.states.punch = { anim: "punch", hitstop: 0, transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    expect(validateStates(f, ANIMS).errors).toEqual([]);
+  });
+
   it("reports an onGotHit state that does not exist", () => {
     const f = machine();
     f.onGotHit = "hrut";

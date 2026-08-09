@@ -50,6 +50,12 @@ export interface StateDef {
    * expected to implement (`hurt`, later `hurt_heavy`, `knockdown`).
    */
   onHit?: string;
+  /**
+   * Game frames both fighters freeze for when this state's attack connects,
+   * overriding the entity's `hitstop` attribute. A heavier blow wants a longer
+   * pause, and that belongs to the blow rather than to either body.
+   */
+  hitstop?: number;
   /** Evaluated in order; the first firing transition wins. */
   transitions?: Transition[];
 }
@@ -293,6 +299,10 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
         `${where}: onHit reaction "${def.onHit}" is not a state of this entity — ` +
           `fine only if every opponent defines it`,
       );
+    }
+
+    if (def.hitstop !== undefined && (typeof def.hitstop !== "number" || def.hitstop < 0)) {
+      errors.push(`${where}: "hitstop" must be a number of game frames, 0 or more`);
     }
 
     if (

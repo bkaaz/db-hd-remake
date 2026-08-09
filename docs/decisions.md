@@ -2,6 +2,30 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Hitstop: both fighters stop dead, and the blow sets for how long
+
+- **A connecting hit freezes *both* fighters**, not just the one taking it.
+  Freezing only the defender lets the attacker keep walking through the moment
+  of contact, which reads as the blow passing through rather than landing.
+- **The freeze is total** — animation, movement and state changes all stop, so
+  the pose the hit landed on is the pose held still. Halting movement while the
+  animation ran on would just be a stutter.
+- **Push separation is suspended too.** It runs every frame regardless of state,
+  so without an explicit guard "frozen" would have meant *everything except the
+  push* — true only by accident, and quietly wrong the day pushing changes.
+- **The number lives in two places, deliberately:** `hitstop` as an entity
+  attribute is the default, and an attack state may override it, because a
+  heavier blow wants a longer pause and that property belongs to the blow rather
+  than to either body. Same shape as `onHit`.
+- **6 frames (100 ms) is a bounded guess, not a derivation**, and is written out
+  in `attributes.json` rather than left to the engine default so it is visible
+  where you would look to tune it. The bounds it sits between: below ~4 frames
+  the pause stops registering at 60 FPS, and above half the 12-frame reaction it
+  eats the reaction it is supposed to punctuate. Like all our timings, generic
+  fighting-game feel — not Hyper Dimension frame data.
+- **Validated as a frame count** (a number, zero or more). Zero is legal and
+  means an attack that deliberately does not pause.
+
 ## 2026-08-09 — Impact: the blow names the reaction, and pushes you back
 
 - **`onHit` on the attack state names a state on the *defender*.** The blow

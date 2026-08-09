@@ -68,6 +68,9 @@ export class Entity {
   private readonly gravity: number;
   private readonly landCue: number;
   private readonly pushWidth: number;
+  private readonly hitstop: number;
+  /** Game frames left of a hit pause; while it lasts nothing about the entity moves. */
+  private freezeFrames = 0;
 
   constructor(
     private readonly def: EntityDef,
@@ -76,6 +79,7 @@ export class Entity {
     this.gravity = def.attributes.gravity;
     this.landCue = def.attributes.landCue;
     this.pushWidth = def.attributes.pushWidth;
+    this.hitstop = def.attributes.hitstop;
     this.sprite.scale.set(scale);
     this.view.addChild(this.sprite, this.boxG);
     this.sm = def.states ? new StateMachine(def.states) : null;
@@ -122,6 +126,25 @@ export class Entity {
     return this.sm?.def.onHit;
   }
 
+  /** Frames to freeze both fighters for when this entity's attack connects. */
+  get attackHitstop(): number {
+    return this.sm?.def.hitstop ?? this.hitstop;
+  }
+
+  /**
+   * Stop dead for `frames` game frames: no state changes, no movement, no
+   * animation. The pause on a connecting hit, applied to both fighters so they
+   * stick together for a moment instead of one sliding out of the other.
+   */
+  freeze(frames: number): void {
+    if (frames > this.freezeFrames) this.freezeFrames = frames;
+  }
+
+  /** Mid hit pause — nothing about this entity may move, push included. */
+  get frozen(): boolean {
+    return this.freezeFrames > 0;
+  }
+
   /**
    * Take a blow: enter the reaction the attacker asked for, or this entity's
    * own default. Returns false when neither names a state that exists — the
@@ -155,6 +178,13 @@ export class Entity {
       return;
     }
     if (!this.sm) return;
+
+    // A hit pause freezes the whole entity, animation included — the pose the
+    // blow landed on is exactly what should be held still.
+    if (this.freezeFrames > 0) {
+      this.freezeFrames--;
+      return;
+    }
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.

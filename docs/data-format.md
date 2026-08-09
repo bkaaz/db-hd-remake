@@ -231,9 +231,16 @@ than to any one state. So far one:
 {
   "gravity": 0.3,    // sprite px per game frame, squared
   "landCue": 60,     // sprite px above the ground where the landing pose starts
-  "pushWidth": 30    // body width for push collision, centred on the anchor
+  "pushWidth": 30,   // body width for push collision, centred on the anchor
+  "hitstop": 6       // game frames both fighters freeze for on a connecting hit
 }
 ```
+
+`hitstop` is the pause that makes a blow feel like it met something. Both
+fighters freeze completely — animation, movement and state changes — so the
+pose the hit landed on is held still. An attack state can override it with its
+own `hitstop` field, because a heavy blow wants a longer pause and that belongs
+to the blow rather than to either body.
 
 `landCue` is a distance, but what matters is how many frames it buys before
 touchdown — and that depends on the jump. For Goku's 150 px jump: 24 px is

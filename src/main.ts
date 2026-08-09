@@ -130,6 +130,11 @@ async function boot(): Promise<void> {
     }
     attacker.markHit();
     defender.gotHit(attacker.attackReaction);
+    // Both sides pause, not just the one taking it: freezing only the defender
+    // lets the attacker walk on through the moment of contact.
+    const stop = attacker.attackHitstop;
+    attacker.freeze(stop);
+    defender.freeze(stop);
   };
 
   let acc = 0;
@@ -144,8 +149,9 @@ async function boot(): Promise<void> {
       dummy?.update(NO_INPUT, player.x, bounds);
       if (dummy) {
         // Bodies cannot overlap — but only on the ground, so a jump can carry
-        // you over the opponent instead of being blocked by them.
-        if (!player.airborne && !dummy.airborne) {
+        // you over the opponent instead of being blocked by them. A hit pause
+        // suspends this too, or "frozen" would mean everything but the push.
+        if (!player.airborne && !dummy.airborne && !player.frozen && !dummy.frozen) {
           const { ax, bx } = separate(
             { x: player.x, half: player.pushHalf },
             { x: dummy.x, half: dummy.pushHalf },
