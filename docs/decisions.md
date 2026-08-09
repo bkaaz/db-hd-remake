@@ -2,6 +2,32 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Frame numbering: reading order, plain numbers, renumber by hand
+
+- **Detection numbered frames by top edge**, so a taller pose starting a few
+  pixels higher stole a lower number from the sprite to its left. Sheets are
+  laid out in rows and neighbouring sprites belong together, so numbering must
+  follow the layout: **group into rows by vertical overlap, then left to right**
+  (`tools/entity-editor/src/rowOrder.ts`, pure and unit-tested; a rect joins a
+  row when it shares at least half its height with it, so a tall sprite cannot
+  swallow the row below).
+- Confirmation the rule is right: with it, Goku's idle becomes 6,7,8 and the
+  air spin becomes 20,21,22,23 — both consecutive, where before they were
+  8,6,7 and 23,21,22,20.
+- **Frame ids are plain numbers** (`"33"`), not `frame_33`. They *are* positions
+  on the sheet; the prefix was noise the sheet view already stripped for
+  display. Kept as strings because JSON keys are strings — and integer-like keys
+  serialise in numeric order, so `frames.json` stays sorted for free.
+- **Renumbering is manual and swaps.** Typing a number over a frame's id
+  renumbers it; if that number is taken the two frames trade places, since
+  renumbering is how an ordering mistake gets fixed and refusing would force a
+  dance through a temporary number. Animation steps follow both ways.
+- **Animation steps take a typed number, not a dropdown** — a `<select>` of 220
+  frames is unusable. An unknown number is rejected and flagged.
+- Existing data was migrated in place (one-off, in the shell) rather than by
+  re-detecting, which would have discarded hand-adjusted frame rectangles.
+  Only ids changed; rects, timings and boxes were untouched.
+
 ## 2026-08-09 — Hurt boxes are fitted to the silhouette, not the frame rect
 
 - **Problem:** deriving a hurt box from the frame rectangle gives one box around

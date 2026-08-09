@@ -1,4 +1,7 @@
 import { getKeyedImageData } from "./imageProcess";
+import { rowMajor, type Rect } from "./rowOrder";
+
+export type { Rect };
 
 /**
  * Auto-detects sprite frames from the keyed sheet: transparent pixels are gaps,
@@ -13,13 +16,6 @@ import { getKeyedImageData } from "./imageProcess";
  * (kills 1px slivers and small noise). Applies to "detect all" only — a magic
  * click is explicit and always makes a frame.
  */
-
-export interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
 
 export interface DetectOptions {
   gap: number;
@@ -143,8 +139,8 @@ export function detectAll(opts: DetectOptions): Rect[] {
     if (rect && rect.w >= opts.minSide && rect.h >= opts.minSide) rects.push(rect);
   }
 
-  rects.sort((a, b) => a.y - b.y || a.x - b.x);
-  return rects;
+  // Numbering follows the sheet's layout: along a row, then down (rowOrder.ts).
+  return rowMajor(rects);
 }
 
 /** Detect the single sprite frame under the given image-space point. */
