@@ -9,7 +9,8 @@
       "transitions": [
         { "when": "pressed:attack", "to": "punch" },
         { "when": "held:fwd", "to": "walk_fwd" },
-        { "when": "held:back", "to": "walk_back" }
+        { "when": "held:back", "to": "walk_back" },
+        { "when": "held:up", "to": "jump_up" }
       ]
     },
     "walk_fwd": {
@@ -18,6 +19,7 @@
       "turn": true,
       "transitions": [
         { "when": "pressed:attack", "to": "punch" },
+        { "when": "held:up", "to": "jump_fwd" },
         { "when": "!held:fwd", "to": "idle" }
       ]
     },
@@ -27,6 +29,7 @@
       "turn": true,
       "transitions": [
         { "when": "pressed:attack", "to": "punch" },
+        { "when": "held:up", "to": "jump_back" },
         { "when": "!held:back", "to": "idle" }
       ]
     },
@@ -41,6 +44,84 @@
       "vel": [0, 0],
       "turn": false,
       "transitions": [{ "when": "animEnd", "to": "idle" }]
+    },
+
+    "jump_up": {
+      "anim": "jump_up",
+      "launch": [0, -9.5],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        { "when": "nearGround", "to": "land" },
+        { "when": "falling", "to": "jump_up_fall" },
+        { "when": "landed", "to": "idle" }
+      ]
+    },
+    "jump_fwd": {
+      "anim": "jump_fwd",
+      "launch": [2.3, -9.5],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        { "when": "nearGround", "to": "land" },
+        { "when": "animEnd", "to": "jump_fwd_air" },
+        { "when": "landed", "to": "idle" }
+      ]
+    },
+    "jump_fwd_air": {
+      "anim": "jump_spin",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        { "when": "nearGround", "to": "land" },
+        { "when": "animEnd", "to": "fall" },
+        { "when": "landed", "to": "idle" }
+      ]
+    },
+    "jump_back": {
+      "anim": "jump_back",
+      "launch": [-2.0, -9.5],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        { "when": "nearGround", "to": "land" },
+        { "when": "animEnd", "to": "jump_back_air" },
+        { "when": "landed", "to": "idle" }
+      ]
+    },
+    "jump_back_air": {
+      "anim": "jump_spin_back",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        { "when": "nearGround", "to": "land" },
+        { "when": "animEnd", "to": "fall" },
+        { "when": "landed", "to": "idle" }
+      ]
+    },
+    "jump_up_fall": {
+      "anim": "jump_up_fall",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        { "when": "nearGround", "to": "land" },
+        { "when": "landed", "to": "idle" }
+      ]
+    },
+    "fall": {
+      "anim": "fall",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        { "when": "nearGround", "to": "land" },
+        { "when": "landed", "to": "idle" }
+      ]
+    },
+    "land": {
+      "anim": "land",
+      "airborne": true,
+      "turn": false,
+      "transitions": [{ "when": "landed", "to": "idle" }]
     }
   }
 }
