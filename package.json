@@ -11,6 +11,7 @@
     "hash-assets": "node scripts/fetch-assets.mjs --print-hashes",
     "build": "tsc --noEmit && vite build",
     "anim": "tsx scripts/anim.ts",
+    "fx": "tsx scripts/fx.ts",
     "sheet": "tsx scripts/sheet.ts",
     "test": "vitest run",
     "test:watch": "vitest",
