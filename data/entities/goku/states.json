@@ -37,10 +37,17 @@
       "anim": "punch",
       "vel": [0, 0],
       "turn": false,
+      "onHit": "hurt",
       "transitions": [{ "when": "animEnd", "to": "idle" }]
     },
     "hurt": {
       "anim": "hurt",
+      "vel": [0, 0],
+      "turn": false,
+      "transitions": [{ "when": "animEnd", "to": "idle" }]
+    },
+    "hurt_heavy": {
+      "anim": "hurt_heavy",
       "vel": [0, 0],
       "turn": false,
       "transitions": [{ "when": "animEnd", "to": "idle" }]

@@ -31,17 +31,6 @@ afterwards would mean redoing all of them.
 Today a hit swaps the defender's animation and nothing else. This makes it an
 event with a direction and a magnitude.
 
-- **A1 — the attacker names the reaction.** New field `onHit: "<state>"` on an
-  attack state; the engine forces *that* state on the defender. The defender's
-  top-level `onGotHit` stays as the fallback for attacks that name nothing.
-  Reaction names become a small shared vocabulary every fighter implements
-  (`hurt_light`, `hurt_heavy`, later `knockdown`) — the validator can only check
-  the attacker's own entity for now, which is fine while both fighters are Goku.
-  *Done when:* Goku's punch names a reaction and the dummy plays it.
-- **A2 — a second reaction, `hurt_heavy`.** Needs a frame; if it is not among
-  the 45 already described, describe that small range first (`add-animation`
-  skill), do not guess the pose.
-  *Done when:* two visibly different reactions exist and an attack picks one.
 - **A3 — knockback.** The reaction state moves the defender backwards. Start
   with plain `vel` on the reaction state — facing is toward the attacker, so
   negative X is away, and no new machinery is needed. *Open:* whether that reads
@@ -80,14 +69,21 @@ event with a direction and a magnitude.
 ## E. Two attack buttons, two standing attacks
 
 Which SNES buttons, and which two attacks, is settled when E starts — not
-guessed from memory.
+guessed from memory. The heavy attack is what finally puts `hurt_heavy` on
+screen; until then nothing selects it, and the validator says so.
 
 ## F. Knockdown
 
-A sequence, not a third hurt variant: fall → down → get up, each its own state.
-Light and heavy share one shape; this one does not.
+A sequence, not a third hurt variant: start of going down → fall → landed →
+get up, each its own state. Light and heavy share one shape; this one does not.
+Frames are already confirmed and in the catalogue (77–81).
 
 ## G. Crouch, and crouch attacks
+
+*Open:* whether a low blow needs its own reaction. Frame 76 is a hit to the
+stomach, so the sprite exists — the question is whether the fight reads better
+with it, or whether high/low is a distinction that costs a reaction per fighter
+and buys little.
 
 ## H. Air attacks
 

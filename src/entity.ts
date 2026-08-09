@@ -1,7 +1,7 @@
 import { Container, Graphics, Sprite } from "pixi.js";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "./hit";
-import { StateMachine } from "./states";
+import { reactionFor, StateMachine } from "./states";
 
 /**
  * One live entity in the world: sprite + animation playback + state machine +
@@ -115,6 +115,22 @@ export class Entity {
   /** Record that the current attack connected; it cannot land again. */
   markHit(): void {
     this.spent = true;
+  }
+
+  /** The reaction this entity's current attack asks of whoever it hits. */
+  get attackReaction(): string | undefined {
+    return this.sm?.def.onHit;
+  }
+
+  /**
+   * Take a blow: enter the reaction the attacker asked for, or this entity's
+   * own default. Returns false when neither names a state that exists — the
+   * hit still landed, it just has nothing to show for it.
+   */
+  gotHit(reaction: string | undefined): boolean {
+    if (!this.def.states) return false;
+    const state = reactionFor(reaction, this.def.states);
+    return state !== undefined && this.forceState(state);
   }
 
   /** Enter a state because something happened *to* this entity (being hit). */

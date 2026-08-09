@@ -150,6 +150,14 @@ rules**; the entity is a state machine and the engine runs it every game frame.
 - **`turn`** — may the entity turn to face its opponent while in this state?
   Facing is engine-owned (`sign(opponentX − selfX)`), so attacks set `turn:false`
   and cannot spin around mid-swing.
+- **`onHit`** — the reaction this state's attack forces on whoever it hits: the
+  name of a state **on the defender**, not in this file. The blow decides how it
+  is taken, which is what separates a jab from a smash. When a state names
+  nothing, the defender's own `onGotHit` applies — so `onHit` overrides a
+  default rather than replacing the mechanism. Reaction names are a small
+  vocabulary every fighter is expected to implement (`hurt`, later `hurt_heavy`,
+  `knockdown`); the validator can only check the attacker's own states, so an
+  unknown name is a **warning**, not an error.
 - **`transitions[]`** — evaluated **in order, first match wins**, and **at most
   one fires per frame** (predictable, no state loops).
   - `when` — trigger, optionally negated with a leading `!`. v0 vocabulary:
@@ -194,7 +202,8 @@ A travelling jump is two states: a take-off (`launch`, one-frame animation,
 with `hit` boxes on its active steps, `turn: false` so it cannot spin mid-swing,
 and `{ "when": "animEnd", "to": "idle" }` to recover. A hit connects when an
 attacker's `hit` box overlaps a defender's `hurt` box; it lands **once per entry
-into the state**, however many frames the box stays out. There is no `hitstun`
+into the state**, however many frames the box stays out. The defender is then
+forced into the attack's `onHit` state, or its own `onGotHit`. There is no `hitstun`
 field yet — the reaction lasts as long as the `onGotHit` state's non-looping
 animation, which is authored in the editor anyway. Damage and health wait for
 `attributes.json`.

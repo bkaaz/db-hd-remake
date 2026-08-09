@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { StateMachine, validateStates, type AnimInfo, type StatesFile } from "./states";
+import { reactionFor, StateMachine, validateStates, type AnimInfo, type StatesFile } from "./states";
 
 /**
  * The state machine and its validator are pure (no PixiJS, no DOM), so they are
@@ -173,6 +173,29 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS).errors).toContain('onGotHit state "hrut" does not exist');
   });
 
+  it("warns about an onHit reaction this entity does not define", () => {
+    // Only a warning: the reaction is looked up on the *defender*, so a name
+    // this fighter lacks may still be legitimate. A typo, though, fails
+    // silently — the attack connects and nothing visible happens.
+    const f = machine();
+    f.states.punch = { anim: "punch", onHit: "hrut", transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    const { errors, warnings } = validateStates(f, ANIMS);
+    expect(errors).toEqual([]);
+    expect(warnings).toContain(
+      'state "punch": onHit reaction "hrut" is not a state of this entity — fine only if every opponent defines it',
+    );
+  });
+
+  it("does not call an onHit reaction unreachable — the engine forces it", () => {
+    // `hurt` here is entered only by being hit; no transition leads to it.
+    const f = machine();
+    f.states.punch = { anim: "punch", onHit: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.hurt = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
+  });
+
   it("keeps the entities we actually ship valid", () => {
     // The point of the validator: catch a typo in hand-authored data. Checking
     // the committed states against the committed animations is what makes that
@@ -185,6 +208,24 @@ describe("validateStates", () => {
     const states = read<StatesFile>("states.json");
     const anims = read<Record<string, AnimInfo>>("animations.json");
     expect(validateStates(states, anims).errors).toEqual([]);
+  });
+});
+
+describe("reactionFor", () => {
+  it("takes the attack's reaction over the defender's default", () => {
+    // The blow outranks the body: a heavy attack staggers someone whose own
+    // default is a flinch.
+    expect(reactionFor("hurt_heavy", { initial: "idle", onGotHit: "hurt", states: {} })).toBe(
+      "hurt_heavy",
+    );
+  });
+
+  it("falls back to the defender's default when the attack names nothing", () => {
+    expect(reactionFor(undefined, { initial: "idle", onGotHit: "hurt", states: {} })).toBe("hurt");
+  });
+
+  it("is undefined when neither side says anything", () => {
+    expect(reactionFor(undefined, { initial: "idle", states: {} })).toBeUndefined();
   });
 });
 

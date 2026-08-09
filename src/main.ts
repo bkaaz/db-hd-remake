@@ -115,22 +115,21 @@ async function boot(): Promise<void> {
   label.y = noStates ? 28 : 8;
   app.stage.addChild(label);
 
-  const onGotHit = def.states?.onGotHit;
-
   /**
    * An attacker's active hit boxes against a defender's hurt boxes. On a
-   * connection the defender is forced into the entity's `onGotHit` state and
-   * the attack is spent, so one swing lands once however long its box is out.
+   * connection the defender takes the reaction the attack asks for (or its own
+   * default) and the attack is spent, so one swing lands once however long its
+   * box is out.
    */
   const resolveHit = (attacker: Entity, defender: Entity): void => {
-    if (!onGotHit || !attacker.canHit) return;
+    if (!attacker.canHit) return;
     const boxes = attacker.boxes("hit");
     if (boxes.length === 0) return;
     if (!connects({ boxes, at: attacker.placement }, { boxes: defender.boxes("hurt"), at: defender.placement })) {
       return;
     }
     attacker.markHit();
-    defender.forceState(onGotHit);
+    defender.gotHit(attacker.attackReaction);
   };
 
   let acc = 0;

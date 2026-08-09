@@ -40,6 +40,16 @@ export interface StateDef {
   vel?: [number, number];
   /** Whether the entity may turn to face its opponent while in this state. */
   turn?: boolean;
+  /**
+   * The reaction this state's attack forces on whoever it hits — the name of a
+   * state **on the defender**, not here. This is how one fighter distinguishes
+   * a jab from a smash: the blow decides how it is taken, not the body taking
+   * it. Falls back to the defender's own `onGotHit` when a state names nothing.
+   *
+   * Reaction names are therefore a small shared vocabulary every fighter is
+   * expected to implement (`hurt`, later `hurt_heavy`, `knockdown`).
+   */
+  onHit?: string;
   /** Evaluated in order; the first firing transition wins. */
   transitions?: Transition[];
 }
@@ -133,6 +143,19 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       value = false;
   }
   return negated ? !value : value;
+}
+
+/**
+ * Which state a landed blow forces on the defender: the attacker's `onHit` if
+ * its state names one, otherwise the defender's own `onGotHit`.
+ *
+ * The precedence is the rule that matters — the blow outranks the body, so a
+ * heavy attack can stagger someone whose default reaction is a flinch, while an
+ * attack that says nothing still gets the defender's default rather than
+ * nothing at all.
+ */
+export function reactionFor(onHit: string | undefined, defender: StatesFile): string | undefined {
+  return onHit ?? defender.onGotHit;
 }
 
 export class StateMachine {
@@ -261,6 +284,17 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
       );
     }
 
+    // A reaction lives on the *defender*, so a name this entity does not define
+    // is only wrong once every fighter is expected to implement the vocabulary.
+    // A warning until then — but a typo here fails silently, which is worse than
+    // most, because the attack still connects and simply does nothing visible.
+    if (def.onHit !== undefined && !states[def.onHit]) {
+      warnings.push(
+        `${where}: onHit reaction "${def.onHit}" is not a state of this entity — ` +
+          `fine only if every opponent defines it`,
+      );
+    }
+
     if (
       def.vel !== undefined &&
       (!Array.isArray(def.vel) || def.vel.length !== 2 || def.vel.some((v) => typeof v !== "number"))
@@ -285,10 +319,14 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
   }
 
   // A state nothing can reach is usually a typo in some transition's target.
-  // The engine can force onGotHit from anywhere, so it counts as an entry point.
+  // The engine can force a reaction from anywhere, so `onGotHit` and every
+  // `onHit` are entry points too — a reaction is never *transitioned* into.
   if (file.initial && states[file.initial]) {
     const roots = [file.initial];
     if (file.onGotHit && states[file.onGotHit]) roots.push(file.onGotHit);
+    for (const def of Object.values(states)) {
+      if (def.onHit && states[def.onHit] && !roots.includes(def.onHit)) roots.push(def.onHit);
+    }
     const seen = new Set<string>(roots);
     const queue = [...roots];
     for (let cur = queue.pop(); cur !== undefined; cur = queue.pop()) {

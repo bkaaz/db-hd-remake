@@ -3,51 +3,135 @@
   "groups": {
     "base_form": {
       "desc": "Goku before transforming — black hair, calmer poses. Frames 0 and 2 are dithered: a SNES transparency effect, so they are the fade in/out of the transformation rather than real poses.",
-      "frames": ["0", "2", "3", "4", "5"]
+      "frames": [
+        "0",
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
     },
     "idle": {
       "desc": "Super Saiyan neutral stance, fists up, weight even. Three near-identical frames that read as breathing.",
-      "frames": ["6", "7", "8"]
+      "frames": [
+        "6",
+        "7",
+        "8"
+      ]
     },
     "walk": {
       "desc": "Two-frame walk cycle, guard held up. Used for BOTH directions — walking backwards plays the same frames, only the velocity differs (walk_fwd / walk_back).",
-      "frames": ["9", "10"]
+      "frames": [
+        "9",
+        "10"
+      ]
     },
     "crouch_low": {
       "desc": "? Low stances: progressively deeper knee bend with the arms drawn in. Likely crouch and/or crouching guard, but which is which is unconfirmed.",
-      "frames": ["11", "12", "13", "17", "18"]
+      "frames": [
+        "11",
+        "12",
+        "13",
+        "17",
+        "18"
+      ]
     },
     "jump_up": {
       "desc": "? Vertical jump: rise with the body upright and legs extended, then tuck. See the note on 17 — the tucked pair looks like 15/16 rather than 17/15.",
-      "frames": ["14", "15", "16"]
+      "frames": [
+        "14",
+        "15",
+        "16"
+      ]
     },
     "jump_fwd": {
       "desc": "Take-off for the forward jump: airborne, body angled, legs trailing. Continues into air_spin.",
-      "frames": ["19"]
+      "frames": [
+        "19"
+      ]
     },
     "air_spin": {
       "desc": "Airborne somersault, four frames of a full rotation — the loop for a travelling jump. Consecutive on the sheet, which is a good sign the numbering is right.",
-      "frames": ["20", "21", "22", "23"]
+      "frames": [
+        "20",
+        "21",
+        "22",
+        "23"
+      ]
     },
     "lunge": {
       "desc": "? Forward-committed poses: deep stances, rear leg extended, arms leading. Could be a dash, an attack wind-up, or both — needs naming.",
-      "frames": ["24", "25", "26", "27", "28"]
+      "frames": [
+        "24",
+        "25",
+        "26",
+        "27",
+        "28"
+      ]
     },
     "powerup": {
       "desc": "Ki charge: standing with fists clenched low inside a bright aura flare, growing over three frames.",
-      "frames": ["29", "30", "31"]
+      "frames": [
+        "29",
+        "30",
+        "31"
+      ]
     },
     "punch_light": {
       "desc": "Straight punch. 32 is the guard the punch starts from AND the pose it pulls back to, so it appears twice in the animation (32 → 33 → 32); 33 is the extended, active frame. Frames can serve several purposes like this — the catalogue names the pose, the animation decides the order.",
-      "frames": ["32", "33"]
+      "frames": [
+        "32",
+        "33"
+      ]
     },
     "kick": {
       "desc": "? Kicks at three heights — mid (36), high (39) and low (42). Whether these are three separate moves or one move's arc is unconfirmed; the wind-up and recovery poses around them are not yet identified.",
-      "frames": ["36", "39", "42"]
+      "frames": [
+        "36",
+        "39",
+        "42"
+      ]
     },
     "crouch_attack": {
       "desc": "? Crouched with an arm driving forward — reads as a low attack from a crouch.",
-      "frames": ["44", "45"]
+      "frames": [
+        "44",
+        "45"
+      ]
+    },
+    "fx_impact": {
+      "desc": "? Effect sprites, not poses: a burst of flame that grows and then breaks up. Almost certainly the hit spark for something — which move is unknown. Relevant to the fx_hit entity (see docs/plan.md, item D).",
+      "frames": [
+        "68",
+        "69",
+        "70"
+      ]
+    },
+    "overhead_swing": {
+      "desc": "? A committed overhead attack: guard, swing with a bright arc trail, recovery with the arm still up. Grouping and order are read off the sheet, not confirmed.",
+      "frames": [
+        "71",
+        "72",
+        "73"
+      ]
+    },
+    "hurt": {
+      "desc": "Hit reactions, standing. 74 alone is the light one — a single flinch after something like the light punch. 74 followed by 75 is the heavier one: the same flinch continued into a real recoil, so the two share a first frame rather than being separate animations. 76 is a hit to the stomach / a low blow. Confirmed by the owner.",
+      "frames": [
+        "74",
+        "75",
+        "76"
+      ]
+    },
+    "knockdown": {
+      "desc": "Being put on the floor: 77 is the start of going down (also read as a stun, and as the start of taking damage while airborne), 78 the fall itself, 79 landed and lying, 80 and 81 getting back up. Confirmed by the owner; see docs/plan.md item F.",
+      "frames": [
+        "77",
+        "78",
+        "79",
+        "80",
+        "81"
+      ]
     }
   },
   "frames": {
@@ -95,6 +179,22 @@
     "42": "low kick: leg extended forward near the ground, body leaning far back",
     "43": "? standing tall, one arm raised overhead — reads as an upward or overhead swing",
     "44": "? crouched low, lead arm driving forward",
-    "45": "? crouched low, arm extended further forward than 44"
+    "45": "? crouched low, arm extended further forward than 44",
+    "68": "impact effect: a compact ball of flame with short spikes around it — an effect sprite, not a pose",
+    "69": "impact effect: the same burst, larger and breaking up into flames at the bottom — the next step of 68",
+    "70": "? impact effect: a thin arc of orange sparks, nothing else — the dying end of 68/69, or a separate small effect",
+    "71": "? standing with both forearms crossed high in front of the face, weight on the back foot — a guard, or the wind-up of the swing in 72",
+    "72": "? overhead swing: arm coming down with a bright arc trail drawn behind it — the trail marks this as the active frame of an attack",
+    "73": "? standing with the lead arm raised high and the fist closed — reads as the recovery of 72",
+    "74": "hit reaction, light: upright, head snapped back, arms flung out and down. Played alone it IS the light reaction; it is also the first frame of the heavier one, which continues into 75",
+    "75": "hit reaction, heavy: turned away from the blow, near arm across the face, head dropped — the recoil that follows 74 when the attack is strong enough to need one. Not used alone",
+    "76": "hit reaction to the stomach / a low blow — doubled forward, head down and forward, arms hanging loose",
+    "77": "the start of going down: off balance, on the way to the floor. Also reads as a stun, and as the start of taking damage in the air",
+    "78": "falling after being knocked down — body horizontal in the air, head low, legs trailing high",
+    "79": "landed: flat on the ground, face down, arms spread",
+    "80": "getting up, first frame — head and shoulder still down, legs coming back under the body",
+    "81": "getting up, second frame — on hands and knees with the head low, about to stand",
+    "82": "dithered full-body standing pose, arms drawn in — dithering is the SNES transparency effect, so this is a fade/flash rather than a real pose",
+    "83": "dithered, compact and turned side-on — the next step of the same fade as 82"
   }
 }
