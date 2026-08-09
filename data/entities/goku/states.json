@@ -9,6 +9,8 @@
       "transitions": [
         { "when": "pressed:punch", "to": "punch" },
         { "when": "pressed:kick", "to": "kick" },
+        { "when": "pressed:punchHeavy", "to": "uppercut" },
+        { "when": "pressed:kickHeavy", "to": "kick_heavy" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" },
         { "when": "held:up", "to": "jump_up" }
@@ -21,6 +23,8 @@
       "transitions": [
         { "when": "pressed:punch", "to": "punch" },
         { "when": "pressed:kick", "to": "kick" },
+        { "when": "pressed:punchHeavy", "to": "uppercut" },
+        { "when": "pressed:kickHeavy", "to": "kick_heavy" },
         { "when": "held:up", "to": "jump_fwd" },
         { "when": "!held:fwd", "to": "idle" }
       ]
@@ -32,6 +36,8 @@
       "transitions": [
         { "when": "pressed:punch", "to": "punch" },
         { "when": "pressed:kick", "to": "kick" },
+        { "when": "pressed:punchHeavy", "to": "uppercut" },
+        { "when": "pressed:kickHeavy", "to": "kick_heavy" },
         { "when": "held:up", "to": "jump_back" },
         { "when": "!held:back", "to": "idle" }
       ]
@@ -54,6 +60,26 @@
         { "when": "animEnd", "to": "idle" }
       ]
     },
+    "uppercut": {
+      "anim": "uppercut",
+      "vel": [0, 0],
+      "turn": false,
+      "onHit": "knockdown",
+      "hitFx": "fx_hit_heavy",
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "kick_heavy": {
+      "anim": "kick_heavy",
+      "vel": [0, 0],
+      "turn": false,
+      "onHit": "hurt_heavy",
+      "hitFx": "fx_hit_heavy",
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
+    },
     "hurt": {
       "anim": "hurt",
       "vel": [-1.4, 0],
@@ -64,7 +90,32 @@
     },
     "hurt_heavy": {
       "anim": "hurt_heavy",
-      "vel": [-3.9, 0],
+      "vel": [-5.2, 0],
+      "turn": false,
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "knockdown": {
+      "anim": "knockdown",
+      "launch": [-1.0, -6.2],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        { "when": "landed", "to": "downed" }
+      ]
+    },
+    "downed": {
+      "anim": "downed",
+      "vel": [0, 0],
+      "turn": false,
+      "transitions": [
+        { "when": "animEnd", "to": "getup" }
+      ]
+    },
+    "getup": {
+      "anim": "getup",
+      "vel": [0, 0],
       "turn": false,
       "transitions": [
         { "when": "animEnd", "to": "idle" }

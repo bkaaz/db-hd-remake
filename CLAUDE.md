@@ -199,8 +199,10 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 The **Entity Editor** authors sprites and animations (framing, background
 color-key, auto-detection, anchors, timed steps, hit/hurt/push boxes); the
 **game** loads an entity and runs it as a **state machine** from `states.json`.
-Goku walks, punches, takes hits, jumps in three variants and pushes the
-opponent. A hit lands but costs nothing yet.
+Goku walks, jumps in three variants, pushes the opponent, and fights with four
+attack buttons: a hit picks the reaction it deserves (flinch, stagger or
+knockdown), pauses the game, pushes the defender back and leaves a generated
+spark where the boxes met. A hit still costs no health.
 
 **What is next: `docs/plan.md`** — the queue, and the only one. Full decision
 log: `docs/decisions.md`.

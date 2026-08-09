@@ -36,7 +36,15 @@ function machine(): StatesFile {
   };
 }
 
-const NONE = { fwd: false, back: false, up: false, punch: false, kick: false };
+const NONE = {
+  fwd: false,
+  back: false,
+  up: false,
+  punch: false,
+  kick: false,
+  punchHeavy: false,
+  kickHeavy: false,
+};
 const FWD = { ...NONE, fwd: true };
 const ATTACK = { ...NONE, punch: true };
 const UP = { ...NONE, up: true };

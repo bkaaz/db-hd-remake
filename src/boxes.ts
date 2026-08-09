@@ -194,6 +194,9 @@ export function durations(
       // ~12 frames of reaction, however many steps it is drawn in.
       return Array<number>(count).fill(Math.max(2, Math.round(12 / count)));
     case "attack":
-      return Array.from({ length: count }, (_, i) => (i < active ? 4 : i === active ? 2 : 5));
+      // The striking frame is **held**, not flashed past: it is the pose the
+      // move is read by, and holding it is what gives the blow its window.
+      // Everything around it moves at a steady 4.
+      return Array.from({ length: count }, (_, i) => (i === active ? 12 : 4));
   }
 }

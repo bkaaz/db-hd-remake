@@ -156,9 +156,10 @@ describe("hitBox", () => {
 });
 
 describe("durations", () => {
-  it("makes an attack sharp: wind-up long, active short, recovery longest", () => {
-    // 4 frames, the third one active.
-    expect(durations("attack", 4, 2)).toEqual([4, 4, 2, 5]);
+  it("holds the striking frame and keeps everything else steady", () => {
+    // 4 frames, the third one active. The blow is read by the pose it stops on,
+    // so that frame is held three times as long as the ones around it.
+    expect(durations("attack", 4, 2)).toEqual([4, 4, 12, 4]);
   });
 
   it("keeps looping animations even", () => {

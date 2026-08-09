@@ -79,12 +79,37 @@ validator, without loading any JSON into context.
 
 ### 2. Generate the animation
 
+**The house shape for an attack** — every attack on the roster is drawn this
+way, so the script does it for you:
+
+```
+wind-up 4  →  (mid pose 4)  →  STRIKING FRAME 12  →  mid pose again 4
+```
+
+Two things follow from it, and both are deliberate:
+
+- **The striking frame is held, not flashed past.** It is the pose the move is
+  read by, and holding it is what gives the blow a window worth aiming at. It
+  also means the hit box is out for 12 frames rather than 2 — the attack is far
+  easier to land and commits the attacker for longer. One hit per entry into the
+  state still applies, so it cannot multi-hit.
+- **The move comes back the way it went**, stepping out through the frame
+  immediately before the strike rather than cutting to idle. That recovery frame
+  is a *repeat*, so `npm run anim` appends it automatically for `--kind attack`
+  when the striking frame is last: give it `--frames 37,38,39` and you get
+  `37 38 39 38`. Total ~24 frames.
+
+A consequence worth knowing: because the script appends that frame, the list it
+builds matches what is already on disk for hand-tuned attacks, so re-running to
+recompute boxes **keeps** the owner's timings instead of resetting them.
+
+
 ```bash
 npm run anim -- goku punch --frames 42,43,44,45 --kind attack
 ```
 
-- `--kind attack` — wind-up / active / recovery timing, and a placeholder hit
-  box on the frame that reaches furthest forward. Implies `loop: false`.
+- `--kind attack` — house timing (below), and a placeholder hit box on the frame
+  that reaches furthest forward. Implies `loop: false`.
 - `--kind loop` — even timing, no hit box. Implies `loop: true`. Idle, walk.
 - `--kind hurt` — a short reaction, ~12 frames total, `loop: false`.
 - `--dur N` overrides every step; `--inset N` shrinks hurt boxes (useful when

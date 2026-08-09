@@ -22,19 +22,14 @@ detail that gets rewritten before it is read.
 **The order is the point.** A–D build **one complete exchange** — a hit that
 costs something, has weight and is visible — before any move is multiplied.
 Four buttons × three stances is twelve attacks, and re-tuning how a hit feels
-afterwards would mean redoing all of them. **A–E are done**: a blow names how it
+afterwards would mean redoing all of them. **A–F and I are done**: a blow names how it
 is taken, pushes the defender back, pauses the game on contact and leaves a
-spark where the boxes met — and there are two attacks on two buttons.
+spark where the boxes met, all four attack buttons are wired, and a
+heavy kick puts a fighter on the floor.
 
 ---
 
 > **One exchange is complete.** Everything below multiplies it.
-
-## F. Knockdown
-
-A sequence, not a third hurt variant: start of going down → fall → landed →
-get up, each its own state. Light and heavy share one shape; this one does not.
-Frames are already confirmed and in the catalogue (77–81).
 
 ## G. Crouch, and crouch attacks
 
@@ -50,11 +45,6 @@ and buys little.
 
 Frames settled: the air kick is 46–47. The flying kick (48–49) is a special and
 is **not** part of this item.
-
-## I. The remaining attack buttons
-
-`kick_heavy` (frames 37–39) is already built and unused, as are `hurt_heavy` and
-`fx_hit_heavy` — a heavy attack on a third button lights up all three at once.
 
 ## J. Sounds
 
@@ -84,7 +74,7 @@ queue.
   difference against the attacker's recovery *is* the combo. Hitstop does not
   enter into it: freezing both sides equally leaves frame advantage unchanged,
   which is why it is symmetric.
-- **The rest of the keyboard layout** and a remapping screen. Only SNES `Y` and
-  `B` (keyboard `A` and `Z`) are wired.
+- **A remapping screen.** All four attack buttons are wired to the ZSNES
+  defaults; nothing lets a player change them.
 - **A camera**, and a stage. Round rules and a second player belong to Stage 3
   in `roadmap.md`.

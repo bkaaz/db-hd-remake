@@ -19,6 +19,10 @@ export interface WorldInput {
   punch: boolean;
   /** Kick button went down **this frame** (edge, not held). */
   kick: boolean;
+  /** Heavy punch button went down **this frame**. */
+  punchHeavy: boolean;
+  /** Heavy kick button went down **this frame**. */
+  kickHeavy: boolean;
 }
 
 export const NO_INPUT: WorldInput = {
@@ -27,6 +31,8 @@ export const NO_INPUT: WorldInput = {
   up: false,
   punch: false,
   kick: false,
+  punchHeavy: false,
+  kickHeavy: false,
 };
 
 const BOX_COLORS: Record<string, number> = {
@@ -172,10 +178,31 @@ export class Entity {
   /** Enter a state because something happened *to* this entity (being hit). */
   forceState(name: string): boolean {
     if (!this.sm?.force(name)) return false;
+    this.enterState();
+    return true;
+  }
+
+  /**
+   * Everything that happens on arriving in a state, wherever the entity came
+   * from. Both routes in — a transition it chose, and a reaction forced on it —
+   * must run this, or a state means different things depending on how you got
+   * there. That asymmetry is what stopped a knockdown ever leaving the ground:
+   * its `launch` was applied only on the transition path, and a knockdown is
+   * never transitioned into.
+   */
+  private enterState(): void {
+    if (!this.sm) return;
     this.setAnim(this.sm.def.anim);
     this.spent = false;
     this.landed = false;
-    return true;
+    // A launch is an impulse, applied once on entry; without one the entity
+    // keeps whatever velocity it had, which is what carries a jump through its
+    // take-off state into the airborne one.
+    const launch = this.sm.def.launch;
+    if (launch) {
+      this.vx = launch[0];
+      this.vy = launch[1];
+    }
   }
 
   /**
@@ -224,22 +251,18 @@ export class Entity {
     const nearGround = falling && this.groundY - this.y <= this.landCue * this.scale;
 
     const changed = this.sm.update(
-      { fwd, back, up: input.up, punch: input.punch, kick: input.kick },
+      {
+        fwd,
+        back,
+        up: input.up,
+        punch: input.punch,
+        kick: input.kick,
+        punchHeavy: input.punchHeavy,
+        kickHeavy: input.kickHeavy,
+      },
       { animEnded: this.animEnded, falling, nearGround, landed: this.landed },
     );
-    if (changed) {
-      this.setAnim(this.sm.def.anim);
-      this.spent = false;
-      this.landed = false;
-      // A launch is an impulse, applied once on entry; without one the entity
-      // keeps whatever velocity it had, which is what carries a jump through
-      // its take-off state into the airborne one.
-      const launch = this.sm.def.launch;
-      if (launch) {
-        this.vx = launch[0];
-        this.vy = launch[1];
-      }
-    }
+    if (changed) this.enterState();
 
     // Velocities are authored in sprite pixels, like box coordinates, and X is
     // facing-relative (+ = forward); scaling to screen px happens here so the

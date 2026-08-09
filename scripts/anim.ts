@@ -209,9 +209,18 @@ async function main(): Promise<void> {
   const name = opts.anim ?? die("animation name required");
   if (opts.frames.length === 0) die("--frames is required (in playback order)");
 
-  const ids = opts.frames.map((t) => resolveFrameId(t, frames));
+  const listed = opts.frames.map((t) => resolveFrameId(t, frames));
+  const activeInListed = activeIndex(listed.map((id) => frames[id]));
+
+  // An attack comes back the way it went: it holds its striking pose, then
+  // steps out through the frame immediately before it rather than cutting to
+  // idle. That recovery frame is a repeat, so it is appended here instead of
+  // being asked of the owner every time — the whole roster is drawn this way.
+  const addRecovery =
+    opts.kind === "attack" && activeInListed === listed.length - 1 && listed.length > 1;
+  const ids = addRecovery ? [...listed, listed[activeInListed - 1]] : listed;
   const rects = ids.map((id) => frames[id]);
-  const active = activeIndex(rects);
+  const active = activeInListed;
 
   // Timing is tuned by hand in the editor, and rebuilding an animation to
   // recompute its boxes must not throw that away. If the frame list is the same

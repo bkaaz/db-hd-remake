@@ -87,6 +87,10 @@ export interface InputSnapshot {
   punch: boolean;
   /** Kick button went down **this frame** (edge, not held). */
   kick: boolean;
+  /** Heavy punch button went down **this frame**. */
+  punchHeavy: boolean;
+  /** Heavy kick button went down **this frame**. */
+  kickHeavy: boolean;
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -111,6 +115,8 @@ export const TRIGGERS = [
   "held:up",
   "pressed:punch",
   "pressed:kick",
+  "pressed:punchHeavy",
+  "pressed:kickHeavy",
   "animEnd",
   "falling",
   "nearGround",
@@ -140,6 +146,12 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "pressed:kick":
       value = input.kick;
+      break;
+    case "pressed:punchHeavy":
+      value = input.punchHeavy;
+      break;
+    case "pressed:kickHeavy":
+      value = input.kickHeavy;
       break;
     case "animEnd":
       value = signals.animEnded;
