@@ -67,6 +67,7 @@ export class Entity {
 
   private readonly gravity: number;
   private readonly landCue: number;
+  private readonly pushWidth: number;
 
   constructor(
     private readonly def: EntityDef,
@@ -74,6 +75,7 @@ export class Entity {
   ) {
     this.gravity = def.attributes.gravity;
     this.landCue = def.attributes.landCue;
+    this.pushWidth = def.attributes.pushWidth;
     this.sprite.scale.set(scale);
     this.view.addChild(this.sprite, this.boxG);
     this.sm = def.states ? new StateMachine(def.states) : null;
@@ -83,6 +85,16 @@ export class Entity {
 
   get state(): string {
     return this.sm?.current ?? this.animName;
+  }
+
+  /** Off the ground — airborne fighters pass over each other instead of pushing. */
+  get airborne(): boolean {
+    return !!this.sm?.def.airborne;
+  }
+
+  /** Half the body's width in world px, for push collision. */
+  get pushHalf(): number {
+    return (this.pushWidth / 2) * this.scale;
   }
 
   /** Where this entity is, for placing authored boxes in the world. */

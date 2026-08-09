@@ -2,6 +2,29 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Push collision, and walking at a speed that matches the jump
+
+- **Fighters can no longer stand inside each other.** Walking into the opponent
+  pushes them, and the walker keeps advancing at reduced speed — as the original
+  does.
+- **The correction is split evenly between both bodies**, and that single rule
+  produces the behaviour for free: a walker advancing at *v* overlaps by *v* each
+  frame, gets pushed back *v/2* and moves the other *v/2*. No special case for
+  who is pushing whom. If one is pinned against the edge of the stage, the other
+  absorbs what is left.
+- **A push body is one width per entity (`pushWidth`), not per-frame boxes.**
+  Per-frame push boxes would shove the opponent every time an arm came out, and
+  two fighters standing still would jitter against each other. This is how the
+  genre does it. The `push` box type stays in the format for later.
+- **Only grounded fighters push.** Otherwise a jump over the opponent would be
+  blocked by them, which is the opposite of what a jump is for.
+- **Walking was a third of jump speed** (0.83 against 2.3 px/frame), so the jump
+  felt like a different game. Now 1.4 forward and 1.0 back — the jump is 1.6×
+  walking rather than 2.8×.
+- **The walk cycle was sped up in proportion** (12 → 7 frames a step), keeping
+  the distance covered per cycle at ~20 px. Speed up the movement without the
+  animation and the feet start sliding.
+
 ## 2026-08-09 — Jumping: impulse + gravity, and variants without new syntax
 
 - **`vel` was a constant per state, which a jump cannot be.** Two fields carry
@@ -26,15 +49,17 @@ Decisions that are settled. Newest first.
 - **Phases are separate states**, because one animation cannot play a take-off
   once and then hand over: a travelling jump is take-off → somersault → fall →
   land, each its own state, chained by the triggers above.
-- Numbers after tuning against the original: `launch [0, -9.5]`, `gravity 0.3`
-  — 63 frames in the air, peaking at 150 sprite px. Height goes as `v²/2g`, so
-  raising it is a matter of scaling the impulse. Worth knowing: at this height
-  the head leaves a window shorter than ~870 px, which will matter when the
-  camera arrives.
+- **Jump height is set by what it is for: clearing the opponent.** Goku is 81
+  sprite px tall, so `launch [0, -7.8]` with `gravity 0.3` peaks at 101 px —
+  the feet pass 20 px over the other fighter's head, comfortably but not
+  absurdly. 52 frames in the air. Guessing at "higher" twice produced a jump
+  three times taller than it needed to be; deriving it from the requirement
+  settled it in one go. Height goes as `v²/2g`.
 - **Every jump runs the same arc** — rise → `falling` → fall pose →
   `nearGround` → landing pose → `landed`. Only the rise differs: the vertical
-  jump plays 14→15→16 and mirrors it back 16→15→14 on the way down (timed so
-  the tuck happens at the apex, and seamless because both halves meet on 16);
+  jump plays 14→15→16 and mirrors it back 16→15→14 on the way down (each half
+  timed to the length of the climb, so the tuck happens at the apex, and
+  seamless because both halves meet on 16);
   the travelling jumps play a take-off frame and **one** somersault, then hold
   the fall pose. The original does one rotation, not a spin loop.
 - **The falling pose is the extended one (14), the landing pose the tucked one

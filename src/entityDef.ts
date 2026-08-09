@@ -45,9 +45,14 @@ export interface Attributes {
    * finishes as the feet touch instead of flashing after the fact.
    */
   landCue: number;
+  /**
+   * Width of the body for push collision, in sprite px, centred on the anchor.
+   * Deliberately one number rather than per-frame boxes — see src/push.ts.
+   */
+  pushWidth: number;
 }
 
-export const DEFAULT_ATTRIBUTES: Attributes = { gravity: 0.3, landCue: 50 };
+export const DEFAULT_ATTRIBUTES: Attributes = { gravity: 0.3, landCue: 50, pushWidth: 30 };
 
 interface EntityFile {
   name: string;

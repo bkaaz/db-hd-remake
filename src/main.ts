@@ -2,6 +2,7 @@ import { Application, Graphics, Text } from "pixi.js";
 import { Entity, NO_INPUT } from "./entity";
 import { loadEntityDef, type EntityDef } from "./entityDef";
 import { connects } from "./hit";
+import { separate } from "./push";
 import { validateStates } from "./states";
 
 /**
@@ -143,6 +144,17 @@ async function boot(): Promise<void> {
       player.update(held, dummy ? dummy.x : null, bounds);
       dummy?.update(NO_INPUT, player.x, bounds);
       if (dummy) {
+        // Bodies cannot overlap — but only on the ground, so a jump can carry
+        // you over the opponent instead of being blocked by them.
+        if (!player.airborne && !dummy.airborne) {
+          const { ax, bx } = separate(
+            { x: player.x, half: player.pushHalf },
+            { x: dummy.x, half: dummy.pushHalf },
+            bounds,
+          );
+          player.x = ax;
+          dummy.x = bx;
+        }
         resolveHit(player, dummy);
         resolveHit(dummy, player);
       }

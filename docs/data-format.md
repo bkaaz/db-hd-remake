@@ -23,7 +23,11 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
 1. **Timing in game frames (60 FPS), not milliseconds.** Frame data is integer
    and deterministic — the fighting-game standard.
 2. **Three box types to start: `hit` (deals damage), `hurt` (can be hit),
-   `push` (body collision).** Throws/other types added later.
+   `push` (body collision).** Throws/other types added later. In practice push
+   collision uses the `pushWidth` attribute rather than per-frame `push` boxes —
+   a push box that followed the animation would shove the opponent whenever an
+   arm came out. The box type stays for cases that need it later (crouching
+   narrower, for instance).
 3. **Coordinates relative to the frame's anchor, Y-down (matches PixiJS).**
    Facing left/right is just a sign flip on X — no geometry recompute.
 
@@ -215,7 +219,8 @@ than to any one state. So far one:
 ```jsonc
 {
   "gravity": 0.3,    // sprite px per game frame, squared
-  "landCue": 50      // sprite px above the ground where the landing pose starts
+  "landCue": 60,     // sprite px above the ground where the landing pose starts
+  "pushWidth": 30    // body width for push collision, centred on the anchor
 }
 ```
 
