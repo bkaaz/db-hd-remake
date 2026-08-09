@@ -22,10 +22,11 @@ detail that gets rewritten before it is read.
 **The order is the point.** A–D build **one complete exchange** — a hit that
 costs something, has weight and is visible — before any move is multiplied.
 Four buttons × three stances is twelve attacks, and re-tuning how a hit feels
-afterwards would mean redoing all of them. **A–F and I are done**: a blow names how it
+afterwards would mean redoing all of them. **A–I are done**: a blow names how it
 is taken, pushes the defender back, pauses the game on contact and leaves a
-spark where the boxes met, all four attack buttons are wired, and a
-heavy kick puts a fighter on the floor.
+spark where the boxes met, all four attack buttons are wired, an uppercut puts
+a fighter on the floor, and there are attacks from standing, crouching and the
+air.
 
 ---
 
@@ -42,11 +43,6 @@ blocking does not exist as a state. Options are recorded in `decisions.md`.
 stomach, so the sprite exists — the question is whether the fight reads better
 with it, or whether high/low is a distinction that costs a reaction per fighter
 and buys little.
-
-## H. Air attacks
-
-Frames settled: the air kick is 46–47. The flying kick (48–49) is a special and
-is **not** part of this item.
 
 ## J. Sounds
 

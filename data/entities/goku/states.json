@@ -101,6 +101,17 @@
         { "when": "animEnd", "to": "crouch" }
       ]
     },
+    "kick_air": {
+      "anim": "kick_air",
+      "airborne": true,
+      "turn": false,
+      "onHit": "hurt",
+      "transitions": [
+        { "when": "landed", "to": "idle" },
+        { "when": "nearGround", "to": "land" },
+        { "when": "animEnd", "to": "fall" }
+      ]
+    },
     "hurt": {
       "anim": "hurt",
       "vel": [-1.4, 0],
@@ -148,6 +159,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:kick", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "falling", "to": "jump_up_fall" },
         { "when": "landed", "to": "idle" }
@@ -159,6 +171,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:kick", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_fwd_air" },
         { "when": "landed", "to": "idle" }
@@ -169,6 +182,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:kick", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" },
         { "when": "landed", "to": "idle" }
@@ -180,6 +194,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:kick", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_back_air" },
         { "when": "landed", "to": "idle" }
@@ -190,6 +205,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:kick", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" },
         { "when": "landed", "to": "idle" }
@@ -200,6 +216,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:kick", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" }
       ]
@@ -209,6 +226,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:kick", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" }
       ]

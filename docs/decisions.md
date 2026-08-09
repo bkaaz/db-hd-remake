@@ -2,6 +2,20 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — Air attacks: one state, reachable from every airborne state
+
+- **The air kick (46–47) is a normal attack state with `airborne: true`** and no
+  `launch`. Without a launch it inherits whatever velocity the jump had, so
+  kicking carries the arc instead of stalling the fighter in mid-air — the same
+  property that lets a take-off hand its momentum to the airborne state.
+- **Reachable from all seven airborne states**, and placed first in each so it
+  can be thrown right up to the moment the landing pose takes over. A fighter
+  who cannot attack on the way down has half a jump.
+- **It exits three ways**, in this order: `landed` (straight to idle, in case
+  the attack is still running at touchdown), `nearGround` (hand over to the
+  landing pose), then `animEnd` (fall for the rest of the arc). The first two
+  exist so the attack can never hold a fighter through their own landing.
+
 ## 2026-08-09 — One sheet stays ours; a fuller rip was measured and rejected
 
 - **A second, much larger rip exists** (Sprite Database, 1043×5179 against our
