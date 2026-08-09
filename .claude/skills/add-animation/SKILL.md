@@ -104,7 +104,9 @@ schedule and edits in the editor. Do offer the usual verification choices
 - **The editor may be open.** It saves whole sections, so it can overwrite what
   the script just wrote. The editor now warns on a stale save, and has a
   **Reload data** button — mention it when handing over.
-- **Frame ids** are `frame_N`; the script accepts a bare `42` too.
+- **Frame ids are plain numbers** (`42`), numbered in reading order along each
+  row of the sheet then down — so frames that belong to one move are usually
+  consecutive. The owner can renumber in the editor, which swaps two frames.
 - **An attack with no hit box cannot connect**, and a hit box with no hurt box
   on the target means nothing to hit — both are warnings, not errors.
 - **Timing numbers are generic fighting-game values, not Hyper Dimension frame

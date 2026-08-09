@@ -266,7 +266,7 @@ export class SheetView {
       ctx.stroke();
 
       // Frame number label (fixed screen size, dark backing for legibility).
-      const label = f.id.startsWith("frame_") ? f.id.slice(6) : f.id;
+      const label = f.id;
       ctx.font = "10px monospace";
       ctx.textBaseline = "top";
       const tw = ctx.measureText(label).width;

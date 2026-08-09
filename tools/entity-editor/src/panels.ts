@@ -40,7 +40,16 @@ export function renderFrames(container: HTMLElement): void {
       className: "row frame-row" + (f.id === state.selectedFrameId ? " selected" : ""),
     });
 
-    const nameInput = el("input", { className: "name", value: f.id });
+    // Frame ids are numbers; typing one here renumbers the frame, swapping with
+    // whichever frame already holds that number.
+    const nameInput = el("input", {
+      className: "num",
+      type: "number",
+      min: "0",
+      step: "1",
+      value: f.id,
+      title: "Frame number — type another to renumber (swaps if taken)",
+    });
     nameInput.addEventListener("change", () => {
       if (!renameFrame(f.id, nameInput.value.trim())) nameInput.value = f.id;
       emitChange();
@@ -158,16 +167,22 @@ export function renderAnims(container: HTMLElement): void {
     });
     row.append(idx);
 
-    const frameSel = el("select");
-    for (const f of state.frames) {
-      const opt = el("option", { value: f.id, textContent: f.id });
-      if (f.id === step.frame) opt.selected = true;
-      frameSel.append(opt);
-    }
-    frameSel.addEventListener("change", () => {
-      step.frame = frameSel.value;
+    // A dropdown of every frame is unusable at 200+ frames — type the number.
+    const frameInput = el("input", {
+      className: "num",
+      type: "number",
+      min: "0",
+      step: "1",
+      value: step.frame,
+      title: "Frame number",
+    });
+    frameInput.addEventListener("change", () => {
+      const wanted = frameInput.value.trim();
+      if (state.frames.some((f) => f.id === wanted)) step.frame = wanted;
+      else frameInput.value = step.frame; // no such frame — put it back
       emitChange();
     });
+    if (!state.frames.some((f) => f.id === step.frame)) frameInput.classList.add("bad");
 
     const dur = el("input", { type: "number", className: "dur", value: String(step.dur) });
     dur.min = "1";
@@ -202,7 +217,7 @@ export function renderAnims(container: HTMLElement): void {
       textContent: step.boxes.length ? `▢${step.boxes.length}` : "",
     });
 
-    row.append(frameSel, el("label", { textContent: "dur" }), dur, up, down, rm, boxCount);
+    row.append(frameInput, el("label", { textContent: "dur" }), dur, up, down, rm, boxCount);
     container.append(row);
   });
 

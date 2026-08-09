@@ -145,12 +145,28 @@ export function selectedStep(): StepDef | null {
 
 let frameCounter = 0;
 
+/**
+ * Frame ids are plain decimal numbers ("0", "1", …) — they are positions on the
+ * sheet, and a `frame_` prefix only added noise. Kept as strings because that is
+ * what JSON object keys are; JS serialises integer-like keys in numeric order,
+ * so frames.json always comes out sorted.
+ */
 export function nextFrameId(): string {
   let id: string;
   do {
-    id = `frame_${frameCounter++}`;
+    id = String(frameCounter++);
   } while (state.frames.some((f) => f.id === id));
   return id;
+}
+
+const asNumber = (id: string): number => {
+  const n = Number(id);
+  return Number.isFinite(n) ? n : Number.MAX_SAFE_INTEGER;
+};
+
+/** Keep the frame list in numeric order, which is the order on the sheet. */
+export function sortFrames(): void {
+  state.frames.sort((a, b) => asNumber(a.id) - asNumber(b.id) || a.id.localeCompare(b.id));
 }
 
 /** Clear all frames and animations, and reset numbering to 0. */
@@ -190,15 +206,29 @@ export function deleteFrame(id: string): void {
   if (state.selectedFrameId === id) state.selectedFrameId = null;
 }
 
+/**
+ * Renumber a frame. If the number is already taken the two frames **swap** —
+ * renumbering is how an ordering mistake gets fixed, and refusing would just
+ * force a dance through a temporary number. Animation steps follow both ways.
+ */
 export function renameFrame(oldId: string, newId: string): boolean {
-  if (!newId || state.frames.some((f) => f.id === newId)) return false;
+  if (!newId || newId === oldId) return !!newId;
   const frame = state.frames.find((f) => f.id === oldId);
   if (!frame) return false;
+
+  const occupant = state.frames.find((f) => f.id === newId);
   frame.id = newId;
+  if (occupant) occupant.id = oldId;
+
   for (const a of state.anims) {
-    for (const s of a.steps) if (s.frame === oldId) s.frame = newId;
+    for (const s of a.steps) {
+      if (s.frame === oldId) s.frame = newId;
+      else if (occupant && s.frame === newId) s.frame = oldId;
+    }
   }
   if (state.selectedFrameId === oldId) state.selectedFrameId = newId;
+  else if (occupant && state.selectedFrameId === newId) state.selectedFrameId = oldId;
+  sortFrames();
   return true;
 }
 
@@ -265,6 +295,10 @@ export function loadEntity(json: EntityFileIn): void {
       boxes: (s.boxes ?? []).map((b) => ({ ...b })),
     })),
   }));
+  sortFrames();
+  // New frames must never reuse a number that an animation might still name,
+  // so keep counting above the highest one on disk.
+  frameCounter = state.frames.reduce((max, f) => Math.max(max, asNumber(f.id) + 1), 0);
   state.states = json.states ?? null;
   state.selectedFrameId = null;
   state.selectedAnimName = state.anims[0]?.name ?? null;

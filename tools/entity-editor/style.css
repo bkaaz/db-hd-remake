@@ -125,6 +125,8 @@ input, select {
   font-size: 12px;
 }
 input.name { width: 90px; }
+input.num { width: 62px; }
+input.num.bad { border-color: #ff8a8a; color: #ff8a8a; }
 input.dur { width: 52px; }
 .dims { color: var(--muted); font-size: 11px; }
 

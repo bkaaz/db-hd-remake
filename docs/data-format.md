@@ -35,25 +35,26 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
   "name": "goku",
   "atlas": "goku.png",              // packed atlas of frames
   "frames": {
+    // id = the frame's number on the sheet, running along each row then down.
     // anchor = pivot point in px (e.g. between the feet),
     // measured from the frame's top-left corner
-    "idle_0": { "x": 2,  "y": 2, "w": 64, "h": 96, "anchor": [32, 94] },
-    "walk_0": { "x": 68, "y": 2, "w": 66, "h": 96, "anchor": [33, 94] }
+    "0": { "x": 2,  "y": 2, "w": 64, "h": 96, "anchor": [32, 94] },
+    "1": { "x": 68, "y": 2, "w": 66, "h": 96, "anchor": [33, 94] }
   },
   "animations": {
     "idle": {
       "loop": true,
       // dur = number of game frames at 60 FPS (NOT milliseconds)
       "steps": [
-        { "frame": "idle_0", "dur": 6 },
-        { "frame": "idle_1", "dur": 6 }
+        { "frame": "0", "dur": 6 },
+        { "frame": "1", "dur": 6 }
       ]
     },
     "punch": {
       "loop": false,
       "steps": [
         {
-          "frame": "punch_0", "dur": 3,
+          "frame": "32", "dur": 3,
           // boxes in px RELATIVE TO the anchor; flipping facing = negate X
           "boxes": [
             { "type": "hurt", "x": -20, "y": -90, "w": 40, "h": 90 },
@@ -61,7 +62,7 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
           ]
         },
         {
-          "frame": "punch_1", "dur": 4,
+          "frame": "33", "dur": 4,
           "boxes": [
             { "type": "hit",  "x": 20,  "y": -70, "w": 34, "h": 20 },
             { "type": "hurt", "x": -20, "y": -90, "w": 40, "h": 90 }
@@ -77,7 +78,9 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
 
 - **`name`** — character id.
 - **`atlas`** — path to the packed sprite atlas PNG.
-- **`frames`** — map of frame id → rect in the atlas plus `anchor`.
+- **`frames`** — map of frame id → rect in the atlas plus `anchor`. Ids are the
+  frame's number on the sheet (`"0"`, `"1"`, …), assigned in reading order:
+  along a row, then down. Renumbering in the editor swaps two frames.
   - `x, y, w, h` — frame rectangle in atlas pixels.
   - `anchor` — `[x, y]` pivot in px from the frame's top-left corner.
 - **`animations`** — map of animation id → `{ loop, steps }`.

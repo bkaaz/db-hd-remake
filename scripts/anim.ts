@@ -134,12 +134,10 @@ const readJson = async <T>(file: string, fallback: T): Promise<T> => {
   }
 };
 
-/** Accept "42", "frame_42" or any literal frame id that exists. */
+/** Frame ids are plain numbers; check the frame exists before using it. */
 function resolveFrameId(token: string, frames: Record<string, FrameRect>): string {
   if (frames[token]) return token;
-  const numbered = `frame_${token}`;
-  if (frames[numbered]) return numbered;
-  return die(`no frame "${token}" (tried "${numbered}" too) in frames.json`);
+  return die(`no frame "${token}" in frames.json`);
 }
 
 const fmtBox = (b: DerivedBox | null | undefined): string =>
