@@ -5,6 +5,10 @@ dist/
 .vite/
 .playwright-mcp/
 
+# Claude Code: skills are project work and are committed; local machine
+# settings (granted permissions) are not.
+.claude/settings.local.json
+
 # BYOA: copyrighted source assets and generated atlases stay out of the repo
 # (see docs/assets.md). Our authored data lives in data/ (committed); only
 # code + data/ + the manifest are committed.

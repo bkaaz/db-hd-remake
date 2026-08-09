@@ -10,6 +10,7 @@
     "fetch-assets": "node scripts/fetch-assets.mjs",
     "hash-assets": "node scripts/fetch-assets.mjs --print-hashes",
     "build": "tsc --noEmit && vite build",
+    "anim": "tsx scripts/anim.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
+    "tsx": "^4.23.11",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",
     "vitest": "^4.1.10"

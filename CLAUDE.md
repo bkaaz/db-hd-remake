@@ -84,6 +84,26 @@ collision resolution) is written free of PixiJS so it can be tested in Node.
 - What tests do **not** cover: how anything looks, animation timing, feel. That
   stays with the owner (see above).
 
+## Authoring content: compute it, don't reason about it
+
+There will be many entities and hundreds of animations, so the split is fixed:
+
+- **Anything derivable from the data is computed by a script**, never worked out
+  by hand or by eye. Hurt boxes, an attack's active frame, default timings all
+  come from the sprite rectangles — deterministic, identical every time, and
+  free of context. Never pull `frames.json` into context to do arithmetic.
+- **The owner names which frames are which pose.** Never guess that; a wrong
+  frame is a silent, expensive mistake. Ask for the list.
+- **What you produce is a skeleton the owner then adjusts** in the editor. Being
+  roughly right and clearly labelling the guesses beats being slow. Always
+  separate what was *computed* from what was *guessed* when reporting.
+- **Do not block on approval** for this kind of work — the owner verifies on
+  their own schedule.
+
+Procedure, flags and pitfalls: the **`add-animation` skill**
+(`.claude/skills/add-animation/`), loaded on demand so it costs nothing in
+sessions that are about something else.
+
 ## Tech stack
 
 - **Language:** TypeScript (strict mode)
@@ -101,6 +121,8 @@ npm run editor    # entity editor (5174)   — normally already running
 npm run build     # typecheck + production build
 npm run typecheck # typecheck only
 npm test          # Vitest, run once (npm run test:watch to keep it running)
+npm run anim -- <entity> <anim> --frames 1,2,3 --kind attack|loop|hurt
+                  # build an animation with derived boxes/timing (--list, --dry-run)
 npm run fetch-assets   # download/verify source sheets from assets.manifest.json
 npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ```
@@ -110,11 +132,15 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ```
 .
 ├── index.html                    # game page shell + #app mount
-├── src/                          # the game (PixiJS)
+├── src/                          # the game (PixiJS) + pure logic (*.test.ts)
 │   ├── main.ts                   #   boot, wiring, input
 │   ├── entityDef.ts              #   load entity data + atlas -> EntityDef
 │   ├── entity.ts                 #   Entity: one live instance in the world
-│   └── states.ts                 #   pure state-machine runner (no PixiJS)
+│   ├── states.ts                 #   state-machine runner + validator (no PixiJS)
+│   ├── hit.ts                    #   box → world, overlap, hit detection (no PixiJS)
+│   └── boxes.ts                  #   derive boxes/timing from sprites (no PixiJS)
+├── scripts/anim.ts               # build an animation from a frame list
+├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/entity-editor/          # the authoring tool (Canvas 2D)
 │   ├── plugin.ts                 #   Vite dev-server plugin: /api/* endpoints
 │   └── src/                      #   editor UI
@@ -124,7 +150,7 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 │   ├── sheets/                   #   source sprite sheets
 │   └── atlases/                  #   generated keyed atlases
 ├── docs/                         # design notes & decisions (read before building)
-├── scripts/fetch-assets.mjs
+├── scripts/fetch-assets.mjs      # BYOA fetch/verify
 ├── vite.config.ts
 └── tsconfig.json
 ```
