@@ -1,45 +1,34 @@
-# Roadmap (rough)
+# Roadmap — the wider arc
 
-High-level phases. Deliberately loose — we go slowly and confirm scope as we go.
-
-> **One phase numbering, not two.** Day-to-day work follows the lettered phases
-> **A–F** in [`entity-editor.md`](./entity-editor.md) — each is a vertical slice
-> (data model + editor + engine + verification). This file is only the wider arc
-> around them.
+Where the project is going, in broad strokes. **This file lists no work.** The
+queue is [`plan.md`](./plan.md), and it is the only one — see `CLAUDE.md`.
 
 ## Stage 0 — Setup ✅ done
 
-- [x] Repo, tooling (TS + Vite + PixiJS), runnable boot
-- [x] Docs skeleton
-- [x] Dev server + editor run locally
+Repo, tooling (TS + Vite + PixiJS), a runnable boot, docs skeleton, dev server
+and editor running locally.
 
 ## Stage 1 — Asset pipeline ✅ done
 
-- [x] Entity Editor: sheet loading, background color-key, auto-detection,
-      frames + anchors, timed animations, hit/hurt/push boxes
-- [x] Repo-integrated I/O (Vite dev-server plugin, per-section save)
-- [x] BYOA asset strategy + `fetch-assets` / `hash-assets`
-- [x] Entity data format v0 ([`data-format.md`](./data-format.md))
+The Entity Editor (sheet loading, background color-key, auto-detection, frames +
+anchors, timed animations, hit/hurt/push boxes), repo-integrated I/O via the
+Vite dev-server plugin with per-section save, the BYOA asset strategy with
+`fetch-assets` / `hash-assets`, and entity data format v0
+([`data-format.md`](./data-format.md)).
 
 ## Stage 2 — Fighting core 🟡 in progress
 
-Tracked in detail as phases A–F in [`entity-editor.md`](./entity-editor.md).
-
-- [x] Rendering authored animations in the game (60 FPS, per-step duration)
-- [x] Hitbox/hurtbox/push authoring + in-game overlay (phase B)
-- [x] State machine: `states.json`, opponent-relative facing, idle/walk (D1)
-- [ ] States tab in the editor (D2)
-- [ ] Commands / input buffer / motion recognition (E) — plus unit tests
-- [ ] Attributes: HP, speeds, gravity (C)
-- [ ] Attacks: hit detection, damage, hitstun, blockstun, knockback
-- [ ] Jumping + gravity; push-box collision between fighters
-- [ ] Sounds (F)
+Authored animations run in the game at 60 FPS, boxes are authored and drawn,
+and an entity is a state machine (`states.json`, opponent-relative facing).
+Goku walks, punches, takes hits, jumps and pushes the opponent; hits connect
+but cost nothing. The rest of this stage — impact, hitstop, effects, the full
+move set, health, blocking, input commands, sounds — is queued in
+[`plan.md`](./plan.md).
 
 ## Stage 3 — A match
 
-- [ ] Two fighters, both player-controlled (same keyboard)
-- [ ] Health/Ki bar (the original's single shared resource)
-- [ ] Round rules, win/lose, a stage
+Two fighters both player-controlled on one keyboard, the health/Ki bar (the
+original's single shared resource), round rules and win/lose, a stage.
 
 ## Still undecided
 

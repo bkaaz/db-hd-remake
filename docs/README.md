@@ -5,20 +5,21 @@ collect what we want to build **before** writing gameplay code.
 
 ## Index
 
+- [`plan.md`](./plan.md) — **the queue.** Start here for "what's next". It is
+  the only file that lists work to do, and finished items are deleted from it.
 - [`game-overview.md`](./game-overview.md) — what the original game is, what we
   know for sure, and what still needs confirming.
 - [`assets.md`](./assets.md) — where graphics/audio come from and how much can be
   automated (research findings).
 - [`tooling.md`](./tooling.md) — the asset pipeline: our own browser editor
   (sprite-sheet-first; MUGEN import parked) and its repo-integrated I/O.
-- [`entity-editor.md`](./entity-editor.md) — **the active plan**: the Entity
-  Editor (sprites, animations, hitboxes, sounds, inputs, states) and the
-  lettered phases A–F we work through. Start here for "what's next".
+- [`entity-editor.md`](./entity-editor.md) — the Entity Editor: its data model,
+  its tabs, and the phases it was built in (history, not a schedule).
 - [`data-format.md`](./data-format.md) — the character file format (the contract
   between the entity editor and the engine).
 - [`tech-stack.md`](./tech-stack.md) — technology choices and why.
-- [`roadmap.md`](./roadmap.md) — rough phases, from setup toward a playable
-  prototype.
+- [`roadmap.md`](./roadmap.md) — the wider arc, from setup toward a playable
+  prototype. No work items; those are in `plan.md`.
 - [`open-questions.md`](./open-questions.md) — decisions we still owe answers to.
 - [`decisions.md`](./decisions.md) — log of decisions already made.
 

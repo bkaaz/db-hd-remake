@@ -27,6 +27,11 @@ The project owner wants to go **slowly and deliberately**:
   comments, commits, and docs are in **English**.
 - **Record settled decisions** in `docs/decisions.md` (newest first), and keep
   the affected doc (`data-format.md`, `entity-editor.md`, …) in sync.
+- **The queue is `docs/plan.md`, and finished items are DELETED from it** — in
+  the same change that finishes them, not later. It is the *only* file that
+  lists work to do; the reasoning goes to `decisions.md`, the timing is in git.
+  `roadmap.md` and `entity-editor.md` describe the arc and the history and must
+  never grow a to-do list again. A queue that only shrinks cannot drift.
 - **Editor and engine co-evolve:** every phase is a vertical slice — data model
   + editor + engine + verification. See `docs/entity-editor.md`.
 
@@ -186,10 +191,9 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 
 The **Entity Editor** authors sprites and animations (framing, background
 color-key, auto-detection, anchors, timed steps, hit/hurt/push boxes); the
-**game** loads an entity and runs it as a **state machine** — Phase D1 gave it
-`states.json`, opponent-relative facing and idle/walk, replacing the temporary
-arrow-key walk.
+**game** loads an entity and runs it as a **state machine** from `states.json`.
+Goku walks, punches, takes hits, jumps in three variants and pushes the
+opponent. A hit lands but costs nothing yet.
 
-Next: **D2** (States tab in the editor), then **E** (Commands / input).
-Roadmap and phase table: `docs/entity-editor.md`. Full decision log:
-`docs/decisions.md`.
+**What is next: `docs/plan.md`** — the queue, and the only one. Full decision
+log: `docs/decisions.md`.

@@ -2,6 +2,35 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-09 — One queue: `docs/plan.md`, and finished items are deleted
+
+- **The work queue is a single file, `docs/plan.md`.** Three documents were
+  listing work — the `roadmap.md` checklists, the phase table in
+  `entity-editor.md`, and `CLAUDE.md`'s "Next:" line — and all three had drifted:
+  jumping and push collision were shipped and still sat unchecked, and the "next
+  step" pointed at phase D2, which had been done *and* partly dropped.
+- **Finished items are deleted, in the same change that finishes them.** A file
+  that only shrinks cannot drift; a stale line is just one somebody forgot to
+  remove. Ticking a box, by contrast, grows a record that duplicates git.
+- **Three files, three questions:** `plan.md` = *what's next* (shrinks),
+  `decisions.md` = *why* (grows), git = *when*. Nothing answers two of them.
+- **The other documents lost their to-do lists, not their content.**
+  `roadmap.md` is the wider arc in prose; `entity-editor.md`'s phase table now
+  says explicitly that the lettered phases are history, not a schedule. Work
+  they held that is not yet scheduled (health/damage, blocking, commands and the
+  input buffer, the rest of the keyboard layout) moved into `plan.md` under
+  "not yet ordered" rather than being dropped.
+- **Detail decays with distance in the plan:** the next few items are slices
+  with a *done when*, later ones a single line. Detail written for work three
+  weeks out gets rewritten before it is read.
+- **The combat push is ordered A–D first for one reason:** build *one complete
+  exchange* — impact, hitstop, a catalogue pass over the attack frames, a hit
+  spark — before multiplying moves. Four buttons × three stances is twelve
+  attacks, and re-tuning how a hit feels afterwards would mean redoing all of
+  them. Knockdown is deliberately *not* a third hurt variant: light and heavy
+  share one shape, a knockdown is a sequence (fall → down → get up) with its own
+  states, so it waits until after the exchange works.
+
 ## 2026-08-09 — Push collision, and walking at a speed that matches the jump
 
 - **Fighters can no longer stand inside each other.** Walking into the opponent
