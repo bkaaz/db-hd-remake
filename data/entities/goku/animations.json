@@ -4,15 +4,42 @@
     "steps": [
       {
         "frame": "frame_8",
-        "dur": 16
+        "dur": 16,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -25,
+            "y": -81,
+            "w": 50,
+            "h": 81
+          }
+        ]
       },
       {
         "frame": "frame_6",
-        "dur": 16
+        "dur": 16,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -25,
+            "y": -82,
+            "w": 50,
+            "h": 82
+          }
+        ]
       },
       {
         "frame": "frame_7",
-        "dur": 16
+        "dur": 16,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -25,
+            "y": -82,
+            "w": 50,
+            "h": 82
+          }
+        ]
       }
     ]
   },
@@ -21,11 +48,98 @@
     "steps": [
       {
         "frame": "frame_9",
-        "dur": 12
+        "dur": 12,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -28,
+            "y": -78,
+            "w": 56,
+            "h": 78
+          }
+        ]
       },
       {
         "frame": "frame_10",
-        "dur": 12
+        "dur": 12,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -31,
+            "y": -76,
+            "w": 61,
+            "h": 76
+          }
+        ]
+      }
+    ]
+  },
+  "punch": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "frame_33",
+        "dur": 8,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -26,
+            "y": -82,
+            "w": 51,
+            "h": 82
+          }
+        ]
+      },
+      {
+        "frame": "frame_36",
+        "dur": 24,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -36,
+            "y": -80,
+            "w": 72,
+            "h": 80
+          },
+          {
+            "type": "hit",
+            "x": 25,
+            "w": 11,
+            "y": -58,
+            "h": 18
+          }
+        ]
+      }
+    ]
+  },
+  "hurt": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "frame_75",
+        "dur": 6,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -26,
+            "y": -79,
+            "w": 51,
+            "h": 79
+          }
+        ]
+      },
+      {
+        "frame": "frame_78",
+        "dur": 6,
+        "boxes": [
+          {
+            "type": "hurt",
+            "x": -28,
+            "y": -59,
+            "w": 55,
+            "h": 59
+          }
+        ]
       }
     ]
   }

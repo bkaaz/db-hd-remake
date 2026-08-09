@@ -1,11 +1,13 @@
 {
   "initial": "idle",
+  "onGotHit": "hurt",
   "states": {
     "idle": {
       "anim": "idle",
       "vel": [0, 0],
       "turn": true,
       "transitions": [
+        { "when": "pressed:attack", "to": "punch" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" }
       ]
@@ -14,13 +16,31 @@
       "anim": "walk",
       "vel": [0.83, 0],
       "turn": true,
-      "transitions": [{ "when": "!held:fwd", "to": "idle" }]
+      "transitions": [
+        { "when": "pressed:attack", "to": "punch" },
+        { "when": "!held:fwd", "to": "idle" }
+      ]
     },
     "walk_back": {
       "anim": "walk",
       "vel": [-0.6, 0],
       "turn": true,
-      "transitions": [{ "when": "!held:back", "to": "idle" }]
+      "transitions": [
+        { "when": "pressed:attack", "to": "punch" },
+        { "when": "!held:back", "to": "idle" }
+      ]
+    },
+    "punch": {
+      "anim": "punch",
+      "vel": [0, 0],
+      "turn": false,
+      "transitions": [{ "when": "animEnd", "to": "idle" }]
+    },
+    "hurt": {
+      "anim": "hurt",
+      "vel": [0, 0],
+      "turn": false,
+      "transitions": [{ "when": "animEnd", "to": "idle" }]
     }
   }
 }
