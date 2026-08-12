@@ -2,6 +2,117 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-13 — The thud belongs to hitting the floor, not to the blow
+
+- **A sound sits on the state that names the moment**, never on the attack that
+  caused it. The crash of a body landing is on `downed`, which is entered on
+  `landed` from whatever put the fighter in the air. Throws, heavier blows and
+  whatever comes after all inherit it by transitioning into the same state; none
+  of them has to remember to play a sound.
+- **The same rule sorts the two kinds of landing.** Coming down from a jump
+  enters `land` and sounds soft; coming down from a knockdown enters `downed` and
+  sounds hard. The distinction is which state you were in, not which move hit.
+- **The validator now warns about an airborne state with no `landed` or
+  `nearGround` transition.** That is the one mistake the next launcher will make,
+  and its symptom — a fighter stuck airborne at ground level, silent — looks like
+  an engine bug rather than a missing line of data.
+- **A voice and an impact are different events at different times:** the grunt is
+  on `knockdown`, at the blow; the crash is on `downed`, at the floor. Wanting
+  both *at once* is what would force `sound` to take a list, and nothing needs
+  that yet.
+
+## 2026-08-10 — Sound effects come from the game's own sound test
+
+- **Better than any rip.** The archives have voices and music but no impacts;
+  the game's options menu plays every effect cleanly, alone and in order. That
+  is a *better* source than a rip, not a worse one — no music underneath, no
+  overlap.
+- **One recording, one script.** Record a single pass through the whole sound
+  test, then cut it on silence: `npm run split-audio`. Recording each effect by
+  hand would mean thirty takes, and doing them again the moment the levels turn
+  out wrong. A pass plus a script makes a better recording cost one command.
+- **The splitter works on a running window, not on single samples**, because a
+  waveform crosses zero constantly and per-sample tests would shatter every clip
+  into fragments. It also refuses to cut at a clip's *own* quiet moment — an
+  impact and its tail are one sound — which is what `gap` is for.
+- **Clips are levelled to a common peak by default.** Sound-test captures come
+  out at wildly different levels, and levelling at the cut means `gain` in
+  `sounds.json` stays a creative choice rather than a correction for a
+  recording.
+- **Capture is the emulator's own audio recorder**, not the browser's. Mesen
+  writes a WAV of what the APU produced: no microphone, no system mixer, no
+  resampling, and no feedback loop to get wrong. Capturing a browser tab still
+  works and is written down as the fallback, but it is a worse copy of the same
+  thing.
+- **The menu blip is filtered by shape, not by ear.** A sound test is walked
+  with the cursor and the menu answers every press, so the recording holds two
+  sounds per effect. Name one copy of the blip and every copy goes — dropped
+  where it stands alone, trimmed off the front where it ran into an effect. The
+  fingerprint is level-independent, because capture levels drift; and where the
+  two truly overlap the clip is *reported*, not trimmed, since a wrong cut costs
+  the attack of the effect, which is the part that matters.
+- **Pauses in the recording are worth more than any amount of cleverness.** The
+  first pass was hurried and 79 clips came out fused to the blip; a second,
+  slower pass produced zero. The trimming stayed, because it costs nothing to
+  keep and the next recording may be hurried too.
+- **The tools are committed, their output is not.** A recording of the game's
+  audio is the game's audio, however it was captured; it goes to
+  `assets/audio/`, which is gitignored, exactly like the sprite sheets.
+
+## 2026-08-10 — Sounds are synthesised, because there was nothing to rip
+
+- **No usable source.** The Sounds Resource has the game but refuses automated
+  reads, and what is downloadable elsewhere (Zophar) is the SPC *music*, not the
+  effects. Pulling the samples out of the ROM is the same class of job as
+  Mesen-S for missing sprites — worth doing, not worth blocking on.
+- **So a sound is a spec, not a recording**, synthesised at runtime from a few
+  numbers in `sounds.json`. The same answer as the hit spark, and for the same
+  reason: being able to make something that fits is worth more than waiting for
+  a file. `file` is reserved so real samples can replace the synth later without
+  a single state changing.
+- **Plain Web Audio, no dependency.** What a fighter needs is "play this short
+  noise now, several at once, with a little pitch wobble" — a few dozen lines,
+  like the PNG encoder.
+- **Pitch wobble is not decoration.** Without it a run of hits sounds like a
+  stuck key rather than a fight, so `vary` is a first-class field and the pitch
+  calculation is pure and tested apart from playback.
+- **Three fields on the blow:** `sound` (the swing, on entering the state),
+  `hitSound` and `blockSound`. That makes seven things a blow decides, all in
+  one family — how it is taken, how long the game stops, what it looks like,
+  what it costs, and how it sounds landing, swinging and being blocked.
+- **A missing sound is silent, a malformed one is reported.** Sound is the last
+  thing added to a move and the first forgotten, so an unknown id must not
+  crash; but a spec with a zero gain fails *quietly*, which is worse, so
+  `validateSounds` runs at load beside the state validator.
+- **The audio context starts lazily**, because browsers refuse to play before
+  the user has interacted. A missing first punch beats a console full of
+  autoplay warnings.
+- **Honest limit: I cannot hear any of this.** The mechanics are testable — what
+  fires when, that the wobble spreads — but whether it sounds right is entirely
+  the owner's call, unlike the spark, where the pixels could be inspected.
+
+## 2026-08-10 — An input buffer, because hitstop was eating presses
+
+- **The bug, predicted and then fixed:** a button was only read on the exact
+  frame it went down, and a frozen entity returns before ever looking at its
+  input — so a press made during the six frames of hitstop was thrown away. That
+  is the worst moment to lose one, because the pause is exactly when a player,
+  having just seen the hit land, reaches for the next attack. Without this,
+  combos would fail in a way that looks like bad timing rather than a swallowed
+  input.
+- **A press lives 8 frames**, which is longer than the default hitstop on
+  purpose, so even a buffer that *was* aged through the pause would survive it.
+- **The buffer is ticked below the freeze check**, so a paused fighter does not
+  age it at all. Standing still cannot eat a press.
+- **A press is spent when it fires a move.** `StateMachine` now records which
+  trigger caused the change (`lastFired`), and the entity consumes the matching
+  button — otherwise one press could start a second move when the first ended
+  with the window still open. Reporting the trigger was chosen over changing
+  what `update` returns, which would have churned the runner's whole test suite
+  for no gain.
+- **It lives in `Entity`, not in the input layer**, so every fighter gets one:
+  the dummy, and a second player when there is one.
+
 ## 2026-08-10 — Blocking is decided at contact, not held as a stance
 
 - **There is no guard state to stand in.** Holding away from the opponent is

@@ -1,6 +1,8 @@
 import { Container, Graphics, Sprite } from "pixi.js";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "./hit";
+import { Audio } from "./audio";
+import { InputBuffer } from "./buffer";
 import { reactionFor, StateMachine } from "./states";
 
 /**
@@ -62,6 +64,12 @@ export class Entity {
   private landed = false;
   /** Whether this entity was holding away from its opponent last frame. */
   private holdingBack = false;
+  /**
+   * Presses wait here for a few frames. Ticked below the freeze check, so a hit
+   * pause cannot age a press out of existence — losing the input a player makes
+   * *because* they saw the hit land is the one thing a buffer has to prevent.
+   */
+  private readonly buffer = new InputBuffer();
 
   readonly view = new Container();
   private readonly sprite = new Sprite();
@@ -98,6 +106,7 @@ export class Entity {
   constructor(
     private readonly def: EntityDef,
     private readonly scale: number,
+    private readonly audio: Audio | null = null,
   ) {
     this.gravity = def.attributes.gravity;
     this.landCue = def.attributes.landCue;
@@ -169,6 +178,11 @@ export class Entity {
    */
   get guarding(): boolean {
     return this.holdingBack && !this.airborne && !!this.def.states?.onGuard;
+  }
+
+  /** Sound this entity's current attack makes on landing, and on being blocked. */
+  get attackSounds(): { hit?: string; block?: string } {
+    return { hit: this.sm?.def.hitSound, block: this.sm?.def.blockSound };
   }
 
   /** Health this entity's current attack takes off. */
@@ -244,6 +258,7 @@ export class Entity {
    */
   private enterState(): void {
     if (!this.sm) return;
+    this.audio?.play(this.sm.def.sound);
     this.setAnim(this.sm.def.anim);
     this.spent = false;
     this.landed = false;
@@ -299,6 +314,12 @@ export class Entity {
     // Live conditions, not latches: true only while they hold. `falling` turns
     // on at the apex; `nearGround` narrows that to the last stretch before
     // touchdown, where the landing pose belongs.
+    // Edges go into the buffer; the state machine reads the buffer, not the edge.
+    if (input.punch) this.buffer.press("punch");
+    if (input.kick) this.buffer.press("kick");
+    if (input.punchHeavy) this.buffer.press("punchHeavy");
+    if (input.kickHeavy) this.buffer.press("kickHeavy");
+
     const airborne = !!this.sm.def.airborne;
     const falling = airborne && this.vy > 0;
     const nearGround = falling && this.groundY - this.y <= this.landCue * this.scale;
@@ -309,14 +330,19 @@ export class Entity {
         back,
         up: input.up,
         down: input.down,
-        punch: input.punch,
-        kick: input.kick,
-        punchHeavy: input.punchHeavy,
-        kickHeavy: input.kickHeavy,
+        punch: this.buffer.has("punch"),
+        kick: this.buffer.has("kick"),
+        punchHeavy: this.buffer.has("punchHeavy"),
+        kickHeavy: this.buffer.has("kickHeavy"),
       },
       { animEnded: this.animEnded, falling, nearGround, landed: this.landed },
     );
+    // A press that started a move is spent, so it cannot start a second one
+    // when the move ends and the buffer has not expired yet.
+    const fired = this.sm.lastFired;
+    if (changed && fired?.startsWith("pressed:")) this.buffer.consume(fired.slice("pressed:".length));
     if (changed) this.enterState();
+    this.buffer.tick();
 
     // Velocities are authored in sprite pixels, like box coordinates, and X is
     // facing-relative (+ = forward); scaling to screen px happens here so the

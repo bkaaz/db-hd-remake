@@ -1,0 +1,79 @@
+{
+  "_comment": "Real samples cut from the sound test, with the synthesised spec kept underneath: it plays until the file has loaded and stands in if one is missing. data/audio/sound-test.json says which clip is what.",
+  "swing": {
+    "kind": "noise",
+    "freq": 1600,
+    "decay": 0.07,
+    "gain": 0.16,
+    "vary": 0.12,
+    "file": "003.wav"
+  },
+  "swing_kick": {
+    "kind": "noise",
+    "freq": 1600,
+    "decay": 0.07,
+    "gain": 0.16,
+    "vary": 0.12,
+    "file": "004.wav"
+  },
+  "swing_heavy": {
+    "kind": "noise",
+    "freq": 1100,
+    "decay": 0.1,
+    "gain": 0.2,
+    "vary": 0.1,
+    "file": "004.wav"
+  },
+  "hit": {
+    "kind": "noise",
+    "freq": 420,
+    "decay": 0.11,
+    "gain": 0.42,
+    "vary": 0.1,
+    "file": "007.wav"
+  },
+  "hit_heavy": {
+    "kind": "noise",
+    "freq": 240,
+    "decay": 0.2,
+    "gain": 0.55,
+    "vary": 0.08,
+    "file": "007.wav"
+  },
+  "block": {
+    "kind": "tone",
+    "freq": 900,
+    "decay": 0.09,
+    "gain": 0.3,
+    "vary": 0.06,
+    "file": "012.wav"
+  },
+  "jump": {
+    "gain": 0.12,
+    "vary": 0.08,
+    "file": "005.wav"
+  },
+  "land": {
+    "kind": "noise",
+    "freq": 180,
+    "decay": 0.09,
+    "gain": 0.22,
+    "vary": 0.1,
+    "file": "010.wav"
+  },
+  "land_hard": {
+    "gain": 0.35,
+    "vary": 0.1,
+    "file": "011.wav"
+  },
+  "land_settle": {
+    "gain": 0.28,
+    "vary": 0.1,
+    "file": "011.wav"
+  },
+  "voice_hurt": {
+    "gain": 0.6,
+    "vary": 0.05,
+    "file": "042.wav"
+  }
+}

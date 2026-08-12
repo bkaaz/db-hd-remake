@@ -238,6 +238,62 @@ malformed `vel`; it warns about unreachable states, states with no way out, and
 the classic slip — a state whose only exit is `animEnd` playing a **looping**
 animation, which can never be left.
 
+## Sounds (added 2026-08-10)
+
+Section file `sounds.json` — id → how the noise is made. A sound is **either a
+real sample or a spec synthesised at runtime**, and usually both: the samples
+are cut from a recording of the game's own sound test (`docs/audio-capture.md`),
+and the spec underneath is what plays until the file has loaded, and if the file
+is missing.
+
+```jsonc
+{
+  "hit":   { "kind": "noise", "freq": 420, "decay": 0.11, "gain": 0.42, "vary": 0.10,
+             "file": "007.wav" },
+  "block": { "kind": "tone",  "freq": 900, "decay": 0.09, "gain": 0.30, "vary": 0.06 }
+}
+```
+
+- **`kind`** — `noise` (filtered white noise: impacts, whiffs) or `tone`
+  (a falling sine: the thin ring of a blocked blow).
+- **`freq`** — centre frequency in Hz; lower reads as heavier.
+- **`decay`** — length in seconds. Impacts live between 0.05 and 0.25.
+- **`gain`** — peak volume, above 0 and at most 1.
+- **`vary`** — random pitch spread as a fraction of `freq`. Without it a run of
+  hits sounds like a stuck key rather than a fight.
+- **`file`** — a `.wav` in `assets/audio/sfx/`, served by `/api/sfx`. Takes
+  precedence over the spec once loaded. The clips keep the numbers the splitter
+  gave them rather than being renamed, so re-cutting the capture cannot orphan a
+  sound; **`data/audio/sound-test.json` is the catalogue** saying which number is
+  what, with `?` for the ones nobody has identified yet — the same convention as
+  `descriptions.json` for sprites.
+
+`gain` applies to a sample too, and `vary` becomes playback speed rather than a
+filter frequency — one definition of the wobble, `rateFor()`, shared by both.
+What a sample does *not* use is `decay`: a recording carries its own envelope.
+
+**A sound with a `file` may drop `kind`, `freq` and `decay` entirely.** Some
+sounds have no honest synthesised stand-in — a voice above all — and inventing
+one is worse than staying quiet for the moment before the sample loads. Without
+a `file` all three are still required: a sound has to be *something*.
+
+A reaction state naming a `sound` is how a fighter gets a voice: `hurt` and
+`knockdown` play the grunt on being entered, which is the moment the blow lands.
+
+**A key starting with `_` is a note, not a sound** — JSON has nowhere else to put
+one, and the validator skips it.
+
+A state names sounds with three fields, the same family as `onHit`, `hitstop`,
+`hitFx` and `damage` — the blow decides how it sounds too:
+
+- **`sound`** — played on entering the state: the swing, not the impact.
+- **`hitSound`** — played when this state's attack lands.
+- **`blockSound`** — played when it is blocked.
+
+An unknown id is silent rather than fatal: sound is the last thing added to a
+move and the first thing forgotten. `validateSounds()` runs at load and reports
+malformed specs, since a broken sound fails quietly.
+
 ## Attributes (added 2026-08-09)
 
 Section file `attributes.json` — constants that belong to the fighter rather

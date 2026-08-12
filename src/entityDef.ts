@@ -1,4 +1,5 @@
 import { Rectangle, Texture } from "pixi.js";
+import type { Sounds } from "./sound";
 import type { StatesFile } from "./states";
 
 /**
@@ -83,6 +84,8 @@ interface EntityFile {
   atlas: string;
   frames: Record<string, FrameDef>;
   animations: Record<string, Anim>;
+  /** Section file `sounds.json`, absent until authored. */
+  sounds?: Sounds;
   /** Section file `states.json`, absent until authored. */
   states?: StatesFile;
   attributes?: Partial<Attributes>;
@@ -102,6 +105,7 @@ export interface EntityDef {
   frames: Map<string, FrameTex>;
   animations: Record<string, Anim>;
   states: StatesFile | null;
+  sounds: Sounds;
   attributes: Attributes;
 }
 
@@ -132,6 +136,7 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
     frames,
     animations: data.animations ?? {},
     states: data.states ?? null,
+    sounds: data.sounds ?? {},
     attributes: { ...DEFAULT_ATTRIBUTES, ...(data.attributes ?? {}) },
   };
 }

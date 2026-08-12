@@ -16,6 +16,7 @@ import path from "node:path";
 const SHEETS_DIR = path.join("assets", "sheets");
 const ENTITIES_DIR = path.join("data", "entities");
 const ATLASES_DIR = path.join("assets", "atlases");
+const SFX_DIR = path.join("assets", "audio", "sfx");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
 
 function sanitizeName(name: string): string {
@@ -94,6 +95,24 @@ export function entityEditorServer(): Plugin {
           const buf = await fs.readFile(file);
           res.statusCode = 200;
           res.setHeader("Content-Type", "image/png");
+          res.end(buf);
+        } catch {
+          res.statusCode = 404;
+          res.end();
+        }
+      });
+
+      // Stream one cut sound effect (used by the game). The clips are game
+      // audio and gitignored like the sheets, so they cannot simply be served
+      // as static files from the repo.
+      server.middlewares.use("/api/sfx", async (req, res) => {
+        const url = new URL(req.url ?? "", "http://localhost");
+        const file = sanitizeName(path.basename(url.searchParams.get("file") ?? "", ".wav"));
+        if (!file) return sendJson(res, 400, { error: "file required" });
+        try {
+          const buf = await fs.readFile(path.join(root, SFX_DIR, `${file}.wav`));
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "audio/wav");
           res.end(buf);
         } catch {
           res.statusCode = 404;

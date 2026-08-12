@@ -1,8 +1,10 @@
 import { Application, Graphics, Text } from "pixi.js";
 import { Entity, NO_INPUT } from "./entity";
 import { loadEntityDef, type EntityDef } from "./entityDef";
+import { Audio } from "./audio";
 import { contact, impactPoint } from "./hit";
 import { separate } from "./push";
+import { validateSounds } from "./sound";
 import { validateStates } from "./states";
 
 /**
@@ -56,6 +58,11 @@ async function boot(): Promise<void> {
       showMessage(app, `states.json — ${errors.length} problem(s):\n${shown}${rest}`);
     }
   }
+
+  // sounds.json is hand-authored too, and a broken spec is silent rather than
+  // loud — exactly the sort of thing nobody notices until they wonder why one
+  // move has no impact.
+  for (const problem of validateSounds(def.sounds)) console.error(`[sounds] ${problem}`);
 
   // Effects are entities with no states: one animation, played once, then gone.
   // They are generated (`npm run fx`), so a clone that has not run it yet is
@@ -123,8 +130,9 @@ async function boot(): Promise<void> {
   const preview = new URL(location.href).searchParams.get("anim");
   const previewing = !!preview && !!def.animations[preview];
 
-  const player = new Entity(def, SCALE);
-  const dummy = previewing ? null : new Entity(def, SCALE);
+  const audio = new Audio(def.sounds);
+  const player = new Entity(def, SCALE, audio);
+  const dummy = previewing ? null : new Entity(def, SCALE, audio);
   if (previewing && preview) player.preview(preview);
   app.stage.addChild(player.view);
   if (dummy) app.stage.addChild(dummy.view);
@@ -213,6 +221,8 @@ async function boot(): Promise<void> {
     // specials, which do not exist yet, so a normal attack on guard is free to
     // eat — deliberately, since a block you cannot afford is not a block.
     const blocked = defender.guarding && defender.guardHit();
+    const noise = attacker.attackSounds;
+    audio.play(blocked ? noise.block : noise.hit);
     if (!blocked) {
       defender.hurtBy(attacker.attackDamage);
       defender.gotHit(attacker.attackReaction);

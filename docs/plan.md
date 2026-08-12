@@ -22,15 +22,54 @@ detail that gets rewritten before it is read.
 **The order is the point.** A–D build **one complete exchange** — a hit that
 costs something, has weight and is visible — before any move is multiplied.
 Four buttons × three stances is twelve attacks, and re-tuning how a hit feels
-afterwards would mean redoing all of them. **A–I are done**: a blow names how it
+afterwards would mean redoing all of them. **A–J are done**: a blow names how it
 is taken, pushes the defender back, pauses the game on contact and leaves a
 spark where the boxes met, all four attack buttons are wired, an uppercut puts
-a fighter on the floor, and there are attacks from standing, crouching and the
-air.
+a fighter on the floor, there are attacks from standing, crouching and the
+air, blows can be blocked, health comes off, and it all makes a noise.
 
 ---
 
 > **One exchange is complete.** Everything below multiplies it.
+
+## Next: review and tidy the sound slice
+
+**Before any new feature.** The sound work landed in one long sitting and grew
+by trial: samples were named live, rejected, renamed, and the tools around them
+were built while being used. It works, and it was committed *because* it works —
+but nobody has read it back as a whole, and some of it is very likely redundant.
+
+*Scope: the diff of the commit that carries this line.* Everything else waits.
+
+Concrete questions already worth asking, so the review does not have to
+rediscover them:
+
+- **The synth spec under a sampled sound.** Five sounds keep `kind`/`freq`/
+  `decay` that nothing will ever play again once the sample loads. Is a fallback
+  that only covers the first few frames of a session worth a second definition
+  of every sound? A voice already proves the format works without one.
+- **Ids that share one file.** `swing_kick` and `swing_heavy` are both `004`,
+  `hit_heavy` borrows `hit`'s `007`, `land_hard` and `land_settle` are both
+  `011`. The reasoning was "separate events, separate ids, so one can change
+  without the other" — sound, but it should be a rule stated once, not four
+  local decisions.
+- **Five files for audio**: `src/sound.ts`, `src/audio.ts`, `src/audioSplit.ts`,
+  `scripts/split-audio.ts`, `scripts/wav.ts`. The pure/browser split is right;
+  whether the cutting tools belong beside the runtime is not obvious.
+- **`trimLeading` and `--blip` trimming.** Built because the first capture was
+  hurried; the second needed none of it. Kept deliberately — confirm that is
+  still the call, or delete it and keep only the dropping.
+- **`docs/audio-capture.md`** still documents the browser route in full. It is
+  the fallback nobody used. Shorten or keep?
+- **`data/audio/`** is a new top-level directory beside `data/entities/`. Is a
+  catalogue of 127 mostly-`?` slots the right shape, and does it belong there?
+- **`/api/sfx` lives in the entity-editor plugin**, like `/api/atlas` — correct
+  by precedent, but the plugin's name has stopped describing what it serves.
+- **The input buffer** rode along in the same batch and has not been looked at
+  since the day it was written.
+
+*Done when:* the diff has been read end to end, the dead weight is gone, and
+anything kept on purpose says why — here or in `decisions.md`.
 
 ## G. Crouch, and crouch attacks
 
@@ -44,8 +83,6 @@ stomach, so the sprite exists — the question is whether the fight reads better
 with it, or whether high/low is a distinction that costs a reaction per fighter
 and buys little.
 
-## J. Sounds
-
 ---
 
 ## Not yet ordered
@@ -54,6 +91,13 @@ Real work, carried over from the checklists this file replaced. It gets slotted
 into the sequence above when its turn comes, rather than living in a second
 queue.
 
+- **Name the rest of the sound test.** The capture is cut into 127 clips and
+  eight are identified, so the swings, the hit, the block, the jump, the
+  landing, the crash to the floor and Goku's own grunt are real samples;
+  `data/audio/sound-test.json` holds a `?` for every clip nobody has listened to
+  yet. One known gap behind that: `hit_heavy` borrows the light
+  hit's sample until a heavier one is named. Nothing here needs code — a clip
+  number in `sounds.json` is the whole change.
 - **Ki, and the bar it shares with health.** The original spends one resource
   for both, so a special costs the same pool that damage eats. Health and damage
   exist now; the shared half waits for specials to exist at all.
@@ -67,13 +111,9 @@ queue.
   forever should eventually fail. Both wait for specials.
 - **A crouching guard.** Standing blocking works; low blocking needs a pose our
   sheet does not have — see `decisions.md` for the three ways out.
-- **Commands / input buffer / motion recognition** (was phase E) — the
-  prerequisite for specials, and for combos before that. **Hitstop currently
-  eats inputs:** the loop clears the attack edge every frame while a frozen
-  `update()` returns before reading it, so a button pressed during the 6-frame
-  pause is lost — and that pause is exactly when a player presses the next
-  attack, having just seen the hit land. Without a buffer the combo failures
-  will look like a timing problem rather than a swallowed press.
+- **Commands and motion recognition** (was phase E) — quarter-circles and the
+  rest, the prerequisite for specials. The input **buffer** underneath them is
+  done.
 - **An explicit `hitstun`.** Today a reaction lasts as long as its animation,
   which is enough while there is one reaction. Combos need to tune how long the
   defender is helpless independently of how many frames the pose takes — that

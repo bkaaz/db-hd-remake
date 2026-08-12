@@ -68,6 +68,12 @@ export interface StateDef {
    * how long the game stops, what it looks like and what it costs.
    */
   damage?: number;
+  /** Sound played on entering this state — the swing, not the impact. */
+  sound?: string;
+  /** Sound this state's attack makes when it lands. */
+  hitSound?: string;
+  /** Sound this state's attack makes when it is blocked. */
+  blockSound?: string;
   /** Evaluated in order; the first firing transition wins. */
   transitions?: Transition[];
 }
@@ -209,6 +215,11 @@ export function reactionFor(onHit: string | undefined, defender: StatesFile): st
 export class StateMachine {
   /** Name of the state the entity is in. */
   current: string;
+  /**
+   * The trigger that caused the last state change, or null. The caller needs it
+   * to spend a buffered press: a press that fired a move must not fire another.
+   */
+  lastFired: string | null = null;
 
   constructor(private readonly file: StatesFile) {
     this.current = file.states[file.initial] ? file.initial : Object.keys(file.states)[0] ?? "";
@@ -248,6 +259,7 @@ export class StateMachine {
       }
       if (t.to === this.current) return null;
       this.current = t.to;
+      this.lastFired = t.when;
       return this.current;
     }
     return null;
@@ -349,6 +361,18 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
     if (def.hitstop !== undefined && (typeof def.hitstop !== "number" || def.hitstop < 0)) {
       errors.push(`${where}: "hitstop" must be a number of game frames, 0 or more`);
+    }
+
+    // Whatever puts a fighter in the air — a jump, an uppercut, a throw nobody
+    // has written yet — has to say what happens when the ground arrives. Coming
+    // down is the engine's job, but noticing it is the data's, and a state that
+    // never asks stays airborne at ground level: no landing pose, no thud, no
+    // way out. This is the one mistake a new launcher will make.
+    if (def.airborne && !exits.some((t) => t.when === "landed" || t.when === "nearGround")) {
+      warnings.push(
+        `${where}: airborne with no "landed" or "nearGround" transition — ` +
+          `nothing happens when it reaches the floor`,
+      );
     }
 
     if (def.damage !== undefined && (typeof def.damage !== "number" || def.damage < 0)) {

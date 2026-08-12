@@ -265,6 +265,50 @@ describe("validateStates", () => {
   });
 });
 
+describe("StateMachine.lastFired", () => {
+  it("reports the trigger that caused the change, so a press can be spent", () => {
+    const sm = new StateMachine(machine());
+    expect(sm.lastFired).toBeNull();
+    sm.update(FWD, QUIET);
+    expect(sm.lastFired).toBe("held:fwd");
+  });
+
+  it("stays on the last one that actually fired", () => {
+    const sm = new StateMachine(machine());
+    sm.update(FWD, QUIET);
+    sm.update(FWD, QUIET); // no change: already in walk_fwd
+    expect(sm.lastFired).toBe("held:fwd");
+  });
+});
+
+describe("an airborne state has to notice the ground", () => {
+  const flying = {
+    initial: "idle",
+    states: {
+      idle: { anim: "idle", transitions: [{ when: "held:up", to: "thrown" }] },
+      thrown: { anim: "hurt", airborne: true, transitions: [{ when: "animEnd", to: "idle" }] },
+    },
+  };
+
+  it("warns when nothing catches the landing", () => {
+    expect(validateStates(flying as never, ANIMS).warnings).toContain(
+      'state "thrown": airborne with no "landed" or "nearGround" transition — ' +
+        "nothing happens when it reaches the floor",
+    );
+  });
+
+  it("is satisfied by either signal", () => {
+    for (const when of ["landed", "nearGround"]) {
+      const ok = JSON.parse(JSON.stringify(flying));
+      ok.states.thrown.transitions.push({ when, to: "idle" });
+      const found = validateStates(ok, ANIMS).warnings.filter((w: string) =>
+        w.includes("reaches the floor"),
+      );
+      expect(found).toEqual([]);
+    }
+  });
+});
+
 describe("reactionFor", () => {
   it("takes the attack's reaction over the defender's default", () => {
     // The blow outranks the body: a heavy attack staggers someone whose own
