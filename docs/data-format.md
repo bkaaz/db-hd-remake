@@ -230,7 +230,7 @@ Deliberately **not** in v0 (later slices): `onEnter` effects, `hit` data
 (damage/hitstun/knockback), the scripting escape hatch, jump/gravity.
 
 **This file is hand-authored** (the editor's States tab is a read-only view —
-see [`decisions.md`](./decisions.md)), so `validateStates()` in `src/states.ts`
+see [`decisions.md`](./decisions.md)), so `validateStates()` in `src/entity/states.ts`
 checks it in both places: the game reports problems on screen at load, the
 editor flags them in the States tab. It catches a missing/unknown `initial` or
 `onGotHit`, an `anim` or `to` that does not exist, an unknown trigger and a
@@ -323,7 +323,7 @@ about 2.5 frames, 40 px about 4.5, 60 px about 7, 80 px about 10.
 An airborne sequence therefore reads: rise → `falling` → fall pose →
 `nearGround` → landing pose → `landed`.
 
-Missing values fall back to engine defaults (`src/entityDef.ts`), so the file is
+Missing values fall back to engine defaults (`src/entity/entityDef.ts`), so the file is
 optional — but **anything meant to be tuned is written out explicitly anyway**.
 A value you are expected to adjust should be visible where you would look for
 it, not hidden in a default.

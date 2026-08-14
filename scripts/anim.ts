@@ -1,6 +1,6 @@
 /**
  * Build an animation from a list of frames, with boxes and timing derived from
- * the sprites (see src/boxes.ts).
+ * the sprites (see src/sprites/boxes.ts).
  *
  * The point is that nothing here needs a human — or a language model — to read
  * a 2000-line frames.json and do arithmetic. You say which frames, in order;
@@ -26,9 +26,9 @@ import {
   type AnimKind,
   type DerivedBox,
   type FrameRect,
-} from "../src/boxes.ts";
-import { validateStates, type StatesFile } from "../src/states.ts";
-import { alphaMask, decodePng, type Rgba } from "./png.ts";
+} from "../src/sprites/boxes.ts";
+import { validateStates, type StatesFile } from "../src/entity/states.ts";
+import { alphaMask, decodePng, type Rgba } from "../src/sprites/png.ts";
 
 interface Step {
   frame: string;

@@ -1,11 +1,11 @@
 import { Application, Graphics, Text } from "pixi.js";
-import { Entity, NO_INPUT } from "./entity";
-import { loadEntityDef, type EntityDef } from "./entityDef";
-import { Audio } from "./audio";
-import { contact, impactPoint } from "./hit";
-import { separate } from "./push";
-import { validateSounds } from "./sound";
-import { validateStates } from "./states";
+import { Entity, NO_INPUT } from "./entity/entity";
+import { loadEntityDef, type EntityDef } from "./entity/entityDef";
+import { Audio } from "./audio/playback";
+import { contact, impactPoint } from "./combat/hit";
+import { separate } from "./combat/push";
+import { validateSounds } from "./audio/sounds";
+import { validateStates } from "./entity/states";
 
 /**
  * Game entry point. Loads an entity authored in the entity editor

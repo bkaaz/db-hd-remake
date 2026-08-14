@@ -1,5 +1,5 @@
 import { Rectangle, Texture } from "pixi.js";
-import type { Sounds } from "./sound";
+import type { Sounds } from "../audio/sounds";
 import type { StatesFile } from "./states";
 
 /**
@@ -48,7 +48,7 @@ export interface Attributes {
   landCue: number;
   /**
    * Width of the body for push collision, in sprite px, centred on the anchor.
-   * Deliberately one number rather than per-frame boxes — see src/push.ts.
+   * Deliberately one number rather than per-frame boxes — see src/combat/push.ts.
    */
   pushWidth: number;
   /**

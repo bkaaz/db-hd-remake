@@ -1,5 +1,5 @@
 /**
- * Playing sounds. The browser half of `src/sound.ts`, which owns the shapes.
+ * Playing sounds. The browser half of `src/audio/sounds.ts`, which owns the shapes.
  *
  * Plain Web Audio, no dependency: what a fighter needs is "play this short
  * noise now, several at once, with a little pitch wobble", and that is a few
@@ -11,7 +11,7 @@
  * autoplay warnings.
  */
 
-import { pitchFor, rateFor, type Sounds } from "./sound";
+import { pitchFor, rateFor, type Sounds } from "./sounds";
 
 export class Audio {
   private ctx: AudioContext | null = null;

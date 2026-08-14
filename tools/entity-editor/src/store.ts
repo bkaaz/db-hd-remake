@@ -7,7 +7,7 @@
  * into the on-disk `*.entity.json`.
  */
 
-import type { StatesFile } from "../../../src/states";
+import type { StatesFile } from "../../../src/entity/states";
 
 export type EditorMode = "frame" | "anchor" | "bg" | "detect";
 

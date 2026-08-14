@@ -5,7 +5,7 @@
  * `frames.json` / `animations.json`. No sheet to frame, no editor round-trip,
  * because the script already knows where every pixel went.
  *
- * The art itself is drawn by `src/fx.ts` (pure, unit-tested). This file only
+ * The art itself is drawn by `src/fx/generate.ts` (pure, unit-tested). This file only
  * turns grids into a PNG and into our data format. Re-running is safe: the
  * generator is seeded, so the same command produces the same bytes.
  *
@@ -20,8 +20,8 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { bounds, FX_PALETTE, spark, sparkVariants, type Grid } from "../src/fx";
-import { encodePng } from "./png";
+import { bounds, FX_PALETTE, spark, sparkVariants, type Grid } from "../src/fx/generate";
+import { encodePng } from "../src/sprites/png";
 
 /** One entity this script owns, end to end. */
 interface Effect {
@@ -51,7 +51,7 @@ interface Effect {
  * which holds the first frame for another 6 on top. The first version ran for
  * 15 and that alone made it read as an explosion rather than an impact.
  *
- * Only sparks are generated. `explosion()` exists in src/fx.ts for ki blasts and
+ * Only sparks are generated. `explosion()` exists in src/fx/generate.ts for ki blasts and
  * specials, but nothing uses it yet, so no entity is written for it — dead data
  * is worse than a missing line here.
  */

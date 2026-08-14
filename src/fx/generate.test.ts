@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bounds, burst, explosion, FX_PALETTE, spark, sparkVariants, type Grid } from "./fx";
+import { bounds, burst, explosion, FX_PALETTE, spark, sparkVariants, type Grid } from "./generate";
 
 /**
  * The generator is pure, so what it draws is checked here rather than by eye.

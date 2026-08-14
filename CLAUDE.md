@@ -144,7 +144,7 @@ npm run anim -- <entity> <anim> --frames 1,2,3 --kind attack|loop|hurt
 npm run sheet -- <entity> --frames 0-30
                   # labelled contact sheet into assets/contact/ (gitignored)
 npm run fx        # generate the effect entities (atlas + frames + animations)
-                  # from src/fx.ts — no ripped hit spark exists (--dry-run)
+                  # from src/fx/generate.ts — no ripped hit spark (--dry-run)
 npm run fetch-assets   # download/verify source sheets from assets.manifest.json
 npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ```
@@ -154,30 +154,52 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ```
 .
 ├── index.html                    # game page shell + #app mount
-├── src/                          # the game (PixiJS) + pure logic (*.test.ts)
-│   ├── main.ts                   #   boot, wiring, input
-│   ├── entityDef.ts              #   load entity data + atlas -> EntityDef
-│   ├── entity.ts                 #   Entity: one live instance in the world
-│   ├── states.ts                 #   state-machine runner + validator (no PixiJS)
-│   ├── hit.ts                    #   box → world, overlap, hit detection (no PixiJS)
-│   └── boxes.ts                  #   derive boxes/timing from sprites (no PixiJS)
-├── scripts/anim.ts               # build an animation from a frame list
-├── scripts/sheet.ts              # labelled contact sheet of frames, to look at
-├── scripts/png.ts                #   minimal PNG read/write (no dependency)
+├── src/                          # grouped by domain; *.test.ts sits beside its source
+│   ├── main.ts                   #   boot, wiring, input — the entry from index.html
+│   ├── entity/                   #   entityDef.ts: data + atlas -> EntityDef
+│   │                             #   entity.ts: one live instance in the world
+│   │                             #   states.ts: state-machine runner + validator
+│   ├── combat/                   #   hit.ts: box → world, overlap, hit detection
+│   │                             #   push.ts: separating two bodies
+│   ├── input/                    #   buffer.ts: the input buffer
+│   ├── audio/                    #   playback.ts: Web Audio, the browser half
+│   │                             #   sounds.ts: the shapes, pure
+│   │                             #   split.ts + wav.ts: cutting a capture (build-time)
+│   ├── sprites/                  #   boxes.ts: derive boxes/timing from sprites
+│   │                             #   png.ts: minimal PNG read/write (no dependency)
+│   └── fx/                       #   generate.ts: draws the effect pixel art
+├── scripts/                      # CLI entry points ONLY — one per npm run command;
+│   │                             #   nothing in the repo imports from here
+│   ├── anim.ts                   #   build an animation from a frame list
+│   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
+│   ├── fx.ts                     #   write the generated effects out
+│   ├── split-audio.ts            #   cut a capture into numbered clips
+│   └── fetch-assets.mjs          #   BYOA fetch/verify
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/entity-editor/          # the authoring tool (Canvas 2D)
-│   ├── plugin.ts                 #   Vite dev-server plugin: /api/* endpoints
-│   └── src/                      #   editor UI
+│   ├── server.ts                 #   Vite dev-server plugin: /api/* endpoints (Node)
+│   └── src/                      #   editor UI (browser)
 ├── data/entities/<name>/         # OUR data, committed: frames.json,
 │                                 #   animations.json, states.json, …
+├── data/audio/sound-test.json    # which clip of the sound-test capture is what
 ├── assets/                       # BYOA — gitignored, never committed
 │   ├── sheets/                   #   source sprite sheets
 │   └── atlases/                  #   generated keyed atlases
 ├── docs/                         # design notes & decisions (read before building)
-├── scripts/fetch-assets.mjs      # BYOA fetch/verify
 ├── vite.config.ts
 └── tsconfig.json
 ```
+
+The directory says *what a file is about*, not whether it runs in the browser.
+Two properties the tree no longer shows, and both still hold:
+
+- **PixiJS appears in exactly three files** — `main.ts`, `entity/entity.ts` and
+  `entity/entityDef.ts`. Everything else is plain TypeScript, which is what lets
+  Vitest run it in Node.
+- **Some files never reach the browser**: `audio/split.ts`, `audio/wav.ts`,
+  `sprites/png.ts`, `sprites/boxes.ts` and `fx/generate.ts` exist for the CLI in
+  `scripts/`. They live in `src/` beside the domain they belong to; nothing the
+  game imports reaches them.
 
 ## Data and assets
 

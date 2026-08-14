@@ -2,7 +2,7 @@
  * Minimal WAV read/write — 16-bit PCM only, which is what the browser recorder
  * in `docs/audio-capture.md` produces and all we ever need to write.
  *
- * No dependency, for the same reason as `scripts/png.ts`: the format we handle
+ * No dependency, for the same reason as `src/sprites/png.ts`: the format we handle
  * is one we also generate, so it is a few dozen lines and it refuses anything
  * unexpected loudly instead of misreading it.
  */

@@ -11,7 +11,7 @@ import {
   deleteFrame,
   type BoxType,
 } from "./store";
-import { validateStates } from "../../../src/states";
+import { validateStates } from "../../../src/entity/states";
 
 /** Tiny typed DOM helper. */
 function el<K extends keyof HTMLElementTagNameMap>(

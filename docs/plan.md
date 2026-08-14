@@ -53,9 +53,10 @@ rediscover them:
   `011`. The reasoning was "separate events, separate ids, so one can change
   without the other" — sound, but it should be a rule stated once, not four
   local decisions.
-- **Five files for audio**: `src/sound.ts`, `src/audio.ts`, `src/audioSplit.ts`,
-  `scripts/split-audio.ts`, `scripts/wav.ts`. The pure/browser split is right;
-  whether the cutting tools belong beside the runtime is not obvious.
+- **Five files for audio**, now all under `src/audio/` except the CLI:
+  `sounds.ts`, `playback.ts`, `split.ts`, `wav.ts` and `scripts/split-audio.ts`.
+  The pure/browser split is right; whether the cutting tools belong beside the
+  runtime is still open — grouping them by domain did not answer it.
 - **`trimLeading` and `--blip` trimming.** Built because the first capture was
   hurried; the second needed none of it. Kept deliberately — confirm that is
   still the call, or delete it and keep only the dropping.

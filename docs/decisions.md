@@ -2,6 +2,29 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-14 — Directories say what a file is about, not how it runs
+
+- **`src/` is grouped by domain** — `entity/`, `combat/`, `input/`, `audio/`,
+  `sprites/`, `fx/` — because the question someone actually asks of an unfamiliar
+  tree is "where is the sound", not "what can run in Node". Twenty flat files had
+  stopped answering either.
+- **The rejected alternative was grouping by layer** (`game/` for PixiJS, `core/`
+  for pure runtime logic, `authoring/` for build-time). It makes the testability
+  rule visible in the tree and is worse to read: it splits `audio/` across three
+  directories and puts a WAV codec next to a state machine because both happen to
+  be pure. Reading the code won.
+- **What that costs**: the tree no longer shows that PixiJS is confined to three
+  files, or that some modules never reach the browser. Both are written down in
+  `CLAUDE.md` instead. A test that enforces them mechanically is a good idea and
+  is *not* built — it would have been new behaviour inside a commit whose whole
+  value was containing none.
+- **`scripts/` holds CLI entry points and nothing else.** One file per `npm run`
+  command, and nothing in the repo imports from it — so the codecs it used to own
+  (`png.ts`, `wav.ts`) moved to the domain they serve. What is a command and what
+  is a library is now visible from the path.
+- **The editor was left alone** apart from `plugin.ts` → `server.ts`, which
+  separates the one Node file from eleven browser ones. It gets its own review.
+
 ## 2026-08-13 — The thud belongs to hitting the floor, not to the blow
 
 - **A sound sits on the state that names the moment**, never on the attack that
@@ -323,7 +346,7 @@ Decisions that are settled. Newest first.
   (ripped by `Locke_gb7`) — auras, beams,
   explosions, smoke — but it has no small impact flash for a basic hit, so it
   is not carried in the manifest: we ship pointers only to sheets we use.
-- **So we draw our own, with a script** (`npm run fx`, `src/fx.ts` pure +
+- **So we draw our own, with a script** (`npm run fx`, `src/fx/generate.ts` pure +
   tested). Not a stopgap: being able to make effects that fit the game is worth
   having on its own, and the owner's judgement is that the original's effects
   are the weakest part of its art, limited by the hardware rather than chosen.
@@ -689,7 +712,7 @@ Decisions that are settled. Newest first.
   is round-trip tested against an encoder in the test file that exercises all
   five row filters.
 - **The fitting itself is pure and testable** (`hurtBoxesFromMask` in
-  `src/boxes.ts`, driven by ASCII-art masks in the tests); only the decoding
+  `src/sprites/boxes.ts`, driven by ASCII-art masks in the tests); only the decoding
   lives in `scripts/`.
 - Falls back to the single bounding box, with a message, when the atlas is
   missing — it is gitignored (BYOA), so a fresh clone has none until
@@ -708,7 +731,7 @@ matters more than any single animation.
 - **Anything derivable is computed by a script**, not reasoned about. Frames are
   cut tight around the silhouette, so a hurt box *is* the frame rect relative to
   the anchor; the active frame of an attack is the one reaching furthest in
-  front of the anchor. `src/boxes.ts` (pure, tested) + `scripts/anim.ts`
+  front of the anchor. `src/sprites/boxes.ts` (pure, tested) + `scripts/anim.ts`
   (`npm run anim`). Rationale is as much about cost as correctness: doing this
   in-context means pulling a 2000-line `frames.json` in per animation, for
   arithmetic that is deterministic — and a script gives the same answer every
@@ -750,7 +773,7 @@ matters more than any single animation.
   health bar there is nothing to see.
 - **One hit per entry into the attack state**, tracked by the engine, so a hit
   box that stays out for several frames still lands once.
-- **Collision lives in `src/hit.ts`** — pure, unit-tested, and used by the box
+- **Collision lives in `src/combat/hit.ts`** — pure, unit-tested, and used by the box
   overlay too, so what is drawn is exactly what collides.
 - **Keyboard = the ZSNES default layout:** SNES `A`=`X`, `B`=`Z`, `X`=`S`,
   `Y`=`A`, `L`=`C`, `R`=`D`, directions on the arrow keys. Only SNES `Y`
@@ -787,7 +810,7 @@ matters more than any single animation.
   text, and beats a form at copy-paste between characters, find & replace and
   git diffs. MUGEN splits the same way: sprites/boxes in a tool, states in text.
 - **The real risk of hand-editing is a silent typo** in a cross-reference, not
-  tedium. So we bought exactly that: `validateStates()` in `src/states.ts`
+  tedium. So we bought exactly that: `validateStates()` in `src/entity/states.ts`
   (pure, no PixiJS) checks `initial`, that every `anim` and every transition
   target exists, that triggers are known, that `vel` is two numbers, and warns
   about states unreachable from `initial`.
@@ -816,7 +839,7 @@ matters more than any single animation.
   same day**, see the entry below. The reasoning rested on Phase D2 reshaping the
   states format; D2 as an editing UI was then dropped, so the format stopped
   moving and the argument for waiting went with it. Pure logic
-  (`src/states.ts` and successors) stays PixiJS-free either way.
+  (`src/entity/states.ts` and successors) stays PixiJS-free either way.
 
 ## 2026-08-08 — `vel` is authored in sprite pixels (unit fix)
 

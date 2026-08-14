@@ -13,8 +13,8 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { encodePng, decodePng, type Rgba } from "./png.ts";
-import type { FrameRect } from "../src/boxes.ts";
+import { encodePng, decodePng, type Rgba } from "../src/sprites/png.ts";
+import type { FrameRect } from "../src/sprites/boxes.ts";
 
 /** 3x5 pixel digits — enough to label a frame, nothing more. */
 const DIGITS: Record<string, string[]> = {

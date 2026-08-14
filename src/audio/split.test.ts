@@ -9,7 +9,7 @@ import {
   peak,
   similarity,
   trimLeading,
-} from "./audioSplit";
+} from "./split";
 
 const RATE = 100; // 100 samples per second keeps the fixtures readable
 

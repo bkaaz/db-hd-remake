@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pitchFor, rateFor, validateSounds, type SoundSpec, type Sounds } from "./sound";
+import { pitchFor, rateFor, validateSounds, type SoundSpec, type Sounds } from "./sounds";
 
 const ok: SoundSpec = { kind: "noise", freq: 400, decay: 0.1, gain: 0.5 };
 
@@ -13,7 +13,7 @@ describe("validateSounds", () => {
   });
 
   it("passes over a note, since JSON has nowhere else to put one", () => {
-    const withNote = { _comment: "placeholders, see src/sound.ts", hit: ok } as unknown as Sounds;
+    const withNote = { _comment: "placeholders, see src/audio/sounds.ts", hit: ok } as unknown as Sounds;
     expect(validateSounds(withNote)).toEqual([]);
   });
 

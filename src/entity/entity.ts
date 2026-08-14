@@ -1,8 +1,8 @@
 import { Container, Graphics, Sprite } from "pixi.js";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
-import { boxToWorld, type Placement } from "./hit";
-import { Audio } from "./audio";
-import { InputBuffer } from "./buffer";
+import { boxToWorld, type Placement } from "../combat/hit";
+import { Audio } from "../audio/playback";
+import { InputBuffer } from "../input/buffer";
 import { reactionFor, StateMachine } from "./states";
 
 /**

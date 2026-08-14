@@ -7,7 +7,7 @@ description: Make a visual effect (hit spark, explosion, aura, projectile impact
 
 Effects here are **generated**, not ripped and not drawn by hand: `npm run fx`
 writes a whole entity — the atlas PNG *and* its `frames.json` /
-`animations.json` — from `src/fx.ts` (pure, unit-tested) via `scripts/fx.ts`
+`animations.json` — from `src/fx/generate.ts` (pure, unit-tested) via `scripts/fx.ts`
 (file I/O only). There is no sheet to frame and no editor round-trip.
 
 Why generated: no ripped hit spark exists for this game. The community sheets
@@ -74,7 +74,7 @@ heavy one. Six frames keeps the drift to about 5 px.
 
 ## Where an effect is drawn
 
-At the **leading edge** of the hit ∩ hurt overlap (`impactPoint` in `src/hit.ts`),
+At the **leading edge** of the hit ∩ hurt overlap (`impactPoint` in `src/combat/hit.ts`),
 not its centre. A fist box is narrow and sits entirely inside the body it
 strikes, so the overlap *is* the fist and its middle lands on the attacker's
 forearm — the spark then looks stuck to the puncher.
@@ -102,7 +102,7 @@ generator:
 
 1. Add or edit an entry in `EFFECTS` in `scripts/fx.ts` — name, kind, `reach`,
    `seed`, `durations`, `variants`.
-2. Shape lives in `src/fx.ts`. `burst()` draws one; `spark()` and `explosion()`
+2. Shape lives in `src/fx/generate.ts`. `burst()` draws one; `spark()` and `explosion()`
    are the two arcs. `taper` carries most of the difference between them: low
    values bulge into an explosion, high values pull out into rays.
 3. `npm run fx` (`--dry-run` to report only). It is seeded, so re-running is

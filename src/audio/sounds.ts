@@ -13,7 +13,7 @@
  * samples exist, a sound gains a path and the synth spec stops being used,
  * without a single state changing.
  *
- * Pure: no Web Audio, no DOM. `src/audio.ts` turns a spec into actual sound.
+ * Pure: no Web Audio, no DOM. `src/audio/playback.ts` turns a spec into actual sound.
  */
 
 /** How a placeholder is built. Two shapes cover everything a fighter needs. */

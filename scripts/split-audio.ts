@@ -24,8 +24,8 @@ import {
   peak,
   trimLeading,
   type SplitOptions,
-} from "../src/audioSplit";
-import { decodeWav, encodeWav } from "./wav";
+} from "../src/audio/split";
+import { decodeWav, encodeWav } from "../src/audio/wav";
 
 function die(message: string): never {
   console.error(message);
