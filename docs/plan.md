@@ -76,28 +76,62 @@ the same fighters the match does; today nothing loads twice.
 *Done when:* `main.ts` is boot plus the crank, and adding a scene does not touch
 it beyond the first one.
 
-## Queued: move the spawned entities out of `data/entities/`
+## Queued: nothing checks that a `sound` or `hitFx` id exists
 
-The sound half of this landed on 2026-08-14 — bank, voices, labels, collision
-rule, all of `data-format.md` updated. What is left is the effects:
+Found while splitting the sound bank, where twenty-one references were renamed
+with only a count to verify them, and again while moving the spawns out of
+`data/entities/` — both times the safety net was care rather than a check. The
+state validator already proves every `anim` reference resolves; `sound`,
+`hitSound`, `blockSound` and `hitFx` deserve the same. It is what would make the
+next rename safe instead of nerve-racking.
 
-- `data/entities/fx_hit*` → `data/spawns/hit*`, same shape (a directory of
-  `frames.json` and `animations.json`). A spark genuinely is that; it just never
-  was a fighter, and only lived among them for want of anywhere else.
-  `spawns` rather than `fx` because auras and ki blasts land in the same place
-  and neither is decoration — see `decisions.md`, 2026-08-14.
-- `npm run fx` and the loader follow it. `/api/entity` reads from
-  `data/entities/`, so spawns need their own route or a root parameter.
-- The two effect names stop being written into `main.ts`.
+*Done when:* an unknown `sound` or `hitFx` id is reported at load, the same way
+an unknown animation is.
 
-**Nothing validates that a `sound` id in `states.json` exists** — found while
-doing the sound half, where twenty-one references were renamed with only a
-count to check them. Same gap for `hitFx`. The state validator already proves
-every `anim` reference resolves; sounds and effects deserve the same, and it is
-the check that would make the next rename safe.
+## Queued: the editor is organised around a PNG, and should be around an entity
 
-*Done when:* `npm run fx` writes to the new home, no effect name appears in
-`main.ts`, and an unknown `sound` or `hitFx` id is reported at load.
+It was a sprite-sheet tool and it was well shaped as one. Then states, sounds and
+soon spawns arrived, and each tab was reasonable on the day it was added — the
+shape it grew into was nobody's decision. Symptoms, all of them consequences of
+the same root:
+
+- **The top bar is a sprite pipeline** — zoom, frame/anchor, background key,
+  detect — spanning the whole application for the benefit of one tab.
+- **Six workspaces share a 300px column** while the canvas sits idle on the
+  tabs that never draw to it.
+- **You cannot open an entity.** You load a *sheet*, and the entity follows from
+  a text field. Which is why there is nowhere to put spawns, even though a spawn
+  is an entity and needs no new UI at all.
+
+Save moved into the panels on 2026-08-14, with a modified marker per tab, and
+the download fallbacks and the upload path went with it. What is left:
+
+**Slice 2 — the entity is the document.** A picker listing everything in
+`data/entities/` and `data/spawns/`; choosing one loads its data **and** its
+image, the ripped sheet for a fighter or the generated atlas for a spawn
+(`/api/atlas` already serves both). Selecting a sheet separately goes away
+entirely: a sheet reaches the editor by being in `assets/sheets/`, which is
+where it has to end up anyway. **This is the whole of
+"how do spawns get edited"** — they appear in the list beside `goku` and every
+existing tab works on them unchanged.
+
+*Depends on* the spawns move above, so the list has two directories to read.
+
+*Done when:* opening `hit` from the list draws its frames, and no step in that
+involves choosing an image.
+
+**Slice 3 — the layout follows the work.** A tab switches the whole workspace,
+not just the sidebar: Sprites and Animations keep the canvas, States and the two
+sound tabs take the full width. Sprite tooling leaves the global bar and sits
+with the canvas, visible where it applies. Nothing is added — space stops being
+reserved for what a tab does not use.
+
+*Done when:* no tab is cramped beside an empty canvas.
+
+**Slice 4 — an entity rail, only if slice 2 proves cramped.** A collapsible list
+down the left. Held back deliberately: it is 200px of permanent furniture for
+something touched a few times a session, and the convenience being bought is
+that opening an entity loads everything, which slice 2 already delivers.
 
 ## Next: review and tidy the sound slice
 

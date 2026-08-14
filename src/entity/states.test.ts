@@ -1,7 +1,14 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { reactionFor, StateMachine, validateStates, type AnimInfo, type StatesFile } from "./states";
+import {
+  effectsNamed,
+  reactionFor,
+  StateMachine,
+  validateStates,
+  type AnimInfo,
+  type StatesFile,
+} from "./states";
 
 /**
  * The state machine and its validator are pure (no PixiJS, no DOM), so they are
@@ -497,5 +504,26 @@ describe("StateMachine", () => {
     const sm = new StateMachine(f);
     expect(sm.update(NONE, QUIET)).toBeNull();
     expect(sm.update(NONE, { ...QUIET, animEnded: true })).toBe("idle");
+  });
+});
+
+describe("effectsNamed", () => {
+  const file = (states: StatesFile["states"]): StatesFile => ({ initial: "idle", states });
+
+  it("always includes the default, since a state without hitFx still sparks", () => {
+    expect(effectsNamed(file({ idle: { anim: "idle" } }))).toEqual(["spark_1"]);
+  });
+
+  it("collects every effect the states name, without repeating one", () => {
+    const states = file({
+      punch: { anim: "punch", hitFx: "spark_1" },
+      heavy: { anim: "heavy", hitFx: "spark_2" },
+      kick: { anim: "kick", hitFx: "spark_2" },
+    });
+    expect(effectsNamed(states).sort()).toEqual(["spark_1", "spark_2"]);
+  });
+
+  it("survives an entity with no states at all", () => {
+    expect(effectsNamed(null)).toEqual(["spark_1"]);
   });
 });

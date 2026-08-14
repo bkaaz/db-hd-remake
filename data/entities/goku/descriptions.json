@@ -81,7 +81,7 @@
       ]
     },
     "fx_impact": {
-      "desc": "? Effect sprites, not poses: a burst of flame that grows and then breaks up. Almost certainly the hit spark for something — which move is unknown. Relevant to the fx_hit entity (see docs/plan.md, item D).",
+      "desc": "? Effect sprites, not poses: a burst of flame that grows and then breaks up. Almost certainly the hit spark for something — which move is unknown. Relevant to the spark spawns in data/spawns/.",
       "frames": [
         "68",
         "69",

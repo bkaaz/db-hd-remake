@@ -3,7 +3,7 @@ import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { InputBuffer } from "../input/buffer";
-import { reactionFor, StateMachine } from "./states";
+import { DEFAULT_HIT_FX, reactionFor, StateMachine } from "./states";
 
 /**
  * One live entity in the world: sprite + animation playback + state machine +
@@ -202,7 +202,7 @@ export class Entity {
 
   /** Effect entity this entity's current attack leaves at the point of contact. */
   get attackFx(): string {
-    return this.sm?.def.hitFx ?? "fx_hit";
+    return this.sm?.def.hitFx ?? DEFAULT_HIT_FX;
   }
 
   /**

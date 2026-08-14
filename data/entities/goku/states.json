@@ -81,7 +81,7 @@
       "sound": "swing_3",
       "hitSound": "hit_2",
       "blockSound": "block_1",
-      "hitFx": "fx_hit_heavy",
+      "hitFx": "spark_2",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -95,7 +95,7 @@
       "sound": "swing_3",
       "hitSound": "hit_2",
       "blockSound": "block_1",
-      "hitFx": "fx_hit_heavy",
+      "hitFx": "spark_2",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]

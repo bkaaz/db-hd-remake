@@ -59,7 +59,7 @@ export interface StateDef {
   /**
    * Effect entity spawned where this state's attack connects. Same idea as
    * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
-   * stops, and what the impact looks like. Defaults to the engine's `fx_hit`.
+   * stops, and what the impact looks like. Defaults to the engine's `spark_1`.
    */
   hitFx?: string;
   /**
@@ -287,6 +287,24 @@ export interface Validation {
 export interface AnimInfo {
   loop: boolean;
   steps?: readonly { boxes?: readonly { type: string }[] }[];
+}
+
+/** The spark a blow leaves when its state does not name one. */
+export const DEFAULT_HIT_FX = "spark_1";
+
+/**
+ * Every spawn an entity's states can ask for, so the game loads exactly those.
+ *
+ * `DEFAULT_HIT_FX` is always included: a state that names no `hitFx` still
+ * leaves a spark, and an attack that forgot to say which one is the normal case
+ * rather than the exception.
+ */
+export function effectsNamed(states: StatesFile | null | undefined): string[] {
+  const names = new Set<string>([DEFAULT_HIT_FX]);
+  for (const def of Object.values(states?.states ?? {})) {
+    if (def.hitFx) names.add(def.hitFx);
+  }
+  return [...names];
 }
 
 export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>): Validation {

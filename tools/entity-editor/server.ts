@@ -15,6 +15,7 @@ import path from "node:path";
 
 const SHEETS_DIR = path.join("assets", "sheets");
 const ENTITIES_DIR = path.join("data", "entities");
+const SPAWNS_DIR = path.join("data", "spawns");
 const ATLASES_DIR = path.join("assets", "atlases");
 const SFX_DIR = path.join("assets", "audio", "sfx");
 const SOUND_BANK = path.join("data", "audio", "sounds.json");
@@ -158,12 +159,20 @@ export function entityEditorServer(): Plugin {
         const name = sanitizeName(url.searchParams.get("name") ?? "");
         if (!name) return sendJson(res, 400, { error: "name required" });
 
-        const dir = path.join(root, ENTITIES_DIR, name);
+        // A spawn is an entity and is read the same way; only its directory
+        // differs. Names are unique across both, so the caller does not have to
+        // know which kind it asked for.
+        let dir = path.join(root, ENTITIES_DIR, name);
         let files: string[];
         try {
           files = (await fs.readdir(dir)).filter((f) => f.endsWith(".json"));
         } catch {
-          return sendJson(res, 404, { error: "not found" });
+          dir = path.join(root, SPAWNS_DIR, name);
+          try {
+            files = (await fs.readdir(dir)).filter((f) => f.endsWith(".json"));
+          } catch {
+            return sendJson(res, 404, { error: "not found" });
+          }
         }
 
         const entity: Record<string, unknown> = {
@@ -223,7 +232,15 @@ export function entityEditorServer(): Plugin {
             return sendJson(res, 400, { error: "name, section and data required" });
           }
 
-          const dir = path.join(root, ENTITIES_DIR, name);
+          // Save beside where the entity was read from: a spawn lives in
+          // data/spawns/, and writing it into data/entities/ would quietly
+          // fork it into two half-entities with the same name.
+          const spawnDir = path.join(root, SPAWNS_DIR, name);
+          const isSpawn = await fs
+            .stat(spawnDir)
+            .then((st) => st.isDirectory())
+            .catch(() => false);
+          const dir = isSpawn ? spawnDir : path.join(root, ENTITIES_DIR, name);
           await fs.mkdir(dir, { recursive: true });
           const file = path.join(dir, `${section}.json`);
           await fs.writeFile(file, JSON.stringify(body.data, null, 2) + "\n");

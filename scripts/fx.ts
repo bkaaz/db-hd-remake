@@ -25,7 +25,7 @@ import { encodePng } from "../src/sprites/png";
 
 /** One entity this script owns, end to end. */
 interface Effect {
-  /** Entity name — its directory under data/entities and its atlas file. */
+  /** Spawn name — its directory under data/spawns and its atlas file. */
   name: string;
   /** Distance from centre to spike tip, in sprite px. */
   reach: number;
@@ -56,8 +56,8 @@ interface Effect {
  * is worse than a missing line here.
  */
 const EFFECTS: Effect[] = [
-  { name: "fx_hit", reach: 13, seed: 1337, durations: [2, 1, 1, 2], variants: 4 },
-  { name: "fx_hit_heavy", reach: 17.5, seed: 4242, durations: [2, 2, 1, 2], variants: 4 },
+  { name: "spark_1", reach: 13, seed: 1337, durations: [2, 1, 1, 2], variants: 4 },
+  { name: "spark_2", reach: 17.5, seed: 4242, durations: [2, 2, 1, 2], variants: 4 },
 ];
 
 /** Lay the variants out one per row, frames along it, and paint them. */
@@ -152,7 +152,9 @@ async function main(): Promise<void> {
     const perVariant = fx.durations.length;
     const animations: Record<string, unknown> = {};
     variants.forEach((_, v) => {
-      animations[count > 1 ? `hit${v}` : "hit"] = {
+      // Interchangeable takes of the same effect — one is picked at random
+      // per spawn, so the name says "another of these", not what it is for.
+      animations[count > 1 ? `v${v + 1}` : "v1"] = {
         loop: false,
         steps: fx.durations.map((dur, i) => ({ frame: String(v * perVariant + i), dur })),
       };
@@ -168,11 +170,11 @@ async function main(): Promise<void> {
     await fs.mkdir(path.dirname(atlas), { recursive: true });
     await fs.writeFile(atlas, encodePng({ width, height, data }));
 
-    const dir = path.join(root, "data", "entities", fx.name);
+    const dir = path.join(root, "data", "spawns", fx.name);
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(path.join(dir, "frames.json"), JSON.stringify(framesJson, null, 2) + "\n");
     await fs.writeFile(path.join(dir, "animations.json"), JSON.stringify(animations, null, 2) + "\n");
-    console.log(`  wrote ${path.relative(root, atlas)} and data/entities/${fx.name}/`);
+    console.log(`  wrote ${path.relative(root, atlas)} and data/spawns/${fx.name}/`);
   }
 }
 

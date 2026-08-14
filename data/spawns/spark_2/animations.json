@@ -1,5 +1,5 @@
 {
-  "hit0": {
+  "v1": {
     "loop": false,
     "steps": [
       {
@@ -20,7 +20,7 @@
       }
     ]
   },
-  "hit1": {
+  "v2": {
     "loop": false,
     "steps": [
       {
@@ -41,7 +41,7 @@
       }
     ]
   },
-  "hit2": {
+  "v3": {
     "loop": false,
     "steps": [
       {
@@ -62,7 +62,7 @@
       }
     ]
   },
-  "hit3": {
+  "v4": {
     "loop": false,
     "steps": [
       {

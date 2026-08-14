@@ -3,7 +3,7 @@ import { loadEntityDef, type EntityDef } from "./entity/entityDef";
 import { loadSoundBank, withVoices } from "./audio/bank";
 import { Audio } from "./audio/playback";
 import { soundIdCollisions, validateSounds } from "./audio/sounds";
-import { validateStates } from "./entity/states";
+import { effectsNamed, validateStates } from "./entity/states";
 import { Effects } from "./fx/effects";
 import { Keyboard } from "./input/keyboard";
 import { Fighters } from "./match/fighters";
@@ -71,7 +71,9 @@ async function boot(): Promise<void> {
   for (const problem of validateSounds(def.sounds)) console.error(`[sounds] ${def.name}: ${problem}`);
   for (const problem of soundIdCollisions(bank, def.sounds)) console.error(`[sounds] ${problem}`);
 
-  const effects = await Effects.load(app, ["fx_hit", "fx_hit_heavy"], SCALE);
+  // Which sparks to load is a question the entity's own states answer, so
+  // adding a move with a new effect does not mean editing this file.
+  const effects = await Effects.load(app, effectsNamed(def.states), SCALE);
 
   const stage = new Stage(app);
 
