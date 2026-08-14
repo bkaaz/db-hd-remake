@@ -32,6 +32,13 @@ The project owner wants to go **slowly and deliberately**:
   lists work to do; the reasoning goes to `decisions.md`, the timing is in git.
   `roadmap.md` and `entity-editor.md` describe the arc and the history and must
   never grow a to-do list again. A queue that only shrinks cannot drift.
+- **Write bugs down in `docs/bugs.md` the moment you notice one** — no need to
+  ask, and no need to fix it there and then. Noticing and fixing are separate
+  acts: a fix smuggled into unrelated work is a fix nobody reviewed. Mention the
+  new entry when handing the work back, and offer the fix as its own change.
+  Deleted from the file in the same change that fixes it. The owner writes there
+  too. It is a list of what is broken, not a queue — `plan.md` stays the only
+  place that says what is next.
 - **Editor and engine co-evolve:** every phase is a vertical slice — data model
   + editor + engine + verification. See `docs/entity-editor.md`.
 
@@ -121,6 +128,26 @@ sessions that are about something else.
 and the rules that keep generated pixel art from looking bolted onto 1996
 sprites are narrow and easy to break. Read the **`add-effect` skill**
 (`.claude/skills/add-effect/`) before touching anything that draws an effect.
+
+## Writing code: it has to be readable by a person
+
+The owner is reading this codebase to learn it, not skimming it. Code that needs
+a paragraph of explanation before it makes sense is code that is wrong here, even
+when it works.
+
+- **A file has to fit in one head.** Past ~150 lines, ask what the second thing
+  in it is and give that thing its own file. Length is the symptom; doing two
+  jobs is the cause.
+- **The name says *what*, the comment says *why*.** A comment explaining what a
+  line does means the name failed — fix the name instead. The comments already in
+  this repo explain reasoning and trade-offs; keep them that way.
+- **`main.ts` is the loop and the wiring, nothing else.** Every rule of the game
+  lives in a module named after what it decides.
+- **A module owns one thing** and exports it plus the handful of functions that
+  work on it — never a drawer of unrelated helpers.
+- **State that belongs together travels together.** Prefer a small object that
+  owns its state and exposes two or three calls over a function taking eight
+  arguments that the caller has to keep in sync.
 
 ## Tech stack
 

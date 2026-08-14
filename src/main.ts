@@ -1,4 +1,4 @@
-import { Application, Graphics, Text } from "pixi.js";
+import { Application, Graphics } from "pixi.js";
 import { Entity, NO_INPUT } from "./entity/entity";
 import { loadEntityDef, type EntityDef } from "./entity/entityDef";
 import { Audio } from "./audio/playback";
@@ -6,6 +6,8 @@ import { contact, impactPoint } from "./combat/hit";
 import { separate } from "./combat/push";
 import { validateSounds } from "./audio/sounds";
 import { validateStates } from "./entity/states";
+import { Keyboard } from "./input/keyboard";
+import { Hud, showMessage } from "./ui/hud";
 
 /**
  * Game entry point. Loads an entity authored in the entity editor
@@ -79,28 +81,6 @@ async function boot(): Promise<void> {
   const ground = new Graphics();
   app.stage.addChild(ground);
 
-  // Health bars drain toward the centre, the way fighters have always drawn
-  // them, so the gap between the two reads as who is winning.
-  const bars = new Graphics();
-  app.stage.addChild(bars);
-  const drawBars = (): void => {
-    const w = Math.min(320, app.screen.width / 2 - 30);
-    const h = 14;
-    const y = 24;
-    bars.clear();
-    const bar = (x: number, frac: number, fromLeft: boolean): void => {
-      bars.rect(x, y, w, h).fill({ color: 0x201820 }).stroke({ color: 0x6a6a7a, width: 1 });
-      const fill = Math.max(0, Math.round(w * frac));
-      if (fill > 0) {
-        bars
-          .rect(fromLeft ? x : x + w - fill, y, fill, h)
-          .fill({ color: frac > 0.3 ? 0xf0c040 : 0xd04030 });
-      }
-    };
-    bar(20, player.healthFraction, false);
-    if (dummy) bar(app.screen.width - 20 - w, dummy.healthFraction, true);
-  };
-
   /** Live effects, removed as they finish. */
   const effects: Entity[] = [];
 
@@ -165,41 +145,22 @@ async function boot(): Promise<void> {
     showMessage(app, `${def.name}: no states.json — showing the first animation`, true);
   }
 
-  // Attack is edge-triggered: pressing the key arms one game frame, so holding
-  // it does not machine-gun. Keyboard layout follows the ZSNES default
-  // (A=X, B=Z, X=S, Y=A, L=C, R=D), in the usual diamond: top row punches, bottom
-  // row kicks, left column light, right column heavy. Remapping comes later.
+  const keyboard = new Keyboard();
+  const hud = new Hud(app, {
+    name: def.name,
+    previewAnim: previewing ? preview : null,
+    belowMessage: noStates,
+  });
+
   // The dummy has no input, so nothing it does can be seen — you cannot practise
   // blocking against someone who never swings. This is a **training fixture,
   // not an opponent**: on a timer it throws each attack in turn, so every
   // reaction, spark and knockback shows up without pretending to be an AI.
   // A real second player on the same keyboard is Stage 3.
-  const dummyAttacks = ["punch", "kick", "punchHeavy", "kickHeavy"] as const;
-  let dummyOn = false;
+  const DUMMY_ROTATION = ["punch", "kick", "punchHeavy", "kickHeavy"] as const;
+  const DUMMY_PERIOD = 90;
   let dummyTimer = 0;
   let dummyNext = 0;
-  const DUMMY_PERIOD = 90;
-
-  const held = {
-    left: false,
-    right: false,
-    up: false,
-    down: false,
-    punch: false,
-    kick: false,
-    punchHeavy: false,
-    kickHeavy: false,
-  };
-  const armed = { punch: false, kick: false, punchHeavy: false, kickHeavy: false };
-  let showBoxes = true;
-
-  const label = new Text({
-    text: "",
-    style: { fill: "#88aa88", fontFamily: "monospace", fontSize: 14 },
-  });
-  label.x = 8;
-  label.y = noStates ? 28 : 8;
-  app.stage.addChild(label);
 
   /**
    * An attacker's active hit boxes against a defender's hurt boxes. On a
@@ -244,16 +205,13 @@ async function boot(): Promise<void> {
     let guard = 0;
     while (acc >= FRAME_TIME && guard++ < 600) {
       acc -= FRAME_TIME;
-      for (const b of ["punch", "kick", "punchHeavy", "kickHeavy"] as const) {
-        held[b] = armed[b];
-        armed[b] = false;
-      }
-      player.update(held, dummy ? dummy.x : null, bounds);
+      player.update(keyboard.frame(), dummy ? dummy.x : null, bounds);
       const dummyInput = { ...NO_INPUT };
-      if (dummy && dummyOn && ++dummyTimer >= DUMMY_PERIOD) {
+      if (!keyboard.dummyAttacks) dummyTimer = 0;
+      else if (dummy && ++dummyTimer >= DUMMY_PERIOD) {
         dummyTimer = 0;
-        dummyInput[dummyAttacks[dummyNext]] = true;
-        dummyNext = (dummyNext + 1) % dummyAttacks.length;
+        dummyInput[DUMMY_ROTATION[dummyNext]] = true;
+        dummyNext = (dummyNext + 1) % DUMMY_ROTATION.length;
       }
       dummy?.update(dummyInput, player.x, bounds);
       if (dummy) {
@@ -285,60 +243,16 @@ async function boot(): Promise<void> {
         }
       }
     }
-    drawBars();
-    player.render(showBoxes);
-    dummy?.render(showBoxes);
+    hud.draw({
+      playerHealth: player.healthFraction,
+      dummyHealth: dummy ? dummy.healthFraction : null,
+      state: player.state,
+      dummyAttacks: keyboard.dummyAttacks,
+    });
+    player.render(keyboard.showBoxes);
+    dummy?.render(keyboard.showBoxes);
     for (const fx of effects) fx.render(false);
-    label.text = previewing
-      ? `${def.name} · anim ${preview} · [B] boxes`
-      : `${def.name} · [←/→] walk · [↑] jump · [↓] crouch · [A/S] punch · [Z/X] kick · [B] boxes · [T] dummy attacks: ${dummyOn ? "on" : "off"} · state: ${player.state}`;
   });
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") held.left = true;
-    else if (e.key === "ArrowRight") held.right = true;
-    else if (e.key === "ArrowUp") held.up = true;
-    else if (e.key === "ArrowDown") held.down = true;
-    else if (e.key === "a" || e.key === "A") {
-      // Auto-repeat must not re-arm: one press, one attack.
-      if (!e.repeat) armed.punch = true;
-    } else if (e.key === "z" || e.key === "Z") {
-      if (!e.repeat) armed.kick = true;
-    } else if (e.key === "s" || e.key === "S") {
-      if (!e.repeat) armed.punchHeavy = true;
-    } else if (e.key === "x" || e.key === "X") {
-      if (!e.repeat) armed.kickHeavy = true;
-    } else if (e.key === "t" || e.key === "T") {
-      dummyOn = !dummyOn;
-      dummyTimer = 0;
-    } else if (e.key === "b" || e.key === "B") showBoxes = !showBoxes;
-  });
-  window.addEventListener("keyup", (e) => {
-    if (e.key === "ArrowLeft") held.left = false;
-    else if (e.key === "ArrowDown") held.down = false;
-    else if (e.key === "ArrowRight") held.right = false;
-    else if (e.key === "ArrowUp") held.up = false;
-  });
-}
-
-function showMessage(app: Application, text: string, subtle = false): void {
-  const label = new Text({
-    text,
-    style: {
-      fill: subtle ? "#88aa88" : "#ffaa66",
-      fontFamily: "monospace",
-      fontSize: subtle ? 14 : 18,
-      align: "center",
-    },
-  });
-  label.anchor.set(0.5);
-  label.x = app.screen.width / 2;
-  label.y = subtle ? 24 : app.screen.height / 2;
-  if (subtle) {
-    label.anchor.set(0.5, 0);
-    label.y = 8;
-  }
-  app.stage.addChild(label);
 }
 
 void boot();
