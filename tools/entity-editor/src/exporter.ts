@@ -1,10 +1,14 @@
+import { isModified, markSaved } from "./saved";
 import { state, type Box } from "./store";
 import { getSource } from "./imageProcess";
 
 /**
- * Builds the on-disk entity file (docs/data-format.md) from editor state and
- * downloads it. For now the loaded sheet *is* the atlas — frames reference rects
- * straight into it — so no repacking happens yet.
+ * Turning editor state into the on-disk section files (docs/data-format.md) and
+ * writing them through the dev-server plugin. For now the loaded sheet *is* the
+ * atlas — frames reference rects straight into it — so no repacking happens yet.
+ *
+ * Each section is saved from the panel that owns it, and `saved.ts` decides
+ * which of them still differ from disk.
  */
 
 interface FrameOut {
@@ -22,12 +26,6 @@ interface StepOut {
 interface AnimOut {
   loop: boolean;
   steps: StepOut[];
-}
-interface EntityOut {
-  name: string;
-  atlas: string;
-  frames: Record<string, FrameOut>;
-  animations: Record<string, AnimOut>;
 }
 
 /** The `frames` section: id -> rect + anchor. */
@@ -56,43 +54,6 @@ export function buildAnimations(): Record<string, AnimOut> {
 }
 
 /** The whole entity (used for the Export-JSON fallback download). */
-export function buildEntity(): EntityOut {
-  return {
-    name: state.entityName,
-    atlas: state.atlasFilename,
-    frames: buildFrames(),
-    animations: buildAnimations(),
-  };
-}
-
-export function downloadJSON(): void {
-  const json = JSON.stringify(buildEntity(), null, 2);
-  triggerDownload(
-    new Blob([json], { type: "application/json" }),
-    `${state.entityName}.entity.json`,
-  );
-}
-
-/**
- * Export the atlas PNG (keyed source, so background transparency is baked in),
- * so it ships next to the JSON.
- */
-export function downloadAtlas(): void {
-  const source = getSource();
-  if (!source) return;
-  const c = document.createElement("canvas");
-  c.width = source.width;
-  c.height = source.height;
-  const ctx = c.getContext("2d");
-  if (!ctx) return;
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(source, 0, 0);
-  c.toBlob((blob) => {
-    if (blob) triggerDownload(blob, state.atlasFilename);
-  });
-}
-
-/** The keyed atlas as a PNG data URL (for saving to the repo). */
 export function getAtlasDataURL(): string | null {
   const source = getSource();
   if (!source) return null;
@@ -151,6 +112,7 @@ async function saveSection(
     if (!res.ok) return { ok: false, message: resp.error ?? "save failed" };
     // Our own write is not a conflict next time round.
     if (resp.mtime !== undefined) state.sectionMtimes[section] = resp.mtime;
+    markSaved(section, data);
     return {
       ok: true,
       message:
@@ -160,6 +122,30 @@ async function saveSection(
   } catch (e) {
     return { ok: false, message: `No editor server (run npm run editor) — ${String(e)}` };
   }
+}
+
+/**
+ * Snapshot every entity section as matching disk. Called right after an entity
+ * is read, so "modified" means changed *since it was opened* rather than
+ * "differs from the empty editor".
+ */
+export function markEntitySaved(): void {
+  markSaved("frames", buildFrames());
+  markSaved("animations", buildAnimations());
+  markSaved("sounds", state.sounds ?? {});
+}
+
+/** True when a section holds edits that are not on disk yet. */
+export function framesModified(): boolean {
+  return isModified("frames", buildFrames());
+}
+
+export function animationsModified(): boolean {
+  return isModified("animations", buildAnimations());
+}
+
+export function entitySoundsModified(): boolean {
+  return isModified("sounds", state.sounds ?? {});
 }
 
 /** Save the `frames` section (+ the keyed atlas the frames index into). */
@@ -177,13 +163,3 @@ export function saveSounds(): Promise<{ ok: boolean; message: string }> {
   return saveSection("sounds", state.sounds ?? {});
 }
 
-function triggerDownload(blob: Blob, filename: string): void {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}

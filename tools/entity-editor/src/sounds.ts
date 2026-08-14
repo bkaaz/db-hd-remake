@@ -1,7 +1,8 @@
 import { Audio } from "../../../src/audio/playback";
 import { validateSounds, type Sounds, type SoundSpec } from "../../../src/audio/sounds";
 import { saveSounds } from "./exporter";
-import { state } from "./store";
+import { isModified, markSaved } from "./saved";
+import { emitChange, state } from "./store";
 
 /**
  * The two sound panels: the game's bank, and the loaded entity's own sounds.
@@ -21,6 +22,9 @@ import { state } from "./store";
  * differ by ear and by nothing else.
  */
 
+/** The bank is not an entity section, so it needs a key of its own. */
+const BANK_SECTION = "globalSounds";
+
 /** A new sound has to be playable and valid the moment it exists. */
 const BLANK: SoundSpec = { kind: "noise", freq: 800, decay: 0.1, gain: 0.3, vary: 0.05 };
 
@@ -31,6 +35,8 @@ interface Source {
   /** Called after the map is replaced wholesale, so the owner can keep up. */
   write(sounds: Sounds): void;
   save(): Promise<string>;
+  /** What the panel's own Save button says. */
+  saveLabel: string;
   /** Shown in place of the panel when `read()` is null. */
   missing: string;
 }
@@ -51,10 +57,6 @@ class SoundPanel {
     if (!this.selected || !ids.includes(this.selected)) this.selected = ids[0] ?? null;
   }
 
-  save(): Promise<string> {
-    return this.source.save();
-  }
-
   render(container: HTMLElement): void {
     container.replaceChildren();
     const sounds = this.source.read();
@@ -72,6 +74,20 @@ class SoundPanel {
     }
     container.append(el("hr"));
     container.append(this.auditionList());
+    container.append(this.saveButton());
+  }
+
+  /** Next to what it writes, so nothing has to be known about which tab is active. */
+  private saveButton(): HTMLElement {
+    const button = el("button", { textContent: this.source.saveLabel });
+    button.addEventListener("click", () => {
+      void this.source.save().then((message) => {
+        const status = document.getElementById("status");
+        if (status) status.textContent = message;
+        emitChange();
+      });
+    });
+    return el("div", { className: "row" }, [button]);
   }
 
   /** Which sound the fields edit, and the three things you can do to the set. */
@@ -236,6 +252,7 @@ const globalPanel = new SoundPanel("global-sounds-panel", {
   read: () => (bankError ? null : bank),
   write: (sounds) => (bank = sounds),
   save: saveBank,
+  saveLabel: "Save global sounds",
   missing: `Could not read data/audio/sounds.json — ${bankError ?? "unknown error"}`,
 });
 
@@ -250,6 +267,7 @@ export async function loadBank(): Promise<void> {
     bank = {};
     bankError = String(e);
   }
+  markSaved(BANK_SECTION, bank);
   globalPanel.refresh();
 }
 
@@ -268,6 +286,7 @@ async function saveBank(): Promise<string> {
     });
     const body = (await res.json()) as { error?: string };
     if (!res.ok) return `Save failed — ${body.error ?? res.status}`;
+    markSaved(BANK_SECTION, bank);
     return problems.length === 0
       ? "Saved data/audio/sounds.json."
       : `Saved with ${problems.length} problem(s): ${problems[0]}`;
@@ -286,6 +305,7 @@ const entityPanel = new SoundPanel("entity-sounds-panel", {
   read: () => (entityLoaded() ? (state.sounds ??= {}) : null),
   write: (sounds) => (state.sounds = sounds),
   save: async () => (await saveSounds()).message,
+  saveLabel: "Save sounds",
   missing: "Load an entity first — its sounds are saved next to its frames.",
 });
 
@@ -303,19 +323,18 @@ export function renderEntitySounds(container: HTMLElement): void {
   entityPanel.render(container);
 }
 
-export function saveGlobalSounds(): Promise<string> {
-  return globalPanel.save();
-}
-
-export function saveEntitySounds(): Promise<string> {
-  return entityPanel.save();
+export function globalSoundsModified(): boolean {
+  return isModified(BANK_SECTION, bank);
 }
 
 // --- fields --------------------------------------------------------------
 
 function text(label: string, value: string, set: (v: string) => void): HTMLElement {
   const input = el("input", { type: "text", value });
-  input.addEventListener("input", () => set(input.value));
+  input.addEventListener("input", () => {
+    set(input.value);
+    emitChange();
+  });
   return field(label, input);
 }
 
@@ -326,7 +345,10 @@ function number(
   set: (v: number | undefined) => void,
 ): HTMLElement {
   const input = el("input", { type: "number", step: String(step), value: String(value ?? "") });
-  input.addEventListener("input", () => set(input.value === "" ? undefined : Number(input.value)));
+  input.addEventListener("input", () => {
+    set(input.value === "" ? undefined : Number(input.value));
+    emitChange();
+  });
   return field(label, input);
 }
 
@@ -338,7 +360,10 @@ function choice(label: string, value: string, set: (v: string) => void): HTMLEle
     );
   }
   select.value = value;
-  select.addEventListener("change", () => set(select.value));
+  select.addEventListener("change", () => {
+    set(select.value);
+    emitChange();
+  });
   return field(label, select);
 }
 

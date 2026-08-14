@@ -16,10 +16,16 @@ import {
   loadBank,
   renderEntitySounds,
   renderGlobalSounds,
-  saveEntitySounds,
-  saveGlobalSounds,
+  globalSoundsModified,
 } from "./sounds";
-import { downloadJSON, downloadAtlas, saveFrames, saveAnimations } from "./exporter";
+import {
+  animationsModified,
+  entitySoundsModified,
+  framesModified,
+  markEntitySaved,
+  saveAnimations,
+  saveFrames,
+} from "./exporter";
 import { setImage, pickColorAt, rebuildKeyed } from "./imageProcess";
 import { detectAll } from "./detect";
 
@@ -38,15 +44,12 @@ const statesPanel = byId("states-panel");
 const entitySoundsPanel = byId("entity-sounds-panel");
 const globalSoundsPanel = byId("global-sounds-panel");
 const boxCanvas = byId<HTMLCanvasElement>("box-canvas");
-const fileInput = byId<HTMLInputElement>("file");
 const sheetSelect = byId<HTMLSelectElement>("sheet-select");
 const sheetLoadBtn = byId("sheet-load");
-const saveBtn = byId<HTMLButtonElement>("save");
 const entityNameInput = byId<HTMLInputElement>("entity-name");
 const atlasNameInput = byId<HTMLInputElement>("atlas-name");
 const zoomLabel = byId("zoom-label");
 const statusEl = byId("status");
-const dropZone = byId("sheet-wrap");
 const modeFrameBtn = byId("mode-frame");
 const modeAnchorBtn = byId("mode-anchor");
 const bgEnabled = byId<HTMLInputElement>("bg-enabled");
@@ -63,7 +66,6 @@ const preview = new Preview(previewCanvas);
 const boxEditor = new BoxEditor(boxCanvas);
 
 // Which tab is active; the Save button saves that section (set in setTab).
-let activeTab = "sprites";
 
 entityNameInput.value = state.entityName;
 atlasNameInput.value = state.atlasFilename;
@@ -146,45 +148,22 @@ detectMin.addEventListener("change", () => {
   emitChange();
 });
 
-byId("export-json").addEventListener("click", () => downloadJSON());
-byId("export-atlas").addEventListener("click", () => downloadAtlas());
 byId("play").addEventListener("click", () => preview.play());
 byId("stop").addEventListener("click", () => preview.stop());
 
 sheetLoadBtn.addEventListener("click", () => loadFromRepo(sheetSelect.value));
-byId("reload-data").addEventListener("click", async () => {
-  statusEl.textContent = "Reloading…";
-  try {
-    statusEl.textContent = (await hydrateFromRepo())
-      ? `Reloaded data/entities/${state.entityName}/ from disk.`
-      : `No data for "${state.entityName}" on disk.`;
-  } catch (e) {
-    statusEl.textContent = `Reload failed — ${String(e)}`;
-  }
-  emitChange();
-});
-saveBtn.addEventListener("click", async () => {
-  statusEl.textContent = "Saving…";
-  // Save only the current tab's section (frames or animations).
-  if (activeTab === "sounds" || activeTab === "global-sounds") {
-    statusEl.textContent =
-      activeTab === "sounds" ? await saveEntitySounds() : await saveGlobalSounds();
-    return;
-  }
-  const result = activeTab === "animations" ? await saveAnimations() : await saveFrames();
-  statusEl.textContent = result.message;
-});
-
-fileInput.addEventListener("change", () => {
-  const file = fileInput.files?.[0];
-  if (file) loadImageFile(file);
-});
-dropZone.addEventListener("dragover", (e) => e.preventDefault());
-dropZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  const file = e.dataTransfer?.files?.[0];
-  if (file) loadImageFile(file);
-});
+// Each section is saved from the panel that owns it, so where the button is
+// says what it writes. A single global Save had to be read together with the
+// active tab to know what a click would do.
+function wireSave(id: string, save: () => Promise<{ message: string }>): void {
+  byId(id).addEventListener("click", async () => {
+    statusEl.textContent = "Saving…";
+    statusEl.textContent = (await save()).message;
+    render();
+  });
+}
+wireSave("save-frames", saveFrames);
+wireSave("save-animations", saveAnimations);
 
 // Delete key removes the selected frame (only when not typing in a field).
 window.addEventListener("keydown", (e) => {
@@ -231,17 +210,6 @@ function applyNewImage(img: HTMLImageElement, fileName: string): void {
   atlasNameInput.value = state.atlasFilename;
 }
 
-function loadImageFile(file: File): void {
-  const img = new Image();
-  img.onload = () => {
-    applyNewImage(img, file.name);
-    emitChange();
-  };
-  img.onerror = () => {
-    statusEl.textContent = "Failed to load image.";
-  };
-  img.src = URL.createObjectURL(file);
-}
 
 /**
  * Pull the entity's section files from the repo into editor state, remembering
@@ -254,6 +222,9 @@ async function hydrateFromRepo(): Promise<boolean> {
   const data = (await res.json()) as { entity: EntityFileIn; mtimes?: Record<string, number> };
   loadEntity(data.entity);
   state.sectionMtimes = data.mtimes ?? {};
+  // "Modified" means changed since this entity was opened, not "differs from
+  // an empty editor" — so the baseline is taken here, at the moment it arrives.
+  markEntitySaved();
   entityNameInput.value = state.entityName;
   atlasNameInput.value = state.atlasFilename;
   return true;
@@ -270,6 +241,9 @@ function loadFromRepo(fileName: string): void {
         rebuildKeyed();
         statusEl.textContent = `Loaded ${fileName} + existing entity data.`;
       } else {
+        // Nothing on disk to compare against, so the empty entity is the
+        // baseline: the first frame drawn then counts as an unsaved change.
+        markEntitySaved();
         statusEl.textContent = `Loaded ${fileName} (new entity).`;
       }
     } catch {
@@ -305,6 +279,7 @@ function render(): void {
   renderAnims(animsPanel);
   renderBoxes(boxesPanel);
   renderStates(statesPanel);
+  refreshTabMarks();
   boxEditor.redraw();
 
   modeFrameBtn.classList.toggle("active", state.mode === "frame");
@@ -330,7 +305,6 @@ function render(): void {
 const tabButtons = document.querySelectorAll<HTMLButtonElement>("#tabs .tab");
 const tabPanes = document.querySelectorAll<HTMLElement>(".tab-pane");
 function setTab(name: string): void {
-  activeTab = name;
   tabButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
   tabPanes.forEach((p) => p.classList.toggle("active", p.dataset.pane === name));
   // The bank is independent of the loaded entity, so it redraws when the tab
@@ -339,20 +313,29 @@ function setTab(name: string): void {
   if (name === "sounds") renderEntitySounds(entitySoundsPanel);
   if (name === "global-sounds") renderGlobalSounds(globalSoundsPanel);
 
-  // States are hand-authored, so there Save is disabled rather than misleading.
-  const readOnly = name === "states";
-  saveBtn.disabled = readOnly;
-  saveBtn.title = readOnly ? "States are hand-authored in data/entities/<name>/states.json" : "";
-  saveBtn.textContent = readOnly
-    ? "Read-only"
-    : name === "sounds"
-      ? "Save sounds"
-      : name === "global-sounds"
-        ? "Save global sounds"
-      : name === "animations"
-        ? "Save animations"
-        : "Save frames";
+  refreshTabMarks();
 }
+
+/**
+ * A dot on a tab whose section has edits that are not on disk. With Save living
+ * in the panels, this is what stops an edit in a tab you have left from being
+ * forgotten — it is the other half of moving the button.
+ */
+const MODIFIED: Record<string, () => boolean> = {
+  sprites: framesModified,
+  animations: animationsModified,
+  sounds: entitySoundsModified,
+  "global-sounds": globalSoundsModified,
+};
+function refreshTabMarks(): void {
+  tabButtons.forEach((b) => {
+    const name = b.dataset.tab;
+    b.dataset.label ??= b.textContent ?? "";
+    const base = b.dataset.label;
+    b.textContent = name && MODIFIED[name]?.() ? `${base} •` : base;
+  });
+}
+
 tabButtons.forEach((b) => {
   const name = b.dataset.tab;
   if (!b.disabled && name) b.addEventListener("click", () => setTab(name));
