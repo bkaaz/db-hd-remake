@@ -124,9 +124,24 @@ export function entityEditorServer(): Plugin {
       // The game's sound bank. Unlike an entity section this belongs to no
       // fighter, so it is read on its own rather than assembled from a
       // directory — see decisions.md, "A voice has an owner; a punch does not".
-      server.middlewares.use("/api/sounds", async (_req, res) => {
+      server.middlewares.use("/api/sounds", async (req, res) => {
+        const file = path.join(root, SOUND_BANK);
+        if (req.method === "POST") {
+          try {
+            const body = JSON.parse(await readBody(req)) as { data?: unknown };
+            // An empty bank is almost certainly a bug on the client rather than
+            // an intention, and it would silence the whole game — refuse it.
+            if (body.data === null || typeof body.data !== "object") {
+              return sendJson(res, 400, { error: "data must be the whole bank object" });
+            }
+            await fs.mkdir(path.dirname(file), { recursive: true });
+            await fs.writeFile(file, JSON.stringify(body.data, null, 2) + "\n");
+            return sendJson(res, 200, { ok: true });
+          } catch (err) {
+            return sendJson(res, 500, { error: String(err) });
+          }
+        }
         try {
-          const file = path.join(root, SOUND_BANK);
           sendJson(res, 200, JSON.parse(await fs.readFile(file, "utf8")) as unknown);
         } catch {
           sendJson(res, 404, { error: "no sound bank" });

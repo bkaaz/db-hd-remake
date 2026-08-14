@@ -172,6 +172,11 @@ export function saveAnimations(): Promise<{ ok: boolean; message: string }> {
   return saveSection("animations", buildAnimations());
 }
 
+/** Save the `sounds` section — this entity's own sounds, never the game bank. */
+export function saveSounds(): Promise<{ ok: boolean; message: string }> {
+  return saveSection("sounds", state.sounds ?? {});
+}
+
 function triggerDownload(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

@@ -80,5 +80,12 @@ schedule** — remaining work is in [`plan.md`](./plan.md), under its own letter
 | **B. Hitboxes** ✅ | box layer in Animations (draw/select/delete) | box overlay (toggle B) | boxes authored + shown |
 | **D1. States — engine** ✅ | — (`states.json` hand-written) | state-machine runner, opponent-relative facing | idle/walk from data; temp walk removed |
 | **D2. States — validation** ✅ | read-only States tab, problems flagged | shared `validateStates()` + `npm test`, errors shown at load | safe hand-authoring (a visual state editor was dropped — see `decisions.md`) |
+| **E. Sounds tab** ✅ | the game's bank listed by category, auditioned, edited, saved via `/api/sounds` | reuses `Audio` and `validateSounds()` unchanged | hearing `swing_2` against `swing_3`, which is the only way they differ |
+
+The Sounds tab is the first thing in the editor that is **not** part of an
+entity: the bank belongs to the game, so it loads and saves on its own route
+rather than as a section of `data/entities/<name>/`. Which sound a *state* uses
+is still typed into `states.json` by hand — the tab's job is to let you find the
+id and hear what it sounds like, not to author the state.
 
 Slow and deliberate; each phase verified in the running game.

@@ -65,7 +65,8 @@
           <button class="tab" data-tab="animations">Animations</button>
           <button class="tab" data-tab="states">States</button>
           <button class="tab" disabled title="Coming soon">Commands</button>
-          <button class="tab" disabled title="Coming soon">Sounds</button>
+          <button class="tab" data-tab="sounds">Sounds</button>
+          <button class="tab" data-tab="global-sounds">Global sounds</button>
           <button class="tab" disabled title="Coming soon">Attributes</button>
         </nav>
 
@@ -107,6 +108,29 @@
             <div id="states-panel"></div>
           </div>
         </div>
+
+        <div class="tab-pane" data-pane="sounds">
+          <div class="card">
+            <h3>Sounds</h3>
+            <p class="hint">This entity's own sounds,
+              <code>data/entities/&lt;name&gt;/sounds.json</code> — its voice. Everything a punch
+              or a landing sounds like belongs to the game, not to a fighter: that is the
+              <em>Global sounds</em> tab. An id defined in both is an error.</p>
+            <div id="entity-sounds-panel"></div>
+          </div>
+        </div>
+
+        <div class="tab-pane" data-pane="global-sounds">
+          <div class="card">
+            <h3>Global sounds</h3>
+            <p class="hint">The game's sound bank, <code>data/audio/sounds.json</code> — swings,
+              impacts, blocks, landings, shared by every fighter. Pick one to edit it; the list at
+              the bottom is for running an ear down every sound. Which state <em>plays</em> a sound
+              is still typed into <code>states.json</code> by hand.</p>
+            <div id="global-sounds-panel"></div>
+          </div>
+        </div>
+
       </aside>
     </main>
 

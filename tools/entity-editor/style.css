@@ -184,3 +184,10 @@ input.dur { width: 52px; }
   color: var(--muted);
   font-size: 12px;
 }
+
+/* Sounds tab. A select is as wide as its longest option, and these carry a
+   label, so the picker would push straight out of the side panel. Cap it to the
+   panel and give it the whole first line — the buttons sit under it. */
+.sound-pick select { flex: 1 1 100%; max-width: 100%; min-width: 0; }
+#sounds-panel input,
+#sounds-panel select { max-width: 100%; min-width: 0; }

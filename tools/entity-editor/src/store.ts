@@ -7,6 +7,7 @@
  * into the on-disk `*.entity.json`.
  */
 
+import type { Sounds } from "../../../src/audio/sounds";
 import type { StatesFile } from "../../../src/entity/states";
 
 export type EditorMode = "frame" | "anchor" | "bg" | "detect";
@@ -58,6 +59,8 @@ export interface EditorState {
    * validates them but never writes them.
    */
   states: StatesFile | null;
+  /** Section file `sounds.json`: this entity's own sounds, not the game's bank. */
+  sounds: Sounds | null;
   /**
    * Per-section file mtime as of the last load/save. The editor is not the only
    * writer (scripts generate animations and states), so this is what lets a save
@@ -95,6 +98,7 @@ export const state: EditorState = {
   frames: [],
   anims: [],
   states: null,
+  sounds: null,
   sectionMtimes: {},
   selectedFrameId: null,
   selectedAnimName: null,
@@ -274,6 +278,7 @@ export interface EntityFileIn {
     { loop: boolean; steps: { frame: string; dur: number; boxes?: Box[] }[] }
   >;
   states?: StatesFile;
+  sounds?: Sounds;
 }
 
 /** Hydrate editor state from an assembled entity (reverse of the exporter). */
@@ -300,6 +305,7 @@ export function loadEntity(json: EntityFileIn): void {
   // so keep counting above the highest one on disk.
   frameCounter = state.frames.reduce((max, f) => Math.max(max, asNumber(f.id) + 1), 0);
   state.states = json.states ?? null;
+  state.sounds = json.sounds ?? null;
   state.selectedFrameId = null;
   state.selectedAnimName = state.anims[0]?.name ?? null;
   state.selectedStepIndex = null;

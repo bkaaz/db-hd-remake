@@ -12,6 +12,13 @@ import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
 import { BoxEditor } from "./boxEditor";
 import { renderFrames, renderAnims, renderBoxes, renderStates } from "./panels";
+import {
+  loadBank,
+  renderEntitySounds,
+  renderGlobalSounds,
+  saveEntitySounds,
+  saveGlobalSounds,
+} from "./sounds";
 import { downloadJSON, downloadAtlas, saveFrames, saveAnimations } from "./exporter";
 import { setImage, pickColorAt, rebuildKeyed } from "./imageProcess";
 import { detectAll } from "./detect";
@@ -28,6 +35,8 @@ const framesPanel = byId("frames-panel");
 const animsPanel = byId("anims-panel");
 const boxesPanel = byId("boxes-panel");
 const statesPanel = byId("states-panel");
+const entitySoundsPanel = byId("entity-sounds-panel");
+const globalSoundsPanel = byId("global-sounds-panel");
 const boxCanvas = byId<HTMLCanvasElement>("box-canvas");
 const fileInput = byId<HTMLInputElement>("file");
 const sheetSelect = byId<HTMLSelectElement>("sheet-select");
@@ -157,6 +166,11 @@ byId("reload-data").addEventListener("click", async () => {
 saveBtn.addEventListener("click", async () => {
   statusEl.textContent = "Saving…";
   // Save only the current tab's section (frames or animations).
+  if (activeTab === "sounds" || activeTab === "global-sounds") {
+    statusEl.textContent =
+      activeTab === "sounds" ? await saveEntitySounds() : await saveGlobalSounds();
+    return;
+  }
   const result = activeTab === "animations" ? await saveAnimations() : await saveFrames();
   statusEl.textContent = result.message;
 });
@@ -319,21 +333,35 @@ function setTab(name: string): void {
   activeTab = name;
   tabButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
   tabPanes.forEach((p) => p.classList.toggle("active", p.dataset.pane === name));
+  // The bank is independent of the loaded entity, so it redraws when the tab
+  // is opened rather than on every entity change — which would throw away a
+  // half-typed field.
+  if (name === "sounds") renderEntitySounds(entitySoundsPanel);
+  if (name === "global-sounds") renderGlobalSounds(globalSoundsPanel);
 
+  // States are hand-authored, so there Save is disabled rather than misleading.
   const readOnly = name === "states";
   saveBtn.disabled = readOnly;
   saveBtn.title = readOnly ? "States are hand-authored in data/entities/<name>/states.json" : "";
   saveBtn.textContent = readOnly
     ? "Read-only"
-    : name === "animations"
-      ? "Save animations"
-      : "Save frames";
+    : name === "sounds"
+      ? "Save sounds"
+      : name === "global-sounds"
+        ? "Save global sounds"
+      : name === "animations"
+        ? "Save animations"
+        : "Save frames";
 }
 tabButtons.forEach((b) => {
   const name = b.dataset.tab;
   if (!b.disabled && name) b.addEventListener("click", () => setTab(name));
 });
 setTab("sprites");
+
+// The bank belongs to the game rather than to the loaded entity, so it is
+// fetched once at start-up instead of arriving with /api/entity.
+void loadBank().then(() => renderGlobalSounds(globalSoundsPanel));
 
 onChange(render);
 render();
