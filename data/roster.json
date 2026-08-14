@@ -1,0 +1,7 @@
+{
+  "_comment": "The character select, laid out as the grid it is drawn as — rows of entity ids, so the file looks like the screen. It names the whole intended roster; what exists in data/entities/ decides what can actually be picked, so adding a fighter is adding a directory and their slot was reserved from the start. `null` is a deliberate gap. TBC: the arrangement is ours, not the original's — the ten names are confirmed (see game-overview.md), their positions in the 1996 grid are not.",
+  "grid": [
+    ["goku", "gohan", "piccolo", "majin_vegeta", "vegito"],
+    ["gotenks", "majin_buu", "kid_buu", "frieza", "perfect_cell"]
+  ]
+}

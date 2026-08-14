@@ -50,12 +50,27 @@ HUD, no keyboard, no stage. It lives in `match/` rather than `combat/` because
 it has to know `Entity` and therefore PixiJS, while `combat/` stays pure and
 unit-tested.
 
-**The fight becomes a scene.** A `Scene` with `step()`, `render()` and
-`destroy()`; `FightScene` holds the modules above, and the `?anim=` preview
-becomes `PreviewScene` instead of five `previewing ? … : …` branches. `main.ts`
-then boots Pixi, makes the first scene and turns the crank — and stops growing
-when menus arrive. Called `Scene` and not `Screen` because `app.screen` in
-PixiJS is the view rectangle.
+**The fight is a scene** as of 2026-08-15, and so is the character select, which
+is the first real transition the `Scene` interface has carried. `main.ts` is
+boot, the clock and one switch that turns a request into a scene. The `?anim=`
+preview was deleted rather than converted: the editor previews animations, and
+the scene's only remaining job was proving the interface with a second
+implementation — which the select now does for real.
+
+**Next: the character select, and two different fighters.** They are one job,
+not two: `FightScene` still builds both bodies from a single `EntityDef`, and a
+real pairing needs two defs and two `Audio`s, because a voice belongs to a
+fighter. `p2` is accepted and warned about today. The select screen is the first
+thing that can ask for a pairing, so it is what forces the fix — and it is also
+the first **real transition**, which is the part of the `Scene` interface that
+has never been exercised.
+
+The roster gets its own file, `data/roster.json`, laid out as the grid rather
+than a list: the arrangement is authored, not alphabetical. It names the whole
+intended roster; **what exists in `data/entities/` decides what is selectable**,
+so adding a fighter is adding a directory and their slot was reserved from the
+start. The cost of that is a typo looking exactly like "not built yet", which
+the slot showing its own name makes visible enough.
 
 **How a scene is chosen is settled** (`decisions.md`, 2026-08-14): every scene is
 built from a small serialisable parameter object, never from what the previous

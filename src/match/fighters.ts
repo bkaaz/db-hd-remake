@@ -57,11 +57,6 @@ export class Fighters {
     return this.player.frozen || !!this.opponent?.frozen;
   }
 
-  /** Play one animation and ignore the state machine (`?anim=`). */
-  preview(anim: string): void {
-    this.player.preview(anim);
-  }
-
   /** Opening corners, and the floor to stand on. */
   start(stage: Stage): void {
     this.player.groundY = stage.groundY;
@@ -118,6 +113,11 @@ export class Fighters {
   render(showBoxes: boolean): void {
     this.player.render(showBoxes);
     this.opponent?.render(showBoxes);
+  }
+
+  /** Take both bodies off the stage; a scene that leaves them leaves ghosts. */
+  destroy(): void {
+    for (const fighter of this.both()) fighter.view.destroy({ children: true });
   }
 
   status(): FightersStatus {

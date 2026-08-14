@@ -74,6 +74,12 @@ export class Effects {
     }
   }
 
+  /** Sweep away whatever is still in the air when the scene ends. */
+  destroy(): void {
+    for (const fx of this.live) fx.view.destroy({ children: true });
+    this.live.length = 0;
+  }
+
   /** Effects never show their boxes — they have none worth looking at. */
   render(): void {
     for (const fx of this.live) fx.render(false);

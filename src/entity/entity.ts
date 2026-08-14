@@ -274,7 +274,7 @@ export class Entity {
 
   /**
    * Play a single animation and nothing else — no state machine, no physics.
-   * Used by `?anim=` to inspect a move, and by effects, which *are* entities
+   * Used by the character select and by effects, which *are* entities
    * with no states: one animation, played once, then gone.
    */
   preview(name: string): void {

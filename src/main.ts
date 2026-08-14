@@ -1,28 +1,29 @@
 import { Application } from "pixi.js";
-import { loadEntityDef, type EntityDef } from "./entity/entityDef";
-import { loadSoundBank, withVoices } from "./audio/bank";
-import { Audio } from "./audio/playback";
-import { soundIdCollisions, validateSounds } from "./audio/sounds";
-import { effectsNamed, validateStates } from "./entity/states";
-import { Effects } from "./fx/effects";
+import { loadSoundBank } from "./audio/bank";
 import { Keyboard } from "./input/keyboard";
-import { Fighters } from "./match/fighters";
-import { Stage } from "./stage";
-import { TrainingFixture } from "./training/fixture";
-import { Hud, showMessage } from "./ui/hud";
+import {
+  queryFor,
+  requestFromUrl,
+  type Scene,
+  type SceneContext,
+  type SceneRequest,
+} from "./scene";
+import { FightScene } from "./scenes/fight";
+import { SelectScene } from "./scenes/select";
+import { showMessage } from "./ui/hud";
 
 /**
- * Game entry point. Loads an entity authored in the entity editor
- * (docs/data-format.md) and runs it as a state machine (Phase D, docs/entity-editor.md):
- * arrow keys drive the player's states, which own the animation and velocity.
+ * Game entry point: put a renderer on the page, load what every scene needs,
+ * run the first scene, and turn the crank.
  *
- * The second Goku is an input-less training dummy: it exists so facing has an
- * opponent, it pushes back, and it takes hits.
+ * Nothing here knows what a fight is. A scene asks to be replaced by returning
+ * a request, and this is the only place that turns a request into a scene —
+ * which is also why the address bar can do it (see `docs/decisions.md`).
  */
 
-const ENTITY = "goku";
-const SCALE = 3; // SNES sprites are small — scale up, nearest-neighbour.
 const FRAME_TIME = 1 / 60;
+/** Ten seconds of catch-up. Unreachable in practice — see the loop below. */
+const MAX_CATCH_UP = 600;
 
 async function boot(): Promise<void> {
   const app = new Application();
@@ -32,96 +33,66 @@ async function boot(): Promise<void> {
   if (!mount) throw new Error("Missing #app mount element");
   mount.appendChild(app.canvas);
 
-  let def: EntityDef;
-  try {
-    def = await loadEntityDef(ENTITY);
-  } catch (e) {
-    showMessage(
-      app,
-      `Could not load entity "${ENTITY}".\nSave it from the entity editor first (npm run editor).\n${String(e)}`,
-    );
-    return;
-  }
-
-  if (Object.keys(def.animations).length === 0) {
-    showMessage(app, `${def.name}: ${def.frames.size} frames, no animation`, true);
-    return;
-  }
-
-  // states.json is hand-authored, so a broken cross-reference must be loud
-  // rather than a console warning nobody reads. We still run, so the rest of
-  // the entity stays inspectable.
-  if (def.states) {
-    const { errors, warnings } = validateStates(def.states, def.animations);
-    for (const w of warnings) console.warn(`[states] ${w}`);
-    if (errors.length > 0) {
-      for (const e of errors) console.error(`[states] ${e}`);
-      const shown = errors.slice(0, 5).join("\n");
-      const rest = errors.length > 5 ? `\n…and ${errors.length - 5} more (see console)` : "";
-      showMessage(app, `states.json — ${errors.length} problem(s):\n${shown}${rest}`);
-    }
-  }
-
-  // Sound comes from two hand-authored files: the game's bank, and this
-  // fighter's own voices. A broken spec is silent rather than loud — exactly the
-  // sort of thing nobody notices until they wonder why one move has no impact —
-  // and an id claimed by both files is an error, never a quiet override.
-  const bank = await loadSoundBank();
-  for (const problem of validateSounds(bank)) console.error(`[sounds] bank: ${problem}`);
-  for (const problem of validateSounds(def.sounds)) console.error(`[sounds] ${def.name}: ${problem}`);
-  for (const problem of soundIdCollisions(bank, def.sounds)) console.error(`[sounds] ${problem}`);
-
-  // Which sparks to load is a question the entity's own states answer, so
-  // adding a move with a new effect does not mean editing this file.
-  const effects = await Effects.load(app, effectsNamed(def.states), SCALE);
-
-  const stage = new Stage(app);
-
-  // `?anim=<name>` previews one animation instead of running the state machine.
-  const preview = new URL(location.href).searchParams.get("anim");
-  const previewing = !!preview && !!def.animations[preview];
-
-  const audio = new Audio(withVoices(bank, def.sounds));
-  const fighters = new Fighters({ app, def, scale: SCALE, audio, effects, solo: previewing });
-  if (previewing && preview) fighters.preview(preview);
-  fighters.start(stage);
-  stage.onResize(() => fighters.fit(stage));
-
-  const noStates = !def.states && !previewing;
-  if (noStates) {
-    showMessage(app, `${def.name}: no states.json — showing the first animation`, true);
-  }
-
+  const ctx: SceneContext = { app, bank: await loadSoundBank() };
   const keyboard = new Keyboard();
-  const hud = new Hud(app, {
-    name: def.name,
-    previewAnim: previewing ? preview : null,
-    belowMessage: noStates,
-  });
 
-  const fixture = new TrainingFixture();
+  /** Null while a scene is being loaded: the crank turns, nothing happens. */
+  let scene: Scene | null = null;
+  let loading = false;
 
-  // The clock. Real time arrives in whatever lumps the monitor delivers, and is
-  // spent here in whole 1/60 steps: everything the game knows — animation
-  // timings, hitstop, the input buffer — is counted in frames, so the same
-  // fight must play identically at 60Hz and at 144Hz. The guard is belt and
-  // braces; Pixi already caps a lump at 100ms, so six steps is the real
-  // ceiling.
+  function go(request: SceneRequest): void {
+    // `replaceState`, not `pushState`: going back would have to rebuild a scene
+    // from a request, which is possible but is a feature nobody asked for. This
+    // only has to survive a reload.
+    history.replaceState(null, "", queryFor(request));
+    scene?.destroy();
+    scene = null;
+    loading = true;
+    void build(ctx, request).then((result) => {
+      loading = false;
+      if (typeof result === "string") showMessage(app, result);
+      else scene = result;
+    });
+  }
+
+  const request = requestFromUrl(new URL(location.href));
+  if (typeof request === "string") {
+    showMessage(app, request);
+    return;
+  }
+  go(request);
+
+  // The clock. Real time arrives in whatever lumps the monitor delivers and is
+  // spent in whole 1/60 steps: everything the game knows — animation timings,
+  // hitstop, the input buffer — is counted in frames, so the same fight must
+  // play identically at 60Hz and at 144Hz. The guard is belt and braces; Pixi
+  // already caps a lump at 100ms, so six steps is the real ceiling.
   let acc = 0;
   app.ticker.add((ticker) => {
     acc += ticker.deltaMS / 1000;
     let guard = 0;
-    while (acc >= FRAME_TIME && guard++ < 600) {
+    while (acc >= FRAME_TIME && guard++ < MAX_CATCH_UP) {
       acc -= FRAME_TIME;
-      fighters.update(keyboard.frame(), fixture.input(keyboard.dummyAttacks), stage.bounds);
-      fighters.pushApart(stage.bounds);
-      fighters.exchangeBlows();
-      effects.update(fighters.frozen, stage.bounds);
+      if (!scene) continue;
+      const next = scene.step(keyboard);
+      if (next) {
+        go(next);
+        break;
+      }
     }
-    hud.draw({ ...fighters.status(), dummyAttacks: keyboard.dummyAttacks });
-    fighters.render(keyboard.showBoxes);
-    effects.render();
+    scene?.render(keyboard);
+    if (loading) acc = 0; // Do not bank the wait as frames the new scene owes.
   });
+}
+
+/** The only place that knows which class serves which request. */
+function build(ctx: SceneContext, request: SceneRequest): Promise<Scene | string> {
+  switch (request.scene) {
+    case "fight":
+      return FightScene.create(ctx, request);
+    case "select":
+      return SelectScene.create(ctx);
+  }
 }
 
 void boot();

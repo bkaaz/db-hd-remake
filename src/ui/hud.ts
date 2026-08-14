@@ -4,8 +4,6 @@ import { Application, Graphics, Text } from "pixi.js";
 export interface HudSetup {
   /** Entity name, shown first in the status line. */
   name: string;
-  /** Animation being previewed via `?anim=`, or null when the game is running. */
-  previewAnim: string | null;
   /** A message already occupies the top line, so the status line moves below it. */
   belowMessage: boolean;
 }
@@ -56,6 +54,11 @@ export class Hud {
     this.label.text = this.statusLine(frame);
   }
 
+  destroy(): void {
+    this.bars.destroy();
+    this.label.destroy();
+  }
+
   private drawBars({ playerHealth, opponentHealth }: HudFrame): void {
     const width = Math.min(BAR_MAX_WIDTH, this.app.screen.width / 2 - 30);
     this.bars.clear();
@@ -78,8 +81,7 @@ export class Hud {
   }
 
   private statusLine({ state, dummyAttacks }: HudFrame): string {
-    const { name, previewAnim } = this.setup;
-    if (previewAnim) return `${name} · anim ${previewAnim} · [B] boxes`;
+    const { name } = this.setup;
     return (
       `${name} · [←/→] walk · [↑] jump · [↓] crouch · [A/S] punch · [Z/X] kick · ` +
       `[B] boxes · [T] dummy attacks: ${dummyAttacks ? "on" : "off"} · state: ${state}`
@@ -92,7 +94,7 @@ export class Hud {
  * loaded with something wrong in it. Loud and centred when the game cannot run,
  * small and out of the way at the top when it can.
  */
-export function showMessage(app: Application, text: string, subtle = false): void {
+export function showMessage(app: Application, text: string, subtle = false): Text {
   const label = new Text({
     text,
     style: {
@@ -111,4 +113,5 @@ export function showMessage(app: Application, text: string, subtle = false): voi
     label.y = app.screen.height / 2;
   }
   app.stage.addChild(label);
+  return label;
 }
