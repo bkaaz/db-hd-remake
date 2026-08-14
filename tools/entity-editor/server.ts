@@ -17,6 +17,7 @@ const SHEETS_DIR = path.join("assets", "sheets");
 const ENTITIES_DIR = path.join("data", "entities");
 const ATLASES_DIR = path.join("assets", "atlases");
 const SFX_DIR = path.join("assets", "audio", "sfx");
+const SOUND_BANK = path.join("data", "audio", "sounds.json");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
 
 function sanitizeName(name: string): string {
@@ -117,6 +118,18 @@ export function entityEditorServer(): Plugin {
         } catch {
           res.statusCode = 404;
           res.end();
+        }
+      });
+
+      // The game's sound bank. Unlike an entity section this belongs to no
+      // fighter, so it is read on its own rather than assembled from a
+      // directory — see decisions.md, "A voice has an owner; a punch does not".
+      server.middlewares.use("/api/sounds", async (_req, res) => {
+        try {
+          const file = path.join(root, SOUND_BANK);
+          sendJson(res, 200, JSON.parse(await fs.readFile(file, "utf8")) as unknown);
+        } catch {
+          sendJson(res, 404, { error: "no sound bank" });
         }
       });
 

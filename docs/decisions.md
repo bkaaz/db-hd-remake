@@ -75,11 +75,22 @@ Decisions that are settled. Newest first.
   and the next nine fighters would each want their own copy of the same thing.
   The bank needs no adjective — there is no second one, so nothing is marked
   "shared" and no `common/` directory exists to become a junk drawer.
-- **Ids name the sound, not the role.** `swing_1`, not `swing_kick`. A name that
-  says who will use it is a guess that ages: today `swing_kick` and
-  `swing_heavy` are the same file, `hit` and `hit_heavy` are the same file, and
-  `land_hard` and `land_settle` are the same file — three pairs that only exist
-  because the id described a role. This is also the rule sprites already follow:
+- **Ids name the sound, not the role, and the bank holds variants to choose
+  from.** `swing_1`, `swing_2`, `swing_3`; a state picks one. A name that says
+  who will use it is a guess that ages — `swing_kick` was played by kicks *and*
+  by heavy punches. **Correction to the first version of this entry:** it
+  claimed the three id pairs sharing a file (004, 007, 011) were duplicates that
+  would collapse. They are not. Each pair differs in gain and character, so
+  merging them would have made heavy blows quieter, and they share a clip only
+  because nobody has yet listened to the 107 unnamed ones. Under the variant
+  model they are simply two entries that point at one file for now — which is
+  what the model is *for*. Numbers are append-only; `swing_7` may never be
+  renumbered, because `states.json` names it.
+- **A `label` carries the meaning that numbered ids gave up** — "swing, leg —
+  heavier" — read by a person and, later, by a picker in the editor. Words alone
+  were rejected as ids: at three variants a category runs out of adjectives and
+  starts arguing with itself over which of two is "deeper". This is also the rule
+  sprites already follow:
   numbered frames, with `descriptions.json` saying what each one is. For sound
   the catalogue is `data/audio/sound-test.json`, which stays separate from the
   bank: it says what all 127 clips *are*, the bank says which ones the game

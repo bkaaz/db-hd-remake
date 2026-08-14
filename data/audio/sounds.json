@@ -1,0 +1,84 @@
+{
+  "_comment": "The game's sound bank: every effect any fighter can play. An id names the sound, never who uses it — a state picks a variant, so giving a kick a different swing is one string, not a new definition. Numbers are append-only: swing_7 must always mean what it means today, because states.json points at it. `label` is what it sounds like, for a person reading this and for the editor's picker. Voices are not here — they belong to a fighter, in data/entities/<name>/sounds.json. Files are clips in assets/audio/sfx/; data/audio/sound-test.json says what each of the 127 is.",
+  "swing_1": {
+    "label": "swing, hand",
+    "kind": "noise",
+    "freq": 1600,
+    "decay": 0.07,
+    "gain": 0.16,
+    "vary": 0.12,
+    "file": "003.wav"
+  },
+  "swing_2": {
+    "label": "swing, leg",
+    "kind": "noise",
+    "freq": 1600,
+    "decay": 0.07,
+    "gain": 0.16,
+    "vary": 0.12,
+    "file": "004.wav"
+  },
+  "swing_3": {
+    "label": "swing, leg — heavier",
+    "kind": "noise",
+    "freq": 1100,
+    "decay": 0.1,
+    "gain": 0.2,
+    "vary": 0.1,
+    "file": "004.wav"
+  },
+  "hit_1": {
+    "label": "hit landed: damage went in",
+    "kind": "noise",
+    "freq": 420,
+    "decay": 0.11,
+    "gain": 0.42,
+    "vary": 0.1,
+    "file": "007.wav"
+  },
+  "hit_2": {
+    "label": "hit landed — heavier; shares 007 until a heavier clip is named",
+    "kind": "noise",
+    "freq": 240,
+    "decay": 0.2,
+    "gain": 0.55,
+    "vary": 0.08,
+    "file": "007.wav"
+  },
+  "block_1": {
+    "label": "a blocked hit",
+    "kind": "tone",
+    "freq": 900,
+    "decay": 0.09,
+    "gain": 0.3,
+    "vary": 0.06,
+    "file": "012.wav"
+  },
+  "jump_1": {
+    "label": "jumping, all three directions",
+    "gain": 0.12,
+    "vary": 0.08,
+    "file": "005.wav"
+  },
+  "land_1": {
+    "label": "landing after a jump",
+    "kind": "noise",
+    "freq": 180,
+    "decay": 0.09,
+    "gain": 0.22,
+    "vary": 0.1,
+    "file": "010.wav"
+  },
+  "land_2": {
+    "label": "a knocked-down body hitting the floor",
+    "gain": 0.35,
+    "vary": 0.1,
+    "file": "011.wav"
+  },
+  "land_3": {
+    "label": "the same body settling after the bounce; shares 011 with land_2",
+    "gain": 0.28,
+    "vary": 0.1,
+    "file": "011.wav"
+  }
+}

@@ -52,9 +52,9 @@
       "turn": false,
       "onHit": "hurt",
       "damage": 6,
-      "sound": "swing",
-      "hitSound": "hit",
-      "blockSound": "block",
+      "sound": "swing_1",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -65,9 +65,9 @@
       "turn": false,
       "onHit": "hurt",
       "damage": 7,
-      "sound": "swing_kick",
-      "hitSound": "hit",
-      "blockSound": "block",
+      "sound": "swing_2",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -78,9 +78,9 @@
       "turn": false,
       "onHit": "knockdown",
       "damage": 14,
-      "sound": "swing_heavy",
-      "hitSound": "hit_heavy",
-      "blockSound": "block",
+      "sound": "swing_3",
+      "hitSound": "hit_2",
+      "blockSound": "block_1",
       "hitFx": "fx_hit_heavy",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
@@ -92,9 +92,9 @@
       "turn": false,
       "onHit": "hurt_heavy",
       "damage": 12,
-      "sound": "swing_heavy",
-      "hitSound": "hit_heavy",
-      "blockSound": "block",
+      "sound": "swing_3",
+      "hitSound": "hit_2",
+      "blockSound": "block_1",
       "hitFx": "fx_hit_heavy",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
@@ -115,9 +115,9 @@
       "turn": false,
       "onHit": "hurt",
       "damage": 7,
-      "sound": "swing_kick",
-      "hitSound": "hit",
-      "blockSound": "block",
+      "sound": "swing_2",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
       "transitions": [
         { "when": "animEnd", "to": "crouch" }
       ]
@@ -128,9 +128,9 @@
       "turn": false,
       "onHit": "hurt",
       "damage": 8,
-      "sound": "swing_kick",
-      "hitSound": "hit",
-      "blockSound": "block",
+      "sound": "swing_2",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
       "transitions": [
         { "when": "landed", "to": "idle" },
         { "when": "nearGround", "to": "land" },
@@ -178,7 +178,7 @@
       "launch": [-0.7, -2.4],
       "airborne": true,
       "turn": false,
-      "sound": "land_hard",
+      "sound": "land_2",
       "transitions": [
         { "when": "landed", "to": "downed" }
       ]
@@ -187,7 +187,7 @@
       "anim": "downed",
       "vel": [0, 0],
       "turn": false,
-      "sound": "land_settle",
+      "sound": "land_3",
       "transitions": [
         { "when": "animEnd", "to": "getup" }
       ]
@@ -211,7 +211,7 @@
         { "when": "falling", "to": "jump_up_fall" },
         { "when": "landed", "to": "idle" }
       ],
-      "sound": "jump"
+      "sound": "jump_1"
     },
     "jump_fwd": {
       "anim": "jump_fwd",
@@ -224,7 +224,7 @@
         { "when": "animEnd", "to": "jump_fwd_air" },
         { "when": "landed", "to": "idle" }
       ],
-      "sound": "jump"
+      "sound": "jump_1"
     },
     "jump_fwd_air": {
       "anim": "jump_spin",
@@ -248,7 +248,7 @@
         { "when": "animEnd", "to": "jump_back_air" },
         { "when": "landed", "to": "idle" }
       ],
-      "sound": "jump"
+      "sound": "jump_1"
     },
     "jump_back_air": {
       "anim": "jump_spin_back",
@@ -288,7 +288,7 @@
       "transitions": [
         { "when": "landed", "to": "idle" }
       ],
-      "sound": "land"
+      "sound": "land_1"
     }
   }
 }

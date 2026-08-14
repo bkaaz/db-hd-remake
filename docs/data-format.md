@@ -238,21 +238,48 @@ malformed `vel`; it warns about unreachable states, states with no way out, and
 the classic slip — a state whose only exit is `animEnd` playing a **looping**
 animation, which can never be left.
 
-## Sounds (added 2026-08-10)
+## Sounds (added 2026-08-10 · split into bank and voices 2026-08-14)
 
-Section file `sounds.json` — id → how the noise is made. A sound is **either a
-real sample or a spec synthesised at runtime**, and usually both: the samples
-are cut from a recording of the game's own sound test (`docs/audio-capture.md`),
-and the spec underneath is what plays until the file has loaded, and if the file
-is missing.
+Sound lives in **two files with one shared id space**:
+
+| file | holds | who owns it |
+|---|---|---|
+| `data/audio/sounds.json` | the **bank** — swings, impacts, blocks, landings | the game |
+| `data/entities/<name>/sounds.json` | that fighter's **voices**, nothing else | the fighter |
+
+Nothing in an impact is anyone's: clip 007 is not Goku's, and the next nine
+fighters would each want a copy of the same thing. A grunt *is* his. So the
+split follows the one the original draws — see `decisions.md`, 2026-08-14.
+
+**An id defined in both files is an error, not an override.** That is what makes
+two files safe: nobody has to remember which one wins, because winning is not on
+offer. `soundIdCollisions()` reports it at load.
+
+**Bank ids are numbered per category and append-only** — `swing_1`, `swing_2`,
+`hit_1`. The name says nothing about who plays it, because a name that does is a
+guess that ages: `swing_kick` was used by kicks *and* by heavy punches. A state
+picks a variant, so giving a move a different swing is one string, not a new
+definition. `swing_7` must always mean what it means today, since `states.json`
+points at it by name.
+
+Two variants may share a `file` and that is not duplication — `hit_2` is a
+heavier hit that borrows `hit_1`'s clip until someone names a heavier one among
+the 107 clips nobody has listened to yet. When they do, one field changes.
 
 ```jsonc
+// data/audio/sounds.json — the bank
 {
-  "hit":   { "kind": "noise", "freq": 420, "decay": 0.11, "gain": 0.42, "vary": 0.10,
-             "file": "007.wav" },
-  "block": { "kind": "tone",  "freq": 900, "decay": 0.09, "gain": 0.30, "vary": 0.06 }
+  "hit_1":   { "label": "hit landed: damage went in",
+               "kind": "noise", "freq": 420, "decay": 0.11, "gain": 0.42, "vary": 0.10,
+               "file": "007.wav" },
+  "block_1": { "label": "a blocked hit",
+               "kind": "tone",  "freq": 900, "decay": 0.09, "gain": 0.30, "vary": 0.06 }
 }
 ```
+
+- **`label`** — what it sounds like, in words. Where the meaning went once ids
+  became numbers: for a person reading the file and for the editor's picker.
+  Never used to look anything up.
 
 - **`kind`** — `noise` (filtered white noise: impacts, whiffs) or `tone`
   (a falling sine: the thin ring of a blocked blow).
@@ -279,6 +306,8 @@ a `file` all three are still required: a sound has to be *something*.
 
 A reaction state naming a `sound` is how a fighter gets a voice: `hurt` and
 `knockdown` play the grunt on being entered, which is the moment the blow lands.
+That id resolves in the fighter's own file rather than the bank — the only kind
+of sound that does.
 
 **A key starting with `_` is a note, not a sound** — JSON has nowhere else to put
 one, and the validator skips it.

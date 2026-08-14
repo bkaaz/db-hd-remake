@@ -46,9 +46,31 @@ export interface SoundSpec {
    * and stays audible if a file is missing.
    */
   file?: string;
+  /**
+   * What this sounds like, in words — "swing, leg — heavier".
+   *
+   * Ids in the bank are numbered rather than descriptive, because at three
+   * variants a category runs out of adjectives and starts arguing with itself.
+   * The label is where the meaning lives instead: for a person reading the
+   * file, and for the editor's picker to list. Never used to look anything up.
+   */
+  label?: string;
 }
 
 export type Sounds = Record<string, SoundSpec>;
+
+/**
+ * Ids defined in both the game's bank and a fighter's own file.
+ *
+ * The two files share one id space, so a collision is an error rather than an
+ * override. That is the whole reason the split is safe: nobody has to remember
+ * which file wins, because winning is not on offer.
+ */
+export function soundIdCollisions(bank: Sounds, own: Sounds | undefined): string[] {
+  return Object.keys(own ?? {})
+    .filter((id) => !id.startsWith("_") && id in bank)
+    .map((id) => `"${id}" is defined in both the sound bank and the entity; ids must be unique`);
+}
 
 /** Problems found in a `sounds.json`, in the same shape the state validator uses. */
 export function validateSounds(sounds: Sounds | undefined): string[] {

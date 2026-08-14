@@ -1,7 +1,8 @@
 import { Application } from "pixi.js";
 import { loadEntityDef, type EntityDef } from "./entity/entityDef";
+import { loadSoundBank, withVoices } from "./audio/bank";
 import { Audio } from "./audio/playback";
-import { validateSounds } from "./audio/sounds";
+import { soundIdCollisions, validateSounds } from "./audio/sounds";
 import { validateStates } from "./entity/states";
 import { Effects } from "./fx/effects";
 import { Keyboard } from "./input/keyboard";
@@ -61,10 +62,14 @@ async function boot(): Promise<void> {
     }
   }
 
-  // sounds.json is hand-authored too, and a broken spec is silent rather than
-  // loud — exactly the sort of thing nobody notices until they wonder why one
-  // move has no impact.
-  for (const problem of validateSounds(def.sounds)) console.error(`[sounds] ${problem}`);
+  // Sound comes from two hand-authored files: the game's bank, and this
+  // fighter's own voices. A broken spec is silent rather than loud — exactly the
+  // sort of thing nobody notices until they wonder why one move has no impact —
+  // and an id claimed by both files is an error, never a quiet override.
+  const bank = await loadSoundBank();
+  for (const problem of validateSounds(bank)) console.error(`[sounds] bank: ${problem}`);
+  for (const problem of validateSounds(def.sounds)) console.error(`[sounds] ${def.name}: ${problem}`);
+  for (const problem of soundIdCollisions(bank, def.sounds)) console.error(`[sounds] ${problem}`);
 
   const effects = await Effects.load(app, ["fx_hit", "fx_hit_heavy"], SCALE);
 
@@ -74,7 +79,7 @@ async function boot(): Promise<void> {
   const preview = new URL(location.href).searchParams.get("anim");
   const previewing = !!preview && !!def.animations[preview];
 
-  const audio = new Audio(def.sounds);
+  const audio = new Audio(withVoices(bank, def.sounds));
   const fighters = new Fighters({ app, def, scale: SCALE, audio, effects, solo: previewing });
   if (previewing && preview) fighters.preview(preview);
   fighters.start(stage);

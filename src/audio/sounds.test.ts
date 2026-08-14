@@ -1,7 +1,37 @@
 import { describe, expect, it } from "vitest";
-import { pitchFor, rateFor, validateSounds, type SoundSpec, type Sounds } from "./sounds";
+import {
+  pitchFor,
+  rateFor,
+  soundIdCollisions,
+  validateSounds,
+  type SoundSpec,
+  type Sounds,
+} from "./sounds";
 
 const ok: SoundSpec = { kind: "noise", freq: 400, decay: 0.1, gain: 0.5 };
+
+describe("soundIdCollisions", () => {
+  it("passes when a fighter only adds ids the bank does not have", () => {
+    expect(soundIdCollisions({ hit_1: ok }, { voice_hurt: ok })).toEqual([]);
+  });
+
+  it("passes when the fighter has no sounds of their own", () => {
+    expect(soundIdCollisions({ hit_1: ok }, undefined)).toEqual([]);
+  });
+
+  it("reports an id claimed by both files, so neither silently wins", () => {
+    expect(soundIdCollisions({ hit_1: ok, swing_1: ok }, { hit_1: ok })).toEqual([
+      '"hit_1" is defined in both the sound bank and the entity; ids must be unique',
+    ]);
+  });
+
+  it("does not mistake a reader's note for a collision", () => {
+    const withNote = { _comment: "voices only", voice_hurt: ok } as unknown as Sounds;
+    expect(soundIdCollisions({ _comment: ok, hit_1: ok } as unknown as Sounds, withNote)).toEqual(
+      [],
+    );
+  });
+});
 
 describe("validateSounds", () => {
   it("accepts a well-formed set", () => {

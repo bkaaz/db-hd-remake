@@ -76,24 +76,26 @@ the same fighters the match does; today nothing loads twice.
 *Done when:* `main.ts` is boot plus the crank, and adding a scene does not touch
 it beyond the first one.
 
-## Queued: split the sound bank from the voices, and move the effects out
+## Queued: move the effects out of `data/entities/`
 
-Decided 2026-08-14 (`decisions.md`), not yet built. Worth doing while there is
-one fighter to migrate instead of ten — that is the whole reason it was settled
-early.
+The sound half of this landed on 2026-08-14 — bank, voices, labels, collision
+rule, all of `data-format.md` updated. What is left is the effects:
 
-- `data/audio/sounds.json` — the game's bank. Eleven of Goku's twelve sounds
-  move here and get renamed after **what they sound like**: `swing_1`, not
-  `swing_kick`. The three pairs pointing at one file (004, 007, 011) collapse.
-- `data/entities/goku/sounds.json` — keeps `voice_hurt` and nothing else.
-- `validateSounds` gains one rule: an entity id that also exists in the bank is
-  an error.
-- `data/entities/fx_hit*` → `data/fx/hit*`, same shape. `npm run fx` and the
-  loader follow; the effect names stop being written into `main.ts`.
-- `states.json` references change with the ids. One entity, so one pass.
+- `data/entities/fx_hit*` → `data/fx/hit*`, same shape (a directory of
+  `frames.json` and `animations.json`). A spark genuinely is that; it just never
+  was a fighter, and only lived among them for want of anywhere else.
+- `npm run fx` and the loader follow it. `/api/entity` reads from
+  `data/entities/`, so effects need their own route or a root parameter.
+- The two effect names stop being written into `main.ts`.
 
-*Done when:* `data-format.md` describes the two files and the collision rule,
-the game sounds exactly as it does now, and `npm run fx` writes to the new home.
+**Nothing validates that a `sound` id in `states.json` exists** — found while
+doing the sound half, where twenty-one references were renamed with only a
+count to check them. Same gap for `hitFx`. The state validator already proves
+every `anim` reference resolves; sounds and effects deserve the same, and it is
+the check that would make the next rename safe.
+
+*Done when:* `npm run fx` writes to the new home, no effect name appears in
+`main.ts`, and an unknown `sound` or `hitFx` id is reported at load.
 
 ## Next: review and tidy the sound slice
 
