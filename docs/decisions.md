@@ -2,6 +2,112 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-14 — No constants file; a value lives with its only user
+
+- **There is no `constants.ts` and there should not be one.** Nearly every value
+  in this codebase is already where it belongs: `BAR_HEIGHT` in the HUD,
+  `EDGE_MARGIN` in the stage, `ATTACK_EVERY` in the training fixture,
+  `SPARK_MAX_STEP` in the effect generator. Collecting them centrally would move
+  each one away from the only code that gives it meaning, and a constants file is
+  usually just the cupboard for values with no home. These have homes.
+- **The rule instead:** a value lives beside its only user; a shared home is for
+  what two modules must *agree* on.
+- **By that rule exactly two values are shared today, and neither is a tuning
+  knob** — both define a unit. `FRAME_TIME = 1/60`, because everything the game
+  knows about time is counted in frames: animation steps, hitstop, the eight
+  frames of input buffer. And `SCALE = 3`, the conversion between a sprite pixel
+  (what the data is authored in) and a screen pixel (what the world is measured
+  in). They stay in `main.ts` and are handed down, which is already how `SCALE`
+  travels.
+- **`SCALE` is entangled with Q7** — the open question about a logical
+  resolution — and is not settled here. Whatever answers Q7 owns it.
+- **`ENTITY = "goku"` was never a constant.** It is a scene parameter, and the
+  URL decision above takes it out of the file altogether. That closes Q11 without
+  a separate conversation, which is what "later questions fall out of earlier
+  ones" is supposed to look like.
+- **`boot()` being long is a symptom, not a cause, so it is not being fixed
+  now.** Around sixty of its ninety-five lines are *building a fight*, and those
+  move into `FightScene` for free when scenes arrive. Restructuring it first
+  means restructuring it twice.
+
+## 2026-08-14 — A scene is what its parameters say, and the URL says them
+
+- **Every scene must be constructible from a small, serialisable set of
+  parameters** — `{ scene: "fight", p1: "goku", p2: "goku" }` — and never from
+  objects the previous scene happened to build. This is the whole decision; the
+  rest follows from it. Getting straight to the scene you are working on is then
+  not a feature anyone has to add, it is a consequence: if a character select can
+  describe a fight in a few values, so can anything else.
+- **Being able to jump into a scene is a constraint on the scene interface, not a
+  tool bolted on later.** A `FightScene` that needs whatever `SelectScene` left
+  behind cannot be entered any other way, and no later trick fixes that. So the
+  rule lands before the first scene exists, not after.
+- **The state and its source are different questions.** The parameter object has
+  to exist regardless; the URL is merely one thing that fills it. That is why
+  "URL or a state object" was a false choice — it is one state type with several
+  possible sources, and today there is one source.
+- **The URL is that source.** `?scene=fight&p1=goku&p2=goku`. It survives a
+  reload, differs per tab, can be pasted to someone else, needs no rebuild, and
+  the repo already does this for one animation with `?anim=`.
+- **An unknown or invalid parameter is a loud error, never a quiet fallback to
+  the default scene.** Everything in a URL is a string, so `p1=gokú` is the
+  realistic mistake, and silently running the default would send someone
+  debugging the wrong thing. Same instinct as `validateStates`.
+- **A committed dev-state file was rejected as the primary source** for one
+  reason: it is global and commitable. Two tabs cannot hold two scenes, and a
+  modified file sits in `git status` waiting to ride along with an unrelated
+  commit. A dev entry point that can be shipped by accident is a bug with a
+  delay on it.
+- **Convenience lives in `package.json` instead** — `npm run fight` opening a
+  prepared URL, the way `npm run editor` already opens the editor. Committed,
+  memorable, and a command rather than game state.
+- **The file comes back if a scene needs more setup than a URL holds
+  comfortably** — "start at 10% health to test a KO" is the shape of that. It
+  slots in as a second source without reworking anything, because the state type
+  is already the interface.
+- **A player can therefore skip the menus by typing a URL.** Accepted: this is a
+  non-commercial fan project, not a thing with a front door to guard.
+
+## 2026-08-14 — A voice has an owner; a punch does not
+
+- **One sound bank for the whole game**, `data/audio/sounds.json`. Impacts,
+  swings, blocks and landings belong to nobody: nothing in clip 007 is Goku's,
+  and the next nine fighters would each want their own copy of the same thing.
+  The bank needs no adjective — there is no second one, so nothing is marked
+  "shared" and no `common/` directory exists to become a junk drawer.
+- **Ids name the sound, not the role.** `swing_1`, not `swing_kick`. A name that
+  says who will use it is a guess that ages: today `swing_kick` and
+  `swing_heavy` are the same file, `hit` and `hit_heavy` are the same file, and
+  `land_hard` and `land_settle` are the same file — three pairs that only exist
+  because the id described a role. This is also the rule sprites already follow:
+  numbered frames, with `descriptions.json` saying what each one is. For sound
+  the catalogue is `data/audio/sound-test.json`, which stays separate from the
+  bank: it says what all 127 clips *are*, the bank says which ones the game
+  *plays* and how loud.
+- **A fighter's voice stays with the fighter**, in
+  `data/entities/<name>/sounds.json`, holding voices and nothing else. Ownership
+  is fake for a punch and real for a grunt, so one rule for both would be
+  convenient rather than true. Practically: the bank stays small and stable
+  while voices grow with the roster, and adding a fighter stays "add a
+  directory" instead of also editing a global file.
+- **This does not break "an entity is a directory"** — that rule never meant an
+  entity contains its content. Goku's sprites live in `assets/sheets/goku.png`;
+  `frames.json` says which rectangles of that shared sheet are his. A
+  `sounds.json` naming which clips of the shared `assets/audio/sfx/` are his is
+  the same pattern, not an exception to it.
+- **One id space, two files, and the validator rejects a collision.** An entity
+  defining an id the bank already has is an error, not a silent override. That
+  removes the only real hazard of splitting them: nobody has to remember which
+  file wins, because both winning is impossible.
+- **Effects leave `data/entities/`** for `data/fx/<name>/`, keeping their shape —
+  a directory of `frames.json` and `animations.json`. A spark genuinely is that;
+  it just never was a fighter, and only lived among them for want of anywhere
+  else to put it.
+- **What would overturn the voice half of this:** finding that the original
+  reuses voice clips across the roster. Then a voice has no owner either and
+  everything belongs in the bank. Unknown today — 107 of the 127 clips have
+  never been listened to.
+
 ## 2026-08-14 — Directories say what a file is about, not how it runs
 
 - **`src/` is grouped by domain** — `entity/`, `combat/`, `input/`, `audio/`,

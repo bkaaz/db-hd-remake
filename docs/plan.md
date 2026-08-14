@@ -57,8 +57,15 @@ then boots Pixi, makes the first scene and turns the crank — and stops growing
 when menus arrive. Called `Scene` and not `Screen` because `app.screen` in
 PixiJS is the view rectangle.
 
-*Open:* whether `step()` returning the next scene is the right way to change
-scene, or whether that wants an event. Decide when the second scene exists, not
+**How a scene is chosen is settled** (`decisions.md`, 2026-08-14): every scene is
+built from a small serialisable parameter object, never from what the previous
+scene left behind, and the URL supplies it —
+`?scene=fight&p1=goku&p2=goku`. An unknown parameter is a loud error, not a
+quiet fallback. Convenience presets go in `package.json`, not into a committed
+dev-state file.
+
+*Open:* how a scene *changes* to the next one — whether `step()` returns the
+successor or that wants an event. Decide when the second scene exists, not
 before. Two implementations are the point — one interface with one implementation
 is a guess.
 
@@ -68,6 +75,25 @@ the same fighters the match does; today nothing loads twice.
 
 *Done when:* `main.ts` is boot plus the crank, and adding a scene does not touch
 it beyond the first one.
+
+## Queued: split the sound bank from the voices, and move the effects out
+
+Decided 2026-08-14 (`decisions.md`), not yet built. Worth doing while there is
+one fighter to migrate instead of ten — that is the whole reason it was settled
+early.
+
+- `data/audio/sounds.json` — the game's bank. Eleven of Goku's twelve sounds
+  move here and get renamed after **what they sound like**: `swing_1`, not
+  `swing_kick`. The three pairs pointing at one file (004, 007, 011) collapse.
+- `data/entities/goku/sounds.json` — keeps `voice_hurt` and nothing else.
+- `validateSounds` gains one rule: an entity id that also exists in the bank is
+  an error.
+- `data/entities/fx_hit*` → `data/fx/hit*`, same shape. `npm run fx` and the
+  loader follow; the effect names stop being written into `main.ts`.
+- `states.json` references change with the ids. One entity, so one pass.
+
+*Done when:* `data-format.md` describes the two files and the collision rule,
+the game sounds exactly as it does now, and `npm run fx` writes to the new home.
 
 ## Next: review and tidy the sound slice
 

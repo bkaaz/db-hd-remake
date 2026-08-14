@@ -148,6 +148,9 @@ when it works.
 - **State that belongs together travels together.** Prefer a small object that
   owns its state and exposes two or three calls over a function taking eight
   arguments that the caller has to keep in sync.
+- **A value lives beside its only user.** No `constants.ts` — a shared home is
+  only for what two modules must *agree* on. A constants file collects values
+  away from the code that gives them meaning.
 
 ## Tech stack
 
