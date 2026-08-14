@@ -9,42 +9,14 @@
   <body>
     <header id="toolbar">
       <div class="group">
-        <select id="sheet-select" title="Sheets in assets/sheets/"></select>
-        <button id="sheet-load">Load</button>
-      </div>
-      <div class="group">
-        <label>Entity <input id="entity-name" type="text" size="10" /></label>
-        <label>Atlas <input id="atlas-name" type="text" size="12" /></label>
-      </div>
-      <div class="group">
-        <span class="lbl">Mode:</span>
-        <button id="mode-frame">Frame</button>
-        <button id="mode-anchor">Anchor</button>
-      </div>
-      <div class="group">
-        <span class="lbl">Zoom:</span>
-        <button id="zoom-out">−</button>
-        <span id="zoom-label">200%</span>
-        <button id="zoom-in">＋</button>
-      </div>
-      <div class="group">
-        <span class="lbl">BG:</span>
-        <label><input id="bg-enabled" type="checkbox" /> transparent</label>
-        <span id="bg-swatch" class="swatch" title="Background color"></span>
-        <button id="bg-pick" title="Eyedropper: click the sheet to pick the background color">Pick</button>
-        <label>tol <input id="bg-tol" type="number" class="dur" value="0" min="0" max="255" /></label>
-      </div>
-      <div class="group">
-        <span class="lbl">Detect:</span>
-        <button id="detect-all" title="Detect all sprites as frames">All</button>
-        <button id="detect-click" title="Magic click: click a sprite to make it a frame">Magic click</button>
-        <button id="frames-clear" class="danger" title="Clear all frames and animations">Clear</button>
-        <label title="Detect all: merge fragments separated by up to this many transparent px">gap <input id="detect-gap" type="number" class="dur" value="2" min="0" max="8" /></label>
-        <label title="Detect all: drop frames whose width OR height is below this (kills 1px slivers). Magic click ignores it.">min side <input id="detect-min" type="number" class="dur" value="4" min="1" /></label>
+        <button id="rail-toggle" title="Show or hide the entity list">☰</button>
+        <span id="open-entity" class="lbl">nothing open</span>
       </div>
     </header>
 
     <main>
+      <aside id="rail"></aside>
+
       <section id="sheet-wrap">
         <canvas id="sheet"></canvas>
       </section>
@@ -61,6 +33,39 @@
         </nav>
 
         <div class="tab-pane" data-pane="sprites">
+          <div class="card">
+            <h3>Sheet</h3>
+            <div class="group">
+              <span class="lbl">Mode:</span>
+              <button id="mode-frame">Frame</button>
+              <button id="mode-anchor">Anchor</button>
+            </div>
+            <div class="group">
+              <span class="lbl">Zoom:</span>
+              <button id="zoom-out">−</button>
+              <span id="zoom-label">200%</span>
+              <button id="zoom-in">＋</button>
+            </div>
+            <div class="group">
+              <span class="lbl">BG:</span>
+              <label><input id="bg-enabled" type="checkbox" /> transparent</label>
+              <span id="bg-swatch" class="swatch" title="Background color"></span>
+              <button id="bg-pick" title="Eyedropper: click the sheet to pick the background color">Pick</button>
+              <label>tol <input id="bg-tol" type="number" class="dur" value="0" min="0" max="255" /></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Detect</h3>
+            <div class="group">
+              <button id="detect-all" title="Detect all sprites as frames">All</button>
+              <button id="detect-click" title="Magic click: click a sprite to make it a frame">Magic click</button>
+              <button id="frames-clear" class="danger" title="Clear all frames and animations">Clear</button>
+              <label title="Detect all: merge fragments separated by up to this many transparent px">gap <input id="detect-gap" type="number" class="dur" value="2" min="0" max="8" /></label>
+              <label title="Detect all: drop frames whose width OR height is below this (kills 1px slivers). Magic click ignores it.">min side <input id="detect-min" type="number" class="dur" value="4" min="1" /></label>
+            </div>
+          </div>
+
           <div class="card">
             <h3>Frames</h3>
             <p class="hint">Drag a rectangle on the sheet to create a frame.

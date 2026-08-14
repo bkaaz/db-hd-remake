@@ -88,50 +88,24 @@ next rename safe instead of nerve-racking.
 *Done when:* an unknown `sound` or `hitFx` id is reported at load, the same way
 an unknown animation is.
 
-## Queued: the editor is organised around a PNG, and should be around an entity
+## Queued: the editor's layout still follows the sheet, not the work
 
-It was a sprite-sheet tool and it was well shaped as one. Then states, sounds and
-soon spawns arrived, and each tab was reasonable on the day it was added — the
-shape it grew into was nobody's decision. Symptoms, all of them consequences of
-the same root:
+Most of this landed on 2026-08-14. The editor opens an **entity** now — a rail
+lists fighters and spawns, picking one loads its data and its picture together,
+and the URL remembers what is open and which tab is showing. Save lives in the
+panels, the sprite tools moved into the Sprites tab, and the frames list became
+a picker. What is left is the half that is about space:
 
-- **The top bar is a sprite pipeline** — zoom, frame/anchor, background key,
-  detect — spanning the whole application for the benefit of one tab.
-- **Six workspaces share a 300px column** while the canvas sits idle on the
-  tabs that never draw to it.
-- **You cannot open an entity.** You load a *sheet*, and the entity follows from
-  a text field. Which is why there is nowhere to put spawns, even though a spawn
-  is an entity and needs no new UI at all.
+**A tab should switch the whole workspace, not just the sidebar.** Sprites and
+Animations use the canvas; States and the two sound tabs never draw to it and
+sit cramped in a 340px column beside half a screen of nothing. Nothing needs
+adding — space needs to stop being reserved for what a tab does not use.
 
-Save moved into the panels on 2026-08-14, with a modified marker per tab, and
-the download fallbacks and the upload path went with it. What is left:
-
-**Slice 2 — the entity is the document.** A picker listing everything in
-`data/entities/` and `data/spawns/`; choosing one loads its data **and** its
-image, the ripped sheet for a fighter or the generated atlas for a spawn
-(`/api/atlas` already serves both). Selecting a sheet separately goes away
-entirely: a sheet reaches the editor by being in `assets/sheets/`, which is
-where it has to end up anyway. **This is the whole of
-"how do spawns get edited"** — they appear in the list beside `goku` and every
-existing tab works on them unchanged.
-
-*Depends on* the spawns move above, so the list has two directories to read.
-
-*Done when:* opening `hit` from the list draws its frames, and no step in that
-involves choosing an image.
-
-**Slice 3 — the layout follows the work.** A tab switches the whole workspace,
-not just the sidebar: Sprites and Animations keep the canvas, States and the two
-sound tabs take the full width. Sprite tooling leaves the global bar and sits
-with the canvas, visible where it applies. Nothing is added — space stops being
-reserved for what a tab does not use.
+There is a smaller symptom of the same thing: the sheet is visible on every tab
+but its zoom and mode controls now live in Sprites, so on Animations you can see
+it and not zoom it. Both go away with the full-width switch.
 
 *Done when:* no tab is cramped beside an empty canvas.
-
-**Slice 4 — an entity rail, only if slice 2 proves cramped.** A collapsible list
-down the left. Held back deliberately: it is 200px of permanent furniture for
-something touched a few times a session, and the convenience being bought is
-that opening an entity loads everything, which slice 2 already delivers.
 
 ## Next: review and tidy the sound slice
 

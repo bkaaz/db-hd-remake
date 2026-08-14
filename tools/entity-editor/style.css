@@ -34,14 +34,38 @@ body {
   background: var(--panel);
   border-bottom: 1px solid var(--line);
 }
-#toolbar .group { display: flex; align-items: center; gap: 6px; }
-#toolbar .lbl { color: var(--muted); }
+/* Tool groups live in the Sprites tab now, not over the whole application —
+   they only ever applied to one of six workspaces. They wrap, because the side
+   panel is a third of the width the header was. */
+.group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lbl { color: var(--muted); }
+.card .group { margin: 4px 0; }
 
 main {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 170px 1fr 340px;
   min-height: 0;
 }
+main.rail-hidden { grid-template-columns: 0 1fr 340px; }
+
+/* The entity list. Open by default: hidden behind a click, it would cost one
+   every time you wanted to see which entity you are looking at. */
+#rail {
+  overflow: auto;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  padding: 10px 8px;
+}
+#rail h4 { margin: 10px 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+#rail h4:first-child { margin-top: 0; }
+.rail-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 2px 0;
+  font-size: 12px;
+}
+.rail-item.active { outline: 1px solid var(--accent); }
 
 #sheet-wrap {
   overflow: auto;

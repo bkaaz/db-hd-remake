@@ -49,7 +49,6 @@ export interface AnimDef {
 
 export interface EditorState {
   image: HTMLImageElement | null;
-  atlasFilename: string;
   entityName: string;
   frames: FrameDef[];
   anims: AnimDef[];
@@ -93,7 +92,6 @@ export interface EditorState {
 
 export const state: EditorState = {
   image: null,
-  atlasFilename: "atlas.png",
   entityName: "entity",
   frames: [],
   anims: [],
@@ -311,5 +309,4 @@ export function loadEntity(json: EntityFileIn): void {
   state.selectedStepIndex = null;
   state.selectedBoxIndex = null;
   state.entityName = json.name;
-  state.atlasFilename = json.atlas;
 }

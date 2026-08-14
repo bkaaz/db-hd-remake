@@ -149,6 +149,22 @@ export function entityEditorServer(): Plugin {
         }
       });
 
+      // Everything the editor can open. Two groups because they are read from
+      // two directories and, more usefully, because the group decides where the
+      // picture comes from: a fighter has a ripped sheet, a spawn has only the
+      // atlas its generator wrote.
+      server.middlewares.use("/api/entities", async (_req, res) => {
+        const names = async (dir: string): Promise<string[]> => {
+          try {
+            const entries = await fs.readdir(path.join(root, dir), { withFileTypes: true });
+            return entries.filter((e) => e.isDirectory()).map((e) => e.name).sort();
+          } catch {
+            return [];
+          }
+        };
+        sendJson(res, 200, { fighters: await names(ENTITIES_DIR), spawns: await names(SPAWNS_DIR) });
+      });
+
       // Read an entity by assembling every section file in its directory:
       // data/entities/<name>/<section>.json -> { name, atlas, <section>: ... }.
       server.middlewares.use("/api/entity", async (req, res) => {

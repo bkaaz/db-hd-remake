@@ -13,6 +13,17 @@ import { Preview } from "./preview";
 import { BoxEditor } from "./boxEditor";
 import { renderFrames, renderAnims, renderBoxes, renderStates } from "./panels";
 import {
+  currentEntity,
+  findEntity,
+  firstEntity,
+  imageUrlFor,
+  loadEntityList,
+  modifiedSections,
+  renderEntityRail,
+  setCurrentEntity,
+  type EntityRef,
+} from "./entities";
+import {
   loadBank,
   renderEntitySounds,
   renderGlobalSounds,
@@ -44,10 +55,9 @@ const statesPanel = byId("states-panel");
 const entitySoundsPanel = byId("entity-sounds-panel");
 const globalSoundsPanel = byId("global-sounds-panel");
 const boxCanvas = byId<HTMLCanvasElement>("box-canvas");
-const sheetSelect = byId<HTMLSelectElement>("sheet-select");
-const sheetLoadBtn = byId("sheet-load");
-const entityNameInput = byId<HTMLInputElement>("entity-name");
-const atlasNameInput = byId<HTMLInputElement>("atlas-name");
+const rail = byId("rail");
+const railToggle = byId("rail-toggle");
+const openLabel = byId("open-entity");
 const zoomLabel = byId("zoom-label");
 const statusEl = byId("status");
 const modeFrameBtn = byId("mode-frame");
@@ -61,22 +71,28 @@ const detectClickBtn = byId("detect-click");
 const detectGap = byId<HTMLInputElement>("detect-gap");
 const detectMin = byId<HTMLInputElement>("detect-min");
 
+/**
+ * What is open and which tab is showing, kept in the URL so a reload lands
+ * where you left off. `replaceState` rather than `pushState`: switching tab is
+ * not navigation, and filling the back button with it would make Back useless.
+ */
+const TABS = ["sprites", "animations", "states", "sounds", "global-sounds"];
+let activeTab = TABS[0];
+
+function rememberInUrl(): void {
+  const url = new URL(location.href);
+  const ref = currentEntity();
+  // Only ever written, never cleared: at start-up this runs before anything is
+  // open, and clearing would throw away the ?entity= that says what to open.
+  if (ref) url.searchParams.set("entity", ref.name);
+  url.searchParams.set("tab", activeTab);
+  history.replaceState(null, "", url);
+}
+
 const sheet = new SheetView(sheetCanvas);
 const preview = new Preview(previewCanvas);
 const boxEditor = new BoxEditor(boxCanvas);
 
-// Which tab is active; the Save button saves that section (set in setTab).
-
-entityNameInput.value = state.entityName;
-atlasNameInput.value = state.atlasFilename;
-
-entityNameInput.addEventListener("change", () => {
-  state.entityName = entityNameInput.value.trim() || "entity";
-  emitChange();
-});
-atlasNameInput.addEventListener("change", () => {
-  state.atlasFilename = atlasNameInput.value.trim() || "atlas.png";
-});
 
 modeFrameBtn.addEventListener("click", () => {
   state.mode = "frame";
@@ -151,7 +167,6 @@ detectMin.addEventListener("change", () => {
 byId("play").addEventListener("click", () => preview.play());
 byId("stop").addEventListener("click", () => preview.stop());
 
-sheetLoadBtn.addEventListener("click", () => loadFromRepo(sheetSelect.value));
 // Each section is saved from the panel that owns it, so where the button is
 // says what it writes. A single global Save had to be read together with the
 // active tab to know what a click would do.
@@ -192,7 +207,6 @@ function applyNewImage(img: HTMLImageElement, fileName: string): void {
   state.mode = "frame";
 
   state.image = img;
-  state.atlasFilename = fileName;
   state.entityName = fileName.replace(/\.[^.]+$/, "") || "entity";
 
   const hasAlpha = setImage(img);
@@ -205,16 +219,11 @@ function applyNewImage(img: HTMLImageElement, fileName: string): void {
     state.bgKeyEnabled = true;
   }
   rebuildKeyed();
-
-  entityNameInput.value = state.entityName;
-  atlasNameInput.value = state.atlasFilename;
 }
-
 
 /**
  * Pull the entity's section files from the repo into editor state, remembering
  * each section's mtime so a later save can tell it would overwrite a newer file.
- * Used both after loading a sheet and by "Reload data" (which keeps the image).
  */
 async function hydrateFromRepo(): Promise<boolean> {
   const res = await fetch(`/api/entity?name=${encodeURIComponent(state.entityName)}`);
@@ -225,52 +234,59 @@ async function hydrateFromRepo(): Promise<boolean> {
   // "Modified" means changed since this entity was opened, not "differs from
   // an empty editor" — so the baseline is taken here, at the moment it arrives.
   markEntitySaved();
-  entityNameInput.value = state.entityName;
-  atlasNameInput.value = state.atlasFilename;
   return true;
 }
 
-/** Load a sheet from the repo, and hydrate any existing entity JSON. */
-function loadFromRepo(fileName: string): void {
-  if (!fileName) return;
+/**
+ * Open an entity: its data and its picture, in one gesture.
+ *
+ * Switching throws away unsaved section edits, which is fine as long as it is
+ * said out loud — and it can be said precisely, because the editor knows which
+ * sections differ from disk. The game's sound bank is not an entity section and
+ * survives untouched.
+ */
+function openEntity(ref: EntityRef): void {
+  const dirty = modifiedSections();
+  if (dirty.length > 0) {
+    const ok = confirm(
+      `Unsaved changes in ${dirty.join(", ")}.\n\nOpening "${ref.name}" discards them.`,
+    );
+    if (!ok) return;
+  }
+
   const img = new Image();
   img.onload = async () => {
-    applyNewImage(img, fileName);
+    applyNewImage(img, `${ref.name}.png`);
+    setCurrentEntity(ref);
+    rememberInUrl();
     try {
       if (await hydrateFromRepo()) {
         rebuildKeyed();
-        statusEl.textContent = `Loaded ${fileName} + existing entity data.`;
+        statusEl.textContent = `Opened ${ref.name}.`;
       } else {
         // Nothing on disk to compare against, so the empty entity is the
         // baseline: the first frame drawn then counts as an unsaved change.
         markEntitySaved();
-        statusEl.textContent = `Loaded ${fileName} (new entity).`;
+        statusEl.textContent = `Opened ${ref.name} (no data on disk yet).`;
       }
     } catch {
-      statusEl.textContent = `Loaded ${fileName}.`;
+      statusEl.textContent = `Opened ${ref.name}.`;
     }
+    // The sounds panel is not redrawn by the normal change notification — that
+    // would throw away a half-typed field on every unrelated edit. A different
+    // entity is the one moment it has to catch up.
+    renderEntitySounds(entitySoundsPanel);
     emitChange();
   };
   img.onerror = () => {
-    statusEl.textContent = `Failed to load ${fileName} from repo.`;
+    statusEl.textContent =
+      ref.kind === "spawn"
+        ? `No atlas for "${ref.name}" — run npm run fx.`
+        : `No sheet assets/sheets/${ref.name}.png.`;
   };
-  img.src = `/api/sheet?name=${encodeURIComponent(fileName)}`;
+  img.src = imageUrlFor(ref);
 }
 
-async function refreshSheetList(): Promise<void> {
-  try {
-    const res = await fetch("/api/sheets");
-    const data = (await res.json()) as { sheets: string[] };
-    sheetSelect.replaceChildren();
-    if (data.sheets.length === 0) {
-      sheetSelect.append(new Option("(none in sprite-sheets/)", ""));
-    } else {
-      for (const name of data.sheets) sheetSelect.append(new Option(name, name));
-    }
-  } catch {
-    sheetSelect.replaceChildren(new Option("(editor server not running)", ""));
-  }
-}
 
 function render(): void {
   sheet.resize();
@@ -280,6 +296,8 @@ function render(): void {
   renderBoxes(boxesPanel);
   renderStates(statesPanel);
   refreshTabMarks();
+  renderEntityRail(rail);
+  openLabel.textContent = currentEntity()?.name ?? "nothing open";
   boxEditor.redraw();
 
   modeFrameBtn.classList.toggle("active", state.mode === "frame");
@@ -305,6 +323,7 @@ function render(): void {
 const tabButtons = document.querySelectorAll<HTMLButtonElement>("#tabs .tab");
 const tabPanes = document.querySelectorAll<HTMLElement>(".tab-pane");
 function setTab(name: string): void {
+  activeTab = name;
   tabButtons.forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
   tabPanes.forEach((p) => p.classList.toggle("active", p.dataset.pane === name));
   // The bank is independent of the loaded entity, so it redraws when the tab
@@ -314,6 +333,7 @@ function setTab(name: string): void {
   if (name === "global-sounds") renderGlobalSounds(globalSoundsPanel);
 
   refreshTabMarks();
+  rememberInUrl();
 }
 
 /**
@@ -340,7 +360,8 @@ tabButtons.forEach((b) => {
   const name = b.dataset.tab;
   if (!b.disabled && name) b.addEventListener("click", () => setTab(name));
 });
-setTab("sprites");
+const wantedTab = new URL(location.href).searchParams.get("tab");
+setTab(wantedTab && TABS.includes(wantedTab) ? wantedTab : TABS[0]);
 
 // The bank belongs to the game rather than to the loaded entity, so it is
 // fetched once at start-up instead of arriving with /api/entity.
@@ -349,16 +370,16 @@ void loadBank().then(() => renderGlobalSounds(globalSoundsPanel));
 onChange(render);
 render();
 
-// Populate the sheet dropdown; optionally auto-load a sheet from ?sheet=.
-void refreshSheetList().then(() => {
-  const preselect = new URL(location.href).searchParams.get("sheet");
-  if (preselect) {
-    const match = [...sheetSelect.options].find(
-      (o) => o.value === preselect || o.value === `${preselect}.png`,
-    );
-    if (match) {
-      sheetSelect.value = match.value;
-      loadFromRepo(match.value);
-    }
-  }
+// The rail is the way in: pick an entity and its data and picture arrive
+// together. `?entity=goku` opens one straight away.
+void loadEntityList(openEntity).then(() => {
+  renderEntityRail(rail);
+  const wanted = new URL(location.href).searchParams.get("entity");
+  const ref = (wanted ? findEntity(wanted) : null) ?? firstEntity();
+  if (ref) openEntity(ref);
+  else if (wanted) statusEl.textContent = `No entity called "${wanted}".`;
+});
+
+railToggle.addEventListener("click", () => {
+  document.querySelector("main")?.classList.toggle("rail-hidden");
 });

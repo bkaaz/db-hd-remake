@@ -27,6 +27,15 @@ function el<K extends keyof HTMLElementTagNameMap>(
 
 // --- Frames panel --------------------------------------------------------
 
+/**
+ * The selected frame, not all of them.
+ *
+ * The sheet is the picker: clicking a sprite selects it, and a picture beats a
+ * row of numbers every time. A list of all frames duplicated that worse — Goku
+ * has 219, so it was a thousand DOM nodes rebuilt on every change, none of them
+ * showing what the frame looks like. The select stays as a fallback for a
+ * sprite too small or too crowded to click.
+ */
 export function renderFrames(container: HTMLElement): void {
   container.replaceChildren();
 
@@ -35,55 +44,75 @@ export function renderFrames(container: HTMLElement): void {
     return;
   }
 
+  container.append(
+    el("p", {
+      className: "hint",
+      textContent: `${state.frames.length} frames — click a sprite on the sheet to select it.`,
+    }),
+  );
+
+  const picker = el("select", { title: "The frame these fields edit" });
   for (const f of state.frames) {
-    const row = el("div", {
-      className: "row frame-row" + (f.id === state.selectedFrameId ? " selected" : ""),
-    });
-
-    // Frame ids are numbers; typing one here renumbers the frame, swapping with
-    // whichever frame already holds that number.
-    const nameInput = el("input", {
-      className: "num",
-      type: "number",
-      min: "0",
-      step: "1",
-      value: f.id,
-      title: "Frame number — type another to renumber (swaps if taken)",
-    });
-    nameInput.addEventListener("change", () => {
-      if (!renameFrame(f.id, nameInput.value.trim())) nameInput.value = f.id;
-      emitChange();
-    });
-
-    const dims = el("span", {
-      className: "dims",
-      textContent: `${f.w}x${f.h} @${f.x},${f.y} ⚓${f.anchor[0]},${f.anchor[1]}`,
-    });
-
-    const selectBtn = el("button", { textContent: "select" });
-    selectBtn.addEventListener("click", () => {
-      state.selectedFrameId = f.id;
-      emitChange();
-    });
-
-    const addBtn = el("button", { textContent: "＋anim", title: "Append as a step to the selected animation" });
-    addBtn.addEventListener("click", () => {
-      const anim = selectedAnim();
-      if (anim) {
-        anim.steps.push({ frame: f.id, dur: 4, boxes: [] });
-        emitChange();
-      }
-    });
-
-    const delBtn = el("button", { className: "danger", textContent: "✕" });
-    delBtn.addEventListener("click", () => {
-      deleteFrame(f.id);
-      emitChange();
-    });
-
-    row.append(nameInput, dims, selectBtn, addBtn, delBtn);
-    container.append(row);
+    picker.append(el("option", { value: f.id, textContent: `${f.id} — ${f.w}x${f.h}` }));
   }
+  picker.value = state.selectedFrameId ?? "";
+  picker.addEventListener("change", () => {
+    state.selectedFrameId = picker.value;
+    emitChange();
+  });
+  container.append(el("div", { className: "row sound-pick" }, [picker]));
+
+  const frame = selectedFrame();
+  if (!frame) {
+    container.append(el("p", { className: "hint", textContent: "Nothing selected." }));
+    return;
+  }
+
+  // Frame ids are numbers; typing another renumbers, swapping with whichever
+  // frame already holds it — renumbering is how an ordering mistake gets fixed.
+  const number = el("input", {
+    className: "num",
+    type: "number",
+    min: "0",
+    step: "1",
+    value: frame.id,
+    title: "Frame number — type another to renumber (swaps if taken)",
+  });
+  number.addEventListener("change", () => {
+    if (!renameFrame(frame.id, number.value.trim())) number.value = frame.id;
+    emitChange();
+  });
+
+  const addBtn = el("button", {
+    textContent: "＋anim",
+    title: "Append as a step to the selected animation",
+  });
+  addBtn.addEventListener("click", () => {
+    const anim = selectedAnim();
+    if (anim) {
+      anim.steps.push({ frame: frame.id, dur: 4, boxes: [] });
+      emitChange();
+    }
+  });
+
+  const delBtn = el("button", { className: "danger", textContent: "Delete" });
+  delBtn.addEventListener("click", () => {
+    deleteFrame(frame.id);
+    emitChange();
+  });
+
+  container.append(
+    el("div", { className: "row" }, [
+      el("span", { className: "dims", textContent: "number" }),
+      number,
+      addBtn,
+      delBtn,
+    ]),
+    el("p", {
+      className: "dims",
+      textContent: `${frame.w}x${frame.h} at ${frame.x},${frame.y} · anchor ${frame.anchor[0]},${frame.anchor[1]}`,
+    }),
+  );
 }
 
 // --- Animations panel ----------------------------------------------------
