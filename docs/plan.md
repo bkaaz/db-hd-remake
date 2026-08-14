@@ -32,6 +32,43 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
+## Now: code the owner can read, before there is more of it
+
+The owner is reading this codebase for the first time, and `main.ts` was where
+that stalled — 344 lines doing seven things. It is 120 now, and the body of the
+fixed-step loop is four named calls.
+
+**The reason this is worth finishing, and not just leaving as tidied:** the
+fight is the only screen that exists today, so the loop body *is* the fight. A
+title menu and a character select are coming, and at that point the loop cannot
+be about fighting at all.
+
+**Watch `match/fighters.ts`.** It is the one real new abstraction — the pair of
+bodies and everything pairwise between them — and every future rule of combat
+will want to move in. Its boundary is *the two fighters and nothing else*: no
+HUD, no keyboard, no stage. It lives in `match/` rather than `combat/` because
+it has to know `Entity` and therefore PixiJS, while `combat/` stays pure and
+unit-tested.
+
+**The fight becomes a scene.** A `Scene` with `step()`, `render()` and
+`destroy()`; `FightScene` holds the modules above, and the `?anim=` preview
+becomes `PreviewScene` instead of five `previewing ? … : …` branches. `main.ts`
+then boots Pixi, makes the first scene and turns the crank — and stops growing
+when menus arrive. Called `Scene` and not `Screen` because `app.screen` in
+PixiJS is the view rectangle.
+
+*Open:* whether `step()` returning the next scene is the right way to change
+scene, or whether that wants an event. Decide when the second scene exists, not
+before. Two implementations are the point — one interface with one implementation
+is a guess.
+
+*Not yet, deliberately:* `TitleScene`, `SelectScene`, any transition machinery,
+and an `EntityDef` cache. The cache earns its place when character select needs
+the same fighters the match does; today nothing loads twice.
+
+*Done when:* `main.ts` is boot plus the crank, and adding a scene does not touch
+it beyond the first one.
+
 ## Next: review and tidy the sound slice
 
 **Before any new feature.** The sound work landed in one long sitting and grew

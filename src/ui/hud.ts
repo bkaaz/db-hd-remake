@@ -14,7 +14,7 @@ export interface HudSetup {
 export interface HudFrame {
   playerHealth: number;
   /** Null when there is no opponent — the preview has none. */
-  dummyHealth: number | null;
+  opponentHealth: number | null;
   /** The player's current state, so the name of what you are doing is visible. */
   state: string;
   dummyAttacks: boolean;
@@ -56,12 +56,12 @@ export class Hud {
     this.label.text = this.statusLine(frame);
   }
 
-  private drawBars({ playerHealth, dummyHealth }: HudFrame): void {
+  private drawBars({ playerHealth, opponentHealth }: HudFrame): void {
     const width = Math.min(BAR_MAX_WIDTH, this.app.screen.width / 2 - 30);
     this.bars.clear();
     this.drawBar(BAR_INSET, width, playerHealth, false);
-    if (dummyHealth !== null) {
-      this.drawBar(this.app.screen.width - BAR_INSET - width, width, dummyHealth, true);
+    if (opponentHealth !== null) {
+      this.drawBar(this.app.screen.width - BAR_INSET - width, width, opponentHealth, true);
     }
   }
 
