@@ -2,6 +2,17 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-14 — The sheet stays visible on every tab
+
+- **A tab was going to switch the whole workspace**, hiding the canvas wherever
+  a tab did not draw to it, so States and the sound tabs could have the width
+  instead of sitting in a 340px column beside half a screen of nothing.
+- **Dropped, because the canvas is not idle when a tab does not own it.** On
+  Animations you pick a frame by clicking its sprite and press `＋anim`; the
+  sheet is a live picker there, not decoration. That leaves only States and the
+  two sound tabs, where the gain is comfort rather than a defect — and a cramped
+  panel is not worth a layout that changes under you as you move between tabs.
+
 ## 2026-08-14 — Everything a state brings into the world is an Entity
 
 - **A spark, an aura and a ki blast are one mechanism, not three.** They differ

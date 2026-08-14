@@ -88,25 +88,6 @@ next rename safe instead of nerve-racking.
 *Done when:* an unknown `sound` or `hitFx` id is reported at load, the same way
 an unknown animation is.
 
-## Queued: the editor's layout still follows the sheet, not the work
-
-Most of this landed on 2026-08-14. The editor opens an **entity** now — a rail
-lists fighters and spawns, picking one loads its data and its picture together,
-and the URL remembers what is open and which tab is showing. Save lives in the
-panels, the sprite tools moved into the Sprites tab, and the frames list became
-a picker. What is left is the half that is about space:
-
-**A tab should switch the whole workspace, not just the sidebar.** Sprites and
-Animations use the canvas; States and the two sound tabs never draw to it and
-sit cramped in a 340px column beside half a screen of nothing. Nothing needs
-adding — space needs to stop being reserved for what a tab does not use.
-
-There is a smaller symptom of the same thing: the sheet is visible on every tab
-but its zoom and mode controls now live in Sprites, so on Animations you can see
-it and not zoom it. Both go away with the full-width switch.
-
-*Done when:* no tab is cramped beside an empty canvas.
-
 ## Next: review and tidy the sound slice
 
 **Before any new feature.** The sound work landed in one long sitting and grew
