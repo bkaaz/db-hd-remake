@@ -82,14 +82,14 @@ export class Fighters {
   }
 
   /**
-   * Bodies cannot overlap — but only on the ground, so a jump can carry you
-   * over the opponent instead of being blocked by them. A hit pause suspends
-   * this too, or "frozen" would mean everything except the push.
+   * Bodies cannot overlap — but only while both are `solid`, so a jump can
+   * carry you over the opponent instead of being blocked by them. A hit pause
+   * suspends this too, or "frozen" would mean everything except the push.
    */
   pushApart(bounds: Bounds): void {
     const { player, opponent } = this;
     if (!opponent) return;
-    if (player.airborne || opponent.airborne || player.frozen || opponent.frozen) return;
+    if (!player.solid || !opponent.solid || player.frozen || opponent.frozen) return;
     const { ax, bx } = separate(
       { x: player.x, half: player.pushHalf },
       { x: opponent.x, half: opponent.pushHalf },

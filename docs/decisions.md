@@ -2,6 +2,29 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — A falling body becomes solid before it lands
+
+- **Push collision was off for the whole jump**, both ways: `pushApart`
+  returned early if either fighter was airborne. The rule was there so a jump
+  could carry you over the opponent rather than being blocked by them, and for
+  the rise it is the right rule.
+- **On the way down it is not.** A falling Goku sank into the opponent, could
+  come out the far side, and the push that returned at touchdown arrived as a
+  snap — the whole overlap undone in one frame.
+- **Push now asks `solid`, not `airborne`:** on the ground always, in the air
+  once `nearGround`. Passing over someone still works, because that is decided
+  high up where nothing is solid; the last stretch of the fall lands you
+  against them instead of inside them.
+- **Reusing `landCue` rather than adding a second distance.** It already means
+  "close enough to the floor to act like you are on it" — that is what cues the
+  landing pose. One number, tuned once, and the pose and the body agree about
+  when the jump is effectively over. A separate threshold is easy to add later
+  if they turn out to want different values; two knobs that always move
+  together are not.
+- The width was never the issue: a push body is one fixed `pushWidth` around
+  the anchor and is deliberately not per-frame (`src/combat/push.ts`), so no
+  animation can be "narrower" than another.
+
 ## 2026-08-14 — The sheet stays visible on every tab
 
 - **A tab was going to switch the whole workspace**, hiding the canvas wherever

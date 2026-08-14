@@ -126,9 +126,28 @@ export class Entity {
     return this.sm?.current ?? this.animName;
   }
 
-  /** Off the ground — airborne fighters pass over each other instead of pushing. */
+  /** Off the ground — a jump arcs over the opponent instead of being blocked. */
   get airborne(): boolean {
     return !!this.sm?.def.airborne;
+  }
+
+  /** Falling, and within `landCue` of the ground: the last stretch before touchdown. */
+  get nearGround(): boolean {
+    return this.airborne && this.vy > 0 && this.groundY - this.y <= this.landCue * this.scale;
+  }
+
+  /**
+   * Whether this entity takes part in push collision.
+   *
+   * Standing on the ground, always. In the air only on the way down, once
+   * `nearGround` — the same threshold that cues the landing pose. High up, two
+   * bodies overlap freely, which is what makes jumping over someone possible;
+   * near the floor they behave like the grounded bodies they are about to be.
+   * Without that second half a fighter drops *through* the opponent and lands
+   * on the far side, and the push that returns on touchdown arrives as a snap.
+   */
+  get solid(): boolean {
+    return !this.airborne || this.nearGround;
   }
 
   /** Half the body's width in world px, for push collision. */
@@ -320,9 +339,8 @@ export class Entity {
     if (input.punchHeavy) this.buffer.press("punchHeavy");
     if (input.kickHeavy) this.buffer.press("kickHeavy");
 
-    const airborne = !!this.sm.def.airborne;
-    const falling = airborne && this.vy > 0;
-    const nearGround = falling && this.groundY - this.y <= this.landCue * this.scale;
+    const falling = this.airborne && this.vy > 0;
+    const nearGround = this.nearGround;
 
     const changed = this.sm.update(
       {

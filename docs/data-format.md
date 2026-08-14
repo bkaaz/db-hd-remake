@@ -331,7 +331,7 @@ than to any one state. So far one:
 ```jsonc
 {
   "gravity": 0.3,    // sprite px per game frame, squared
-  "landCue": 60,     // sprite px above the ground where the landing pose starts
+  "landCue": 60,     // sprite px above the ground where a fall starts landing
   "pushWidth": 30,   // body width for push collision, centred on the anchor
   "hitstop": 6,      // game frames both fighters freeze for on a connecting hit
   "health": 100,     // what the fighter can take before there is nothing left
@@ -351,6 +351,10 @@ about 2.5 frames, 40 px about 4.5, 60 px about 7, 80 px about 10.
 
 An airborne sequence therefore reads: rise → `falling` → fall pose →
 `nearGround` → landing pose → `landed`.
+
+`landCue` also decides when a falling body starts pushing again. Above it two
+bodies overlap freely, which is what lets a jump pass over the opponent; below
+it they separate like the grounded bodies they are about to be.
 
 Missing values fall back to engine defaults (`src/entity/entityDef.ts`), so the file is
 optional — but **anything meant to be tuned is written out explicitly anyway**.
