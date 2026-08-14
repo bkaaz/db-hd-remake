@@ -76,16 +76,18 @@ the same fighters the match does; today nothing loads twice.
 *Done when:* `main.ts` is boot plus the crank, and adding a scene does not touch
 it beyond the first one.
 
-## Queued: move the effects out of `data/entities/`
+## Queued: move the spawned entities out of `data/entities/`
 
 The sound half of this landed on 2026-08-14 — bank, voices, labels, collision
 rule, all of `data-format.md` updated. What is left is the effects:
 
-- `data/entities/fx_hit*` → `data/fx/hit*`, same shape (a directory of
+- `data/entities/fx_hit*` → `data/spawns/hit*`, same shape (a directory of
   `frames.json` and `animations.json`). A spark genuinely is that; it just never
   was a fighter, and only lived among them for want of anywhere else.
+  `spawns` rather than `fx` because auras and ki blasts land in the same place
+  and neither is decoration — see `decisions.md`, 2026-08-14.
 - `npm run fx` and the loader follow it. `/api/entity` reads from
-  `data/entities/`, so effects need their own route or a root parameter.
+  `data/entities/`, so spawns need their own route or a root parameter.
 - The two effect names stop being written into `main.ts`.
 
 **Nothing validates that a `sound` id in `states.json` exists** — found while
