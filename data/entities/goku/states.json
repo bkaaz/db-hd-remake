@@ -9,8 +9,8 @@
       "turn": true,
       "transitions": [
         { "when": "pressed:light", "to": "punch" },
-        { "when": "pressed:medium", "to": "kick" },
-        { "when": "pressed:heavy", "to": "kick_heavy" },
+        { "when": "pressed:medium", "to": "kick_mid" },
+        { "when": "pressed:heavy", "to": "kick_high" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" },
         { "when": "held:up", "to": "jump_up" },
@@ -23,8 +23,8 @@
       "turn": true,
       "transitions": [
         { "when": "pressed:light", "to": "punch" },
-        { "when": "pressed:medium", "to": "kick" },
-        { "when": "pressed:heavy", "to": "kick_heavy" },
+        { "when": "pressed:medium", "to": "kick_mid" },
+        { "when": "pressed:heavy", "to": "kick_high" },
         { "when": "held:up", "to": "jump_fwd" },
         { "when": "!held:fwd", "to": "idle" },
         { "when": "held:down", "to": "crouch" }
@@ -36,8 +36,8 @@
       "turn": true,
       "transitions": [
         { "when": "pressed:light", "to": "punch" },
-        { "when": "pressed:medium", "to": "kick" },
-        { "when": "pressed:heavy", "to": "kick_heavy" },
+        { "when": "pressed:medium", "to": "kick_mid" },
+        { "when": "pressed:heavy", "to": "kick_high" },
         { "when": "held:up", "to": "jump_back" },
         { "when": "!held:back", "to": "idle" },
         { "when": "held:down", "to": "crouch" }
@@ -56,9 +56,9 @@
         { "when": "animEnd", "to": "idle" }
       ]
     },
-    "kick": {
-      "anim": "kick",
-      "vel": [0, 0],
+    "kick_mid": {
+      "anim": "kick_mid",
+      "vel": [0.4, 0],
       "turn": false,
       "onHit": "hurt",
       "damage": 7,
@@ -66,6 +66,7 @@
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
+        { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_high_chain" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -83,12 +84,41 @@
         { "when": "animEnd", "to": "idle" }
       ]
     },
-    "kick_heavy": {
-      "anim": "kick_heavy",
+    "kick_high": {
+      "anim": "kick_high",
       "vel": [0, 0],
       "turn": false,
       "onHit": "hurt_heavy",
       "damage": 12,
+      "sound": "swing_3",
+      "hitSound": "hit_2",
+      "blockSound": "block_1",
+      "hitFx": "spark_2",
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "kick_high_chain": {
+      "anim": "kick_high",
+      "vel": [0.4, 0],
+      "turn": false,
+      "onHit": "hurt",
+      "damage": 9,
+      "sound": "swing_3",
+      "hitSound": "hit_2",
+      "blockSound": "block_1",
+      "hitFx": "spark_2",
+      "transitions": [
+        { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_low" },
+        { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "kick_low": {
+      "anim": "kick_low",
+      "vel": [0.4, 0],
+      "turn": false,
+      "onHit": "knockdown_sweep",
+      "damage": 10,
       "sound": "swing_3",
       "hitSound": "hit_2",
       "blockSound": "block_1",
@@ -188,6 +218,17 @@
     "knockdown": {
       "anim": "knockdown",
       "launch": [-1.0, -6.2],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "knockdown_air",
+      "transitions": [
+        { "when": "landed", "to": "bounce" }
+      ]
+    },
+    "knockdown_sweep": {
+      "anim": "knockdown",
+      "launch": [-4.5, -3.2],
       "airborne": true,
       "turn": false,
       "sound": "voice_hurt",

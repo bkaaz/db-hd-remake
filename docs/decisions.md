@@ -2,6 +2,76 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Knockback belongs to the role, not to the animation
+
+- **The chain's third blow could not reach.** `hurt_heavy` pushes the defender
+  62 sprite px over its 12 frames, and the longest reach in the whole game is
+  44. Not mistuned — arithmetically impossible.
+- **The cause was one state doing two jobs.** `kick_high` was both the standalone
+  standing Heavy, which *wants* a big knockback so it creates space and is safe
+  on block, and the middle link of a chain, which must not push the victim out
+  of range of the next blow. Those are contradictory and no single number
+  satisfies both.
+- **So the roles split into two states over one animation** — `kick_high` keeps
+  `hurt_heavy`, `kick_high_chain` takes the light reaction. This is the first
+  time the animation/state split has actually been needed rather than merely
+  argued for, and it arrived on its own.
+- **Attacks now drift forward** (`vel: [0.4, 0]`, about 10 px across a swing).
+  Net separation per link drops to ~7 px against reaches of 36–44. Known
+  limitation: `vel` applies for the whole state, so the drift happens in the
+  wind-up and the recovery too. Per-step velocity is the real answer and is
+  deliberately not built — a constant drift is enough, and a mechanism invented
+  ahead of a need comes out wrong.
+- **The sweep gets its own knockdown.** `knockdown_sweep` sends further back and
+  less up than the uppercut's, because a sweep should skid the opponent along
+  the floor rather than lift them; `knockdown` is shared and stays as it was.
+- **A test now owns this invariant** — for every chain transition, what the blow
+  does to the distance is compared with how far the next one reaches. Crude, in
+  that it ignores starting distance and the defender's width, but the number it
+  catches was off by a factor of two. Reintroducing the bug fails it with
+  "expected 62.4 to be less than 36".
+- **What we did by hand here is what combo scaling will own** (`combat.md` §3):
+  knockback that depends on where in a string a blow lands. Authoring it per
+  link is right while there is one chain; it must not grow into a second
+  mechanism beside the scaling when there are ten.
+
+## 2026-08-15 — A press made during a hit pause is no longer thrown away
+
+- **The buffer never received presses made during hitstop.** `update()` returned
+  early on the freeze, and the four `buffer.press(...)` calls sat below that
+  return. The buffer's own docstring names this exact case as the reason it
+  exists, and it correctly does not age while frozen — but it cannot keep what
+  it is never handed.
+- **Recording moved above the freeze check; the tick stays below it.** The pause
+  is precisely when a player, having just seen the blow land, reaches for the
+  next attack, so it was the worst frame in the game to be deaf on.
+- Found while building the first chain, which is not a coincidence: nothing
+  before it asked the player to press a button during a hit pause.
+
+## 2026-08-15 — The first chain is the original's own kick string
+
+- **Medium pressed three times walks `kick_mid` → `kick_high` → `kick_low`**,
+  which is the string the 1996 game already had (catalogue group `kick_string`,
+  frames 34–42). Building our first chain out of a sequence somebody else
+  already designed beats inventing one before we can feel any of it.
+- **Its shape is why it works: mid, high, low.** The three blows differ by
+  *height*, not only by force, which is what separates a string from pressing
+  the same button three times.
+- **`kick` and `kick_heavy` became `kick_mid` and `kick_high`.** The old names
+  came from a placeholder button rather than from a pose, which the naming rule
+  does not allow — and `kick_heavy` was about to read as "the heavy one" in a
+  chain where it is the middle link.
+- **The high kick is one animation behind two roles**: standing Heavy on its
+  own, and the second link of the Medium string. First real use of the
+  animation/state split we settled, and it cost nothing.
+- **The string ends in a knockdown.** `kick_low` is a sweep, and putting the
+  opponent on the floor terminates the combo by itself — so the first chain
+  cannot accidentally loop while there is no scaling and no juggle limit yet.
+- **No hitstun, deliberately.** A *cancel* skips the attacker's own recovery, so
+  the advantage comes from the skipping, not from the length of the stun; the
+  12-frame reaction is already far longer than a 4-frame startup. Hitstun is the
+  tuning layer and is worth adding when there is something to tune.
+
 ## 2026-08-15 — A transition may require several triggers at once
 
 - **`when` now takes a list as well as a string, and every trigger in it has to

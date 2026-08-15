@@ -316,8 +316,19 @@ export class Entity {
     }
     if (!this.sm) return;
 
+    // Edges go into the buffer; the state machine reads the buffer, not the
+    // edge. This happens **above** the freeze check on purpose: a hit pause is
+    // exactly when a player, having just seen the blow land, reaches for the
+    // next attack, and an entity that returns before looking at its input
+    // throws that press away. The buffer cannot keep what it is never handed.
+    if (input.light) this.buffer.press("light");
+    if (input.medium) this.buffer.press("medium");
+    if (input.heavy) this.buffer.press("heavy");
+    if (input.special) this.buffer.press("special");
+
     // A hit pause freezes the whole entity, animation included — the pose the
-    // blow landed on is exactly what should be held still.
+    // blow landed on is exactly what should be held still. The buffer is not
+    // ticked below either, so the pause cannot age a press out of existence.
     if (this.freezeFrames > 0) {
       this.freezeFrames--;
       return;
@@ -335,12 +346,6 @@ export class Entity {
     // Live conditions, not latches: true only while they hold. `falling` turns
     // on at the apex; `nearGround` narrows that to the last stretch before
     // touchdown, where the landing pose belongs.
-    // Edges go into the buffer; the state machine reads the buffer, not the edge.
-    if (input.light) this.buffer.press("light");
-    if (input.medium) this.buffer.press("medium");
-    if (input.heavy) this.buffer.press("heavy");
-    if (input.special) this.buffer.press("special");
-
     const falling = this.airborne && this.vy > 0;
     const nearGround = this.nearGround;
 

@@ -333,6 +333,63 @@ describe("validateStates", () => {
   });
 });
 
+describe("a chain link has to be able to reach what the last one knocked away", () => {
+  /**
+   * The failure this exists to prevent, found by playing: the middle of the
+   * kick string forced `hurt_heavy`, whose knockback is 62 sprite px, against a
+   * longest reach in the whole game of 44. The third blow could not connect —
+   * not badly tuned, arithmetically impossible.
+   *
+   * So for every chain transition, measure what the blow does to the distance
+   * between the two fighters and compare it with how far the next one reaches.
+   * The margin is crude, because it ignores where they were standing and how
+   * wide the defender is, but the number it catches is not a near miss.
+   */
+  const read = <T>(file: string): T =>
+    JSON.parse(
+      readFileSync(fileURLToPath(new URL(`../../data/entities/goku/${file}`, import.meta.url)), "utf8"),
+    ) as T;
+
+  interface Step {
+    dur: number;
+    boxes?: { type: string; x: number; w: number }[];
+  }
+  const anims = read<Record<string, { steps: Step[] }>>("animations.json");
+  const states = read<StatesFile>("states.json").states;
+
+  const frames = (anim: string): number =>
+    (anims[anim]?.steps ?? []).reduce((n, s) => n + s.dur, 0);
+  const reach = (anim: string): number =>
+    Math.max(
+      0,
+      ...(anims[anim]?.steps ?? []).flatMap((s) =>
+        (s.boxes ?? []).filter((b) => b.type === "hit").map((b) => b.x + b.w),
+      ),
+    );
+
+  /** Every transition that continues a chain: source state → target state. */
+  const links = Object.entries(states).flatMap(([from, def]) =>
+    (def.transitions ?? [])
+      .filter((t) => Array.isArray(t.when) && t.when.includes("hitConfirmed"))
+      .map((t) => [from, t.to] as const),
+  );
+
+  it("finds the chains that exist, so this suite cannot pass by testing nothing", () => {
+    expect(links.length).toBeGreaterThan(0);
+  });
+
+  it.each(links)("%s can still be followed by %s", (from, to) => {
+    const attack = states[from];
+    const reaction = states[attack.onHit ?? ""];
+    // A reaction that launches is a knockdown: the chain is over either way.
+    if (!reaction?.vel) return;
+
+    const knockback = Math.abs(reaction.vel[0]) * frames(reaction.anim);
+    const advance = (attack.vel?.[0] ?? 0) * frames(attack.anim);
+    expect(knockback - advance).toBeLessThan(reach(states[to].anim));
+  });
+});
+
 /** idle ⇄ walk_fwd, plus an attack reached with the light button. */
 function withAttack(when: string | string[] = "pressed:light"): StatesFile {
   const f = machine();

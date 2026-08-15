@@ -379,7 +379,7 @@
       ]
     },
     "kick_string": {
-      "desc": "The original's leg combo, in sheet order, confirmed by the owner 2026-08-15: 34-42 is ONE nine-frame string of three kicks, not three unrelated kicks. 34 is the neutral it starts from; 35-36 is the first blow, straight forward at hip height; 37-39 the second, leg high with the torso thrown well back and the longest reach on the sheet at 83 px; 40-42 the third, low and near the ground. The three differ by HEIGHT — mid, high, low — which is what makes a string a mixup rather than a repetition, and it is direct evidence for how the L/M/H chain should read. The groups kick_basic, kick_heavy and kick_combo are the individual blows of this same string; `kick_heavy` is named after a placeholder button rather than after its pose, and wants renaming when the moveset is rebuilt.",
+      "desc": "The original's leg combo, in sheet order, confirmed by the owner 2026-08-15: 34-42 is ONE nine-frame string of three kicks, not three unrelated kicks. 34 is the neutral it starts from; 35-36 is the first blow, straight forward at hip height; 37-39 the second, leg high with the torso thrown well back and the longest reach on the sheet at 83 px; 40-42 the third, low and near the ground. The three differ by HEIGHT — mid, high, low — which is what makes a string a mixup rather than a repetition, and it is direct evidence for how the L/M/H chain should read. Built 2026-08-15 as the game's first chain: Medium pressed three times walks kick_mid -> kick_high -> kick_low. The groups kick_basic, kick_heavy and kick_combo are the individual blows of this same string.",
       "frames": [
         "34",
         "35",
