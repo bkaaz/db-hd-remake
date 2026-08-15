@@ -1,7 +1,13 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { StateMachine, type InputSnapshot, type Signals, type StatesFile } from "./states";
+import {
+  reactionFor,
+  StateMachine,
+  type InputSnapshot,
+  type Signals,
+  type StatesFile,
+} from "./states";
 
 /**
  * Chains, driven frame by frame against the **committed** `states.json`.
@@ -122,6 +128,78 @@ describe("the medium string", () => {
     s.frame({ medium: true });
     s.frame({}, { animEnded: true });
     expect(s.frame({ medium: true })).toBe("kick_mid");
+  });
+});
+
+/**
+ * The other half of a string, and the one the frame-by-frame walk above cannot
+ * see: what each blow does to a defender who is already *in* something.
+ *
+ * Found by playing — the string juggled nobody, because rank compared a flinch
+ * against a knockdown and refused every blow. The rule was right and the data
+ * was too blunt: `hurt_chain` now names an air version that is a juggle, so one
+ * reaction is a flinch on the ground and a lift in the air.
+ */
+describe("the string juggles what the uppercut launched", () => {
+  /** What a blow does to a defender currently in `state`. */
+  const against = (onHit: string, state: string): string | undefined =>
+    reactionFor(onHit, goku(), goku().states[state]);
+
+  it("lifts a body that is still falling", () => {
+    expect(against("hurt_chain", "knockdown")).toBe("juggle");
+  });
+
+  it("re-enters itself, which is what keeps a body up for the next link", () => {
+    expect(against("hurt_chain", "juggle")).toBe("juggle");
+  });
+
+  it("still flinches someone standing — one reaction, two ways of taking it", () => {
+    expect(against("hurt_chain", "idle")).toBe("hurt_chain");
+  });
+
+  it("lets the finisher end the juggle", () => {
+    expect(against("knockdown_sweep", "juggle")).toBe("knockdown_air");
+  });
+
+  it("is over once the body touches the floor", () => {
+    // Rank 4 is the floor and nothing forces it: bounce, downed and getup are
+    // where an exchange ends, juggle or no juggle.
+    expect(against("hurt_chain", "bounce")).toBeUndefined();
+    expect(against("hurt_chain", "downed")).toBeUndefined();
+  });
+
+  it("does not let a jab juggle — only the string has an air version", () => {
+    // Deliberate (owner, 2026-08-15): `hurt` keeps `hurt_air`, so a single
+    // light blow into a falling body still hurts and still does not interrupt.
+    expect(against("hurt", "knockdown")).toBeUndefined();
+  });
+
+  it("does not let a jab stand up someone on the floor", () => {
+    expect(against("hurt", "downed")).toBeUndefined();
+  });
+
+  it("makes the whole trip to the floor untouchable", () => {
+    // Rank 4 says a blow may not interrupt these; it does not stop one costing
+    // health, and a fighter here can neither block nor move. The two lists are
+    // asserted to be the same so a fifth rank-4 state cannot arrive hittable.
+    const named = (pick: (d: { rank?: number; invulnerable?: boolean }) => unknown): string[] =>
+      Object.entries(goku().states)
+        .filter(([, def]) => pick(def))
+        .map(([name]) => name)
+        .sort();
+    expect(named((d) => d.invulnerable)).toEqual(["bounce", "downed", "getup"]);
+    expect(named((d) => d.rank === 4)).toEqual(named((d) => d.invulnerable));
+  });
+
+  it("marks as a smash exactly the blows meant to floor a body", () => {
+    // The budget in src/combat/combo.ts is spent by these two and nothing else,
+    // so a new launcher arriving unmarked is a loop nobody notices until it is
+    // played. The list is short on purpose: a chain link is not a smash.
+    const marked = Object.entries(goku().states)
+      .filter(([, def]) => def.smash)
+      .map(([name]) => name)
+      .sort();
+    expect(marked).toEqual(["kick_finisher", "uppercut"]);
   });
 });
 

@@ -2,6 +2,104 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — The floor is untouchable, not merely uninterruptible
+
+- **Rank 4 was only half of wake-up invulnerability**, and the half that was
+  missing is the one that costs a round: a blow refused a reaction still landed
+  and still took health, so an uppercut into a body on the floor was 14 damage
+  at no risk against someone who could neither block nor move. Requested by the
+  owner, and the recording had already shown it (`HITS P2 (was bounce) · 14 dmg`).
+- **`invulnerable: true` on the state, checked before anything is spent.**
+  Nothing connects: no damage, no reaction, no spark, no noise, no hit pause,
+  the combo does not grow, and **the attacker's swing is not spent** — the same
+  active frames may still land the moment the defender is touchable. That last
+  part is what makes pressure on a wake-up a question of timing rather than of
+  holding a button down.
+- **The whole trip to the floor** (owner): `bounce`, `downed`, `getup`. The
+  alternative was leaving `bounce` hittable as a deliberate off-the-ground
+  reward; consistency won — if rank 4 cannot be interrupted, it should not be
+  hittable either, and there is a test asserting the two lists are identical so
+  a fifth rank-4 state cannot arrive hittable.
+- **A flag rather than rank ≥ 4, and rather than deleting hurt boxes.** Deriving
+  it from rank welds two different questions together — severity, and whether a
+  blow registers at all — and would block an off-the-ground mechanic later.
+  Deleting the boxes from the animation is invisible in the data and trips the
+  validator's own "no hurt box" warning, which exists to catch exactly that as a
+  mistake.
+- **What it deliberately does not buy.** The window ends the frame control
+  returns, so a blow timed onto the first vulnerable frame still lands — the
+  genre's *meaty*, and blockable, which is the point. A real escape from
+  pressure is Vanish (§5) and costs a resource. Said here because "invulnerable
+  while getting up" sounds like it means "safe on wake-up", and it does not.
+- **`landBlow` is now unit-tested** — it names `Entity` only as a type and at
+  run time reaches for two pure functions, so both bodies can be stand-ins in
+  Node. The file that decides what a connection costs had no tests at all.
+
+## 2026-08-15 — Two lifts per combo, and the uppercut loop is closed
+
+- **Found in the recording that verified the juggle.** Twelve uppercuts in a
+  row, `gap 30` throughout, 14 damage each and the victim never touched the
+  floor. Not a regression: rank has never had anything to say about it, because
+  a knockdown replacing a knockdown is an *equal* rank, and equal rank
+  re-entering is the definition of a combo.
+- **The corner is half the recipe.** `knockdown_air` pushes back 2.0 px a frame,
+  which against the stage bound moves nobody, so the gap never grew and the next
+  uppercut always reached. In the open the victim drifts away and the loop
+  breaks itself — `combat.md` §6, seen for the first time.
+- **A budget on the defender, not a cooldown on the attacker.** `Combo` already
+  counts what has been done to one fighter and resets when they get control
+  back; the lift count rides in the same object and resets at the same moment.
+  A cooldown would have been a second piece of state saying the same thing, out
+  of step the first time a projectile did the lifting.
+- **`SMASH_LIMIT = 2`, and it lives beside the counter** rather than in an
+  entity's attributes: it is a rule of the fight, and a juggle limit one fighter
+  could opt out of is not a limit. Two, so a launcher can open a combo and
+  another blow can end it, and a third cannot start it over.
+- **Authored on the blow (`smash: true`), not derived from the reaction.** Every
+  knockdown launches; only some are meant to be able to do it twice. Goku marks
+  `uppercut` and `kick_finisher`. Chain links stay unmarked — a juggle keeps a
+  body up rather than flooring it again, and a string that spent the budget on
+  its own middle could not end with a knockdown.
+- **A refused smash does not spend the budget.** It is checked before the
+  reaction is chosen but counted after, so a blow rank refused anyway — an
+  uppercut into someone already on the floor — costs nothing from it.
+- **The validator warns when a `smash` names a reaction that cannot lift**, the
+  mistake being the flag on the wrong half of a pair: it reads as a launcher and
+  behaves like a jab, and nothing says so until a juggle refuses to end.
+- **The readout and the recording now show lifts** (`lift 1/2`, and the count on
+  the `combo over` line). A refused smash otherwise looks exactly like a refused
+  rank — a blow with no state change after it — and telling the two apart is the
+  whole question when this is being tuned.
+
+## 2026-08-15 — One reaction, a flinch on the ground and a juggle in the air
+
+- **The rank rule refused every juggle**, found by playing: launch someone with
+  the uppercut and the whole medium string connects for 52 damage without
+  interrupting the fall once, because a flinch (rank 1) may not replace a
+  knockdown (rank 3). The rule was doing what it was told — it was written to
+  stop a jab *rescuing* someone mid-knockdown, and that instruction cannot tell
+  rescuing apart from juggling.
+- **No engine change was needed**, because rank is compared *after* the
+  `ifAirborne` redirect. `hurt_chain` now names `juggle` — rank 3, airborne,
+  `launch: [null, -2.0]` — so the same blow flinches a standing opponent and
+  lifts a falling one. This is what `ifAirborne` was for: the air version
+  changes how a reaction is taken, and severity is part of how.
+- **A null horizontal component, like `bounce`.** A juggle decides how high the
+  body comes back up and has no business deciding how fast it was already
+  travelling — one number there would be right for the uppercut and wrong for
+  the next launcher.
+- **Only the string juggles** (owner). `hurt` keeps `hurt_air` at rank 1, so a
+  jab, a crouching kick or a jump-in into a falling body still lands, still
+  hurts and still does not interrupt. The narrower change is also the smaller
+  hole while the smash limit does not exist.
+- **`juggle` lands into `bounce`**, like every other rank-3 reaction. A juggle
+  is knockdown severity by construction, so it ends on the floor rather than
+  putting the victim back on their feet.
+- **Juggling went in before `combat.md` §4's smash limit existed**, on the
+  assumption that the hole was worth accepting for one change. The recording
+  that verified the juggle answered that within the hour — twelve uppercuts in a
+  row — and the limit was built next, above.
+
 ## 2026-08-15 — Four links, and the middle of a string barely pushes
 
 - **The medium string is four blows**, chosen by the owner from the sheet:

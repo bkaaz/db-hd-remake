@@ -76,6 +76,7 @@
       "vel": [0, 0],
       "turn": false,
       "onHit": "knockdown",
+      "smash": true,
       "damage": 14,
       "sound": "swing_3",
       "hitSound": "hit_2",
@@ -120,6 +121,7 @@
       "hitstop": 10,
       "turn": false,
       "onHit": "knockdown_sweep",
+      "smash": true,
       "damage": 14,
       "sound": "swing_3",
       "hitSound": "hit_2",
@@ -189,7 +191,7 @@
       "vel": [-1.0, 0],
       "turn": false,
       "sound": "voice_hurt",
-      "ifAirborne": "hurt_air",
+      "ifAirborne": "juggle",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -216,6 +218,17 @@
         { "when": "landed", "to": "idle" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" }
+      ]
+    },
+    "juggle": {
+      "anim": "hurt_air",
+      "rank": 3,
+      "launch": [null, -2.0],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        { "when": "landed", "to": "bounce" }
       ]
     },
     "guard_hit": {
@@ -286,6 +299,7 @@
     "bounce": {
       "anim": "bounce",
       "rank": 4,
+      "invulnerable": true,
       "launch": [null, -2.4],
       "airborne": true,
       "turn": false,
@@ -297,6 +311,7 @@
     "downed": {
       "anim": "downed",
       "rank": 4,
+      "invulnerable": true,
       "vel": [0, 0],
       "turn": false,
       "sound": "land_3",
@@ -307,6 +322,7 @@
     "getup": {
       "anim": "getup",
       "rank": 4,
+      "invulnerable": true,
       "vel": [0, 0],
       "turn": false,
       "transitions": [

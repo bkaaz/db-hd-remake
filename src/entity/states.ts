@@ -107,6 +107,29 @@ export interface StateDef {
    * how long the game stops, what it looks like and what it costs.
    */
   damage?: number;
+  /**
+   * Whether blows pass straight through this entity while it is here. Not "a
+   * hit for no damage": nothing connects at all, so there is no spark, no
+   * noise, the combo does not grow and the attacker's swing is not spent — the
+   * same active frames may still land once the state is over.
+   *
+   * It is what a fighter on the floor needs and rank cannot give. Rank already
+   * stops anything *interrupting* a knockdown, but a refused reaction still
+   * costs health, so a body that can neither block nor move takes free damage
+   * for as long as the attacker keeps swinging.
+   */
+  invulnerable?: boolean;
+  /**
+   * Whether this state's attack may lift or floor a body that is already
+   * helpless — a **smash**. Only `SMASH_LIMIT` of them land in one combo; past
+   * that the blow still connects and still hurts, but the victim keeps falling
+   * on the arc they were already on.
+   *
+   * It is authored on the blow rather than derived from whether its reaction
+   * launches, because the two questions differ: every knockdown launches, and
+   * only some of them are meant to be able to do it twice.
+   */
+  smash?: boolean;
   /** Sound played on entering this state — the swing, not the impact. */
   sound?: string;
   /** Sound this state's attack makes when it lands. */
@@ -529,6 +552,30 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
     if (def.rank !== undefined && (typeof def.rank !== "number" || def.rank < 0)) {
       errors.push(`${where}: "rank" must be a number, 0 or more`);
+    }
+
+    if (def.smash !== undefined && typeof def.smash !== "boolean") {
+      errors.push(`${where}: "smash" must be true or false`);
+    }
+
+    if (def.invulnerable !== undefined && typeof def.invulnerable !== "boolean") {
+      errors.push(`${where}: "invulnerable" must be true or false`);
+    }
+
+    // A state nobody can touch and nobody can leave is a fighter removed from
+    // the match. The `no transitions` warning above does not cover it, because
+    // there the entity was at least still hittable.
+    if (def.invulnerable && exits.length === 0) {
+      warnings.push(`${where}: invulnerable and has no transitions — nothing can end it`);
+    }
+
+    // A smash is a blow allowed to lift a body twice, so one that cannot lift
+    // at all is a line that does nothing — usually the flag put on the wrong
+    // state of a pair, which is invisible until a juggle refuses to end.
+    if (def.smash && def.onHit && !(states[def.onHit]?.launch || states[def.onHit]?.ifAirborne)) {
+      warnings.push(
+        `${where}: "smash" but its reaction "${def.onHit}" neither launches nor has an air version`,
+      );
     }
 
     (def.transitions ?? []).forEach((t, i) => {

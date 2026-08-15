@@ -19,7 +19,7 @@ const snapshot = (buffer: [string, number][]): EntityDebug => ({
   hp: 100,
   vx: 0,
   buffer,
-  combo: { hits: 0, damage: 0 },
+  combo: { hits: 0, damage: 0, lifts: 0 },
 });
 
 describe("pressChanges", () => {

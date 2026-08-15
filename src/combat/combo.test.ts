@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Combo } from "./combo";
+import { Combo, SMASH_LIMIT } from "./combo";
 
 describe("Combo", () => {
   it("starts at nothing", () => {
@@ -35,6 +35,53 @@ describe("Combo", () => {
     c.enter(0); // idle, or an attack of their own
     expect(c.hits).toBe(0);
     expect(c.damage).toBe(0);
+  });
+
+  describe("the smash limit", () => {
+    it("allows a lift while there is budget left", () => {
+      expect(new Combo().smashable).toBe(true);
+    });
+
+    it("stops allowing them at the limit", () => {
+      const c = new Combo();
+      for (let i = 0; i < SMASH_LIMIT; i++) {
+        expect(c.smashable).toBe(true);
+        c.smash();
+      }
+      expect(c.smashable).toBe(false);
+      expect(c.lifts).toBe(SMASH_LIMIT);
+    });
+
+    it("is the uppercut loop that it closes", () => {
+      // Rank alone cannot: a knockdown replacing a knockdown is an equal rank,
+      // which is exactly what a combo is allowed to do.
+      const c = new Combo();
+      const uppercut = (): boolean => {
+        if (!c.smashable) return false;
+        c.smash();
+        c.hit(14);
+        c.enter(3);
+        return true;
+      };
+      for (let i = 0; i < SMASH_LIMIT; i++) expect(uppercut()).toBe(true);
+      expect(uppercut()).toBe(false);
+    });
+
+    it("hands the budget back when the fighter has control again", () => {
+      const c = new Combo();
+      for (let i = 0; i < SMASH_LIMIT; i++) c.smash();
+      c.enter(0);
+      expect(c.lifts).toBe(0);
+      expect(c.smashable).toBe(true);
+    });
+
+    it("keeps the budget spent while the fighter stays helpless", () => {
+      const c = new Combo();
+      c.smash();
+      c.enter(3); // knocked down
+      c.enter(4); // and now on the floor
+      expect(c.lifts).toBe(1);
+    });
   });
 
   it("counts a blow that lands without interrupting", () => {

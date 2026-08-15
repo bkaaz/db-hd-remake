@@ -97,15 +97,21 @@ kind of system does not get finished.
 
 ### 4. Smash — the hard limit that scaling cannot give
 
+**Built 2026-08-15** (`smash: true` on the blow, `SMASH_LIMIT` on the counter).
 Scaling is soft: it makes a fourth uppercut weak, never impossible. Some things
-should be impossible. A blow may be marked as able to **re-launch or re-knock
-down**, and only a fixed number of those may land in one combo. Past the limit
-such a blow still hits and still hurts — it just does not lift or floor the
-victim again, who keeps falling on the arc they were already on.
+should be impossible. A blow marked as able to **re-launch or re-knock down**
+spends from a budget of two per combo. Past the limit such a blow still hits and
+still hurts — it just does not lift or floor the victim again, who keeps falling
+on the arc they were already on, and the exchange ends itself.
 
 This is the answer to "an uppercut cannot juggle forever", expressed as a rule
 about re-launching rather than as a counter of uppercuts, so it holds for every
-launcher anyone adds later.
+launcher anyone adds later. **Two**, so a launcher can open a combo and another
+blow can end it, and a third cannot start it over.
+
+Chain links that juggle are deliberately not smashes: a juggle keeps a body up
+where a smash puts it back down, and a string that spent the budget on its own
+middle could not end with a knockdown.
 
 ### 5. Vanish — the escape, and why it is not the limiter
 
@@ -155,8 +161,18 @@ Two consequences fell out rather than being designed. Nothing forces rank 4, so
 a downed or getting-up fighter cannot be interrupted at all — **wake-up
 invulnerability**, which settles one of the open questions below. And an
 *equal*-rank blow can still relaunch a body that is still airborne, so an
-uppercut into an uppercut juggles: that is precisely the hole §4 exists to
-close, and it is still open.
+uppercut into an uppercut juggles — which §4 closes, because rank has nothing to
+say about it: knockdown replacing knockdown is an equal rank, and equal rank
+re-entering is what a combo *is*.
+
+**Severity is part of how a reaction is taken, not only which one it is.** Rank
+is compared *after* the airborne redirect, so a reaction may name an air version
+that outranks it: `hurt_chain` flinches a standing opponent at rank 1 and
+becomes `juggle` at rank 3 against a falling one. Without that, a light chain
+link cannot touch a body its own launcher put in the air — the string that
+follows an uppercut connects, costs health and interrupts nothing. Only the
+string has one (2026-08-15); a jab into a falling body still does not interrupt,
+which keeps §4's hole as small as it can be until the limit exists.
 
 ## Movement, and why the dash belongs in this file
 
@@ -241,9 +257,11 @@ shape `states.json` already has.
   is impossible — either the best thing in the design or a death spiral. Decide
   the resource before the escape.
 - **Whether Vanish also escapes an ongoing combo**, not only guard pressure.
-- ~~**Whether a downed fighter is hittable at all.**~~ Settled 2026-08-15 by
-  consequence: `downed` and `getup` are rank 4 and nothing forces rank 4, so
-  they cannot be interrupted. Wake-up invulnerability without a special case.
+- ~~**Whether a downed fighter is hittable at all.**~~ Settled 2026-08-15, in
+  two halves. Rank 4 made `bounce`, `downed` and `getup` un-interruptible by
+  consequence rather than by special case; the recording then showed the other
+  half missing — a refused reaction still cost 14 health. They are now
+  `invulnerable`, so nothing connects there at all.
 - **The CPU.** Everything above assumes an opponent; a large unbuilt system.
 - **Whether a second human ever plays** (Q8). It does not change the structure —
   that is the point of designing for it — but it decides how forgiving the

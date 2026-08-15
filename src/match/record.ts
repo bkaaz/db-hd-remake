@@ -36,7 +36,11 @@ export class Recorder {
       if (was.state !== now.state) this.say(fighters, `${who} ${was.state} → ${now.state}`);
       for (const line of pressChanges(who, was, now)) this.say(fighters, line);
       if (was.combo.hits > 0 && now.combo.hits === 0) {
-        this.say(fighters, `${who} combo over — ${was.combo.hits} hits, ${was.combo.damage} dmg`);
+        this.say(
+          fighters,
+          `${who} combo over — ${was.combo.hits} hits, ${was.combo.damage} dmg, ` +
+            `${was.combo.lifts} lift${was.combo.lifts === 1 ? "" : "s"}`,
+        );
       }
     }
   }

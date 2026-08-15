@@ -212,6 +212,33 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   Consequence worth knowing: nothing forces rank 4, so a downed or getting-up
   fighter cannot be interrupted at all — wake-up invulnerability, arrived at by
   the same rule rather than as a special case.
+- **`invulnerable`** — on any state: blows pass straight through. Not a hit for
+  zero damage — **nothing connects**: no spark, no noise, the combo does not
+  grow, and the attacker's swing is not spent, so the same active frames may
+  still land once the state is over.
+
+  Goku marks the whole trip to the floor: `bounce`, `downed`, `getup`. Rank 4
+  already stops a blow *interrupting* those, but a refused reaction still costs
+  health, and a fighter there can neither block nor move — free damage for as
+  long as the attacker keeps swinging. What it does **not** buy is an escape:
+  the window ends exactly when control returns, so a blow timed to arrive on
+  the first vulnerable frame still lands, and is blockable, which is the point.
+
+  A state that is invulnerable with no transitions is warned about — untouchable
+  and unleavable is a fighter removed from the match.
+- **`smash`** — on an **attack** state: may this blow lift or floor a body that
+  is already helpless? Only `SMASH_LIMIT` of them (2, in `src/combat/combo.ts`)
+  land in one combo; past that the reaction is refused exactly as rank refuses
+  one — the blow connects and costs health, and the victim keeps falling on the
+  arc they were on. A refused smash does not spend the budget.
+
+  It is the hard limit scaling cannot give: a curve makes a fourth uppercut
+  weak, never impossible, while equal rank re-entering means an uppercut can
+  relaunch what it just knocked down, forever. Authored on the blow rather than
+  derived from whether its reaction launches, because every knockdown launches
+  and only some are meant to be able to do it twice. Goku marks two: `uppercut`
+  and `kick_finisher`. Chain links that juggle are **not** smashes — a juggle
+  keeps a body up, it does not floor it again.
 - **`ifAirborne`** — on a **reaction** state: the state to use instead when the
   entity being forced into it is off the ground. Without it an airborne
   defender is put into a grounded reaction and snaps to the floor, erasing the

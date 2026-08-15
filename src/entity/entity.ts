@@ -55,7 +55,7 @@ export interface EntityDebug {
   hp: number;
   vx: number;
   buffer: [button: string, framesLeft: number][];
-  combo: { hits: number; damage: number };
+  combo: { hits: number; damage: number; lifts: number };
 }
 
 const BOX_COLORS: Record<string, number> = {
@@ -195,7 +195,7 @@ export class Entity {
       hp: this.hp,
       vx: this.vx,
       buffer: this.buffer.live(),
-      combo: { hits: this.combo.hits, damage: this.combo.damage },
+      combo: { hits: this.combo.hits, damage: this.combo.damage, lifts: this.combo.lifts },
     };
   }
 
@@ -214,6 +214,15 @@ export class Entity {
     return !this.spent;
   }
 
+  /**
+   * Whether blows pass straight through this entity right now — the floor, and
+   * getting up off it. Rank already stops a blow interrupting a knockdown; this
+   * is what stops it costing health while the victim can neither block nor move.
+   */
+  get invulnerable(): boolean {
+    return !!this.sm?.def.invulnerable;
+  }
+
   /** Record that the current attack connected; it cannot land again. */
   markHit(): void {
     this.spent = true;
@@ -222,6 +231,11 @@ export class Entity {
   /** The reaction this entity's current attack asks of whoever it hits. */
   get attackReaction(): string | undefined {
     return this.sm?.def.onHit;
+  }
+
+  /** Whether this entity's current attack may lift a body that is already helpless. */
+  get attackSmash(): boolean {
+    return !!this.sm?.def.smash;
   }
 
   /** Frames to freeze both fighters for when this entity's attack connects. */
@@ -302,10 +316,17 @@ export class Entity {
     this.combo.hit(amount);
   }
 
-  gotHit(reaction: string | undefined): boolean {
+  gotHit(reaction: string | undefined, smash = false): boolean {
     if (!this.def.states) return false;
+    // A smash spends from a budget the combo owns, and the budget is checked
+    // before the reaction is chosen: a blow past the limit is refused for the
+    // same reason a jab at a floored fighter is, and looks the same from here.
+    if (smash && !this.combo.smashable) return false;
     const state = reactionFor(reaction, this.def.states, this.sm?.def);
-    return state !== undefined && this.forceState(state);
+    if (state === undefined) return false;
+    // Counted only now, because a reaction rank refused changed nothing.
+    if (smash) this.combo.smash();
+    return this.forceState(state);
   }
 
   /** Enter a state because something happened *to* this entity (being hit). */

@@ -32,49 +32,7 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## First: rank refuses juggles, and it should not
-
-Found by playing, 2026-08-15. Launch someone with the uppercut, then run the
-medium string into the falling body: every blow connects and takes health — 52
-damage across five — and **not one of them interrupts**, so the victim serenely
-finishes the fall. From the recording:
-
-```
-00717  uppercut HITS          → P2 knockdown (rank 3)
-00759  kick_mid HITS (was knockdown) · 7 dmg     ← no state change
-00769  kick_thrust HITS (was knockdown) · 8 dmg  ← no state change
-00779  P2 knockdown → bounce  (rank 4)
-00797  kick_finisher HITS (was bounce) · 14 dmg  ← refused, 3 < 4
-```
-
-**The rank rule is doing exactly what it was told**, and the instruction was too
-broad. It was written to stop a jab *rescuing* someone mid-knockdown; it also
-stops anything *juggling* them, and those are different wishes that one number
-cannot tell apart.
-
-**The fix needs no engine change**, because rank is compared *after* the
-`ifAirborne` redirect: give the chain's reaction an air version that is a
-juggle.
-
-```jsonc
-"hurt_chain": { "rank": 1, "ifAirborne": "juggle" }
-"juggle":     { "rank": 3, "airborne": true, "launch": [ … ] }
-```
-
-The same blow then flinches a standing opponent (rank 1) and juggles a falling
-one (3 ≥ 3). `bounce` stays rank 4 — once you have touched the floor the
-exchange is over — and with juggling working the string should not reach it.
-
-**The decision that is actually open, and it is the owner's:** this switches
-juggling on while `combat.md` §4's smash limit does not exist. Uppercut into
-uppercut will loop. The four-link string self-terminates so the practical risk
-is small, but the hole becomes reachable. Either accept it and note it, or build
-the limit first.
-
-*Done when:* a blow landing on a falling body visibly juggles it, and a jab
-still cannot stand up someone on the floor.
-
-## Next: an explicit `hitstun`
+## First: an explicit `hitstun`
 
 A reaction lasts exactly as long as its animation — a number chosen so a pose
 reads well, quietly deciding whether combos exist. Combos need the defender's

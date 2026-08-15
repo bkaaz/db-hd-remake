@@ -38,6 +38,11 @@ export function landBlow(
   { audio, effects }: BlowContext,
 ): BlowResult | null {
   if (!attacker.canHit) return null;
+  // Before anything is spent or spawned: an invulnerable defender is not hit
+  // for nothing, they are **not hit**. The swing keeps its active frames and
+  // may still land the moment they are touchable again — which is what makes
+  // pressure on a wake-up a matter of timing rather than of holding a button.
+  if (defender.invulnerable) return null;
   const boxes = attacker.boxes("hit");
   if (boxes.length === 0) return null;
   const where = contact(
@@ -57,7 +62,7 @@ export function landBlow(
   audio.play(blocked ? noise.block : noise.hit);
   if (!blocked) {
     defender.hurtBy(attacker.attackDamage);
-    defender.gotHit(attacker.attackReaction);
+    defender.gotHit(attacker.attackReaction, attacker.attackSmash);
   }
   // The spark belongs at the deepest point of the blow, not at either fighter's
   // anchor and not at the middle of the overlap — see impactPoint.
