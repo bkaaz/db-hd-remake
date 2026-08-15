@@ -175,11 +175,11 @@ the sheet and not about the blow, and it makes `states.json` unreadable without
 a second window open. Stance is part of the identity where it binds the move:
 `kick_crouch`, `kick_air`.
 
-**136 of Goku's 219 frames have no description at all** (84–219, plus 61–67 and
-43). Nearly two thirds of the sheet is unread, and the moveset cannot be
-designed from what we cannot name. The sheet is known to hold several punches
-and kicks, an overhead punch and an overhead kick, a close knee, a fast close
-jab — and whatever is in those 136.
+**100 of Goku's 181 frames have no description at all** (84–176, plus 61–67).
+More than half the sheet is unread, and the moveset cannot be designed from
+what we cannot name. The sheet is known to hold several punches and kicks, an
+overhead punch and an overhead kick, a close knee, a fast close jab — and
+whatever is in those 100.
 
 Done in batches of roughly twenty frames: render a contact sheet, propose a
 reading, the owner corrects, write `descriptions.json`. One batch is a small

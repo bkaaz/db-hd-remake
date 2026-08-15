@@ -2,6 +2,24 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Depth is a drawing, not a plane
+
+- **The sheet has a whole second combat mode and we are not building it.**
+  Goku's far-distance set is complete — a recede ramp, an idle, two deflects
+  for batting ki bolts away, two dodges and two hit reactions — and the
+  original's confirmed "send the opponent to the back of a stage" is what it is
+  for. It has no place in a FighterZ-shaped design, which is strictly one plane.
+- **The frames stay, the mode does not** (owner). Depth becomes presentation: a
+  special may travel into the background, an attack may be *shown* that way, and
+  none of it touches physics. `deflect_far` and `dodge_far` go in a drawer
+  rather than a bin.
+- **The trap this creates, and it is a real one:** hurt boxes are fitted to the
+  sprite's silhouette by `npm run anim`. A frame drawn at 59 px instead of 85
+  yields a tiny box low on the body, so a fighter mid-`kick_from_depth` would be
+  nearly unhittable — an artefact of the drawing, not a decision. **Boxes on
+  depth frames have to be authored against the plane the fighter is actually
+  on**, not derived. Written into the `add-animation` skill.
+
 ## 2026-08-15 — Four buttons by strength, and animations named for the pose
 
 - **Light / Medium / Heavy / Special, exactly FighterZ's scheme** (owner). The

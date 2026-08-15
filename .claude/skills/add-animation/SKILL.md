@@ -155,6 +155,26 @@ npm run anim -- goku punch --frames 42,43,44,45 --kind attack
   **Without the atlas** (it is gitignored — run `npm run fetch-assets`) it falls
   back to one bounding box per frame and says so.
 
+> **Dithered frames are detected wrong, and it is not obvious.** Wherever
+> something fades on this sheet — a teleport, a transformation, a step into the
+> background — the sprite is drawn as a checkerboard, and auto-detection finds
+> only the pixels that survived. It crops the box to them and can spill the rest
+> into a bogus extra frame (127 lost 15 px and produced a phantom 128; frame 0
+> lost a column). Two useful moves: compare the box against the *solid* frames
+> either side of the fade, and measure with
+> `npm run anim -- <entity> probe --frames <n> --kind hurt --dry-run --hurt-boxes 1`,
+> which prints the real pixel extent without writing anything. Content that ends
+> exactly on the box edge is the sign that the box is cutting into it.
+
+> **Depth frames break the derivation, silently.** Some sprites are drawn
+> smaller because the character has moved *into* the screen (`kick_from_depth`,
+> the `_far` groups) or larger because they stepped toward the camera
+> (`ki_blast`). Physics stays on one plane, so a box fitted to a 59 px drawing
+> of an 85 px fighter is a tiny box low on the body, and the move becomes nearly
+> unhittable for reasons nobody chose. **Author the boxes on those frames
+> against the plane the fighter is really on** — and say in the handover that
+> you did, because the printed table will otherwise look normal.
+
 The script prints a table separating **computed** (hurt boxes) from
 **placeholder** (hit box, timing). Read that table — it is your report source.
 It also tells you when the hit box is a `FALLBACK`, meaning nothing measurably

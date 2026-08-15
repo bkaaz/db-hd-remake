@@ -2,7 +2,7 @@
   "_convention": "What the sprites ARE, not how they are played. Written from looking at them (npm run sheet); a leading '?' marks a guess to be settled when the move is actually built. A frame may belong to several groups and may appear more than once in one animation (a guard pose is often both the wind-up and the recovery) — say so in its description. Playback order and timing live in animations.json and are NOT recorded here: they cannot be read off a sheet, and a second copy would only go stale.",
   "groups": {
     "base_form": {
-      "desc": "Goku before transforming — black hair, calmer poses. Frames 0 and 2 are dithered: a SNES transparency effect, so they are the fade in/out of the transformation rather than real poses.",
+      "desc": "Goku before transforming — black hair, calmer poses. Frames 0 and 2 are dithered: a SNES transparency effect, so they are the fade in/out of the transformation rather than real poses. 0 had been detected a pixel narrow (33 wide against 2's 34) because the dithering left its rightmost column too sparse to find; re-cut by hand 2026-08-15 to match 2. Its drawn pixels still stop 4 px above the anchor and 7 px below the top — the dithering eats the hair tips and the feet first — so any box derived from this frame comes out short.",
       "frames": [
         "0",
         "2",
@@ -203,6 +203,115 @@
       "frames": [
         "28"
       ]
+    },
+    "kick_from_depth": {
+      "desc": "An attack that leaves the plane of the fight: Goku jumps into the depth of the screen and comes back out of it with a kick. Confirmed by the owner 2026-08-15. 82 is the launch and 83 the way in — both dithered, the SNES half-transparency standing in for fading out; 84 is the far point; 85 and 86 are the return, leg already extended. Distance is drawn as scale, which is why the frames shrink to 59 px and back. Name is provisional. Watch out: a shrinking silhouette on this sheet does NOT mean a second small-scale sprite set — it means depth inside a move.",
+      "frames": [
+        "82",
+        "83",
+        "84",
+        "85",
+        "86"
+      ]
+    },
+    "ki_blast": {
+      "desc": "Firing a ki bolt, confirmed by the owner 2026-08-15. Goku steps to the FOREGROUND — nearer the camera — to shoot: 87 is the foreground pose (and most likely the frame that carries the step there), 88 is the full-body white flash that starts the attack, 89 the arm wind-up, 90 the shot. Shares 87 and 88 with kamehameha, which is what a shared entry looks like. The foreground is drawn as scale and it is subtle: 83–85 px against the idle's 81–82, so playing the frames gives the effect without the engine scaling anything.",
+      "frames": [
+        "87",
+        "88",
+        "89",
+        "90"
+      ]
+    },
+    "kamehameha": {
+      "desc": "The Kamehameha, confirmed by the owner 2026-08-15. Same foreground entry as ki_blast — 87 in the foreground, 88 the white flash — then 91 charges it and 92 fires. In our button scheme this is a motion input, while the ki bolt above is what S does; the two sharing an entry is worth knowing before either is animated.",
+      "frames": [
+        "87",
+        "88",
+        "91",
+        "92"
+      ]
+    },
+    "recede": {
+      "desc": "Going away into the depth of the screen, confirmed by the owner 2026-08-15. A scale ramp and nothing else: the same standing pose at 67, 54, 37 and finally 30 px, against the idle's 81. This is the transition; everything suffixed _far below is what Goku can do once he is there.",
+      "frames": [
+        "93",
+        "94",
+        "95",
+        "96"
+      ]
+    },
+    "idle_far": {
+      "desc": "Standing in the depth of the screen, ~29 px. 98 is the pose; 100 is nearly the same and may be its second frame or the neutral the deflects return to — unconfirmed. 97 is the whole body flashed white, the far-scale twin of 88.",
+      "frames": [
+        "97",
+        "98",
+        "100"
+      ]
+    },
+    "deflect_far": {
+      "desc": "Batting away ki bolts while in the depth of the screen, confirmed by the owner 2026-08-15: 99 and 101, an arm thrown up and forward in each. Being far is not being safe — it is a different set of options.",
+      "frames": [
+        "99",
+        "101"
+      ]
+    },
+    "dodge_far": {
+      "desc": "Avoiding a blow while in the depth of the screen, confirmed by the owner 2026-08-15: 102 and 103, the body pulled aside.",
+      "frames": [
+        "102",
+        "103"
+      ]
+    },
+    "hurt_far": {
+      "desc": "Taking damage while in the depth of the screen, confirmed by the owner 2026-08-15: 104 recoiling, 105 doubled over. The far plane has its own hit reactions, which is what makes it a second place to fight rather than a pose.",
+      "frames": [
+        "104",
+        "105"
+      ]
+    },
+    "ki_bolt": {
+      "desc": "? Not poses — the ki projectile itself, drawn at six sizes: 42, 32, 16, 12, 10 and 8 px. Almost certainly distance rather than time, since ki_blast fires from the foreground and the bolt travels away from the camera. If so, which frame is drawn is decided by where the bolt is, not by an animation clock. 116-119 are smaller yellow scraps of the same family and may be its tail or the debris of an impact.",
+      "frames": [
+        "106",
+        "107",
+        "108",
+        "109",
+        "110",
+        "111",
+        "116",
+        "117",
+        "118",
+        "119"
+      ]
+    },
+    "hop_lunge": {
+      "desc": "From the original: Goku hops into a long stride and jumps out of it, confirmed by the owner 2026-08-15. 120 is the wind-up, 121 throws the leg high and starts the stride, 122 is airborne and attacking, 123 comes down in a straddle, 124 lands out of it. The owner notes 121 also stands on its own as a high-leg attack, which is exactly the kind of reuse a state gives us for free. Name is provisional.",
+      "frames": [
+        "120",
+        "121",
+        "122",
+        "123",
+        "124"
+      ]
+    },
+    "teleport": {
+      "desc": "Vanishing, confirmed by the owner 2026-08-15: 125 solid, 126 half dithered, 127 nearly gone — the SNES half-transparency again, here as a teleport rather than a transformation or a step into the background. 127 was detected wrongly (the dithering left holes, so the box was cut to 34x78 and the surviving pixels below it became a bogus frame 128); the box is now 34x93 like 125, anchored at the feet, and 128 is deleted.",
+      "frames": [
+        "125",
+        "126",
+        "127"
+      ]
+    },
+    "palettes": {
+      "desc": "Not poses: one standing pose recoloured five ways, kept on the sheet as examples of the alternate palettes (confirmed by the owner 2026-08-15, to be dealt with later). Nothing animates these.",
+      "frames": [
+        "177",
+        "178",
+        "179",
+        "180",
+        "181"
+      ]
     }
   },
   "frames": {
@@ -280,7 +389,51 @@
     "79": "landed: flat on the ground, face down, arms spread",
     "80": "getting up, first frame — head and shoulder still down, legs coming back under the body",
     "81": "getting up, second frame — on hands and knees with the head low, about to stand",
-    "82": "dithered full-body standing pose, arms drawn in — dithering is the SNES transparency effect, so this is a fade/flash rather than a real pose",
-    "83": "dithered, compact and turned side-on — the next step of the same fade as 82"
+    "82": "kick_from_depth, 1 of 5: the launch. Full height (81 px) and dithered — the SNES half-transparency, here the start of fading into the background rather than a transformation",
+    "83": "kick_from_depth, 2 of 5: halfway in, still dithered and already smaller (59 px). Distance is drawn as scale",
+    "84": "kick_from_depth, 3 of 5: deep in the screen, solid again and side-on, at its smallest",
+    "85": "kick_from_depth, 4 of 5: on the way back, halfway, leg already extended into the kick",
+    "86": "kick_from_depth, 5 of 5: nearly back at full distance, leg still extended — the frame that connects",
+    "87": "standing in the FOREGROUND, fists up — the pose Goku shoots from, and most likely the frame that carries the step forward. 85 px against the idle's 81, so the plane change is drawn as a slight scale-up",
+    "88": "the whole body flashed solid white — the flare that starts a ki attack, not a teleport and not a missing sprite",
+    "89": "arm cocked back to throw a ki bolt",
+    "90": "the ki bolt leaves the hand",
+    "91": "hands cupped at the hip, charging the Kamehameha",
+    "92": "the Kamehameha fires — arms thrust forward, body braced",
+    "93": "receding, 1 of 4 — the standing pose at 67 px",
+    "94": "receding, 2 of 4 — 54 px",
+    "95": "receding, 3 of 4 — 37 px",
+    "96": "receding, 4 of 4 — 30 px, the far distance reached",
+    "97": "flashed solid white at far scale — the twin of 88",
+    "98": "standing far, fists up — the idle of the depth plane",
+    "99": "far: arm thrown up and forward, batting a ki bolt away",
+    "100": "? far, standing with the arms in — either the second frame of the far idle or the neutral the deflects return to",
+    "101": "far: the other deflect, arm up and across",
+    "102": "far: pulling the body aside to avoid a blow",
+    "103": "far: the second dodge frame",
+    "104": "far: taking a hit, recoiling with the arms up",
+    "105": "far: taking a hit, doubled over",
+    "106": "? the ki bolt at its largest, 42 px — nearest the camera",
+    "107": "? the ki bolt, 32 px",
+    "108": "? the ki bolt, 16 px",
+    "109": "? the ki bolt, 12 px",
+    "110": "? the ki bolt, 10 px",
+    "111": "? the ki bolt, 8 px — the far end of the flight",
+    "112": "? full-height standing lean — probably the entry into the rising kick below",
+    "113": "? coiling down and back, the wind-up",
+    "114": "? coiled tighter, still leaning away",
+    "115": "? the leg thrown high — the extended frame of a rising kick, and the obvious launcher of this sheet",
+    "116": "? a small yellow scrap, 8x13 — ki bolt tail or impact debris",
+    "117": "? a smaller scrap, 8x8",
+    "118": "? a smaller scrap, 8x8",
+    "119": "? the smallest scrap, 5x5",
+    "120": "hop_lunge, 1 of 5: the wind-up",
+    "121": "hop_lunge, 2 of 5: the leg thrown high as the stride begins — also usable on its own as a high-leg attack",
+    "122": "hop_lunge, 3 of 5: airborne and attacking, body horizontal, leg extended",
+    "123": "hop_lunge, 4 of 5: coming down in a straddle",
+    "124": "hop_lunge, 5 of 5: landing out of the straddle, knee up and compact",
+    "125": "teleport, 1 of 3: standing solid, the frame it starts from",
+    "126": "teleport, 2 of 3: half dithered, going",
+    "127": "teleport, 3 of 3: nearly gone. Its box was re-cut by hand — auto-detection had cropped it to the surviving dithered pixels"
   }
 }
