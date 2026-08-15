@@ -155,6 +155,12 @@ npm run anim -- goku punch --frames 42,43,44,45 --kind attack
   **Without the atlas** (it is gitignored — run `npm run fetch-assets`) it falls
   back to one bounding box per frame and says so.
 
+> **Consecutive numbers are not always one sequence.** Where two rows of the
+> sheet sit close together, detection interleaves them, so 60-67 turned out to
+> be *two* effects alternating rather than one. The `y` in `frames.json` settles
+> it in a second and is not a judgement call: group by row before believing a
+> run of numbers is a run of frames.
+
 > **Dithered frames are detected wrong, and it is not obvious.** Wherever
 > something fades on this sheet — a teleport, a transformation, a step into the
 > background — the sprite is drawn as a checkerboard, and auto-detection finds

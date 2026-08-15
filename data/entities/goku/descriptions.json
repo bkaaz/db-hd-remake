@@ -86,14 +86,6 @@
         "45"
       ]
     },
-    "fx_impact": {
-      "desc": "? Effect sprites, not poses: a burst of flame that grows and then breaks up. Almost certainly the hit spark for something — which move is unknown. Relevant to the spark spawns in data/spawns/.",
-      "frames": [
-        "68",
-        "69",
-        "70"
-      ]
-    },
     "knee": {
       "desc": "A knee strike, confirmed by the owner 2026-08-15: 112 prepares, 113 brings the knee up, 114 drives it further, 115 carries it through the air. **Two moves out of one set, and the short one is a PREFIX of the long one** — a close-range knee that ends at 114, and a travelling knee that continues into 115 and leaves the ground. Worth deciding before it is built: our animations play whole, so a prefix is either two animations sharing three frames, or one animation with a state that leaves early. Was guessed as a rising kick / launcher and is not one.",
       "frames": [
@@ -276,7 +268,7 @@
       ]
     },
     "ki_bolt": {
-      "desc": "? Not poses — the ki projectile itself, drawn at six sizes: 42, 32, 16, 12, 10 and 8 px. Almost certainly distance rather than time, since ki_blast fires from the foreground and the bolt travels away from the camera. If so, which frame is drawn is decided by where the bolt is, not by an animation clock. 116-119 are smaller yellow scraps of the same family and may be its tail or the debris of an impact.",
+      "desc": "? Ten round yellow sprites shrinking from 42 px to 5 px. NOT the ki bolt after all — the real bolts are fx_ki_bolt_small and fx_ki_bolt_big (56-59) and are comet-shaped, not round. These are most likely one thing seen receding, which fits ki_blast_foreground firing away from the camera, but nobody has confirmed it. Name kept until it is.",
       "frames": [
         "106",
         "107",
@@ -362,18 +354,6 @@
         "157"
       ]
     },
-    "fx_explosion": {
-      "desc": "? Effect sprites, not poses: a fireball that swells white-hot and then tears apart — 61 and 62 the growing ball, 64 the peak at 26x26, 63 and 65 breaking up in orange, 66 an arc of debris, 67 the last specks. Sheet order is probably not play order. Neighbours fx_impact (68-70), which is the same family at a smaller size; whether they are one effect or two is unconfirmed.",
-      "frames": [
-        "61",
-        "62",
-        "63",
-        "64",
-        "65",
-        "66",
-        "67"
-      ]
-    },
     "fx_electric": {
       "desc": "Electrical discharge, confirmed by the owner 2026-08-15 — nineteen blue-white lightning arcs from 32x26 down to 5x7, the crackle that surrounds a Super Saiyan. Deferred: the owner expects some of these to need their size and position corrected, which is exactly what sparse effect sprites do to auto-detection. Measure before using any of them (see the add-animation skill).",
       "frames": [
@@ -420,6 +400,41 @@
         "179",
         "180",
         "181"
+      ]
+    },
+    "fx_ki_bolt_small": {
+      "desc": "The small ki bolt in flight, confirmed by the owner 2026-08-15: two comet-shaped frames, 24x12 and 16x10. Pairs with fx_ki_burst_small.",
+      "frames": [
+        "57",
+        "58"
+      ]
+    },
+    "fx_ki_bolt_big": {
+      "desc": "The large ki bolt in flight, confirmed by the owner 2026-08-15: two comet frames at 40x14 and 39x14 — the same shape as the small bolt at nearly twice the length. Pairs with fx_ki_burst_big.",
+      "frames": [
+        "56",
+        "59"
+      ]
+    },
+    "fx_ki_burst_small": {
+      "desc": "The small ki bolt going off, confirmed by the owner 2026-08-15: a white ball that turns orange, tears open and scatters. Six frames, all about 16 px.",
+      "frames": [
+        "60",
+        "61",
+        "63",
+        "65",
+        "66",
+        "67"
+      ]
+    },
+    "fx_ki_burst_big": {
+      "desc": "The large ki bolt going off, confirmed by the owner 2026-08-15. Starts as a small white ball like the other burst (62, 16 px) and then grows instead of scattering: 64 at 26x26, then 68, 69 and 70 up to 29x31. Bigger is drawn as a longer, larger blast rather than a different shape.",
+      "frames": [
+        "62",
+        "64",
+        "68",
+        "69",
+        "70"
       ]
     }
   },
@@ -479,14 +494,14 @@
     "53": "crouching kick, the extended frame: leg extended forward along the ground, body leaning well back",
     "54": "ki_blast, the charge: feet wide, both hands brought together in front of the chest",
     "55": "ki_blast, the release: one arm thrust forward, hand open",
-    "56": "? projectile sprite, not a pose: an elongated bolt of energy with a trailing tail, the largest of the set",
-    "57": "? projectile sprite: the same bolt, shorter",
-    "58": "? projectile sprite: a small flattened blob of energy — the smallest of the set",
-    "59": "? projectile sprite: a long bolt with a bright head, close to 56 in size",
-    "60": "? projectile sprite: a round ball of energy, no tail — probably a different attack from the bolts in 56-59",
-    "68": "impact effect: a compact ball of flame with short spikes around it — an effect sprite, not a pose",
-    "69": "impact effect: the same burst, larger and breaking up into flames at the bottom — the next step of 68",
-    "70": "? impact effect: a thin arc of orange sparks, nothing else — the dying end of 68/69, or a separate small effect",
+    "56": "fx_ki_bolt_big, 1 of 2: a long comet-shaped bolt, 40 px",
+    "57": "fx_ki_bolt_small, 1 of 2: the same comet shape at 24 px",
+    "58": "fx_ki_bolt_small, 2 of 2: 16 px",
+    "59": "fx_ki_bolt_big, 2 of 2: 39 px",
+    "60": "fx_ki_burst_small: the white ball, whole",
+    "68": "fx_ki_burst_big: 26x29, wider at the base",
+    "69": "fx_ki_burst_big: 28x31, the peak",
+    "70": "fx_ki_burst_big: 29x31, breaking apart",
     "71": "deflect, the wind-up: compact, arm drawn back and low",
     "72": "deflect, the active frame: the arm sweeping up and over behind a bright arc of light",
     "73": "deflect, after: the arm left extended above the head",
@@ -572,6 +587,13 @@
     "154": "the hair reverting, still facing front",
     "155": "base form facing front, arms at the sides",
     "156": "base form, one hand up behind the head, grinning",
-    "157": "base form, hand still on the head — the held frame of the celebration"
+    "157": "base form, hand still on the head — the held frame of the celebration",
+    "61": "fx_ki_burst_small: orange starting to show underneath",
+    "62": "fx_ki_burst_big: the white ball it starts from — the same size as the small burst before it grows",
+    "63": "fx_ki_burst_small: orange breaking through",
+    "64": "fx_ki_burst_big: swollen to 26x26 and white-hot",
+    "65": "fx_ki_burst_small: torn open, orange",
+    "66": "fx_ki_burst_small: an arc of debris left over",
+    "67": "fx_ki_burst_small: the last specks"
   }
 }
