@@ -60,8 +60,11 @@ export function landBlow(
   const blocked = defender.guarding && defender.guardHit();
   const noise = attacker.attackSounds;
   audio.play(blocked ? noise.block : noise.hit);
+  // What the blow was worth, after the combo it lands in has scaled it — the
+  // number the defender actually lost, which is the only one worth reporting.
+  let dealt = 0;
   if (!blocked) {
-    defender.hurtBy(attacker.attackDamage);
+    dealt = defender.hurtBy(attacker.attackDamage);
     defender.gotHit({
       reaction: attacker.attackReaction,
       smash: attacker.attackSmash,
@@ -77,5 +80,5 @@ export function landBlow(
   const stop = attacker.attackHitstop;
   attacker.freeze(stop);
   defender.freeze(stop);
-  return { attack, damage: blocked ? 0 : attacker.attackDamage, blocked, took };
+  return { attack, damage: dealt, blocked, took };
 }

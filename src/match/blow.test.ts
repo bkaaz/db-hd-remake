@@ -32,7 +32,8 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackFx: "spark_1",
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
-    hurtBy: vi.fn(),
+    // Scaled by the combo it lands in, so it is rarely what was asked for.
+    hurtBy: vi.fn(() => 5),
     gotHit: vi.fn(),
     guardHit: vi.fn(() => true),
     freeze: vi.fn(),
@@ -105,6 +106,15 @@ describe("landBlow", () => {
     const defender = body("hurt");
     landBlow(attacker, defender, context());
     expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ hitstun: 20 }));
+  });
+
+  it("reports what the blow cost, not what it asked for", () => {
+    // Damage is scaled by how long the combo has already run, and the defender
+    // is what knows that — so the number in the result comes back from it.
+    const attacker = body("hit");
+    const defender = body("hurt");
+    expect(landBlow(attacker, defender, context())?.damage).toBe(5);
+    expect(defender.hurtBy).toHaveBeenCalledWith(7);
   });
 
   it("costs a blocking defender nothing", () => {

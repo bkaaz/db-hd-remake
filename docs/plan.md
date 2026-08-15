@@ -32,23 +32,21 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## First: the three scalings
+## First: the two scalings that are left
 
-Hitstun exists as a number on the blow (2026-08-15), and the smash limit is the
-hard floor under everything. What is missing is the soft half — the part that
-makes a long combo *end itself* instead of being refused:
+Damage scaling landed 2026-08-16 (`src/combat/scaling.ts`), so a long combo is
+worth visibly less than a short one and a single touch is no longer most of a
+round. What is missing is the half that changes the *shape* of a combo rather
+than its price:
 
 | scaling | what it does |
 |---|---|
-| **damage** | the fifteenth hit takes off a fraction of the first |
 | **hitstun** | each successive blow holds for less, so the victim recovers first |
 | **launch** | each successive lift raises less, so the body falls out |
 
-**Damage first, and it is not a tie.** A combo already takes 78 of 100 health,
-so nothing about juggling should be loosened until a long one is worth less than
-a short one. The other two are what buys longer juggles, and until they exist
-the smash limit is doing the work of three systems at once — which is why it
-reads as a wall rather than as a body falling out of a juggle.
+Both end a combo by having it stop working, which is the difference between a
+juggle that finishes and a blow that is refused. Until they exist the smash limit
+is doing that job alone, which is why it reads as a wall.
 
 Everything hangs off `Combo`, which already counts hits and lifts on the
 defender and resets when they get control back. No new state should be needed;
@@ -69,8 +67,9 @@ scaling also shortens knockback. It does today by construction — `vel` applies
 every frame the reaction lasts — so a decayed hitstun quietly shortens the push
 too, which may be exactly right or may need the two separating.
 
-*Done when:* a fifteen-hit combo is worth visibly less than five, and a juggle
-ends because the body fell out of it rather than because a blow was refused.
+*Done when:* a juggle ends because the body fell out of it rather than because a
+blow was refused, and the jab can be made plus enough to link without that link
+running forever.
 
 ## Now: code the owner can read, before there is more of it
 

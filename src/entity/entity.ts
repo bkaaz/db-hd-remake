@@ -3,6 +3,7 @@ import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { Combo } from "../combat/combo";
+import { scaledDamage } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { DEFAULT_HIT_FX, reactionFor, StateMachine } from "./states";
 
@@ -341,13 +342,22 @@ export class Entity {
     return state !== undefined && this.forceState(state);
   }
 
-  /** Take damage. Health floors at zero; nothing happens there yet. */
-  hurtBy(amount: number): void {
-    this.hp = Math.max(0, this.hp - amount);
+  /**
+   * Take damage, **scaled by how long this combo has already run**, and return
+   * what it actually cost. The caller reports that number rather than the one it
+   * asked for: a log or a hit counter showing the unscaled figure would be
+   * describing a blow nobody took.
+   *
+   * Health floors at zero; nothing happens there yet.
+   */
+  hurtBy(amount: number): number {
+    const dealt = scaledDamage(amount, this.combo.hits);
+    this.hp = Math.max(0, this.hp - dealt);
     // Counted here rather than beside the reaction, because a blow that is
     // refused a reaction — a jab at someone already on the floor — still landed
     // and is still part of the combo.
-    this.combo.hit(amount);
+    this.combo.hit(dealt);
+    return dealt;
   }
 
   gotHit(blow: Blow): boolean {

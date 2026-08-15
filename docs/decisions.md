@@ -2,6 +2,29 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — Damage scaling: the opener is worth all of itself
+
+- **The first of the three curves** (`src/combat/scaling.ts`), and the one that
+  had to come first: a combo already took 78 of 100 health, so nothing about
+  juggling could be loosened while a single touch was most of a round. It takes
+  52 now.
+- **The shape**: opener at full value, ten per cent off per blow already landed,
+  floor at twenty. A curve rather than a per-move budget, because there will be
+  hundreds of moves and three curves, and the other kind of system never gets
+  finished.
+- **A blow that costs something never costs nothing.** Rounded, minimum one. A
+  free blow still stops and still holds the victim, so a floor of zero would let
+  a combo be extended at no price at all — and would make the damage counter a
+  lie.
+- **`hurtBy` returns what it actually cost**, and the blow reports that rather
+  than what it asked for. A log or a hit counter showing the unscaled figure
+  would be describing a blow nobody took.
+- **It lives beside the counter, not inside it.** `Combo` holds the state; the
+  curves are pure functions of it. The other two scalings land in the same file,
+  which is what keeps them one system rather than three opinions.
+- **The readout shows the next multiplier** (`next ×0.7`), because a curve you
+  cannot see while playing is a curve nobody can tune.
+
 ## 2026-08-16 — The buffer holds twelve frames, because hitstop adds to a move
 
 - **The arithmetic was wrong twice and the recording settled it.** Hitstop does

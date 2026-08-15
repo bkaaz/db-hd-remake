@@ -76,8 +76,8 @@ last frame. The alternative — the animation deciding — is how a drawing ends
 setting frame data.
 
 **What it bought, the day after** (2026-08-16): every attack used to be minus on
-hit — the fighter who landed a blow recovered second. Light is +4 now, medium
-+2, and `kick_high` is deliberately left minus because it pushes 62 px, further
+hit — the fighter who landed a blow recovered second. Light is +3 now, medium
++1, and `kick_high` is deliberately left minus because it pushes 62 px, further
 than anything in the game reaches. Frame advantage and knockback were moved
 together, since one is the other times the hold; every distance stayed where it
 was while the frames changed completely.
@@ -113,6 +113,12 @@ next.
 | **hitstun** | each successive blow holds for less | corner loops — the defender eventually recovers before the next blow lands, so the combo ends *itself* |
 | **launch / gravity** | each successive lift raises less | endless juggling — the victim falls out |
 
+**Damage scaling is built** (2026-08-16, `src/combat/scaling.ts`): the opener is
+worth all of itself, every blow after it takes ten per cent off the next, and the
+floor is twenty. A blow that costs something never costs nothing — a free blow
+still stops and still holds the victim, which would let a combo be extended at no
+price. The seven-hit combo that took 78 of 100 health takes 52 now.
+
 The reason to prefer curves over per-move budgets is not elegance, it is the
 scale of the authoring ahead: three curves in one file, versus a juggle cost to
 be filled in on each of several hundred moves that do not exist yet. The second
@@ -137,11 +143,11 @@ it to the budget costs a string its own finisher — a combo opened with two
 uppercuts could not end with a knockdown. So the sequence is launcher, then two
 more lifts, then the fall.
 
-**Why the hard limit currently feels like a wall**: it is the *only* limiter in
-the game. Everything in §3 is unbuilt, so a cap doing the work of three curves
-at once ends a juggle by refusing a blow, where scaling would have the body
-visibly falling out. Raising the number is not the answer to "can we juggle
-more" — the curves are. Nor is it safe while a combo can take 78 of 100 health.
+**Why the hard limit still feels like a wall**: it ends a juggle by refusing a
+blow, where scaling would have the body visibly falling out of one. Damage
+scaling landed on 2026-08-16, so a long combo is no longer a round; the two that
+would soften the *shape* of a juggle — hitstun and launch — are still unbuilt.
+Raising the number is not the answer to "can we juggle more". The curves are.
 
 Chain links that juggle are deliberately not smashes: a juggle keeps a body up
 where a smash puts it back down, and a string that spent the budget on its own
