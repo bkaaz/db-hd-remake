@@ -110,7 +110,10 @@ export class Fighters {
    */
   exchangeBlows(): void {
     if (!this.opponent) return;
-    const gap = Math.abs(this.opponent.x - this.player.x);
+    // In SPRITE px, like every reach, box and knockback in the project. World
+    // positions are kept in screen px at a fixed scale, and a gap quoted in
+    // those cannot be compared with the numbers it exists to be compared with.
+    const gap = Math.abs(this.opponent.x - this.player.x) / this.player.placement.scale;
     const named = this.named();
     this.recorder.blow(landBlow(this.player, this.opponent, this.impact), "P1", "P2", gap, named);
     this.recorder.blow(landBlow(this.opponent, this.player, this.impact), "P2", "P1", gap, named);

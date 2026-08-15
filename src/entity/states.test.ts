@@ -411,6 +411,32 @@ describe("a chain link has to be able to reach what the last one knocked away", 
     const advance = (attack.vel?.[0] ?? 0) * frames(attack.anim);
     expect(knockback - advance).toBeLessThan(reach(states[to].anim));
   });
+
+  /**
+   * Distance is only half of it, and the recording found the other half: the
+   * defender has to still be *helpless* when the next blow arrives, not merely
+   * within range of it.
+   *
+   * From the blow landing, both fighters freeze for the same hit pause, so it
+   * cancels out of both sides of the sum. The attacker is then free one frame
+   * later and spends the next link's start-up getting its box out; the defender
+   * is helpless for as long as the reaction lasts. Hence `1 + start-up` against
+   * the reaction's length, with no hitstop in it.
+   */
+  const startup = (anim: string): number => {
+    let before = 0;
+    for (const step of anims[anim]?.steps ?? []) {
+      if ((step.boxes ?? []).some((b) => b.type === "hit")) return before;
+      before += step.dur;
+    }
+    return before;
+  };
+
+  it.each(links)("%s still has %s helpless when the next blow lands", (from, to) => {
+    const reaction = states[states[from].onHit ?? ""];
+    if (!reaction?.vel) return; // a knockdown: helplessness is not the question
+    expect(1 + startup(states[to].anim)).toBeLessThanOrEqual(frames(reaction.anim));
+  });
 });
 
 /** idle ⇄ walk_fwd, plus an attack reached with the light button. */

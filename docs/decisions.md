@@ -2,6 +2,39 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Being hit again restarts the reaction
+
+- **The medium string was not a true combo**, and the reason was not the one
+  written down an hour earlier. The first recording showed the defender
+  recovering three frames before the third blow arrived, and that was diagnosed
+  as hitstun being too short. It was wrong.
+- **`setAnim` returns early when the animation name has not changed**, which is
+  right for a transition — `walk_fwd → walk_back` should keep one cycle running
+  rather than stutter — and exactly backwards for a blow. Re-entering `hurt`
+  from `hurt` left the reaction playing from wherever it had got to, so **the
+  second hit refreshed nothing.** The log said so plainly: `P2 hurt 1/1 4f` at
+  the moment of a fresh hit, where it should have read 12f.
+- **A forced state restarts its animation; a chosen one does not.** That is the
+  distinction the guard was missing, and it is the same one the rest of the
+  engine already draws between transitioning and being made to go somewhere.
+- **The rank rule said equal rank re-enters "because that is what a combo is".**
+  It was right, and it had been silently failing to do it since the day it was
+  written.
+- **The data was always fine.** With the restart, the arithmetic works out with
+  frames to spare: the attacker cancels one frame after the pause and spends
+  eight on start-up, against twelve of flinch.
+- **The chain now has a timing test as well as a distance one** — reaction
+  length against `1 + start-up`, with the hit pause cancelling out of both
+  sides because it freezes attacker and defender alike. It passes today and
+  fails if the flinch is shortened by so much as a frame past the margin.
+- **The recording's `gap` is reported in sprite px**, like every other distance
+  in the project. It was screen px, which is the same number multiplied by a
+  scale of 3 — unusable for the one question it exists to answer. Noted beside
+  it that it is still not a *direct* comparison with reach, because a blow
+  arrives at the defender's hurt box rather than at their anchor.
+- Worth keeping: **the log found this on its first use**, and found it by
+  printing a number nobody would have thought to ask for.
+
 ## 2026-08-15 — Two ways to see a chain, because they answer different questions
 
 - **Scripted chain tests** (`src/entity/chains.test.ts`) drive the *committed*

@@ -311,7 +311,7 @@ export class Entity {
   /** Enter a state because something happened *to* this entity (being hit). */
   forceState(name: string): boolean {
     if (!this.sm?.force(name)) return false;
-    this.enterState();
+    this.enterState(true);
     return true;
   }
 
@@ -323,10 +323,10 @@ export class Entity {
    * its `launch` was applied only on the transition path, and a knockdown is
    * never transitioned into.
    */
-  private enterState(): void {
+  private enterState(forced = false): void {
     if (!this.sm) return;
     this.audio?.play(this.sm.def.sound);
-    this.setAnim(this.sm.def.anim);
+    this.setAnim(this.sm.def.anim, forced);
     this.spent = false;
     this.landed = false;
     // Rank 0 is anything that is not a reaction, so arriving in one is the
@@ -478,8 +478,12 @@ export class Entity {
     return this.anim.steps[Math.min(this.stepIndex, this.anim.steps.length - 1)];
   }
 
-  private setAnim(name: string): void {
-    if (name === this.animName) return;
+  private setAnim(name: string, restart = false): void {
+    // The guard is what lets walk_fwd → walk_back keep one cycle running rather
+    // than stutter. `restart` is for the opposite case: being hit again while
+    // already reeling has to play the reaction from the top, or the second blow
+    // silently fails to refresh how long the defender is helpless.
+    if (name === this.animName && !restart) return;
     const anim = this.def.animations[name];
     if (!anim) {
       console.warn(`[entity] unknown animation "${name}"`);

@@ -32,56 +32,47 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## Combat, in order — three things the first chain turned up
+## Next: an explicit `hitstun`
 
-The medium string exists and can be played. A recording of it
-(`L`, then `logs/session.log`) showed two problems and one gap in the tests.
-**Do these in order; each is small and the last one needs the second.**
+A reaction lasts exactly as long as its animation — a number chosen so a pose
+reads well, quietly deciding whether combos exist. Combos need the defender's
+helplessness tuned **independently of how many frames the pose takes**; that
+difference against the attacker's recovery *is* the combo. Hitstop does not
+enter into it, because freezing both sides equally leaves frame advantage
+unchanged, which is why it is symmetric.
 
-### 1. The recording's `gap` is in the wrong units
+**It is the first piece of [`combat.md`](./combat.md)** — the three scalings,
+the smash limit and everything after them are tuning on top of it.
 
-It prints screen px while every reach, box and knockback in the project is in
-sprite px — `SCALE` is 3, so a logged `gap 134` is really 45. It is the one
-number in the log meant to answer "did it reach", and it cannot be compared with
-the numbers it exists to be compared with.
-
-Worth writing down beside it: even converted, it is not a *direct* comparison.
-A blow reaches the defender's hurt box, not their anchor, so the defender's own
-box (~30 px) is part of the sum.
-
-*Done when:* the log reports the gap in sprite px, and says so.
-
-### 2. There is no test for a chain link's **timing**
-
-`states.test.ts` checks that knockback does not push the defender out of the
-next link's *reach*. Nothing checks that the defender is still *helpless* when
-it arrives, and that is the failure the recording found: after the second blow
-the victim recovered three frames before the third landed. Same arithmetic, same
-data — reaction length against hit pause plus the next link's start-up.
-
-**It will fail on today's data.** That is the point; it is measuring a real
-defect. Write the test, watch it fail, then fix it with item 3.
-
-*Done when:* every chain link is checked for time as well as distance.
-
-### 3. An explicit `hitstun`
-
-Today a reaction lasts exactly as long as its animation — a number chosen so the
-pose reads well, now silently deciding whether combos exist. The recording put
-figures on it: `hurt` holds for 12 frames, and the third link needs 14 (6 of hit
-pause, 1 to cancel, 7 of start-up). Three frames short, and unfixable except by
-shortening a start-up for the wrong reason.
-
-Combos need the defender's helplessness tuned **independently of how many frames
-the pose takes** — that difference against the attacker's recovery *is* the
-combo. Hitstop does not enter into it: freezing both sides equally leaves frame
-advantage unchanged, which is why it is symmetric.
-
-**It is the first piece of the combat system in [`combat.md`](./combat.md)** —
-the three scalings, the smash limit and everything else are tuning on top of it.
+*Honest note on why, since the first answer was wrong.* The recording showed the
+medium string was not a true combo, and this was written up as hitstun being
+three frames short. It was not: re-entering a reaction did not restart its
+animation, so a second blow never refreshed anything (fixed 2026-08-15, and
+there is now a test for the timing). The data was always fine. Hitstun is still
+next, but as a foundation rather than a repair.
 
 *Done when:* a blow says how long it holds the defender, independently of the
-reaction's animation, and item 2's test passes.
+reaction's animation, and the chain timing test reads that number instead of the
+animation's length.
+
+**The concrete target, measured.** A second recording, after the restart fix,
+landed the string twice: from a starting gap of 30 sprite px it combos (3 hits,
+26 damage, the third blow arriving `(was hurt)`); from 42 it drops the third
+blow by **one frame**. The defender slides away at 1.4 px a frame while the
+attacker drifts forward at 0.4 — net +1.0 — against a combined reach of 61
+(36 of kick_low plus 25 of the defender's own hurt box). The last blow's box
+came out at roughly 64 px and connected only once the sliding stopped, which is
+the same instant the defender recovered.
+
+So the string is **distance-dependent, with a one-frame margin**, and a player
+has no way to see why it dropped. Three levers reach it — less knockback, more
+drift, or longer hitstun — and hitstun is the one that is a foundation rather
+than a fudge.
+
+Note what the tests cannot do here: the distance test compares the *per-link*
+growth (7.2 px) against reach, and the real constraint is the **cumulative** gap
+from wherever the two were standing. That is a property of a match, not of the
+data, so it belongs in a recording rather than in a test.
 
 ## Now: code the owner can read, before there is more of it
 

@@ -41,7 +41,12 @@ export class Recorder {
     }
   }
 
-  /** One blow. The gap is why the follow-up will reach, or will not. */
+  /**
+   * One blow. The gap — in **sprite px** — is why the follow-up will reach, or
+   * will not. It is not a direct comparison with an attack's reach: a blow
+   * arrives at the defender's hurt box, not at their anchor, so the defender's
+   * own box (roughly 30 px) is part of the sum.
+   */
   blow(result: BlowResult | null, from: string, to: string, gap: number, fighters: Named): void {
     if (!result) return;
     // The attack is already in the attacker's column; what the column cannot
