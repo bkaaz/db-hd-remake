@@ -78,9 +78,10 @@
         "33"
       ]
     },
-    "crouch_attack": {
-      "desc": "? Crouched with the lead arm driving forward — an attack from a low stance, but which one is unconfirmed. 47, 49 and 53 used to be lumped in here and turned out to belong to the air kick, the flying kick and the crouching kick.",
+    "punch_air": {
+      "desc": "Striking with the hands while airborne, confirmed by the owner 2026-08-15: 43 the wind-up with the body stretched and the arms drawn up behind, 44 the blow being driven down and forward with both fists, 45 the same still going and the frame it ends on. The counterpart of kick_air. Was catalogued as a \"crouch_attack\" with a `?` — 44 and 45 read as a crouch only because a body pitched forward with the legs trailing looks like one when there is no ground line to judge it against. 47, 49 and 53 were also lumped in here once and turned out to be the air kick, the flying kick and the crouching kick.",
       "frames": [
+        "43",
         "44",
         "45"
       ]
@@ -93,8 +94,17 @@
         "70"
       ]
     },
-    "overhead_swing": {
-      "desc": "? A committed overhead attack: guard, swing with a bright arc trail, recovery with the arm still up. Grouping and order are read off the sheet, not confirmed.",
+    "knee": {
+      "desc": "A knee strike, confirmed by the owner 2026-08-15: 112 prepares, 113 brings the knee up, 114 drives it further, 115 carries it through the air. **Two moves out of one set, and the short one is a PREFIX of the long one** — a close-range knee that ends at 114, and a travelling knee that continues into 115 and leaves the ground. Worth deciding before it is built: our animations play whole, so a prefix is either two animations sharing three frames, or one animation with a state that leaves early. Was guessed as a rising kick / launcher and is not one.",
+      "frames": [
+        "112",
+        "113",
+        "114",
+        "115"
+      ]
+    },
+    "deflect": {
+      "desc": "Batting a projectile away, confirmed by the owner 2026-08-15: 71 the wind-up with the arm drawn back low, 72 the active frame — the arm sweeping up and over behind a bright arc of light — 73 the arm left extended above. In the original the same move doubles as **one of the attacks**, so it is one animation behind two states: one that hits, one that turns a ki bolt aside. Was catalogued as \"overhead_swing\" with a `?`. The same gesture as deflect_far (99, 101), which is the far-plane version of this.",
       "frames": [
         "71",
         "72",
@@ -120,15 +130,19 @@
       ]
     },
     "ki_blast": {
-      "desc": "? A projectile attack: 54 gathers both hands in front of the chest, 55 thrusts one arm out — the charge and the release. 56-60 are the projectile itself, not poses. Whether this is the Kamehameha or a smaller ki blast is unconfirmed.",
+      "desc": "Firing a ki bolt from the fighting plane, confirmed by the owner 2026-08-15: 54 charges it with the feet wide and both hands together at the chest, 55 thrusts one arm out with the hand open. This is the version that fills the S slot — S is the ki blast in our button scheme — while ki_blast_foreground is the same idea drawn around a step toward the camera. Exactly the split the two Kamehamehas have.",
       "frames": [
         "54",
-        "55",
-        "56",
-        "57",
-        "58",
-        "59",
-        "60"
+        "55"
+      ]
+    },
+    "ki_blast_foreground": {
+      "desc": "Firing a ki bolt from the FOREGROUND, confirmed by the owner 2026-08-15. Goku steps nearer the camera to shoot: 87 is the foreground pose (and most likely the frame that carries the step there), 88 is the full-body white flash that starts the attack, 89 the arm wind-up, 90 the shot. Shares 87 and 88 with kamehameha_foreground, which is what a shared entry looks like. The foreground is drawn as scale and it is subtle: 83–85 px against the idle's 81–82, so playing the frames gives the effect without the engine scaling anything.",
+      "frames": [
+        "87",
+        "88",
+        "89",
+        "90"
       ]
     },
     "kick_basic": {
@@ -156,14 +170,14 @@
       ]
     },
     "kick_air": {
-      "desc": "A kick thrown while airborne: 46, 47. Confirmed by the owner.",
+      "desc": "A kick thrown while airborne: 46 gathers, 47 puts the leg out. Confirmed by the owner. **It is not only an air move** — the owner flags it for reuse on the ground inside combinations (2026-08-15), which is what the animation/state split is for: the same frames, a different state, different damage and a different reaction. Open: whether the move actually begins at 45, the frame punch_air ends on. If it does, the two share it — the recovery of one being the wind-up of the next is exactly what a chain looks like, and worth settling before either is rebuilt.",
       "frames": [
         "46",
         "47"
       ]
     },
     "flying_kick": {
-      "desc": "A special attack from the air, the flying kick: 48, 49. Confirmed by the owner. Not being built yet — specials come after the basic moves.",
+      "desc": "An attack out of the air, and the sheet uses it for two things (owner, 2026-08-15): the blow thrown during a diagonal jump, and a dedicated air special where 49 carries Goku diagonally down to the ground still attacking. 48 is the tuck, 49 the leading leg with the body angled behind it. The second use is a TRAVELLING attack — the pose is held while the fighter moves — which our state machine already covers: an airborne state with a launch and a `landed` transition, no new machinery. Another case of one animation serving two states with different damage and different reach.",
       "frames": [
         "48",
         "49"
@@ -183,8 +197,8 @@
         "53"
       ]
     },
-    "guard_stand": {
-      "desc": "? Upright with the forearms crossed in front of the chest, three near-identical frames. NOT the block — that is 28. What they actually are is unconfirmed.",
+    "exhausted": {
+      "desc": "Being spent, confirmed by the owner 2026-08-15: out of ki, or badly hurt. Three near-identical hunched frames that read as heavy breathing, the same way the idle's three read as breathing normally. Was catalogued as \"guard_stand\" with a `?` and was never the guard — the block is 28, alone.",
       "frames": [
         "11",
         "12",
@@ -212,15 +226,6 @@
         "84",
         "85",
         "86"
-      ]
-    },
-    "ki_blast": {
-      "desc": "Firing a ki bolt, confirmed by the owner 2026-08-15. Goku steps to the FOREGROUND — nearer the camera — to shoot: 87 is the foreground pose (and most likely the frame that carries the step there), 88 is the full-body white flash that starts the attack, 89 the arm wind-up, 90 the shot. Shares 87 and 88 with kamehameha, which is what a shared entry looks like. The foreground is drawn as scale and it is subtle: 83–85 px against the idle's 81–82, so playing the frames gives the effect without the engine scaling anything.",
-      "frames": [
-        "87",
-        "88",
-        "89",
-        "90"
       ]
     },
     "kamehameha_foreground": {
@@ -393,6 +398,20 @@
         "176"
       ]
     },
+    "kick_string": {
+      "desc": "The original's leg combo, in sheet order, confirmed by the owner 2026-08-15: 34-42 is ONE nine-frame string of three kicks, not three unrelated kicks. 34 is the neutral it starts from; 35-36 is the first blow, straight forward at hip height; 37-39 the second, leg high with the torso thrown well back and the longest reach on the sheet at 83 px; 40-42 the third, low and near the ground. The three differ by HEIGHT — mid, high, low — which is what makes a string a mixup rather than a repetition, and it is direct evidence for how the L/M/H chain should read. The groups kick_basic, kick_heavy and kick_combo are the individual blows of this same string; `kick_heavy` is named after a placeholder button rather than after its pose, and wants renaming when the moveset is rebuilt.",
+      "frames": [
+        "34",
+        "35",
+        "36",
+        "37",
+        "38",
+        "39",
+        "40",
+        "41",
+        "42"
+      ]
+    },
     "palettes": {
       "desc": "Not poses: one standing pose recoloured five ways, kept on the sheet as examples of the alternate palettes (confirmed by the owner 2026-08-15, to be dealt with later). Nothing animates these.",
       "frames": [
@@ -415,9 +434,9 @@
     "8": "SSJ idle, third breathing frame",
     "9": "SSJ walk, guard held. NOT mid-stride: the feet are planted in the same wide stance as 10 (looked at 2026-08-15)",
     "10": "SSJ walk, same foot placement as 9 — only the arms rise and the body lifts. The pair is a bob, not a step",
-    "11": "? standing guard: upright, forearms crossed in front of the chest, weight even",
-    "12": "? standing guard, second frame — near-identical to 11, the pair reads as breathing",
-    "13": "? standing guard, third frame — the arms sit fractionally lower than in 11",
+    "11": "exhausted: hunched, arms hanging in across the chest, weight sagging",
+    "12": "exhausted, second frame — near-identical to 11, the set reads as heavy breathing",
+    "13": "exhausted, third frame — the arms sit fractionally lower again",
     "14": "airborne: body upright, arms out to the sides, legs extended straight down — the rise",
     "15": "airborne: compact, knees drawn up, arms bent in — tuck",
     "16": "airborne: tighter tuck, forearms crossed at the chest",
@@ -438,28 +457,28 @@
     "31": "SSJ charging: same pose, aura at its largest",
     "32": "square guard: feet planted, both fists up at chest height — the light punch starts here AND returns here, so it appears twice in that animation",
     "33": "straight punch fully extended, lead fist out at shoulder height, body turned into it — the active frame",
-    "34": "basic kick: standing with both fists up near the shoulders, feet apart, no leg committed yet",
+    "34": "kick_string, the neutral it starts from: fists up near the shoulders, feet apart, no leg committed",
     "35": "basic kick: side-on, torso leaning back, lead knee lifted",
-    "36": "basic kick, the extended frame: lead leg straight forward at hip height, arms up for balance",
+    "36": "kick_string blow 1, extended: lead leg straight forward at hip height — the MID kick, 68 px of reach",
     "37": "heavy kick, the wind-up: torso leaning back, knee lifted, arms drawn in. Confirmed by the owner",
     "38": "heavy kick, the strike being delivered: leaning forward off the back foot with one arm trailing behind. Confirmed by the owner",
-    "39": "heavy kick, the extended frame: leg extended forward and upward, body leaning well back — the highest of the three kicks",
-    "40": "combination kick: upright, lead fist forward at chest height, rear fist low",
+    "39": "kick_string blow 2, extended: leg high with the torso thrown well back — the HIGH kick, and the longest reach on the sheet at 83 px",
+    "40": "kick_string: upright between blow 2 and blow 3, lead fist forward — the recovery that becomes the next wind-up",
     "41": "combination kick: knees bent, both fists up, compact",
-    "42": "combination kick, the extended frame: leg extended forward near the ground, body leaning far back — the lowest of the three kicks",
-    "43": "? standing tall with one arm swung up overhead, body stretched — an overhead attack of some kind; NOT the uppercut, which is 50/51",
-    "44": "? crouched low with the lead arm driving forward",
-    "45": "? crouched low, arm extended further forward than 44 — the same attack one frame on",
+    "42": "kick_string blow 3, extended: leg out low near the ground, body leaning far back — the LOW kick, 72 px",
+    "43": "punch_air, the wind-up: airborne, body stretched out, arms drawn up and back over the head",
+    "44": "punch_air, the strike: pitched forward with both fists driven down and out, legs trailing",
+    "45": "punch_air, still going and the frame it ends on — the same posture, fists lower",
     "46": "air kick: body compact and leaning back, fists up, legs gathered — the frame before the leg goes out",
     "47": "air kick, the extended frame: lead leg out low and forward, body leaning back to counterbalance",
-    "48": "flying kick (special, not built yet): body tucked tight, arms in front — the launch of a committed airborne charge",
-    "49": "flying kick (special, not built yet), the extended frame: body stretched out nearly horizontal behind the leading leg",
+    "48": "flying kick, the tuck: knees drawn up, fists at the chest, airborne",
+    "49": "flying kick, the leading leg out and down with the body angled behind it. Held while travelling — this is the frame that carries Goku diagonally to the ground in the air special",
     "50": "uppercut: crouched with both fists up in front of the chest — the compression before rising into the blow",
     "51": "uppercut, the extended frame: driving upright with one fist high above the head, the other at the chest",
     "52": "crouching kick: crouched and turned away, arms drawn tight to the body — the frame before the leg goes out",
     "53": "crouching kick, the extended frame: leg extended forward along the ground, body leaning well back",
-    "54": "? standing with the feet wide and both hands brought together in front of the chest — the charge of a projectile attack",
-    "55": "? the same wide stance with one arm thrust forward, hand open — the release that follows 54",
+    "54": "ki_blast, the charge: feet wide, both hands brought together in front of the chest",
+    "55": "ki_blast, the release: one arm thrust forward, hand open",
     "56": "? projectile sprite, not a pose: an elongated bolt of energy with a trailing tail, the largest of the set",
     "57": "? projectile sprite: the same bolt, shorter",
     "58": "? projectile sprite: a small flattened blob of energy — the smallest of the set",
@@ -468,9 +487,9 @@
     "68": "impact effect: a compact ball of flame with short spikes around it — an effect sprite, not a pose",
     "69": "impact effect: the same burst, larger and breaking up into flames at the bottom — the next step of 68",
     "70": "? impact effect: a thin arc of orange sparks, nothing else — the dying end of 68/69, or a separate small effect",
-    "71": "? standing with both forearms crossed high in front of the face, weight on the back foot — a guard, or the wind-up of the swing in 72",
-    "72": "? overhead swing: arm coming down with a bright arc trail drawn behind it — the trail marks this as the active frame of an attack",
-    "73": "? standing with the lead arm raised high and the fist closed — reads as the recovery of 72",
+    "71": "deflect, the wind-up: compact, arm drawn back and low",
+    "72": "deflect, the active frame: the arm sweeping up and over behind a bright arc of light",
+    "73": "deflect, after: the arm left extended above the head",
     "74": "hit reaction, light: upright, head snapped back, arms flung out and down. Played alone it IS the light reaction; it is also the first frame of the heavier one, which continues into 75",
     "75": "hit reaction, heavy: turned away from the blow, near arm across the face, head dropped — the recoil that follows 74 when the attack is strong enough to need one. Not used alone",
     "76": "hit reaction to the stomach / a low blow — doubled forward, head down and forward, arms hanging loose",
@@ -509,10 +528,10 @@
     "109": "? the ki bolt, 12 px",
     "110": "? the ki bolt, 10 px",
     "111": "? the ki bolt, 8 px — the far end of the flight",
-    "112": "? full-height standing lean — probably the entry into the rising kick below",
-    "113": "? coiling down and back, the wind-up",
-    "114": "? coiled tighter, still leaning away",
-    "115": "? the leg thrown high — the extended frame of a rising kick, and the obvious launcher of this sheet",
+    "112": "knee: the preparation, standing and leaning in",
+    "113": "knee: the knee coming up",
+    "114": "knee: driven further up — the frame the close-range version ends on",
+    "115": "knee: carried through the air, feet off the ground — only the travelling version reaches this",
     "116": "? a small yellow scrap, 8x13 — ki bolt tail or impact debris",
     "117": "? a smaller scrap, 8x8",
     "118": "? a smaller scrap, 8x8",

@@ -147,8 +147,10 @@ anything kept on purpose says why — here or in `decisions.md`.
 
 Frames settled: 17 is the way down, 18 the held crouch, and the crouching kick
 is 52–53 — all built. **A crouching guard is not on our sheet** and is the first
-known gap; the standing guard is 11–13. It blocks nothing today, because
-blocking does not exist as a state. Options are recorded in `decisions.md`.
+known gap. The standing guard is **28 and nothing else**: 11–13 was listed here
+as the standing guard and is in fact Goku exhausted (owner, 2026-08-15), so the
+guard is a single frame held on contact, which is all it ever needed to be.
+Options for the crouching one are recorded in `decisions.md`.
 
 *Open:* whether a low blow needs its own reaction. Frame 76 is a hit to the
 stomach, so the sprite exists — the question is whether the fight reads better
