@@ -59,6 +59,7 @@
     "kick_mid": {
       "anim": "kick_mid",
       "vel": [0.4, 0],
+      "hitstop": 10,
       "turn": false,
       "onHit": "hurt_chain",
       "damage": 7,
@@ -101,6 +102,7 @@
     "kick_thrust": {
       "anim": "kick_air",
       "vel": [0.4, 0],
+      "hitstop": 10,
       "turn": false,
       "onHit": "hurt_chain",
       "damage": 8,
@@ -115,6 +117,7 @@
     "kick_finisher": {
       "anim": "kick_high",
       "vel": [0.4, 0],
+      "hitstop": 10,
       "turn": false,
       "onHit": "knockdown_sweep",
       "damage": 14,
@@ -129,6 +132,7 @@
     "kick_low": {
       "anim": "kick_low",
       "vel": [0.4, 0],
+      "hitstop": 10,
       "turn": false,
       "onHit": "hurt_chain",
       "damage": 9,

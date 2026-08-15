@@ -1494,7 +1494,7 @@
     "steps": [
       {
         "frame": "46",
-        "dur": 4,
+        "dur": 8,
         "boxes": [
           {
             "type": "hurt",
