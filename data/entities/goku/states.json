@@ -60,13 +60,13 @@
       "anim": "kick_mid",
       "vel": [0.4, 0],
       "turn": false,
-      "onHit": "hurt",
+      "onHit": "hurt_chain",
       "damage": 7,
       "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
-        { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_high_chain" },
+        { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_thrust" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -98,18 +98,31 @@
         { "when": "animEnd", "to": "idle" }
       ]
     },
-    "kick_high_chain": {
+    "kick_thrust": {
+      "anim": "kick_air",
+      "vel": [0.4, 0],
+      "turn": false,
+      "onHit": "hurt_chain",
+      "damage": 8,
+      "sound": "swing_2",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
+      "transitions": [
+        { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_low" },
+        { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "kick_finisher": {
       "anim": "kick_high",
       "vel": [0.4, 0],
       "turn": false,
-      "onHit": "hurt",
-      "damage": 9,
+      "onHit": "knockdown_sweep",
+      "damage": 14,
       "sound": "swing_3",
       "hitSound": "hit_2",
       "blockSound": "block_1",
       "hitFx": "spark_2",
       "transitions": [
-        { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_low" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -117,13 +130,14 @@
       "anim": "kick_low",
       "vel": [0.4, 0],
       "turn": false,
-      "onHit": "knockdown_sweep",
-      "damage": 10,
+      "onHit": "hurt_chain",
+      "damage": 9,
       "sound": "swing_3",
       "hitSound": "hit_2",
       "blockSound": "block_1",
       "hitFx": "spark_2",
       "transitions": [
+        { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_finisher" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -163,6 +177,17 @@
         { "when": "landed", "to": "idle" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" }
+      ]
+    },
+    "hurt_chain": {
+      "anim": "hurt",
+      "rank": 1,
+      "vel": [-1.0, 0],
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "hurt_air",
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
       ]
     },
     "hurt": {

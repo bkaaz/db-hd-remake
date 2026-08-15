@@ -71,19 +71,31 @@ class Sim {
 }
 
 describe("the medium string", () => {
-  it("walks mid → high → low when every blow connects", () => {
+  it("walks mid → thrust → sweep → finisher when every blow connects", () => {
     const s = new Sim();
     expect(s.frame({ medium: true })).toBe("kick_mid");
-    expect(s.confirmAnd("medium")).toBe("kick_high_chain");
+    expect(s.confirmAnd("medium")).toBe("kick_thrust");
     expect(s.confirmAnd("medium")).toBe("kick_low");
+    expect(s.confirmAnd("medium")).toBe("kick_finisher");
   });
 
-  it("is three long — the sweep does not chain into anything", () => {
+  it("is four long — the finisher does not chain into anything", () => {
     const s = new Sim();
     s.frame({ medium: true });
     s.confirmAnd("medium");
     s.confirmAnd("medium");
-    expect(s.confirmAnd("medium")).toBe("kick_low");
+    s.confirmAnd("medium");
+    expect(s.confirmAnd("medium")).toBe("kick_finisher");
+  });
+
+  it("only the finisher knocks down — a middle link must leave them standing", () => {
+    // A middle link that floored the opponent would end the string at itself,
+    // however many links came after it in the data.
+    const reaction = (state: string): string | undefined => goku().states[state].onHit;
+    expect(reaction("kick_mid")).toBe("hurt_chain");
+    expect(reaction("kick_thrust")).toBe("hurt_chain");
+    expect(reaction("kick_low")).toBe("hurt_chain");
+    expect(reaction("kick_finisher")).toBe("knockdown_sweep");
   });
 
   it("stops on a whiff, however hard the button is pressed", () => {

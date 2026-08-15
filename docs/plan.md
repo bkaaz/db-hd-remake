@@ -32,6 +32,48 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
+## First: rank refuses juggles, and it should not
+
+Found by playing, 2026-08-15. Launch someone with the uppercut, then run the
+medium string into the falling body: every blow connects and takes health — 52
+damage across five — and **not one of them interrupts**, so the victim serenely
+finishes the fall. From the recording:
+
+```
+00717  uppercut HITS          → P2 knockdown (rank 3)
+00759  kick_mid HITS (was knockdown) · 7 dmg     ← no state change
+00769  kick_thrust HITS (was knockdown) · 8 dmg  ← no state change
+00779  P2 knockdown → bounce  (rank 4)
+00797  kick_finisher HITS (was bounce) · 14 dmg  ← refused, 3 < 4
+```
+
+**The rank rule is doing exactly what it was told**, and the instruction was too
+broad. It was written to stop a jab *rescuing* someone mid-knockdown; it also
+stops anything *juggling* them, and those are different wishes that one number
+cannot tell apart.
+
+**The fix needs no engine change**, because rank is compared *after* the
+`ifAirborne` redirect: give the chain's reaction an air version that is a
+juggle.
+
+```jsonc
+"hurt_chain": { "rank": 1, "ifAirborne": "juggle" }
+"juggle":     { "rank": 3, "airborne": true, "launch": [ … ] }
+```
+
+The same blow then flinches a standing opponent (rank 1) and juggles a falling
+one (3 ≥ 3). `bounce` stays rank 4 — once you have touched the floor the
+exchange is over — and with juggling working the string should not reach it.
+
+**The decision that is actually open, and it is the owner's:** this switches
+juggling on while `combat.md` §4's smash limit does not exist. Uppercut into
+uppercut will loop. The four-link string self-terminates so the practical risk
+is small, but the hole becomes reachable. Either accept it and note it, or build
+the limit first.
+
+*Done when:* a blow landing on a falling body visibly juggles it, and a jab
+still cannot stand up someone on the floor.
+
 ## Next: an explicit `hitstun`
 
 A reaction lasts exactly as long as its animation — a number chosen so a pose
@@ -55,19 +97,12 @@ next, but as a foundation rather than a repair.
 reaction's animation, and the chain timing test reads that number instead of the
 animation's length.
 
-**The concrete target, measured.** A second recording, after the restart fix,
-landed the string twice: from a starting gap of 30 sprite px it combos (3 hits,
-26 damage, the third blow arriving `(was hurt)`); from 42 it drops the third
-blow by **one frame**. The defender slides away at 1.4 px a frame while the
-attacker drifts forward at 0.4 — net +1.0 — against a combined reach of 61
-(36 of kick_low plus 25 of the defender's own hurt box). The last blow's box
-came out at roughly 64 px and connected only once the sliding stopped, which is
-the same instant the defender recovered.
-
-So the string is **distance-dependent, with a one-frame margin**, and a player
-has no way to see why it dropped. Three levers reach it — less knockback, more
-drift, or longer hitstun — and hitstun is the one that is a foundation rather
-than a fudge.
+**The concrete target, measured.** The string is four links as of 2026-08-15
+and its middle links use a softer reaction (`hurt_chain`, 1.0 rather than 1.4),
+which took the tightest margin from 3 sprite px to 13 — so hitstun is no longer
+holding anything up. What it buys is the *ability to tune* helplessness at all:
+today a reaction lasts exactly as long as its animation, so the only way to make
+a link land later is to redraw a pose.
 
 Note what the tests cannot do here: the distance test compares the *per-link*
 growth (7.2 px) against reach, and the real constraint is the **cumulative** gap

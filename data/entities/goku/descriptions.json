@@ -162,7 +162,7 @@
       ]
     },
     "kick_air": {
-      "desc": "A kick thrown while airborne: 46 gathers, 47 puts the leg out. Confirmed by the owner. **It is not only an air move** — the owner flags it for reuse on the ground inside combinations (2026-08-15), which is what the animation/state split is for: the same frames, a different state, different damage and a different reaction. Open: whether the move actually begins at 45, the frame punch_air ends on. If it does, the two share it — the recovery of one being the wind-up of the next is exactly what a chain looks like, and worth settling before either is rebuilt.",
+      "desc": "A kick thrown while airborne: 46 gathers, 47 puts the leg out. Confirmed by the owner. **It is not only an air move.** As of 2026-08-15 it is the SECOND link of the ground medium string, as the state `kick_thrust` — the same frames, a different state, different damage and a different reaction. Exactly what the animation/state split is for. Open: whether the move actually begins at 45, the frame punch_air ends on. If it does, the two share it — the recovery of one being the wind-up of the next is exactly what a chain looks like, and worth settling before either is rebuilt.",
       "frames": [
         "46",
         "47"

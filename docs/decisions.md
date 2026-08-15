@@ -2,6 +2,31 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Four links, and the middle of a string barely pushes
+
+- **The medium string is four blows**, chosen by the owner from the sheet:
+  `kick_mid` (36) → `kick_thrust` (47) → `kick_low` (42) → `kick_finisher` (39).
+  Nothing limits a chain's length; it is a path through the state machine.
+- **The longest-reaching kick goes last, and that is the whole trick.** Distance
+  grows through a string, so the final link is the one that needs reach most —
+  39 has the longest on the sheet at 44 px. Reversed, the string would end with
+  its shortest blow at its widest gap.
+- **Frame 47 is the air kick, used on the ground.** The owner flagged it for
+  this when the sheet was catalogued, and it is the fourth time one animation
+  has turned out to serve two states.
+- **Middle links use a softer reaction, `hurt_chain` (1.0 rather than 1.4).**
+  This is how the genre does it — the middle of a string barely pushes and the
+  finisher does the pushing — and here it was necessary rather than stylistic.
+  With four links the old knockback compounded to the point where the tightest
+  margin was **3 sprite px**, the same one-frame fragility a recording had just
+  caught. It is **13 px** now, with one more blow in the string than before.
+- **`kick_low` stopped being the finisher and had to stop knocking down.** A
+  middle link that floors the opponent ends the string at itself, however many
+  links follow it in the data — so there is now a test asserting that only the
+  last link's reaction is a knockdown.
+- **The chain tests earned their keep immediately**: they failed on the
+  restructure, naming the exact states that had moved, before anything was run.
+
 ## 2026-08-15 — Being hit again restarts the reaction
 
 - **The medium string was not a true combo**, and the reason was not the one
