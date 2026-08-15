@@ -355,12 +355,21 @@ export class Entity {
         heavy: this.buffer.has("heavy"),
         special: this.buffer.has("special"),
       },
-      { animEnded: this.animEnded, falling, nearGround, landed: this.landed },
+      {
+        animEnded: this.animEnded,
+        falling,
+        nearGround,
+        landed: this.landed,
+        // `spent` means this attack has connected — set on a hit and on a block,
+        // never on a whiff, which is exactly what a chain is allowed to continue
+        // from. It was already recorded for a different reason: an attack may
+        // only land once per entry into its state.
+        hitConfirmed: this.spent,
+      },
     );
     // A press that started a move is spent, so it cannot start a second one
     // when the move ends and the buffer has not expired yet.
-    const fired = this.sm.lastFired;
-    if (changed && fired?.startsWith("pressed:")) this.buffer.consume(fired.slice("pressed:".length));
+    if (changed && this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
     if (changed) this.enterState();
     this.buffer.tick();
 

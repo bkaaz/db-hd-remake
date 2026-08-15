@@ -2,6 +2,30 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — A transition may require several triggers at once
+
+- **`when` now takes a list as well as a string, and every trigger in it has to
+  hold.** A chain link needs two facts at the same time — the attack connected
+  *and* a button was pressed — and a transition could only test one.
+- **A conjunction rather than a compound trigger per pair.** The alternative
+  was inventing `confirmed:medium` and later `fwd:heavy`, which multiplies with
+  the button count and again with every new pairing. Command normals (forward
+  plus a button) want exactly the same mechanism, so it is built once.
+- **`hitConfirmed` costs nothing to add**, because `Entity.spent` already knew
+  the answer and already had the right meaning: it is set on a hit *and* on a
+  block, never on a whiff — which is precisely the rule chosen for chains — and
+  cleared on entering any state, so each link has to connect on its own.
+- **`lastFired` became `pressSpent`.** Once several triggers can fire together
+  there is no single "trigger that fired" to report, and the only caller wanted
+  one thing from it: which button to spend out of the input buffer. It now
+  answers that, by name, and the parsing lives with the module that knows how a
+  trigger is spelled.
+- The timing falls out of the loop order and is right by accident rather than
+  by design, so it is worth writing down: blows are resolved after `update()`,
+  and a connecting blow freezes both fighters for the hitstop. A cancel
+  therefore becomes available on the first frame *after* the freeze, which is
+  where a fighting game puts it.
+
 ## 2026-08-15 — The buttons become Light / Medium / Heavy / Special
 
 - **`punch`, `kick`, `punchHeavy` and `kickHeavy` are gone** from the input, the

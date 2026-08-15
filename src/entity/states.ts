@@ -12,8 +12,14 @@
  */
 
 export interface Transition {
-  /** Trigger expression, e.g. "held:fwd" or "!held:back". */
-  when: string;
+  /**
+   * Trigger expression, e.g. "held:fwd" or "!held:back" — or a **list, all of
+   * which must hold**. A chain link needs two facts at once ("my attack
+   * connected" and "a button was pressed"), and so will a command normal
+   * (forward plus a button), so the conjunction is the general shape rather
+   * than a special trigger per pair.
+   */
+  when: string | string[];
   /** State to enter when the trigger fires. */
   to: string;
 }
@@ -141,6 +147,13 @@ export interface Signals {
   nearGround: boolean;
   /** The entity touched the ground (latched until the state changes). */
   landed: boolean;
+  /**
+   * The attack this entity is in has **connected** — landed or been blocked,
+   * but never merely swung. It is what lets an attack be cancelled into the
+   * next link of a chain, and the reason a whiff ends a string: swinging at air
+   * has to be punishable or both players just hold the button down.
+   */
+  hitConfirmed: boolean;
 }
 
 /** Every trigger the runner understands, for validation and editor UI. */
@@ -157,6 +170,7 @@ export const TRIGGERS = [
   "falling",
   "nearGround",
   "landed",
+  "hitConfirmed",
 ] as const;
 
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
@@ -204,6 +218,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "landed":
       value = signals.landed;
       break;
+    case "hitConfirmed":
+      value = signals.hitConfirmed;
+      break;
     default:
       if (!warned.has(key)) {
         warned.add(key);
@@ -213,6 +230,24 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
   }
   return negated ? !value : value;
 }
+
+/** A `when` fires when every trigger in it does; a lone string is a list of one. */
+function fires(when: string | string[], input: InputSnapshot, signals: Signals): boolean {
+  return triggersOf(when).every((t) => evaluate(t, input, signals));
+}
+
+const triggersOf = (when: string | string[]): string[] => (Array.isArray(when) ? when : [when]);
+
+/**
+ * The button a transition spent, or null. A press that started a move must not
+ * start a second one when the move ends and the buffer has not expired yet, so
+ * whoever owns the buffer has to know which press was used — and only this
+ * module knows how a trigger is spelled.
+ */
+const pressIn = (when: string | string[]): string | null => {
+  const pressed = triggersOf(when).find((t) => t.startsWith("pressed:"));
+  return pressed ? pressed.slice("pressed:".length) : null;
+};
 
 /**
  * Which state a landed blow forces on the defender: the attacker's `onHit` if
@@ -242,10 +277,15 @@ export class StateMachine {
   /** Name of the state the entity is in. */
   current: string;
   /**
-   * The trigger that caused the last state change, or null. The caller needs it
-   * to spend a buffered press: a press that fired a move must not fire another.
+   * The attack button the last state change consumed, or null — the name alone
+   * (`"medium"`), not the trigger it was spelled with. A press that started a
+   * move must not start a second one when the move ends and the buffer has not
+   * expired yet, so whoever owns the buffer has to be told what was used. Once
+   * a transition can require several triggers at once there is no single
+   * "trigger that fired" to report, and this was the only thing anyone wanted
+   * from it.
    */
-  lastFired: string | null = null;
+  pressSpent: string | null = null;
 
   constructor(private readonly file: StatesFile) {
     this.current = file.states[file.initial] ? file.initial : Object.keys(file.states)[0] ?? "";
@@ -275,7 +315,7 @@ export class StateMachine {
    */
   update(input: InputSnapshot, signals: Signals): string | null {
     for (const t of this.def.transitions ?? []) {
-      if (!evaluate(t.when, input, signals)) continue;
+      if (!fires(t.when, input, signals)) continue;
       if (!this.file.states[t.to]) {
         if (!warned.has(t.to)) {
           warned.add(t.to);
@@ -285,7 +325,7 @@ export class StateMachine {
       }
       if (t.to === this.current) return null;
       this.current = t.to;
-      this.lastFired = t.when;
+      this.pressSpent = pressIn(t.when);
       return this.current;
     }
     return null;
@@ -448,11 +488,17 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
     (def.transitions ?? []).forEach((t, i) => {
       const at = `${where}, transition ${i}`;
-      const key = t.when?.startsWith("!") ? t.when.slice(1) : t.when;
-      if (!key) {
+      const triggers = t.when === undefined ? [] : triggersOf(t.when);
+      if (triggers.length === 0) {
         errors.push(`${at}: no "when" trigger`);
-      } else if (!(TRIGGERS as readonly string[]).includes(key)) {
-        errors.push(`${at}: unknown trigger "${key}" (known: ${TRIGGERS.join(", ")})`);
+      }
+      for (const trigger of triggers) {
+        const key = trigger?.startsWith("!") ? trigger.slice(1) : trigger;
+        if (!key) {
+          errors.push(`${at}: no "when" trigger`);
+        } else if (!(TRIGGERS as readonly string[]).includes(key)) {
+          errors.push(`${at}: unknown trigger "${key}" (known: ${TRIGGERS.join(", ")})`);
+        }
       }
       if (!t.to) {
         errors.push(`${at}: no "to" state`);

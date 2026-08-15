@@ -58,7 +58,13 @@ const ATTACK = { ...NONE, light: true };
 const UP = { ...NONE, up: true };
 
 /** Nothing happened to the entity this frame. */
-const QUIET = { animEnded: false, falling: false, nearGround: false, landed: false };
+const QUIET = {
+  animEnded: false,
+  falling: false,
+  nearGround: false,
+  landed: false,
+  hitConfirmed: false,
+};
 
 describe("validateStates", () => {
   it("accepts a well-formed machine", () => {
@@ -91,6 +97,25 @@ describe("validateStates", () => {
     const { errors } = validateStates(f, ANIMS);
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatch(/unknown trigger "pressed:x"/);
+  });
+
+  it("accepts a `when` of several triggers", () => {
+    const f = machine();
+    f.states.idle.transitions = [{ when: ["hitConfirmed", "pressed:light"], to: "walk_fwd" }];
+    expect(validateStates(f, ANIMS).errors).toEqual([]);
+  });
+
+  it("reports an unknown trigger inside a list, not just a lone one", () => {
+    const f = machine();
+    f.states.idle.transitions = [{ when: ["hitConfirmed", "pressed:x"], to: "walk_fwd" }];
+    expect(validateStates(f, ANIMS).errors).toHaveLength(1);
+    expect(validateStates(f, ANIMS).errors[0]).toMatch(/unknown trigger "pressed:x"/);
+  });
+
+  it("reports an empty list — a transition nothing can fire", () => {
+    const f = machine();
+    f.states.idle.transitions = [{ when: [], to: "walk_fwd" }];
+    expect(validateStates(f, ANIMS).errors).toContain('state "idle", transition 0: no "when" trigger');
   });
 
   it("reports a missing or unknown initial state", () => {
@@ -308,19 +333,65 @@ describe("validateStates", () => {
   });
 });
 
-describe("StateMachine.lastFired", () => {
-  it("reports the trigger that caused the change, so a press can be spent", () => {
+/** idle ⇄ walk_fwd, plus an attack reached with the light button. */
+function withAttack(when: string | string[] = "pressed:light"): StatesFile {
+  const f = machine();
+  f.states.punch = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
+  f.states.idle.transitions?.push({ when, to: "punch" });
+  return f;
+}
+
+describe("StateMachine.pressSpent", () => {
+  it("is null when a button was not what caused the change", () => {
     const sm = new StateMachine(machine());
-    expect(sm.lastFired).toBeNull();
+    expect(sm.pressSpent).toBeNull();
     sm.update(FWD, QUIET);
-    expect(sm.lastFired).toBe("held:fwd");
+    expect(sm.pressSpent).toBeNull();
   });
 
-  it("stays on the last one that actually fired", () => {
-    const sm = new StateMachine(machine());
-    sm.update(FWD, QUIET);
-    sm.update(FWD, QUIET); // no change: already in walk_fwd
-    expect(sm.lastFired).toBe("held:fwd");
+  it("names the button a transition consumed, so it cannot fire a second move", () => {
+    const sm = new StateMachine(withAttack());
+    sm.update(ATTACK, QUIET);
+    expect(sm.pressSpent).toBe("light");
+  });
+
+  it("finds the button inside a conjunction", () => {
+    const sm = new StateMachine(withAttack(["hitConfirmed", "pressed:light"]));
+    sm.update(ATTACK, { ...QUIET, hitConfirmed: true });
+    expect(sm.current).toBe("punch");
+    expect(sm.pressSpent).toBe("light");
+  });
+});
+
+describe("a `when` of several triggers needs all of them", () => {
+  const CHAIN = ["hitConfirmed", "pressed:light"];
+
+  it("fires when both hold", () => {
+    const sm = new StateMachine(withAttack(CHAIN));
+    sm.update(ATTACK, { ...QUIET, hitConfirmed: true });
+    expect(sm.current).toBe("punch");
+  });
+
+  it("does not fire on the button alone — a whiff ends a string", () => {
+    const sm = new StateMachine(withAttack(CHAIN));
+    sm.update(ATTACK, QUIET);
+    expect(sm.current).toBe("idle");
+  });
+
+  it("does not fire on the confirm alone — the player still has to ask", () => {
+    const sm = new StateMachine(withAttack(CHAIN));
+    sm.update(NONE, { ...QUIET, hitConfirmed: true });
+    expect(sm.current).toBe("idle");
+  });
+
+  it("still honours a negation inside the list", () => {
+    // `back` rather than `fwd`: idle already leaves on held:fwd, and the first
+    // matching transition wins, so testing against it would prove nothing.
+    const sm = new StateMachine(withAttack(["!held:back", "pressed:light"]));
+    sm.update({ ...ATTACK, back: true }, QUIET);
+    expect(sm.current).toBe("idle");
+    sm.update(ATTACK, QUIET);
+    expect(sm.current).toBe("punch");
   });
 });
 

@@ -320,6 +320,10 @@ export function renderStates(container: HTMLElement): void {
     if (def.turn) head.append(el("span", { className: "dims", textContent: "turn" }));
     container.append(head);
 
+    /** A `when` may be several triggers that all have to hold. */
+    const triggerText = (when: string | string[]): string =>
+      Array.isArray(when) ? when.join(" + ") : when;
+
     const transitions = def.transitions ?? [];
     if (transitions.length === 0) {
       container.append(el("div", { className: "row trans-row dims", textContent: "no transitions" }));
@@ -327,7 +331,7 @@ export function renderStates(container: HTMLElement): void {
     transitions.forEach((t, i) => {
       const row = el("div", { className: "row trans-row" });
       row.append(el("span", { className: "idx", textContent: String(i) }));
-      row.append(el("span", { className: "dims", textContent: t.when }));
+      row.append(el("span", { className: "dims", textContent: triggerText(t.when) }));
       row.append(el("span", { className: "dims", textContent: "→" }));
       row.append(
         el("span", {

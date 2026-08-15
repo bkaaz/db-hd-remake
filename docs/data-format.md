@@ -206,7 +206,17 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   warning, since it would produce the very snap the field exists to prevent.
 - **`transitions[]`** — evaluated **in order, first match wins**, and **at most
   one fires per frame** (predictable, no state loops).
-  - `when` — trigger, optionally negated with a leading `!`. v0 vocabulary:
+  - `when` — a trigger, optionally negated with a leading `!` — **or a list of
+    them, all of which have to hold**:
+
+    ```jsonc
+    { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_high" }
+    ```
+
+    A chain link needs two facts at once — the attack connected *and* a button
+    was pressed — and so will a command normal (forward plus a button). One
+    conjunction covers both, which is why there is no `pressed:medium+fwd`
+    style trigger per pair. The vocabulary:
     - `held:fwd` / `held:back` — movement input, facing-relative.
     - `held:up` — up is a **world** direction, not facing-relative. Held rather
       than an edge, deliberately: see "jump variants" below.
@@ -227,11 +237,17 @@ rules**; the entity is a state machine and the engine runs it every game frame.
       finishes as the feet arrive.
     - `landed` — the entity touched the ground (latched until the state
       changes).
+    - `hitConfirmed` — the attack this state is playing has **connected**:
+      landed or been blocked, never merely swung. This is what a chain link
+      hangs off, and why swinging at air ends a string instead of continuing
+      it. Cleared on entering any state, so each link has to connect on its own.
   - `to` — target state.
 
-**Jump variants without compound triggers.** "Up **and** forward" is a
-conjunction, and triggers are single conditions — but no new syntax is needed,
-because the walking states already encode the held direction:
+**Jump variants without a conjunction.** "Up **and** forward" is a conjunction,
+and `when` can express one — but it does not need to, because the walking states
+already encode the held direction. Worth keeping in mind now that the syntax
+exists: **the state you are in is itself a condition**, and using it costs
+nothing to read.
 
 ```
 idle      → held:fwd → walk_fwd,  held:up → jump_up
