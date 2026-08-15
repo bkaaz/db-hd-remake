@@ -2,6 +2,66 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Four buttons by strength, and animations named for the pose
+
+- **Light / Medium / Heavy / Special, exactly FighterZ's scheme** (owner). The
+  earlier idea of punch / kick / special / ki is dropped: strength rather than
+  limb, so *which* limb a blow uses is the character's business and not the
+  player's. `punchHeavy` and `kickHeavy` go away with it.
+- **The chain rule arrives with the scheme, and it is one sentence:** cancel
+  into a stronger button, never a weaker one. An ordering rather than a table
+  of permitted transitions, which is why it does not rot when a character gains
+  a fifth kick. Switching mid-chain lands at the same depth or deeper.
+- **Two consequences worth having seen in advance.** `S` is the ki blast and
+  the default chain ender, *not* a special-move button — so real specials are
+  motion inputs, and command recognition stops being optional. And the scheme
+  hands the moveset its shape: three stances × three strengths is nine normals,
+  which is a list of holes to fill rather than "some punches and some kicks".
+- **Guard stays on back.** FighterZ does the same and so do we already, so the
+  guard-button question is parked at zero cost. Reopen it if the AI struggles.
+- **Animations are named for the pose** — `punch_hook`, `kick_roundhouse` — with
+  a number only to separate two that genuinely resemble each other.
+  `punch_1, punch_2, …` was considered and rejected: the number encodes the
+  order frames happened to appear on the sheet, which is a fact about the sheet
+  rather than about the blow, and `"anim": "punch_3"` cannot be read without
+  opening a second window. Across characters the same number would mean nothing
+  in common.
+- **A state's name says its role, an animation's says its shape.** That split is
+  what makes reuse work: one animation, several states, different damage and
+  different reactions depending on where in a chain — or in a special — it sits.
+  Stance is part of a move's identity where it binds it (`kick_crouch`,
+  `kick_air`), because those are not interchangeable variants.
+- **No `moves.json`.** The owner asked whether combos need their own definition;
+  they do not. An animation is the pose, a state is the consequence, and a chain
+  is a path through the states. A parallel structure would be a second source of
+  truth to reconcile. If the repetition between chain links ever hurts, the cure
+  is a `like` field on a state — built when it hurts, not before.
+
+## 2026-08-15 — How long a pose is shown is not how long it can hit
+
+- **Every attack on the sheet holds its hit box for the whole strike** — 16
+  frames on the punch, 12 on the heavy kick, against the 2–4 a fighting game
+  would use. That was not an oversight: the long active was standing in for
+  **hitstop**, which did not exist when the first attacks were authored, and it
+  was the only thing making a blow feel like it met something.
+- **Hitstop exists now and does that job better**, because it only fires when
+  the blow actually lands. The long active can go.
+- **But the pose still has to be held**, or a whiffed swing is a flicker — and
+  a whiff is exactly when nothing else is selling the move.
+- **Both are true at once, because they are different questions.** One `dur`
+  was answering them together. Two steps naming the *same* frame separate them:
+  a short one carrying the hit box, a long one carrying none. The sprite never
+  changes, so nothing looks different; only the window in which the attack
+  connects gets shorter. **The engine already does this** — it is a change in
+  data, not in code.
+- **Starting values: 3–4 frames active for a light attack, 4–6 for a heavy**,
+  the box on the first part of the strike rather than the tail. Guesses to be
+  tuned. Attacks will get noticeably harder to land, which is the point: a
+  12-frame window cannot be whiffed badly enough to be punished.
+- Written into the `add-animation` skill, which previously argued *for* the long
+  active. `npm run anim` still emits the old single-step strike; splitting it is
+  a hand edit until the script is changed.
+
 ## 2026-08-15 — It is always 1v1, and movement is a dash rather than a walk
 
 - **1v1, permanently.** No tag, no assists, no 2v2 or 3v3 (owner). FighterZ's

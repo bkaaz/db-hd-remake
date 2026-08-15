@@ -86,13 +86,35 @@ way, so the script does it for you:
 wind-up 4  →  (mid pose 4)  →  STRIKING FRAME 12  →  mid pose again 4
 ```
 
-Two things follow from it, and both are deliberate:
+Three things follow from it, and all three are deliberate:
 
 - **The striking frame is held, not flashed past.** It is the pose the move is
-  read by, and holding it is what gives the blow a window worth aiming at. It
-  also means the hit box is out for 12 frames rather than 2 — the attack is far
-  easier to land and commits the attacker for longer. One hit per entry into the
-  state still applies, so it cannot multi-hit.
+  read by, and holding it is what makes the swing legible — especially when it
+  *misses*, where nothing else sells the blow.
+- **How long the pose is shown is not how long the hit box is out.** These are
+  two different questions that one `dur` used to answer at once. Split the
+  striking frame into two steps that name the **same frame**: the first short
+  and carrying the hit box, the second long and carrying none. The sprite does
+  not change, so it looks identical — only the window in which the attack can
+  connect gets shorter.
+
+  ```jsonc
+  { "frame": "33", "dur": 4,  "boxes": [ …hurt…, {"type": "hit", …} ] }  // active
+  { "frame": "33", "dur": 12, "boxes": [ …hurt… ] }                      // the pose, held
+  ```
+
+  **Starting values, to be tuned, not truth:** 3–4 frames active for a light
+  attack, 4–6 for a heavy one. Put the box on the *first* part of the strike —
+  the moment of extension — not the tail. Expect the attack to become
+  noticeably harder to land than it is with a 12-frame window; that is the
+  point, and it is what makes whiffing punishable.
+
+  Why the old shape existed, and why it should not be copied: the long active
+  was standing in for **hitstop**, which did not exist when the first attacks
+  were authored. Hitstop does that job now, and does it better, because it only
+  fires when the blow actually lands. (`hitstop` freezes both fighters on
+  contact; `hitstun` is how long the defender stays helpless afterwards. They
+  are different fields and are easy to confuse.)
 - **The move comes back the way it went**, stepping out through the frame
   immediately before the strike rather than cutting to idle. That recovery frame
   is a *repeat*, so `npm run anim` appends it automatically for `--kind attack`
@@ -107,6 +129,11 @@ recompute boxes **keeps** the owner's timings instead of resetting them.
 ```bash
 npm run anim -- goku punch --frames 42,43,44,45 --kind attack
 ```
+
+> **The script still emits the old, single-step strike** — one long step with
+> the hit box on it. Splitting it into an active step plus a held pose is a
+> hand edit for now (or the editor). Say so when you hand the work over, so
+> nobody assumes the active window is tuned.
 
 - `--kind attack` — house timing (below), and a placeholder hit box on the frame
   that reaches furthest forward. Implies `loop: false`.

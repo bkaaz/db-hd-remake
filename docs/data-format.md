@@ -96,6 +96,23 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
       - `type` — `hit` | `hurt` | `push`.
       - `x, y, w, h` — rectangle in px, relative to the frame's anchor, Y-down.
 
+**Two consecutive steps may name the same frame**, and for attacks they usually
+should. How long a pose is *shown* and how long its hit box is *out* are
+different questions, and one `dur` answers only one of them. Give the striking
+frame a short step carrying the hit box and a long step carrying none: the
+sprite never changes, so the swing reads exactly as before, while the window in
+which it can connect is short enough to be worth aiming at and to punish when
+it misses.
+
+```jsonc
+{ "frame": "33", "dur": 4,  "boxes": [ /* hurt… */, { "type": "hit", … } ] },
+{ "frame": "33", "dur": 12, "boxes": [ /* hurt… */ ] }
+```
+
+The attacks authored before 2026-08-15 do not do this — they hold the hit box
+for the whole strike, because the long active was standing in for **hitstop**,
+which did not exist yet. See the `add-animation` skill for the numbers.
+
 ## States (v0, added 2026-08-08)
 
 Section file `states.json`. A state binds an **animation + velocity + transition

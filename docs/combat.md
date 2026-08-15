@@ -179,6 +179,31 @@ directions are only ever asked as `held:`. A double tap is new pure logic in
 `input/buffer.ts` — cheap, testable, and worth knowing about before it is
 mistaken for "just an animation".
 
+## The buttons
+
+**Light, Medium, Heavy, Special — FighterZ's scheme, taken whole.** Strength
+rather than limb: which blow is a punch and which a kick is the character's
+business, not the player's. Guard stays on back, which is what FighterZ does and
+what we already do.
+
+**S is the ki blast and the default chain ender, not a special-move button.**
+Real specials are motion inputs, so command recognition is a prerequisite for a
+character having anything beyond normals rather than a later luxury.
+
+The scheme hands the moveset its shape — three stances × three strengths is
+**nine normals**, plus what S does in each:
+
+|          | L | M | H | S |
+|---|---|---|---|---|
+| standing | · | · | · | ki blast |
+| crouching | · | · | · (launcher) | |
+| air | · | · | · | |
+
+**The chain rule comes with it, and it is one sentence: you may cancel into a
+stronger button, never a weaker one.** `L → M → H → S`. An ordering, not a table
+of permitted transitions — which is why it survives a character gaining a fifth
+kick variant. Switching mid-chain lands at the same depth or deeper, never back.
+
 ## Chaining: two different things worth naming separately
 
 - **Link** — the attack finishes, control returns, the defender is still in

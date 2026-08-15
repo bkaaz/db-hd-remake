@@ -155,6 +155,88 @@ stomach, so the sprite exists — the question is whether the fight reads better
 with it, or whether high/low is a distinction that costs a reaction per fighter
 and buys little.
 
+## The moveset: name what is on the sheet, then build it
+
+**The current attacks are placeholders and will be redone**, so nothing about
+their timing, their button, or their 12–16 frame active windows is worth
+preserving or retrofitting separately — that work folds into this.
+
+**The button scheme gives the list its shape.** Four buttons, exactly
+FighterZ's: **Light, Medium, Heavy, Special** — strength, not limb, so which
+animation is a punch and which a kick is the character's business, not the
+player's. Three stances × three strengths is **nine normals**, plus what S does
+in each, plus specials. That is what we are looking for on the sheet, rather
+than "some punches and some kicks".
+
+**Animations are named for what the pose is** — `punch_hook`, `kick_roundhouse`
+— with a number only to separate two that really are alike. A name like
+`punch_3` encodes the order we happened to find frames in, which is a fact about
+the sheet and not about the blow, and it makes `states.json` unreadable without
+a second window open. Stance is part of the identity where it binds the move:
+`kick_crouch`, `kick_air`.
+
+**136 of Goku's 219 frames have no description at all** (84–219, plus 61–67 and
+43). Nearly two thirds of the sheet is unread, and the moveset cannot be
+designed from what we cannot name. The sheet is known to hold several punches
+and kicks, an overhead punch and an overhead kick, a close knee, a fast close
+jab — and whatever is in those 136.
+
+Done in batches of roughly twenty frames: render a contact sheet, propose a
+reading, the owner corrects, write `descriptions.json`. One batch is a small
+change; the whole sheet is not one sitting. See the `add-animation` skill.
+
+*Done when:* every frame is either described or explicitly marked as not a pose,
+and there is a list of the attacks Goku actually has.
+
+## Buttons and chains
+
+**The scheme is settled and described in [`combat.md`](./combat.md)** — Light,
+Medium, Heavy, Special, cancel upward only, guard on back. What is left here is
+the work.
+
+**The engine needs one thing before a chain can be authored:** a trigger for
+"the attack I am in has connected", since a chain continues on a hit or a block
+and never on a whiff. `Entity.spent` already knows the answer at the right
+moment; nothing else is missing, because a chain is an ordinary path through
+the state machine — attack state → `pressed:X` → next attack state.
+
+**The four attack buttons in `input/` are the old punch/kick/heavy pair** and
+have to become L/M/H/S. Small, but it touches every attack state's trigger.
+
+*Open, and worth deciding before an editor UI is built:* the owner wants to
+author combos in the editor. `states.json` is already the definition of a chain
+— a second "combos" structure would be a second source of truth to reconcile.
+The likely right answer is a chain-shaped **view** of the states, not a new
+format. Deferred by the owner, not dropped.
+
+## The repo has no LICENSE
+
+The code and the tools are the part of this repository that is actually ours,
+and nothing says on what terms anyone may read or use them. Wanted: a licence
+for the code, plus one line making explicit what the README already implies —
+Dragon Ball and its characters belong to their owners, the sprites are not
+distributed here (BYOA), and the project is non-commercial and unaffiliated.
+
+Not a legal opinion, and worth a few minutes of the owner's own judgement:
+mechanics, control schemes and combo systems are not what copyright covers, so
+naming FighterZ or Budokai as influences in the docs is ordinary attribution
+rather than a risk. The exposure that exists is the sprites and the characters,
+which BYOA and non-commercial status already address as well as a fan project
+can.
+
+*Done when:* a LICENSE file exists and the README says what it covers and what
+it does not.
+
+The state machine already expresses all of this: a chain is attack state →
+`pressed:X` → next attack state. What it lacks is a trigger for "the attack I am
+in has connected", and `Entity.spent` already knows the answer.
+
+*Open, and worth deciding before an editor UI is built:* the owner wants to
+author combos in the editor. `states.json` is already the definition of a chain
+— a second "combos" structure would be a second source of truth to reconcile.
+The likely right answer is a chain-shaped **view** of the states, not a new
+format.
+
 ---
 
 ## Not yet ordered
@@ -185,7 +267,8 @@ queue.
   sheet does not have — see `decisions.md` for the three ways out.
 - **Commands and motion recognition** (was phase E) — quarter-circles and the
   rest, the prerequisite for specials. The input **buffer** underneath them is
-  done.
+  done. **Promoted from optional by the button scheme:** `S` is the ki blast,
+  so a character with no motion inputs has no specials at all.
 - **An explicit `hitstun`.** Today a reaction lasts as long as its animation,
   which is enough while there is one reaction. Combos need to tune how long the
   defender is helpless independently of how many frames the pose takes — that
