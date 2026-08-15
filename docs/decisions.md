@@ -16,9 +16,13 @@ Decisions that are settled. Newest first.
 - **The trap this creates, and it is a real one:** hurt boxes are fitted to the
   sprite's silhouette by `npm run anim`. A frame drawn at 59 px instead of 85
   yields a tiny box low on the body, so a fighter mid-`kick_from_depth` would be
-  nearly unhittable — an artefact of the drawing, not a decision. **Boxes on
-  depth frames have to be authored against the plane the fighter is actually
-  on**, not derived. Written into the `add-animation` skill.
+  nearly unhittable — an artefact of the drawing, not a decision, and the
+  printed table looks normal while it happens.
+- **So the working rule is: the depth frames are not used unless the owner asks**
+  (owner, 2026-08-15). Not "used carefully" — treated as absent. They are for
+  the cases where hit boxes do not matter, or for an explicit request. Written
+  into the `add-animation` skill, which is what gets loaded when someone is
+  choosing frames.
 
 ## 2026-08-15 — Four buttons by strength, and animations named for the pose
 

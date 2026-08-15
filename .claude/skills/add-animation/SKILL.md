@@ -172,14 +172,18 @@ npm run anim -- goku punch --frames 42,43,44,45 --kind attack
 > which prints the real pixel extent without writing anything. Content that ends
 > exactly on the box edge is the sign that the box is cutting into it.
 
-> **Depth frames break the derivation, silently.** Some sprites are drawn
-> smaller because the character has moved *into* the screen (`kick_from_depth`,
-> the `_far` groups) or larger because they stepped toward the camera
-> (`ki_blast`). Physics stays on one plane, so a box fitted to a 59 px drawing
-> of an 85 px fighter is a tiny box low on the body, and the move becomes nearly
-> unhittable for reasons nobody chose. **Author the boxes on those frames
-> against the plane the fighter is really on** — and say in the handover that
-> you did, because the printed table will otherwise look normal.
+> **Do not use the depth frames.** Some sprites are drawn smaller because the
+> character moved *into* the screen (`kick_from_depth`, every `_far` group) or
+> larger because they stepped toward the camera (the `_foreground` pairs).
+> **Treat them as absent unless the owner names them** — owner's instruction,
+> 2026-08-15. They are for cases where hit boxes do not matter, or for an
+> explicit request.
+>
+> The reason is that the derivation breaks silently: physics stays on one plane,
+> so a box fitted to a 59 px drawing of an 85 px fighter is a tiny box low on the
+> body, and the move becomes nearly unhittable for reasons nobody chose — while
+> the printed table looks perfectly normal. If one of them is the pose you want,
+> say so and ask rather than authoring boxes for it.
 
 The script prints a table separating **computed** (hurt boxes) from
 **placeholder** (hit box, timing). Read that table — it is your report source.
