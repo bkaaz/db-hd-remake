@@ -2,6 +2,87 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Two ways to see a chain, because they answer different questions
+
+- **Scripted chain tests** (`src/entity/chains.test.ts`) drive the *committed*
+  `states.json` frame by frame and assert the path: medium three times walks
+  mid → high → low, a whiff stops it, no press stops it, the sweep chains into
+  nothing. The state machine is pure, so this needs no browser and no owner —
+  which is the difference between authoring a string and being able to check it,
+  and being able to check it only by asking somebody to play.
+- **A recording** (`src/log.ts`, `L`) writes what actually happened to
+  `logs/session.log`, gitignored. It exists because the owner and Claude cannot
+  see the same thing: one knows how it felt, the other knows why. Without it the
+  gap is bridged by reading numbers aloud.
+- **Events, not frames.** Sixty frames a second times two fighters is six
+  hundred near-identical lines for ten seconds of play — unreadable, and it
+  buries the causes in the data. A fight's interesting moments are discrete, and
+  one combo attempt comes out as about twenty lines.
+- **Every line carries both fighters and the gap since the last line.** The
+  first draft printed one fighter per line with an absolute frame number, and
+  the owner was right that it was near useless: reconstructing what the other
+  body was doing meant scanning upwards, and "how many frames after the hit did
+  the cancel come out" — which is nearly every question in a fighting game —
+  meant doing arithmetic by hand. Both are now on the line that raises them.
+- **Presses entering and leaving the buffer are recorded**, with a *spent* /
+  *EXPIRED unused* distinction inferred from the frames left on them. That is
+  the answer to "did the game eat my input", and the inference is guessy enough
+  to be worth its own test — a wrong guess sends the reader hunting a bug that
+  is not there.
+- **On demand, not always.** `L` starts and stops, and starting discards the
+  last one, so the file holds *what you just did* rather than four hours of
+  noise. That is the only thing that makes it readable.
+- **It describes, it never computes.** Everything recorded is something the game
+  already worked out for itself. The rule has teeth: the trigger that fired a
+  transition would have been nice to print, and reinstating a field to carry it
+  would have broken the rule — so the line prints the target state instead,
+  which identifies the transition anyway because two of them rarely share one.
+- **The lines are made in `match/record.ts`, not in `Entity`.** That layer is
+  what knows which body is P1; a body neither knows nor should, and naming one
+  so a log line could print it would be the recording changing the game to suit
+  itself. It spots things by comparing public state between frames, so nothing
+  is added anywhere for it to read — and a blow logged with no state change
+  after it *is* the signature of a refused reaction.
+- **`landBlow` now returns what happened** instead of swallowing it. Driven by
+  the recording, but a real gap regardless: `exchangeBlows` could not previously
+  tell whether anything had occurred, and a hit counter will want the same.
+- **Not covered:** how any of it felt. A recording says what the engine decided
+  and never whether it was any good. Timing and feel stay with the owner; this
+  only replaces the transcription.
+
+## 2026-08-15 — A debug readout, and the combo counter it needed
+
+- **`D` prints what the engine thinks about both fighters**: state, rank, the
+  step and frames left in it, whether the current attack has confirmed, hit
+  pause, health, horizontal velocity, what is alive in the input buffer, and the
+  combo count. Plus the gap between them, once, underneath.
+- **Two fixed columns, not text above each head** (owner's choice after the
+  argument), **on by default**, and the pairwise gap dropped from the middle of
+  the screen — it belongs in the recording, beside the blow it explains. Labels attached to a body earn their place when there are many
+  bodies; with exactly two they only cost. Fighters stand 30–60 px apart during a
+  combo — which is precisely when these numbers are read — so attached blocks
+  would overlap and jitter exactly then, and swap sides on a cross-up.
+- **Pairwise facts go in one place.** The gap belongs to the pair; printing it
+  above both heads invites two copies of one number to disagree.
+- **One `Entity.debug` getter rather than six public fields.** `spent`, the
+  buffer, `freezeFrames` and `vx` are private and should stay that way; this is
+  scaffolding and deleting `src/ui/debug.ts` plus that getter removes it whole.
+  Nothing in the game may read it — a rule that needs one of those numbers gets
+  its own name for it.
+- **The combo counter was built properly rather than faked for the readout.**
+  "Combo stats" described something that did not exist: `combat.md` §2 is one
+  integer on the defender, and all three scalings will hang off it. Inventing a
+  second one for a debug line is how two counters that disagree get born — the
+  same mistake we talked ourselves out of over knockback.
+- **It lives in `src/combat/combo.ts`, pure and tested**, because the scalings
+  that will read it have to be testable. It counts hits and damage, and
+  **resets on entering any state of rank 0** — so "recovered control" needs no
+  separate signal and no timer: not being in a reaction *is* the reset, which
+  means the count cannot drift out of step with what the fighter is doing.
+- **A blow refused a reaction still counts.** A jab at someone already on the
+  floor changes no state but did land, so the counting sits in `hurtBy` rather
+  than beside the reaction.
+
 ## 2026-08-15 — Being helpless outranks being hit lightly
 
 - **A reaction carries a `rank`** — flinch 1, stagger 2, knockdown 3, on the

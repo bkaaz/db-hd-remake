@@ -39,7 +39,11 @@ face each other on a ground line. **←/→** walks, **↑** jumps, **↓** crou
 **A**/**S**/**Z**/**X** are the four attack buttons — light, medium, heavy and
 special, by strength rather than by limb — and holding away from your opponent blocks
 whatever lands next. **T** makes the training dummy attack on a timer, so the
-reactions can be seen; **B** toggles the collision-box overlay.
+reactions can be seen; **B** toggles the collision-box overlay and **D** the readout of what the engine
+thinks about both fighters — state, rank, buffer, hit pause, combo count. **L**
+starts and stops a recording of what happened, written to `logs/session.log`
+(gitignored) as events rather than frames, so a combo attempt reads as twenty
+lines instead of six hundred.
 
 Without the assets step the page reports that the entity could not be loaded.
 

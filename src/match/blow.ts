@@ -3,6 +3,21 @@ import { contact, impactPoint } from "../combat/hit";
 import type { Entity } from "../entity/entity";
 import type { Effects } from "../fx/effects";
 
+/**
+ * What happened, for whoever wants to say so out loud — the recording, and one
+ * day a hit counter. Returned rather than swallowed because `exchangeBlows`
+ * currently cannot tell whether anything occurred, which is a gap regardless of
+ * who is reading.
+ */
+export interface BlowResult {
+  /** The attacker's state, which is the move by name. */
+  attack: string;
+  damage: number;
+  blocked: boolean;
+  /** The state the defender was in when it arrived. */
+  took: string;
+}
+
 /** What a landing blow needs besides the two bodies: a noise and a spark. */
 export interface BlowContext {
   audio: Audio;
@@ -17,16 +32,22 @@ export interface BlowContext {
  * when nothing touches. On a connection the attack is spent — one swing lands
  * once, however many frames its box stays out.
  */
-export function landBlow(attacker: Entity, defender: Entity, { audio, effects }: BlowContext): void {
-  if (!attacker.canHit) return;
+export function landBlow(
+  attacker: Entity,
+  defender: Entity,
+  { audio, effects }: BlowContext,
+): BlowResult | null {
+  if (!attacker.canHit) return null;
   const boxes = attacker.boxes("hit");
-  if (boxes.length === 0) return;
+  if (boxes.length === 0) return null;
   const where = contact(
     { boxes, at: attacker.placement },
     { boxes: defender.boxes("hurt"), at: defender.placement },
   );
-  if (!where) return;
+  if (!where) return null;
 
+  const attack = attacker.state;
+  const took = defender.state;
   attacker.markHit();
   // A blocked blow costs nothing and only moves you. Chip damage belongs to
   // specials, which do not exist yet, so a normal attack on guard is free to
@@ -47,4 +68,5 @@ export function landBlow(attacker: Entity, defender: Entity, { audio, effects }:
   const stop = attacker.attackHitstop;
   attacker.freeze(stop);
   defender.freeze(stop);
+  return { attack, damage: blocked ? 0 : attacker.attackDamage, blocked, took };
 }

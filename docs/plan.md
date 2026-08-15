@@ -32,6 +32,57 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
+## Combat, in order — three things the first chain turned up
+
+The medium string exists and can be played. A recording of it
+(`L`, then `logs/session.log`) showed two problems and one gap in the tests.
+**Do these in order; each is small and the last one needs the second.**
+
+### 1. The recording's `gap` is in the wrong units
+
+It prints screen px while every reach, box and knockback in the project is in
+sprite px — `SCALE` is 3, so a logged `gap 134` is really 45. It is the one
+number in the log meant to answer "did it reach", and it cannot be compared with
+the numbers it exists to be compared with.
+
+Worth writing down beside it: even converted, it is not a *direct* comparison.
+A blow reaches the defender's hurt box, not their anchor, so the defender's own
+box (~30 px) is part of the sum.
+
+*Done when:* the log reports the gap in sprite px, and says so.
+
+### 2. There is no test for a chain link's **timing**
+
+`states.test.ts` checks that knockback does not push the defender out of the
+next link's *reach*. Nothing checks that the defender is still *helpless* when
+it arrives, and that is the failure the recording found: after the second blow
+the victim recovered three frames before the third landed. Same arithmetic, same
+data — reaction length against hit pause plus the next link's start-up.
+
+**It will fail on today's data.** That is the point; it is measuring a real
+defect. Write the test, watch it fail, then fix it with item 3.
+
+*Done when:* every chain link is checked for time as well as distance.
+
+### 3. An explicit `hitstun`
+
+Today a reaction lasts exactly as long as its animation — a number chosen so the
+pose reads well, now silently deciding whether combos exist. The recording put
+figures on it: `hurt` holds for 12 frames, and the third link needs 14 (6 of hit
+pause, 1 to cancel, 7 of start-up). Three frames short, and unfixable except by
+shortening a start-up for the wrong reason.
+
+Combos need the defender's helplessness tuned **independently of how many frames
+the pose takes** — that difference against the attacker's recovery *is* the
+combo. Hitstop does not enter into it: freezing both sides equally leaves frame
+advantage unchanged, which is why it is symmetric.
+
+**It is the first piece of the combat system in [`combat.md`](./combat.md)** —
+the three scalings, the smash limit and everything else are tuning on top of it.
+
+*Done when:* a blow says how long it holds the defender, independently of the
+reaction's animation, and item 2's test passes.
+
 ## Now: code the owner can read, before there is more of it
 
 The owner is reading this codebase for the first time, and `main.ts` was where
@@ -277,13 +328,6 @@ queue.
   rest, the prerequisite for specials. The input **buffer** underneath them is
   done. **Promoted from optional by the button scheme:** `S` is the ki blast,
   so a character with no motion inputs has no specials at all.
-- **An explicit `hitstun`.** Today a reaction lasts as long as its animation,
-  which is enough while there is one reaction. Combos need to tune how long the
-  defender is helpless independently of how many frames the pose takes — that
-  difference against the attacker's recovery *is* the combo. Hitstop does not
-  enter into it: freezing both sides equally leaves frame advantage unchanged,
-  which is why it is symmetric. **It is the first piece of the combat system
-  described in [`combat.md`](./combat.md)** — everything else there scales it.
 - **A remapping screen.** All four attack buttons are wired to the ZSNES
   defaults; nothing lets a player change them.
 - **A camera**, and a stage. Round rules and a second player belong to Stage 3

@@ -6,6 +6,8 @@ import type { EntityDef } from "../entity/entityDef";
 import type { Effects } from "../fx/effects";
 import type { Stage } from "../stage";
 import { landBlow, type BlowContext } from "./blow";
+import { Recorder } from "./record";
+import type { DebugFrame } from "../ui/debug";
 
 export interface FightersSetup {
   app: Application;
@@ -43,6 +45,8 @@ export class Fighters {
 
   /** Passed to every blow that lands: what it sounds like and what it leaves. */
   private readonly impact: BlowContext;
+  /** Turns what happens between the two into lines — see ./record.ts. */
+  private readonly recorder = new Recorder();
 
   constructor({ app, def, scale, audio, effects, solo }: FightersSetup) {
     this.impact = { audio, effects };
@@ -106,8 +110,24 @@ export class Fighters {
    */
   exchangeBlows(): void {
     if (!this.opponent) return;
-    landBlow(this.player, this.opponent, this.impact);
-    landBlow(this.opponent, this.player, this.impact);
+    const gap = Math.abs(this.opponent.x - this.player.x);
+    const named = this.named();
+    this.recorder.blow(landBlow(this.player, this.opponent, this.impact), "P1", "P2", gap, named);
+    this.recorder.blow(landBlow(this.opponent, this.player, this.impact), "P2", "P1", gap, named);
+  }
+
+  /** Note what changed this frame, for the recording. */
+  note(): void {
+    this.recorder.note(this.named());
+  }
+
+  private named(): [string, Entity][] {
+    return this.opponent
+      ? [
+          ["P1", this.player],
+          ["P2", this.opponent],
+        ]
+      : [["P1", this.player]];
   }
 
   render(showBoxes: boolean): void {
@@ -125,6 +145,14 @@ export class Fighters {
       playerHealth: this.player.healthFraction,
       opponentHealth: this.opponent?.healthFraction ?? null,
       state: this.player.state,
+    };
+  }
+
+  /** What the debug readout shows; null when it is switched off. */
+  debug(): DebugFrame {
+    return {
+      player: this.player.debug,
+      opponent: this.opponent?.debug ?? null,
     };
   }
 

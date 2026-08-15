@@ -72,8 +72,21 @@ options and let the owner choose** (the first is the default):
 1. **No check** — the owner already sees it works, or trusts the change.
 2. **The owner tests** — hand over a short list of concrete things to look at;
    they send screenshots only if something is off.
-3. **Playwright smoke check** — page boots, console clean, one screenshot.
-4. **Full Playwright scenario** — describe the scenario before running it.
+3. **A recording** — ask the owner to press `L`, do the specific thing, press
+   `L` again, then read `logs/session.log`. **Prefer this to any browser
+   automation for anything about combat**: it is the only way to see *why* the
+   engine did what it did, it costs the owner ten seconds, and unlike a
+   screenshot it survives being reasoned about. Say what you want them to do —
+   "land the medium string on a standing opponent" — not "record something".
+4. **Playwright smoke check** — page boots, console clean, one screenshot.
+5. **Full Playwright scenario** — describe the scenario before running it.
+
+**Ask for a recording whenever a question is about behaviour rather than
+appearance.** "Does the chain fire", "was the input eaten", "why did the third
+hit miss", "how many frames was he free" — all of these are in the log and none
+of them are on a screenshot. It records **events, not frames**: every state
+change, every blow, every press entering or leaving the buffer, each line
+carrying both fighters and the gap since the previous line. See `src/log.ts`.
 
 Browser automation stays available for bugs the owner reports and for
 reproduction work — but the owner picks it; you only offer it.

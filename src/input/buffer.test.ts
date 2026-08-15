@@ -66,4 +66,25 @@ describe("InputBuffer", () => {
     for (let i = 0; i < 6; i++) b.tick();
     expect(b.has("punch")).toBe(true);
   });
+
+  it("lists what is still usable, longest window first", () => {
+    const b = new InputBuffer(8);
+    b.press("light");
+    b.tick();
+    b.press("medium");
+    expect(b.live()).toEqual([
+      ["medium", 8],
+      ["light", 7],
+    ]);
+  });
+
+  it("forgets a spent or expired press", () => {
+    const b = new InputBuffer(2);
+    b.press("light");
+    b.press("medium");
+    b.consume("light");
+    b.tick();
+    b.tick();
+    expect(b.live()).toEqual([]);
+  });
 });

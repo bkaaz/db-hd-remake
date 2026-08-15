@@ -16,6 +16,8 @@ export interface HudFrame {
   /** The player's current state, so the name of what you are doing is visible. */
   state: string;
   dummyAttacks: boolean;
+  /** A gameplay recording is running — worth seeing, since it writes a file. */
+  recording: boolean;
 }
 
 const BAR_HEIGHT = 14;
@@ -80,11 +82,11 @@ export class Hud {
       .fill({ color: fraction > LOW_HEALTH ? 0xf0c040 : 0xd04030 });
   }
 
-  private statusLine({ state, dummyAttacks }: HudFrame): string {
+  private statusLine({ state, dummyAttacks, recording }: HudFrame): string {
     const { name } = this.setup;
     return (
       `${name} · [←/→] walk · [↑] jump · [↓] crouch · [A] light [Z] medium [S] heavy [X] special · ` +
-      `[B] boxes · [T] dummy attacks: ${dummyAttacks ? "on" : "off"} · state: ${state}`
+      `[B] boxes · [D] debug · [L] record: ${recording ? "ON" : "off"} · [T] dummy: ${dummyAttacks ? "on" : "off"} · state: ${state}`
     );
   }
 }

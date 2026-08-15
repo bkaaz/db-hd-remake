@@ -2,6 +2,7 @@ import { Container, Graphics, Sprite } from "pixi.js";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
+import { Combo } from "../combat/combo";
 import { InputBuffer } from "../input/buffer";
 import { DEFAULT_HIT_FX, reactionFor, StateMachine } from "./states";
 
@@ -42,6 +43,21 @@ export const NO_INPUT: WorldInput = {
   special: false,
 };
 
+/** One fighter's innards, for the debug readout only — see `Entity.debug`. */
+export interface EntityDebug {
+  state: string;
+  rank: number;
+  step: number;
+  steps: number;
+  framesLeft: number;
+  hitConfirmed: boolean;
+  freeze: number;
+  hp: number;
+  vx: number;
+  buffer: [button: string, framesLeft: number][];
+  combo: { hits: number; damage: number };
+}
+
 const BOX_COLORS: Record<string, number> = {
   hit: 0xff3b3b,
   hurt: 0x4be04b,
@@ -72,6 +88,8 @@ export class Entity {
    * *because* they saw the hit land is the one thing a buffer has to prevent.
    */
   private readonly buffer = new InputBuffer();
+  /** The combo being done **to** this fighter — see src/combat/combo.ts. */
+  readonly combo = new Combo();
 
   readonly view = new Container();
   private readonly sprite = new Sprite();
@@ -155,6 +173,30 @@ export class Entity {
   /** Half the body's width in world px, for push collision. */
   get pushHalf(): number {
     return (this.pushWidth / 2) * this.scale;
+  }
+
+  /**
+   * Everything the debug readout shows, in one place.
+   *
+   * Deliberately one getter rather than making six private fields public: this
+   * exists for `src/ui/debug.ts` and nothing else, and it can be deleted in a
+   * single edit when it stops earning its keep. Nothing in the game may read
+   * it — if a rule needs one of these numbers, that number gets its own name.
+   */
+  get debug(): EntityDebug {
+    return {
+      state: this.state,
+      rank: this.sm?.def.rank ?? 0,
+      step: this.stepIndex,
+      steps: this.anim?.steps.length ?? 0,
+      framesLeft: this.remaining,
+      hitConfirmed: this.spent,
+      freeze: this.freezeFrames,
+      hp: this.hp,
+      vx: this.vx,
+      buffer: this.buffer.live(),
+      combo: { hits: this.combo.hits, damage: this.combo.damage },
+    };
   }
 
   /** Where this entity is, for placing authored boxes in the world. */
@@ -254,6 +296,10 @@ export class Entity {
   /** Take damage. Health floors at zero; nothing happens there yet. */
   hurtBy(amount: number): void {
     this.hp = Math.max(0, this.hp - amount);
+    // Counted here rather than beside the reaction, because a blow that is
+    // refused a reaction — a jab at someone already on the floor — still landed
+    // and is still part of the combo.
+    this.combo.hit(amount);
   }
 
   gotHit(reaction: string | undefined): boolean {
@@ -283,6 +329,9 @@ export class Entity {
     this.setAnim(this.sm.def.anim);
     this.spent = false;
     this.landed = false;
+    // Rank 0 is anything that is not a reaction, so arriving in one is the
+    // fighter getting themselves back — which is exactly when a combo ends.
+    this.combo.enter(this.sm.def.rank ?? 0);
     // A launch is an impulse, applied once on entry; without one the entity
     // keeps whatever velocity it had, which is what carries a jump through its
     // take-off state into the airborne one.

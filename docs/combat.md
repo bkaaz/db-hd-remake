@@ -71,10 +71,16 @@ setting frame data.
 
 ### 2. The combo counter — one integer, on the defender
 
-Starts at zero, increments on every blow taken, and **resets when the defender
-recovers control or settles on the ground**. It drives everything below, so the
-whole system has exactly one piece of state to reason about and one place to
-inspect when a combo does something surprising.
+**Built 2026-08-15** (`src/combat/combo.ts`). Starts at zero, increments on
+every blow taken, and **resets on entering any state of rank 0** — which is to
+say any state that is not a reaction (§7). "Recovered control" therefore needs
+no separate signal and no timer, and the count cannot drift out of step with
+what the fighter is actually doing.
+
+It drives everything below, so the whole system has exactly one piece of state
+to reason about and one place to inspect when a combo does something
+surprising. Nothing reads it yet but the `D` readout; the three scalings are
+next.
 
 ### 3. Three scalings
 

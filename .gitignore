@@ -13,3 +13,7 @@ dist/
 # (see docs/assets.md). Our authored data lives in data/ (committed); only
 # code + data/ + the manifest are committed.
 assets/
+
+# Gameplay recordings (src/log.ts) — a scratch file for debugging a session,
+# rewritten every time recording starts.
+logs/

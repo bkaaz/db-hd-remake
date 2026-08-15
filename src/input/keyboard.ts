@@ -1,4 +1,5 @@
 import type { WorldInput } from "../entity/entity";
+import { startRecording, stopRecording } from "../log";
 
 /**
  * The keyboard, turned into one game frame of input.
@@ -23,6 +24,10 @@ export class Keyboard {
   showBoxes = true;
   /** Let the training fixture throw its attacks. Toggled with T. */
   dummyAttacks = false;
+  /** Print what the engine thinks for both fighters. Toggled with D. */
+  showDebug = true;
+  /** Whether a gameplay recording is running. Started and stopped with L. */
+  recording = false;
 
   private readonly held: Directions = { left: false, right: false, up: false, down: false };
   private readonly armed: Attacks = {
@@ -65,6 +70,14 @@ export class Keyboard {
     }
     if (key === "t") this.dummyAttacks = !this.dummyAttacks;
     else if (key === "b") this.showBoxes = !this.showBoxes;
+    else if (key === "d") this.showDebug = !this.showDebug;
+    else if (key === "l") this.toggleRecording();
+  }
+
+  private toggleRecording(): void {
+    this.recording = !this.recording;
+    if (this.recording) startRecording();
+    else stopRecording();
   }
 
   private release(e: KeyboardEvent): void {

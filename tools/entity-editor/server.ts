@@ -17,6 +17,8 @@ const SHEETS_DIR = path.join("assets", "sheets");
 const ENTITIES_DIR = path.join("data", "entities");
 const SPAWNS_DIR = path.join("data", "spawns");
 const ATLASES_DIR = path.join("assets", "atlases");
+/** Where a gameplay recording lands. Gitignored; dev-only. */
+const LOG_FILE = path.join("logs", "session.log");
 const SFX_DIR = path.join("assets", "audio", "sfx");
 const SOUND_BANK = path.join("data", "audio", "sounds.json");
 const ROSTER = path.join("data", "roster.json");
@@ -238,6 +240,25 @@ export function entityEditorServer(): Plugin {
           /* no directory yet — nothing has been written, so nothing is stale */
         }
         sendJson(res, 200, { mtimes });
+      });
+
+      // Append to the gameplay recording (src/log.ts). Dev-only and gitignored:
+      // it is how the owner's hands and Claude's reading meet in one place.
+      server.middlewares.use("/api/log", async (req, res) => {
+        if (req.method !== "POST") {
+          return sendJson(res, 405, { error: "method not allowed" });
+        }
+        try {
+          const body = JSON.parse(await readBody(req)) as { lines?: string[]; reset?: boolean };
+          const text = (body.lines ?? []).join("\n") + "\n";
+          const file = path.join(root, LOG_FILE);
+          await fs.mkdir(path.dirname(file), { recursive: true });
+          if (body.reset) await fs.writeFile(file, text);
+          else await fs.appendFile(file, text);
+          sendJson(res, 200, { ok: true });
+        } catch (err) {
+          sendJson(res, 500, { error: String(err) });
+        }
       });
 
       // Write ONE section: data/entities/<name>/<section>.json (+ optional atlas).

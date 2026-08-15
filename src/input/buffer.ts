@@ -53,4 +53,9 @@ export class InputBuffer {
   remaining(button: string): number {
     return this.life.get(button) ?? 0;
   }
+
+  /** Every press still usable, newest window first — for the debug readout. */
+  live(): [button: string, framesLeft: number][] {
+    return [...this.life].sort((a, b) => b[1] - a[1]);
+  }
 }

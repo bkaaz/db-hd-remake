@@ -9,6 +9,8 @@ import { Fighters } from "../match/fighters";
 import type { Scene, SceneContext, SceneRequest } from "../scene";
 import { Stage } from "../stage";
 import { TrainingFixture } from "../training/fixture";
+import { tickLog } from "../log";
+import { DebugPanel } from "../ui/debug";
 import { Hud, showMessage } from "../ui/hud";
 import type { Text } from "pixi.js";
 
@@ -30,6 +32,7 @@ export class FightScene implements Scene {
     private readonly fighters: Fighters,
     private readonly effects: Effects,
     private readonly hud: Hud,
+    private readonly panel: DebugPanel,
     /** Notices about broken data; they belong to this scene and go with it. */
     private readonly notices: Text[],
   ) {}
@@ -60,7 +63,7 @@ export class FightScene implements Scene {
     if (noStates) notices.push(showMessage(ctx.app, `${def.name}: no states.json`, true));
     const hud = new Hud(ctx.app, { name: def.name, belowMessage: noStates });
 
-    return new FightScene(stage, fighters, effects, hud, notices);
+    return new FightScene(stage, fighters, effects, hud, new DebugPanel(ctx.app), notices);
   }
 
   /** One game frame, in the order the parts of it have to happen. */
@@ -72,12 +75,19 @@ export class FightScene implements Scene {
     );
     this.fighters.pushApart(this.stage.bounds);
     this.fighters.exchangeBlows();
+    this.fighters.note();
+    tickLog();
     this.effects.update(this.fighters.frozen, this.stage.bounds);
     return null;
   }
 
   render(keyboard: Keyboard): void {
-    this.hud.draw({ ...this.fighters.status(), dummyAttacks: keyboard.dummyAttacks });
+    this.hud.draw({
+      ...this.fighters.status(),
+      dummyAttacks: keyboard.dummyAttacks,
+      recording: keyboard.recording,
+    });
+    this.panel.draw(keyboard.showDebug ? this.fighters.debug() : null);
     this.fighters.render(keyboard.showBoxes);
     this.effects.render();
   }
@@ -87,6 +97,7 @@ export class FightScene implements Scene {
     this.fighters.destroy();
     this.effects.destroy();
     this.hud.destroy();
+    this.panel.destroy();
     for (const notice of this.notices) notice.destroy();
   }
 }
