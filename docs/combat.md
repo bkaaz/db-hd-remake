@@ -134,15 +134,23 @@ that pressure stops mattering.
 
 ### 7. Reaction rank — being helpless outranks being hit lightly
 
-Orthogonal to all of the above, and not solved by any of it: a reaction carries
-a rank (flinch < stagger < knockdown < on the floor), and **a blow never lowers
-the rank the defender is already in**. Without it a light kick converts someone
-already falling into a soft landing, and a kick to a downed body stands it back
-up in a standing flinch — both real today.
+**Built 2026-08-15.** Orthogonal to all of the above, and not solved by any of
+it: a reaction carries a rank (flinch 1 < stagger 2 < knockdown 3 < on the floor
+4), and **a blow never lowers the rank the defender is already in**. A refused
+reaction changes nothing — the blow still lands and still hurts, the victim just
+keeps falling on the arc they were on. An equal rank re-enters, which is what a
+combo is.
 
 The alternative considered and rejected was a per-state redirect table naming
 which reaction replaces which. It encodes a rule about severity as a table of
 names, and grows with every fighter × every reaction.
+
+Two consequences fell out rather than being designed. Nothing forces rank 4, so
+a downed or getting-up fighter cannot be interrupted at all — **wake-up
+invulnerability**, which settles one of the open questions below. And an
+*equal*-rank blow can still relaunch a body that is still airborne, so an
+uppercut into an uppercut juggles: that is precisely the hole §4 exists to
+close, and it is still open.
 
 ## Movement, and why the dash belongs in this file
 
@@ -227,8 +235,9 @@ shape `states.json` already has.
   is impossible — either the best thing in the design or a death spiral. Decide
   the resource before the escape.
 - **Whether Vanish also escapes an ongoing combo**, not only guard pressure.
-- **Whether a downed fighter is hittable at all.** Wake-up invulnerability is
-  standard and cheaper than tuning it.
+- ~~**Whether a downed fighter is hittable at all.**~~ Settled 2026-08-15 by
+  consequence: `downed` and `getup` are rank 4 and nothing forces rank 4, so
+  they cannot be interrupted. Wake-up invulnerability without a special case.
 - **The CPU.** Everything above assumes an opponent; a large unbuilt system.
 - **Whether a second human ever plays** (Q8). It does not change the structure —
   that is the point of designing for it — but it decides how forgiving the

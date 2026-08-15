@@ -77,6 +77,19 @@ export interface StateDef {
    */
   ifAirborne?: string;
   /**
+   * How severe a reaction this is: flinch below stagger below knockdown below
+   * lying on the floor. Absent means 0, which is every state that is not a
+   * reaction — so any reaction outranks standing there.
+   *
+   * The rule it exists for: **a blow never lowers the rank the defender is
+   * already in.** A jab does not rescue someone in the middle of being knocked
+   * down, and does not stand a floored fighter back up. Being helpless is a
+   * stronger fact than being hit lightly, and severity is one number rather
+   * than a table of which reaction may replace which — which would grow with
+   * every fighter and every reaction.
+   */
+  rank?: number;
+  /**
    * Game frames both fighters freeze for when this state's attack connects,
    * overriding the entity's `hitstop` attribute. A heavier blow wants a longer
    * pause, and that belongs to the blow rather than to either body.
@@ -263,20 +276,32 @@ const pressIn = (when: string | string[]): string | null => {
  * The precedence is the rule that matters — the blow outranks the body, so a
  * heavy attack can stagger someone whose default reaction is a flinch, while an
  * attack that says nothing still gets the defender's default rather than
- * nothing at all. Being airborne is the last word rather than the first,
- * because it changes only *how* a chosen reaction is taken, never which one:
- * the blow that would knock you down still knocks you down in the air.
+ * nothing at all. Being airborne comes after that, because it changes only
+ * *how* a chosen reaction is taken, never which one: the blow that would knock
+ * you down still knocks you down in the air.
+ *
+ * **Severity has the last word.** A reaction that ranks below the state the
+ * defender is already in is refused, and `undefined` comes back: the blow still
+ * connected and still hurt, it just did not interrupt. That is what stops a jab
+ * from rescuing someone mid-knockdown or standing a floored fighter up.
  */
 export function reactionFor(
   onHit: string | undefined,
   defender: StatesFile,
-  airborne: boolean,
+  current: StateDef | undefined,
 ): string | undefined {
-  const name = onHit ?? defender.onGotHit;
-  if (name === undefined || !airborne) return name;
+  const chosen = onHit ?? defender.onGotHit;
+  if (chosen === undefined) return undefined;
+
   // No air version means the ground reaction, which is what fighters without
   // air reactions have always got. Nothing here can invent one.
-  return defender.states[name]?.ifAirborne ?? name;
+  const name = current?.airborne ? defender.states[chosen]?.ifAirborne ?? chosen : chosen;
+
+  // Severity is the last word. Undefined means the blow lands — it costs health
+  // and makes its noise — but changes nothing: the defender keeps falling on
+  // the arc they were already on, or stays on the floor.
+  const rank = defender.states[name]?.rank ?? 0;
+  return rank >= (current?.rank ?? 0) ? name : undefined;
 }
 
 export class StateMachine {
@@ -500,6 +525,10 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
         def.launch.some((v) => v !== null && typeof v !== "number"))
     ) {
       errors.push(`${where}: "launch" must be two numbers or nulls, e.g. [null, -2.4]`);
+    }
+
+    if (def.rank !== undefined && (typeof def.rank !== "number" || def.rank < 0)) {
+      errors.push(`${where}: "rank" must be a number, 0 or more`);
     }
 
     (def.transitions ?? []).forEach((t, i) => {

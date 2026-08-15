@@ -2,6 +2,38 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Being helpless outranks being hit lightly
+
+- **A reaction carries a `rank`** — flinch 1, stagger 2, knockdown 3, on the
+  floor 4 — and **a blow never lowers the rank the defender is already in.**
+  Both bugs this was written for are gone: a jab no longer rescues someone
+  mid-knockdown, and a kick no longer stands a floored fighter up.
+- **A refused reaction is `undefined`, not a re-entry.** The blow still lands,
+  still costs health, still makes its noise; it simply does not interrupt, so
+  the victim keeps falling on the arc they were already on. Re-entering the
+  current state would have re-applied its launch, which is a jab relaunching a
+  falling body — the opposite of the intent.
+- **Equal rank re-enters**, because that is what a combo is: a second jab
+  refreshes the flinch.
+- **One number instead of a table** of which reaction may replace which. A table
+  grows with every fighter times every reaction; an ordering does not, and the
+  earlier per-state redirect proposal is now formally dead.
+- **Wake-up invulnerability comes out for free.** Nothing forces rank 4, so
+  `downed` and `getup` cannot be interrupted at all. That answers an open
+  question in `plan.md` — whether a downed fighter is hittable — by consequence
+  rather than by special case, which is the better kind of answer.
+- **`bounce` is rank 4 on purpose**: once you have hit the floor, the exchange
+  is over. That leaves re-launching possible only during the airborne knockdown
+  itself, which is a short window and a genuine juggle.
+- **Still unbounded, deliberately:** an equal-rank blow *can* relaunch a body
+  still in the air, so an uppercut into an uppercut juggles. That is exactly
+  what the smash limit in `combat.md` §4 exists to bound, and it is not built.
+  Nothing here should grow into a second mechanism beside it.
+- **`reactionFor` takes the defender's current state** rather than a bare
+  `airborne` flag. It needed the rank as well, and the state carries both — one
+  argument that says "here is the situation" beats two that each say a piece of
+  it.
+
 ## 2026-08-15 — Touching the ground stops the fall, not the slide
 
 - **The sweep's victim flew sideways fast and then crawled after the bounce.**

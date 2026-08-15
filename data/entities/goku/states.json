@@ -167,6 +167,7 @@
     },
     "hurt": {
       "anim": "hurt",
+      "rank": 1,
       "vel": [-1.4, 0],
       "turn": false,
       "sound": "voice_hurt",
@@ -177,6 +178,7 @@
     },
     "hurt_air": {
       "anim": "hurt_air",
+      "rank": 1,
       "launch": [-1.2, -1.0],
       "airborne": true,
       "turn": false,
@@ -197,6 +199,7 @@
     },
     "hurt_heavy": {
       "anim": "hurt_heavy",
+      "rank": 2,
       "vel": [-5.2, 0],
       "turn": false,
       "sound": "voice_hurt",
@@ -207,6 +210,7 @@
     },
     "hurt_heavy_air": {
       "anim": "knockdown",
+      "rank": 2,
       "launch": [-3.5, -2.5],
       "airborne": true,
       "turn": false,
@@ -217,6 +221,7 @@
     },
     "knockdown": {
       "anim": "knockdown",
+      "rank": 3,
       "launch": [-1.0, -6.2],
       "airborne": true,
       "turn": false,
@@ -228,6 +233,7 @@
     },
     "knockdown_sweep": {
       "anim": "knockdown",
+      "rank": 3,
       "launch": [-4.5, -3.2],
       "airborne": true,
       "turn": false,
@@ -239,6 +245,7 @@
     },
     "knockdown_air": {
       "anim": "knockdown",
+      "rank": 3,
       "launch": [-2.0, -4.5],
       "airborne": true,
       "turn": false,
@@ -249,6 +256,7 @@
     },
     "bounce": {
       "anim": "bounce",
+      "rank": 4,
       "launch": [null, -2.4],
       "airborne": true,
       "turn": false,
@@ -259,6 +267,7 @@
     },
     "downed": {
       "anim": "downed",
+      "rank": 4,
       "vel": [0, 0],
       "turn": false,
       "sound": "land_3",
@@ -268,6 +277,7 @@
     },
     "getup": {
       "anim": "getup",
+      "rank": 4,
       "vel": [0, 0],
       "turn": false,
       "transitions": [

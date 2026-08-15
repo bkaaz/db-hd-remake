@@ -7,6 +7,7 @@ import {
   StateMachine,
   validateStates,
   type AnimInfo,
+  type StateDef,
   type StatesFile,
 } from "./states";
 
@@ -144,6 +145,14 @@ describe("validateStates", () => {
     (f.states.idle as { launch: unknown }).launch = ["fast", -2.4];
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "idle": "launch" must be two numbers or nulls, e.g. [null, -2.4]',
+    );
+  });
+
+  it("reports a malformed rank", () => {
+    const f = machine();
+    (f.states.idle as { rank: unknown }).rank = "heavy";
+    expect(validateStates(f, ANIMS).errors).toContain(
+      'state "idle": "rank" must be a number, 0 or more',
     );
   });
 
@@ -501,54 +510,86 @@ describe("reactionFor", () => {
       initial: "idle",
       onGotHit: "hurt",
       states: {
-        hurt: { anim: "hurt", ifAirborne: "hurt_air" },
-        hurt_air: { anim: "hurt", airborne: true },
-        hurt_heavy: { anim: "hurt" },
+        hurt: { anim: "hurt", rank: 1, ifAirborne: "hurt_air" },
+        hurt_air: { anim: "hurt", rank: 1, airborne: true },
+        hurt_heavy: { anim: "hurt", rank: 2 },
+        knockdown: { anim: "hurt", rank: 3, airborne: true },
+        downed: { anim: "hurt", rank: 4 },
       },
     };
   }
+  const STANDING = undefined;
+  const IN_AIR: StateDef = { anim: "jump", airborne: true };
+  const in_ = (name: string): StateDef => defender().states[name];
 
   it("takes the attack's reaction over the defender's default", () => {
     // The blow outranks the body: a heavy attack staggers someone whose own
     // default is a flinch.
-    expect(
-      reactionFor("hurt_heavy", { initial: "idle", onGotHit: "hurt", states: {} }, false),
-    ).toBe("hurt_heavy");
+    expect(reactionFor("hurt_heavy", defender(), STANDING)).toBe("hurt_heavy");
   });
 
   it("falls back to the defender's default when the attack names nothing", () => {
-    expect(reactionFor(undefined, { initial: "idle", onGotHit: "hurt", states: {} }, false)).toBe(
-      "hurt",
-    );
+    expect(reactionFor(undefined, defender(), STANDING)).toBe("hurt");
   });
 
   it("is undefined when neither side says anything", () => {
-    expect(reactionFor(undefined, { initial: "idle", states: {} }, false)).toBeUndefined();
+    expect(reactionFor(undefined, { initial: "idle", states: {} }, STANDING)).toBeUndefined();
   });
 
   it("redirects an airborne defender to the reaction's air version", () => {
-    expect(reactionFor(undefined, defender(), true)).toBe("hurt_air");
+    expect(reactionFor(undefined, defender(), IN_AIR)).toBe("hurt_air");
   });
 
   it("leaves a grounded defender on the ground reaction", () => {
-    expect(reactionFor(undefined, defender(), false)).toBe("hurt");
+    expect(reactionFor(undefined, defender(), STANDING)).toBe("hurt");
   });
 
   it("keeps the ground reaction when it has no air version", () => {
     // The old behaviour, and all a fighter without air reactions can be given.
-    expect(reactionFor("hurt_heavy", defender(), true)).toBe("hurt_heavy");
+    expect(reactionFor("hurt_heavy", defender(), IN_AIR)).toBe("hurt_heavy");
   });
 
   it("redirects the attack's reaction, not only the defender's default", () => {
-    expect(reactionFor("hurt", defender(), true)).toBe("hurt_air");
+    expect(reactionFor("hurt", defender(), IN_AIR)).toBe("hurt_air");
   });
 
   it("does not follow a second hop", () => {
     // hurt_air would have to name its own ifAirborne to chain, and a redirect
     // that chains is a loop waiting to be authored.
     const f = defender();
-    f.states.hurt_air = { anim: "hurt", airborne: true, ifAirborne: "hurt" };
-    expect(reactionFor(undefined, f, true)).toBe("hurt_air");
+    f.states.hurt_air = { anim: "hurt", rank: 1, airborne: true, ifAirborne: "hurt" };
+    expect(reactionFor(undefined, f, IN_AIR)).toBe("hurt_air");
+  });
+
+  describe("severity has the last word", () => {
+    it("lets a harder blow take over a lighter reaction", () => {
+      expect(reactionFor("hurt_heavy", defender(), in_("hurt"))).toBe("hurt_heavy");
+    });
+
+    it("lets an equal blow re-enter — that is what a combo is", () => {
+      expect(reactionFor("hurt", defender(), in_("hurt"))).toBe("hurt");
+    });
+
+    it("refuses to rescue someone already being knocked down", () => {
+      // The blow still lands and still hurts; it just does not interrupt, so
+      // the victim keeps falling on the arc they were already on.
+      expect(reactionFor("hurt", defender(), in_("knockdown"))).toBeUndefined();
+    });
+
+    it("refuses to stand a floored fighter back up", () => {
+      expect(reactionFor("hurt_heavy", defender(), in_("downed"))).toBeUndefined();
+    });
+
+    it("compares the air version's rank, not the ground one's", () => {
+      // A jab at someone mid-knockdown resolves to hurt_air, which ranks 1
+      // against the knockdown's 3 — the redirect happens first, the rank check
+      // second.
+      expect(reactionFor("hurt", defender(), { anim: "x", rank: 3, airborne: true })).toBeUndefined();
+    });
+
+    it("treats a missing rank as zero, so any reaction beats standing there", () => {
+      expect(reactionFor("hurt", defender(), { anim: "idle" })).toBe("hurt");
+    });
   });
 });
 

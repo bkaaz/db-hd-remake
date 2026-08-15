@@ -197,6 +197,21 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   vocabulary every fighter is expected to implement (`hurt`, later `hurt_heavy`,
   `knockdown`); the validator can only check the attacker's own states, so an
   unknown name is a **warning**, not an error.
+- **`rank`** — on a **reaction** state: how severe it is. Flinch 1, stagger 2,
+  knockdown 3, on the floor 4. Absent means 0, which is every state that is not
+  a reaction.
+
+  The rule: **a blow never lowers the rank the defender is already in.** A jab
+  cannot rescue someone mid-knockdown or stand a floored fighter up; the blow
+  still connects, still costs health and still makes its noise, it simply does
+  not interrupt — the victim keeps falling on the arc they were on. An *equal*
+  rank re-enters, which is what a combo is.
+
+  One number rather than a table of which reaction may replace which, because a
+  table grows with every fighter times every reaction and this does not.
+  Consequence worth knowing: nothing forces rank 4, so a downed or getting-up
+  fighter cannot be interrupted at all — wake-up invulnerability, arrived at by
+  the same rule rather than as a special case.
 - **`ifAirborne`** — on a **reaction** state: the state to use instead when the
   entity being forced into it is off the ground. Without it an airborne
   defender is put into a grounded reaction and snaps to the floor, erasing the
