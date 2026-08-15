@@ -415,12 +415,17 @@ describe("validateStates", () => {
   });
 });
 
-describe("a chain link has to be able to reach what the last one knocked away", () => {
+describe("the arithmetic of a blow, against the data we ship", () => {
   /**
-   * The failure this exists to prevent, found by playing: the middle of the
-   * kick string forced `hurt_heavy`, whose knockback is 62 sprite px, against a
-   * longest reach in the whole game of 44. The third blow could not connect —
-   * not badly tuned, arithmetically impossible.
+   * Three sums, each of which was a bug before it was a test: can the next link
+   * still **reach**, is the victim still **helpless** when it arrives, and does
+   * landing a blow leave you acting **first**. All of them are properties of the
+   * committed data, so they are checked here rather than by playing.
+   *
+   * The failure the first one exists to prevent, found by playing: the middle of
+   * the kick string forced `hurt_heavy`, whose knockback is 62 sprite px,
+   * against a longest reach in the whole game of 44. The third blow could not
+   * connect — not badly tuned, arithmetically impossible.
    *
    * So for every chain transition, measure what the blow does to the distance
    * between the two fighters and compare it with how far the next one reaches.
@@ -507,6 +512,55 @@ describe("a chain link has to be able to reach what the last one knocked away", 
     const reaction = states[states[from].onHit ?? ""];
     if (!reaction?.vel) return; // a knockdown: helplessness is not the question
     expect(1 + startup(states[to].anim)).toBeLessThanOrEqual(hitstun(from));
+  });
+
+  /**
+   * The third arithmetic, and the one a recording found: **landing a blow must
+   * not leave you acting second.** Hitstun against the attacker's own recovery,
+   * with the hit pause cancelling out of both sides as always.
+   *
+   * There are two ways to be safe and only requiring the first would be wrong.
+   * Either you recover first, or you have put them further away than anything in
+   * the game can reach — a heavy that pushes 62 px cannot be punished at that
+   * distance whatever the frame count says.
+   *
+   * A launcher is exempt: its reaction has no `vel` because the victim is in the
+   * air, and being minus against somebody still falling means nothing.
+   */
+  const advantage = (attack: string): number =>
+    // The `- 1` is measured, not derived: collision is resolved after both
+    // fighters have advanced, so the frame a blow lands on is already spent for
+    // the attacker and not yet for the defender. A recording of the jab put it
+    // at +3 where the sum without it says +4.
+    hitstun(attack) - (frames(states[attack].anim) - startup(states[attack].anim)) - 1;
+
+  /** The longest any attack reaches, which is what "out of range" has to beat. */
+  const longestReach = Math.max(
+    ...Object.values(states)
+      .filter((d) => d.onHit)
+      .map((d) => reach(d.anim)),
+  );
+
+  const grounded = Object.entries(states)
+    .filter(([, d]) => d.onHit !== undefined && states[d.onHit]?.vel !== undefined)
+    .map(([name]) => name);
+
+  it("finds the blows that keep the victim on the ground", () => {
+    expect(grounded.length).toBeGreaterThan(0);
+  });
+
+  it.each(grounded)("%s does not leave its owner punishable", (name) => {
+    const reaction = states[states[name].onHit ?? ""];
+    const knockback = Math.abs(reaction?.vel?.[0] ?? 0) * hitstun(name);
+    // Phrased as a sentence so a failure names the numbers instead of saying
+    // "expected false to be true".
+    const verdict =
+      advantage(name) >= 0
+        ? "recovers first"
+        : knockback > longestReach
+          ? "pushes them out of range"
+          : `punishable: ${advantage(name)} frames, pushed only ${knockback.toFixed(0)} px`;
+    expect(verdict).not.toMatch(/^punishable/);
   });
 });
 

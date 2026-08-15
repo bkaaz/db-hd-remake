@@ -46,6 +46,7 @@
     "punch": {
       "anim": "punch",
       "vel": [0, 0],
+      "hitstun": 25,
       "turn": false,
       "onHit": "hurt",
       "damage": 6,
@@ -60,6 +61,7 @@
       "anim": "kick_mid",
       "vel": [0.4, 0],
       "hitstop": 10,
+      "hitstun": 18,
       "turn": false,
       "onHit": "hurt_chain",
       "damage": 7,
@@ -104,6 +106,7 @@
       "anim": "kick_air",
       "vel": [0.4, 0],
       "hitstop": 10,
+      "hitstun": 18,
       "turn": false,
       "onHit": "hurt_chain",
       "damage": 8,
@@ -135,6 +138,7 @@
       "anim": "kick_low",
       "vel": [0.4, 0],
       "hitstop": 10,
+      "hitstun": 18,
       "turn": false,
       "onHit": "hurt_chain",
       "damage": 9,
@@ -160,6 +164,7 @@
     "kick_crouch": {
       "anim": "kick_crouch",
       "vel": [0, 0],
+      "hitstun": 18,
       "turn": false,
       "onHit": "hurt",
       "damage": 7,
@@ -173,6 +178,7 @@
     "kick_air": {
       "anim": "kick_air",
       "airborne": true,
+      "hitstun": 20,
       "turn": false,
       "onHit": "hurt",
       "damage": 8,
@@ -188,7 +194,7 @@
     "hurt_chain": {
       "anim": "hurt",
       "rank": 1,
-      "vel": [-1.0, 0],
+      "vel": [-0.67, 0],
       "turn": false,
       "sound": "voice_hurt",
       "ifAirborne": "juggle",
@@ -199,7 +205,7 @@
     "hurt": {
       "anim": "hurt",
       "rank": 1,
-      "vel": [-1.4, 0],
+      "vel": [-0.7, 0],
       "turn": false,
       "sound": "voice_hurt",
       "ifAirborne": "hurt_air",

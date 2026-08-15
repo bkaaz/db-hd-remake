@@ -2,6 +2,33 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — A blow that lands acts first, and the push does not grow with it
+
+- **Every attack was minus on hit**: a jab −9, everything else −4, so the
+  fighter who connected recovered second and could be punished by the person who
+  had just taken the blow. The string hid it, because a chain link is a *cancel*
+  and never pays its own recovery. First real use of hitstun, and the first
+  thing that needed no redrawn pose.
+- **Hitstun and the reaction's `vel` were tuned as a pair**, because knockback is
+  one times the other. Raising a jab's hold from 12 to 25 with the old velocity
+  would have pushed the victim 35 px instead of 17 — a plus jab that walks itself
+  out of range is not an improvement. `hurt` went 1.4 → 0.7 and `hurt_chain`
+  1.0 → 0.67, so **every distance in the game is within half a pixel of what it
+  was** while the frames changed completely.
+- **The numbers**: light +4 (`punch` 25), medium +2 (the three chain links and
+  `kick_crouch`, 18), the air kick +4 (20). `kick_high` is left minus on purpose
+  — it pushes 62 px, which is further than anything in the game reaches, so the
+  frame count is not what decides whether it can be answered.
+- **That exception is the invariant, not a special case.** The new test asks
+  whether a blow leaves its owner punishable, and accepts two answers: you
+  recover first, or they are out of everyone's range. Encoding only the first
+  would have forced a heavy to be plus for no reason anybody could feel.
+- **The chain arithmetic is now three sums in one place** — reach, helplessness,
+  advantage — all of them properties of the committed data rather than things to
+  be felt for. The advantage test fails with the actual numbers in the message
+  (`punishable: -9 frames, pushed only 8 px`), because a boolean would only say
+  that something is wrong.
+
 ## 2026-08-15 — Hitstun is a number on the blow, and it changed nothing
 
 - **The whole point was that nothing changed.** The default is 12 frames, which

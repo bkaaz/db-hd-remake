@@ -20,29 +20,34 @@ because a number would only need translating back.
 
 ---
 
-## Every attack is minus on hit — the blow that lands acts second
+## Three quarters of the presses during a move are thrown away
 
-`data/entities/goku/states.json` · noticed 2026-08-15 · annoying
+`src/input/buffer.ts` · noticed 2026-08-16 · breaks play
 
-Land anything and the defender recovers before you do. From the recording: a jab
-connects on frame 274, the victim is free on 292, and Goku is still swinging
-until 302. It holds for all six attacks — the recovery of every one of them is
-longer than the 12 frames of hitstun it deals:
+Land a jab (**A**) and press **A** again to use the frame advantage: 25 of 33
+light presses in one recording expired unused, and exactly one second jab ever
+came out. The advantage is real — the log shows P1 free three frames before P2 —
+and almost unreachable in practice.
 
-| attack | recovery | hitstun | advantage |
-|---|---|---|---|
-| `punch` | 21 | 12 | −9 |
-| everything else | 16 | 12 | −4 |
+Two separate causes, and the first is a defect rather than tuning.
 
-The medium string hides it, because a chain link is a **cancel** — it interrupts
-its own recovery, so recovery never enters the sum. A single blow has nowhere to
-cancel to, and is therefore punishable by the person who just took it.
+**A press dies on the frame the move ends.** The machine reads the buffer once
+per frame and the buffer is ticked afterwards, so a press with one frame of life
+left is aged out by the very frame that returns control, and the state entered
+that frame only looks at its input on the next one. From the recording: press on
+00098, `punch → idle` on 00105, and the same line says `EXPIRED unused`. Seven
+frames of an eight-frame window are usable, and the eighth is precisely the one a
+player aiming at "as soon as I can act" will hit.
 
-Now a one-field fix per blow (`hitstun`, added 2026-08-15) rather than a
-redrawn pose — but it is tuning, and it is coupled: `hurt` slides 1.4 px a
-frame, so a jab held for 22 instead of 12 pushes the victim 31 px instead of 17
-and walks itself out of range. Frame advantage and knockback have to move
-together.
+**And eight frames is short against these moves.** `punch` has 22 frames between
+landing and recovering, 6 of them hitstop (which the buffer correctly does not
+age). Pressing when you *see* the hit therefore always loses: the press must
+arrive in the last 8 frames of the 16 that follow the pause.
+
+The candidate fixes are a re-evaluation of the new state's transitions on the
+frame it is entered (which is what makes a buffer feel like its number), a
+longer `BUFFER_FRAMES`, and — separately — a shorter jab: 25 frames total for a
+light attack is long, and its second step alone is held for 16.
 
 ## A held direction sticks after the window loses focus
 

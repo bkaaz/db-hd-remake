@@ -75,6 +75,13 @@ animation".
 last frame. The alternative — the animation deciding — is how a drawing ends up
 setting frame data.
 
+**What it bought, the day after** (2026-08-16): every attack used to be minus on
+hit — the fighter who landed a blow recovered second. Light is +4 now, medium
++2, and `kick_high` is deliberately left minus because it pushes 62 px, further
+than anything in the game reaches. Frame advantage and knockback were moved
+together, since one is the other times the hold; every distance stayed where it
+was while the frames changed completely.
+
 Two things the build settled, neither of them obvious beforehand. **Hitstop does
 not eat hitstun**: the clock ticks below the freeze check, like the input buffer,
 because a pause that freezes both fighters equally must leave frame advantage
