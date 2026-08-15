@@ -20,34 +20,30 @@ because a number would only need translating back.
 
 ---
 
-## Three quarters of the presses during a move are thrown away
+## A press dies on the frame the move ends
 
-`src/input/buffer.ts` · noticed 2026-08-16 · breaks play
+`src/input/buffer.ts` · noticed 2026-08-16 · annoying
 
-Land a jab (**A**) and press **A** again to use the frame advantage: 25 of 33
-light presses in one recording expired unused, and exactly one second jab ever
-came out. The advantage is real — the log shows P1 free three frames before P2 —
-and almost unreachable in practice.
+The machine reads the buffer once per frame and the buffer is ticked afterwards,
+so a press with one frame of life left is aged out by the very frame that
+returns control — and the state entered on that frame only looks at its input on
+the next one. Seven frames of an eight-frame window are usable, and the eighth
+is precisely the one a player aiming at "as soon as I can act" will hit. From
+the recording: press on 00098, `punch → idle` on 00105, and the same line says
+`EXPIRED unused`.
 
-Two separate causes, and the first is a defect rather than tuning.
+Found while measuring why 25 of 33 light presses in one session went unused, and
+it survived two attempts at the other cause. The jab shrank from 25 frames to
+12, and the second recording still lost the press: **hitstop is added to an
+attack's remaining animation, not taken out of it**, so a blow that lands leaves
+6 frozen frames *plus* the 8 the jab still has to play. At a window of 8 the
+press expired on the very frame it would have been spent. `BUFFER_FRAMES` is 12
+now and the jab links, which is tuning around the defect rather than fixing it.
 
-**A press dies on the frame the move ends.** The machine reads the buffer once
-per frame and the buffer is ticked afterwards, so a press with one frame of life
-left is aged out by the very frame that returns control, and the state entered
-that frame only looks at its input on the next one. From the recording: press on
-00098, `punch → idle` on 00105, and the same line says `EXPIRED unused`. Seven
-frames of an eight-frame window are usable, and the eighth is precisely the one a
-player aiming at "as soon as I can act" will hit.
-
-**And eight frames is short against these moves.** `punch` has 22 frames between
-landing and recovering, 6 of them hitstop (which the buffer correctly does not
-age). Pressing when you *see* the hit therefore always loses: the press must
-arrive in the last 8 frames of the 16 that follow the pause.
-
-The candidate fixes are a re-evaluation of the new state's transitions on the
-frame it is entered (which is what makes a buffer feel like its number), a
-longer `BUFFER_FRAMES`, and — separately — a shorter jab: 25 frames total for a
-light attack is long, and its second step alone is held for 16.
+The fix that makes a buffer feel like its number is to let the state entered on
+a frame evaluate its own transitions that same frame. That touches "at most one
+transition per frame" in `states.ts`, which is deliberate, so it wants deciding
+rather than doing.
 
 ## A held direction sticks after the window loses focus
 

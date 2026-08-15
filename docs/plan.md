@@ -54,6 +54,16 @@ Everything hangs off `Combo`, which already counts hits and lifts on the
 defender and resets when they get control back. No new state should be needed;
 if a curve wants some, that is the signal to stop and ask why.
 
+**What it unlocks, measured 2026-08-16.** The jab is +3 and needs **5** to link
+into itself — four frames of start-up plus the frame it lands on — so the second
+jab arrives one frame after the victim stands up, every time. Closing that gap is
+one field (`hitstun: 17` gives +8 with three frames to spare), and it is not
+being done yet **because a jab that links into itself does so forever**: 6
+damage, repeatable, and no smash limit touches it because nothing is being
+lifted. The hitstun curve is what ends it — each blow holds less until the
+defender recovers first — which makes this the first thing that needs §3 rather
+than wants it.
+
 *Open, and worth deciding before the curves are written:* whether hitstun
 scaling also shortens knockback. It does today by construction — `vel` applies
 every frame the reaction lasts — so a decayed hitstun quietly shortens the push

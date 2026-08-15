@@ -2,6 +2,50 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — The buffer holds twelve frames, because hitstop adds to a move
+
+- **The arithmetic was wrong twice and the recording settled it.** Hitstop does
+  not consume an attack's remaining animation, it *pauses* it: a jab that lands
+  leaves 6 frozen frames **plus** the 8 it still has to play. A press made when
+  the blow lands therefore has to survive 8 real ticks, and the window was 8 —
+  so it expired on exactly the frame it would have been spent.
+- **`BUFFER_FRAMES` 8 → 12**, which makes the jab link reachable by hand. It is
+  tuning around the defect in `bugs.md`, not a fix for it, and the entry says so.
+- **The number now has a stated job**, and a test that fails if either side of
+  it moves: the window must outlast the frames left after a hit, measured
+  against the shipped jab. The jab is the case that matters because it is the
+  only blow whose plus is used by *linking* rather than by cancelling.
+
+## 2026-08-16 — A jab that is twelve frames, and a jab that starts a string
+
+Free hand from the owner on `A` and `S`, since both are placeholders due to be
+redone when the moveset is authored.
+
+- **The jab was 25 frames and its extended fist hung out for 16 of them.** That
+  is what made it feel slow and what made the frame advantage unusable: 21
+  frames of recovery against an 8-frame input buffer meant pressing "when you
+  see the hit land" always lost the press. It is **12 frames now** — 4 out, 4
+  active, 4 back — and 6 of the 8 that follow a hit are hitstop, so the buffer
+  no longer has to survive a long wait.
+- **The +3 came back for free**, from the default hitstun rather than a field:
+  25 was only ever compensating for the recovery. `punch` names no `hitstun` at
+  all now, which is how a normal blow should read.
+- **`hurt` went back up to 1.0** (from 0.7), because the jab's hold dropped from
+  25 frames to 12: same arithmetic, 12 px of knockback instead of 8. The one
+  number these two must agree on is the product, never either alone.
+- **The heavy stopped lingering**: `kick_high` held its extended leg for 12
+  frames out of 24, which reads as slow rather than as heavy. Now 20 frames with
+  the wind-up untouched — a heavy should be committal on the way *in* — and a
+  6-frame active. It stays slightly minus (−1) and pushes 62 px, which is
+  further than anything in the game reaches.
+- **`kick_finisher` shares that animation**, so the string's last blow got the
+  same shortening. Fourth time one animation has served two states, and the
+  first time editing one moved the other.
+- **The jab cancels upward into medium and heavy** (`combat.md`'s L → M → H,
+  finally exercised): a connected jab can now open the whole medium string. It
+  is two transitions in the data and no engine work, which is the point of a
+  chain being a path through the state machine.
+
 ## 2026-08-16 — A blow that lands acts first, and the push does not grow with it
 
 - **Every attack was minus on hit**: a jab −9, everything else −4, so the

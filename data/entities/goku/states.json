@@ -46,7 +46,6 @@
     "punch": {
       "anim": "punch",
       "vel": [0, 0],
-      "hitstun": 25,
       "turn": false,
       "onHit": "hurt",
       "damage": 6,
@@ -54,6 +53,8 @@
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
+        { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_mid" },
+        { "when": ["hitConfirmed", "pressed:heavy"], "to": "kick_high" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -205,7 +206,7 @@
     "hurt": {
       "anim": "hurt",
       "rank": 1,
-      "vel": [-0.7, 0],
+      "vel": [-1.0, 0],
       "turn": false,
       "sound": "voice_hurt",
       "ifAirborne": "hurt_air",

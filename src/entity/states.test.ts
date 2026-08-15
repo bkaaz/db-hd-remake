@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
   reactionFor,
@@ -547,6 +548,20 @@ describe("the arithmetic of a blow, against the data we ship", () => {
 
   it("finds the blows that keep the victim on the ground", () => {
     expect(grounded.length).toBeGreaterThan(0);
+  });
+
+  it("keeps the jab's advantage reachable — the buffer outlasts its recovery", () => {
+    /**
+     * The other half of frame advantage, and the half a recording found: being
+     * plus is worthless if the press cannot survive to the frame it is spent on.
+     *
+     * The jab is the case that matters, because it is the only blow whose plus
+     * is used by **linking** — waiting out your own recovery — rather than by
+     * cancelling out of it. Hitstop is free (a frozen entity does not age the
+     * buffer); the animation frames left after the hit are not.
+     */
+    const left = frames("punch") - startup("punch");
+    expect(BUFFER_FRAMES).toBeGreaterThan(left);
   });
 
   it.each(grounded)("%s does not leave its owner punishable", (name) => {

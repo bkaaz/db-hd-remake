@@ -14,8 +14,18 @@
  * calls `tick`.
  */
 
-/** How long a press stays usable, in game frames. */
-export const BUFFER_FRAMES = 8;
+/**
+ * How long a press stays usable, in game frames.
+ *
+ * Twelve, and the number has a job: a player who presses the moment they see a
+ * blow land must still have that press when control comes back. Hitstop is free
+ * — a frozen entity does not tick this — but the rest of the attack's animation
+ * is not, so the window has to outlast the frames left after the hit. The jab
+ * has eight of them, and at eight the press expired on the very frame it would
+ * have been spent (`docs/bugs.md`), which is how a buffer ends up feeling like
+ * no buffer at all.
+ */
+export const BUFFER_FRAMES = 12;
 
 export class InputBuffer {
   /** Button name → frames of life left. Absent means "not pressed". */
