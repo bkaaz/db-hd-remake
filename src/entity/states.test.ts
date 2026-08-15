@@ -129,6 +129,42 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
+  /** A machine whose flinch has an air version, as goku's does. */
+  function withAirReaction(): StatesFile {
+    const f = machine();
+    f.onGotHit = "hurt";
+    f.states.hurt = {
+      anim: "hurt",
+      ifAirborne: "hurt_air",
+      transitions: [{ when: "animEnd", to: "idle" }],
+    };
+    f.states.hurt_air = {
+      anim: "hurt",
+      airborne: true,
+      transitions: [{ when: "landed", to: "idle" }],
+    };
+    return f;
+  }
+
+  it("does not call an air reaction unreachable — its ground version leads there", () => {
+    expect(validateStates(withAirReaction(), ANIMS)).toEqual({ errors: [], warnings: [] });
+  });
+
+  it("reports an ifAirborne that names no state", () => {
+    const f = withAirReaction();
+    f.states.hurt.ifAirborne = "hurt_ari";
+    expect(validateStates(f, ANIMS).errors).toContain('state "hurt": ifAirborne "hurt_ari" is not a state');
+  });
+
+  it("warns when the air version is not itself airborne", () => {
+    const f = withAirReaction();
+    delete f.states.hurt_air.airborne;
+    expect(validateStates(f, ANIMS).warnings).toContain(
+      'state "hurt": ifAirborne "hurt_air" is not airborne — ' +
+        "an entity sent there mid-jump snaps to the ground",
+    );
+  });
+
   it("warns when a state can only end by animEnd but its animation loops", () => {
     // The classic authoring slip: forgetting to untick "loop" on an attack.
     const f = machine();
@@ -317,20 +353,60 @@ describe("an airborne state has to notice the ground", () => {
 });
 
 describe("reactionFor", () => {
+  /** A defender whose flinch has an air version and whose stagger has none. */
+  function defender(): StatesFile {
+    return {
+      initial: "idle",
+      onGotHit: "hurt",
+      states: {
+        hurt: { anim: "hurt", ifAirborne: "hurt_air" },
+        hurt_air: { anim: "hurt", airborne: true },
+        hurt_heavy: { anim: "hurt" },
+      },
+    };
+  }
+
   it("takes the attack's reaction over the defender's default", () => {
     // The blow outranks the body: a heavy attack staggers someone whose own
     // default is a flinch.
-    expect(reactionFor("hurt_heavy", { initial: "idle", onGotHit: "hurt", states: {} })).toBe(
-      "hurt_heavy",
-    );
+    expect(
+      reactionFor("hurt_heavy", { initial: "idle", onGotHit: "hurt", states: {} }, false),
+    ).toBe("hurt_heavy");
   });
 
   it("falls back to the defender's default when the attack names nothing", () => {
-    expect(reactionFor(undefined, { initial: "idle", onGotHit: "hurt", states: {} })).toBe("hurt");
+    expect(reactionFor(undefined, { initial: "idle", onGotHit: "hurt", states: {} }, false)).toBe(
+      "hurt",
+    );
   });
 
   it("is undefined when neither side says anything", () => {
-    expect(reactionFor(undefined, { initial: "idle", states: {} })).toBeUndefined();
+    expect(reactionFor(undefined, { initial: "idle", states: {} }, false)).toBeUndefined();
+  });
+
+  it("redirects an airborne defender to the reaction's air version", () => {
+    expect(reactionFor(undefined, defender(), true)).toBe("hurt_air");
+  });
+
+  it("leaves a grounded defender on the ground reaction", () => {
+    expect(reactionFor(undefined, defender(), false)).toBe("hurt");
+  });
+
+  it("keeps the ground reaction when it has no air version", () => {
+    // The old behaviour, and all a fighter without air reactions can be given.
+    expect(reactionFor("hurt_heavy", defender(), true)).toBe("hurt_heavy");
+  });
+
+  it("redirects the attack's reaction, not only the defender's default", () => {
+    expect(reactionFor("hurt", defender(), true)).toBe("hurt_air");
+  });
+
+  it("does not follow a second hop", () => {
+    // hurt_air would have to name its own ifAirborne to chain, and a redirect
+    // that chains is a loop waiting to be authored.
+    const f = defender();
+    f.states.hurt_air = { anim: "hurt", airborne: true, ifAirborne: "hurt" };
+    expect(reactionFor(undefined, f, true)).toBe("hurt_air");
   });
 });
 

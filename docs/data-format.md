@@ -171,6 +171,22 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   vocabulary every fighter is expected to implement (`hurt`, later `hurt_heavy`,
   `knockdown`); the validator can only check the attacker's own states, so an
   unknown name is a **warning**, not an error.
+- **`ifAirborne`** — on a **reaction** state: the state to use instead when the
+  entity being forced into it is off the ground. Without it an airborne
+  defender is put into a grounded reaction and snaps to the floor, erasing the
+  jump.
+
+  It hangs off the reaction rather than off every attack because there are
+  three ways to be hit and there will be dozens of attacks: an attack names one
+  `onHit` and gets the right air version for free. What a blow does is decided
+  by the blow (flinch, stagger, knockdown); *being in the air* changes only the
+  pose and the impulse, which belong to the reaction.
+
+  **One hop, forced entries only.** A state never redirects into a transition
+  it chose itself, and the air version's own `ifAirborne` is not followed.
+  Naming a state that does not exist is an **error** (unlike `onHit`, this
+  names a state in this same file); naming one that is not `airborne` is a
+  warning, since it would produce the very snap the field exists to prevent.
 - **`transitions[]`** — evaluated **in order, first match wins**, and **at most
   one fires per frame** (predictable, no state loops).
   - `when` — trigger, optionally negated with a leading `!`. v0 vocabulary:
@@ -219,7 +235,8 @@ with `hit` boxes on its active steps, `turn: false` so it cannot spin mid-swing,
 and `{ "when": "animEnd", "to": "idle" }` to recover. A hit connects when an
 attacker's `hit` box overlaps a defender's `hurt` box; it lands **once per entry
 into the state**, however many frames the box stays out. The defender is then
-forced into the attack's `onHit` state, or its own `onGotHit`. **Knockback needs
+forced into the attack's `onHit` state, or its own `onGotHit` — or, if it was
+off the ground, into that reaction's `ifAirborne`. **Knockback needs
 no field of its own:** a reaction state faces the attacker, so a negative `vel`
 X is "backwards, away" — the reaction slides for as long as it lasts. There is no `hitstun`
 field yet — the reaction lasts as long as the `onGotHit` state's non-looping
@@ -233,8 +250,10 @@ Deliberately **not** in v0 (later slices): `onEnter` effects, `hit` data
 see [`decisions.md`](./decisions.md)), so `validateStates()` in `src/entity/states.ts`
 checks it in both places: the game reports problems on screen at load, the
 editor flags them in the States tab. It catches a missing/unknown `initial` or
-`onGotHit`, an `anim` or `to` that does not exist, an unknown trigger and a
-malformed `vel`; it warns about unreachable states, states with no way out, and
+`onGotHit`, an `anim`, `to` or `ifAirborne` that does not exist, an unknown
+trigger and a malformed `vel`; it warns about unreachable states — an air
+version counts as reached through the reaction that names it — an `ifAirborne`
+target that is not itself `airborne`, states with no way out, and
 the classic slip — a state whose only exit is `animEnd` playing a **looping**
 animation, which can never be left.
 

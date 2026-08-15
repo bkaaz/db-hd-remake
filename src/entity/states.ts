@@ -51,6 +51,20 @@ export interface StateDef {
    */
   onHit?: string;
   /**
+   * The state to use instead of this one when the entity being forced into it
+   * is off the ground — an air version of a reaction.
+   *
+   * It hangs off the *reaction* rather than off every attack on purpose: there
+   * are three ways to be hit and there will be dozens of attacks, so an attack
+   * names one `onHit` and gets the right air version of it for free. A blow
+   * that knocks you over does so whether or not you were jumping; what changes
+   * is the pose and the impulse, and both belong to the reaction.
+   *
+   * One hop only, and only on a forced entry — a state never redirects into a
+   * transition it chose itself.
+   */
+  ifAirborne?: string;
+  /**
    * Game frames both fighters freeze for when this state's attack connects,
    * overriding the entity's `hitstop` attribute. A heavier blow wants a longer
    * pause, and that belongs to the blow rather than to either body.
@@ -201,15 +215,26 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
 
 /**
  * Which state a landed blow forces on the defender: the attacker's `onHit` if
- * its state names one, otherwise the defender's own `onGotHit`.
+ * its state names one, otherwise the defender's own `onGotHit` — and then the
+ * air version of that, if the defender is off the ground and one is named.
  *
  * The precedence is the rule that matters — the blow outranks the body, so a
  * heavy attack can stagger someone whose default reaction is a flinch, while an
  * attack that says nothing still gets the defender's default rather than
- * nothing at all.
+ * nothing at all. Being airborne is the last word rather than the first,
+ * because it changes only *how* a chosen reaction is taken, never which one:
+ * the blow that would knock you down still knocks you down in the air.
  */
-export function reactionFor(onHit: string | undefined, defender: StatesFile): string | undefined {
-  return onHit ?? defender.onGotHit;
+export function reactionFor(
+  onHit: string | undefined,
+  defender: StatesFile,
+  airborne: boolean,
+): string | undefined {
+  const name = onHit ?? defender.onGotHit;
+  if (name === undefined || !airborne) return name;
+  // No air version means the ground reaction, which is what fighters without
+  // air reactions have always got. Nothing here can invent one.
+  return defender.states[name]?.ifAirborne ?? name;
 }
 
 export class StateMachine {
@@ -377,6 +402,22 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
       );
     }
 
+    // Unlike `onHit`, this names a state of *this* entity, so a missing one is
+    // an error rather than a warning. A version that is not itself airborne
+    // would drop the defender to the floor on the frame it starts — the exact
+    // failure `ifAirborne` exists to prevent.
+    if (def.ifAirborne !== undefined) {
+      const air = states[def.ifAirborne];
+      if (!air) {
+        errors.push(`${where}: ifAirborne "${def.ifAirborne}" is not a state`);
+      } else if (!air.airborne) {
+        warnings.push(
+          `${where}: ifAirborne "${def.ifAirborne}" is not airborne — ` +
+            `an entity sent there mid-jump snaps to the ground`,
+        );
+      }
+    }
+
     if (def.hitstop !== undefined && (typeof def.hitstop !== "number" || def.hitstop < 0)) {
       errors.push(`${where}: "hitstop" must be a number of game frames, 0 or more`);
     }
@@ -433,10 +474,15 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
     const seen = new Set<string>(roots);
     const queue = [...roots];
     for (let cur = queue.pop(); cur !== undefined; cur = queue.pop()) {
-      for (const t of states[cur]?.transitions ?? []) {
-        if (states[t.to] && !seen.has(t.to)) {
-          seen.add(t.to);
-          queue.push(t.to);
+      const def = states[cur];
+      // An air version is an edge, not a root: it is reached exactly when the
+      // reaction that names it is, and no sooner.
+      const next = (def?.transitions ?? []).map((t) => t.to);
+      if (def?.ifAirborne) next.push(def.ifAirborne);
+      for (const to of next) {
+        if (states[to] && !seen.has(to)) {
+          seen.add(to);
+          queue.push(to);
         }
       }
     }

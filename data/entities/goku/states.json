@@ -142,8 +142,21 @@
       "vel": [-1.4, 0],
       "turn": false,
       "sound": "voice_hurt",
+      "ifAirborne": "hurt_air",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "hurt_air": {
+      "anim": "hurt_air",
+      "launch": [-1.2, -1.0],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        { "when": "landed", "to": "idle" },
+        { "when": "nearGround", "to": "land" },
+        { "when": "animEnd", "to": "fall" }
       ]
     },
     "guard_hit": {
@@ -159,13 +172,35 @@
       "vel": [-5.2, 0],
       "turn": false,
       "sound": "voice_hurt",
+      "ifAirborne": "hurt_heavy_air",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "hurt_heavy_air": {
+      "anim": "knockdown",
+      "launch": [-3.5, -2.5],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        { "when": "landed", "to": "bounce" }
       ]
     },
     "knockdown": {
       "anim": "knockdown",
       "launch": [-1.0, -6.2],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "knockdown_air",
+      "transitions": [
+        { "when": "landed", "to": "bounce" }
+      ]
+    },
+    "knockdown_air": {
+      "anim": "knockdown",
+      "launch": [-2.0, -4.5],
       "airborne": true,
       "turn": false,
       "sound": "voice_hurt",

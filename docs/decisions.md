@@ -2,6 +2,34 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Being in the air is the reaction's business, not the attack's
+
+- **A fighter hit mid-jump snapped to the floor.** `reactionFor` knew the blow
+  and the defender's default and nothing about where the defender was, so an
+  airborne body was forced into `hurt` — a grounded state — and `update()` did
+  what it does for grounded states: `y = groundY`, in one frame.
+- **The redirect hangs off the reaction, `ifAirborne`, not off every attack.**
+  The alternative was an `onHitAir` beside every `onHit`. There are three ways
+  to be hit and there will be dozens of attacks, so that is the wrong axis:
+  a blow that knocks you over knocks you over whether or not you were jumping.
+  What being airborne changes is the pose and the impulse, and both belong to
+  the reaction. Every existing attack got its air version without being touched.
+- **One hop, and only on a forced entry.** A redirect that chains is a loop
+  waiting to be authored, and a state a fighter *chose* to enter was never the
+  problem. Both are pinned by tests.
+- **Light hits do not knock down; heavy ones do** (owner's call). A light air
+  hit is a flinch on frame 77 that returns to `fall` and lands normally, so
+  jumping stays worth doing; `hurt_heavy_air` and `knockdown_air` end on the
+  floor through the existing `bounce → downed → getup` tail.
+- **The air variants reuse the `knockdown` animation** rather than duplicating
+  it. The catalogue already records 77 as "the start of taking damage while
+  airborne" and 78 as the fall — the sprites for being hit out of the air *are*
+  the knockdown sprites. What separates the three is the `launch`, which is
+  exactly what an impulse is for: from the ground you must be lifted, in the
+  air you are already up and only need sending back.
+- The launch numbers are guesses to be tuned in the editor. Nothing about them
+  is Hyper Dimension frame data.
+
 ## 2026-08-15 — A falling body becomes solid before it lands
 
 - **Push collision was off for the whole jump**, both ways: `pushApart`

@@ -256,7 +256,7 @@ export class Entity {
 
   gotHit(reaction: string | undefined): boolean {
     if (!this.def.states) return false;
-    const state = reactionFor(reaction, this.def.states);
+    const state = reactionFor(reaction, this.def.states, this.airborne);
     return state !== undefined && this.forceState(state);
   }
 
