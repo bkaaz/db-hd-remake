@@ -288,8 +288,10 @@ export class Entity {
     // take-off state into the airborne one.
     const launch = this.sm.def.launch;
     if (launch) {
-      this.vx = launch[0];
-      this.vy = launch[1];
+      // A null component keeps the axis: a bounce sets how high you come back
+      // up without claiming to know how fast you were already travelling.
+      if (launch[0] !== null) this.vx = launch[0];
+      if (launch[1] !== null) this.vy = launch[1];
     }
   }
 
@@ -387,8 +389,11 @@ export class Entity {
       this.vy += this.gravity;
       if (this.y >= this.groundY) {
         this.y = this.groundY;
+        // Only the fall stops. Touching the ground does not delete horizontal
+        // speed — a body skidding at 4.5 px a frame is still skidding — and
+        // pretending it does made every bounce start from nothing, so the state
+        // that followed had to invent a speed it could not know.
         this.vy = 0;
-        this.vx = 0;
         this.landed = true;
       }
     } else {

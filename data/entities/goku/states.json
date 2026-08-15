@@ -249,7 +249,7 @@
     },
     "bounce": {
       "anim": "bounce",
-      "launch": [-0.7, -2.4],
+      "launch": [null, -2.4],
       "airborne": true,
       "turn": false,
       "sound": "land_2",

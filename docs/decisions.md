@@ -2,6 +2,36 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Touching the ground stops the fall, not the slide
+
+- **The sweep's victim flew sideways fast and then crawled after the bounce.**
+  Two things were deleting the speed and neither was visible: landing did
+  `this.vx = 0`, and `bounce` then set `vx = -0.7` from its own launch. From 4.5
+  to 0.7 in one frame.
+- **The −0.7 was not wrong, it was orphaned.** `bounce` was authored for the
+  uppercut, whose knockdown arrives at −1.0, so −0.7 is proportionate there. The
+  sweep arrives at −4.5 and the same number is a cliff.
+- **A `bounce_sweep` state was considered and rejected.** Splitting a role into
+  two states is right when there really are two roles — it is why
+  `kick_high_chain` and `knockdown_sweep` exist. Here there is one role and one
+  number that *should have been derived from the incoming speed*. Copying a
+  state to encode "how fast were you going" is the right field on the wrong
+  axis, and the third launcher would want a third bounce.
+- **So the engine stopped lying twice.** Landing zeroes only `vy`, because a
+  body skidding at 4.5 px a frame is still skidding after its feet touch. And a
+  `launch` component may be `null`, meaning *keep this axis* — `bounce` is now
+  `[null, -2.4]`, which decides how high you come back up and claims nothing
+  about how fast you were already travelling. Every launcher's skid now carries
+  in proportion, with nothing authored per pair.
+- **Side effect, accepted knowingly:** `land` is an airborne state with no
+  launch, so a forward jump now keeps a little speed through its three-frame
+  landing pose instead of stopping dead. It is a change nobody asked for and it
+  reads as a small skid.
+- **Not covered by a test**, and worth saying plainly: `launch` is applied in
+  `entity.ts`, the PixiJS half that Vitest does not reach. The validator gained
+  a shape check for the nullable form — which it had never had for `launch` at
+  all — but the behaviour is the owner's to judge.
+
 ## 2026-08-15 — Knockback belongs to the role, not to the animation
 
 - **The chain's third blow could not reach.** `hurt_heavy` pushes the defender

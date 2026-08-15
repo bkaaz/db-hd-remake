@@ -133,6 +133,20 @@ describe("validateStates", () => {
     );
   });
 
+  it("accepts a launch that keeps an axis", () => {
+    const f = machine();
+    f.states.idle.launch = [null, -2.4];
+    expect(validateStates(f, ANIMS).errors).toEqual([]);
+  });
+
+  it("reports a malformed launch", () => {
+    const f = machine();
+    (f.states.idle as { launch: unknown }).launch = ["fast", -2.4];
+    expect(validateStates(f, ANIMS).errors).toContain(
+      'state "idle": "launch" must be two numbers or nulls, e.g. [null, -2.4]',
+    );
+  });
+
   it("reports an empty machine", () => {
     expect(validateStates({ initial: "idle", states: {} }, ANIMS).errors).toEqual([
       "no states defined",

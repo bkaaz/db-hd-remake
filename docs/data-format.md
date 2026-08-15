@@ -169,6 +169,15 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   px per frame; X facing-relative, Y **negative is up**. This is how a jump
   starts. A state without `launch` leaves the velocity alone, which is what
   carries momentum from a take-off state into the airborne one that follows.
+
+  **A component may be `null`, meaning "keep this axis".** `[null, -2.4]` is a
+  bounce: it decides how high you come back up and says nothing about how fast
+  you were already skidding. Without it a bounce has to name a horizontal speed,
+  and any number it names is right for one launcher and wrong for the next — an
+  uppercut arrives at 1 px a frame and a sweep at 4.5.
+
+  Landing zeroes the **vertical** velocity only, for the same reason: touching
+  the ground stops the fall, not the slide.
 - **`airborne`** — while true the entity is off the ground: gravity is added to
   its vertical velocity every frame and its horizontal velocity carries, instead
   of `vel` being re-applied. Landing (reaching the ground line) zeroes the

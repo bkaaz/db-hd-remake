@@ -31,8 +31,14 @@ export interface StateDef {
    * Velocity set **on entering** the state, as an impulse: X facing-relative
    * (+ = forward), Y negative = upward. This is how a jump starts; from then on
    * physics owns the velocity.
+   *
+   * **`null` in a component keeps that axis** instead of setting it, which is
+   * what a bounce wants: it decides how high you come back up and has no
+   * business deciding how fast you were already skidding. Without it a bounce
+   * has to name a horizontal speed, and any number it names is right for one
+   * launcher and wrong for the next.
    */
-  launch?: [number, number];
+  launch?: [number | null, number | null];
   /**
    * While true the entity is off the ground: gravity pulls on it every frame
    * and its velocity carries (momentum), instead of `vel` being re-applied.
@@ -484,6 +490,16 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
       (!Array.isArray(def.vel) || def.vel.length !== 2 || def.vel.some((v) => typeof v !== "number"))
     ) {
       errors.push(`${where}: "vel" must be two numbers, e.g. [0.83, 0]`);
+    }
+
+    // Unlike `vel`, a component may be null — that means "keep this axis".
+    if (
+      def.launch !== undefined &&
+      (!Array.isArray(def.launch) ||
+        def.launch.length !== 2 ||
+        def.launch.some((v) => v !== null && typeof v !== "number"))
+    ) {
+      errors.push(`${where}: "launch" must be two numbers or nulls, e.g. [null, -2.4]`);
     }
 
     (def.transitions ?? []).forEach((t, i) => {
