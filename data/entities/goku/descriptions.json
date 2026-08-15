@@ -223,8 +223,8 @@
         "90"
       ]
     },
-    "kamehameha": {
-      "desc": "The Kamehameha, confirmed by the owner 2026-08-15. Same foreground entry as ki_blast — 87 in the foreground, 88 the white flash — then 91 charges it and 92 fires. In our button scheme this is a motion input, while the ki bolt above is what S does; the two sharing an entry is worth knowing before either is animated.",
+    "kamehameha_foreground": {
+      "desc": "The Kamehameha fired from the FOREGROUND, confirmed by the owner 2026-08-15. Same entry as ki_blast — 87 in the foreground, 88 the white flash — then 91 charges it and 92 fires. There is a second, plainer Kamehameha on the normal plane (see kamehameha), and that is the one worth building first now that the depth plane is not a mode. Keep the two apart: this one only has a forward shot and cannot exist without the step toward the camera.",
       "frames": [
         "87",
         "88",
@@ -301,6 +301,96 @@
         "125",
         "126",
         "127"
+      ]
+    },
+    "kamehameha": {
+      "desc": "The Kamehameha on the normal plane, confirmed by the owner 2026-08-15: 129 charges it with the hands cupped at the hip, 130 fires level, 131 fires upward. Two firing angles is what makes this the version to build rather than kamehameha_foreground. The 72-78 px heights are a deep straddled stance, not a change of scale — the idle is 81.",
+      "frames": [
+        "129",
+        "130",
+        "131"
+      ]
+    },
+    "fx_kamehameha": {
+      "desc": "The beam's own sprites, not poses: 132 and 133 are a half-round segment, 134 and 135 a comet head, 136 a larger burst. Deferred by the owner 2026-08-15 — the move gets built before its effect does.",
+      "frames": [
+        "132",
+        "133",
+        "134",
+        "135",
+        "136"
+      ]
+    },
+    "throw": {
+      "desc": "Taking hold of the opponent and throwing them, confirmed by the owner 2026-08-15: 137 the grab with both hands out, 138 holding and starting the throw, 139 the release — Goku has turned, so the opponent goes behind him. Nothing in our combat design has a throw in it yet; these three frames are the first evidence that one belongs there.",
+      "frames": [
+        "137",
+        "138",
+        "139"
+      ]
+    },
+    "ultimate": {
+      "desc": "The original's ultimate, and the longest sequence on the sheet — confirmed by the owner 2026-08-15. Four movements in one: Goku transforms to SSJ3 (140 start, 141 the hair growing, 142 transformed), throws a jumping uppercut (143 gathers, 144 the uppercut, 145 airborne after it), turns away as SSJ3 wears off (147), then charges and throws a Genki Dama with the hair already back to base form (148 arms up mid-revert, 149 arms up in base form, 150 the throw), and finishes by going Super Saiyan again (151 with the aura, 152 the same pose without it). 146 is not a pose: it is the arc of light left where he was, which in our engine is an fx entity spawned at the departure point rather than a frame of this animation. Worth knowing for the design: every transformation here is transient inside one move, so it needs no engine support at all — a transformation you *stay* in would be another matter entirely.",
+      "frames": [
+        "140",
+        "141",
+        "142",
+        "143",
+        "144",
+        "145",
+        "146",
+        "147",
+        "148",
+        "149",
+        "150",
+        "151",
+        "152"
+      ]
+    },
+    "victory": {
+      "desc": "Winning, confirmed by the owner 2026-08-15: Goku turns to face the screen, drops out of Super Saiyan and stands there scratching his head. 153 is SSJ facing front, 154 the hair reverting, 155 base form facing front, 156 and 157 the hand up behind the head. The whole set faces the camera, which is why none of it is mirrored like the fighting poses.",
+      "frames": [
+        "153",
+        "154",
+        "155",
+        "156",
+        "157"
+      ]
+    },
+    "fx_explosion": {
+      "desc": "? Effect sprites, not poses: a fireball that swells white-hot and then tears apart — 61 and 62 the growing ball, 64 the peak at 26x26, 63 and 65 breaking up in orange, 66 an arc of debris, 67 the last specks. Sheet order is probably not play order. Neighbours fx_impact (68-70), which is the same family at a smaller size; whether they are one effect or two is unconfirmed.",
+      "frames": [
+        "61",
+        "62",
+        "63",
+        "64",
+        "65",
+        "66",
+        "67"
+      ]
+    },
+    "fx_electric": {
+      "desc": "Electrical discharge, confirmed by the owner 2026-08-15 — nineteen blue-white lightning arcs from 32x26 down to 5x7, the crackle that surrounds a Super Saiyan. Deferred: the owner expects some of these to need their size and position corrected, which is exactly what sparse effect sprites do to auto-detection. Measure before using any of them (see the add-animation skill).",
+      "frames": [
+        "158",
+        "159",
+        "160",
+        "161",
+        "162",
+        "163",
+        "164",
+        "165",
+        "166",
+        "167",
+        "168",
+        "169",
+        "170",
+        "171",
+        "172",
+        "173",
+        "174",
+        "175",
+        "176"
       ]
     },
     "palettes": {
@@ -434,6 +524,35 @@
     "124": "hop_lunge, 5 of 5: landing out of the straddle, knee up and compact",
     "125": "teleport, 1 of 3: standing solid, the frame it starts from",
     "126": "teleport, 2 of 3: half dithered, going",
-    "127": "teleport, 3 of 3: nearly gone. Its box was re-cut by hand — auto-detection had cropped it to the surviving dithered pixels"
+    "127": "teleport, 3 of 3: nearly gone. Its box was re-cut by hand — auto-detection had cropped it to the surviving dithered pixels",
+    "129": "kamehameha charge: deep straddled stance, hands cupped at the hip",
+    "130": "kamehameha fired level — both arms thrust straight forward",
+    "131": "kamehameha fired upward — the same thrust angled up",
+    "132": "kamehameha beam: a half-round segment",
+    "133": "kamehameha beam: the segment again, slightly smaller",
+    "134": "kamehameha beam: a comet head with a ragged trail",
+    "135": "kamehameha beam: the comet head, narrower",
+    "136": "kamehameha beam: the largest burst, round and ragged",
+    "137": "throw, 1 of 3: the grab — both hands out, fingers open",
+    "138": "throw, 2 of 3: holding on, body turning into the throw",
+    "139": "throw, 3 of 3: the release, Goku turned away — the opponent goes behind him",
+    "140": "ultimate: the transformation begins, standing tensed with SSJ hair",
+    "141": "ultimate: the hair grows and starts falling down the back",
+    "142": "ultimate: SSJ3, hair full length",
+    "143": "ultimate: coiling down for the jumping uppercut",
+    "144": "ultimate: the jumping uppercut — fist up, the whole body edged in light, the tallest frame on the sheet at 99 px",
+    "145": "ultimate: airborne after the uppercut, arm coming down",
+    "146": "ultimate: NOT a pose — the arc of light and torn hair left where he launched from. An fx spawn, not a frame of the animation",
+    "147": "ultimate: turned away, landing, the SSJ3 hair already shortening",
+    "148": "ultimate: arms raised to gather the Genki Dama, hair still mid-revert",
+    "149": "ultimate: arms up in base form — dark hair — holding the Genki Dama",
+    "150": "ultimate: throwing the Genki Dama, still base form",
+    "151": "ultimate: going Super Saiyan again, wrapped in a full aura",
+    "152": "ultimate: the same pose as 151 with the aura stripped off",
+    "153": "Super Saiyan standing square to the camera, fists at the sides. The owner flags it for reuse beyond the victory pose: it is the only front-facing fighting-form frame on the sheet, so it is what a turn — the moment the opponent crosses over — would be built from",
+    "154": "the hair reverting, still facing front",
+    "155": "base form facing front, arms at the sides",
+    "156": "base form, one hand up behind the head, grinning",
+    "157": "base form, hand still on the head — the held frame of the celebration"
   }
 }

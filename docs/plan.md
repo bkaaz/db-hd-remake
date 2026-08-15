@@ -175,18 +175,24 @@ the sheet and not about the blow, and it makes `states.json` unreadable without
 a second window open. Stance is part of the identity where it binds the move:
 `kick_crouch`, `kick_air`.
 
-**100 of Goku's 181 frames have no description at all** (84–176, plus 61–67).
-More than half the sheet is unread, and the moveset cannot be designed from
-what we cannot name. The sheet is known to hold several punches and kicks, an
-overhead punch and an overhead kick, a close knee, a fast close jab — and
-whatever is in those 100.
+**The sheet is fully catalogued** as of 2026-08-15 — 180 frames, 44 groups,
+nothing unnamed. What it holds beyond the normals already built: a kick out of
+the background, a ki bolt and two Kamehamehas, a hop-and-lunge jump attack, a
+teleport, a throw, a thirteen-frame SSJ3 ultimate, a victory pose, and effect
+sets for the beam, an explosion and the Super Saiyan crackle.
 
-Done in batches of roughly twenty frames: render a contact sheet, propose a
-reading, the owner corrects, write `descriptions.json`. One batch is a small
-change; the whole sheet is not one sitting. See the `add-animation` skill.
+**What it does not hold is a clean set of nine normals.** The strengths do not
+come labelled, so the remaining work is a judgement call rather than a lookup:
+deciding which pose is Goku's L, which his M, which his H, in each of the three
+stances — and which of the leftovers become specials.
 
-*Done when:* every frame is either described or explicitly marked as not a pose,
-and there is a list of the attacks Goku actually has.
+Two gaps the catalogue turned up and neither is in `combat.md`: **a throw**
+(137–139, and it is the honest answer to blocking costing nothing) and **a turn**
+(153 is the only front-facing fighting-form frame, so an animated turn is
+possible where today facing flips in one frame).
+
+*Done when:* every slot in the L/M/H/S table names an animation, and what is
+left over is either assigned to a special or explicitly parked.
 
 ## Buttons and chains
 
