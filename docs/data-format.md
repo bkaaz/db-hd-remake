@@ -212,6 +212,12 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   Consequence worth knowing: nothing forces rank 4, so a downed or getting-up
   fighter cannot be interrupted at all — wake-up invulnerability, arrived at by
   the same rule rather than as a special case.
+- **`hitstun`** — on an **attack** state: game frames it holds its victim
+  helpless, overriding the entity's `hitstun` attribute (12). The fifth of the
+  family with `onHit`, `hitstop`, `hitFx` and `damage` — the blow decides how it
+  is taken, how long the game stops, what it looks like, what it costs and now
+  how long it holds. See "Attacks and hitstun" below for what it owns and what
+  it moves.
 - **`invulnerable`** — on any state: blows pass straight through. Not a hit for
   zero damage — **nothing connects**: no spark, no noise, the combo does not
   grow, and the attacker's swing is not spent, so the same active frames may
@@ -227,10 +233,12 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   A state that is invulnerable with no transitions is warned about — untouchable
   and unleavable is a fighter removed from the match.
 - **`smash`** — on an **attack** state: may this blow lift or floor a body that
-  is already helpless? Only `SMASH_LIMIT` of them (2, in `src/combat/combo.ts`)
-  land in one combo; past that the reaction is refused exactly as rank refuses
-  one — the blow connects and costs health, and the victim keeps falling on the
-  arc they were on. A refused smash does not spend the budget.
+  is already helpless? Past `SMASH_LIMIT` **re-launches** (2, in
+  `src/combat/combo.ts`) the reaction is refused exactly as rank refuses one —
+  the blow connects and costs health, and the victim keeps falling on the arc
+  they were on. Two smashes do not spend anything: the one that **opens** a
+  combo, because it lifts a fighter who had control and that is a launch rather
+  than a re-launch, and one that rank refused anyway, because it changed nothing.
 
   It is the hard limit scaling cannot give: a curve makes a fourth uppercut
   weak, never impossible, while equal rank re-entering means an uppercut can
@@ -280,6 +288,10 @@ rules**; the entity is a state machine and the engine runs it every game frame.
       business — see [`combat.md`](./combat.md).
     - `animEnd` — a non-looping animation reached its last frame (latched until
       the animation changes).
+    - `stunEnd` — the hitstun this entity was put in has run out. True whenever
+      there is none left, so only a reaction has any use for it. It is the way
+      out of every grounded reaction, and the reason a flinch's length is a
+      number on the blow instead of a property of a drawing.
     - `falling` — moving downward, i.e. past the apex. The signal the arc gives
       you: a rise animation is shorter than the climb, so `animEnd` would fire
       while still going up.
@@ -324,13 +336,22 @@ into the state**, however many frames the box stays out. The defender is then
 forced into the attack's `onHit` state, or its own `onGotHit` — or, if it was
 off the ground, into that reaction's `ifAirborne`. **Knockback needs
 no field of its own:** a reaction state faces the attacker, so a negative `vel`
-X is "backwards, away" — the reaction slides for as long as it lasts. There is no `hitstun`
-field yet — the reaction lasts as long as the `onGotHit` state's non-looping
-animation, which is authored in the editor anyway. Damage and health wait for
-`attributes.json`.
+X is "backwards, away" — the reaction slides for as long as it lasts.
 
-Deliberately **not** in v0 (later slices): `onEnter` effects, `hit` data
-(damage/hitstun/knockback), the scripting escape hatch, jump/gravity.
+**How long it lasts is `hitstun`, and that is a number on the blow** (added
+2026-08-15). A grounded reaction leaves on `stunEnd`, never on `animEnd`: an
+animation shorter than the hold keeps its last frame, a longer one is cut off.
+The pose is a drawing, and a drawing has no business setting frame data — a
+combo is nothing but the defender's hitstun minus the attacker's recovery.
+
+Two consequences worth knowing before tuning it. **Knockback moves with it**,
+because `vel` applies every frame the reaction lasts, so holding somebody longer
+also pushes them further; the chain distance test multiplies by `hitstun` for
+exactly that reason. And **airborne reactions ignore it** — they end when the
+ground arrives, and being helpless in the air lasts as long as the fall.
+
+Deliberately **not** yet: `onEnter` effects, the scripting escape hatch, and
+blockstun — `guard_hit` still ends with its animation.
 
 **This file is hand-authored** (the editor's States tab is a read-only view —
 see [`decisions.md`](./decisions.md)), so `validateStates()` in `src/entity/states.ts`

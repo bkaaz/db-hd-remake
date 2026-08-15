@@ -43,6 +43,23 @@ export const NO_INPUT: WorldInput = {
   special: false,
 };
 
+/**
+ * What a landing blow asks of the body taking it.
+ *
+ * One object rather than three arguments because they are one thing — the blow —
+ * and every rule added since has wanted to travel with the others: what reaction
+ * it forces, whether it may lift a body that is already helpless, and how long
+ * it holds them.
+ */
+export interface Blow {
+  /** The reaction the attacker's state names, if any; the defender's default otherwise. */
+  reaction?: string;
+  /** Whether it may lift or floor a body that is already helpless. */
+  smash: boolean;
+  /** Game frames the defender is held helpless for. */
+  hitstun: number;
+}
+
 /** One fighter's innards, for the debug readout only — see `Entity.debug`. */
 export interface EntityDebug {
   state: string;
@@ -52,6 +69,8 @@ export interface EntityDebug {
   framesLeft: number;
   hitConfirmed: boolean;
   freeze: number;
+  /** Game frames of helplessness left — the defender's half of a combo. */
+  stun: number;
   hp: number;
   vx: number;
   buffer: [button: string, framesLeft: number][];
@@ -118,10 +137,18 @@ export class Entity {
   private readonly hitstop: number;
   private readonly maxHealth: number;
   private readonly baseDamage: number;
+  private readonly baseHitstun: number;
   /** What is left of this fighter, in health points. */
   private hp = 0;
   /** Game frames left of a hit pause; while it lasts nothing about the entity moves. */
   private freezeFrames = 0;
+  /**
+   * Game frames left of being held helpless by the last blow. Ticked below the
+   * freeze check, like the buffer: a hit pause freezes both fighters equally, so
+   * letting it eat hitstun would quietly change frame advantage — the one thing
+   * a symmetric pause must not do.
+   */
+  private stun = 0;
 
   constructor(
     private readonly def: EntityDef,
@@ -134,6 +161,7 @@ export class Entity {
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
     this.baseDamage = def.attributes.damage;
+    this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
     this.view.addChild(this.sprite, this.boxG);
@@ -192,6 +220,7 @@ export class Entity {
       framesLeft: this.remaining,
       hitConfirmed: this.spent,
       freeze: this.freezeFrames,
+      stun: this.stun,
       hp: this.hp,
       vx: this.vx,
       buffer: this.buffer.live(),
@@ -241,6 +270,11 @@ export class Entity {
   /** Frames to freeze both fighters for when this entity's attack connects. */
   get attackHitstop(): number {
     return this.sm?.def.hitstop ?? this.hitstop;
+  }
+
+  /** Frames this entity's current attack holds whoever it hits. */
+  get attackHitstun(): number {
+    return this.sm?.def.hitstun ?? this.baseHitstun;
   }
 
   /**
@@ -316,17 +350,21 @@ export class Entity {
     this.combo.hit(amount);
   }
 
-  gotHit(reaction: string | undefined, smash = false): boolean {
+  gotHit(blow: Blow): boolean {
     if (!this.def.states) return false;
     // A smash spends from a budget the combo owns, and the budget is checked
     // before the reaction is chosen: a blow past the limit is refused for the
     // same reason a jab at a floored fighter is, and looks the same from here.
-    if (smash && !this.combo.smashable) return false;
-    const state = reactionFor(reaction, this.def.states, this.sm?.def);
+    if (blow.smash && !this.combo.smashable) return false;
+    const state = reactionFor(blow.reaction, this.def.states, this.sm?.def);
     if (state === undefined) return false;
     // Counted only now, because a reaction rank refused changed nothing.
-    if (smash) this.combo.smash();
-    return this.forceState(state);
+    if (blow.smash) this.combo.smash();
+    if (!this.forceState(state)) return false;
+    // After entering, because arriving in a state clears the clock — and this
+    // blow's hold is the one thing about the reaction the blow gets to decide.
+    this.stun = blow.hitstun;
+    return true;
   }
 
   /** Enter a state because something happened *to* this entity (being hit). */
@@ -350,6 +388,9 @@ export class Entity {
     this.setAnim(this.sm.def.anim, forced);
     this.spent = false;
     this.landed = false;
+    // A state arrives with no hold of its own; only a blow can set one, and it
+    // does so straight after forcing the reaction.
+    this.stun = 0;
     // Rank 0 is anything that is not a reaction, so arriving in one is the
     // fighter getting themselves back — which is exactly when a combo ends.
     this.combo.enter(this.sm.def.rank ?? 0);
@@ -406,6 +447,8 @@ export class Entity {
       return;
     }
 
+    if (this.stun > 0) this.stun--;
+
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
     if (this.sm.def.turn && opponentX !== null && opponentX !== this.x) {
@@ -434,6 +477,7 @@ export class Entity {
       },
       {
         animEnded: this.animEnded,
+        stunEnded: this.stun === 0,
         falling,
         nearGround,
         landed: this.landed,

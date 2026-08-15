@@ -61,7 +61,7 @@ function block(who: string, d: EntityDebug): string {
   return [
     `${who}  ${d.state}`,
     `step ${d.step + 1}/${d.steps} · ${d.framesLeft}f · rank ${d.rank}`,
-    `${d.hitConfirmed ? "hit ✓" : "hit —"} · freeze ${d.freeze} · hp ${d.hp}`,
+    `${d.hitConfirmed ? "hit ✓" : "hit —"} · freeze ${d.freeze} · stun ${d.stun} · hp ${d.hp}`,
     `vx ${d.vx.toFixed(1)} · buf ${buffer}`,
     `combo ${d.combo.hits} hits · ${d.combo.damage} dmg · lift ${d.combo.lifts}/${SMASH_LIMIT}`,
   ].join("\n");

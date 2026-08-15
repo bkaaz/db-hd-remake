@@ -16,6 +16,7 @@ const snapshot = (buffer: [string, number][]): EntityDebug => ({
   framesLeft: 1,
   hitConfirmed: false,
   freeze: 0,
+  stun: 0,
   hp: 100,
   vx: 0,
   buffer,

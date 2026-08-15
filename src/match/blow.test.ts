@@ -28,6 +28,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackHitstop: 6,
     attackReaction: "hurt",
     attackSmash: false,
+    attackHitstun: 12,
     attackFx: "spark_1",
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
@@ -50,7 +51,11 @@ describe("landBlow", () => {
     const result = landBlow(attacker, defender, context());
     expect(result).not.toBeNull();
     expect(defender.hurtBy).toHaveBeenCalledWith(7);
-    expect(defender.gotHit).toHaveBeenCalledWith("hurt", false);
+    expect(defender.gotHit).toHaveBeenCalledWith({
+      reaction: "hurt",
+      smash: false,
+      hitstun: 12,
+    });
   });
 
   describe("an invulnerable defender", () => {
@@ -92,7 +97,14 @@ describe("landBlow", () => {
     const attacker = body("hit", { attackSmash: true });
     const defender = body("hurt");
     landBlow(attacker, defender, context());
-    expect(defender.gotHit).toHaveBeenCalledWith("hurt", true);
+    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ smash: true }));
+  });
+
+  it("hands over how long the blow holds, not how long the pose lasts", () => {
+    const attacker = body("hit", { attackHitstun: 20 });
+    const defender = body("hurt");
+    landBlow(attacker, defender, context());
+    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ hitstun: 20 }));
   });
 
   it("costs a blocking defender nothing", () => {

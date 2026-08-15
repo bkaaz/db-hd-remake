@@ -62,7 +62,11 @@ export function landBlow(
   audio.play(blocked ? noise.block : noise.hit);
   if (!blocked) {
     defender.hurtBy(attacker.attackDamage);
-    defender.gotHit(attacker.attackReaction, attacker.attackSmash);
+    defender.gotHit({
+      reaction: attacker.attackReaction,
+      smash: attacker.attackSmash,
+      hitstun: attacker.attackHitstun,
+    });
   }
   // The spark belongs at the deepest point of the blow, not at either fighter's
   // anchor and not at the middle of the overlap — see impactPoint.

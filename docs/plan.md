@@ -32,40 +32,35 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## First: an explicit `hitstun`
+## First: the three scalings
 
-A reaction lasts exactly as long as its animation — a number chosen so a pose
-reads well, quietly deciding whether combos exist. Combos need the defender's
-helplessness tuned **independently of how many frames the pose takes**; that
-difference against the attacker's recovery *is* the combo. Hitstop does not
-enter into it, because freezing both sides equally leaves frame advantage
-unchanged, which is why it is symmetric.
+Hitstun exists as a number on the blow (2026-08-15), and the smash limit is the
+hard floor under everything. What is missing is the soft half — the part that
+makes a long combo *end itself* instead of being refused:
 
-**It is the first piece of [`combat.md`](./combat.md)** — the three scalings,
-the smash limit and everything after them are tuning on top of it.
+| scaling | what it does |
+|---|---|
+| **damage** | the fifteenth hit takes off a fraction of the first |
+| **hitstun** | each successive blow holds for less, so the victim recovers first |
+| **launch** | each successive lift raises less, so the body falls out |
 
-*Honest note on why, since the first answer was wrong.* The recording showed the
-medium string was not a true combo, and this was written up as hitstun being
-three frames short. It was not: re-entering a reaction did not restart its
-animation, so a second blow never refreshed anything (fixed 2026-08-15, and
-there is now a test for the timing). The data was always fine. Hitstun is still
-next, but as a foundation rather than a repair.
+**Damage first, and it is not a tie.** A combo already takes 78 of 100 health,
+so nothing about juggling should be loosened until a long one is worth less than
+a short one. The other two are what buys longer juggles, and until they exist
+the smash limit is doing the work of three systems at once — which is why it
+reads as a wall rather than as a body falling out of a juggle.
 
-*Done when:* a blow says how long it holds the defender, independently of the
-reaction's animation, and the chain timing test reads that number instead of the
-animation's length.
+Everything hangs off `Combo`, which already counts hits and lifts on the
+defender and resets when they get control back. No new state should be needed;
+if a curve wants some, that is the signal to stop and ask why.
 
-**The concrete target, measured.** The string is four links as of 2026-08-15
-and its middle links use a softer reaction (`hurt_chain`, 1.0 rather than 1.4),
-which took the tightest margin from 3 sprite px to 13 — so hitstun is no longer
-holding anything up. What it buys is the *ability to tune* helplessness at all:
-today a reaction lasts exactly as long as its animation, so the only way to make
-a link land later is to redraw a pose.
+*Open, and worth deciding before the curves are written:* whether hitstun
+scaling also shortens knockback. It does today by construction — `vel` applies
+every frame the reaction lasts — so a decayed hitstun quietly shortens the push
+too, which may be exactly right or may need the two separating.
 
-Note what the tests cannot do here: the distance test compares the *per-link*
-growth (7.2 px) against reach, and the real constraint is the **cumulative** gap
-from wherever the two were standing. That is a property of a match, not of the
-data, so it belongs in a recording rather than in a test.
+*Done when:* a fifteen-hit combo is worth visibly less than five, and a juggle
+ends because the body fell out of it rather than because a blow was refused.
 
 ## Now: code the owner can read, before there is more of it
 

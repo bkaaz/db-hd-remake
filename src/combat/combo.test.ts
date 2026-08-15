@@ -38,38 +38,45 @@ describe("Combo", () => {
   });
 
   describe("the smash limit", () => {
+    /** One blow able to lift, landing on the fighter. False when it is refused. */
+    const uppercut = (c: Combo): boolean => {
+      if (!c.smashable) return false;
+      c.smash();
+      c.hit(14);
+      c.enter(3); // knocked down
+      return true;
+    };
+
     it("allows a lift while there is budget left", () => {
       expect(new Combo().smashable).toBe(true);
     });
 
-    it("stops allowing them at the limit", () => {
+    it("does not spend the budget on the blow that opens the combo", () => {
+      // It lifts somebody who was standing there: a launch, not a *re*-launch,
+      // and charging the opener for it costs the string its own finisher.
       const c = new Combo();
-      for (let i = 0; i < SMASH_LIMIT; i++) {
-        expect(c.smashable).toBe(true);
-        c.smash();
-      }
-      expect(c.smashable).toBe(false);
-      expect(c.lifts).toBe(SMASH_LIMIT);
+      expect(uppercut(c)).toBe(true);
+      expect(c.lifts).toBe(0);
+    });
+
+    it("spends it on every lift after that", () => {
+      const c = new Combo();
+      uppercut(c);
+      uppercut(c);
+      expect(c.lifts).toBe(1);
     });
 
     it("is the uppercut loop that it closes", () => {
       // Rank alone cannot: a knockdown replacing a knockdown is an equal rank,
       // which is exactly what a combo is allowed to do.
       const c = new Combo();
-      const uppercut = (): boolean => {
-        if (!c.smashable) return false;
-        c.smash();
-        c.hit(14);
-        c.enter(3);
-        return true;
-      };
-      for (let i = 0; i < SMASH_LIMIT; i++) expect(uppercut()).toBe(true);
-      expect(uppercut()).toBe(false);
+      for (let i = 0; i < SMASH_LIMIT + 1; i++) expect(uppercut(c)).toBe(true);
+      expect(uppercut(c)).toBe(false);
     });
 
     it("hands the budget back when the fighter has control again", () => {
       const c = new Combo();
-      for (let i = 0; i < SMASH_LIMIT; i++) c.smash();
+      for (let i = 0; i < SMASH_LIMIT + 1; i++) uppercut(c);
       c.enter(0);
       expect(c.lifts).toBe(0);
       expect(c.smashable).toBe(true);
@@ -77,6 +84,7 @@ describe("Combo", () => {
 
     it("keeps the budget spent while the fighter stays helpless", () => {
       const c = new Combo();
+      c.enter(1); // flinching
       c.smash();
       c.enter(3); // knocked down
       c.enter(4); // and now on the floor

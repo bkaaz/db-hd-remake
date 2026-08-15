@@ -193,7 +193,7 @@
       "sound": "voice_hurt",
       "ifAirborne": "juggle",
       "transitions": [
-        { "when": "animEnd", "to": "idle" }
+        { "when": "stunEnd", "to": "idle" }
       ]
     },
     "hurt": {
@@ -204,7 +204,7 @@
       "sound": "voice_hurt",
       "ifAirborne": "hurt_air",
       "transitions": [
-        { "when": "animEnd", "to": "idle" }
+        { "when": "stunEnd", "to": "idle" }
       ]
     },
     "hurt_air": {
@@ -247,7 +247,7 @@
       "sound": "voice_hurt",
       "ifAirborne": "hurt_heavy_air",
       "transitions": [
-        { "when": "animEnd", "to": "idle" }
+        { "when": "stunEnd", "to": "idle" }
       ]
     },
     "hurt_heavy_air": {

@@ -4,5 +4,6 @@
   "pushWidth": 30,
   "hitstop": 6,
   "health": 100,
-  "damage": 6
+  "damage": 6,
+  "hitstun": 12
 }

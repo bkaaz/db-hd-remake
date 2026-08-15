@@ -96,6 +96,21 @@ export interface StateDef {
    */
   hitstop?: number;
   /**
+   * Game frames this state's attack holds its victim helpless, overriding the
+   * entity's `hitstun` attribute. **The blow decides, not the pose**: a reaction
+   * used to last exactly as long as its animation, which meant a drawing was
+   * quietly setting frame data, and combos are nothing but
+   * `defender's hitstun − attacker's recovery`.
+   *
+   * It owns the reaction's length in both directions — a shorter animation
+   * holds its last frame, a longer one is cut off — because the alternative is
+   * the two disagreeing and nobody knowing which won.
+   *
+   * Airborne reactions ignore it: they end when the ground arrives, and being
+   * helpless in the air lasts as long as the fall.
+   */
+  hitstun?: number;
+  /**
    * Effect entity spawned where this state's attack connects. Same idea as
    * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
    * stops, and what the impact looks like. Defaults to the engine's `spark_1`.
@@ -180,6 +195,13 @@ export interface InputSnapshot {
 export interface Signals {
   /** A non-looping animation reached its end (latched until it changes). */
   animEnded: boolean;
+  /**
+   * The hitstun this entity was put in has run out — the defender's own clock,
+   * counted down by the engine and untouched by how long the pose takes. True
+   * whenever there is none left, so a state nobody stunned reads it as true and
+   * a reaction reads it exactly once its blow has finished holding it.
+   */
+  stunEnded: boolean;
   /** Moving downward — true from the apex of a jump onward. */
   falling: boolean;
   /**
@@ -209,6 +231,7 @@ export const TRIGGERS = [
   "pressed:heavy",
   "pressed:special",
   "animEnd",
+  "stunEnd",
   "falling",
   "nearGround",
   "landed",
@@ -250,6 +273,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "animEnd":
       value = signals.animEnded;
+      break;
+    case "stunEnd":
+      value = signals.stunEnded;
       break;
     case "falling":
       value = signals.falling;
@@ -515,6 +541,10 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
     if (def.hitstop !== undefined && (typeof def.hitstop !== "number" || def.hitstop < 0)) {
       errors.push(`${where}: "hitstop" must be a number of game frames, 0 or more`);
+    }
+
+    if (def.hitstun !== undefined && (typeof def.hitstun !== "number" || def.hitstun < 0)) {
+      errors.push(`${where}: "hitstun" must be a number of game frames, 0 or more`);
     }
 
     // Whatever puts a fighter in the air — a jump, an uppercut, a throw nobody

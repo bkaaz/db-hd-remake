@@ -45,6 +45,9 @@ const NOTHING: InputSnapshot = {
 };
 const QUIET: Signals = {
   animEnded: false,
+  // Nobody is stunned unless a test says so: the fighter driving a chain is the
+  // one landing the blows, not the one taking them.
+  stunEnded: true,
   falling: false,
   nearGround: false,
   landed: false,
@@ -189,6 +192,16 @@ describe("the string juggles what the uppercut launched", () => {
         .sort();
     expect(named((d) => d.invulnerable)).toEqual(["bounce", "downed", "getup"]);
     expect(named((d) => d.rank === 4)).toEqual(named((d) => d.invulnerable));
+  });
+
+  it("ends every grounded reaction on the blow's clock", () => {
+    // `animEnd` creeping back into one of these is the whole regression: the
+    // reaction would silently go back to lasting as long as its drawing, and
+    // every number tuned against hitstun would quietly stop applying to it.
+    const states = goku().states;
+    for (const name of ["hurt", "hurt_chain", "hurt_heavy"]) {
+      expect(states[name].transitions?.map((t) => t.when)).toEqual(["stunEnd"]);
+    }
   });
 
   it("marks as a smash exactly the blows meant to floor a body", () => {

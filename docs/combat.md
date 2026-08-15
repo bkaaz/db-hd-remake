@@ -50,6 +50,12 @@ resource has.
 
 ### 1. Hitstun — the axis everything multiplies
 
+**Built 2026-08-15** (`hitstun` on the blow, `hitstun` in `attributes.json` as
+the default, `stunEnd` as the way out of a grounded reaction). It arrived at 12
+frames everywhere, which is exactly what every reaction animation happened to
+last, so nothing about the fight changed on the day it landed — the point was
+never a new number, it was that the number can now be chosen at all.
+
 How long the defender is helpless, as **a number of frames on the blow**, not as
 the length of whatever pose it plays. It joins `damage`, `hitstop`, `hitFx` and
 `onHit` in the family that already exists: the blow decides how it is taken, how
@@ -68,6 +74,16 @@ animation".
 **Hitstun owns the state's length**, and an animation shorter than it holds its
 last frame. The alternative — the animation deciding — is how a drawing ends up
 setting frame data.
+
+Two things the build settled, neither of them obvious beforehand. **Hitstop does
+not eat hitstun**: the clock ticks below the freeze check, like the input buffer,
+because a pause that freezes both fighters equally must leave frame advantage
+alone. And **knockback travels with hitstun**, since a reaction's `vel` applies
+every frame it lasts — so tuning how long somebody is held also moves them
+further, which is a coupling to remember when §3's curves arrive.
+
+Blockstun is the same mechanism with its own number, and is deliberately not
+built yet: `guard_hit` still ends with its animation.
 
 ### 2. The combo counter — one integer, on the defender
 
@@ -106,8 +122,19 @@ on the arc they were already on, and the exchange ends itself.
 
 This is the answer to "an uppercut cannot juggle forever", expressed as a rule
 about re-launching rather than as a counter of uppercuts, so it holds for every
-launcher anyone adds later. **Two**, so a launcher can open a combo and another
-blow can end it, and a third cannot start it over.
+launcher anyone adds later.
+
+**Only a *re*-launch is counted**, which is the word doing the work: the blow
+that opens a combo lands on somebody who has control of themselves, and charging
+it to the budget costs a string its own finisher — a combo opened with two
+uppercuts could not end with a knockdown. So the sequence is launcher, then two
+more lifts, then the fall.
+
+**Why the hard limit currently feels like a wall**: it is the *only* limiter in
+the game. Everything in §3 is unbuilt, so a cap doing the work of three curves
+at once ends a juggle by refusing a blow, where scaling would have the body
+visibly falling out. Raising the number is not the answer to "can we juggle
+more" — the curves are. Nor is it safe while a combo can take 78 of 100 health.
 
 Chain links that juggle are deliberately not smashes: a juggle keeps a body up
 where a smash puts it back down, and a string that spent the budget on its own

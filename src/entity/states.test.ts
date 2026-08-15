@@ -58,9 +58,10 @@ const FWD = { ...NONE, fwd: true };
 const ATTACK = { ...NONE, light: true };
 const UP = { ...NONE, up: true };
 
-/** Nothing happened to the entity this frame. */
+/** Nothing happened to the entity this frame, and nobody is holding it. */
 const QUIET = {
   animEnded: false,
+  stunEnded: true,
   falling: false,
   nearGround: false,
   landed: false,
@@ -153,6 +154,14 @@ describe("validateStates", () => {
     (f.states.idle as { rank: unknown }).rank = "heavy";
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "idle": "rank" must be a number, 0 or more',
+    );
+  });
+
+  it("reports a malformed hitstun", () => {
+    const f = machine();
+    (f.states.idle as { hitstun: unknown }).hitstun = "long";
+    expect(validateStates(f, ANIMS).errors).toContain(
+      'state "idle": "hitstun" must be a number of game frames, 0 or more',
     );
   });
 
@@ -429,6 +438,14 @@ describe("a chain link has to be able to reach what the last one knocked away", 
   }
   const anims = read<Record<string, { steps: Step[] }>>("animations.json");
   const states = read<StatesFile>("states.json").states;
+  const attributes = read<{ hitstun: number }>("attributes.json");
+
+  /**
+   * How long a blow holds its victim — the blow's own number, or the fighter's
+   * default. **Not the reaction animation's length**: that is exactly the
+   * coupling `hitstun` exists to break, and reading it here would put it back.
+   */
+  const hitstun = (attack: string): number => states[attack].hitstun ?? attributes.hitstun;
 
   const frames = (anim: string): number =>
     (anims[anim]?.steps ?? []).reduce((n, s) => n + s.dur, 0);
@@ -457,7 +474,11 @@ describe("a chain link has to be able to reach what the last one knocked away", 
     // A reaction that launches is a knockdown: the chain is over either way.
     if (!reaction?.vel) return;
 
-    const knockback = Math.abs(reaction.vel[0]) * frames(reaction.anim);
+    // Knockback is velocity times how long the reaction lasts, and what decides
+    // that is now the blow's hitstun rather than the pose — so tuning how long
+    // a fighter is held also moves them, which is worth remembering when the
+    // curves of §3 arrive.
+    const knockback = Math.abs(reaction.vel[0]) * hitstun(from);
     const advance = (attack.vel?.[0] ?? 0) * frames(attack.anim);
     expect(knockback - advance).toBeLessThan(reach(states[to].anim));
   });
@@ -485,7 +506,7 @@ describe("a chain link has to be able to reach what the last one knocked away", 
   it.each(links)("%s still has %s helpless when the next blow lands", (from, to) => {
     const reaction = states[states[from].onHit ?? ""];
     if (!reaction?.vel) return; // a knockdown: helplessness is not the question
-    expect(1 + startup(states[to].anim)).toBeLessThanOrEqual(frames(reaction.anim));
+    expect(1 + startup(states[to].anim)).toBeLessThanOrEqual(hitstun(from));
   });
 });
 
@@ -548,6 +569,38 @@ describe("a `when` of several triggers needs all of them", () => {
     expect(sm.current).toBe("idle");
     sm.update(ATTACK, QUIET);
     expect(sm.current).toBe("punch");
+  });
+});
+
+describe("a reaction leaves on the blow's clock, not on the pose", () => {
+  /** A flinch whose only way out is the hitstun running out. */
+  function stunned(): StatesFile {
+    const f = machine();
+    f.states.hurt = { anim: "hurt", rank: 1, transitions: [{ when: "stunEnd", to: "idle" }] };
+    return f;
+  }
+
+  it("holds while the blow still has frames left", () => {
+    const sm = new StateMachine(stunned());
+    sm.force("hurt");
+    expect(sm.update(NONE, { ...QUIET, stunEnded: false })).toBeNull();
+    expect(sm.current).toBe("hurt");
+  });
+
+  it("lets go the frame it runs out", () => {
+    const sm = new StateMachine(stunned());
+    sm.force("hurt");
+    sm.update(NONE, { ...QUIET, stunEnded: false });
+    expect(sm.update(NONE, { ...QUIET, stunEnded: true })).toBe("idle");
+  });
+
+  it("does not care that the animation ended first", () => {
+    // The whole point: a pose that runs out early holds its last frame, and a
+    // long one is cut off. Either way the number decides.
+    const sm = new StateMachine(stunned());
+    sm.force("hurt");
+    expect(sm.update(NONE, { ...QUIET, stunEnded: false, animEnded: true })).toBeNull();
+    expect(sm.current).toBe("hurt");
   });
 });
 

@@ -68,6 +68,13 @@ export interface Attributes {
    * silently make a move free.
    */
   damage: number;
+  /**
+   * Game frames a blow holds its victim helpless when its own state does not
+   * say. Twelve, which is what every reaction animation happens to last today —
+   * so switching the length from the pose to the number changed nothing, which
+   * is how a foundation should arrive.
+   */
+  hitstun: number;
 }
 
 export const DEFAULT_ATTRIBUTES: Attributes = {
@@ -77,6 +84,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   hitstop: 6,
   health: 100,
   damage: 6,
+  hitstun: 12,
 };
 
 interface EntityFile {

@@ -2,6 +2,60 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — Hitstun is a number on the blow, and it changed nothing
+
+- **The whole point was that nothing changed.** The default is 12 frames, which
+  is what every reaction animation happens to last, so the fight on the day it
+  landed is the fight from the day before. What arrived is the *ability to
+  choose*: until now the only way to make a link land later was to redraw a pose.
+- **`stunEnd`, a trigger, rather than the engine pushing the reaction out.** The
+  way out of a state stays visible in `states.json`, the validator sees it, and
+  the editor gets it free in the trigger list — against one state that would
+  have ended by magic. Grounded reactions (`hurt`, `hurt_chain`, `hurt_heavy`)
+  now leave on it, and there is a test asserting `animEnd` cannot creep back.
+- **The clock ticks below the freeze check**, beside the input buffer and for
+  the same class of reason: hitstop freezes both fighters equally, so letting it
+  eat hitstun would change frame advantage — the one thing a symmetric pause
+  must not do.
+- **Knockback travels with hitstun**, because a reaction's `vel` applies every
+  frame it lasts. Holding somebody longer also pushes them further, and the
+  chain distance test multiplies by `hitstun` for that reason. Not a defect, but
+  it means the two cannot be tuned independently yet, and §3's hitstun curve
+  will inherit the coupling.
+- **Airborne reactions ignore it** (owner): they end when the ground arrives.
+  Being helpless in the air lasts as long as the fall, and a second clock
+  competing with `landed` would be two answers to one question.
+- **`gotHit` takes a `Blow` object now.** Three arguments in a row was the
+  signal: reaction, smash and hitstun are one thing — the blow — and the next
+  rule will want to travel with them.
+- **Blockstun deliberately left out** (owner): the same mechanism with its own
+  number, and `guard_hit` still ends with its animation. One foundation at a
+  time.
+
+## 2026-08-15 — Only a *re*-launch spends the budget
+
+- **The limit counted one too many, and the word `re` is where it was hiding.**
+  §4 has always said "re-launch or re-knock down", and the code charged every
+  smash, the one that opened the combo included. The recording showed the cost:
+  a combo opened with two uppercuts had nothing left, so the string's finisher
+  hit for 14 and did not knock down — a finisher that does not finish.
+- **Rank 0 is already "this fighter is their own"**, the same fact the reset
+  uses, so the fix needed no new state: `Combo` remembers the rank it was last
+  told about, and a lift on a fighter at rank 0 is free. The whole rule stayed
+  in one pure class, and the entity's wiring did not change at all.
+- **The sequence this buys**: launcher, two more lifts, then the fall. A third
+  uppercut is still refused, so the loop stays closed.
+- **The limit is not raised, and should not be** while it is the only limiter in
+  the game. Every curve in §3 is unbuilt, so a cap is doing the work of three
+  soft systems and ends a juggle by refusing a blow rather than by the body
+  falling out of it. What buys longer juggles is the scaling; what makes them
+  safe to want is damage scaling, since one combo already takes 78 of 100 health.
+- **How the genre does it**, so this is not re-argued: Street Fighter gives each
+  move its own juggle cost, Tekken raises gravity through the combo and allows
+  one screw, the Marvel/FighterZ line lets hitstun decay until the victim falls
+  out. A hard cap is the net under the curves in all of them, never the whole
+  mechanism — which is exactly the position this one should end up in.
+
 ## 2026-08-15 — The floor is untouchable, not merely uninterruptible
 
 - **Rank 4 was only half of wake-up invulnerability**, and the half that was

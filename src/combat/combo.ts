@@ -21,12 +21,13 @@
  * Pure: no PixiJS, no entities, no clock.
  */
 /**
- * How many blows may lift or floor one fighter in a single combo.
+ * How many times one fighter may be lifted **again** in a single combo.
  *
- * Two, so that a launcher can open a combo and another blow can end it, and a
- * third cannot start it over. It lives here rather than in an entity's
- * attributes because it is a rule of the fight, not a property of a body: a
- * juggle limit one fighter could opt out of is not a limit.
+ * Two, on top of the blow that opened the combo: a launcher starts it, one more
+ * keeps it going and one more ends it, and the next cannot start it over. It
+ * lives here rather than in an entity's attributes because it is a rule of the
+ * fight, not a property of a body: a juggle limit one fighter could opt out of
+ * is not a limit.
  */
 export const SMASH_LIMIT = 2;
 
@@ -34,6 +35,8 @@ export class Combo {
   private count = 0;
   private total = 0;
   private smashes = 0;
+  /** Severity of the state the fighter is in — 0 while they have control. */
+  private rank = 0;
 
   /** Blows landed since the fighter last had control. */
   get hits(): number {
@@ -45,7 +48,7 @@ export class Combo {
     return this.total;
   }
 
-  /** Blows that have lifted or floored this fighter since they last had control. */
+  /** Times this fighter has been lifted *again* since they last had control. */
   get lifts(): number {
     return this.smashes;
   }
@@ -58,9 +61,14 @@ export class Combo {
    * knocked down loops forever. Past the limit such a blow still hits and still
    * hurts — it simply does not lift, so the victim keeps falling on the arc
    * they were already on and the exchange ends itself.
+   *
+   * **Only a *re*-launch is limited.** A blow landing on somebody who has
+   * control of themselves is how a combo starts, and refusing that would mean
+   * the opener could be eaten by a budget it had no part in spending. Rank 0 is
+   * exactly "this fighter is their own", which is the same fact the reset uses.
    */
   get smashable(): boolean {
-    return this.smashes < SMASH_LIMIT;
+    return this.rank === 0 || this.smashes < SMASH_LIMIT;
   }
 
   /** A blow landed on this fighter. Blocked blows are not combo hits. */
@@ -70,12 +78,16 @@ export class Combo {
   }
 
   /**
-   * A blow lifted or floored this fighter. Counted only when the reaction was
-   * actually entered: one that rank refused changed nothing, so it has no
-   * business spending the budget.
+   * A blow lifted or floored this fighter. Spends from the budget only when it
+   * was a *re*-launch — one landing on a fighter who was already helpless.
+   *
+   * Called before the reaction is entered, so the rank it reads is the state
+   * the blow arrived in. Counted only when the reaction was actually entered
+   * either: one that rank refused changed nothing, so it has no business
+   * spending anything.
    */
   smash(): void {
-    this.smashes++;
+    if (this.rank > 0) this.smashes++;
   }
 
   /**
@@ -84,6 +96,7 @@ export class Combo {
    * again, so the combo is over.
    */
   enter(rank: number): void {
+    this.rank = rank;
     if (rank === 0) {
       this.count = 0;
       this.total = 0;

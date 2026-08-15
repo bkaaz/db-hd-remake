@@ -75,10 +75,14 @@ type Named = [name: string, fighter: Entity][];
 /** `P1 kick_mid 2/4 6f` — who, what, and how far through it they are. */
 function situation(who: string, d: EntityDebug): string {
   const where = d.steps > 0 ? `${d.step + 1}/${d.steps}` : "-";
-  const flags = [d.freeze > 0 ? `frz${d.freeze}` : "", d.hitConfirmed ? "hit✓" : ""]
+  const flags = [
+    d.freeze > 0 ? `frz${d.freeze}` : "",
+    d.stun > 0 ? `stun${d.stun}` : "",
+    d.hitConfirmed ? "hit✓" : "",
+  ]
     .filter(Boolean)
     .join(" ");
-  return `${who} ${d.state.padEnd(16)} ${where} ${String(d.framesLeft).padStart(2)}f ${flags.padEnd(9)}`;
+  return `${who} ${d.state.padEnd(16)} ${where} ${String(d.framesLeft).padStart(2)}f ${flags.padEnd(17)}`;
 }
 
 /**
