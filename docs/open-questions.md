@@ -5,8 +5,11 @@ Move resolved ones into [`decisions.md`](./decisions.md).
 
 ## Scope & vision
 
-- **Q1 — Remake fidelity:** faithful recreation, modernized reimagining, or a
-  minimal "core combat" slice first?
+- **Q1 — Remake fidelity:** 🟡 Partially resolved — **gameplay is ours**, and
+  deliberately not faithful: the owner dislikes the original's combat and that
+  is a main reason the remake exists (`decisions.md`, 2026-08-15). The sprites,
+  the roster and the look stay Hyper Dimension. Still open: how much of the
+  presentation beyond that (stage planes, HUD, round flow) we keep.
 - **Q2 — First playable slice:** which characters/stage/moves define "done" for
   the first milestone?
 - **Q3 — Single-player scope:** do we want AI opponents, story mode, or is local
@@ -58,3 +61,7 @@ Deliberately not answered in one sitting; each gets its own conversation.
   the world to a logical resolution changes the engine only — authored data
   keeps its meaning. Decide before the world grows (stages, camera).
 - **Q8 — Multiplayer:** local only, or eventual online? (Affects architecture.)
+  Deliberately left open rather than answered by default: the expected opponent
+  is the CPU, but combat is designed as if a second human will arrive, because
+  a versus-sound system also plays well against the CPU and not the reverse.
+  See [`combat.md`](./combat.md).

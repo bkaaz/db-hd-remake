@@ -45,8 +45,20 @@ Verified 2026-08-07.
 - **Story-mode structure** — which arcs, fight order. **(TBC)**
 - **Movement details** — dashes, jumps, air combat, guard specifics. **(TBC)**
 
-## Our remake — scope (to be defined)
+## Our remake — scope
 
-Not yet decided. Open question: are we aiming for a **faithful recreation**,
-a **modernized reimagining**, or a **small subset** (e.g. 2 characters, core
-combat) as a first playable slice? See [`open-questions.md`](./open-questions.md).
+**Everything above describes the 1996 game. It is context, not a requirement.**
+
+Settled 2026-08-15 (`decisions.md`): the **combat system is ours**. The owner
+does not like the original's, and that is a main reason this remake exists — so
+the shared health/Ki bar, the Rush Battle System and the rest are things the
+original did, not things we owe. What binds us is the **roster** and the
+**sprites**.
+
+The brief for combat is a feeling: *the fight should be dynamic, the way Dragon
+Ball is dynamic*. The reference point is the Budokai games rather than Hyper
+Dimension, with other modern fighters open as inspiration.
+
+Still open, in [`open-questions.md`](./open-questions.md): how much of the
+presentation beyond sprites and roster we keep, and what the first playable
+slice is.

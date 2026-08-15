@@ -2,6 +2,85 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — It is always 1v1, and movement is a dash rather than a walk
+
+- **1v1, permanently.** No tag, no assists, no 2v2 or 3v3 (owner). FighterZ's
+  team layer is therefore *rejected*, not deferred — which retroactively
+  settles the "what we leave behind" row in `combat.md`.
+- **Goku's walk cannot be made to look right, and that is a property of the
+  sheet, not of our timing.** Frames 9 and 10 hold the same wide stance with the
+  feet in the same place; only the arms and the body height change. It is a bob,
+  so the character glides. Written into `descriptions.json` so nobody spends an
+  afternoon retiming it.
+- **Frames 24–27 are two dashes, not a run cycle** — 24 the pose a dash starts
+  from, 25 the forward dash, 26 that same start pose again, 27 the backward
+  dash. Confirmed by the owner. Worth recording *how* this was got wrong: read
+  off the sheet they look exactly like the alternating upright/extended poses of
+  a run cycle, and that reading was confidently wrong. The catalogue group
+  `lunge` is gone, replaced by `dash_fwd` and `dash_back`.
+- **A dash is therefore how this fighter moves**, not an extra. **The fast dash
+  costs the resource** (owner) — which makes the free one worth choosing and
+  blocks the fast one on a resource that does not exist yet. The ordinary dash
+  depends on nothing.
+- **A double tap is new input logic**, not an animation detail: the buffer
+  records attack presses and directions are only ever read as `held:`.
+
+## 2026-08-15 — FighterZ for the rules, Budokai for the flow
+
+- **The combat system now has a shape**, written down in
+  [`combat.md`](./combat.md) so it is not re-derived every session.
+- **Dragon Ball FighterZ is the reference for the rules** rather than Budokai:
+  it is a Dragon Ball game, two-dimensional, dynamic in the sense the owner
+  means, and it already contains the teleport escape the owner asked for
+  independently. Budokai stays the reference for *flow* — strings you fall into
+  rather than execute.
+- **We take an architecture, not frame data.** No constant in our data is
+  FighterZ's; theirs is not documented to us. Every number is ours and is
+  tuned by eye.
+- **Long combos are wanted** (owner). The expected opponent is the CPU, but
+  **multiplayer is explicitly not ruled out**, so the system is designed as if a
+  second human will arrive. The risk is lopsided: a versus-sound design also
+  plays well against the CPU, while one tuned for the CPU alone breaks the day
+  somebody sits at the other side. Every mechanic stays symmetric; what the AI
+  cannot yet use well is an AI problem. (An earlier draft of `combat.md` leaned
+  too far into single-player and was corrected the same day.)
+- **The escape was demoted and a structural limit restored.** The earlier
+  reasoning — that a teleport turns infinite juggling from a physics problem
+  into an economy one — was half right and shipped nothing. An escape costs a
+  resource, resources run out, and a floor made only of a resource is not a
+  floor. Soft scaling and a hard cap on re-launches are always on; Vanish is
+  situational on top.
+- **The corner was diagnosed properly rather than patched.** Push collision
+  separates anchors by 30 sprite px while attacks reach 28–44, so bodies pushing
+  apart never ended pressure anywhere on the stage — knockback did. At the wall
+  knockback is spent against the bound and nothing carries it to the attacker.
+  The rule to add is the one `separate()` already uses for pinned bodies.
+
+## 2026-08-15 — The combat system is ours; only the presentation is Hyper Dimension
+
+- **The owner does not like the original's combat, and that is a main reason
+  this remake exists.** So gameplay is deliberately *not* faithful. What stays
+  from Hyper Dimension: the sprites, the roster, the look. What does not: how
+  fighting works.
+- **The brief is a feeling, not a spec — "the fight is dynamic, the way Dragon
+  Ball is dynamic."** Every mechanical decision below serves that and is judged
+  by it.
+- **Reference point: the Budokai games on PS2** — combo strings you flow
+  through rather than execute — with other modern fighters open as inspiration.
+  Nothing is copied wholesale; they are a direction, not a specification.
+- **Wanted concretely, named by the owner:** a teleport behind the opponent on
+  a well-timed input while guarding. It is not a garnish — an escape that costs
+  a resource is what makes long combos survivable, and it turns "can someone be
+  juggled forever" from a physics problem into an economy one.
+- **The shared health/Ki bar is reopened.** It is a fact about the original, not
+  an inherited requirement. It now couples directly to the teleport: if escaping
+  costs health, escaping while nearly dead is impossible, which is either the
+  best thing about the design or a death spiral. Decide the resource before the
+  escape.
+- **Consequence for `game-overview.md`:** its confirmed facts describe the 1996
+  game. They are context now, not requirements. Only the roster and the sprites
+  still bind.
+
 ## 2026-08-15 — Being in the air is the reaction's business, not the attack's
 
 - **A fighter hit mid-jump snapped to the floor.** `reactionFor` knew the blow

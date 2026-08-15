@@ -20,6 +20,21 @@ because a number would only need translating back.
 
 ---
 
+## A light hit rescues someone who is already being knocked down
+
+`src/entity/states.ts` · noticed 2026-08-15 · annoying
+
+Uppercut, then jump and land a light kick on the rising body: instead of
+continuing to the floor, the opponent switches to `hurt_air`, recovers and
+lands on their feet. The knockdown is cancelled by the weaker blow.
+
+Same cause, second symptom: `downed` has hurt boxes, so a fighter lying on the
+floor can be kicked, and stands up into the standing `hurt` mid-lie-down.
+
+A reaction is chosen from the blow and from whether the defender is airborne;
+nothing asks what the defender is *doing*. Being helpless outranks being hit
+lightly, and no state can say so today.
+
 ## A held direction sticks after the window loses focus
 
 `src/input/keyboard.ts` · noticed 2026-08-14 · annoying

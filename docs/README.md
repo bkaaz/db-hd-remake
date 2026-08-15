@@ -8,7 +8,10 @@ collect what we want to build **before** writing gameplay code.
 - [`plan.md`](./plan.md) — **the queue.** Start here for "what's next". It is
   the only file that lists work to do, and finished items are deleted from it.
 - [`game-overview.md`](./game-overview.md) — what the original game is, what we
-  know for sure, and what still needs confirming.
+  know for sure, and what still needs confirming. Context, not requirements:
+  the combat system is ours.
+- [`combat.md`](./combat.md) — the fight we are building toward, and why each
+  part is there. The shape, not a schedule.
 - [`assets.md`](./assets.md) — where graphics/audio come from and how much can be
   automated (research findings).
 - [`tooling.md`](./tooling.md) — the asset pipeline: our own browser editor

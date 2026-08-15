@@ -191,7 +191,8 @@ queue.
   defender is helpless independently of how many frames the pose takes — that
   difference against the attacker's recovery *is* the combo. Hitstop does not
   enter into it: freezing both sides equally leaves frame advantage unchanged,
-  which is why it is symmetric.
+  which is why it is symmetric. **It is the first piece of the combat system
+  described in [`combat.md`](./combat.md)** — everything else there scales it.
 - **A remapping screen.** All four attack buttons are wired to the ZSNES
   defaults; nothing lets a player change them.
 - **A camera**, and a stage. Round rules and a second player belong to Stage 3

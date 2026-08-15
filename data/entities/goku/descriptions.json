@@ -20,7 +20,7 @@
       ]
     },
     "walk": {
-      "desc": "Two-frame walk cycle, guard held up. Used for BOTH directions — walking backwards plays the same frames, only the velocity differs (walk_fwd / walk_back).",
+      "desc": "Two-frame walk cycle, guard held up. Used for BOTH directions — walking backwards plays the same frames, only the velocity differs (walk_fwd / walk_back). Looked at 2026-08-15: THE FEET DO NOT MOVE between 9 and 10 — same wide stance, same foot placement, only the arms and the body height change. It is a bob, not a step, so walking will always read as gliding and no retiming can fix it. The sheet has no walking legs.",
       "frames": [
         "9",
         "10"
@@ -49,11 +49,16 @@
         "23"
       ]
     },
-    "lunge": {
-      "desc": "? Forward-committed poses: deep stances, rear leg extended, arms leading. Could be a dash, an attack wind-up, or both — needs naming. 28 used to be lumped in here and is in fact the block.",
+    "dash_fwd": {
+      "desc": "Dashing forward, confirmed by the owner 2026-08-15: 24 is the pose the dash starts from, 25 is the dash itself — torso pitched far forward, trailing leg straight out behind, hair blown back. Used to be half of a group called \"lunge\" that read the four frames as one run cycle; they are two dashes, not a cycle. These and dash_back are the only frames on the sheet where the legs travel at all — the walk does not step.",
       "frames": [
         "24",
-        "25",
+        "25"
+      ]
+    },
+    "dash_back": {
+      "desc": "Dashing backwards, confirmed by the owner 2026-08-15: 26 is the start pose and is the same pose as 24, 27 is the backward dash. The start pose appearing twice is the sheet giving each dash its own strip, not two different poses.",
+      "frames": [
         "26",
         "27"
       ]
@@ -209,8 +214,8 @@
     "6": "SSJ idle, fists up in guard, weight even",
     "7": "SSJ idle, as 6 with a slight shift — breathing",
     "8": "SSJ idle, third breathing frame",
-    "9": "SSJ walk, legs apart mid-stride, guard held",
-    "10": "SSJ walk, opposite leg leading, wider stride",
+    "9": "SSJ walk, guard held. NOT mid-stride: the feet are planted in the same wide stance as 10 (looked at 2026-08-15)",
+    "10": "SSJ walk, same foot placement as 9 — only the arms rise and the body lifts. The pair is a bob, not a step",
     "11": "? standing guard: upright, forearms crossed in front of the chest, weight even",
     "12": "? standing guard, second frame — near-identical to 11, the pair reads as breathing",
     "13": "? standing guard, third frame — the arms sit fractionally lower than in 11",
@@ -224,10 +229,10 @@
     "21": "airborne somersault, rotated further, feet uppermost",
     "22": "airborne somersault, body horizontal, head to the right",
     "23": "airborne somersault, curled, head up and to the left",
-    "24": "? upright, one arm cocked back at the shoulder, torso turned",
-    "25": "? low lunge, rear leg extended far back, lead arm forward",
-    "26": "? mid-stride, leaning, both arms raised",
-    "27": "? deep forward lunge, both arms extended, very low centre of gravity",
+    "24": "the pose a dash starts from — upright, weight forward, fists up. Same pose as 26",
+    "25": "dashing forward: torso pitched far forward, trailing leg straight out behind, hair blown back",
+    "26": "the pose a dash starts from, same as 24 — the sheet gives each dash its own strip",
+    "27": "dashing backwards, low and pitched, arms leading",
     "28": "the block: braced, arms up and across, taking a blow rather than throwing one. Confirmed by the owner",
     "29": "SSJ charging: fists clenched low, bright aura flaring around the whole body",
     "30": "SSJ charging: same pose, larger aura",
