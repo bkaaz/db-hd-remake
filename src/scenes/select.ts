@@ -104,7 +104,7 @@ export class SelectScene implements Scene {
     this.was = input;
 
     // Attacks are already edge-triggered, so any of the four confirms.
-    const confirm = input.punch || input.kick || input.punchHeavy || input.kickHeavy;
+    const confirm = input.light || input.medium || input.heavy || input.special;
     const slot = this.slots[this.cursor];
     if (confirm && slot.available && slot.id) {
       this.picked.push(slot.id);

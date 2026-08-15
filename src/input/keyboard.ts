@@ -9,9 +9,14 @@ import type { WorldInput } from "../entity/entity";
  * taken, so leaning on the key does not machine-gun. Auto-repeat is ignored for
  * the same reason — one press, one attack.
  *
- * Layout follows the ZSNES default (A=X, B=Z, X=S, Y=A), in the usual diamond:
- * top row punches, bottom row kicks, left column light, right column heavy.
- * Remapping comes later.
+ * The four attack buttons are **Light, Medium, Heavy, Special** — strength, not
+ * limb — on the `A S` / `Z X` square that stands in for a pad's four face
+ * buttons. Read it by **column, not by row**: the left column is the lighter
+ * pair and the right the heavier, which is the rule this project already used
+ * when the buttons were punch/kick, and which puts Heavy on the right the way
+ * the pad does.
+ *
+ * Remapping comes later; nothing outside this file knows which key is which.
  */
 export class Keyboard {
   /** Draw hit/hurt/push boxes over the fighters. Toggled with B. */
@@ -21,10 +26,10 @@ export class Keyboard {
 
   private readonly held: Directions = { left: false, right: false, up: false, down: false };
   private readonly armed: Attacks = {
-    punch: false,
-    kick: false,
-    punchHeavy: false,
-    kickHeavy: false,
+    light: false,
+    medium: false,
+    heavy: false,
+    special: false,
   };
 
   constructor(target: Window = window) {
@@ -69,9 +74,9 @@ export class Keyboard {
 }
 
 type Directions = Pick<WorldInput, "left" | "right" | "up" | "down">;
-type Attacks = Pick<WorldInput, "punch" | "kick" | "punchHeavy" | "kickHeavy">;
+type Attacks = Pick<WorldInput, "light" | "medium" | "heavy" | "special">;
 
-const ATTACK_BUTTONS = ["punch", "kick", "punchHeavy", "kickHeavy"] as const;
+const ATTACK_BUTTONS = ["light", "medium", "heavy", "special"] as const;
 
 const DIRECTION_KEYS: Record<string, keyof Directions | undefined> = {
   ArrowLeft: "left",
@@ -81,8 +86,8 @@ const DIRECTION_KEYS: Record<string, keyof Directions | undefined> = {
 };
 
 const ATTACK_KEYS: Record<string, keyof Attacks | undefined> = {
-  a: "punch",
-  z: "kick",
-  s: "punchHeavy",
-  x: "kickHeavy",
+  a: "light",
+  z: "medium",
+  s: "heavy",
+  x: "special",
 };

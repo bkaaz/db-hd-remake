@@ -36,7 +36,8 @@ npm run dev
 
 Then open the URL Vite prints (it opens the browser automatically). Two fighters
 face each other on a ground line. **←/→** walks, **↑** jumps, **↓** crouches,
-**A**/**S** punch, **Z**/**X** kick, and holding away from your opponent blocks
+**A**/**S**/**Z**/**X** are the four attack buttons — light, medium, heavy and
+special, by strength rather than by limb — and holding away from your opponent blocks
 whatever lands next. **T** makes the training dummy attack on a timer, so the
 reactions can be seen; **B** toggles the collision-box overlay.
 

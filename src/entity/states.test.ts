@@ -48,13 +48,13 @@ const NONE = {
   back: false,
   up: false,
   down: false,
-  punch: false,
-  kick: false,
-  punchHeavy: false,
-  kickHeavy: false,
+  light: false,
+  medium: false,
+  heavy: false,
+  special: false,
 };
 const FWD = { ...NONE, fwd: true };
-const ATTACK = { ...NONE, punch: true };
+const ATTACK = { ...NONE, light: true };
 const UP = { ...NONE, up: true };
 
 /** Nothing happened to the entity this frame. */
@@ -169,7 +169,7 @@ describe("validateStates", () => {
     // The classic authoring slip: forgetting to untick "loop" on an attack.
     const f = machine();
     f.states.punch = { anim: "walk", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
     expect(validateStates(f, ANIMS).warnings).toContain(
       'state "punch": can never be left — animation "walk" loops, so animEnd never fires',
     );
@@ -178,7 +178,7 @@ describe("validateStates", () => {
   it("accepts the same state once its animation stops looping", () => {
     const f = machine();
     f.states.punch = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
@@ -222,7 +222,7 @@ describe("validateStates", () => {
   it("reports a hitstop that is not a frame count", () => {
     const f = machine();
     f.states.punch = { anim: "punch", hitstop: -1, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "punch": "hitstop" must be a number of game frames, 0 or more',
     );
@@ -231,14 +231,14 @@ describe("validateStates", () => {
   it("accepts a hitstop of zero — an attack that deliberately does not pause", () => {
     const f = machine();
     f.states.punch = { anim: "punch", hitstop: 0, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
   it("reports damage that is not a number", () => {
     const f = machine();
     f.states.punch = { anim: "punch", damage: -3, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "punch": "damage" must be a number, 0 or more',
     );
@@ -247,7 +247,7 @@ describe("validateStates", () => {
   it("accepts damage of zero — an attack that only moves the opponent", () => {
     const f = machine();
     f.states.punch = { anim: "punch", damage: 0, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
@@ -276,7 +276,7 @@ describe("validateStates", () => {
     // silently — the attack connects and nothing visible happens.
     const f = machine();
     f.states.punch = { anim: "punch", onHit: "hrut", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
     const { errors, warnings } = validateStates(f, ANIMS);
     expect(errors).toEqual([]);
     expect(warnings).toContain(
@@ -289,7 +289,7 @@ describe("validateStates", () => {
     const f = machine();
     f.states.punch = { anim: "punch", onHit: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
     f.states.hurt = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:punch", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
@@ -471,7 +471,7 @@ describe("StateMachine", () => {
   it("enters an attack on the button edge, not while it is held", () => {
     const f = machine();
     f.states.punch = { anim: "idle", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions = [{ when: "pressed:punch", to: "punch" }];
+    f.states.idle.transitions = [{ when: "pressed:light", to: "punch" }];
     const sm = new StateMachine(f);
     expect(sm.update(NONE, QUIET)).toBeNull();
     expect(sm.update(ATTACK, QUIET)).toBe("punch");

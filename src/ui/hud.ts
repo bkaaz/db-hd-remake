@@ -83,7 +83,7 @@ export class Hud {
   private statusLine({ state, dummyAttacks }: HudFrame): string {
     const { name } = this.setup;
     return (
-      `${name} · [←/→] walk · [↑] jump · [↓] crouch · [A/S] punch · [Z/X] kick · ` +
+      `${name} · [←/→] walk · [↑] jump · [↓] crouch · [A] light [Z] medium [S] heavy [X] special · ` +
       `[B] boxes · [T] dummy attacks: ${dummyAttacks ? "on" : "off"} · state: ${state}`
     );
   }

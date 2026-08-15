@@ -38,4 +38,4 @@ export class TrainingFixture {
 /** Game frames between swings — 1.5 seconds, long enough to watch one land. */
 const ATTACK_EVERY = 90;
 
-const ROTATION = ["punch", "kick", "punchHeavy", "kickHeavy"] as const;
+const ROTATION = ["light", "medium", "heavy", "special"] as const;

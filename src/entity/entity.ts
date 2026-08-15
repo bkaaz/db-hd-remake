@@ -19,14 +19,16 @@ export interface WorldInput {
   up: boolean;
   /** Down arrow — held, like up. */
   down: boolean;
-  /** Punch button went down **this frame** (edge, not held). */
-  punch: boolean;
-  /** Kick button went down **this frame** (edge, not held). */
-  kick: boolean;
-  /** Heavy punch button went down **this frame**. */
-  punchHeavy: boolean;
-  /** Heavy kick button went down **this frame**. */
-  kickHeavy: boolean;
+  /**
+   * The four attack buttons, by **strength** rather than by limb: which blow is
+   * a punch and which a kick is the character's business, not the player's.
+   * Each went down **this frame** (edge, not held).
+   */
+  light: boolean;
+  medium: boolean;
+  heavy: boolean;
+  /** The ki blast, and the ender a chain falls into. */
+  special: boolean;
 }
 
 export const NO_INPUT: WorldInput = {
@@ -34,10 +36,10 @@ export const NO_INPUT: WorldInput = {
   right: false,
   up: false,
   down: false,
-  punch: false,
-  kick: false,
-  punchHeavy: false,
-  kickHeavy: false,
+  light: false,
+  medium: false,
+  heavy: false,
+  special: false,
 };
 
 const BOX_COLORS: Record<string, number> = {
@@ -334,10 +336,10 @@ export class Entity {
     // on at the apex; `nearGround` narrows that to the last stretch before
     // touchdown, where the landing pose belongs.
     // Edges go into the buffer; the state machine reads the buffer, not the edge.
-    if (input.punch) this.buffer.press("punch");
-    if (input.kick) this.buffer.press("kick");
-    if (input.punchHeavy) this.buffer.press("punchHeavy");
-    if (input.kickHeavy) this.buffer.press("kickHeavy");
+    if (input.light) this.buffer.press("light");
+    if (input.medium) this.buffer.press("medium");
+    if (input.heavy) this.buffer.press("heavy");
+    if (input.special) this.buffer.press("special");
 
     const falling = this.airborne && this.vy > 0;
     const nearGround = this.nearGround;
@@ -348,10 +350,10 @@ export class Entity {
         back,
         up: input.up,
         down: input.down,
-        punch: this.buffer.has("punch"),
-        kick: this.buffer.has("kick"),
-        punchHeavy: this.buffer.has("punchHeavy"),
-        kickHeavy: this.buffer.has("kickHeavy"),
+        light: this.buffer.has("light"),
+        medium: this.buffer.has("medium"),
+        heavy: this.buffer.has("heavy"),
+        special: this.buffer.has("special"),
       },
       { animEnded: this.animEnded, falling, nearGround, landed: this.landed },
     );

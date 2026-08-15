@@ -117,14 +117,15 @@ export interface InputSnapshot {
   up: boolean;
   /** Down is a world direction too — it starts a crouch. */
   down: boolean;
-  /** Punch button went down **this frame** (edge, not held). */
-  punch: boolean;
-  /** Kick button went down **this frame** (edge, not held). */
-  kick: boolean;
-  /** Heavy punch button went down **this frame**. */
-  punchHeavy: boolean;
-  /** Heavy kick button went down **this frame**. */
-  kickHeavy: boolean;
+  /**
+   * The four attack buttons, by strength rather than by limb — which blow is a
+   * punch and which a kick is the character's business. Each went down **this
+   * frame** (edge, not held).
+   */
+  light: boolean;
+  medium: boolean;
+  heavy: boolean;
+  special: boolean;
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -148,10 +149,10 @@ export const TRIGGERS = [
   "held:back",
   "held:up",
   "held:down",
-  "pressed:punch",
-  "pressed:kick",
-  "pressed:punchHeavy",
-  "pressed:kickHeavy",
+  "pressed:light",
+  "pressed:medium",
+  "pressed:heavy",
+  "pressed:special",
   "animEnd",
   "falling",
   "nearGround",
@@ -179,17 +180,17 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "held:down":
       value = input.down;
       break;
-    case "pressed:punch":
-      value = input.punch;
+    case "pressed:light":
+      value = input.light;
       break;
-    case "pressed:kick":
-      value = input.kick;
+    case "pressed:medium":
+      value = input.medium;
       break;
-    case "pressed:punchHeavy":
-      value = input.punchHeavy;
+    case "pressed:heavy":
+      value = input.heavy;
       break;
-    case "pressed:kickHeavy":
-      value = input.kickHeavy;
+    case "pressed:special":
+      value = input.special;
       break;
     case "animEnd":
       value = signals.animEnded;

@@ -8,10 +8,9 @@
       "vel": [0, 0],
       "turn": true,
       "transitions": [
-        { "when": "pressed:punch", "to": "punch" },
-        { "when": "pressed:kick", "to": "kick" },
-        { "when": "pressed:punchHeavy", "to": "uppercut" },
-        { "when": "pressed:kickHeavy", "to": "kick_heavy" },
+        { "when": "pressed:light", "to": "punch" },
+        { "when": "pressed:medium", "to": "kick" },
+        { "when": "pressed:heavy", "to": "kick_heavy" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" },
         { "when": "held:up", "to": "jump_up" },
@@ -23,10 +22,9 @@
       "vel": [1.4, 0],
       "turn": true,
       "transitions": [
-        { "when": "pressed:punch", "to": "punch" },
-        { "when": "pressed:kick", "to": "kick" },
-        { "when": "pressed:punchHeavy", "to": "uppercut" },
-        { "when": "pressed:kickHeavy", "to": "kick_heavy" },
+        { "when": "pressed:light", "to": "punch" },
+        { "when": "pressed:medium", "to": "kick" },
+        { "when": "pressed:heavy", "to": "kick_heavy" },
         { "when": "held:up", "to": "jump_fwd" },
         { "when": "!held:fwd", "to": "idle" },
         { "when": "held:down", "to": "crouch" }
@@ -37,10 +35,9 @@
       "vel": [-1.0, 0],
       "turn": true,
       "transitions": [
-        { "when": "pressed:punch", "to": "punch" },
-        { "when": "pressed:kick", "to": "kick" },
-        { "when": "pressed:punchHeavy", "to": "uppercut" },
-        { "when": "pressed:kickHeavy", "to": "kick_heavy" },
+        { "when": "pressed:light", "to": "punch" },
+        { "when": "pressed:medium", "to": "kick" },
+        { "when": "pressed:heavy", "to": "kick_heavy" },
         { "when": "held:up", "to": "jump_back" },
         { "when": "!held:back", "to": "idle" },
         { "when": "held:down", "to": "crouch" }
@@ -105,7 +102,8 @@
       "vel": [0, 0],
       "turn": true,
       "transitions": [
-        { "when": "pressed:kick", "to": "kick_crouch" },
+        { "when": "pressed:medium", "to": "kick_crouch" },
+        { "when": "pressed:heavy", "to": "uppercut" },
         { "when": "!held:down", "to": "idle" }
       ]
     },
@@ -241,7 +239,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:kick", "to": "kick_air" },
+        { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "falling", "to": "jump_up_fall" },
         { "when": "landed", "to": "idle" }
@@ -254,7 +252,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:kick", "to": "kick_air" },
+        { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_fwd_air" },
         { "when": "landed", "to": "idle" }
@@ -266,7 +264,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:kick", "to": "kick_air" },
+        { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" },
         { "when": "landed", "to": "idle" }
@@ -278,7 +276,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:kick", "to": "kick_air" },
+        { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_back_air" },
         { "when": "landed", "to": "idle" }
@@ -290,7 +288,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:kick", "to": "kick_air" },
+        { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" },
         { "when": "landed", "to": "idle" }
@@ -301,7 +299,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:kick", "to": "kick_air" },
+        { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" }
       ]
@@ -311,7 +309,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:kick", "to": "kick_air" },
+        { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" }
       ]

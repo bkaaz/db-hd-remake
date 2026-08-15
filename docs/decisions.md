@@ -2,6 +2,31 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-15 — The buttons become Light / Medium / Heavy / Special
+
+- **`punch`, `kick`, `punchHeavy` and `kickHeavy` are gone** from the input, the
+  trigger vocabulary and the data. Nothing outside `input/keyboard.ts` knows
+  which key is which, so remapping stays a later, local change.
+- **Keys are the `A S` / `Z X` square**, the keyboard stand-in for a pad's four
+  face buttons, and it is read **by column**: `A` light and `Z` medium on the
+  left, `S` heavy and `X` special on the right. Left lighter, right heavier is
+  the rule this project already used when the buttons were punch/kick, and it
+  puts Heavy on the right the way the pad does (FighterZ: □ L, △ M, ○ H, ✕ S).
+  There is no single convention for translating a pad diamond onto four
+  keyboard keys, so the tie is broken by what the project and the owner's hand
+  already expect. A row of `A S D F` was tried first and rejected.
+- **Uppercut moved to crouching Heavy.** Four attacks did not fit three standing
+  slots, and the uppercut is the launcher — which is the crouching Heavy in the
+  game we are taking the scheme from. It costs nothing mechanically: crouch is
+  already its own state, so `pressed:heavy` there is an ordinary single trigger,
+  not a direction-plus-button combination we cannot express yet.
+- **Special does nothing yet, deliberately.** It is the ki blast, the ki blast
+  is frames 54–55, and those are not built. An empty button is more honest than
+  parking the uppercut there and moving it again later.
+- This is the first of three slices toward a chain: buttons, then the mechanism
+  (a conjunction in `when`, plus a `hitConfirmed` trigger), then the kick string
+  itself.
+
 ## 2026-08-15 — Depth is a drawing, not a plane
 
 - **The sheet has a whole second combat mode and we are not building it.**
