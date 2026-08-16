@@ -2,6 +2,19 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — A recording opens with what it is a recording *of*
+
+- **`describes()` in `src/log.ts`**, called by the scene when it is built rather
+  than by `L` when a recording starts: the two are minutes apart and only the
+  scene knows the answer.
+- **The mode's contents, not its number.** Mode 0 is the everyday scratch setup
+  and changes whenever it needs to, so two logs a week apart would both say
+  "mode 0" and describe different fights. The header carries the JSON.
+- **Stepping to another mode mid-recording writes a line** rather than passing
+  silently, or every line after it would describe something the header does not.
+- Tested against a stubbed `fetch`, which is the whole of this module's contact
+  with the outside world.
+
 ## 2026-08-16 — An attack is authored from a table, not tuned move by move
 
 - **One row per strength** (`combat.md`): L/M/H fix start-up, active, recovery,

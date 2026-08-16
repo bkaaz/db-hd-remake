@@ -10,7 +10,7 @@ import type { Scene, SceneContext, SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
 import { Stage } from "../stage";
-import { tickLog } from "../log";
+import { describes, tickLog } from "../log";
 import { DebugPanel } from "../ui/debug";
 import { Hud, showMessage } from "../ui/hud";
 import type { Text } from "pixi.js";
@@ -57,6 +57,13 @@ export class DebugScene implements Scene {
     const loaded = await loadMode(req.mode);
     if (typeof loaded === "string") return loaded;
     const { mode, count } = loaded;
+
+    // What a recording made from here is a recording *of* — the number alone
+    // means nothing, because mode 0 is the everyday scratch setup.
+    describes([
+      `debug mode ${req.mode}: ${JSON.stringify(mode)}`,
+      `p1=${req.p1} p2=${req.p2}`,
+    ]);
 
     const dummy = Dummy.from(mode.p2);
     if (typeof dummy === "string") return `mode ${req.mode}: ${dummy}`;

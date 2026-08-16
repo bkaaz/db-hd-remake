@@ -32,49 +32,7 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## First: the debug scene gets setups you can write down
-
-The scene formerly called `fight` is **`debug`** as of 2026-08-16, and the real
-fight and a player's training mode are both still ahead of it (`decisions.md`).
-What it needs next is a way to *say* what the dummy does, because the one thing
-it cannot do today is hold back — so the fix that made combos true combos could
-not be seen on a recording at all.
-
-Settled: **`data/debug.json` holds numbered modes, `?scene=debug&mode=N` picks
-one**, no parameter means mode 0, and a missing key means "as it is today" — a
-mode is a list of differences, not a description of the world. Shape:
-
-```json
-{ "modes": [
-  { "p1": { "at": 0.62 }, "p2": { "at": 0.95, "does": ["light", 90], "loop": true }, "boxes": true }
-] }
-```
-
-- **`at` is a fraction of the stage**, 0 the left wall and 1 the right, so it
-  survives a resize. Both fighters at the same value is legal — the push that
-  already exists separates them, which is how "both in the corner" is written.
-- **`does` is a timeline, not a policy**: an action name, or a number of frames
-  of nothing. It replaces the old `attackEvery`, which could say "swing on a
-  timer" but never "light, light, pause, jump in, light". Action *names* rather
-  than key letters, because keys become remappable.
-- **The line that must hold: no conditions in `does`.** The moment a mode wants
-  "if he blocked, then…" it has become a second state machine beside
-  `states.json`, and that is the point to stop and ask why.
-- `guard` is separate from `does` because it is a hold, not an event: `never` or
-  `always` to start with, `afterFirstHit` when combo work asks for it.
-- `boxes` and `debug` set the *initial* value only; `B` and `D` still toggle.
-
-The file, `mode=N`, the start positions, the overlay defaults and the scripted
-dummy all landed 2026-08-16 (`src/debug/`, `/api/debug`). What is left:
-
-- **The recording writes the mode's contents on its first line.** The number
-  means nothing on its own, because mode 0 is edited freely and two logs a week
-  apart would both call themselves "0".
-
-*Done when:* a recording can be reproduced from its own first line, and P2 can
-be told to block without touching any code.
-
-## Then: what chains into what, derived — never written down
+## First: what chains into what, derived — never written down
 
 A chain is a **conclusion from `states.json`**, so it is computed, never
 maintained by hand: a markdown table of links would be wrong within a day, and

@@ -27,6 +27,16 @@
  */
 
 let recording = false;
+/**
+ * What the recording is *of* — set by whoever built the situation, printed at
+ * the top of the file.
+ *
+ * A recording that only says "started at 14:32" is evidence of nothing: the
+ * debug scene's mode 0 is edited freely, so two logs a week apart both call
+ * themselves the same number and describe different fights. The header carries
+ * the mode's **contents**, which is what makes an old recording still readable.
+ */
+let situation: string[] = [];
 let frame = 0;
 /** Frame the previous line was written on, for the gap each new line prints. */
 let lastAt = 0;
@@ -37,13 +47,30 @@ const FLUSH_EVERY = 30;
 
 export const isRecording = (): boolean => recording;
 
+/**
+ * Say what is being run, for the top of the next recording. Called on building
+ * a scene, not on starting a recording — the two are minutes apart and only the
+ * scene knows the answer.
+ *
+ * While a recording is already running this writes a line instead, because
+ * stepping to another mode mid-recording is a change to what the log describes
+ * and a silent one would make the rest of the file a lie.
+ */
+export function describes(lines: string[]): void {
+  situation = lines;
+  if (recording) for (const line of lines) logEvent(`— now ${line}`);
+}
+
 /** Begin a recording, discarding whatever the last one left behind. */
 export function startRecording(): void {
   recording = true;
   frame = 0;
   lastAt = 0;
   pending = [];
-  void send([`# recording started ${new Date().toISOString()}`], true);
+  void send(
+    [`# recording started ${new Date().toISOString()}`, ...situation.map((l) => `# ${l}`)],
+    true,
+  );
 }
 
 export function stopRecording(): void {
