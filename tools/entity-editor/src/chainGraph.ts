@@ -1,8 +1,9 @@
-import { chainLinks, type AnimSteps } from "../../../src/combat/chains";
+import { attacksIn, chainLinks, openings, type AnimSteps } from "../../../src/combat/chains";
 import type { StatesFile } from "../../../src/entity/states";
-import { state } from "./store";
-import { getSource } from "./imageProcess";
-import { drawEdges, type GraphNode } from "./chainEdges";
+import { drawEdges, type Edge, type GraphNode } from "./chainEdges";
+import { legend } from "./chainLegend";
+import { highlightOnHover } from "./chainFocus";
+import { hitFrameOf } from "./chainNode";
 
 /**
  * The cancel graph: which attack leads into which, and whether the link holds.
@@ -20,30 +21,94 @@ import { drawEdges, type GraphNode } from "./chainEdges";
  * layout algorithm, and it is enough because depth is already computed.
  */
 
+/**
+ * The state the graph is drawn *from*, or "" for all of them.
+ *
+ * Showing every way in at once turned out to be too much — one air attack is
+ * reachable from seven states, and that is seven arrows saying the same thing.
+ * Picking one answers the question you actually have ("I am crouching: what can
+ * I do?") and cuts the picture down to that answer.
+ */
+let from: string | null = null;
+
 export function renderChainGraph(
   container: HTMLElement,
   file: StatesFile,
   anims: Record<string, AnimSteps>,
   baseHitstun: number,
 ): void {
-  const links = chainLinks(file, anims, baseHitstun);
-  if (links.length === 0) {
+  const rebuild = (): void => {
+    container.replaceChildren();
+    renderChainGraph(container, file, anims, baseHitstun);
+  };
+  const all = chainLinks(file, anims, baseHitstun);
+  const openers = openings(file);
+  const sources = [...new Set(openers.flatMap((o) => o.from))].sort();
+  // The graph opens on the state the entity itself starts in — `initial` is the
+  // authored answer to "where does this begin", so nothing here has to know
+  // that the answer is usually called "idle". "" is the deliberate choice of
+  // seeing every attack at once.
+  if (from === null) from = sources.includes(file.initial) ? file.initial : "";
+  if (from && !sources.includes(from)) from = "";
+  // Copied out of the module variable, which the select is free to change from
+  // under this render: everything below has to describe one picture.
+  const start: string = from;
+
+  // Chosen a state to start from: only the attacks it opens, and whatever those
+  // can still cancel into. Everything else is somebody else's question.
+  const entries = start ? openers.filter((o) => o.from.includes(start)) : openers;
+  const attacks = start ? reachable(entries.map((e) => e.to), all) : attacksIn(file);
+  const links = all.filter((l) => attacks.has(l.from) && attacks.has(l.to));
+  // Every attack gets a node, whether or not it chains: a move that leads
+  // nowhere is worth seeing, and after the moveset pass most of them will.
+  const shift = start ? 1 : 0;
+  const depths = new Map<string, number>();
+  for (const name of attacks) depths.set(name, shift);
+  for (const l of links) {
+    depths.set(l.from, Math.max(depths.get(l.from) ?? 0, l.depth + shift));
+    depths.set(l.to, Math.max(depths.get(l.to) ?? 0, l.depth + shift + 1));
+  }
+  if (start) depths.set(start, 0);
+
+  // The ways in become edges of their own in this mode, so they are handed to
+  // the same routing as the cancels rather than drawn a second way.
+  const shown: Edge[] = start
+    ? [
+        ...links,
+        ...entries.map((e) => ({
+          from: start,
+          to: e.to,
+          on: e.when.replace(/pressed:|held:/g, ""),
+          window: 0,
+          startup: 0,
+          worst: 0,
+          depth: 0,
+          hitstun: 0,
+          margin: 0,
+          launcher: false,
+          entry: true,
+        })),
+      ]
+    : links;
+
+  container.append(
+    legend(sources, start, (state) => {
+      from = state;
+      rebuild();
+    }),
+  );
+
+  if (attacks.size === 0) {
     container.append(
       el("p", {
         className: "hint",
-        textContent: 'No cancels: no transition asks for "cancelable", so every attack stands alone.',
+        textContent: start
+          ? `Nothing opens from ${start}: no transition out of it starts an attack.`
+          : 'No attacks: no state says what it does to whoever it hits.',
       }),
     );
     return;
   }
-
-  const depths = new Map<string, number>();
-  for (const l of links) {
-    depths.set(l.from, Math.max(depths.get(l.from) ?? 0, l.depth));
-    depths.set(l.to, Math.max(depths.get(l.to) ?? 0, l.depth + 1));
-  }
-
-  container.append(legend());
 
   const board = el("div", { className: "chain-board" });
   const edges = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -57,7 +122,17 @@ export function renderChainGraph(
     for (const [name, at] of depths) {
       if (at !== depth) continue;
       const shot = hitFrameOf(file.states[name]?.anim ?? "");
+      const ways = start ? [] : entries.filter((e) => e.to === name);
       const box = el("div", { className: "chain-node" }, [
+        // How you get in, when it is not from another attack. Without it the
+        // graph says what follows what and never says where to start.
+        ...ways.map((w) =>
+          el("span", {
+            className: "chain-entry",
+            textContent: w.when.replace(/pressed:|held:/g, "").replace(/ \+ /g, " + "),
+            title: `from ${w.from.join(", ")} — ${w.when}`,
+          }),
+        ),
         ...(shot ? [shot] : []),
         el("strong", { textContent: name }),
         el("span", {
@@ -78,7 +153,7 @@ export function renderChainGraph(
   // Positions are only known once the browser has laid the boxes out, and they
   // move with every resize of the pane — so the edges are drawn from measured
   // geometry rather than from anything this module decides.
-  const draw = (): void => drawEdges(edges, board, nodes, links);
+  const draw = (): void => drawEdges(edges, board, nodes, shown);
   requestAnimationFrame(draw);
   new ResizeObserver(draw).observe(board);
 }
@@ -93,90 +168,17 @@ function el<K extends keyof HTMLElementTagNameMap>(
   return node;
 }
 
-/**
- * Hovering a node dims everything it does not touch.
- *
- * With nine attacks and nineteen cancels the picture is honest but crowded, and
- * the question you actually arrive with is about one move: *what can I do out of
- * this, and what gets me here*. Dimming answers it without a click, and without
- * a second view.
- */
-function highlightOnHover(board: HTMLElement): void {
-  board.addEventListener("mouseover", (e) => {
-    const node = (e.target as HTMLElement).closest<HTMLElement>(".chain-node");
-    const name = node?.dataset.node;
-    board.classList.toggle("focusing", !!name);
-    if (!name) return;
-
-    const touching = new Set<string>([name]);
-    for (const edge of board.querySelectorAll<SVGElement>("[data-from]")) {
-      const from = edge.dataset.from ?? "";
-      const to = edge.dataset.to ?? "";
-      const on = from === name || to === name;
-      edge.classList.toggle("on", on);
-      if (on) touching.add(from).add(to);
+/** Everything you can still get to from these attacks, following cancels only. */
+function reachable(seeds: string[], links: Edge[]): Set<string> {
+  const found = new Set(seeds);
+  for (let added = true; added; ) {
+    added = false;
+    for (const l of links) {
+      if (found.has(l.from) && !found.has(l.to)) {
+        found.add(l.to);
+        added = true;
+      }
     }
-    for (const box of board.querySelectorAll<HTMLElement>(".chain-node")) {
-      box.classList.toggle("on", touching.has(box.dataset.node ?? ""));
-    }
-  });
-  board.addEventListener("mouseleave", () => board.classList.remove("focusing"));
-}
-
-/**
- * What the arrows mean, shown with the arrows themselves rather than described
- * in words: a sample of each stroke beside the sentence about it, because "red"
- * and "dashed" are only names for something the reader can just be shown.
- */
-function legend(): HTMLElement {
-  const rows: [string, string][] = [
-    ["chain-edge", "the button that cancels, and the frames of margin"],
-    ["chain-edge bad", "no margin left — the defender is up before the next blow, so it is not a combo"],
-    ["chain-edge ends", "the blow floors them: the chain ends here whatever you press"],
-  ];
-  const key = el("div", { className: "chain-key" });
-  for (const [cls, text] of rows) {
-    const swatch = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    swatch.setAttribute("viewBox", "0 0 34 10");
-    swatch.classList.add("chain-swatch");
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    line.setAttribute("d", "M 1 5 C 12 5, 22 5, 33 5");
-    line.setAttribute("class", cls);
-    swatch.append(line);
-    key.append(el("div", { className: "chain-key-row" }, [swatch, el("span", { textContent: text })]));
   }
-  key.append(el("div", { className: "chain-key-row dims" }, [el("span", { textContent: "Hover an arrow for the whole sum: window, start-up, hitstun, depth." })]));
-  return key;
+  return found;
 }
-
-/**
- * The frame this attack actually hits on, cut out of the sheet.
- *
- * A name tells you nothing about a blow and a picture tells you everything, so
- * the node *is* the pose — which is also the only thing that makes this read as
- * a combo rather than as a diagram of a state machine.
- */
-function hitFrameOf(anim: string): HTMLCanvasElement | null {
-  const steps = state.anims.find((a) => a.name === anim)?.steps ?? [];
-  const step = steps.find((s) => s.boxes.some((b) => b.type === "hit")) ?? steps[0];
-  const frame = state.frames.find((f) => f.id === step?.frame);
-  // The keyed canvas, not the raw sheet: the same source the preview and the
-  // atlas export use, so the pose sits on the node's own background instead of
-  // a rectangle of whatever colour the rip happened to have.
-  const sheet = getSource();
-  if (!frame || !sheet) return null;
-
-  const scale = Math.min(SHOT / frame.w, SHOT / frame.h, 2);
-  const canvas = document.createElement("canvas");
-  canvas.className = "chain-shot";
-  canvas.width = Math.round(frame.w * scale);
-  canvas.height = Math.round(frame.h * scale);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return null;
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, 0, 0, canvas.width, canvas.height);
-  return canvas;
-}
-
-/** Longest side of a node's picture, in screen px. */
-const SHOT = 96;

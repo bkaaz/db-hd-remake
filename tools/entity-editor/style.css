@@ -183,6 +183,7 @@ input.dur { width: 52px; }
   color: var(--muted);
 }
 .chain-key-row { display: flex; align-items: center; gap: 8px; }
+.chain-key-row select { font-size: 11px; }
 .chain-swatch { width: 34px; height: 10px; flex: none; overflow: visible; }
 .chain-board {
   position: relative;
@@ -191,6 +192,15 @@ input.dur { width: 52px; }
   align-items: flex-start;
   padding: 12px 4px;
   width: max-content;
+}
+.chain-entry {
+  display: block;
+  font-size: 10px;
+  color: #04222a;
+  background: var(--accent);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-bottom: 4px;
 }
 .chain-shot {
   image-rendering: pixelated;
@@ -241,6 +251,8 @@ input.dur { width: 52px; }
 .chain-board.focusing .chain-label.on { opacity: 1; }
 .chain-node.on { border-color: var(--accent); }
 .chain-edge.ends { stroke-dasharray: 4 3; }
+/* A way in is context, not part of the string: thinner and quieter. */
+.chain-edge.entry { stroke: var(--muted); stroke-width: 1; opacity: 0.5; }
 .chain-edge.bad { stroke: #ff6b6b; opacity: 1; }
 .chain-label {
   fill: var(--text);

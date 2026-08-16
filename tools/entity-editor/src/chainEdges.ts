@@ -9,6 +9,14 @@ import type { Link } from "../../../src/combat/chains";
  * boxes it joins and how to get there without crossing a third one.
  */
 
+/**
+ * An arrow to draw. A cancel carries its arithmetic; a **way in** carries only
+ * the input, because "margin" means nothing for a move you start from standing.
+ */
+export interface Edge extends Link {
+  entry?: boolean;
+}
+
 /** A node the browser has already placed; the routing measures it, never moves it. */
 export interface GraphNode {
   name: string;
@@ -16,7 +24,7 @@ export interface GraphNode {
   el: HTMLElement;
 }
 
-export function drawEdges(svg: SVGSVGElement, board: HTMLElement, nodes: Map<string, GraphNode>, links: Link[]): void {
+export function drawEdges(svg: SVGSVGElement, board: HTMLElement, nodes: Map<string, GraphNode>, links: Edge[]): void {
   const origin = board.getBoundingClientRect();
   svg.replaceChildren();
 
@@ -27,7 +35,7 @@ export function drawEdges(svg: SVGSVGElement, board: HTMLElement, nodes: Map<str
    * crosses, at our scale where a lane per edge is enough.
    */
   const long = links.filter((l) => columnsApart(l, nodes) > 1);
-  const lane = new Map<Link, number>();
+  const lane = new Map<Edge, number>();
   long
     .slice()
     .sort((a, b) => columnsApart(b, nodes) - columnsApart(a, nodes))
@@ -70,7 +78,7 @@ export function drawEdges(svg: SVGSVGElement, board: HTMLElement, nodes: Map<str
 
     const line = svgEl("path", {
       d,
-      class: `chain-edge${link.margin < 0 ? " bad" : ""}${link.launcher ? " ends" : ""}`,
+      class: `chain-edge${link.entry ? " entry" : ""}${!link.entry && link.margin < 0 ? " bad" : ""}${!link.entry && link.launcher ? " ends" : ""}`,
       "data-from": link.from,
       "data-to": link.to,
     });
@@ -86,21 +94,24 @@ export function drawEdges(svg: SVGSVGElement, board: HTMLElement, nodes: Map<str
           "data-from": link.from,
           "data-to": link.to,
         },
-        `${link.on ?? "—"} ${link.margin >= 0 ? "+" : ""}${link.margin}`,
+        link.entry
+          ? (link.on ?? "—")
+          : `${link.on ?? "—"} ${link.margin >= 0 ? "+" : ""}${link.margin}`,
       ),
     );
   }
 }
 
 /** How many columns a link crosses — 1 is a neighbour, more is a fly-over. */
-function columnsApart(link: Link, nodes: Map<string, GraphNode>): number {
+function columnsApart(link: Edge, nodes: Map<string, GraphNode>): number {
   const from = nodes.get(link.from)?.depth ?? 0;
   const to = nodes.get(link.to)?.depth ?? 0;
   return to - from;
 }
 
 /** The arithmetic behind one link, for whoever hovers it. */
-function tooltip(l: Link): string {
+function tooltip(l: Edge): string {
+  if (l.entry) return `${l.to} starts from ${l.from} on ${l.on}`;
   return [
     `${l.from} → ${l.to} on ${l.on ?? "—"}`,
     `window ${l.window} + start-up ${l.startup} = ${l.worst} frames at worst`,

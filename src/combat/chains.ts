@@ -46,6 +46,16 @@ export interface Link {
 /** The trigger a chain hangs off — "connected, and still cancellable". */
 const CANCEL = "cancelable";
 
+/** How a string is *started*: a state that is not an attack, and what it takes. */
+export interface Entry {
+  /** The attack this opens. */
+  to: string;
+  /** The state you are in when you press — `idle`, `crouch`, `walk_fwd`. */
+  from: string;
+  /** The trigger as authored, e.g. `pressed:light` or `held:down + pressed:heavy`. */
+  when: string;
+}
+
 /** Frames before the hit box appears. */
 export function startupOf(anim: AnimSteps | undefined): number {
   let before = 0;
@@ -59,6 +69,61 @@ export function startupOf(anim: AnimSteps | undefined): number {
 /** Frames the whole animation lasts. */
 export function framesOf(anim: AnimSteps | undefined): number {
   return (anim?.steps ?? []).reduce((n, s) => n + s.dur, 0);
+}
+
+/**
+ * Every way *into* an attack that is not a cancel — the openers.
+ *
+ * A cancel graph starts from nowhere without these: the string `A Z Z S` is only
+ * half the answer, because nothing on it says that `A` from standing is what
+ * gets you in, and that crouching gives a different move for the same button.
+ * The sources are the states that take part in no chain of their own — standing,
+ * walking, crouching — which is exactly what "you have control" looks like here.
+ */
+export function entriesOf(file: StatesFile): Entry[] {
+  const attacks = attacksIn(file);
+  return Object.entries(file.states).flatMap(([from, def]) =>
+    // A source is a state you are *in charge of*: not an attack, and not a
+    // reaction (which is what a rank means). That is "you have control", which
+    // is the same fact the combo counter resets on.
+    attacks.has(from) || def.rank
+      ? []
+      : (def.transitions ?? [])
+          .filter((t) => attacks.has(t.to))
+          .map((t) => ({ to: t.to, from, when: [t.when].flat().join(" + ") })),
+  );
+}
+
+/**
+ * Every attack in the file — a state that says what it does to whoever it hits.
+ *
+ * Attacks with no cancels belong on the graph too: "this move leads nowhere" is
+ * a fact worth seeing, not a reason to leave it out.
+ */
+export function attacksIn(file: StatesFile): Set<string> {
+  return new Set(
+    Object.entries(file.states)
+      .filter(([, def]) => def.onHit !== undefined)
+      .map(([name]) => name),
+  );
+}
+
+/**
+ * The same openers, gathered by what you press.
+ *
+ * Standing, walking forward and walking back all open the same attacks with the
+ * same button, so listing them one by one buries the fact in triplicate. What
+ * matters is the input; *which* neutral state you were in is the footnote.
+ */
+export function openings(file: StatesFile): { to: string; when: string; from: string[] }[] {
+  const grouped = new Map<string, { to: string; when: string; from: string[] }>();
+  for (const e of entriesOf(file)) {
+    const key = `${e.to}\u0000${e.when}`;
+    const at = grouped.get(key) ?? { to: e.to, when: e.when, from: [] };
+    at.from.push(e.from);
+    grouped.set(key, at);
+  }
+  return [...grouped.values()];
 }
 
 /**

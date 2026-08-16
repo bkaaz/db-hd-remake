@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chainLinks, framesOf, startupOf, type AnimSteps } from "./chains";
+import { chainLinks, entriesOf, framesOf, openings, startupOf, type AnimSteps } from "./chains";
 import type { StatesFile } from "../entity/states";
 
 /** 4 frames of wind-up, 4 with a hit box, 4 of recovery. */
@@ -114,6 +114,55 @@ describe("chainLinks", () => {
     const f = file();
     f.states.c.transitions = [{ when: ["cancelable", "pressed:light"], to: "a" }];
     expect(() => chainLinks(f, anims, 12)).not.toThrow();
+  });
+});
+
+describe("entriesOf", () => {
+  it("names the ways into a string that are not cancels", () => {
+    const f = file();
+    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    f.states.crouch = { anim: "crouch", transitions: [{ when: "pressed:medium", to: "b" }] };
+    expect(entriesOf(f)).toEqual([
+      { to: "a", from: "idle", when: "pressed:light" },
+      { to: "b", from: "crouch", when: "pressed:medium" },
+    ]);
+  });
+
+  it("spells out a conjunction, because that is the input", () => {
+    const f = file();
+    f.states.idle.transitions = [{ when: ["held:down", "pressed:heavy"], to: "c" }];
+    expect(entriesOf(f)[0].when).toBe("held:down + pressed:heavy");
+  });
+
+  it("ignores links between attacks — those are cancels, not ways in", () => {
+    const f = file();
+    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    // a → b is a cancel and already in the graph; it must not be listed twice.
+    expect(entriesOf(f).map((e) => e.to)).toEqual(["a"]);
+  });
+
+  it("says nothing about a state nothing leads to", () => {
+    const f = file();
+    f.states.idle.transitions = [{ when: "pressed:light", to: "hurt" }];
+    expect(entriesOf(f)).toEqual([]);
+  });
+});
+
+describe("openings", () => {
+  it("gathers the neutral states that open the same attack the same way", () => {
+    const f = file();
+    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    f.states.walk = { anim: "walk", transitions: [{ when: "pressed:light", to: "a" }] };
+    expect(openings(f)).toEqual([{ to: "a", when: "pressed:light", from: ["idle", "walk"] }]);
+  });
+
+  it("keeps two different inputs apart", () => {
+    const f = file();
+    f.states.idle.transitions = [
+      { when: "pressed:light", to: "a" },
+      { when: ["held:down", "pressed:light"], to: "b" },
+    ];
+    expect(openings(f).map((o) => o.when)).toEqual(["pressed:light", "held:down + pressed:light"]);
   });
 });
 

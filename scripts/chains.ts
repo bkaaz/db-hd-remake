@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { chainLinks, type AnimSteps } from "../src/combat/chains";
+import { chainLinks, openings, type AnimSteps } from "../src/combat/chains";
 import type { StatesFile } from "../src/entity/states";
 
 /**
@@ -30,6 +30,12 @@ if (links.length === 0) {
 
 const pad = (s: string | number, n: number): string => String(s).padEnd(n);
 console.log(`${name} — ${links.length} cancels\n`);
+
+// A cancel graph starts from nowhere without these: what opens each string.
+for (const o of openings(states)) {
+  console.log(`${pad(o.when, 34)}→ ${pad(o.to, 14)}${o.from.join(", ")}`);
+}
+console.log();
 console.log(
   pad("from", 14) + pad("on", 9) + pad("→ into", 16) + pad("window", 8) + pad("start-up", 10) + pad("latest hit", 12) + pad("hitstun", 9) + pad("depth", 7) + "margin",
 );
