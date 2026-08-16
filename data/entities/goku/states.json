@@ -47,11 +47,30 @@
       "anim": "punch",
       "vel": [0, 0],
       "turn": false,
-      "hitstun": 17,
-      "cancelBy": 10,
-      "onHit": "hurt",
-      "damage": 6,
+      "hitstun": 15,
+      "cancelBy": 8,
+      "onHit": "hurt_chain",
+      "damage": 5,
       "sound": "swing_1",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
+      "transitions": [
+        { "when": ["cancelable", "pressed:medium"], "to": "kick_mid" },
+        { "when": ["cancelable", "pressed:heavy"], "to": "kick_high" },
+        { "when": "animEnd", "to": "idle" }
+      ],
+      "hitstop": 6
+    },
+    "kick_mid": {
+      "anim": "kick_mid",
+      "vel": [0.4, 0],
+      "hitstop": 8,
+      "hitstun": 20,
+      "cancelBy": 12,
+      "turn": false,
+      "onHit": "hurt_chain",
+      "damage": 8,
+      "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -60,20 +79,20 @@
         { "when": "animEnd", "to": "idle" }
       ]
     },
-    "kick_mid": {
-      "anim": "kick_mid",
+    "kick_thrust": {
+      "anim": "kick_air",
       "vel": [0.4, 0],
-      "hitstop": 10,
-      "hitstun": 22,
-      "cancelBy": 14,
+      "hitstop": 8,
+      "hitstun": 20,
+      "cancelBy": 13,
       "turn": false,
       "onHit": "hurt_chain",
-      "damage": 7,
+      "damage": 8,
       "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
-        { "when": ["cancelable", "pressed:medium"], "to": "kick_thrust" },
+        { "when": ["cancelable", "pressed:heavy"], "to": "kick_high" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -83,79 +102,32 @@
       "turn": false,
       "onHit": "knockdown",
       "smash": true,
-      "damage": 14,
+      "damage": 13,
       "sound": "swing_3",
       "hitSound": "hit_2",
       "blockSound": "block_1",
       "hitFx": "spark_2",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
-      ]
+      ],
+      "hitstop": 12
     },
     "kick_high": {
       "anim": "kick_high",
       "vel": [0, 0],
       "turn": false,
       "onHit": "hurt_heavy",
-      "damage": 12,
-      "sound": "swing_3",
-      "hitSound": "hit_2",
-      "blockSound": "block_1",
-      "hitFx": "spark_2",
-      "transitions": [
-        { "when": "animEnd", "to": "idle" }
-      ]
-    },
-    "kick_thrust": {
-      "anim": "kick_air",
-      "vel": [0.4, 0],
-      "hitstop": 10,
-      "hitstun": 22,
-      "cancelBy": 14,
-      "turn": false,
-      "onHit": "hurt_chain",
-      "damage": 8,
-      "sound": "swing_2",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
-      "transitions": [
-        { "when": ["cancelable", "pressed:medium"], "to": "kick_low" },
-        { "when": "animEnd", "to": "idle" }
-      ]
-    },
-    "kick_finisher": {
-      "anim": "kick_high",
-      "vel": [0.4, 0],
-      "hitstop": 10,
-      "turn": false,
-      "onHit": "knockdown_sweep",
       "smash": true,
-      "damage": 14,
+      "damage": 13,
       "sound": "swing_3",
       "hitSound": "hit_2",
       "blockSound": "block_1",
       "hitFx": "spark_2",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
-      ]
-    },
-    "kick_low": {
-      "anim": "kick_low",
-      "vel": [0.4, 0],
-      "hitstop": 10,
-      "hitstun": 22,
-      "cancelBy": 14,
-      "turn": false,
-      "onHit": "hurt_chain",
-      "damage": 9,
-      "sound": "swing_3",
-      "hitSound": "hit_2",
-      "blockSound": "block_1",
-      "hitFx": "spark_2",
-      "transitions": [
-        { "when": ["cancelable", "pressed:medium"], "to": "kick_finisher" },
-        { "when": "animEnd", "to": "idle" }
-      ]
+      ],
+      "hitstun": 20,
+      "hitstop": 12
     },
     "crouch": {
       "anim": "crouch",
@@ -173,13 +145,14 @@
       "hitstun": 18,
       "turn": false,
       "onHit": "hurt",
-      "damage": 7,
+      "damage": 8,
       "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
         { "when": "animEnd", "to": "crouch" }
-      ]
+      ],
+      "hitstop": 8
     },
     "kick_air": {
       "anim": "kick_air",
@@ -254,7 +227,7 @@
     "hurt_heavy": {
       "anim": "hurt_heavy",
       "rank": 2,
-      "vel": [-5.2, 0],
+      "vel": [-3.1, 0],
       "turn": false,
       "sound": "voice_hurt",
       "ifAirborne": "hurt_heavy_air",
@@ -264,7 +237,7 @@
     },
     "hurt_heavy_air": {
       "anim": "knockdown",
-      "rank": 2,
+      "rank": 3,
       "launch": [-3.5, -2.5],
       "airborne": true,
       "turn": false,

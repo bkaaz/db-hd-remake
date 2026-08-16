@@ -106,35 +106,28 @@ the editor's graph, and the player's move list after it.
 
 *Done when:* the editor shows the cancel graph of the entity being edited.
 
-## Then: the chain shape, and a table that authors an attack
+## Then: give every sprite on the sheet a strength and a stance
 
-**Stop tuning attacks one at a time.** The engine has everything it needs —
-hitstun on the blow, `cancelBy`, both scalings, a test that does the worst-case
-arithmetic — and the four attacks that exist are placeholders whose numbers were
-fitted to each other by hand, twice. The next twenty must come out of a table.
+**The table exists** (`combat.md`, 2026-08-16): L/M/H each name their start-up,
+active, recovery, `hitstun`, `cancelBy`, damage, hitstop and reaction, the ladder
+is `L → L → M → H` with `S` reserved, and the three attacks that exist are built
+from it. Authoring an attack is now "these sprites, this strength" — the numbers
+follow, and `npm run chains` shows what the link is worth.
 
-Two decisions, in this order, because the first sets the second:
+What is left is the part only the owner can do: **deciding which pose is which
+strength**, in each of the three stances. Nine normals, and the sheet does not
+label them.
 
-1. **The shape of a string.** `combat.md` says L → M → H → S, cancel upward
-   only; the data says `medium → medium → medium → medium`, which is off-doc and
-   is what broke the arithmetic — `kick_low` is the *fourth* blow, where hitstun
-   scaling has cut 22 down to 15 and the cancel window has nowhere to fit. The
-   owner settled half of it on 2026-08-16: a light **feeds the middle** of the
-   string (`punch → kick_thrust`), so an opener does not add a rung. What is
-   still open is whether the kick string itself stays four medium links.
-2. **One row per strength** — start-up / active / recovery / `hitstun` /
-   `cancelBy` / damage / hitstop / reaction — so authoring an attack is "these
-   sprites, this strength" and the numbers follow. `npm run anim` already
-   derives boxes and timing from the sprites and is where a `--kind` belongs.
+Unassigned and waiting, freed when the four-link medium string was replaced by
+the ladder: the low kick (frames 40–42) and the sweep that used to finish the
+string. Their animations are still in `animations.json`; nothing in
+`states.json` names them.
 
-*Known wrong until this lands*, and deliberately not patched per-move
-(`combat.md`): `kick_high` and `uppercut` have no `hitstun`, so the two heaviest
-blows hold less than the jab; and raising it also lengthens their knockback,
-which is already further than anything reaches.
+The second light rung is **empty**: a crouching light does not exist yet, so the
+ladder is `L → M → H` in practice until one is authored.
 
-*Done when:* every attack's frame data comes from the table, the test passes at
-each link's own depth, and adding an attack does not require this conversation
-again.
+*Done when:* every slot in the L/M/H table names an animation in all three
+stances, each built from the table rather than tuned by hand.
 
 ## Then: launch scaling, the last of the three
 

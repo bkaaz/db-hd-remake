@@ -2,6 +2,40 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — An attack is authored from a table, not tuned move by move
+
+- **One row per strength** (`combat.md`): L/M/H fix start-up, active, recovery,
+  `hitstun`, `cancelBy`, damage, hitstop and reaction. The three attacks that
+  exist were rebuilt from it, and every number was checked against the two sums
+  that were already written down rather than chosen by feel and a recording.
+- **The ladder is `L → L → M → H`, cancel upward only**, `S` reserved for
+  specials that do not exist. Upward-only is what makes a string finite without
+  a special rule: there is no way back down, so the rungs run out.
+- **A rung may repeat, but only with a different move.** A move cancelling into
+  itself is a loop with extra steps; a second medium, or a crouching light after
+  a standing one, is a different attack on the same rung. The first version of
+  this rule said "only the light may repeat" and was wrong — it confused which
+  rung is *cheapest* with which rung is *allowed*.
+- **There is no fixed budget of blows**, which was the other wrong turn the same
+  day. What a string can afford depends on what it climbs into: a light costs 8
+  frames of worst case and four of them hold with room to spare, while a string
+  ending in a heavy costs 14 and runs out at the fourth. `npm run chains` is the
+  answer — which is the whole reason it was built.
+- **The heavy floors a body it finds in the air**, and pays a smash for it. Its
+  air reaction ranked 2 against a juggle's 3, so the blow landed, cost health and
+  did nothing — a regression the moment the heavy became the string's ender,
+  since the old ender's reaction ranked 3. An ender that cannot end a juggle is
+  not an ender.
+- **The string is `A Z Z S`**: the medium rung is taken twice, by two different
+  moves, and the medium's hitstun went 18 → 20 to buy the last link a real
+  margin instead of exactly zero.
+- **The heavy stays minus on hit** and its reaction slowed from 5.2 to 3.1 px
+  per frame, because knockback is `vel × hitstun` and its hold grew: the push
+  had to stay at the 62 px it was tuned to.
+- **Three attacks left `states.json`** — the middle of the old medium string,
+  which was the same rung four times. The sprites are untouched and go back in
+  with a strength and a stance when the moveset is assigned.
+
 ## 2026-08-16 — The chain graph is derived, and one function owns the sum
 
 - **`src/combat/chains.ts`** turns `states.json` plus the animations into the

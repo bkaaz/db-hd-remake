@@ -35,6 +35,11 @@ and printed by `npm run chains`. → `plan.md`
 into it. Scaling shortens hitstun as depth grows, so a string can hold at its
 opener and break at its third link. → `combat.md` §3
 
+**Frame advantage** — `hitstun − the attacker's remaining recovery`: who acts
+first once a blow has landed. Plus means the attacker, minus means the defender,
+and minus can be correct when the blow also pushes them out of range.
+→ `combat.md` §1
+
 **Hitstop** — the freeze on contact, applied to **both** fighters for the same
 number of frames (`hitstop`, 10 on the chain kicks). It is what gives a blow
 weight, and because both sides freeze equally it changes nothing about who acts
@@ -47,6 +52,10 @@ animation. Everything about combos is arithmetic on this number. → `combat.md`
 **Link** — hitting again *after* your attack has fully played out, because the
 defender is still in hitstun. Nothing is interrupted; the sum is
 `recovery + next start-up ≤ hitstun`. → `combat.md` (Chaining)
+
+**Proration (scaling)** — every blow after the first is worth 10% less, in both
+damage and hitstun, down to a floor of 20% and 50%. The counter lives on the
+defender and resets when they get control back. → `combat.md` §3
 
 **Recovery** — the frames after the active ones, when the hit box is gone but you
 still cannot act. What makes a whiff punishable. → `combat.md` §1

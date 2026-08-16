@@ -79,39 +79,60 @@ class Sim {
   }
 }
 
-describe("the medium string", () => {
-  it("walks mid → thrust → sweep → finisher when every blow connects", () => {
+describe("the ladder — light, then medium, then heavy", () => {
+  it("walks punch → kick_mid → kick_thrust → kick_high when every blow connects", () => {
     const s = new Sim();
-    expect(s.frame({ medium: true })).toBe("kick_mid");
+    expect(s.frame({ light: true })).toBe("punch");
+    expect(s.confirmAnd("medium")).toBe("kick_mid");
     expect(s.confirmAnd("medium")).toBe("kick_thrust");
-    expect(s.confirmAnd("medium")).toBe("kick_low");
-    expect(s.confirmAnd("medium")).toBe("kick_finisher");
+    expect(s.confirmAnd("heavy")).toBe("kick_high");
   });
 
-  it("is four long — the finisher does not chain into anything", () => {
+  it("takes the medium rung twice, but only with a different move", () => {
+    // A rung may repeat; a move may never cancel into itself, which would be a
+    // loop with extra steps. So the second medium is a different attack, and
+    // there is no third.
     const s = new Sim();
     s.frame({ medium: true });
-    s.confirmAnd("medium");
-    s.confirmAnd("medium");
-    s.confirmAnd("medium");
-    expect(s.confirmAnd("medium")).toBe("kick_finisher");
+    expect(s.confirmAnd("medium")).toBe("kick_thrust");
+    expect(s.confirmAnd("medium")).toBe("kick_thrust");
   });
 
-  it("only the finisher knocks down — a middle link must leave them standing", () => {
+  it("only goes up: the heavy ends it, and nothing cancels back down", () => {
+    // The rung a string cannot climb back down is what makes it finite without
+    // any special rule — see combat.md. Every button, on the ender, does
+    // nothing.
+    const s = new Sim();
+    s.frame({ light: true });
+    s.confirmAnd("medium");
+    s.confirmAnd("medium");
+    s.confirmAnd("heavy");
+    expect(s.confirmAnd("light")).toBe("kick_high");
+    expect(s.confirmAnd("medium")).toBe("kick_high");
+    expect(s.confirmAnd("heavy")).toBe("kick_high");
+  });
+
+  it("lets a light skip the medium and end on the heavy", () => {
+    const s = new Sim();
+    s.frame({ light: true });
+    expect(s.confirmAnd("heavy")).toBe("kick_high");
+  });
+
+  it("leaves the middle links standing — only an ender may floor", () => {
     // A middle link that floored the opponent would end the string at itself,
     // however many links came after it in the data.
     const reaction = (state: string): string | undefined => goku().states[state].onHit;
+    expect(reaction("punch")).toBe("hurt_chain");
     expect(reaction("kick_mid")).toBe("hurt_chain");
     expect(reaction("kick_thrust")).toBe("hurt_chain");
-    expect(reaction("kick_low")).toBe("hurt_chain");
-    expect(reaction("kick_finisher")).toBe("knockdown_sweep");
+    expect(reaction("kick_high")).toBe("hurt_heavy");
   });
 
   it("stops on a whiff, however hard the button is pressed", () => {
     const s = new Sim();
     expect(s.frame({ medium: true })).toBe("kick_mid");
-    expect(s.frame({ medium: true })).toBe("kick_mid");
-    expect(s.frame({ medium: true })).toBe("kick_mid");
+    expect(s.frame({ heavy: true })).toBe("kick_mid");
+    expect(s.frame({ heavy: true })).toBe("kick_mid");
   });
 
   it("stops when the player does not ask, however well it connected", () => {
@@ -160,8 +181,17 @@ describe("the string juggles what the uppercut launched", () => {
     expect(against("hurt_chain", "idle")).toBe("hurt_chain");
   });
 
-  it("lets the finisher end the juggle", () => {
-    expect(against("knockdown_sweep", "juggle")).toBe("knockdown_air");
+  it("lets a knockdown end the juggle", () => {
+    expect(against("knockdown", "juggle")).toBe("knockdown_air");
+  });
+
+  it("lets the heavy floor a body it finds in the air", () => {
+    // The ender of a string has to be able to end a juggle. Its air reaction
+    // ranks with the juggle rather than below it — below it, the blow lands,
+    // costs health and does nothing at all, which is what it did on the day
+    // the heavy became the ender.
+    expect(against("hurt_heavy", "juggle")).toBe("hurt_heavy_air");
+    expect(against("hurt_heavy", "knockdown")).toBe("hurt_heavy_air");
   });
 
   it("is over once the body touches the floor", () => {
@@ -205,14 +235,14 @@ describe("the string juggles what the uppercut launched", () => {
   });
 
   it("marks as a smash exactly the blows meant to floor a body", () => {
-    // The budget in src/combat/combo.ts is spent by these two and nothing else,
-    // so a new launcher arriving unmarked is a loop nobody notices until it is
+    // The budget in src/combat/combo.ts is spent by these and nothing else, so
+    // a new launcher arriving unmarked is a loop nobody notices until it is
     // played. The list is short on purpose: a chain link is not a smash.
     const marked = Object.entries(goku().states)
       .filter(([, def]) => def.smash)
       .map(([name]) => name)
       .sort();
-    expect(marked).toEqual(["kick_finisher", "uppercut"]);
+    expect(marked).toEqual(["kick_high", "uppercut"]);
   });
 });
 

@@ -303,39 +303,70 @@ moment, for the right reason. A string is then an ordinary path through the
 state machine — attack state, `pressed:X`, next attack state — which is the
 shape `states.json` already has.
 
-### How an attack is shaped, and what is still guessed
+### The table an attack is authored from
 
-Two rules now hold for **every** attack in `data/entities/goku/` (2026-08-16):
+**Settled 2026-08-16, and it is the foundation the moveset will be built on.**
+An attack is not tuned move by move any more: it is given a strength, and the
+strength decides its frames. Every number below was chosen against the two sums
+this file already states — the link (`window + next start-up ≤ hitstun`) and the
+advantage (`hitstun − recovery`) — and then checked with `npm run chains`.
 
-- **The hit box is out for 4 frames.** It used to be out for as long as the
-  drawing was held — 12 frames on the uppercut and the crouching kick, 6 on the
-  heavy — which is the drawing setting frame data. Trimming changed no attack's
-  total length: only the window in which it can connect.
-- **The strike pose is held afterwards, without a hit box.** Recovery is
+| | **L** | **M** | **H** | **S** |
+|---|---|---|---|---|
+| key | `A` | `Z` | `S` | `X` |
+| start-up | 4 | 7 | 9 | — |
+| active | 3 | 4 | 4 | reserved: |
+| recovery | 8 | 12 | 19 | no ki, |
+| **total** | **15** | **23** | **32** | no motion |
+| `hitstun` | 15 | 20 | 20 | inputs, |
+| `cancelBy` | 8 | 12 | — (ender) | no specials |
+| `damage` | 5 | 8 | 13 | yet |
+| `hitstop` | 6 | 8 | 12 | |
+| `onHit` | `hurt_chain` | `hurt_chain` | `hurt_heavy` | |
+| advantage on hit | **+5** | **+5** | **−2** | |
+
+**Cancel upward only**, `S` waits at the top for specials that do not exist, and
+what the string is today is `A Z Z S` — `punch → kick_mid → kick_thrust →
+kick_high`. Three rules go with it:
+
+- **A rung may be repeated, but only with a different move.** A move cancelling
+  into itself is a loop with extra steps; a second medium, or a crouching light
+  after a standing one, is a different attack on the same step of the ladder.
+- **There is no fixed number of blows** — that was a wrong turn on 2026-08-16.
+  What a string can afford depends entirely on what it climbs *into*: a light
+  costs 8 frames of worst case, a heavy 14. Four lights in a row hold with room
+  to spare (+7, +6, +4, +3), while a string ending in a heavy runs out at the
+  fourth. **`npm run chains` is the answer, not a number in anyone's head.**
+- **Design a string from its last link**, where scaling has taken the most. If
+  the end holds, the beginning holds.
+
+**The ender floors an airborne body and spends a smash for it.** A blow may not
+lower the rank the defender is already in (§7), so the heavy's air reaction has
+to rank with a juggle rather than below it — below it, the blow lands, costs
+health and does nothing. And because it lifts a body that is already helpless it
+is marked `smash`, or an uppercut into a heavy into an uppercut would loop.
+
+**Why the heavy is minus on hit and that is correct**: it pushes the defender
+out of everything's range, so acting second costs nothing. Its reaction had to
+slow down when its hold grew — knockback is `vel × hitstun`, so `hurt_heavy`
+went from 5.2 to 3.1 px per frame to keep the push at the 62 it was tuned to.
+
+**Two rules hold for every attack's animation**, whatever its strength:
+
+- **The hit box is out for the active frames and no longer.** It used to be out
+  for as long as the drawing was held — 12 frames on the uppercut, where the
+  genre uses three or four — which is a drawing setting frame data.
+- **The strike pose is held through recovery, without a hit box.** Recovery is
   supposed to be visible: it is what a whiff looks like and what makes it
-  punishable. Before this, a blow that missed showed the pose for four frames
-  and was gone — hitstop had been hiding it, because a blow that *lands* holds
-  its pose for ten.
+  punishable. Hitstop had been hiding this, because a blow that lands holds its
+  pose for ten frames and a blow that misses holds nothing.
 
-**Not yet chosen, and knowingly wrong until it is** — these wait for the chain
-shape and the per-strength table (`plan.md`), because picking them per-move is
-how you end up picking them twice:
-
-- `kick_high` and `uppercut` name **no `hitstun` at all** and fall back to the
-  entity's 12, so the two heaviest blows hold their victim *less* than the jab's
-  17. The hierarchy is upside down.
-- Raising them is not one number: `hurt_heavy` moves at 5.2 px per frame of
-  hitstun, so a heavy that holds longer also throws the defender further than
-  anything in the game can reach.
-- Only `punch` and the three chain kicks have a `cancelBy`. Every attack in the
-  new set needs one.
-
-**The light feeds the *middle* of the kick string** (owner, 2026-08-16): `A`
-then `Z` gives `punch → kick_thrust`, not `punch → kick_mid`. The jab takes the
-place of the string's first kick rather than being added in front of it, so
-`A Z Z Z` is four blows and not five — and the ladder does not get a rung deeper
-every time a new opener is added. The depth test in `states.test.ts` measures
-the **longest** route into a link for exactly this reason.
+*What this cost, and it is deliberate:* `kick_low` and `kick_finisher` are gone
+from `states.json`. They were the middle of a four-link medium string — the same
+rung four times, which is what the ladder forbids. `kick_thrust` came back as
+the *second* medium, which is a rung repeated legally. The other two sprites are
+untouched and unassigned; the moveset rebuild gives them a strength and a stance
+(`plan.md`).
 
 ### The rule for authoring a string, and the field it is waiting for
 
