@@ -58,6 +58,12 @@ export interface EditorState {
    * validates them but never writes them.
    */
   states: StatesFile | null;
+  /**
+   * The entity's default hitstun, for attacks that name none of their own. Only
+   * the chain graph reads it, and only so an untuned attack shows the number it
+   * is actually running on rather than a blank.
+   */
+  baseHitstun: number;
   /** Section file `sounds.json`: this entity's own sounds, not the game's bank. */
   sounds: Sounds | null;
   /**
@@ -95,6 +101,7 @@ export const state: EditorState = {
   entityName: "entity",
   frames: [],
   anims: [],
+  baseHitstun: 12,
   states: null,
   sounds: null,
   sectionMtimes: {},
@@ -277,6 +284,7 @@ export interface EntityFileIn {
   >;
   states?: StatesFile;
   sounds?: Sounds;
+  attributes?: { hitstun?: number };
 }
 
 /** Hydrate editor state from an assembled entity (reverse of the exporter). */
@@ -303,6 +311,7 @@ export function loadEntity(json: EntityFileIn): void {
   // so keep counting above the highest one on disk.
   frameCounter = state.frames.reduce((max, f) => Math.max(max, asNumber(f.id) + 1), 0);
   state.states = json.states ?? null;
+  state.baseHitstun = json.attributes?.hitstun ?? 12;
   state.sounds = json.sounds ?? null;
   state.selectedFrameId = null;
   state.selectedAnimName = state.anims[0]?.name ?? null;

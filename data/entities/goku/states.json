@@ -258,18 +258,6 @@
         { "when": "landed", "to": "bounce" }
       ]
     },
-    "knockdown_sweep": {
-      "anim": "knockdown",
-      "rank": 3,
-      "launch": [-4.5, -3.2],
-      "airborne": true,
-      "turn": false,
-      "sound": "voice_hurt",
-      "ifAirborne": "knockdown_air",
-      "transitions": [
-        { "when": "landed", "to": "bounce" }
-      ]
-    },
     "knockdown_air": {
       "anim": "knockdown",
       "rank": 3,

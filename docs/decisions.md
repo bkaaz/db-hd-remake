@@ -2,6 +2,42 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — The States tab becomes the Combos graph
+
+- **What it replaced was a prettier `cat states.json`**: a read-only print of the
+  file plus a validation the game already shouts on load and `npm test` already
+  enforces. It showed contents you can read and answered nothing you could not
+  ask elsewhere, which is why it felt useless.
+- **The question only a graph answers is what leads where.** `states.json` is a
+  graph written as a list, with the relationships scattered across `to` fields,
+  so a string has to be assembled in the reader's head — which is exactly what we
+  did by hand all day.
+- **And it is called Combos** (owner's call), not Chains: the tab is named after
+  what you are trying to build, while `chain`, `link` and `cancel` keep their
+  precise meanings in the docs and the code. The glossary says they are the same
+  thing seen from two sides.
+- **So the tab is the graph now**, and the flat list of states is gone: it was a
+  worse version of opening the file. The validation stays in the side panel,
+  because an error must be loud and a list of errors belongs in a column.
+- **The graph takes the middle of the window**, where the sheet normally is. It
+  first went in the 300 px side panel and the labels landed on top of each other
+   — a graph needs the room a panel cannot give.
+- **A node is the frame the attack hits on**, drawn from the keyed canvas on a
+  checkerboard. A name says nothing about a blow; the pose says everything, and
+  it is what makes this read as a combo rather than as a state diagram.
+- **A view, not a second format**: every number comes from `src/combat/chains.ts`
+  — the same function the test asserts on and `npm run chains` prints — so the
+  picture cannot disagree with the check.
+- **Long edges are routed through their own lane below the row**, which is the
+  layered-drawing trick of giving an edge waypoints in every layer it crosses.
+  Without it the opener-to-ender link flew straight through two sprites.
+- **Hovering a node dims everything it does not touch.** Nineteen cancels (in a
+  mock moveset) are honest but crowded, and the question you arrive with is
+  about one move.
+- **DOM boxes and one SVG, no canvas and no library**, split in two files:
+  `chainGraph.ts` decides what to draw, `chainEdges.ts` only knows how to get
+  from one box to another without crossing a third.
+
 ## 2026-08-16 — A recording opens with what it is a recording *of*
 
 - **`describes()` in `src/log.ts`**, called by the scene when it is built rather

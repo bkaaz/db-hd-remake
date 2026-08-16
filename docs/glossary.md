@@ -31,6 +31,11 @@ animation ends". → `data-format.md`
 anywhere: it is a path through `states.json`, derived by `src/combat/chains.ts`
 and printed by `npm run chains`. → `plan.md`
 
+**Combo** — a chain whose links actually hold: the defender never gets control
+back between the blows. The player's word for it, and the editor tab's name; the
+docs and the code say *chain*, *link* and *cancel* when the distinction matters.
+→ `combat.md`
+
 **Depth** — how many blows landed before a link fires, by the **longest** route
 into it. Scaling shortens hitstun as depth grows, so a string can hold at its
 opener and break at its third link. → `combat.md` §3

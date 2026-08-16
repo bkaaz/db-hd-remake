@@ -284,7 +284,6 @@ export function renderStates(container: HTMLElement): void {
     return;
   }
 
-  const known = new Set(state.anims.map((a) => a.name));
   const byName = Object.fromEntries(
     state.anims.map((a) => [a.name, { loop: a.loop, steps: a.steps }]),
   );
@@ -301,47 +300,6 @@ export function renderStates(container: HTMLElement): void {
   for (const e of errors) container.append(el("p", { className: "err msg", textContent: `• ${e}` }));
   for (const w of warnings) container.append(el("p", { className: "warn msg", textContent: `• ${w}` }));
 
-  for (const [name, def] of Object.entries(file.states)) {
-    const head = el("div", { className: "row state-row" });
-    head.append(el("strong", { textContent: name }));
-    if (name === file.initial) head.append(el("span", { className: "badge", textContent: "initial" }));
-
-    const animOk = !!def.anim && known.has(def.anim);
-    head.append(
-      el("span", {
-        className: animOk ? "dims" : "err",
-        textContent: `anim: ${def.anim || "—"}`,
-      }),
-    );
-    const vel = def.vel ?? [0, 0];
-    if (vel[0] !== 0 || vel[1] !== 0) {
-      head.append(el("span", { className: "dims", textContent: `vel ${vel[0]},${vel[1]}` }));
-    }
-    if (def.turn) head.append(el("span", { className: "dims", textContent: "turn" }));
-    container.append(head);
-
-    /** A `when` may be several triggers that all have to hold. */
-    const triggerText = (when: string | string[]): string =>
-      Array.isArray(when) ? when.join(" + ") : when;
-
-    const transitions = def.transitions ?? [];
-    if (transitions.length === 0) {
-      container.append(el("div", { className: "row trans-row dims", textContent: "no transitions" }));
-    }
-    transitions.forEach((t, i) => {
-      const row = el("div", { className: "row trans-row" });
-      row.append(el("span", { className: "idx", textContent: String(i) }));
-      row.append(el("span", { className: "dims", textContent: triggerText(t.when) }));
-      row.append(el("span", { className: "dims", textContent: "→" }));
-      row.append(
-        el("span", {
-          className: file.states[t.to] ? "dims" : "err",
-          textContent: t.to || "—",
-        }),
-      );
-      container.append(row);
-    });
-  }
 }
 
 // --- Boxes panel ---------------------------------------------------------

@@ -57,7 +57,7 @@ behaviors that don't fit. More power than pure data, without a full DSL.
 |---|---|
 | **Sprites** | load sheet, background key, auto-detect, frames + anchors |
 | **Animations** | timed steps + hit/hurt/push box layer + preview |
-| **States** | read-only view of `states.json` + validation (authoring stays in text — see `decisions.md`) |
+| **Combos** | the **chain graph** in the middle of the window — a node per attack (its hit frame), an edge per cancel, labelled with the button and the frames of margin; hover a node to dim everything it does not touch. The side panel keeps the validation. Read-only; authoring stays in text (see `decisions.md`, 2026-08-16) |
 
 Commands (input motions), Sounds and Attributes are placeholder tabs. They get
 built when the engine work that needs them comes up the queue — see

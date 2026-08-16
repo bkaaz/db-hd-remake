@@ -164,6 +164,98 @@ input.dur { width: 52px; }
   background: transparent;
 }
 
+/* Chain graph — the States tab takes over the middle of the window for it.
+   Columns are depth, so the layout is entirely the data's; the SVG only joins
+   boxes the browser has placed. */
+#chain-wrap {
+  flex: 1;
+  overflow: auto;
+  background: var(--bg);
+  padding: 16px;
+}
+#chain-wrap[hidden] { display: none; }
+.chain-key {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0 0 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.chain-key-row { display: flex; align-items: center; gap: 8px; }
+.chain-swatch { width: 34px; height: 10px; flex: none; overflow: visible; }
+.chain-board {
+  position: relative;
+  display: flex;
+  gap: 72px;
+  align-items: flex-start;
+  padding: 12px 4px;
+  width: max-content;
+}
+.chain-shot {
+  image-rendering: pixelated;
+  display: block;
+  margin: 0 auto 6px;
+  border-radius: 3px;
+  /* A checker behind the pose, the way every sprite tool shows transparency —
+     and it doubles as a scale reference, since every square is the same size. */
+  background-color: #14141a;
+  background-image:
+    linear-gradient(45deg, #1c1c24 25%, transparent 25%, transparent 75%, #1c1c24 75%),
+    linear-gradient(45deg, #1c1c24 25%, transparent 25%, transparent 75%, #1c1c24 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 6px 6px;
+}
+.chain-col { display: flex; flex-direction: column; gap: 20px; }
+.chain-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: center;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.chain-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.chain-edge { fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: 0.7; pointer-events: stroke; }
+
+/* Hovering a node dims everything it does not touch. Transitions are short on
+   purpose: this is meant to answer a question, not to animate. */
+.chain-node, .chain-edge, .chain-label { transition: opacity 90ms linear; }
+.chain-board.focusing .chain-node,
+.chain-board.focusing .chain-edge,
+.chain-board.focusing .chain-label { opacity: 0.12; }
+.chain-board.focusing .chain-node.on { opacity: 1; }
+.chain-board.focusing .chain-edge.on { opacity: 1; stroke-width: 2.5; }
+.chain-board.focusing .chain-label.on { opacity: 1; }
+.chain-node.on { border-color: var(--accent); }
+.chain-edge.ends { stroke-dasharray: 4 3; }
+.chain-edge.bad { stroke: #ff6b6b; opacity: 1; }
+.chain-label {
+  fill: var(--text);
+  font-size: 11px;
+  text-anchor: middle;
+  /* Outlined in the background colour so a label crossing another line stays
+     readable without a box behind it. */
+  stroke: var(--bg);
+  stroke-width: 3px;
+  paint-order: stroke;
+}
+.chain-label.bad { fill: #ff6b6b; }
+.state-list { margin-top: 12px; color: var(--muted); }
+.state-list summary { cursor: pointer; }
+
 /* States tab (read-only view of states.json). */
 .state-row { margin-top: 8px; gap: 8px; }
 .trans-row { margin: 2px 0 2px 16px; gap: 6px; }

@@ -21,11 +21,15 @@
         <canvas id="sheet"></canvas>
       </section>
 
+      <!-- The States tab takes over the middle: a graph needs the room the
+           sheet normally has, and a side panel cannot give it. -->
+      <section id="chain-wrap" hidden></section>
+
       <aside id="side">
         <nav id="tabs">
           <button class="tab" data-tab="sprites">Sprites</button>
           <button class="tab" data-tab="animations">Animations</button>
-          <button class="tab" data-tab="states">States</button>
+          <button class="tab" data-tab="combos">Combos</button>
           <button class="tab" disabled title="Coming soon">Commands</button>
           <button class="tab" data-tab="sounds">Sounds</button>
           <button class="tab" data-tab="global-sounds">Global sounds</button>
@@ -96,7 +100,7 @@
           </div>
         </div>
 
-        <div class="tab-pane" data-pane="states">
+        <div class="tab-pane" data-pane="combos">
           <div class="card">
             <h3>States</h3>
             <p class="hint">Read-only view of <code>states.json</code>. States are

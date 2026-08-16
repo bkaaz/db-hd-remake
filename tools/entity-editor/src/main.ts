@@ -12,6 +12,7 @@ import { SheetView } from "./sheetView";
 import { Preview } from "./preview";
 import { BoxEditor } from "./boxEditor";
 import { renderFrames, renderAnims, renderBoxes, renderStates } from "./panels";
+import { renderChainGraph } from "./chainGraph";
 import {
   currentEntity,
   findEntity,
@@ -47,6 +48,7 @@ function byId<T extends HTMLElement>(id: string): T {
 }
 
 const sheetCanvas = byId<HTMLCanvasElement>("sheet");
+const sheetWrap = byId("sheet-wrap");
 const previewCanvas = byId<HTMLCanvasElement>("preview");
 const framesPanel = byId("frames-panel");
 const animsPanel = byId("anims-panel");
@@ -76,7 +78,7 @@ const detectMin = byId<HTMLInputElement>("detect-min");
  * where you left off. `replaceState` rather than `pushState`: switching tab is
  * not navigation, and filling the back button with it would make Back useless.
  */
-const TABS = ["sprites", "animations", "states", "sounds", "global-sounds"];
+const TABS = ["sprites", "animations", "combos", "sounds", "global-sounds"];
 let activeTab = TABS[0];
 
 function rememberInUrl(): void {
@@ -295,6 +297,7 @@ function render(): void {
   renderAnims(animsPanel);
   renderBoxes(boxesPanel);
   renderStates(statesPanel);
+  drawChains();
   refreshTabMarks();
   renderEntityRail(rail);
   openLabel.textContent = currentEntity()?.name ?? "nothing open";
@@ -317,7 +320,24 @@ function render(): void {
     : "Load a sprite sheet to begin.";
 }
 
-// Tab switching (Sprites / Animations / States; the rest are placeholders).
+/**
+ * The Combos tab takes the middle of the window: a graph needs the room the
+ * sheet normally has, and the side panel — 300 px wide — turns one into
+ * overlapping labels. The panel keeps the validation, which is a list and
+ * belongs in a column.
+ */
+const chainWrap = byId("chain-wrap");
+function drawChains(): void {
+  const showing = activeTab === "combos";
+  chainWrap.hidden = !showing;
+  sheetWrap.hidden = showing;
+  if (!showing) return;
+  chainWrap.replaceChildren();
+  const byName = Object.fromEntries(state.anims.map((a) => [a.name, { loop: a.loop, steps: a.steps }]));
+  if (state.states) renderChainGraph(chainWrap, state.states, byName, state.baseHitstun);
+}
+
+// Tab switching (Sprites / Animations / Combos; the rest are placeholders).
 // The Save button saves only the active tab's section, and its label reflects
 // it. States is read-only, so there Save is disabled rather than misleading.
 const tabButtons = document.querySelectorAll<HTMLButtonElement>("#tabs .tab");
@@ -329,6 +349,7 @@ function setTab(name: string): void {
   // The bank is independent of the loaded entity, so it redraws when the tab
   // is opened rather than on every entity change — which would throw away a
   // half-typed field.
+  drawChains();
   if (name === "sounds") renderEntitySounds(entitySoundsPanel);
   if (name === "global-sounds") renderGlobalSounds(globalSoundsPanel);
 
