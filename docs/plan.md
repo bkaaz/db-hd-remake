@@ -64,11 +64,13 @@ mode is a list of differences, not a description of the world. Shape:
   `always` to start with, `afterFirstHit` when combo work asks for it.
 - `boxes` and `debug` set the *initial* value only; `B` and `D` still toggle.
 
-Remaining slices: **(2)** the file, `mode=N` and start positions; **(3)** the
-scripted dummy, replacing the rotation in `TrainingFixture`, with tests, and
-`src/training/` becoming `src/debug/`; **(4)** the recording writes the mode's
-contents on its first line — the numbers mean nothing on their own, because mode
-0 is edited freely and two logs a week apart would both call themselves "0".
+The file, `mode=N`, the start positions and the overlay defaults landed
+2026-08-16 (`src/debug/mode.ts`, `/api/debug`). Remaining slices: **(3)** the
+scripted dummy — `does` and `guard` replacing the rotation in
+`TrainingFixture`, with tests, and `src/training/` becoming `src/debug/`;
+**(4)** the recording writes the mode's contents on its first line — the numbers
+mean nothing on their own, because mode 0 is edited freely and two logs a week
+apart would both call themselves "0".
 
 *Done when:* a recording can be reproduced from its own first line, and P2 can
 be told to block without touching any code.

@@ -109,7 +109,9 @@ export class SelectScene implements Scene {
     if (confirm && slot.available && slot.id) {
       this.picked.push(slot.id);
       if (this.picked.length === 2) {
-        return { scene: "debug", p1: this.picked[0], p2: this.picked[1] };
+        // Mode 0 is the everyday setup: a pick from the roster is not asking
+        // for a written-down situation, it is asking for two fighters.
+        return { scene: "debug", p1: this.picked[0], p2: this.picked[1], mode: 0 };
       }
     }
     for (const s of this.slots) s.entity?.update(NO_INPUT, null, { min: 0, max: 0 });

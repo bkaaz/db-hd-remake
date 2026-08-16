@@ -61,13 +61,19 @@ export class Fighters {
     return this.player.frozen || !!this.opponent?.frozen;
   }
 
-  /** Opening corners, and the floor to stand on. */
-  start(stage: Stage): void {
+  /**
+   * Opening corners, and the floor to stand on.
+   *
+   * `at` is a fraction of the stage, and a debug mode may set either side — the
+   * same value twice is legal and means "both in the corner": they start on top
+   * of each other and the push that already runs every frame does the rest.
+   */
+  start(stage: Stage, at: { p1?: number; p2?: number } = {}): void {
     this.player.groundY = stage.groundY;
-    this.player.x = stage.xAt(this.opponent ? 0.35 : 0.5);
+    this.player.x = stage.xAt(at.p1 ?? (this.opponent ? 0.35 : 0.5));
     if (this.opponent) {
       this.opponent.groundY = stage.groundY;
-      this.opponent.x = stage.xAt(0.65);
+      this.opponent.x = stage.xAt(at.p2 ?? 0.65);
     }
   }
 

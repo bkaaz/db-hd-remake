@@ -33,8 +33,8 @@ async function boot(): Promise<void> {
   if (!mount) throw new Error("Missing #app mount element");
   mount.appendChild(app.canvas);
 
-  const ctx: SceneContext = { app, bank: await loadSoundBank() };
   const keyboard = new Keyboard();
+  const ctx: SceneContext = { app, bank: await loadSoundBank(), keyboard };
 
   /** Null while a scene is being loaded: the crank turns, nothing happens. */
   let scene: Scene | null = null;

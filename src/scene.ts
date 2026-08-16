@@ -34,12 +34,17 @@ export interface Scene {
 /** What to run, in the few values it takes to say it. */
 export type SceneRequest =
   | { scene: "select" }
-  | { scene: "debug"; p1: string; p2: string };
+  | { scene: "debug"; p1: string; p2: string; mode: number };
 
-/** What every scene is handed: the renderer, and the game-wide sound bank. */
+/**
+ * What every scene is handed: the renderer, the game-wide sound bank, and the
+ * keyboard — which is here rather than only in `step` because a scene may want
+ * to *set* a toggle while it is being built, not just read one every frame.
+ */
 export interface SceneContext {
   app: Application;
   bank: Sounds;
+  keyboard: Keyboard;
 }
 
 const DEFAULT_FIGHTER = "goku";
@@ -64,6 +69,7 @@ export function queryFor(request: SceneRequest): string {
   if (request.scene === "debug") {
     q.set("p1", request.p1);
     q.set("p2", request.p2);
+    q.set("mode", String(request.mode));
   }
   return `?${q.toString()}`;
 }
@@ -75,7 +81,10 @@ export function requestFromUrl(url: URL): SceneRequest | string {
   if (scene === "select") return { scene: "select" };
   if (scene === "debug") {
     const p1 = q.get("p1") ?? DEFAULT_FIGHTER;
-    return { scene: "debug", p1, p2: q.get("p2") ?? p1 };
+    const asked = q.get("mode");
+    const mode = asked === null ? 0 : Number(asked);
+    if (!Number.isInteger(mode)) return `mode "${asked}" is not a mode number`;
+    return { scene: "debug", p1, p2: q.get("p2") ?? p1, mode };
   }
   return `unknown scene "${scene}" — try select or debug`;
 }

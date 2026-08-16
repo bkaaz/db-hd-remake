@@ -7,6 +7,7 @@ import { Effects } from "../fx/effects";
 import type { Keyboard } from "../input/keyboard";
 import { Fighters } from "../match/fighters";
 import type { Scene, SceneContext, SceneRequest } from "../scene";
+import { loadMode } from "../debug/mode";
 import { Stage } from "../stage";
 import { TrainingFixture } from "../training/fixture";
 import { tickLog } from "../log";
@@ -44,7 +45,15 @@ export class DebugScene implements Scene {
     private readonly notices: Text[],
   ) {}
 
-  static async create(ctx: SceneContext, req: { p1: string; p2: string }): Promise<Scene | string> {
+  static async create(
+    ctx: SceneContext,
+    req: { p1: string; p2: string; mode: number },
+  ): Promise<Scene | string> {
+    // First, so a mode that does not exist says so instead of quietly running
+    // the scene as if nothing had been asked for.
+    const mode = await loadMode(req.mode);
+    if (typeof mode === "string") return mode;
+
     const def = await loadEntityDef(req.p1).catch(() => null);
     if (!def) return `Could not load "${req.p1}". Save it from the entity editor first.`;
     if (Object.keys(def.animations).length === 0) return `${def.name}: no animations`;
@@ -63,7 +72,10 @@ export class DebugScene implements Scene {
     const stage = new Stage(ctx.app);
     const audio = new Audio(withVoices(ctx.bank, def.sounds));
     const fighters = new Fighters({ app: ctx.app, def, scale: SCALE, audio, effects, solo: false });
-    fighters.start(stage);
+    fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
+    // The mode sets what the overlays *start* as; B and D still toggle them.
+    if (mode.boxes !== undefined) ctx.keyboard.showBoxes = mode.boxes;
+    if (mode.debug !== undefined) ctx.keyboard.showDebug = mode.debug;
     stage.onResize(() => fighters.fit(stage));
 
     const noStates = !def.states;

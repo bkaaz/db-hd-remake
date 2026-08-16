@@ -22,6 +22,7 @@ const LOG_FILE = path.join("logs", "session.log");
 const SFX_DIR = path.join("assets", "audio", "sfx");
 const SOUND_BANK = path.join("data", "audio", "sounds.json");
 const ROSTER = path.join("data", "roster.json");
+const DEBUG_MODES = path.join("data", "debug.json");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
 
 function sanitizeName(name: string): string {
@@ -158,6 +159,17 @@ export function entityEditorServer(): Plugin {
           sendJson(res, 200, JSON.parse(await fs.readFile(path.join(root, ROSTER), "utf8")));
         } catch {
           sendJson(res, 404, { error: "no roster" });
+        }
+      });
+
+      // The debug scene's setups. Read on every scene build rather than
+      // bundled, which is the whole point: editing a mode costs a reload, not a
+      // restart of a dev server that has been up for days.
+      server.middlewares.use("/api/debug", async (_req, res) => {
+        try {
+          sendJson(res, 200, JSON.parse(await fs.readFile(path.join(root, DEBUG_MODES), "utf8")));
+        } catch {
+          sendJson(res, 404, { error: "no debug modes" });
         }
       });
 
