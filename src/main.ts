@@ -8,7 +8,7 @@ import {
   type SceneContext,
   type SceneRequest,
 } from "./scene";
-import { FightScene } from "./scenes/fight";
+import { DebugScene } from "./scenes/debug";
 import { SelectScene } from "./scenes/select";
 import { showMessage } from "./ui/hud";
 
@@ -88,8 +88,8 @@ async function boot(): Promise<void> {
 /** The only place that knows which class serves which request. */
 function build(ctx: SceneContext, request: SceneRequest): Promise<Scene | string> {
   switch (request.scene) {
-    case "fight":
-      return FightScene.create(ctx, request);
+    case "debug":
+      return DebugScene.create(ctx, request);
     case "select":
       return SelectScene.create(ctx);
   }

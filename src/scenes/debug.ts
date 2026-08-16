@@ -18,13 +18,20 @@ import type { Text } from "pixi.js";
 const SCALE = 3;
 
 /**
- * The fight: two bodies on a stage, hitting each other.
+ * The debug scene: two bodies on a stage, hitting each other, with everything
+ * about the engine on show.
+ *
+ * **This is not the fight, and not the training mode.** Both of those are ahead
+ * of us and are for a player; this one is for whoever is building the engine, so
+ * it is where the box overlays, the state readout, the log recording and the
+ * scripted dummy live — none of which a player should ever reach. Keeping them
+ * here is what stops them leaking into the real screens later.
  *
  * Everything that used to be the body of the game loop lives here, and the
  * order of one game frame is the whole of `step()` — the most instructive four
  * lines in the project, kept in one place on purpose.
  */
-export class FightScene implements Scene {
+export class DebugScene implements Scene {
   private readonly fixture = new TrainingFixture();
 
   private constructor(
@@ -47,7 +54,7 @@ export class FightScene implements Scene {
     // that lands with the character select, which is the first thing that can
     // ask for a pairing. Until then, say so rather than quietly ignoring p2.
     if (req.p2 !== req.p1) {
-      console.warn(`[fight] p2="${req.p2}" ignored — both sides are ${req.p1} for now`);
+      console.warn(`[debug] p2="${req.p2}" ignored — both sides are ${req.p1} for now`);
     }
 
     const notices = reportProblems(ctx, def);
@@ -63,7 +70,7 @@ export class FightScene implements Scene {
     if (noStates) notices.push(showMessage(ctx.app, `${def.name}: no states.json`, true));
     const hud = new Hud(ctx.app, { name: def.name, belowMessage: noStates });
 
-    return new FightScene(stage, fighters, effects, hud, new DebugPanel(ctx.app), notices);
+    return new DebugScene(stage, fighters, effects, hud, new DebugPanel(ctx.app), notices);
   }
 
   /** One game frame, in the order the parts of it have to happen. */

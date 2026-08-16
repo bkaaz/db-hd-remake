@@ -2,6 +2,32 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — The screen we have is `debug`, and the fight is still ahead
+
+- **`FightScene` → `DebugScene`, `?scene=fight` → `?scene=debug`.** What exists
+  today is not the fight and not a training mode: it is where box overlays, the
+  state readout, log recording and a scripted dummy live, none of which a player
+  should ever reach. Both of the real screens are still to be built, and naming
+  this one after either would have taken the name they need.
+- **Not `training`**, though the module was called that: a training mode is a
+  player's screen with practice conveniences, and it will want to exist beside
+  the fight. This one is for whoever is building the engine.
+- **Its setups live in a committed file, `data/debug.json`** — numbered modes,
+  `?scene=debug&mode=N` picking one, no parameter meaning 0. This **overrules
+  the 2026-08-14 line** that convenience presets belong in `package.json`: the
+  dev server has been up for days at a time, and a preset that costs a server
+  restart costs more than the reload a URL or a file change already costs.
+- **Numbers, not names**, at the owner's call: they are one character to change
+  in the address bar, and behaviour like "light, light, pause, jump in, light"
+  has no honest name. The cost — a number that means nothing in a log — is paid
+  by having the recording print the mode's *contents*, which also frees mode 0
+  to be edited freely as the everyday scratch setup.
+- **A mode is a list of differences**, so a missing key means "as it is today"
+  and a new mode is three lines rather than a copy of the last one.
+- **The dummy is given a timeline, not a policy**, and never a condition: an
+  action name or a number of frames of nothing. A dummy that can say "if he
+  blocked, then…" is a second state machine beside `states.json`.
+
 ## 2026-08-16 — A blow you are still taking cannot be blocked
 
 - **Rank is the whole rule** (`guardable`, `src/entity/states.ts`): 0 is a

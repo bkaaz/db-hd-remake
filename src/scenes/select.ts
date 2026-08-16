@@ -109,7 +109,7 @@ export class SelectScene implements Scene {
     if (confirm && slot.available && slot.id) {
       this.picked.push(slot.id);
       if (this.picked.length === 2) {
-        return { scene: "fight", p1: this.picked[0], p2: this.picked[1] };
+        return { scene: "debug", p1: this.picked[0], p2: this.picked[1] };
       }
     }
     for (const s of this.slots) s.entity?.update(NO_INPUT, null, { min: 0, max: 0 });

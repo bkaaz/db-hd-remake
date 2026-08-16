@@ -32,7 +32,48 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## First: launch scaling, the last of the three
+## First: the debug scene gets setups you can write down
+
+The scene formerly called `fight` is **`debug`** as of 2026-08-16, and the real
+fight and a player's training mode are both still ahead of it (`decisions.md`).
+What it needs next is a way to *say* what the dummy does, because the one thing
+it cannot do today is hold back — so the fix that made combos true combos could
+not be seen on a recording at all.
+
+Settled: **`data/debug.json` holds numbered modes, `?scene=debug&mode=N` picks
+one**, no parameter means mode 0, and a missing key means "as it is today" — a
+mode is a list of differences, not a description of the world. Shape:
+
+```json
+{ "modes": [
+  { "p1": { "at": 0.62 }, "p2": { "at": 0.95, "does": ["light", 90], "loop": true }, "boxes": true }
+] }
+```
+
+- **`at` is a fraction of the stage**, 0 the left wall and 1 the right, so it
+  survives a resize. Both fighters at the same value is legal — the push that
+  already exists separates them, which is how "both in the corner" is written.
+- **`does` is a timeline, not a policy**: an action name, or a number of frames
+  of nothing. It replaces the old `attackEvery`, which could say "swing on a
+  timer" but never "light, light, pause, jump in, light". Action *names* rather
+  than key letters, because keys become remappable.
+- **The line that must hold: no conditions in `does`.** The moment a mode wants
+  "if he blocked, then…" it has become a second state machine beside
+  `states.json`, and that is the point to stop and ask why.
+- `guard` is separate from `does` because it is a hold, not an event: `never` or
+  `always` to start with, `afterFirstHit` when combo work asks for it.
+- `boxes` and `debug` set the *initial* value only; `B` and `D` still toggle.
+
+Remaining slices: **(2)** the file, `mode=N` and start positions; **(3)** the
+scripted dummy, replacing the rotation in `TrainingFixture`, with tests, and
+`src/training/` becoming `src/debug/`; **(4)** the recording writes the mode's
+contents on its first line — the numbers mean nothing on their own, because mode
+0 is edited freely and two logs a week apart would both call themselves "0".
+
+*Done when:* a recording can be reproduced from its own first line, and P2 can
+be told to block without touching any code.
+
+## Then: launch scaling, the last of the three
 
 Damage and hitstun scaling both landed 2026-08-16 (`src/combat/scaling.ts`): a
 long combo is worth visibly less than a short one, and a ground loop now ends
@@ -77,7 +118,7 @@ the scene's only remaining job was proving the interface with a second
 implementation — which the select now does for real.
 
 **Next: the character select, and two different fighters.** They are one job,
-not two: `FightScene` still builds both bodies from a single `EntityDef`, and a
+not two: `DebugScene` still builds both bodies from a single `EntityDef`, and a
 real pairing needs two defs and two `Audio`s, because a voice belongs to a
 fighter. `p2` is accepted and warned about today. The select screen is the first
 thing that can ask for a pairing, so it is what forces the fix — and it is also
@@ -94,9 +135,12 @@ the slot showing its own name makes visible enough.
 **How a scene is chosen is settled** (`decisions.md`, 2026-08-14): every scene is
 built from a small serialisable parameter object, never from what the previous
 scene left behind, and the URL supplies it —
-`?scene=fight&p1=goku&p2=goku`. An unknown parameter is a loud error, not a
-quiet fallback. Convenience presets go in `package.json`, not into a committed
-dev-state file.
+`?scene=debug&p1=goku&p2=goku`. An unknown parameter is a loud error, not a
+quiet fallback. The line that used to sit here — "convenience presets go in
+`package.json`, not into a committed dev-state file" — was overruled on
+2026-08-16 and is now the opposite: the debug scene's setups live in a committed
+file, because restarting a dev server that has been up for days costs more than
+a page reload (`decisions.md`).
 
 *Open:* how a scene *changes* to the next one — whether `step()` returns the
 successor or that wants an event. Decide when the second scene exists, not

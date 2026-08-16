@@ -4,7 +4,8 @@ import type { Keyboard } from "./input/keyboard";
 
 /**
  * A scene is one screen of the game, and the only thing `main.ts` knows how to
- * run. The fight is one; a character select and a title will be others.
+ * run. The debug scene is one; a character select and a title are others, and
+ * the fight a player will actually play is still ahead of us.
  *
  * **Every scene is built from a small serialisable request** — never from
  * objects the previous scene happened to leave behind (see `decisions.md`,
@@ -14,7 +15,7 @@ import type { Keyboard } from "./input/keyboard";
  *
  * A scene asks to be replaced by *returning a request*, not by building its
  * successor. Otherwise the character select would have to know how to construct
- * a fight — its modules, its loading, its wiring — and the two screens would be
+ * a match — its modules, its loading, its wiring — and the two screens would be
  * welded together. Returning a request means the select and the URL speak the
  * same language, and only `main.ts` turns that language into a scene.
  */
@@ -33,7 +34,7 @@ export interface Scene {
 /** What to run, in the few values it takes to say it. */
 export type SceneRequest =
   | { scene: "select" }
-  | { scene: "fight"; p1: string; p2: string };
+  | { scene: "debug"; p1: string; p2: string };
 
 /** What every scene is handed: the renderer, and the game-wide sound bank. */
 export interface SceneContext {
@@ -60,7 +61,7 @@ const DEFAULT_FIGHTER = "goku";
  */
 export function queryFor(request: SceneRequest): string {
   const q = new URLSearchParams({ scene: request.scene });
-  if (request.scene === "fight") {
+  if (request.scene === "debug") {
     q.set("p1", request.p1);
     q.set("p2", request.p2);
   }
@@ -72,9 +73,9 @@ export function requestFromUrl(url: URL): SceneRequest | string {
   const scene = q.get("scene") ?? "select";
 
   if (scene === "select") return { scene: "select" };
-  if (scene === "fight") {
+  if (scene === "debug") {
     const p1 = q.get("p1") ?? DEFAULT_FIGHTER;
-    return { scene: "fight", p1, p2: q.get("p2") ?? p1 };
+    return { scene: "debug", p1, p2: q.get("p2") ?? p1 };
   }
-  return `unknown scene "${scene}" — try select or fight`;
+  return `unknown scene "${scene}" — try select or debug`;
 }
