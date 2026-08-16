@@ -353,6 +353,23 @@ export function reactionFor(
   return rank >= (current?.rank ?? 0) ? name : undefined;
 }
 
+/**
+ * May a fighter in this state put a guard up at all?
+ *
+ * **Only if they are their own.** Rank is exactly that question — 0 is standing,
+ * walking, attacking; anything above it is a reaction somebody else put them in
+ * — so a fighter still taking a blow cannot answer the next one by holding back.
+ *
+ * This is what makes a combo a combo. All three scalings exist to end a sequence
+ * the victim cannot escape, and without this every sequence was escapable by
+ * holding a direction: guard is decided at the moment of contact rather than by
+ * standing in a guard state, so nothing else was asking whether the defender was
+ * in any position to decide anything.
+ */
+export function guardable(current: StateDef | undefined): boolean {
+  return (current?.rank ?? 0) === 0;
+}
+
 export class StateMachine {
   /** Name of the state the entity is in. */
   current: string;

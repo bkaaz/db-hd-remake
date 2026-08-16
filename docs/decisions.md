@@ -2,6 +2,27 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — A blow you are still taking cannot be blocked
+
+- **Rank is the whole rule** (`guardable`, `src/entity/states.ts`): 0 is a
+  fighter who is their own, anything above it is a state somebody else put them
+  in, and only the first may put a guard up. It is the same number the combo
+  counter resets on, which is deliberate — two answers to "does this fighter
+  have control of themselves" would eventually disagree.
+- **Why it mattered more than it looked**: guard is decided at the moment of
+  contact rather than by standing in a guard state, and `holdingBack` is read
+  from the pad every frame whatever the fighter is doing. So holding back
+  through hitstun blocked the next blow, and *no combo in the game was a true
+  combo* — all three scalings existed to end sequences that were already
+  escapable by holding a direction.
+- **A pure predicate rather than a condition inline**, because `entity.ts` needs
+  PixiJS and cannot be unit-tested. The rule that decides whether a combo can
+  happen at all is worth a test that fails, so it lives in `states.ts` with one.
+- **Blockstun still guards**: `guard_hit` has no rank, so a fighter already
+  blocking keeps blocking. That is the behaviour we want, and it comes free.
+- **The other half is filed, not fixed** (`bugs.md`): an attack state also ranks
+  0, so a fighter blocks in the middle of their own swing.
+
 ## 2026-08-16 — Hitstun scaling, and a jab that links but not forever
 
 - **The second curve** (`src/combat/scaling.ts`), and the one that changes a

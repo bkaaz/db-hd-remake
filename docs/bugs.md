@@ -20,26 +20,23 @@ because a number would only need translating back.
 
 ---
 
-## A fighter can block while they are still being hit
+## A fighter blocks in the middle of their own attack
 
-`src/entity/entity.ts` · noticed 2026-08-16 · breaks play
+`src/entity/entity.ts` · noticed 2026-08-16 · annoying
 
-`holdingBack` is refreshed every frame from the pad regardless of what state the
-fighter is in, and `guarding` asks only whether they are holding back, on the
-ground, and own a guard pose. Nothing asks whether they have control of
-themselves — so a defender who holds back during hitstun blocks the next blow of
-the combo. **No combo in the game is a true combo**, which is the assumption
-every one of the three scalings is built on: they exist to end a sequence the
-victim cannot escape, and this makes every sequence escapable by holding a
-direction.
+The same root as the hitstun one fixed that day, and the half that stayed: guard
+is resolved at the moment of contact from `holdingBack`, and an attack state
+ranks 0, so a fighter who holds back and presses light blocks whatever arrives
+while their own punch is out. A trade becomes a block, and a counter-hit is
+unreachable — which is a real loss, because the counter-hit is the reward for
+whiff-punishing rather than mashing.
 
-To see it: hold back on P2 while P1 jabs. The second jab should read as
-`blocked` in the recording even though P2 was in `hurt` when it arrived.
+To see it: hold back on P1, press light, and have the blow met by P2's. The
+recording says `blocked` on a fighter who was swinging.
 
-Not noticed earlier because P2 is a dummy that holds nothing. The fix is a
-condition on `guarding` — a reaction rank is exactly "not their own" — but it
-wants deciding rather than doing: guard is resolved at the moment of contact,
-not by standing in a guard state, so this is where block-stun would live too.
+Not fixed with the reaction case because the rule wants a boundary decided
+rather than guessed: `onHit` marks an attack, but "no guard while attacking"
+also has to say what happens during recovery, and during `land` and `getup`.
 
 ## A press dies on the frame the move ends
 

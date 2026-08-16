@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
+  guardable,
   reactionFor,
   StateMachine,
   validateStates,
@@ -982,5 +983,23 @@ describe("effectsNamed", () => {
 
   it("survives an entity with no states at all", () => {
     expect(effectsNamed(null)).toEqual(["spark_1"]);
+  });
+});
+
+describe("guardable", () => {
+  it("lets a fighter who is their own put a guard up", () => {
+    expect(guardable({ anim: "idle" })).toBe(true);
+    expect(guardable({ anim: "walk", rank: 0 })).toBe(true);
+    // Nothing to be in yet, at the very first frame of a match.
+    expect(guardable(undefined)).toBe(true);
+  });
+
+  it("refuses a fighter a blow already has hold of", () => {
+    // The rule that makes a combo a combo: holding back during hitstun used to
+    // block the next blow, which made every sequence escapable by holding a
+    // direction — and all three scalings exist to end sequences that are not.
+    expect(guardable({ anim: "hurt", rank: 1 })).toBe(false);
+    expect(guardable({ anim: "knockdown", rank: 3 })).toBe(false);
+    expect(guardable({ anim: "downed", rank: 4 })).toBe(false);
   });
 });

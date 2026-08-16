@@ -92,6 +92,12 @@ further, which is a coupling to remember when §3's curves arrive.
 Blockstun is the same mechanism with its own number, and is deliberately not
 built yet: `guard_hit` still ends with its animation.
 
+**A held blow cannot be answered by holding back** (2026-08-16, `guardable` in
+`states.ts`): rank above zero is exactly "somebody else put me here", and a
+fighter there has no guard. Without it every combo was escapable by holding a
+direction, which would have made all three curves guard something that was never
+inescapable to begin with.
+
 ### 2. The combo counter — one integer, on the defender
 
 **Built 2026-08-15** (`src/combat/combo.ts`). Starts at zero, increments on

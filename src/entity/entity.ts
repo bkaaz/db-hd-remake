@@ -5,7 +5,7 @@ import { Audio } from "../audio/playback";
 import { Combo } from "../combat/combo";
 import { scaledDamage, scaledHitstun } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
-import { DEFAULT_HIT_FX, reactionFor, StateMachine } from "./states";
+import { DEFAULT_HIT_FX, guardable, reactionFor, StateMachine } from "./states";
 
 /**
  * One live entity in the world: sprite + animation playback + state machine +
@@ -286,10 +286,16 @@ export class Entity {
    * block is decided at the moment of contact, which is also how the genre has
    * always worked — the guard pose only ever appears on a blow that arrives.
    * Not in the air: a fighter who can block a jump-in for free has removed the
-   * point of jumping in.
+   * point of jumping in. And not while a blow already has hold of them — see
+   * `guardable`, which is the rule that makes a combo a combo.
    */
   get guarding(): boolean {
-    return this.holdingBack && !this.airborne && !!this.def.states?.onGuard;
+    return (
+      this.holdingBack &&
+      !this.airborne &&
+      guardable(this.sm?.def) &&
+      !!this.def.states?.onGuard
+    );
   }
 
   /** Sound this entity's current attack makes on landing, and on being blocked. */
