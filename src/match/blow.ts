@@ -64,12 +64,16 @@ export function landBlow(
   // number the defender actually lost, which is the only one worth reporting.
   let dealt = 0;
   if (!blocked) {
-    dealt = defender.hurtBy(attacker.attackDamage);
+    // The reaction goes first, and the order matters: both scalings read how
+    // many blows have landed *before* this one, and `hurtBy` is what adds this
+    // one to the count. Hitting first would scale the opener as if it were the
+    // second blow.
     defender.gotHit({
       reaction: attacker.attackReaction,
       smash: attacker.attackSmash,
       hitstun: attacker.attackHitstun,
     });
+    dealt = defender.hurtBy(attacker.attackDamage);
   }
   // The spark belongs at the deepest point of the blow, not at either fighter's
   // anchor and not at the middle of the overlap — see impactPoint.

@@ -59,6 +59,26 @@ describe("landBlow", () => {
     });
   });
 
+  it("decides the reaction before the blow is added to the combo", () => {
+    // Both scalings read how many blows landed *before* this one, and `hurtBy`
+    // is what counts it. Reversed, the opener would be held as if it were the
+    // second blow of its own combo.
+    const order: string[] = [];
+    const attacker = body("hit");
+    const defender = body("hurt", {
+      hurtBy: vi.fn(() => {
+        order.push("hurtBy");
+        return 5;
+      }),
+      gotHit: vi.fn(() => {
+        order.push("gotHit");
+        return true;
+      }),
+    });
+    landBlow(attacker, defender, context());
+    expect(order).toEqual(["gotHit", "hurtBy"]);
+  });
+
   describe("an invulnerable defender", () => {
     // Being on the floor, and getting up off it. Rank already stops a blow
     // interrupting; this is what stops it costing health while the victim can

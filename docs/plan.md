@@ -32,44 +32,24 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## First: the two scalings that are left
+## First: launch scaling, the last of the three
 
-Damage scaling landed 2026-08-16 (`src/combat/scaling.ts`), so a long combo is
-worth visibly less than a short one and a single touch is no longer most of a
-round. What is missing is the half that changes the *shape* of a combo rather
-than its price:
+Damage and hitstun scaling both landed 2026-08-16 (`src/combat/scaling.ts`): a
+long combo is worth visibly less than a short one, and a ground loop now ends
+because the defender recovers first. **Launch is the one left** — each successive
+lift raises less, so the body falls out of a juggle instead of being refused a
+hit. Until it exists the smash limit does that job alone, which is why it reads
+as a wall rather than as a net under the curve.
 
-| scaling | what it does |
-|---|---|
-| **hitstun** | each successive blow holds for less, so the victim recovers first |
-| **launch** | each successive lift raises less, so the body falls out |
-
-Both end a combo by having it stop working, which is the difference between a
-juggle that finishes and a blow that is refused. Until they exist the smash limit
-is doing that job alone, which is why it reads as a wall.
-
-Everything hangs off `Combo`, which already counts hits and lifts on the
-defender and resets when they get control back. No new state should be needed;
-if a curve wants some, that is the signal to stop and ask why.
-
-**What it unlocks, measured 2026-08-16.** The jab is +3 and needs **5** to link
-into itself — four frames of start-up plus the frame it lands on — so the second
-jab arrives one frame after the victim stands up, every time. Closing that gap is
-one field (`hitstun: 17` gives +8 with three frames to spare), and it is not
-being done yet **because a jab that links into itself does so forever**: 6
-damage, repeatable, and no smash limit touches it because nothing is being
-lifted. The hitstun curve is what ends it — each blow holds less until the
-defender recovers first — which makes this the first thing that needs §3 rather
-than wants it.
-
-*Open, and worth deciding before the curves are written:* whether hitstun
-scaling also shortens knockback. It does today by construction — `vel` applies
-every frame the reaction lasts — so a decayed hitstun quietly shortens the push
-too, which may be exactly right or may need the two separating.
+It hangs off `Combo.lifts`, which already counts re-launches on the defender and
+resets when they get control back. No new state should be needed; if the curve
+wants some, that is the signal to stop and ask why. The one thing to look at
+first is *what* it scales: `launch` is an impulse applied on entering a reaction
+(`entity.ts`), not a per-frame velocity like `vel`, so the curve multiplies the
+`vy` a state asks for — and whether it should touch `vx` with it is open.
 
 *Done when:* a juggle ends because the body fell out of it rather than because a
-blow was refused, and the jab can be made plus enough to link without that link
-running forever.
+blow was refused.
 
 ## Now: code the owner can read, before there is more of it
 

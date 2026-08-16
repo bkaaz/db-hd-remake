@@ -2,6 +2,29 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — Hitstun scaling, and a jab that links but not forever
+
+- **The second curve** (`src/combat/scaling.ts`), and the one that changes a
+  combo's *shape* rather than its price: every blow holds a little less than the
+  last, so a loop ends because the defender recovers first. A combo that stops
+  working reads as a fighter getting up, where a blow refused reads as a bug.
+- **Same step, much higher floor: ten per cent off per blow, floor at fifty.**
+  Twenty — the damage floor — would leave three or four frames of an eighteen
+  frame reaction: the hurt pose would be gone before it could be read. Half is
+  still short enough that the defender wins the race, which is the entire job.
+- **It shortens knockback with it, deliberately.** A ground reaction moves for
+  exactly as long as it holds (`vel` + `stunEnd`), so the late blows of a combo
+  shove less. Separating the two would mean a second clock on the defender
+  saying almost the same thing; if it ever feels wrong, that is when to add one.
+- **The jab is `hitstun: 17`**, which is +8 and a real light → light link, and it
+  is only safe *because* of the curve: unscaled it would link forever for 6
+  damage a time. Scaled it links three times and the fourth arrives late.
+- **The reaction is now decided before the blow is counted** (`match/blow.ts`):
+  `gotHit` before `hurtBy`, because `hurtBy` is what adds the blow to the combo
+  and both curves read the count from *before* it. Reversed, every opener would
+  be scaled as if it were the second blow of its own combo. A test in
+  `blow.test.ts` holds the order, since nothing else about the code shows it.
+
 ## 2026-08-16 — Damage scaling: the opener is worth all of itself
 
 - **The first of the three curves** (`src/combat/scaling.ts`), and the one that

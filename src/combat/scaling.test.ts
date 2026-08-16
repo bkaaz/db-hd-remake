@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { damageScale, scaledDamage } from "./scaling";
+import { damageScale, hitstunScale, scaledDamage, scaledHitstun } from "./scaling";
 
-describe("damage scaling", () => {
+describe("combo scaling", () => {
   it("gives the opener all of itself", () => {
     expect(damageScale(0)).toBe(1);
     expect(scaledDamage(14, 0)).toBe(14);
@@ -28,6 +28,41 @@ describe("damage scaling", () => {
   it("leaves a blow authored as free alone", () => {
     expect(scaledDamage(0, 0)).toBe(0);
     expect(scaledDamage(0, 9)).toBe(0);
+  });
+
+  it("holds the opener for all of its hitstun", () => {
+    expect(hitstunScale(0)).toBe(1);
+    expect(scaledHitstun(17, 0)).toBe(17);
+  });
+
+  it("holds every blow after it a little less", () => {
+    expect(scaledHitstun(20, 1)).toBe(18);
+    expect(scaledHitstun(20, 2)).toBe(16);
+    expect(scaledHitstun(20, 3)).toBe(14);
+  });
+
+  it("stops falling far higher than damage does, so a reaction stays visible", () => {
+    expect(hitstunScale(10)).toBeCloseTo(0.5);
+    expect(hitstunScale(100)).toBeCloseTo(0.5);
+    // Three or four frames is what the damage floor would have left of an 18
+    // frame reaction — a flicker rather than a pose.
+    expect(scaledHitstun(18, 100)).toBe(9);
+  });
+
+  it("leaves a blow authored to hold nothing alone", () => {
+    expect(scaledHitstun(0, 0)).toBe(0);
+    expect(scaledHitstun(0, 9)).toBe(0);
+  });
+
+  it("ends the jab's link into itself instead of letting it run forever", () => {
+    // Measured 2026-08-16: the jab recovers 9 frames after it lands and needs 5
+    // frames of advantage to reach with the next one — four of start-up plus the
+    // frame it connects on.
+    const advantage = (hits: number) => scaledHitstun(17, hits) - 9;
+    expect(advantage(0)).toBeGreaterThanOrEqual(5);
+    expect(advantage(2)).toBeGreaterThanOrEqual(5);
+    // The fourth jab arrives too late: the defender is standing before it lands.
+    expect(advantage(3)).toBeLessThan(5);
   });
 
   it("makes a long combo worth visibly less than a short one", () => {

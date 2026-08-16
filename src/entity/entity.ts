@@ -3,7 +3,7 @@ import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { Combo } from "../combat/combo";
-import { scaledDamage } from "../combat/scaling";
+import { scaledDamage, scaledHitstun } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { DEFAULT_HIT_FX, reactionFor, StateMachine } from "./states";
 
@@ -368,12 +368,15 @@ export class Entity {
     if (blow.smash && !this.combo.smashable) return false;
     const state = reactionFor(blow.reaction, this.def.states, this.sm?.def);
     if (state === undefined) return false;
+    // Read before entering anything: arriving in a state can reset the combo,
+    // and the hold this blow earns is decided by the beating up to it.
+    const hits = this.combo.hits;
     // Counted only now, because a reaction rank refused changed nothing.
     if (blow.smash) this.combo.smash();
     if (!this.forceState(state)) return false;
     // After entering, because arriving in a state clears the clock — and this
     // blow's hold is the one thing about the reaction the blow gets to decide.
-    this.stun = blow.hitstun;
+    this.stun = scaledHitstun(blow.hitstun, hits);
     return true;
   }
 

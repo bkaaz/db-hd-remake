@@ -22,21 +22,43 @@ const FULL = 1;
 const STEP = 0.1;
 
 /**
- * The floor, so a long combo still costs the victim something.
+ * The damage floor, so a long combo still costs the victim something.
  *
  * A blow worth nothing is worse than it sounds: it still stops them, still holds
  * them, and would let a combo be extended indefinitely at no cost to the
  * attacker's patience. Twenty per cent keeps the incentive to end a combo and
  * start a new one, which is where the reset — and the risk — lives.
  */
-const FLOOR = 0.2;
+const DAMAGE_FLOOR = 0.2;
+
+/**
+ * The hitstun floor, and it sits much higher than the damage one because it is
+ * measured in something a person has to *see*.
+ *
+ * Twenty per cent of a reaction is three or four frames: the victim would snap
+ * back to standing before the hurt pose had been on screen long enough to read,
+ * and a combo would end in a flicker rather than in a recovery. Half is still
+ * short enough that the defender wins the race — which is the whole job of this
+ * curve — while leaving a reaction that looks like one.
+ */
+const HITSTUN_FLOOR = 0.5;
+
+/** The one curve both scalings ride, differing only in how far they may fall. */
+function curve(hits: number, floor: number): number {
+  return Math.max(floor, FULL - STEP * Math.max(0, hits));
+}
 
 /**
  * What a blow is worth when `hits` have already landed since the victim last had
  * control. `hits` of 0 is the opener, and is worth all of itself.
  */
 export function damageScale(hits: number): number {
-  return Math.max(FLOOR, FULL - STEP * Math.max(0, hits));
+  return curve(hits, DAMAGE_FLOOR);
+}
+
+/** How long a blow holds, as a fraction, after `hits` have already landed. */
+export function hitstunScale(hits: number): number {
+  return curve(hits, HITSTUN_FLOOR);
 }
 
 /**
@@ -49,4 +71,23 @@ export function damageScale(hits: number): number {
 export function scaledDamage(damage: number, hits: number): number {
   if (damage <= 0) return 0;
   return Math.max(1, Math.round(damage * damageScale(hits)));
+}
+
+/**
+ * How many frames a blow holds its victim, after the combo it lands in has
+ * shortened it — the half of scaling that changes a combo's *shape*.
+ *
+ * This is what ends a corner loop: every blow leaves the defender a frame or two
+ * freer than the last, until the link the attacker relies on is simply not there
+ * any more. The combo stops because it stopped working, which reads as a fighter
+ * recovering rather than as a blow being refused.
+ *
+ * It shortens the knockback with it, deliberately: a ground reaction moves for
+ * exactly as long as it holds, so the tenth blow of a combo shoves less than the
+ * first. One number, one consequence — separating the two would mean a second
+ * clock on the defender to say the same thing twice.
+ */
+export function scaledHitstun(frames: number, hits: number): number {
+  if (frames <= 0) return 0;
+  return Math.max(1, Math.round(frames * hitstunScale(hits)));
 }

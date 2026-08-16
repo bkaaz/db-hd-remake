@@ -119,6 +119,13 @@ floor is twenty. A blow that costs something never costs nothing — a free blow
 still stops and still holds the victim, which would let a combo be extended at no
 price. The seven-hit combo that took 78 of 100 health takes 52 now.
 
+**Hitstun scaling is built** (2026-08-16, same file): the same ten per cent per
+blow, but the floor is fifty rather than twenty, because a fifth of a reaction is
+three frames and a pose nobody can read. It shortens the knockback with it — a
+ground reaction moves for exactly as long as it holds — and that is on purpose.
+What it buys: the jab is `hitstun: 17` and links into itself for real, three
+times, and the fourth arrives after the defender is standing.
+
 The reason to prefer curves over per-move budgets is not elegance, it is the
 scale of the authoring ahead: three curves in one file, versus a juggle cost to
 be filled in on each of several hundred moves that do not exist yet. The second

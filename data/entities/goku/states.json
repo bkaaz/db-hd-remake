@@ -47,6 +47,7 @@
       "anim": "punch",
       "vel": [0, 0],
       "turn": false,
+      "hitstun": 17,
       "onHit": "hurt",
       "damage": 6,
       "sound": "swing_1",
