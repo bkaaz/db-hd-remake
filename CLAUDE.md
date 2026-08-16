@@ -187,6 +187,9 @@ npm run typecheck # typecheck only
 npm test          # Vitest, run once (npm run test:watch to keep it running)
 npm run anim -- <entity> <anim> --frames 1,2,3 --kind attack|loop|hurt
                   # build an animation with derived boxes/timing (--list, --dry-run)
+npm run chains -- <entity>
+                  # what cancels into what, and how many frames of margin each
+                  # link has — the instrument for tuning frame data
 npm run sheet -- <entity> --frames 0-30
                   # labelled contact sheet into assets/contact/ (gitignored)
 npm run fx        # generate the effect entities (atlas + frames + animations)
@@ -217,6 +220,7 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ├── scripts/                      # CLI entry points ONLY — one per npm run command;
 │   │                             #   nothing in the repo imports from here
 │   ├── anim.ts                   #   build an animation from a frame list
+│   ├── chains.ts                 #   print the cancel graph with its arithmetic
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
 │   ├── fx.ts                     #   write the generated effects out
 │   ├── split-audio.ts            #   cut a capture into numbered clips

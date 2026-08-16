@@ -11,6 +11,7 @@
     "hash-assets": "node scripts/fetch-assets.mjs --print-hashes",
     "build": "tsc --noEmit && vite build",
     "anim": "tsx scripts/anim.ts",
+    "chains": "tsx scripts/chains.ts",
     "fx": "tsx scripts/fx.ts",
     "split-audio": "tsx scripts/split-audio.ts",
     "sheet": "tsx scripts/sheet.ts",

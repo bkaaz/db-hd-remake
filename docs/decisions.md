@@ -2,6 +2,24 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — The chain graph is derived, and one function owns the sum
+
+- **`src/combat/chains.ts`** turns `states.json` plus the animations into the
+  list of cancels, each with its window, the next attack's start-up, the worst
+  case, the depth, the hitstun left at that depth and the margin.
+- **Derived, never written down.** A markdown table of links would be wrong the
+  first time a number moved, and twenty fighters would mean twenty stale tables.
+- **One function, three consumers**: the test asserts on it, `npm run chains`
+  prints it, the editor will draw it. Two implementations of one formula
+  disagree by a frame and nobody can tell which is lying — which is exactly what
+  was about to happen, since the test had grown its own copy.
+- **What it is for**: `npm test` says a link works or does not; the script says
+  by how much. That margin is what the frame-data table will be tuned against,
+  instead of guessing and waiting for a recording.
+- **Not built, deliberately**: the player's move list. It is rows, not a graph —
+  a player reads strings as sequences and must never see `cancelBy` — and there
+  is no screen to put it on yet.
+
 ## 2026-08-16 — Four active frames, and the pose is held afterwards
 
 - **A light feeds the middle of the kick string**, not its front: `A Z` is

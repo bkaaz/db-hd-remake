@@ -330,7 +330,7 @@ const triggersOf = (when: string | string[]): string[] => (Array.isArray(when) ?
  * whoever owns the buffer has to know which press was used — and only this
  * module knows how a trigger is spelled.
  */
-const pressIn = (when: string | string[]): string | null => {
+export const pressIn = (when: string | string[]): string | null => {
   const pressed = triggersOf(when).find((t) => t.startsWith("pressed:"));
   return pressed ? pressed.slice("pressed:".length) : null;
 };

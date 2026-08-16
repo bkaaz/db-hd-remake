@@ -74,6 +74,38 @@ dummy all landed 2026-08-16 (`src/debug/`, `/api/debug`). What is left:
 *Done when:* a recording can be reproduced from its own first line, and P2 can
 be told to block without touching any code.
 
+## Then: what chains into what, derived — never written down
+
+A chain is a **conclusion from `states.json`**, so it is computed, never
+maintained by hand: a markdown table of links would be wrong within a day, and
+twenty fighters would mean twenty of them.
+
+`npm test` already refuses a link whose arithmetic does not work
+(`states.test.ts`). What is missing is the *picture* — how much margin each link
+has — which is the instrument for choosing the numbers in the item below, rather
+than guessing them and waiting for a recording.
+
+**One derivation, three consumers**, and the boundary matters more than any of
+them: the graph is derived by a pure module in `src/combat/`, which the test, the
+CLI and later the editor all import. `scripts/chains.ts` only prints.
+
+| consumer | what it shows | when |
+|---|---|---|
+| **`npm run chains`** | every link: window, start-up, worst case, hitstun at that depth, margin | **done** 2026-08-16 |
+| **editor** | the same, as a **graph** — attack states and cancel edges only, ~10 nodes. A graph is the honest shape of the data: it shows branches, dead ends and unreachable states, which a list hides. Read-only first; editing the timings from there is natural later because the editor already saves `states.json` sections | after the CLI |
+| **in-game move list** | rows a player can read — `A → Z → Z`, names and sprites, **never** a frame number and never the word `cancelBy`. Not a graph: players read strings as sequences, and a node-link diagram would be showing them our data model | when a screen exists to put it on — there is no pause menu and no title yet |
+
+**The line that must hold:** a chain never becomes a file. It stays a *view* of
+the states, or we have two sources of truth about the same thing. Different
+fighters get different chains for free, because the graph comes out of their own
+`states.json`.
+
+The CLI and the shared module landed 2026-08-16 (`src/combat/chains.ts`), and
+`states.test.ts` asserts on the same numbers the script prints. What is left is
+the editor's graph, and the player's move list after it.
+
+*Done when:* the editor shows the cancel graph of the entity being edited.
+
 ## Then: the chain shape, and a table that authors an attack
 
 **Stop tuning attacks one at a time.** The engine has everything it needs —

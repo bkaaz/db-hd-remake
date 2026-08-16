@@ -27,6 +27,14 @@ whiff) and only up to its `cancelBy` frame. Trigger: `cancelable`.
 from entering the state and ignoring frozen frames. Absent means "until the
 animation ends". → `data-format.md`
 
+**Chain (string)** — a run of attacks joined by cancels. It is not a structure
+anywhere: it is a path through `states.json`, derived by `src/combat/chains.ts`
+and printed by `npm run chains`. → `plan.md`
+
+**Depth** — how many blows landed before a link fires, by the **longest** route
+into it. Scaling shortens hitstun as depth grows, so a string can hold at its
+opener and break at its third link. → `combat.md` §3
+
 **Hitstop** — the freeze on contact, applied to **both** fighters for the same
 number of frames (`hitstop`, 10 on the chain kicks). It is what gives a blow
 weight, and because both sides freeze equally it changes nothing about who acts

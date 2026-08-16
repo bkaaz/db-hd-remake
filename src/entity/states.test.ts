@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { scaledHitstun } from "../combat/scaling";
+import { chainLinks, framesOf, startupOf } from "../combat/chains";
 import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
@@ -455,8 +455,7 @@ describe("the arithmetic of a blow, against the data we ship", () => {
    */
   const hitstun = (attack: string): number => states[attack].hitstun ?? attributes.hitstun;
 
-  const frames = (anim: string): number =>
-    (anims[anim]?.steps ?? []).reduce((n, s) => n + s.dur, 0);
+  const frames = (anim: string): number => framesOf(anims[anim]);
   const reach = (anim: string): number =>
     Math.max(
       0,
@@ -465,12 +464,13 @@ describe("the arithmetic of a blow, against the data we ship", () => {
       ),
     );
 
-  /** Every transition that continues a chain: source state → target state. */
-  const links = Object.entries(states).flatMap(([from, def]) =>
-    (def.transitions ?? [])
-      .filter((t) => Array.isArray(t.when) && t.when.includes("cancelable"))
-      .map((t) => [from, t.to] as const),
-  );
+  /**
+   * Every cancel in the file, with its arithmetic already done — by the same
+   * function `npm run chains` prints, so the two cannot drift apart by a frame
+   * and leave nobody knowing which one is lying.
+   */
+  const chains = chainLinks({ initial: "idle", states }, anims, attributes.hitstun);
+  const links = chains.map((l) => [l.from, l.to] as const);
 
   it("finds the chains that exist, so this suite cannot pass by testing nothing", () => {
     expect(links.length).toBeGreaterThan(0);
@@ -508,34 +508,11 @@ describe("the arithmetic of a blow, against the data we ship", () => {
    * shortens each successive hitstun — a string that holds at its opener can
    * still fall apart at its third link, which is exactly what happened.
    */
-  const startup = (anim: string): number => {
-    let before = 0;
-    for (const step of anims[anim]?.steps ?? []) {
-      if ((step.boxes ?? []).some((b) => b.type === "hit")) return before;
-      before += step.dur;
-    }
-    return before;
-  };
+  const startup = (anim: string): number => startupOf(anims[anim]);
 
-  /**
-   * Blows landed before this link fires. A state can be reached by more than one
-   * route — a light feeds into the middle of the kick string — so it is the
-   * **longest** way in that matters: that is where scaling has taken the most
-   * off the hitstun.
-   */
-  const depth = (state: string, seen: string[] = []): number => {
-    if (seen.includes(state)) return 0; // authored loop: stop rather than hang
-    const parents = links.filter(([, to]) => to === state).map(([from]) => from);
-    return parents.length === 0 ? 0 : 1 + Math.max(...parents.map((p) => depth(p, [...seen, state])));
-  };
-
-  it.each(links)("%s still has %s helpless when the next blow lands", (from, to) => {
-    const reaction = states[states[from].onHit ?? ""];
-    if (!reaction?.vel) return; // a knockdown: helplessness is not the question
-    const attack = states[from];
-    const latest = attack.cancelBy ?? frames(attack.anim);
-    const worst = latest - startup(attack.anim) + startup(states[to].anim);
-    expect(worst).toBeLessThanOrEqual(scaledHitstun(hitstun(from), depth(from)));
+  it.each(chains)("$from still has $to helpless when the next blow lands", (link) => {
+    if (link.launcher) return; // a knockdown: helplessness is not the question
+    expect(link.margin).toBeGreaterThanOrEqual(0);
   });
 
   /**
