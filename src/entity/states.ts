@@ -110,6 +110,22 @@ export interface StateDef {
    * helpless in the air lasts as long as the fall.
    */
   hitstun?: number;
+
+  /**
+   * The last frame of this attack at which it may be **cancelled** into the
+   * next link of a chain, counted from entering the state and not counting the
+   * frames a hit pause froze — the same clock the defender's hitstun runs on.
+   *
+   * Without it the cancel window is the whole animation, which ties two things
+   * that want opposite lengths: recovery should be long enough to read and to
+   * punish, while the window should be short enough that the *latest* possible
+   * cancel still lands inside the hitstun the blow gave (`combat.md`). One
+   * number cannot be both, and the string quietly stops being a combo.
+   *
+   * Absent means "until the animation ends", which is what every attack did
+   * before this existed.
+   */
+  cancelBy?: number;
   /**
    * Effect entity spawned where this state's attack connects. Same idea as
    * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
@@ -235,7 +251,7 @@ export const TRIGGERS = [
   "falling",
   "nearGround",
   "landed",
-  "hitConfirmed",
+  "cancelable",
 ] as const;
 
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
@@ -286,7 +302,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "landed":
       value = signals.landed;
       break;
-    case "hitConfirmed":
+    case "cancelable":
+      // Connected *and* still early enough to cancel — the state machine
+      // narrows the signal before it gets here, see StateMachine.update.
       value = signals.hitConfirmed;
       break;
     default:
@@ -384,6 +402,12 @@ export class StateMachine {
    */
   pressSpent: string | null = null;
 
+  /**
+   * Frames this state has run. Only used by `cancelBy`, and counted here rather
+   * than in the entity so the rule can be tested without a renderer.
+   */
+  private elapsed = 0;
+
   constructor(private readonly file: StatesFile) {
     this.current = file.states[file.initial] ? file.initial : Object.keys(file.states)[0] ?? "";
   }
@@ -401,6 +425,7 @@ export class StateMachine {
   force(name: string): boolean {
     if (!this.file.states[name]) return false;
     this.current = name;
+    this.elapsed = 0;
     return true;
   }
 
@@ -411,8 +436,12 @@ export class StateMachine {
    * @returns the new state's name if it changed, else null.
    */
   update(input: InputSnapshot, signals: Signals): string | null {
+    this.elapsed++;
+    // A connection the window has closed on is no longer a cancel, so the
+    // signal is narrowed once, here, rather than at every transition.
+    const now: Signals = { ...signals, hitConfirmed: signals.hitConfirmed && this.cancelable };
     for (const t of this.def.transitions ?? []) {
-      if (!fires(t.when, input, signals)) continue;
+      if (!fires(t.when, input, now)) continue;
       if (!this.file.states[t.to]) {
         if (!warned.has(t.to)) {
           warned.add(t.to);
@@ -423,9 +452,16 @@ export class StateMachine {
       if (t.to === this.current) return null;
       this.current = t.to;
       this.pressSpent = pressIn(t.when);
+      this.elapsed = 0;
       return this.current;
     }
     return null;
+  }
+
+  /** Still inside this attack's cancel window — always true when it has none. */
+  private get cancelable(): boolean {
+    const by = this.def.cancelBy;
+    return by === undefined || this.elapsed <= by;
   }
 }
 
@@ -560,6 +596,9 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
       errors.push(`${where}: "hitstop" must be a number of game frames, 0 or more`);
     }
 
+    if (def.cancelBy !== undefined && (typeof def.cancelBy !== "number" || def.cancelBy < 0)) {
+      errors.push(`${where}: "cancelBy" must be a frame of this state, 0 or more`);
+    }
     if (def.hitstun !== undefined && (typeof def.hitstun !== "number" || def.hitstun < 0)) {
       errors.push(`${where}: "hitstun" must be a number of game frames, 0 or more`);
     }

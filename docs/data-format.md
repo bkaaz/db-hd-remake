@@ -218,6 +218,14 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   is taken, how long the game stops, what it looks like, what it costs and now
   how long it holds. See "Attacks and hitstun" below for what it owns and what
   it moves.
+- **`cancelBy`** — on an **attack** state: the last frame at which it may be
+  cancelled into the next link, counted from entering the state and ignoring the
+  frames a hit pause froze. Absent means "until the animation ends", which is
+  what every attack did before the field existed (added 2026-08-16). It is what
+  lets recovery be long — readable, and punishable on a whiff — while the window
+  stays short enough that even the *latest* cancel lands inside the hitstun the
+  blow gave. The arithmetic, and the combo it silently broke, are in
+  `combat.md`.
 - **`invulnerable`** — on any state: blows pass straight through. Not a hit for
   zero damage — **nothing connects**: no spark, no noise, the combo does not
   grow, and the attacker's swing is not spent, so the same active frames may
@@ -269,7 +277,7 @@ rules**; the entity is a state machine and the engine runs it every game frame.
     them, all of which have to hold**:
 
     ```jsonc
-    { "when": ["hitConfirmed", "pressed:medium"], "to": "kick_high" }
+    { "when": ["cancelable", "pressed:medium"], "to": "kick_high" }
     ```
 
     A chain link needs two facts at once — the attack connected *and* a button
@@ -300,10 +308,11 @@ rules**; the entity is a state machine and the engine runs it every game frame.
       finishes as the feet arrive.
     - `landed` — the entity touched the ground (latched until the state
       changes).
-    - `hitConfirmed` — the attack this state is playing has **connected**:
-      landed or been blocked, never merely swung. This is what a chain link
-      hangs off, and why swinging at air ends a string instead of continuing
-      it. Cleared on entering any state, so each link has to connect on its own.
+    - `cancelable` — the attack this state is playing has **connected** —
+      landed or been blocked, never merely swung — **and the cancel window is
+      still open** (`cancelBy`, below). This is what a chain link hangs off, and
+      why swinging at air ends a string instead of continuing it. Cleared on
+      entering any state, so each link has to connect on its own.
   - `to` — target state.
 
 **Jump variants without a conjunction.** "Up **and** forward" is a conjunction,

@@ -27,6 +27,9 @@ The project owner wants to go **slowly and deliberately**:
   comments, commits, and docs are in **English**.
 - **Record settled decisions** in `docs/decisions.md` (newest first), and keep
   the affected doc (`data-format.md`, `entity-editor.md`, …) in sync.
+- **`docs/glossary.md` is one line per term plus a pointer** — never a second
+  copy of the design doc. A term whose field or file is renamed gets renamed
+  there in the same change; a new concept gets one line, not a section.
 - **The queue is `docs/plan.md`, and finished items are DELETED from it** — in
   the same change that finishes them, not later. It is the *only* file that
   lists work to do; the reasoning goes to `decisions.md`, the timing is in git.

@@ -17,6 +17,8 @@
  * Pure apart from `loadMode`: the shape and the checking are testable in Node.
  */
 
+import type { Script } from "./dummy";
+
 /** Where a fighter starts, as a fraction of the stage: 0 the left wall, 1 the right. */
 export interface Placement {
   at?: number;
@@ -24,7 +26,8 @@ export interface Placement {
 
 export interface DebugMode {
   p1?: Placement;
-  p2?: Placement;
+  /** The dummy: where it stands, and the timeline it plays — see ./dummy.ts. */
+  p2?: Placement & Script;
   /** Initial value only — `B` still toggles the boxes afterwards. */
   boxes?: boolean;
   /** Initial value only — `D` still toggles the state readout. */
@@ -74,14 +77,21 @@ function check(mode: DebugMode, index: number): DebugMode | string {
   return mode;
 }
 
+/** How many modes the file holds — what `M` needs in order to wrap around. */
+export function countOf(file: unknown): number {
+  const modes = (file as DebugModes | null)?.modes;
+  return Array.isArray(modes) ? modes.length : 0;
+}
+
 /**
  * Read `data/debug.json` and pick a mode from it. Served by the dev plugin, and
  * read on every scene build so that editing a mode costs a reload rather than a
  * restart of a dev server that has been up for days.
  */
-export async function loadMode(index: number): Promise<DebugMode | string> {
+export async function loadMode(index: number): Promise<{ mode: DebugMode; count: number } | string> {
   const file = await fetch("/api/debug")
     .then((res) => (res.ok ? res.json() : null))
     .catch(() => null);
-  return modeAt(file, index);
+  const mode = modeAt(file, index);
+  return typeof mode === "string" ? mode : { mode, count: countOf(file) };
 }

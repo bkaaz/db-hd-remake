@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { modeAt, NO_MODE } from "./mode";
+import { countOf, modeAt, NO_MODE } from "./mode";
 
 const file = {
   modes: [{}, { p1: { at: 0.8 }, p2: { at: 0.97 }, boxes: true }],
@@ -37,6 +37,12 @@ describe("modeAt", () => {
     // inside, so 9.5 would look like the mode having done nothing.
     expect(modeAt({ modes: [{ p2: { at: 9.5 } }] }, 0)).toContain("between 0 and 1");
     expect(modeAt({ modes: [{ p1: { at: -0.2 } }] }, 0)).toContain("between 0 and 1");
+  });
+
+  it("counts the modes, which is what M wraps around", () => {
+    expect(countOf(file)).toBe(2);
+    // No file is no modes, so stepping has nothing to step to.
+    expect(countOf(null)).toBe(0);
   });
 
   it("takes both fighters at the same place — that is how a corner is written", () => {

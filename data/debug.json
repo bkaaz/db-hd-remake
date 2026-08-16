@@ -1,6 +1,8 @@
 {
   "modes": [
     {},
-    { "p1": { "at": 0.8 }, "p2": { "at": 0.97 }, "boxes": true }
+    { "p1": { "at": 0.8 }, "p2": { "at": 0.97 }, "boxes": true },
+    { "p2": { "does": ["medium 12", "medium 12", "medium 12", "medium 12", 90] } },
+    { "p2": { "does": ["medium 24"] } }
   ]
 }

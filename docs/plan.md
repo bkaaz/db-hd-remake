@@ -64,16 +64,45 @@ mode is a list of differences, not a description of the world. Shape:
   `always` to start with, `afterFirstHit` when combo work asks for it.
 - `boxes` and `debug` set the *initial* value only; `B` and `D` still toggle.
 
-The file, `mode=N`, the start positions and the overlay defaults landed
-2026-08-16 (`src/debug/mode.ts`, `/api/debug`). Remaining slices: **(3)** the
-scripted dummy — `does` and `guard` replacing the rotation in
-`TrainingFixture`, with tests, and `src/training/` becoming `src/debug/`;
-**(4)** the recording writes the mode's contents on its first line — the numbers
-mean nothing on their own, because mode 0 is edited freely and two logs a week
-apart would both call themselves "0".
+The file, `mode=N`, the start positions, the overlay defaults and the scripted
+dummy all landed 2026-08-16 (`src/debug/`, `/api/debug`). What is left:
+
+- **The recording writes the mode's contents on its first line.** The number
+  means nothing on its own, because mode 0 is edited freely and two logs a week
+  apart would both call themselves "0".
 
 *Done when:* a recording can be reproduced from its own first line, and P2 can
 be told to block without touching any code.
+
+## Then: the chain shape, and a table that authors an attack
+
+**Stop tuning attacks one at a time.** The engine has everything it needs —
+hitstun on the blow, `cancelBy`, both scalings, a test that does the worst-case
+arithmetic — and the four attacks that exist are placeholders whose numbers were
+fitted to each other by hand, twice. The next twenty must come out of a table.
+
+Two decisions, in this order, because the first sets the second:
+
+1. **The shape of a string.** `combat.md` says L → M → H → S, cancel upward
+   only; the data says `medium → medium → medium → medium`, which is off-doc and
+   is what broke the arithmetic — `kick_low` is the *fourth* blow, where hitstun
+   scaling has cut 22 down to 15 and the cancel window has nowhere to fit. The
+   owner settled half of it on 2026-08-16: a light **feeds the middle** of the
+   string (`punch → kick_thrust`), so an opener does not add a rung. What is
+   still open is whether the kick string itself stays four medium links.
+2. **One row per strength** — start-up / active / recovery / `hitstun` /
+   `cancelBy` / damage / hitstop / reaction — so authoring an attack is "these
+   sprites, this strength" and the numbers follow. `npm run anim` already
+   derives boxes and timing from the sprites and is where a `--kind` belongs.
+
+*Known wrong until this lands*, and deliberately not patched per-move
+(`combat.md`): `kick_high` and `uppercut` have no `hitstun`, so the two heaviest
+blows hold less than the jab; and raising it also lengthens their knockback,
+which is already further than anything reaches.
+
+*Done when:* every attack's frame data comes from the table, the test passes at
+each link's own depth, and adding an attack does not require this conversation
+again.
 
 ## Then: launch scaling, the last of the three
 
@@ -257,6 +286,12 @@ Two gaps the catalogue turned up and neither is in `combat.md`: **a throw**
 (137–139, and it is the honest answer to blocking costing nothing) and **a turn**
 (153 is the only front-facing fighting-form frame, so an animated turn is
 possible where today facing flips in one frame).
+
+**Every attack in the new set needs a `cancelBy`** — the field landed 2026-08-16
+and only the three chain kicks use it. Without one the cancel window is the whole
+animation, which is what silently stopped the medium string being a combo; the
+arithmetic is in `combat.md` and a test in `states.test.ts` checks it against the
+shipped data.
 
 *Done when:* every slot in the L/M/H/S table names an animation, and what is
 left over is either assigned to a special or explicitly parked.

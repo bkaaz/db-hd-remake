@@ -22,8 +22,16 @@ import { startRecording, stopRecording } from "../log";
 export class Keyboard {
   /** Draw hit/hurt/push boxes over the fighters. Toggled with B. */
   showBoxes = true;
-  /** Let the training fixture throw its attacks. Toggled with T. */
+  /** Let the debug dummy play its timeline. Toggled with T. */
   dummyAttacks = false;
+  /**
+   * Step to the next debug mode, pressed with M.
+   *
+   * An edge rather than a toggle, and taken by the scene rather than read: it
+   * asks for a rebuild, and a request that stayed true for a second frame would
+   * ask twice.
+   */
+  private modeAsked = false;
   /** Print what the engine thinks for both fighters. Toggled with D. */
   showDebug = true;
   /** Whether a gameplay recording is running. Started and stopped with L. */
@@ -55,6 +63,13 @@ export class Keyboard {
     return input;
   }
 
+  /** True once per press of M. Taking it spends it, like an attack button. */
+  takeModeStep(): boolean {
+    const asked = this.modeAsked;
+    this.modeAsked = false;
+    return asked;
+  }
+
   private press(e: KeyboardEvent): void {
     const direction = DIRECTION_KEYS[e.key];
     if (direction) {
@@ -68,7 +83,8 @@ export class Keyboard {
       if (!e.repeat) this.armed[attack] = true;
       return;
     }
-    if (key === "t") this.dummyAttacks = !this.dummyAttacks;
+    if (key === "m") this.modeAsked = !e.repeat;
+    else if (key === "t") this.dummyAttacks = !this.dummyAttacks;
     else if (key === "b") this.showBoxes = !this.showBoxes;
     else if (key === "d") this.showDebug = !this.showDebug;
     else if (key === "l") this.toggleRecording();

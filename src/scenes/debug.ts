@@ -7,9 +7,9 @@ import { Effects } from "../fx/effects";
 import type { Keyboard } from "../input/keyboard";
 import { Fighters } from "../match/fighters";
 import type { Scene, SceneContext, SceneRequest } from "../scene";
+import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
 import { Stage } from "../stage";
-import { TrainingFixture } from "../training/fixture";
 import { tickLog } from "../log";
 import { DebugPanel } from "../ui/debug";
 import { Hud, showMessage } from "../ui/hud";
@@ -33,11 +33,14 @@ const SCALE = 3;
  * lines in the project, kept in one place on purpose.
  */
 export class DebugScene implements Scene {
-  private readonly fixture = new TrainingFixture();
-
   private constructor(
     private readonly stage: Stage,
     private readonly fighters: Fighters,
+    /** The second body's timeline — see src/debug/dummy.ts. */
+    private readonly dummy: Dummy,
+    /** What built this scene, and how many modes there are to step through. */
+    private readonly req: { p1: string; p2: string; mode: number },
+    private readonly modes: number,
     private readonly effects: Effects,
     private readonly hud: Hud,
     private readonly panel: DebugPanel,
@@ -51,8 +54,12 @@ export class DebugScene implements Scene {
   ): Promise<Scene | string> {
     // First, so a mode that does not exist says so instead of quietly running
     // the scene as if nothing had been asked for.
-    const mode = await loadMode(req.mode);
-    if (typeof mode === "string") return mode;
+    const loaded = await loadMode(req.mode);
+    if (typeof loaded === "string") return loaded;
+    const { mode, count } = loaded;
+
+    const dummy = Dummy.from(mode.p2);
+    if (typeof dummy === "string") return `mode ${req.mode}: ${dummy}`;
 
     const def = await loadEntityDef(req.p1).catch(() => null);
     if (!def) return `Could not load "${req.p1}". Save it from the entity editor first.`;
@@ -76,20 +83,38 @@ export class DebugScene implements Scene {
     // The mode sets what the overlays *start* as; B and D still toggle them.
     if (mode.boxes !== undefined) ctx.keyboard.showBoxes = mode.boxes;
     if (mode.debug !== undefined) ctx.keyboard.showDebug = mode.debug;
+    // Writing a timeline is asking for it to run, so the dummy starts switched
+    // on rather than waiting for `T` — which still stops and restarts it.
+    if (mode.p2?.does) ctx.keyboard.dummyAttacks = true;
     stage.onResize(() => fighters.fit(stage));
 
     const noStates = !def.states;
     if (noStates) notices.push(showMessage(ctx.app, `${def.name}: no states.json`, true));
     const hud = new Hud(ctx.app, { name: def.name, belowMessage: noStates });
 
-    return new DebugScene(stage, fighters, effects, hud, new DebugPanel(ctx.app), notices);
+    return new DebugScene(
+      stage,
+      fighters,
+      dummy,
+      req,
+      count,
+      effects,
+      hud,
+      new DebugPanel(ctx.app),
+      notices,
+    );
   }
 
   /** One game frame, in the order the parts of it have to happen. */
   step(keyboard: Keyboard): SceneRequest | null {
     this.fighters.update(
       keyboard.frame(),
-      this.fixture.input(keyboard.dummyAttacks),
+      this.dummy.input({
+        on: keyboard.dummyAttacks,
+        facing: this.fighters.opponent?.facing ?? -1,
+        // Read before the bodies move, which is the freeze this frame will use.
+        frozen: this.fighters.frozen,
+      }),
       this.stage.bounds,
     );
     this.fighters.pushApart(this.stage.bounds);
@@ -97,7 +122,19 @@ export class DebugScene implements Scene {
     this.fighters.note();
     tickLog();
     this.effects.update(this.fighters.frozen, this.stage.bounds);
-    return null;
+    return this.nextMode(keyboard);
+  }
+
+  /**
+   * `M` steps to the next mode by asking to be rebuilt, which is the machinery
+   * the character select already uses — so the address bar always says which
+   * setup is running and can be copied straight into a bug report. Everything
+   * reloads with it: health, positions and the timeline all start over, which
+   * for a written-down situation is the point rather than the price.
+   */
+  private nextMode(keyboard: Keyboard): SceneRequest | null {
+    if (!keyboard.takeModeStep() || this.modes < 2) return null;
+    return { ...this.req, scene: "debug", mode: (this.req.mode + 1) % this.modes };
   }
 
   render(keyboard: Keyboard): void {

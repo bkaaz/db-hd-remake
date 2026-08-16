@@ -303,6 +303,94 @@ moment, for the right reason. A string is then an ordinary path through the
 state machine — attack state, `pressed:X`, next attack state — which is the
 shape `states.json` already has.
 
+### How an attack is shaped, and what is still guessed
+
+Two rules now hold for **every** attack in `data/entities/goku/` (2026-08-16):
+
+- **The hit box is out for 4 frames.** It used to be out for as long as the
+  drawing was held — 12 frames on the uppercut and the crouching kick, 6 on the
+  heavy — which is the drawing setting frame data. Trimming changed no attack's
+  total length: only the window in which it can connect.
+- **The strike pose is held afterwards, without a hit box.** Recovery is
+  supposed to be visible: it is what a whiff looks like and what makes it
+  punishable. Before this, a blow that missed showed the pose for four frames
+  and was gone — hitstop had been hiding it, because a blow that *lands* holds
+  its pose for ten.
+
+**Not yet chosen, and knowingly wrong until it is** — these wait for the chain
+shape and the per-strength table (`plan.md`), because picking them per-move is
+how you end up picking them twice:
+
+- `kick_high` and `uppercut` name **no `hitstun` at all** and fall back to the
+  entity's 12, so the two heaviest blows hold their victim *less* than the jab's
+  17. The hierarchy is upside down.
+- Raising them is not one number: `hurt_heavy` moves at 5.2 px per frame of
+  hitstun, so a heavy that holds longer also throws the defender further than
+  anything in the game can reach.
+- Only `punch` and the three chain kicks have a `cancelBy`. Every attack in the
+  new set needs one.
+
+**The light feeds the *middle* of the kick string** (owner, 2026-08-16): `A`
+then `Z` gives `punch → kick_thrust`, not `punch → kick_mid`. The jab takes the
+place of the string's first kick rather than being added in front of it, so
+`A Z Z Z` is four blows and not five — and the ladder does not get a rung deeper
+every time a new opener is added. The depth test in `states.test.ts` measures
+the **longest** route into a link for exactly this reason.
+
+### The rule for authoring a string, and the field it is waiting for
+
+**A link in a string is a true combo only if**
+
+> hitstun of the blow ≥ (latest frame the cancel may fire) + (start-up of the
+> next attack), both counted from the frame the blow landed.
+
+Everything on the right is the *worst* case, because the player decides when to
+press: cancel late and the next attack starts late. Hitstop does not enter the
+arithmetic — it freezes both fighters equally.
+
+**Today "latest" means the end of the animation**, since a cancel may fire any
+time after the hit. So the length of the attack *is* the cancel window, and that
+makes the attack's own frames the first place to look when a string will not
+combo.
+
+Measured 2026-08-16 on the medium string, and worth keeping because it is the
+whole lesson: `kick_mid` ran 24 frames with a **12-frame active step** — a
+hitbox out for a fifth of a second, where the genre uses three or four. That one
+step was most of the cancel window: a cancel on the last frame put the next blow
+31 frames after the first, which no sane hitstun on a medium can cover. With
+hitstun 18 the recording showed the second and third blows landing on a defender
+who had just stood up — `1 hits` at the end, no scaling applied, while the
+string still *looked* like it was chaining.
+
+The first fix was in the animation, not in the hitstun: the three chain kicks
+are **4 active frames** now instead of twelve. Trimming alone made them 16
+frames long, and then the whiff read as a flicker — hitstop had been hiding it,
+because a blow that lands holds its pose for ten frames and a blow that misses
+holds nothing.
+
+That is the moment the field earned itself, so **`cancelBy` exists** (2026-08-16,
+`states.json`): the last frame at which an attack may be cancelled. The pose can
+now hang for as long as it looks right — the kicks run 22 frames again, with the
+leg out and no hitbox — while the window stays where it was. Recovery being long
+is a *feature*: it is what makes a whiff punishable.
+
+The three kicks are `cancelBy: 14` against a hit that lands on frame 9, so the
+worst case is five frames of window plus eight of start-up — fourteen frames,
+against a hitstun of 22 that scaling leaves at 18 by the third link. A test in
+`states.test.ts` does that arithmetic against the shipped data, at each link's
+own depth in the chain, so the next set of numbers cannot quietly break it.
+
+Two things that follow, and are easy to miss:
+
+- **Scaling makes later links stricter.** The curve shortens each successive
+  hitstun, so a window that holds for the first link may not hold for the
+  fourth. That is the intended feel, not a defect — but it means a string
+  should be checked at its *end*, not at its opener.
+- **A string that drops is invisible.** The blows still connect and the
+  animation still chains; the only tell is the combo counter resetting and the
+  damage not scaling. Which is exactly what a recording shows and the screen
+  does not.
+
 ## Open
 
 - **The resource.** Shared health/Ki bar (what the original did) or separate.

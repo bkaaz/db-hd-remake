@@ -2,6 +2,83 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-16 — Four active frames, and the pose is held afterwards
+
+- **A light feeds the middle of the kick string**, not its front: `A Z` is
+  `punch → kick_thrust`. Adding an opener in front of a four-link string would
+  make it five blows deep, and the fifth is where hitstun scaling has taken 40%
+  off and the cancel window stops fitting. The arithmetic test now measures a
+  link at the **longest** route into it, since a state can be entered from more
+  than one place.
+
+- **Applied to every attack**, not just the three that were being debugged: the
+  hit box is out for 4 frames and the strike pose is then held with no hit box.
+  No attack changed length, so no frame advantage moved — the only difference is
+  when a blow can connect and what a whiff looks like.
+- **It is the same lesson twice**: a drawing must not set frame data, and a
+  whiff must be readable. Hitstop had been hiding the second one, because a blow
+  that lands freezes its pose for ten frames and a blow that misses freezes
+  nothing.
+- **`punch` got `cancelBy: 10`**; the heavies got none because nothing chains
+  out of them yet.
+- **What was left knowingly wrong is written down rather than guessed**
+  (`combat.md`, `plan.md`): the two heaviest attacks still hold their victim
+  less than the jab does. Fixing that is not one number — their knockback is
+  hitstun times 5.2 px — so it waits for the per-strength table rather than
+  being invented per move. A future session should read it there and not
+  rediscover it.
+
+## 2026-08-16 — `cancelBy`: recovery and the cancel window stop being one number
+
+- **The field exists** (`StateDef.cancelBy`, `src/entity/states.ts`): the last
+  frame at which an attack may be cancelled into the next link, counted in
+  frames the state has actually run — the same clock the defender's hitstun uses,
+  so a hit pause cancels out of both sides.
+- **What forced it was the art, not the arithmetic.** Trimming the 12-frame
+  active steps to 4 made the strings combo, and made a whiff unreadable: hitstop
+  had been hiding it, since a blow that lands holds its pose for ten frames and a
+  blow that misses holds nothing. Holding the pose meant longer recovery, longer
+  recovery meant a wider cancel window, and the combo broke again. One number
+  cannot be both, which is exactly the field's argument.
+- **Recovery being long is a feature** — it is what makes a whiff punishable —
+  so the kicks are 22 frames again, with 4 active, the leg held out with no
+  hitbox, and `cancelBy: 14` against a hit that lands on frame 9.
+- **The trigger is now `cancelable`, not `hitConfirmed`.** The state machine
+  narrows the signal in one place, so a chain asks the honest question: not
+  "did it connect" but "may I still cancel". The entity keeps reporting the bare
+  fact; the rule lives with the rest of the rules.
+- **The machine counts the frames, not the entity**, so the window can be tested
+  in Node. Four tests cover it, and the data test in `states.test.ts` now does
+  the worst-case sum against the shipped numbers at **each link's own depth in
+  the chain** — because scaling shortens hitstun as the string runs, which is
+  how the third link broke while the first two held.
+- **An attack without `cancelBy` is cancellable until its animation ends**,
+  which is what every attack did before this existed. Only the three chain kicks
+  set one so far.
+
+## 2026-08-16 — A string combos because the attack is short, not because the hitstun is long
+
+- **The rule is written down** (`combat.md`): a link is a true combo only if the
+  hitstun of the blow covers the *latest* cancel plus the next attack's
+  start-up. The player picks when to press, so only the worst case counts.
+- **Without a cancel window, the attack's own length is the window.** That makes
+  the animation the first place to look, not the hitstun — a fact that was not
+  obvious from either file on its own, and cost two recordings to find.
+- **The chain kicks had 12-frame active steps.** A hitbox out for a fifth of a
+  second, where the genre uses three or four; that one step was most of the
+  window. Trimmed to 4, the attacks run 16 frames instead of 24 and hitstun 22
+  covers every cancel with room to spare — including the third link, where
+  scaling has already shortened it.
+- **The alternative was hitstun 26**, arrived at by measurement and rejected: it
+  buys the same combo by making the game floatier, which is the wrong direction
+  for a fighter that already reads as slow.
+- **The price is admitted rather than hidden:** a short attack is less
+  punishable on a whiff. Decoupling that from the cancel window is what the
+  missing field is for, and it lands with the moveset rebuild.
+- **A dropped string is invisible on screen** — the blows connect, the animation
+  chains, and only the combo counter and the unscaled damage say otherwise. This
+  is the kind of question a recording answers and a screenshot cannot.
+
 ## 2026-08-16 — The screen we have is `debug`, and the fight is still ahead
 
 - **`FightScene` → `DebugScene`, `?scene=fight` → `?scene=debug`.** What exists
@@ -27,6 +104,23 @@ Decisions that are settled. Newest first.
 - **The dummy is given a timeline, not a policy**, and never a condition: an
   action name or a number of frames of nothing. A dummy that can say "if he
   blocked, then…" is a second state machine beside `states.json`.
+- **A step holds its directions and edges its buttons** (`src/debug/dummy.ts`):
+  `"back 30"` is half a second of holding back, `"light 30"` is one press and
+  then twenty-nine frames of the button being down without being pressed again.
+  Anything else would have the dummy mashing sixty times a second. `fwd`/`back`
+  are resolved against the dummy's own facing, because the file should read the
+  way the fight does while the world knows only left and right.
+- **The dummy's clock stops when its body is frozen.** Found on the first
+  recording: a hit pause holds the body for ten frames while the world keeps
+  counting, so a timeline that ran through it drifted ten frames per blow and
+  the same script meant one thing on a whiff and another in a combo. A dummy
+  exists to be repeatable, so its steps are counted in frames the body actually
+  lives through.
+- **`M` steps to the next mode by rebuilding the scene**, not by mutating one:
+  `step()` returns a request and `main.ts` does what it already does for the
+  character select, so the address bar keeps saying what is running and can be
+  copied into a bug report. Health, positions and the timeline all restart —
+  for a written-down situation that is the point, not the price.
 
 ## 2026-08-16 — A blow you are still taking cannot be blocked
 

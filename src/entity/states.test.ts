@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { scaledHitstun } from "../combat/scaling";
 import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
@@ -105,13 +106,13 @@ describe("validateStates", () => {
 
   it("accepts a `when` of several triggers", () => {
     const f = machine();
-    f.states.idle.transitions = [{ when: ["hitConfirmed", "pressed:light"], to: "walk_fwd" }];
+    f.states.idle.transitions = [{ when: ["cancelable", "pressed:light"], to: "walk_fwd" }];
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
   it("reports an unknown trigger inside a list, not just a lone one", () => {
     const f = machine();
-    f.states.idle.transitions = [{ when: ["hitConfirmed", "pressed:x"], to: "walk_fwd" }];
+    f.states.idle.transitions = [{ when: ["cancelable", "pressed:x"], to: "walk_fwd" }];
     expect(validateStates(f, ANIMS).errors).toHaveLength(1);
     expect(validateStates(f, ANIMS).errors[0]).toMatch(/unknown trigger "pressed:x"/);
   });
@@ -467,7 +468,7 @@ describe("the arithmetic of a blow, against the data we ship", () => {
   /** Every transition that continues a chain: source state → target state. */
   const links = Object.entries(states).flatMap(([from, def]) =>
     (def.transitions ?? [])
-      .filter((t) => Array.isArray(t.when) && t.when.includes("hitConfirmed"))
+      .filter((t) => Array.isArray(t.when) && t.when.includes("cancelable"))
       .map((t) => [from, t.to] as const),
   );
 
@@ -496,10 +497,16 @@ describe("the arithmetic of a blow, against the data we ship", () => {
    * within range of it.
    *
    * From the blow landing, both fighters freeze for the same hit pause, so it
-   * cancels out of both sides of the sum. The attacker is then free one frame
-   * later and spends the next link's start-up getting its box out; the defender
-   * is helpless for as long as the reaction lasts. Hence `1 + start-up` against
-   * the reaction's length, with no hitstop in it.
+   * cancels out of both sides of the sum. What is left is the **worst case**,
+   * because the player picks when to press: the latest frame the cancel may
+   * fire, plus the next attack's start-up, against the hitstun this blow gave.
+   * `cancelBy` is that latest frame; without one it is the end of the animation,
+   * which is how a string can look like it chains while the defender stands up
+   * between blows (`combat.md`, 2026-08-16).
+   *
+   * And it is measured **at the link's own depth in the chain**, because scaling
+   * shortens each successive hitstun — a string that holds at its opener can
+   * still fall apart at its third link, which is exactly what happened.
    */
   const startup = (anim: string): number => {
     let before = 0;
@@ -510,10 +517,25 @@ describe("the arithmetic of a blow, against the data we ship", () => {
     return before;
   };
 
+  /**
+   * Blows landed before this link fires. A state can be reached by more than one
+   * route — a light feeds into the middle of the kick string — so it is the
+   * **longest** way in that matters: that is where scaling has taken the most
+   * off the hitstun.
+   */
+  const depth = (state: string, seen: string[] = []): number => {
+    if (seen.includes(state)) return 0; // authored loop: stop rather than hang
+    const parents = links.filter(([, to]) => to === state).map(([from]) => from);
+    return parents.length === 0 ? 0 : 1 + Math.max(...parents.map((p) => depth(p, [...seen, state])));
+  };
+
   it.each(links)("%s still has %s helpless when the next blow lands", (from, to) => {
     const reaction = states[states[from].onHit ?? ""];
     if (!reaction?.vel) return; // a knockdown: helplessness is not the question
-    expect(1 + startup(states[to].anim)).toBeLessThanOrEqual(hitstun(from));
+    const attack = states[from];
+    const latest = attack.cancelBy ?? frames(attack.anim);
+    const worst = latest - startup(attack.anim) + startup(states[to].anim);
+    expect(worst).toBeLessThanOrEqual(scaledHitstun(hitstun(from), depth(from)));
   });
 
   /**
@@ -603,15 +625,72 @@ describe("StateMachine.pressSpent", () => {
   });
 
   it("finds the button inside a conjunction", () => {
-    const sm = new StateMachine(withAttack(["hitConfirmed", "pressed:light"]));
+    const sm = new StateMachine(withAttack(["cancelable", "pressed:light"]));
     sm.update(ATTACK, { ...QUIET, hitConfirmed: true });
     expect(sm.current).toBe("punch");
     expect(sm.pressSpent).toBe("light");
   });
 });
 
+describe("cancelBy closes the window a chain fires in", () => {
+  /** An attack that may only be cancelled in its first three frames. */
+  function windowed(): StatesFile {
+    const f = withAttack();
+    f.states.punch = {
+      anim: "punch",
+      cancelBy: 3,
+      transitions: [
+        { when: ["cancelable", "pressed:medium"], to: "kick" },
+        { when: "animEnd", to: "idle" },
+      ],
+    };
+    f.states.kick = { anim: "kick", transitions: [] };
+    return f;
+  }
+  const CONNECTED = { ...QUIET, hitConfirmed: true };
+  const MEDIUM = { ...NONE, medium: true };
+
+  it("lets the cancel through while the window is open", () => {
+    const sm = new StateMachine(windowed());
+    sm.update(ATTACK, QUIET); // idle -> punch
+    sm.update(MEDIUM, CONNECTED);
+    expect(sm.current).toBe("kick");
+  });
+
+  it("refuses it afterwards, however long the attack still plays", () => {
+    // The whole point: recovery may be long enough to read and to punish
+    // without the cancel window growing with it.
+    const sm = new StateMachine(windowed());
+    sm.update(ATTACK, QUIET);
+    for (let i = 0; i < 5; i++) sm.update(NONE, CONNECTED);
+    sm.update(MEDIUM, CONNECTED);
+    expect(sm.current).toBe("punch");
+  });
+
+  it("counts from entering the state, so every attempt gets the same window", () => {
+    const sm = new StateMachine(windowed());
+    sm.update(ATTACK, QUIET);
+    for (let i = 0; i < 9; i++) sm.update(NONE, CONNECTED);
+    sm.update(NONE, { ...CONNECTED, animEnded: true }); // punch -> idle
+    expect(sm.current).toBe("idle");
+    sm.update(ATTACK, QUIET); // idle -> punch again
+    sm.update(MEDIUM, CONNECTED);
+    expect(sm.current).toBe("kick");
+  });
+
+  it("leaves an attack without one cancellable to the end", () => {
+    const f = windowed();
+    delete f.states.punch.cancelBy;
+    const sm = new StateMachine(f);
+    sm.update(ATTACK, QUIET);
+    for (let i = 0; i < 20; i++) sm.update(NONE, CONNECTED);
+    sm.update(MEDIUM, CONNECTED);
+    expect(sm.current).toBe("kick");
+  });
+});
+
 describe("a `when` of several triggers needs all of them", () => {
-  const CHAIN = ["hitConfirmed", "pressed:light"];
+  const CHAIN = ["cancelable", "pressed:light"];
 
   it("fires when both hold", () => {
     const sm = new StateMachine(withAttack(CHAIN));
