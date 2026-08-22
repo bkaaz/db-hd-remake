@@ -83,8 +83,12 @@ the ladder: the low kick (frames 40–42) and the sweep that used to finish the
 string. Their animations are still in `animations.json`; nothing in
 `states.json` names them.
 
-The second light rung is **empty**: a crouching light does not exist yet, so the
-ladder is `L → M → H` in practice until one is authored.
+**The crouching row is full** as of 2026-08-22: `punch_knee` (187–188) is the
+crouching light, beside `kick_crouch` and `uppercut`. That also fills the second
+light rung, so the ladder is `L → L → M → H` for real — the standing light
+cancels into the crouching one with the widest margin on the graph (+7,
+`npm run chains`). **Standing and crouching are done; the air row has only a
+medium.**
 
 *Done when:* every slot in the L/M/H table names an animation in all three
 stances, each built from the table rather than tuned by hand.

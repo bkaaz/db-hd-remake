@@ -2,6 +2,62 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-22 — Going down and being down are two states, not one animation
+
+- **The bug, reported by the owner and visible in one line of the log:** holding
+  down and pressing light made Goku stand for an instant before kneeling into the
+  attack. `punch_knee → crouch → punch_knee` in three frames, and `crouch` step
+  **1 of 2** in the middle of it — frame 17, which the catalogue already called
+  "the transition, not the held pose".
+- **Not a bug in the new attack.** Six states return to `crouch` — every
+  crouching move plus both crouching reactions — so all of them replayed the
+  descent. `kick_crouch` has done it since the day it was built and nobody had
+  named it.
+- **So the animation split follows the description that already existed.**
+  `crouch_down` is 17 then 18, played once on the way in; `crouch` is 18 alone,
+  looping, and is what everything returns to. The names line up with the states
+  so neither has to be looked up.
+- **`crouch_down` carries the crouch's attacks too**, duplicated rather than
+  inherited. Without them, pressing an attack during the twelve frames of the
+  descent would be held by the input buffer (`BUFFER_FRAMES` is exactly 12) and
+  fire late instead of at once — a feel regression traded for three fewer lines.
+  If a second fighter repeats the duplication, that is the evidence for shared
+  transitions; one is not.
+- **No validator rule for it.** The general shape — "a state several others fall
+  back into should be a held pose" — has one instance and several honest
+  counter-examples (`fall`, `getup`, `bounce` are all sequences that are legally
+  returned to). Recorded here instead, so the next occurrence has a precedent
+  rather than a rule invented from one.
+
+## 2026-08-22 — The crouching light, and the second rung of the ladder
+
+- **`punch_knee` (187–188) is the crouching L**, built from the table in
+  `combat.md` rather than tuned: start-up 4, active 3, recovery 8, `hitstun` 15,
+  `cancelBy` 8, `damage` 5, `hitstop` 6, `onHit: hurt_chain`. Shaped like the
+  standing light down to the step split — 4 / 3 active / 5 held / 3 back — so the
+  pose is read rather than flashed past.
+- **It fills the second light rung `plan.md` had been carrying as empty.** The
+  standing light now cancels into it, so `L → L → M → H` is real rather than
+  aspirational, and `npm run chains` gives that link **+7**, the widest margin on
+  the graph. `punch_knee → uppercut` is the tightest at +1.
+- **Crouching is complete**: light, medium and heavy all named. The air row still
+  has only a medium.
+- **The generated hit box was wrong and it took measuring to see it.** The script
+  derives it from how far the active frame reaches beyond the others, which
+  assumes the striking limb reaches furthest — on a kneeling attack the wind-up's
+  *knee* is further forward, so the box came out 3 px wide against the standing
+  punch's 11. Measured inside the arm's own rows the fist is 12x7, identical to
+  the standing punch's fist, and that is what shipped. Written up in `bugs.md`;
+  not fixed, because the rule for choosing the band wants more than one crouching
+  attack as evidence.
+- **A formatting regression of my own, fixed here.** Rewriting `states.json`
+  through `json.dump` earlier the same day expanded every inline array and
+  transition, taking a hand-written 406-line file to 773 and burying the change
+  in it inside a 728-line diff. Restored to the house style — `"vel": [0, 0]` and
+  one transition per line — verified by round-tripping the pre-regression file
+  byte for byte before touching the current one. The lesson is narrow and worth
+  keeping: **`json.dump` is not a formatter for a file a person wrote.**
+
 ## 2026-08-22 — Being low is a situation, so it is a flag and reactions redirect on it
 
 - **Crouching reactions built** (183 and 184, drawn by the owner): `hurt` and

@@ -39,6 +39,64 @@ message belongs somewhere that is not the status bar. The new "Apply to sheet"
 button sidesteps it by not calling `render()` — nothing in the editor's state
 changed, only the disk — which works but is a second convention, not a fix.
 
+## A new frame's anchor lands in the middle of its rectangle, not under its feet
+
+`tools/entity-editor` · noticed 2026-08-22 · annoying
+
+Cutting a frame puts the anchor at `round(w / 2)` — every frame on the sheet has
+it there. The rectangle follows the widest limb, so a pose with an arm out gets a
+wider rect, a centre further from the body, and a fighter who slides sideways
+when that pose plays. It cost four of the seven new frames:
+
+| frame | feet, against the held crouch |
+|---|---|
+| 182 | aligned — drawn on the crouch's own legs |
+| 183 | +6 px |
+| 184 | +7 px |
+| 187 | +5 px |
+| 188 | −3 px |
+
+Nothing errors, and it is invisible in the editor: each pose looks right on its
+own, and only playing them in sequence shows the drift. The owner found it by
+noticing Goku move during an attack whose legs do not move.
+
+The fix is computable, which is what makes this worth writing down rather than
+correcting by eye. Correlating the bottom sixteen rows of a frame against the
+stance it belongs to gives the offset exactly — 95–100% coverage on all five
+crouching frames, because the legs really are the same pixels. That could be a
+script (`npm run anchor -- goku 187,188 --like 18`) or a button in the editor;
+either beats nudging until it looks still.
+
+Two things to know before fixing it. Boxes are stored **relative to the anchor**,
+so moving one must move them with it, or the hurt boxes come off the body. And
+the reference stance differs per pose: crouching frames align to 18, standing
+ones to an idle frame, so the tool has to be told which.
+
+## npm run anim measures the hit box against the wrong limb
+
+`scripts/anim.ts` · noticed 2026-08-22 · annoying
+
+The hit box is derived from how far the active frame reaches **beyond the
+others**, which assumes the striking limb is what reaches furthest. On a
+kneeling attack it is not: `punch_knee`'s wind-up (187) has a knee out at
+`y=64`, further forward than anything in the strike except the fist, so the
+comparison came back 3 px wide against 11 for the standing punch. Measuring
+inside the arm's own rows instead gives 6 px of extension and a 12x7 fist —
+the same fist size the standing punch measures.
+
+Nothing errors. The printed table looks ordinary and the move is simply almost
+impossible to land, which is the same silent shape as the depth-frame problem
+the skill already warns about.
+
+To see it: `npm run anim -- goku probe --frames 187,188 --kind attack --dry-run`
+and read the hit box against `punch`'s.
+
+The fix is to compare within a band of rows rather than across the whole frame
+— the striking limb's own rows, taken from where the active frame reaches
+furthest. Left alone for now because it wants a rule about which band, and one
+crouching attack is not enough evidence to choose it. Meanwhile the number is a
+placeholder like every other hit box, and the report says when it looks wrong.
+
 ## Keying starts off on a sheet that is already partly transparent
 
 `tools/entity-editor/src/main.ts:213` · noticed 2026-08-21 · annoying

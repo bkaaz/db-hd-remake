@@ -198,7 +198,7 @@
       ]
     },
     "crouch": {
-      "desc": "The low stance, confirmed by the owner: 17 is the transition down into it, 18 is the neutral crouch held at the bottom. A crouching guard exists in the game but is not on this sheet.",
+      "desc": "The low stance, confirmed by the owner: 17 is the transition down into it, 18 is the neutral crouch held at the bottom. They are two states as well as two poses (2026-08-22): everything that returns to a crouch returns to 18, because a move ending used to replay 17 and read as standing up for a frame.",
       "frames": [
         "17",
         "18"
