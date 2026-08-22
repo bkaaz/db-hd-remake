@@ -8,7 +8,7 @@ import { loadEntityDef, type EntityDef } from "../entity/entityDef";
  * animation, played once, then gone.
  *
  * They are generated rather than ripped (`npm run fx`), so a clone of this repo
- * that has not run the script has no atlas for them. That is not fatal; the
+ * that has not run the script has no sheet for them. That is not fatal; the
  * game says so once and fights on without sparks.
  */
 export class Effects {

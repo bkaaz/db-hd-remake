@@ -192,10 +192,8 @@ npm run chains -- <entity>
                   # link has — the instrument for tuning frame data
 npm run sheet -- <entity> --frames 0-30
                   # labelled contact sheet into assets/contact/ (gitignored)
-npm run fx        # generate the effect entities (atlas + frames + animations)
+npm run fx        # generate the effect entities (sheet + frames + animations)
                   # from src/fx/generate.ts — no ripped hit spark (--dry-run)
-npm run fetch-assets   # download/verify source sheets from assets.manifest.json
-npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ```
 
 ## Structure
@@ -205,7 +203,7 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 ├── index.html                    # game page shell + #app mount
 ├── src/                          # grouped by domain; *.test.ts sits beside its source
 │   ├── main.ts                   #   boot, wiring, input — the entry from index.html
-│   ├── entity/                   #   entityDef.ts: data + atlas -> EntityDef
+│   ├── entity/                   #   entityDef.ts: data + sheet -> EntityDef
 │   │                             #   entity.ts: one live instance in the world
 │   │                             #   states.ts: state-machine runner + validator
 │   ├── combat/                   #   hit.ts: box → world, overlap, hit detection
@@ -223,8 +221,7 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 │   ├── chains.ts                 #   print the cancel graph with its arithmetic
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
 │   ├── fx.ts                     #   write the generated effects out
-│   ├── split-audio.ts            #   cut a capture into numbered clips
-│   └── fetch-assets.mjs          #   BYOA fetch/verify
+│   └── split-audio.ts            #   cut a capture into numbered clips
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/entity-editor/          # the authoring tool (Canvas 2D)
 │   ├── server.ts                 #   Vite dev-server plugin: /api/* endpoints (Node)
@@ -233,8 +230,8 @@ npm run hash-assets    # print sha256 of local assets (to fill the manifest)
 │                                 #   animations.json, states.json, …
 ├── data/audio/sound-test.json    # which clip of the sound-test capture is what
 ├── assets/                       # BYOA — gitignored, never committed
-│   ├── sheets/                   #   source sprite sheets
-│   └── atlases/                  #   generated keyed atlases
+│   └── sheets/                   #   one image per entity, transparency in the
+│                                 #   file; spawns/ holds what npm run fx writes
 ├── docs/                         # design notes & decisions (read before building)
 ├── vite.config.ts
 └── tsconfig.json
@@ -263,8 +260,11 @@ Two properties the tree no longer shows, and both still hold:
   time** via `POST /api/section` (the active tab decides which). Format:
   `docs/data-format.md`.
 - **BYOA (Bring Your Own Assets):** copyrighted images/audio are gitignored and
-  must **never** enter git history. Only code, `data/` and
-  `assets.manifest.json` are committed. See `docs/assets.md`.
+  must **never** enter git history. Only code and `data/` are committed. The
+  source pack is **not downloadable anywhere** — the owner keeps it; the sheet is
+  hand-extended and matches no public rip, so **never re-flow `goku.png`**, only
+  append at the bottom (`frames.json` is coordinates into it). See
+  `docs/assets.md`.
 
 ## Current status
 

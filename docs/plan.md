@@ -214,7 +214,7 @@ rediscover them:
   the fallback nobody used. Shorten or keep?
 - **`data/audio/`** is a new top-level directory beside `data/entities/`. Is a
   catalogue of 127 mostly-`?` slots the right shape, and does it belong there?
-- **`/api/sfx` lives in the entity-editor plugin**, like `/api/atlas` — correct
+- **`/api/sfx` lives in the entity-editor plugin**, like `/api/sheet` — correct
   by precedent, but the plugin's name has stopped describing what it serves.
 - **The input buffer** rode along in the same batch and has not been looked at
   since the day it was written.

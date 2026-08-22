@@ -133,7 +133,7 @@ async function main(): Promise<void> {
     written++;
   }
   console.log(`  wrote ${written} file(s) to ${outDir}/`);
-  console.log("  these are game audio: gitignored, and listed in assets.manifest.json if shared");
+  console.log("  these are game audio: gitignored, and part of the owner's asset pack");
 }
 
 main().catch((err: unknown) => die(err instanceof Error ? err.message : String(err)));

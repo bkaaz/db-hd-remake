@@ -32,7 +32,8 @@ Around it:
   frames into named animations with timing → author hitboxes/hurtboxes.
 - **Importer — MUGEN (parked):** slot kept open. Later, parsing `.air` (text)
   fills frames/timing/anchors/hitboxes almost for free; `.sff` provides images.
-- **Exporter — our format:** PixiJS atlas (PNG + JSON) + animation/hitbox data.
+- **Exporter — our format:** section files per entity (`frames.json`,
+  `animations.json`, …) indexing into the entity's one sheet.
 
 The same primitives ("draw a rectangle", "set a point") serve frame selection,
 anchors, and hitboxes — so the code is smaller than it sounds.
@@ -44,15 +45,15 @@ without reworking the editor or exporter.
 
 - **Phase 1 — MVP (small):** ✅ done — `tools/entity-editor/`. Load image →
   manual rectangle frame selection → per-frame anchor → animations with timing →
-  playback preview → export `*.entity.json` + atlas. Verified end-to-end
+  playback preview → export the entity's section files. Verified end-to-end
   (draw frames → build animation → export matches `data-format.md`).
 - **Phase 2 (in progress):**
-  - ✅ Background color-keying (auto-detect + eyedropper + tolerance; alpha baked
-    into export).
+  - ✅ Background color-keying (auto-detect + eyedropper + tolerance). Since
+    2026-08-22 "Apply to sheet" bakes the alpha into the source sheet itself,
+    rather than into a second image written on every save.
   - ✅ Auto-slice via connected-component detection ("Detect all" + "Magic
     click"), with a gap-close slider to merge fragments and a min-area filter.
   - ✅ Hitbox/hurtbox/push layer (per-step boxes; editor canvas + game overlay).
-  - ⬜ Tight atlas repacking; more UX polish.
 - **Phase 3 (parked):** MUGEN importer — `.air` parser first (cheap, high
   value), then `.sff` parser.
 
@@ -60,32 +61,34 @@ without reworking the editor or exporter.
 
 Replacing upload/download with direct repo file access, since the editor is
 always used against a specific sheet in this repo. **Implemented**
-(`npm run editor`, `npm run fetch-assets`).
+(`npm run editor`).
 
 - **Mechanism:** a **Vite dev-server plugin** (`configureServer`, dev-only) with
   endpoints:
   - `GET /api/sheets` — list `assets/sheets/`; `GET /api/sheet?name=` streams one.
   - `GET /api/entity?name=` — assemble all section files in the entity's dir.
-  - `POST /api/section {name, section, data, atlasPngBase64?}` — write ONE
-    section file (+ atlas).
-  - `GET /api/atlas?name=` — stream the keyed atlas (used by the game).
+  - `POST /api/section {name, section, data}` — write ONE section file.
+  - `POST /api/sheet {name, pngBase64}` — burn the colour key into the source
+    sheet, in place. The one write here that destroys pixels.
 - **Command:** `npm run editor` (dedicated port; optional `?sheet=` preselect).
 - **UI:** sheet dropdown + Load (hydrates from existing data) instead of upload;
-  **Save saves only the active tab's section** (Sprites → `frames.json` + atlas,
-  Animations → `animations.json`). Upload/download kept as fallback.
-- **Layout:** input `assets/sheets/<name>.png` (gitignored); committed section
-  files `data/entities/<name>/{frames,animations,...}.json`; runtime keyed atlas
-  `assets/atlases/<name>.png` (gitignored, regenerated locally).
-- **Storage = BYOA:** only our code + JSON + the manifest are committed; images
-  are gitignored and never enter git history. A committed `assets.manifest.json`
-  + `npm run fetch-assets` fetch/verify source assets on the user's machine. See
-  [`assets.md`](./assets.md) and [`decisions.md`](./decisions.md).
+  **Save saves only the active tab's section** (Sprites → `frames.json`,
+  Animations → `animations.json`) — JSON only. Upload/download kept as fallback.
+- **Layout:** one image per entity at `assets/sheets/<name>.png`, or
+  `assets/sheets/spawns/<name>.png` for what `npm run fx` writes (both
+  gitignored); committed section files
+  `data/entities/<name>/{frames,animations,...}.json`. There is no second keyed
+  copy — the transparency lives in the sheet.
+- **Storage = BYOA:** only our code + JSON are committed; images are gitignored
+  and never enter git history. The source pack is not downloadable and lives with
+  the owner — the manifest and fetcher that once pinned it to a public URL were
+  deleted 2026-08-21. See [`assets.md`](./assets.md) and
+  [`decisions.md`](./decisions.md).
 
-**Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet`, `/api/entity` assemble,
-`/api/section` write, `/api/atlas`); ✅ dropdown Load + hydrate; ✅ per-section
-Save (`data/entities/<name>/<section>.json`) + keyed `assets/atlases/*.png`;
-✅ `assets.manifest.json` + `npm run fetch-assets` / `hash-assets`. Verified
-end-to-end (load → detect → per-section save → reload → hydrate; the game
+**Status:** ✅ Vite plugin (`/api/sheets`, `/api/sheet` read + write,
+`/api/entity` assemble, `/api/section` write); ✅ dropdown Load + hydrate;
+✅ per-section Save (`data/entities/<name>/<section>.json`);
+✅ BYOA layout under a gitignored `assets/`. Verified end-to-end (load → detect → per-section save → reload → hydrate; the game
 assembles + renders).
 
 ## Existing tools — landscape (for reference)

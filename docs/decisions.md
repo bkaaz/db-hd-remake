@@ -2,6 +2,93 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-22 — One entity, one image, and the transparency lives in the file
+
+- **`assets/atlases/` is gone, and so is `/api/atlas`.** A fighter had two copies
+  of the same pixels — the opaque rip in `assets/sheets/` and a keyed duplicate
+  the editor wrote on every Save of the Sprites tab — differing only in an alpha
+  channel, at identical dimensions. The second copy is deleted, not renamed.
+- **The atlas only ever existed because somebody needed the alpha.** Four
+  consumers read it: the game, `npm run anim` (hurt boxes fitted to the
+  silhouette), `npm run sheet`, and `npm run fx` as its writer. Give the sheet an
+  alpha channel and none of them needs a separate file. That is the whole
+  argument; everything else follows.
+- **The name was also a promise nothing kept.** A texture atlas is a *packed*
+  image; ours was the sheet at the same size with a different colour type, and
+  `exporter.ts` said as much in a comment. Repacking has been deferred since the
+  format was written, so the word described an intention, not a file.
+- **The key is applied once and becomes the source.** A new **Apply to sheet**
+  button (`POST /api/sheet`) writes the keyed pixels back over
+  `assets/sheets/<name>.png`. Deliberately its own action rather than part of
+  saving frames: everything else the editor writes can be rebuilt from disk, and
+  this cannot. It is also idempotent — `rebuildKeyed` only touches pixels with
+  `a > 0`, so keying a keyed sheet does nothing.
+- **This is not the old PNG write coming back.** That one was bad because it was a
+  *derived duplicate whose recipe was never saved* — `bgColor` and `bgTolerance`
+  lived only in the editor's memory, so the pixels were the sole record of a
+  decision nobody could reproduce. Here there is no duplicate and no recipe to
+  lose. The objection was to duplication, not to writing a PNG.
+- **Measured before committing to it**, because the operation is destructive:
+  `goku.png` held 119 distinct colours, the background `(140,159,181)` covering
+  87% of it, and the nearest other colour 20 units away. That background is not a
+  reachable 5-bit SNES colour, so every pixel of it was the ripper's stand-in for
+  palette index 0 and nothing else — tolerance 0 was provably exact. The result
+  is 1,446,687 transparent and 212,193 opaque pixels, **none in between**.
+- **1-bit alpha is a property to protect, not an accident.** SNES sprites were
+  drawn or not drawn; there is no anti-aliasing to preserve. It is also what keeps
+  palette swaps possible — a colour map is only unambiguous while every pixel is
+  exactly one palette colour. So hand-drawn additions must not be anti-aliased,
+  and that rule now has two independent reasons behind it.
+- **Spawns live at `assets/sheets/spawns/`**, written by `npm run fx`. One
+  directory would have been simpler by one branch, and the argument that lost was
+  mine: I defended the split on backup grounds worth 4 KB. It stands on the
+  owner's reason instead — the top of `assets/sheets/` should hold only what a
+  person edits, so `spawns/` is the line between authored and regenerated. The
+  server absorbs the difference the way it already does for `data/`: `/api/entity`
+  now returns a `sheet` path, so nothing downstream asks which kind it got.
+- **`atlas` is gone from the data format too**, replaced by `sheet`
+  (`data-format.md`). Renaming rather than keeping a dead word was the point: the
+  concept it named no longer exists.
+- **Not done, and deliberately:** the colour-key settings are still session state
+  rather than committed data. They no longer need to be — the key is burned in
+  once — so the recipe-in-JSON idea is dropped rather than deferred.
+
+## 2026-08-21 — The asset pack is not downloadable, and the sheet is ours to extend
+
+- **Supersedes the distribution half of 2026-08-07.** `assets.manifest.json` and
+  `npm run fetch-assets` / `hash-assets` are deleted. The BYOA rule itself is
+  untouched: copyrighted bytes still never enter git history.
+- **The manifest had already stopped being true.** It listed one asset — the Goku
+  sheet — while `assets/audio/` held a capture and 128 cut clips that were never
+  in it. A file that claims to be the inventory and covers a third of it is worse
+  than no file, because nobody re-reads it to find out.
+- **Neither half of the pack is a public download.** The audio was captured from
+  the game's own sound test on the owner's machine and was never published. The
+  sheet is about to stop matching its published rip, because missing poses get
+  **appended to the bottom of `goku.png`** rather than carried in a second image.
+- **So the pin dies with its purpose.** A sha256 existed to keep our coordinates
+  valid across machines. There is one machine; the file it pins is hand-edited;
+  and the owner's call is that no validation is wanted — the file handed to the
+  editor is assumed good. Keeping 200 lines of fetch-and-verify for that would be
+  machinery guarding an assumption we have chosen to make.
+- **What was argued for and lost, recorded because it will come back:** a hash
+  kept purely as a version check. Once the sheet is edited there are *versions* of
+  it, and `frames.json` is coordinates into one — restoring last week's backup
+  would draw the wrong sprite for every frame above 180 without erroring. The
+  owner accepted that risk knowingly; the mitigation is the append-only rule,
+  which makes old ids immune to new work.
+- **Append only, never re-flow**, and it is now stated in `CLAUDE.md`, the README
+  and `assets.md`. Frame ids run in reading order, so new rows at the bottom take
+  the next free numbers and leave every existing rect true.
+- **One sheet, not two, and the cost is known.** A separate own-art image would
+  keep the rip byte-identical and would be committable — but `frames.json` has no
+  per-frame sheet field, so it would cost a format change, and most gap-fills are
+  composites of ripped frames or Mesen-S rips, which could not be committed
+  either. Revisit if a fighter ends up mostly hand-drawn.
+- **Credits moved to the README**, one line per sheet with the ripper and the
+  source. It was the manifest's only surviving job, and a credit is read by a
+  person, not by a script.
+
 ## 2026-08-16 — The States tab becomes the Combos graph
 
 - **What it replaced was a prettier `cat states.json`**: a read-only print of the

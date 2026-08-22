@@ -273,7 +273,8 @@ export function removeAnim(name: string): void {
 
 export interface EntityFileIn {
   name: string;
-  atlas: string;
+  /** Path under `assets/sheets/`, as the server resolved it — `spawns/` and all. */
+  sheet: string;
   frames?: Record<
     string,
     { x: number; y: number; w: number; h: number; anchor: [number, number] }

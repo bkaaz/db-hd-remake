@@ -20,6 +20,45 @@ because a number would only need translating back.
 
 ---
 
+## Save never tells you it saved
+
+`tools/entity-editor/src/main.ts:192` · noticed 2026-08-22 · annoying
+
+`wireSave` puts the result in the status bar and then calls `render()`, which
+sets `statusEl.textContent` unconditionally from the sheet's dimensions and
+counts (`main.ts:336`). The message is overwritten in the same tick, so
+"Saved data/entities/goku/frames.json" never appears — the bar just snaps back to
+`720x2304px · 180 frames · …`. An error message from a failed save is lost the
+same way, which is the half that matters.
+
+To see it: press Save on the Sprites tab and watch the status bar.
+
+Not fixed here because the ordering is not the whole question: `render()` owns
+that element, so either it learns to leave a transient message alone or the
+message belongs somewhere that is not the status bar. The new "Apply to sheet"
+button sidesteps it by not calling `render()` — nothing in the editor's state
+changed, only the disk — which works but is a second convention, not a fix.
+
+## Keying starts off on a sheet that is already partly transparent
+
+`tools/entity-editor/src/main.ts:213` · noticed 2026-08-21 · annoying
+
+Loading a sheet asks whether the image contains *any* transparency and answers it
+for all 180 frames: if yes, `bgKeyEnabled` starts false. That is the right answer
+for a fully keyed sheet, which every fighter's now is — and the wrong one the
+moment new poses are appended to `goku.png` on the rip's background colour, since
+the control that would key them starts switched off.
+
+To see it: append anything opaque to `assets/sheets/goku.png` and load it — the
+"transparent" checkbox is clear and the new rows keep their background.
+
+Nothing is lost and there is a one-click way out: the eyedropper sets
+`bgKeyEnabled = true` unconditionally (`sheetView.ts:88`), so picking the
+background colour turns keying back on, and `rebuildKeyed` only ever touches
+pixels with `a > 0` — the already-transparent ones are left alone. The fix, if
+one is wanted, is to drop the all-or-nothing question at load and let the eyedropper
+be the whole interface.
+
 ## A fighter blocks in the middle of their own attack
 
 `src/entity/entity.ts` · noticed 2026-08-16 · annoying

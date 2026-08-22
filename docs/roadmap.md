@@ -12,8 +12,8 @@ and editor running locally.
 
 The Entity Editor (sheet loading, background color-key, auto-detection, frames +
 anchors, timed animations, hit/hurt/push boxes), repo-integrated I/O via the
-Vite dev-server plugin with per-section save, the BYOA asset strategy with
-`fetch-assets` / `hash-assets`, and entity data format v0
+Vite dev-server plugin with per-section save, the BYOA asset strategy, and
+entity data format v0
 ([`data-format.md`](./data-format.md)).
 
 ## Stage 2 — Fighting core 🟡 in progress

@@ -36,4 +36,4 @@ own ourselves rather than fit into a general framework's conventions.
 - Audio engine
 - Input mapping / gamepad support (keyboard only for now)
 - Netcode / multiplayer (may be out of scope entirely — TBD)
-- Tight atlas repacking (the atlas is the whole keyed sheet for now)
+- Tight sheet repacking (frames index straight into the authored sheet for now)

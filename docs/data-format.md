@@ -14,7 +14,7 @@ Accepted 2026-08-07 · split into sections 2026-08-08.
 ## Model
 
 ```
-character = atlas image + frames (rects + anchors) + animations (timed frame
+character = sheet image + frames (rects + anchors) + animations (timed frame
             sequences) + boxes (hit / hurt / push, per animation step)
 ```
 
@@ -37,7 +37,7 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
 // goku.entity.json
 {
   "name": "goku",
-  "atlas": "goku.png",              // packed atlas of frames
+  "sheet": "goku.png",              // path under assets/sheets/
   "frames": {
     // id = the frame's number on the sheet, running along each row then down.
     // anchor = pivot point in px (e.g. between the feet),
@@ -81,11 +81,15 @@ character = atlas image + frames (rects + anchors) + animations (timed frame
 ## Field reference
 
 - **`name`** — character id.
-- **`atlas`** — path to the packed sprite atlas PNG.
-- **`frames`** — map of frame id → rect in the atlas plus `anchor`. Ids are the
+- **`sheet`** — the entity's image, as a path under `assets/sheets/`. A
+  fighter's sits at the top (`goku.png`); a spawn's is written by `npm run fx`
+  into `spawns/` beneath it (`spawns/spark_1.png`). The server fills this in when
+  it assembles the entity, so nothing downstream has to know which kind it got.
+  The sheet's own transparency is used as-is — there is no second, keyed copy.
+- **`frames`** — map of frame id → rect in the sheet plus `anchor`. Ids are the
   frame's number on the sheet (`"0"`, `"1"`, …), assigned in reading order:
   along a row, then down. Renumbering in the editor swaps two frames.
-  - `x, y, w, h` — frame rectangle in atlas pixels.
+  - `x, y, w, h` — frame rectangle in sheet pixels.
   - `anchor` — `[x, y]` pivot in px from the frame's top-left corner.
 - **`animations`** — map of animation id → `{ loop, steps }`.
   - `loop` — whether playback repeats.

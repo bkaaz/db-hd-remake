@@ -142,7 +142,7 @@ async function main(): Promise<void> {
   const frames = JSON.parse(
     await fs.readFile(path.join(root, "data", "entities", entity, "frames.json"), "utf8"),
   ) as Record<string, FrameRect>;
-  const atlas = decodePng(await fs.readFile(path.join(root, "assets", "atlases", `${entity}.png`)));
+  const sheet = decodePng(await fs.readFile(path.join(root, "assets", "sheets", `${entity}.png`)));
 
   const ids = parseFrames(spec).filter((id) => {
     if (frames[id]) return true;
@@ -171,7 +171,7 @@ async function main(): Promise<void> {
       // Bottom-centre the sprite in its cell, so poses share a ground line.
       blit(
         sheet,
-        atlas,
+        sheet,
         rect,
         cx + Math.round((cellW - rect.w * scale) / 2),
         cy + cellH - 4 - rect.h * scale,

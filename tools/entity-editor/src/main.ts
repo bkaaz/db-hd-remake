@@ -32,6 +32,7 @@ import {
 } from "./sounds";
 import {
   animationsModified,
+  applyKeyToSheet,
   entitySoundsModified,
   framesModified,
   markEntitySaved,
@@ -68,6 +69,7 @@ const bgEnabled = byId<HTMLInputElement>("bg-enabled");
 const bgSwatch = byId("bg-swatch");
 const bgTol = byId<HTMLInputElement>("bg-tol");
 const bgPickBtn = byId("bg-pick");
+const bgApplyBtn = byId<HTMLButtonElement>("bg-apply");
 const detectAllBtn = byId("detect-all");
 const detectClickBtn = byId("detect-click");
 const detectGap = byId<HTMLInputElement>("detect-gap");
@@ -130,6 +132,21 @@ bgPickBtn.addEventListener("click", () => {
     state.mode = "bg";
     emitChange();
   }
+});
+
+// The one editor action that destroys pixels, so it asks first and says what it
+// costs. Deliberately not part of saving frames: the rest of a session can be
+// redone from disk, and this cannot.
+bgApplyBtn.addEventListener("click", async () => {
+  if (!state.image || !state.bgKeyEnabled || !state.bgColor) return;
+  const ok = confirm(
+    `Write the keyed image over assets/sheets/${state.entityName}.png?\n\n` +
+      `The background becomes transparent in the source file itself. The editor ` +
+      `cannot undo it — the un-keyed original exists only in your asset pack.`,
+  );
+  if (!ok) return;
+  statusEl.textContent = "Keying…";
+  statusEl.textContent = (await applyKeyToSheet()).message;
 });
 
 detectAllBtn.addEventListener("click", () => {
@@ -283,7 +300,7 @@ function openEntity(ref: EntityRef): void {
   img.onerror = () => {
     statusEl.textContent =
       ref.kind === "spawn"
-        ? `No atlas for "${ref.name}" — run npm run fx.`
+        ? `No sheet assets/sheets/spawns/${ref.name}.png — run npm run fx.`
         : `No sheet assets/sheets/${ref.name}.png.`;
   };
   img.src = imageUrlFor(ref);
@@ -311,6 +328,7 @@ function render(): void {
   detectMin.value = String(state.detectMinSide);
   bgEnabled.checked = state.bgKeyEnabled;
   bgTol.value = String(state.bgTolerance);
+  bgApplyBtn.disabled = !(state.image && state.bgKeyEnabled && state.bgColor);
   bgSwatch.style.background = state.bgColor
     ? `rgb(${state.bgColor[0]}, ${state.bgColor[1]}, ${state.bgColor[2]})`
     : "transparent";

@@ -7,8 +7,6 @@
   "scripts": {
     "dev": "vite",
     "editor": "vite --port 5174 --open /tools/entity-editor/",
-    "fetch-assets": "node scripts/fetch-assets.mjs",
-    "hash-assets": "node scripts/fetch-assets.mjs --print-hashes",
     "build": "tsc --noEmit && vite build",
     "anim": "tsx scripts/anim.ts",
     "chains": "tsx scripts/chains.ts",

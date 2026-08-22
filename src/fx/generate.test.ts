@@ -40,7 +40,7 @@ describe("burst", () => {
   });
 
   it("never touches the edge of the sprite", () => {
-    // A burst that bleeds off its own grid would be clipped in the atlas.
+    // A burst that bleeds off its own grid would be clipped in the sheet.
     const g = burst(19, 42, params);
     for (let i = 0; i < g.size; i++) {
       expect(g.px[i]).toBe(0); // top row
@@ -136,7 +136,7 @@ describe("burst squash", () => {
 
   it("refuses to stretch, which would clip against the sprite's edge", () => {
     // Values above 1 are clamped rather than honoured: the grid is sized for
-    // `reach`, so a stretched burst would simply lose its tips in the atlas.
+    // `reach`, so a stretched burst would simply lose its tips in the sheet.
     const stretched = burst(25, 5, { ...base, axis: 0, squash: 3 });
     const round = burst(25, 5, { ...base, squash: 1 });
     expect([...stretched.px]).toEqual([...round.px]);
@@ -236,7 +236,7 @@ describe("explosion", () => {
     expect(white(frames[5])).toBe(0);
   });
 
-  it("keeps every frame on one grid size, so the atlas rows line up", () => {
+  it("keeps every frame on one grid size, so the sheet rows line up", () => {
     const frames = explosion(9, 1);
     for (const f of frames) expect(f.size).toBe(frames[0].size);
   });

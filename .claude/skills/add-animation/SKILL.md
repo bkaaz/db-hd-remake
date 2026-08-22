@@ -147,12 +147,14 @@ npm run anim -- goku punch --frames 42,43,44,45 --kind attack
   frame list changed, defaults come back and the script prints the old values.
   `--retime` forces defaults.
 - `--hurt-boxes N` (default 3) — how many boxes are fitted to the silhouette per
-  frame. The script reads `assets/atlases/<entity>.png`, takes each row's
+  frame. The script reads `assets/sheets/<entity>.png`, takes each row's
   horizontal extent and merges neighbouring rows into N bands, so the boxes hug
   the body: narrow head, wide torso where the arms are, narrow legs. `1` gives
   the old single bounding box, which an outstretched arm makes far too wide.
   More boxes means a tighter fit and more of them to check by hand.
-  **Without the atlas** (it is gitignored — run `npm run fetch-assets`) it falls
+  It is the sheet's **alpha** that gives the silhouette, so a sheet still
+  carrying an opaque background yields nothing useful — key it first with
+  **Apply to sheet** in the editor. Without a readable sheet the script falls
   back to one bounding box per frame and says so.
 
 > **Consecutive numbers are not always one sequence.** Where two rows of the

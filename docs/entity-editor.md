@@ -14,7 +14,7 @@ One file per entity: `<name>.entity.json` (was `*.character.json`).
 
 ```
 entity.json
-  meta:        name, atlas
+  meta:        name, sheet
   attributes:  health, walkSpeed, jumpSpeed, gravity, …     # constants (MUGEN: CNS const)
   frames:      id → { rect, anchor }                         # sprites   (MUGEN: SFF)
   animations:  id → { loop, steps:[{ frame, dur, boxes:[hit|hurt|push] }] }  # (MUGEN: AIR + Clsn)

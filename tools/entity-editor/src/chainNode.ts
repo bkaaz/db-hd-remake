@@ -20,9 +20,10 @@ export function hitFrameOf(anim: string): HTMLCanvasElement | null {
   const steps = state.anims.find((a) => a.name === anim)?.steps ?? [];
   const step = steps.find((s) => s.boxes.some((b) => b.type === "hit")) ?? steps[0];
   const frame = state.frames.find((f) => f.id === step?.frame);
-  // The keyed canvas, not the raw sheet: the same source the preview and the
-  // atlas export use, so the pose sits on the node's own background instead of
-  // a rectangle of whatever colour the rip happened to have.
+  // The keyed canvas, the same source the sheet view and the preview use. On a
+  // sheet whose transparency is already in the file this is the file; on one
+  // still carrying a background it is the keyed version, so the pose sits on the
+  // node's own background either way.
   const sheet = getSource();
   if (!frame || !sheet) return null;
 

@@ -157,13 +157,13 @@ const fmtBox = (b: DerivedBox | null | undefined): string =>
 const fmtBoxes = (bs: DerivedBox[]): string => (bs.length ? bs.map(fmtBox).join(" | ") : "—");
 
 /**
- * Hurt boxes for one frame. With the atlas available they are fitted to the
+ * Hurt boxes for one frame. With the sheet available they are fitted to the
  * sprite's actual silhouette in horizontal bands; without it, all we know is
  * the frame's bounding box — one coarse rectangle.
  */
-function hurtFor(atlas: Rgba | null, frame: FrameRect, count: number, inset: number): DerivedBox[] {
-  if (atlas) {
-    const boxes = hurtBoxesFromMask(alphaMask(atlas, frame), frame, count, inset);
+function hurtFor(sheet: Rgba | null, frame: FrameRect, count: number, inset: number): DerivedBox[] {
+  if (sheet) {
+    const boxes = hurtBoxesFromMask(alphaMask(sheet, frame), frame, count, inset);
     if (boxes.length > 0) return boxes;
   }
   const box = hurtBox(frame, inset);
@@ -242,20 +242,21 @@ async function main(): Promise<void> {
     : (opts.durs ?? durations(opts.kind, ids.length, active, opts.dur));
   const guess = opts.kind === "attack" && opts.hit ? hitBox(rects, active) : null;
 
-  // Hurt boxes are fitted to the sprite itself, so the atlas is read here.
-  const atlasFile = path.join(process.cwd(), "assets", "atlases", `${opts.entity}.png`);
-  let atlas: Rgba | null = null;
+  // Hurt boxes are fitted to the sprite itself, so the sheet is read here — its
+  // alpha is the silhouette.
+  const sheetFile = path.join(process.cwd(), "assets", "sheets", `${opts.entity}.png`);
+  let sheet: Rgba | null = null;
   try {
-    atlas = decodePng(await fs.readFile(atlasFile));
+    sheet = decodePng(await fs.readFile(sheetFile));
   } catch (e) {
     console.log(
-      `  note: ${path.relative(process.cwd(), atlasFile)} unreadable (${String(e)}) —\n` +
+      `  note: ${path.relative(process.cwd(), sheetFile)} unreadable (${String(e)}) —\n` +
         "        hurt boxes fall back to one bounding box per frame",
     );
   }
 
   const steps: Step[] = ids.map((id, i) => {
-    const boxes: DerivedBox[] = hurtFor(atlas, rects[i], opts.hurtBoxes, opts.inset);
+    const boxes: DerivedBox[] = hurtFor(sheet, rects[i], opts.hurtBoxes, opts.inset);
     if (guess && i === active) boxes.push(guess.box);
     return { frame: id, dur: durs[i], ...(boxes.length ? { boxes } : {}) };
   });
@@ -267,7 +268,7 @@ async function main(): Promise<void> {
   // Report: computed values on the left, guesses called out on the right.
   console.log(
     `${opts.entity} · ${name} · kind=${opts.kind} · loop=${loop} · ` +
-      `hurt boxes ${atlas ? `${opts.hurtBoxes}/frame, fitted to the sprite` : "1/frame (no atlas)"}`,
+      `hurt boxes ${sheet ? `${opts.hurtBoxes}/frame, fitted to the sprite` : "1/frame (no sheet)"}`,
   );
   steps.forEach((s, i) => {
     const mark = i === active && opts.kind === "attack" ? "*" : " ";

@@ -3,8 +3,8 @@ import { state } from "./store";
 /**
  * Owns the loaded sheet's pixels and produces a "keyed" canvas where the chosen
  * background color has been made transparent. The keyed canvas is the single
- * render/export source, so the sheet view, preview, and atlas export all show
- * the same transparency.
+ * render source, so the sheet view, the preview and what "Apply to sheet"
+ * writes all show the same transparency.
  *
  * Global color-key: every pixel matching the background color (within
  * tolerance) becomes transparent. Fine for flat pixel-art with no

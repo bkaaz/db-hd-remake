@@ -9,9 +9,10 @@ no background music, no overlap, in order.
 The method is one recording and one script. Record a single pass through the
 whole sound test, then cut it into separate clips automatically.
 
-**What comes out is game audio.** It lives in `assets/audio/` (gitignored) and,
-if it needs to reach another machine, gets a line in `assets.manifest.json` with
-a `sha256`. The tools here are ours and are committed; their output is not.
+**What comes out is game audio.** It lives in `assets/audio/` (gitignored) and
+travels only as part of the asset pack the owner hands over on request — it was
+never published anywhere, so there is nothing to point at. The tools here are
+ours and are committed; their output is not.
 
 ## 1. Record the sound test
 
@@ -86,7 +87,8 @@ numbering does not shift when the rest follow.
 
 Rename the numbered files to what they are, then point `sounds.json` at them
 with the `file` field, which replaces the synthesised placeholder without any
-state changing. Add the pack to `assets.manifest.json` if it needs to travel.
+state changing. `assets/audio/raw/` is the original and belongs in the backup;
+`sfx/` is output and comes back from this script.
 
 ## Why not just record each effect separately
 

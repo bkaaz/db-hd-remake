@@ -6,13 +6,13 @@ description: Make a visual effect (hit spark, explosion, aura, projectile impact
 # Making an effect
 
 Effects here are **generated**, not ripped and not drawn by hand: `npm run fx`
-writes a whole entity — the atlas PNG *and* its `frames.json` /
-`animations.json` — from `src/fx/generate.ts` (pure, unit-tested) via `scripts/fx.ts`
-(file I/O only). There is no sheet to frame and no editor round-trip.
+writes a whole entity — the sheet PNG (into `assets/sheets/spawns/`) *and* its
+`frames.json` / `animations.json` — from `src/fx/generate.ts` (pure, unit-tested)
+via `scripts/fx.ts` (file I/O only). Nothing to frame, no editor round-trip.
 
 Why generated: no ripped hit spark exists for this game. The community sheets
-have auras, beams, explosions and smoke (`Locke_gb7`, in `assets.manifest.json`)
-but nothing for a basic blow. Generating also means the art is **ours**, unlike
+have auras, beams, explosions and smoke (ripped by `Locke_gb7`; see
+`decisions.md`, 2026-08-09) but nothing for a basic blow. Generating also means the art is **ours**, unlike
 the ripped sheets.
 
 ## The four rules that keep generated art from looking bolted on
@@ -95,7 +95,7 @@ generator:
   moment of the hit. A squash axis repeats every 180°, so spread over half a
   turn.
 - **Squash only, never stretch.** The grid is sized for `reach`; a stretched
-  burst loses its tips in the atlas. `burst` clamps values above 1.
+  burst loses its tips in the sheet. `burst` clamps values above 1.
 - A random mirror at spawn doubles the variety for free.
 
 ## Procedure
@@ -107,7 +107,7 @@ generator:
    values bulge into an explosion, high values pull out into rays.
 3. `npm run fx` (`--dry-run` to report only). It is seeded, so re-running is
    safe and never silently changes the art.
-4. **Look at it.** Upscale the atlas nearest-neighbour and read the image —
+4. **Look at it.** Upscale the sheet nearest-neighbour and read the image —
    there is no substitute. Put previews in `assets/contact/` (gitignored).
 5. `npm test` and `npm run typecheck`.
 
@@ -145,5 +145,6 @@ Which effect a blow leaves is the blow's choice: `hitFx` on the attack state,
 alongside `onHit` and `hitstop`. Three fields, one idea — the blow decides how
 it is taken, how long the game stops, and what the impact looks like.
 
-Effects are **derived**, like the atlas: gitignored and rebuilt with `npm run fx`.
+Effects are **derived**, unlike a fighter's sheet: gitignored and rebuilt with
+`npm run fx`.
 A clone that has not run it gets a console warning and no sparks, not a crash.

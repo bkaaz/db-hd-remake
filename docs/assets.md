@@ -20,8 +20,13 @@ anchors, animations, hitboxes). **Copyrighted images/audio are never committed**
 from their own copy; the tool loads it locally. This is the model that keeps
 projects like OpenRA / ScummVM / DevilutionX legally distributable.
 
-To keep our coordinates valid across machines we pin to a **canonical source
-asset** (documented source URL + expected sha256) per entry.
+**There is one machine, and the pack lives on it** (2026-08-21). The project
+used to pin each asset to a canonical public download — source URL plus expected
+sha256 — so that coordinates stayed valid wherever the repo was cloned. Neither
+half of that survived contact with the work: the audio was captured from the
+game's sound test and exists nowhere public, and the sheet is now appended to by
+hand, so it matches no published file. The manifest and its fetch command are
+gone; the README says to ask the author for the pack. See `decisions.md`.
 
 **Asset layout** — one gitignored root for all BYOA source assets, split by type
 so new kinds (audio, backgrounds, …) have an obvious home:
@@ -29,17 +34,20 @@ so new kinds (audio, backgrounds, …) have an obvious home:
 ```
 assets/            # all BYOA source assets (gitignored)
   sheets/          # character sprite sheets (the editor reads these)
-  audio/           # (future) sfx / music
+  audio/           # raw/ the sound-test capture, sfx/ the clips cut from it
   backgrounds/     # (future) stage art
 ```
 
-**`assets.manifest.json`** (committed) lists each asset as
-`{ type, name, source, url, sha256 }`; `typeDirs` maps a `type` to its folder.
-`npm run fetch-assets` downloads present-but-missing assets into
-`assets/<type>/` and verifies the sha256; when there's no direct `url` it prints
-exactly where to place the file and the expected hash. `npm run hash-assets`
-prints local files' sha256 to help fill the manifest. Adding an asset = one
-manifest entry (the copyrighted bytes still never enter the repo).
+**Two of those directories hold originals and the rest is output.**
+`assets/sheets/` and `assets/audio/raw/` are the pack — irreplaceable, backed up
+by the author — with one exception inside the first: `assets/sheets/spawns/`
+holds what `npm run fx` writes. That and `assets/audio/sfx/` and
+`assets/contact/` (from `npm run split-audio` and `npm run sheet`) are allowed to
+be deleted at any time.
+
+**Attribution lives in the README's Credits section**, one line per sheet naming
+whoever ripped it and where it came from. It moved there when the manifest was
+deleted, on the grounds that a credit is read by a person and not by a script.
 
 (Note: practical common-practice reasoning, not legal advice.)
 
@@ -122,6 +130,14 @@ character design, so it does not make the project free of the original rights;
 what it does is avoid the one clear-cut act, which is redistributing extracted
 assets.
 
+**Sprites appended to the sheet give that right up, and knowingly.** A pose drawn
+by hand into `goku.png` would be committable on its own; painted into the ripped
+sheet it is inseparable from it, so it stays gitignored with everything else in
+`assets/`. The alternative — a second image, own art only — costs `frames.json` a
+per-frame "which sheet", and the gaps are mostly composites of ripped frames
+anyway, which could not be committed either. The seam was judged not worth the
+format change. Revisit it if a fighter ever ends up mostly hand-drawn.
+
 That is the whole point of BYOA. It was never a claim of legal cover for a fan
 remake — it removes the single unambiguous risk at a cost of nothing, and keeps
 git history clean, which is a property you lose exactly once.
@@ -145,5 +161,4 @@ git history clean, which is a property you lose exactly once.
 ## Open items
 
 - Verify per-character sheet completeness (which frames, if any, are missing).
-- Decide atlas format & animation metadata schema for PixiJS.
 - Decide how hitbox/frame-data is authored and stored (see roadmap Phase 3).

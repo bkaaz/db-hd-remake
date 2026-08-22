@@ -1,8 +1,8 @@
 /**
  * Generate the effect entities: `npm run fx`
  *
- * Writes a complete entity from nothing but code — the atlas PNG *and* its
- * `frames.json` / `animations.json`. No sheet to frame, no editor round-trip,
+ * Writes a complete entity from nothing but code — the sheet PNG *and* its
+ * `frames.json` / `animations.json`. Nothing to frame, no editor round-trip,
  * because the script already knows where every pixel went.
  *
  * The art itself is drawn by `src/fx/generate.ts` (pure, unit-tested). This file only
@@ -11,8 +11,9 @@
  *
  * Why generated at all: no ripped hit spark exists for this game (see
  * docs/plan.md). Regenerating also means the effect is *ours*, so unlike the
- * ripped sheets it could be committed — for now it is treated like the atlas,
- * which is to say derived and gitignored.
+ * ripped sheets it could be committed — for now it is treated like every other
+ * sheet, which is to say gitignored, and unlike them it comes back from this
+ * command.
  *
  *   npm run fx                 # write every effect entity
  *   npm run fx -- --dry-run    # report only
@@ -25,7 +26,7 @@ import { encodePng } from "../src/sprites/png";
 
 /** One entity this script owns, end to end. */
 interface Effect {
-  /** Spawn name — its directory under data/spawns and its atlas file. */
+  /** Spawn name — its directory under data/spawns and its sheet file. */
   name: string;
   /** Distance from centre to spike tip, in sprite px. */
   reach: number;
@@ -133,7 +134,7 @@ async function main(): Promise<void> {
       }
     }
 
-    // Every variant's frames go into one atlas, one row per variant, and each
+    // Every variant's frames go into one sheet, one row per variant, and each
     // becomes its own animation. The engine treats an effect's animations as
     // interchangeable and picks one, so adding a variant is a data change only.
     const { width, height, data, rects } = sheet(variants);
@@ -162,19 +163,21 @@ async function main(): Promise<void> {
 
     console.log(
       `${fx.name}: ${count} variant(s) x ${perVariant} frames, sprite ${variants[0][0].size}px` +
-        `, atlas ${width}x${height}, ${fx.durations.reduce((a, b) => a + b, 0)} game frames each`,
+        `, sheet ${width}x${height}, ${fx.durations.reduce((a, b) => a + b, 0)} game frames each`,
     );
     if (dryRun) continue;
 
-    const atlas = path.join(root, "assets", "atlases", `${fx.name}.png`);
-    await fs.mkdir(path.dirname(atlas), { recursive: true });
-    await fs.writeFile(atlas, encodePng({ width, height, data }));
+    // Under `spawns/` rather than beside the fighters: it is the one thing on
+    // disk that says this image comes back from a command and the others do not.
+    const sheetFile = path.join(root, "assets", "sheets", "spawns", `${fx.name}.png`);
+    await fs.mkdir(path.dirname(sheetFile), { recursive: true });
+    await fs.writeFile(sheetFile, encodePng({ width, height, data }));
 
     const dir = path.join(root, "data", "spawns", fx.name);
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(path.join(dir, "frames.json"), JSON.stringify(framesJson, null, 2) + "\n");
     await fs.writeFile(path.join(dir, "animations.json"), JSON.stringify(animations, null, 2) + "\n");
-    console.log(`  wrote ${path.relative(root, atlas)} and data/spawns/${fx.name}/`);
+    console.log(`  wrote ${path.relative(root, sheetFile)} and data/spawns/${fx.name}/`);
   }
 }
 

@@ -29,7 +29,6 @@ TypeScript · PixiJS v8 · Vite · Vitest
 
 ```bash
 npm install
-npm run fetch-assets     # sprite sheets are not in this repo — see below
 npm run fx               # generate the effect sprites (we draw those ourselves)
 npm run dev
 ```
@@ -45,7 +44,8 @@ starts and stops a recording of what happened, written to `logs/session.log`
 (gitignored) as events rather than frames, so a combo attempt reads as twenty
 lines instead of six hundred.
 
-Without the assets step the page reports that the entity could not be loaded.
+Without the game's assets the page reports that the entity could not be loaded.
+Getting them is the next section, and it is not a command.
 
 ## Assets (Bring Your Own Assets)
 
@@ -53,20 +53,48 @@ This repo ships **only our code + data** — no copyrighted game art. Source ass
 live under `assets/` (gitignored), by type:
 
 ```
-assets/sheets/       character sprite sheets (the editor reads these)
-assets/audio/        (future) sfx / music
-assets/backgrounds/  (future) stage art
+assets/sheets/         one image per entity — the editor and the game read these
+assets/sheets/spawns/  effect sheets, written by npm run fx
+assets/audio/          clips cut from a capture of the game's sound test
+assets/backgrounds/    (future) stage art
 ```
 
-On a fresh clone, fetch them with:
+**Every entity is one image, and its transparency is in the file.** There is no
+second, keyed copy of a sheet anywhere: the background is removed once, in the
+editor, and what is written back is what everything reads.
 
-```bash
-npm run fetch-assets     # download/verify assets listed in assets.manifest.json
-npm run hash-assets      # print local files' sha256 (to fill the manifest)
-```
+**There is nothing to download.** A manifest and a fetch command used to pull the
+Goku sheet from The Spriters Resource; both are gone, because neither half of the
+pack is a public file any more. The audio was captured from the game's own sound
+test on the author's machine and was never published anywhere, and the sheet has
+since been modified — see below. The pack lives with the author: **ask, and you
+get a copy.**
 
-If an asset has no direct download URL, the command prints exactly where to get
-it and where to place it. See [`docs/assets.md`](./docs/assets.md).
+### The sheet is no longer the published rip
+
+The community rips of Hyper Dimension have gaps — poses the game uses that nobody
+extracted, starting with the crouching guard. Rather than swap the foundation or
+carry a second image, missing sprites are drawn or composed and **appended to the
+bottom of `assets/sheets/goku.png`**. Two things follow, and both matter before
+anyone opens that file in an image editor:
+
+- **Append only, never re-flow.** `data/entities/<name>/frames.json` is
+  coordinates into one specific image, and frame ids run in reading order along
+  each row. Rows added at the bottom leave every existing frame true; moving
+  anything already on the sheet invalidates them silently — nothing crashes, the
+  wrong sprite just draws.
+- **It matches no public download and no checksum.** Keep an untouched copy of
+  the original rip beside it, so a better rip can still be diffed against what
+  this started from.
+
+### What is the pack, and what is derived
+
+The pack is `assets/sheets/*.png` and `assets/audio/raw/` — losing those means
+losing work. Everything else under `assets/` comes back from a command:
+`assets/sheets/spawns/` from `npm run fx`, `assets/audio/sfx/` from
+`npm run split-audio`, `assets/contact/` from `npm run sheet`.
+
+See [`docs/assets.md`](./docs/assets.md) for why the project is arranged this way.
 
 ## Entity editor
 
@@ -77,8 +105,12 @@ npm run editor           # asset pipeline tool at /tools/entity-editor/
 Load a sheet from `assets/sheets/`, frame it, build animations, and Save. An
 entity is a **directory of section files** — `data/entities/<name>/frames.json`,
 `animations.json`, `states.json`, … (committed) — and Save writes the section
-belonging to the active tab, plus a keyed `assets/atlases/<name>.png`
-(gitignored). See [`docs/data-format.md`](./docs/data-format.md).
+belonging to the active tab — JSON only, never the image.
+
+The one exception is **Apply to sheet** in the BG controls, which writes the
+colour-keyed pixels back over `assets/sheets/<name>.png` itself. It is its own
+button, used once per sheet, because it is the only thing here that destroys
+pixels. See [`docs/data-format.md`](./docs/data-format.md).
 
 ## Docs
 
@@ -95,14 +127,19 @@ belonging to the active tab, plus a keyed `assets/atlases/<name>.png`
 This project would not be practical without the people who ripped the game's
 graphics and published them. The sheets it reads are theirs, not ours.
 
-Every sheet the project uses is listed, with whoever ripped it and where it came
-from, in [`assets.manifest.json`](./assets.manifest.json) — one file, which is
-the credit list as well as the download list. Add the ripper and the source
-whenever you add a sheet, and keep the list to sheets actually in use.
+- **Goku** — ripped by contributors to
+  [The Spriters Resource](https://www.spriters-resource.com/snes/dragonballzhyperdimension/asset/45315/).
+  Everything appended below the original rip's last row is the author's own.
+
+This list is the whole of it. A sheet that enters the project adds a line here,
+naming whoever ripped it and where it came from; a sheet that stops being used
+loses its line.
 
 ## Legal
 
 This is a non-commercial fan project. _Dragon Ball Z_ and _Hyper Dimension_ are
 properties of their respective owners (Bandai / Bird Studio / Toei / Nintendo).
-No original game assets are distributed in this repository — only pointers to
-where they can be found, and the code and data we wrote ourselves.
+No original game assets are distributed in this repository — not the sprites, not
+the audio, and not in any encoding. What is here is the code and the data we
+wrote ourselves, which is coordinates into an image the repository does not
+carry.

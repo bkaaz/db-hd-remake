@@ -89,7 +89,8 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
 
 interface EntityFile {
   name: string;
-  atlas: string;
+  /** Path under `assets/sheets/`, which the server resolves — `spawns/` and all. */
+  sheet: string;
   frames: Record<string, FrameDef>;
   animations: Record<string, Anim>;
   /** Section file `sounds.json`, absent until authored. */
@@ -117,22 +118,22 @@ export interface EntityDef {
   attributes: Attributes;
 }
 
-/** Fetch an entity plus its keyed atlas and build per-frame textures. */
+/** Fetch an entity plus its sheet and build per-frame textures. */
 export async function loadEntityDef(name: string): Promise<EntityDef> {
   const res = await fetch(`/api/entity?name=${name}`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = ((await res.json()) as { entity: EntityFile }).entity;
 
-  const atlasImg = new Image();
-  atlasImg.src = `/api/atlas?name=${name}`;
-  await atlasImg.decode();
-  const atlas = Texture.from(atlasImg);
-  atlas.source.scaleMode = "nearest";
+  const sheetImg = new Image();
+  sheetImg.src = `/api/sheet?name=${encodeURIComponent(data.sheet)}`;
+  await sheetImg.decode();
+  const sheet = Texture.from(sheetImg);
+  sheet.source.scaleMode = "nearest";
 
   const frames = new Map<string, FrameTex>();
   for (const [id, f] of Object.entries(data.frames ?? {})) {
     frames.set(id, {
-      tex: new Texture({ source: atlas.source, frame: new Rectangle(f.x, f.y, f.w, f.h) }),
+      tex: new Texture({ source: sheet.source, frame: new Rectangle(f.x, f.y, f.w, f.h) }),
       anchor: f.anchor,
       w: f.w,
       h: f.h,

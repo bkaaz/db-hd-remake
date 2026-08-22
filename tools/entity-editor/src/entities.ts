@@ -6,8 +6,9 @@ import { animationsModified, entitySoundsModified, framesModified } from "./expo
  * Both are entities and every tab works on either — a spawn is an entity is the
  * whole reason the editor needs nothing new to author one (see `decisions.md`,
  * 2026-08-14). The two groups are not decoration: they decide **where the image
- * comes from**. A fighter is cut from a ripped sheet in `assets/sheets/`; a
- * spawn is generated and its atlas is the only picture of it there is.
+ * comes from**. A fighter is cut from a ripped sheet at the top of
+ * `assets/sheets/`; a spawn's sheet is written by `npm run fx` into `spawns/`
+ * beneath it, and is the only picture of it there is.
  */
 
 export type EntityKind = "fighter" | "spawn";
@@ -19,8 +20,8 @@ export interface EntityRef {
 
 /** Where the picture of an entity lives, which is what the two groups encode. */
 export function imageUrlFor(ref: EntityRef): string {
-  const name = encodeURIComponent(ref.name);
-  return ref.kind === "spawn" ? `/api/atlas?name=${name}` : `/api/sheet?name=${name}.png`;
+  const rel = ref.kind === "spawn" ? `spawns/${ref.name}.png` : `${ref.name}.png`;
+  return `/api/sheet?name=${encodeURIComponent(rel)}`;
 }
 
 let groups: { fighters: string[]; spawns: string[] } = { fighters: [], spawns: [] };

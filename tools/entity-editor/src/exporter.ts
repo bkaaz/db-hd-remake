@@ -4,8 +4,9 @@ import { getSource } from "./imageProcess";
 
 /**
  * Turning editor state into the on-disk section files (docs/data-format.md) and
- * writing them through the dev-server plugin. For now the loaded sheet *is* the
- * atlas — frames reference rects straight into it — so no repacking happens yet.
+ * writing them through the dev-server plugin. Frames reference rects straight
+ * into the loaded sheet, so no repacking happens and there is no second image to
+ * keep in step with this one.
  *
  * Each section is saved from the panel that owns it, and `saved.ts` decides
  * which of them still differ from disk.
@@ -54,7 +55,7 @@ export function buildAnimations(): Record<string, AnimOut> {
 }
 
 /** The whole entity (used for the Export-JSON fallback download). */
-export function getAtlasDataURL(): string | null {
+export function getKeyedSheetDataURL(): string | null {
   const source = getSource();
   if (!source) return null;
   const c = document.createElement("canvas");
@@ -97,7 +98,6 @@ async function confirmNotStale(section: string): Promise<boolean> {
 async function saveSection(
   section: string,
   data: unknown,
-  atlasPngBase64?: string,
 ): Promise<{ ok: boolean; message: string }> {
   if (!(await confirmNotStale(section))) {
     return { ok: false, message: `Save cancelled — ${section}.json on disk is newer.` };
@@ -106,19 +106,14 @@ async function saveSection(
     const res = await fetch("/api/section", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: state.entityName, section, data, atlasPngBase64 }),
+      body: JSON.stringify({ name: state.entityName, section, data }),
     });
-    const resp = (await res.json()) as { error?: string; atlasWritten?: boolean; mtime?: number };
+    const resp = (await res.json()) as { error?: string; mtime?: number };
     if (!res.ok) return { ok: false, message: resp.error ?? "save failed" };
     // Our own write is not a conflict next time round.
     if (resp.mtime !== undefined) state.sectionMtimes[section] = resp.mtime;
     markSaved(section, data);
-    return {
-      ok: true,
-      message:
-        `Saved data/entities/${state.entityName}/${section}.json` +
-        (resp.atlasWritten ? ` + assets/atlases/${state.entityName}.png` : ""),
-    };
+    return { ok: true, message: `Saved data/entities/${state.entityName}/${section}.json` };
   } catch (e) {
     return { ok: false, message: `No editor server (run npm run editor) — ${String(e)}` };
   }
@@ -148,9 +143,39 @@ export function entitySoundsModified(): boolean {
   return isModified("sounds", state.sounds ?? {});
 }
 
-/** Save the `frames` section (+ the keyed atlas the frames index into). */
+/**
+ * Burn the current colour key into the source sheet, in place.
+ *
+ * Its own action rather than part of saving frames, and deliberately so:
+ * everything else the editor writes can be rebuilt from what is on disk, and
+ * this cannot. Applied once per sheet, it makes the background transparent in
+ * the file itself, so nothing downstream has to re-derive it from settings that
+ * are not stored anywhere. Keying an already-keyed sheet is a no-op, since only
+ * pixels with `a > 0` are ever touched.
+ */
+export async function applyKeyToSheet(): Promise<{ ok: boolean; message: string }> {
+  const png = getKeyedSheetDataURL();
+  if (!png) return { ok: false, message: "No sheet loaded." };
+  try {
+    const res = await fetch("/api/sheet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: state.entityName, pngBase64: png }),
+    });
+    const resp = (await res.json()) as { error?: string; bytes?: number };
+    if (!res.ok) return { ok: false, message: resp.error ?? "write failed" };
+    return {
+      ok: true,
+      message: `Keyed assets/sheets/${state.entityName}.png in place (${resp.bytes} bytes).`,
+    };
+  } catch (e) {
+    return { ok: false, message: `No editor server (run npm run editor) — ${String(e)}` };
+  }
+}
+
+/** Save the `frames` section. The sheet it indexes into is never rewritten here. */
 export function saveFrames(): Promise<{ ok: boolean; message: string }> {
-  return saveSection("frames", buildFrames(), getAtlasDataURL() ?? undefined);
+  return saveSection("frames", buildFrames());
 }
 
 /** Save the `animations` section. */

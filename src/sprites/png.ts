@@ -1,9 +1,9 @@
 import { deflateSync, inflateSync } from "node:zlib";
 
 /**
- * Just enough PNG decoding to read our own atlases.
+ * Just enough PNG decoding to read our own sheets.
  *
- * The atlas is produced by the editor's canvas, so it is always 8-bit
+ * A sheet we read here is produced by the editor's canvas, so it is always 8-bit
  * non-interlaced RGB(A) — no palettes, no 16-bit channels. Rather than take a
  * dependency for that one case, this decodes it with the built-in zlib and
  * refuses loudly on anything it was not built for, so an unexpected file fails
