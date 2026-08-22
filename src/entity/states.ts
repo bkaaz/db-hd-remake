@@ -45,6 +45,17 @@ export interface StateDef {
    */
   airborne?: boolean;
   /**
+   * While true the entity is low: crouching, blocking low, swinging from a
+   * crouch. It changes nothing about physics — unlike `airborne` — and exists
+   * only so a blow arriving can pick a reaction that stays down instead of
+   * standing the defender up.
+   *
+   * It has to be a flag rather than a state name, because the situation
+   * outlives the stance: the second blow of a string arrives while the
+   * defender is already in a crouching reaction, and that reaction is low too.
+   */
+  crouching?: boolean;
+  /**
    * Velocity in px per game frame, X measured **in the facing direction**
    * (+ = forward, − = backward), like box coordinates. Y is reserved until
    * gravity exists and is ignored for now.
@@ -76,6 +87,15 @@ export interface StateDef {
    * transition it chose itself.
    */
   ifAirborne?: string;
+  /**
+   * The version of this reaction for a defender who is **crouching** — the same
+   * idea as `ifAirborne`, one situation down. Without it a low fighter is stood
+   * up by every blow they take, which loses the crouch they were holding.
+   *
+   * Airborne wins when a state somehow claims both: you cannot crouch in
+   * mid-air, and a grounded reaction on a body in the air erases the jump.
+   */
+  ifCrouching?: string;
   /**
    * The block reaction to use while in this state, instead of the file's
    * `onGuard`. What it exists for is the crouching guard: blocking is decided
@@ -375,7 +395,14 @@ export function reactionFor(
 
   // No air version means the ground reaction, which is what fighters without
   // air reactions have always got. Nothing here can invent one.
-  const name = current?.airborne ? defender.states[chosen]?.ifAirborne ?? chosen : chosen;
+  // The defender's situation picks the version; the blow already picked which
+  // reaction it is. Nothing here can invent a version that was not authored.
+  const redirect = current?.airborne
+    ? defender.states[chosen]?.ifAirborne
+    : current?.crouching
+      ? defender.states[chosen]?.ifCrouching
+      : undefined;
+  const name = redirect ?? chosen;
 
   // Severity is the last word. Undefined means the blow lands — it costs health
   // and makes its noise — but changes nothing: the defender keeps falling on
@@ -649,6 +676,21 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
       }
     }
 
+    // Same shape as `ifAirborne`, and the same failure it exists to prevent:
+    // a version that is not itself low stands the defender up on the frame it
+    // starts, which is the whole thing being fixed.
+    if (def.ifCrouching !== undefined) {
+      const low = states[def.ifCrouching];
+      if (!low) {
+        errors.push(`${where}: ifCrouching "${def.ifCrouching}" is not a state`);
+      } else if (!low.crouching) {
+        warnings.push(
+          `${where}: ifCrouching "${def.ifCrouching}" is not itself crouching — ` +
+            `the next blow of a string would stand the defender up`,
+        );
+      }
+    }
+
     if (def.hitstop !== undefined && (typeof def.hitstop !== "number" || def.hitstop < 0)) {
       errors.push(`${where}: "hitstop" must be a number of game frames, 0 or more`);
     }
@@ -763,6 +805,7 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
       // reaction that names it is, and no sooner.
       const next = (def?.transitions ?? []).map((t) => t.to);
       if (def?.ifAirborne) next.push(def.ifAirborne);
+      if (def?.ifCrouching) next.push(def.ifCrouching);
       for (const to of next) {
         if (states[to] && !seen.has(to)) {
           seen.add(to);

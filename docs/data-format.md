@@ -281,6 +281,20 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   Naming a state that does not exist is an **error**. A state reached only as
   somebody's `guard` is not "unreachable": it is forced from outside on contact,
   exactly like a reaction.
+- **`crouching`** — on any state: this entity is **low** while in it. Unlike
+  `airborne` it changes nothing about physics; it exists so a blow arriving can
+  pick a reaction that stays down. Set on the crouch, the crouching block, the
+  crouching attacks and the crouching reactions themselves — that last one is
+  what carries the crouch through a string, because the second blow of a string
+  arrives while the defender is already in the reaction.
+- **`ifCrouching`** — on a **reaction** state: the version for a defender who is
+  crouching, exactly parallel to `ifAirborne` one situation down. Without it a
+  low fighter is stood up by every blow they take. Naming a state that does not
+  exist is an **error**; naming one that is not itself `crouching` is a
+  **warning**, because the next blow of the string would stand them up.
+
+  **Airborne wins** when a state somehow claims both: you cannot crouch in
+  mid-air, and a grounded reaction on a body in the air erases the jump.
 - **`ifAirborne`** — on a **reaction** state: the state to use instead when the
   entity being forced into it is off the ground. Without it an airborne
   defender is put into a grounded reaction and snaps to the floor, erasing the
@@ -392,10 +406,10 @@ blockstun — `guard_hit` still ends with its animation.
 see [`decisions.md`](./decisions.md)), so `validateStates()` in `src/entity/states.ts`
 checks it in both places: the game reports problems on screen at load, the
 editor flags them in the States tab. It catches a missing/unknown `initial` or
-`onGotHit`, an `anim`, `to`, `guard` or `ifAirborne` that does not exist, an
-unknown trigger and a malformed `vel`; it warns about unreachable states — an
-air version counts as reached through the reaction that names it, and a block
-through the stance that names it — an `ifAirborne`
+`onGotHit`, an `anim`, `to`, `guard`, `ifAirborne` or `ifCrouching` that does
+not exist, an unknown trigger and a malformed `vel`; it warns about unreachable
+states — an air or low version counts as reached through the reaction that names
+it, and a block through the stance that names it — an `ifAirborne`
 target that is not itself `airborne`, states with no way out, and
 the classic slip — a state whose only exit is `animEnd` playing a **looping**
 animation, which can never be left.

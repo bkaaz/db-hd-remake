@@ -2,6 +2,37 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-22 — Being low is a situation, so it is a flag and reactions redirect on it
+
+- **Crouching reactions built** (183 and 184, drawn by the owner): `hurt` and
+  `hurt_chain` send a low defender to `hurt_crouch`, `hurt_heavy` to
+  `hurt_heavy_crouch`. Both leave to `crouch` rather than `idle`, for the same
+  reason the crouching block does — standing up would undo a hold nobody
+  released.
+- **Shaped as `ifAirborne` was, not as `guard` was.** The engine had exactly one
+  idiom for "the defender's situation changes the reaction": a flag on the state
+  (`airborne`) and a redirect on the reaction (`ifAirborne`). Being low is the
+  same kind of fact, so it gets `crouching` and `ifCrouching` rather than a new
+  shape. An attack still names one `onHit` and gets the right version free,
+  which is the reason `ifAirborne` hangs off the reaction in the first place.
+- **A flag rather than a state name, and that is the whole trick.** The situation
+  outlives the stance: by the second blow of a string the defender is in
+  `hurt_crouch`, not in `crouch`. Marking the *reaction* `crouching` too makes
+  the redirect compose, so the crouch survives a string with nothing
+  self-referential — which is exactly what the crouching guard needed a
+  hand-written self-reference for a few hours earlier.
+- **Knockdown gets no low version, deliberately.** Only two crouching reaction
+  poses exist, and being floored out of a crouch is still being floored — there
+  is no crouch left to preserve.
+- **Open, and worth deciding before a second fighter:** there are now two
+  mechanisms for one idea. `guard` on the stance and `ifCrouching` on the
+  reaction both answer "how does a low defender take this", and with `crouching`
+  now existing the guard could be `guard_hit.ifCrouching` instead — which would
+  delete `StateDef.guard`, its validator warning, and `guard_crouch`'s
+  self-reference, since the flag composes where the self-reference had to be
+  remembered. Behaviour identical. Not done unasked, because the guard shipped
+  and was verified by recording hours before.
+
 ## 2026-08-22 — How you cover is a fact about you, so the stance names its own block
 
 - **The first known gap is closed, by a fourth way nobody had listed.**

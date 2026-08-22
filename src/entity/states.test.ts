@@ -1168,3 +1168,103 @@ describe("a stance's own guard, through the validator", () => {
     );
   });
 });
+
+describe("a crouching defender keeps the crouch a blow arrives on", () => {
+  /** Flinch and stagger, each with a low version; knockdown has none. */
+  function defender(): StatesFile {
+    return {
+      initial: "idle",
+      onGotHit: "hurt",
+      states: {
+        crouch: { anim: "idle", crouching: true },
+        hurt: { anim: "hurt", rank: 1, ifAirborne: "hurt_air", ifCrouching: "hurt_crouch" },
+        hurt_air: { anim: "hurt", rank: 1, airborne: true },
+        hurt_crouch: { anim: "hurt", rank: 1, crouching: true },
+        hurt_heavy: { anim: "hurt", rank: 2, ifCrouching: "hurt_heavy_crouch" },
+        hurt_heavy_crouch: { anim: "hurt", rank: 2, crouching: true },
+        knockdown: { anim: "hurt", rank: 3, airborne: true },
+      },
+    };
+  }
+  const LOW: StateDef = { anim: "crouch", crouching: true };
+  const STANDING = undefined;
+  const IN_AIR: StateDef = { anim: "jump", airborne: true };
+
+  it("sends a low defender to the low version of the blow's reaction", () => {
+    expect(reactionFor(undefined, defender(), LOW)).toBe("hurt_crouch");
+    expect(reactionFor("hurt_heavy", defender(), LOW)).toBe("hurt_heavy_crouch");
+  });
+
+  it("stays standing when the defender is not low", () => {
+    expect(reactionFor(undefined, defender(), STANDING)).toBe("hurt");
+  });
+
+  it("keeps the crouch through a string, because the reaction is low too", () => {
+    // The failure this is here for: the second blow arrives while the defender
+    // is already in the low reaction, so *that* is the state being asked. A
+    // reaction not marked `crouching` would stand them up mid-string, which is
+    // exactly what the crouching guard did on its first day.
+    const f = defender();
+    expect(reactionFor(undefined, f, f.states.hurt_crouch)).toBe("hurt_crouch");
+  });
+
+  it("lets airborne win when a state somehow claims both", () => {
+    // You cannot crouch in mid-air, and a grounded reaction on a body in the
+    // air erases the jump — the failure ifAirborne exists to prevent.
+    const both: StateDef = { anim: "jump", airborne: true, crouching: true };
+    expect(reactionFor(undefined, defender(), both)).toBe("hurt_air");
+    expect(reactionFor(undefined, defender(), IN_AIR)).toBe("hurt_air");
+  });
+
+  it("invents nothing: a reaction with no low version is used as it stands", () => {
+    expect(reactionFor("knockdown", defender(), LOW)).toBe("knockdown");
+  });
+});
+
+describe("ifCrouching, through the validator", () => {
+  function lowered(): StatesFile {
+    const f = machine();
+    f.onGotHit = "hurt";
+    f.states.hurt = {
+      anim: "hurt",
+      rank: 1,
+      ifCrouching: "hurt_crouch",
+      transitions: [{ when: "stunEnd", to: "idle" }],
+    };
+    f.states.hurt_crouch = {
+      anim: "hurt",
+      rank: 1,
+      crouching: true,
+      transitions: [{ when: "stunEnd", to: "idle" }],
+    };
+    return f;
+  }
+
+  it("accepts a reaction with a low version that is itself low", () => {
+    expect(validateStates(lowered(), ANIMS).errors).toEqual([]);
+    expect(validateStates(lowered(), ANIMS).warnings.join(" ")).not.toContain("ifCrouching");
+  });
+
+  it("reports a low version that is not a state", () => {
+    const f = lowered();
+    f.states.hurt.ifCrouching = "hurt_crouhc";
+    expect(validateStates(f, ANIMS).errors).toContain(
+      'state "hurt": ifCrouching "hurt_crouhc" is not a state',
+    );
+  });
+
+  it("warns about a low version that would stand the defender up", () => {
+    const f = lowered();
+    delete f.states.hurt_crouch.crouching;
+    expect(validateStates(f, ANIMS).warnings).toContain(
+      'state "hurt": ifCrouching "hurt_crouch" is not itself crouching — ' +
+        "the next blow of a string would stand the defender up",
+    );
+  });
+
+  it("does not call a low version unreachable — the reaction that names it reaches it", () => {
+    expect(validateStates(lowered(), ANIMS).warnings).not.toContain(
+      'state "hurt_crouch" is unreachable (no transition leads to it)',
+    );
+  });
+});
