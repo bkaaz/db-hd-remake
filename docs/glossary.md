@@ -46,9 +46,10 @@ and minus can be correct when the blow also pushes them out of range.
 → `combat.md` §1
 
 **Hitstop** — the freeze on contact, applied to **both** fighters for the same
-number of frames (`hitstop`, 10 on the chain kicks). It is what gives a blow
-weight, and because both sides freeze equally it changes nothing about who acts
-first. → `entityFile.ts` (`hitstop`)
+number of frames, set by the blow (`hitstop`) over an entity-wide default. It is
+what gives a blow weight, and because both sides freeze equally it changes
+nothing about who acts first. → `entityFile.ts` (`hitstop`), `combat.md`'s table
+for the value per strength
 
 **Hitstun** — how long the **defender** is helpless after a blow, counted in
 frames and set by the blow (`hitstun`), not by the length of the reaction
@@ -62,8 +63,32 @@ defender is still in hitstun. Nothing is interrupted; the sum is
 damage and hitstun, down to a floor of 20% and 50%. The counter lives on the
 defender and resets when they get control back. → `combat.md` §3
 
+**Rank** — how badly a reaction has taken control away: flinch 1, stagger 2,
+knockdown 3, on the floor 4, and 0 for a fighter who is their own. A blow never
+lowers the rank the defender is already in, an equal rank re-enters, and rank 0
+is also what resets the combo counter and what decides you may still guard.
+→ `combat.md` §7, `states.ts` (`reactionFor`, `guardable`)
+
 **Recovery** — the frames after the active ones, when the hit box is gone but you
 still cannot act. What makes a whiff punishable. → `combat.md` §1
+
+**Situation flag** (`airborne`, `crouching`) **and its redirect**
+(`ifAirborne`, `ifCrouching`) — how a defender's circumstances change the
+reaction without any attack knowing about them. The flag marks the state, the
+redirect hangs off the reaction, and an attack still names one `onHit`. The flag
+also rides on the reaction, which is what makes it survive a string.
+→ [ADR 0002](./adr/0002-the-defenders-situation-is-a-flag.md)
+
+**Smash** — a blow allowed to *re*-launch or re-floor a body that is already
+being juggled. Marked on the attack (`smash`), spent from a budget of two per
+combo; past the budget it still hits and still hurts, it just stops lifting.
+→ `combat.md` §4
+
+**Spawn** — anything a state brings into the world: a hit spark, an aura, a ki
+blast. Not a kind of object — it is an ordinary `Entity`, authored in
+`data/spawns/<name>/`, and *effect*, *attachment* and *projectile* are words for
+how one behaves rather than three types.
+→ [ADR 0007](./adr/0007-everything-a-state-spawns-is-an-entity.md)
 
 **Startup** — the frames from pressing the button to the hit box appearing.
 → `combat.md` §1

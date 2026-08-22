@@ -1,8 +1,13 @@
 # Open questions
 
 Decisions we still owe answers to. We resolve these before they block work.
-Move a resolved one into [`adr/`](./adr/) if it is architecture, into
-[`combat.md`](./combat.md) if it is gameplay.
+
+**A resolved question is deleted from this file**, in the change that resolves
+it — the answer goes to [`adr/`](./adr/) if it is architecture and to
+[`combat.md`](./combat.md) if it is gameplay, and that is then the only place it
+lives. Numbers are never reused. Like `plan.md`, this file only shrinks: an
+entry marked *resolved* and left here reads exactly like a live one, which is
+how a file stops being read at all.
 
 ## Scope & vision
 
@@ -18,7 +23,6 @@ Move a resolved one into [`adr/`](./adr/) if it is architecture, into
 
 ## Game facts to confirm (see game-overview.md)
 
-- **Q4 — Roster:** ✅ Resolved — 10 fighters confirmed (see `game-overview.md`).
 - **Q5 — Core mechanics:** 🟡 Partially resolved — shared health/Ki bar, Rush
   Battle System, desperation moves and four-button controls are confirmed. Still
   open: exact **move sets, inputs, frame data, hitboxes, round rules**.
@@ -29,32 +33,18 @@ Move a resolved one into [`adr/`](./adr/) if it is architecture, into
 ## Hardcoding: what is cheap to leave, and what gets expensive
 
 Raised by the owner on 2026-08-14, reading `main.ts` after the split. Nothing
-here is a bug — it is all the shape of a game that has exactly one fighter, one
-opponent, one screen and no menu. The question each time is not "is this
-hardcoded" but **what does leaving it cost, and when does that bill arrive.**
-
-Deliberately not answered in one sitting; each gets its own conversation.
+here is a bug — it is the shape of a game with one fighter, one opponent, one
+screen and no menu. The question is never "is this hardcoded" but **what does
+leaving it cost, and when does that bill arrive.**
 
 - **Q9 — `boot()` is still one long function.** ⏸ Deferred on purpose — most of
   its length is building a fight, which moves into `FightScene`. Fixing it before
   that means fixing it twice.
-- **Q10 — Constants have no home.** ✅ Resolved — they mostly already do. No
-  constants file; a value lives beside its only user. The two genuinely shared
-  ones define units, not tuning.
-- **Q11 — `"goku"` is written into `main.ts`.** ✅ Resolved — it is a scene
-  parameter, not a constant, and the URL supplies it (Q13).
-- **Q12 — Effects and sounds are tied to one entity.** ✅ Resolved — one game-wide
-  sound bank in `data/audio/`, voices stay with the fighter
-  ([ADR 0011](./adr/0011-where-a-sound-lives.md)), and effects moved out to
-  `data/spawns/` ([ADR 0007](./adr/0007-everything-a-state-spawns-is-an-entity.md)).
-- **Q13 — One scene, assumed everywhere.** ✅ Resolved — a scene is built from
-  plain parameters, chosen by the URL
-  ([ADR 0008](./adr/0008-a-scene-is-what-its-parameters-say.md)). Still
-  open, and deliberately so: how a scene *changes* to the next one. That gets
-  decided when there are two scenes to move between.
-- **Q14 — Getting straight to a scene while developing.** ✅ Resolved with Q13 —
-  it is not a separate feature. A scene describable by parameters can be entered
-  by anything that can supply them, the URL included.
+- **Q15 — How a scene *changes* to the next one.** What a scene is, and how one
+  is entered, is settled ([ADR 0008](./adr/0008-a-scene-is-what-its-parameters-say.md));
+  what a scene says when it wants to be replaced is not. Deliberately left until
+  there are two screens to move between, which is the first moment the answer
+  can be judged rather than guessed.
 
 ## Technical
 
