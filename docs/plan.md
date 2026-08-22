@@ -189,7 +189,15 @@ order, because each step tests the rule before the next one applies it wider:
    had gone stale twice in one day. What survived is the section-file layout,
    who writes what, the decisions that explain absences, how a blow travels
    across files, and the sound id-space rules.
-2. **`tooling.md` and `entity-editor.md`** (~100 each) — same scan, likely small.
+2. ~~`tooling.md` and `entity-editor.md`~~ — **done 2026-08-22**, 204 lines to
+   87, and one file instead of two. `tooling.md` had kept an `/api/*` endpoint
+   list that went stale twice in a day, a phase table duplicating
+   `entity-editor.md`'s, and layout rules duplicating `assets.md`; what was left
+   answered "why ours", which is the first entry in the editor's own history, so
+   it merged there and the file is gone. `entity-editor.md` had a 2026-08-07
+   target model — one file per entity, `commands`, `onEnter`, a scripting escape
+   hatch — none of which was built and all of which `data-format.md` now lists as
+   absent, so it was not merely duplicated but misleading.
 3. **`decisions.md` → `docs/adr/NNNN-title.md`**, numbered, `Status:` header, one
    screen each. Architecture only; gameplay folds into `combat.md`, the rest is
    dropped and stays in git. A sample conversion of four crouch entries came out

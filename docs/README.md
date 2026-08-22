@@ -14,12 +14,11 @@ collect what we want to build **before** writing gameplay code.
   part is there. The shape, not a schedule.
 - [`assets.md`](./assets.md) — where graphics/audio come from and how much can be
   automated (research findings).
-- [`tooling.md`](./tooling.md) — the asset pipeline: our own browser editor
-  (sprite-sheet-first; MUGEN import parked) and its repo-integrated I/O.
-- [`entity-editor.md`](./entity-editor.md) — the Entity Editor: its data model,
-  its tabs, and the phases it was built in (history, not a schedule).
-- [`data-format.md`](./data-format.md) — the character file format (the contract
-  between the entity editor and the engine).
+- [`entity-editor.md`](./entity-editor.md) — the Entity Editor: its tabs, the
+  MUGEN mapping, why it is ours rather than someone else's, and the phases it
+  was built in (history, not a schedule).
+- [`data-format.md`](./data-format.md) — where an entity's sections live and who
+  may write them. The shape itself is `src/entity/entityFile.ts`.
 - [`tech-stack.md`](./tech-stack.md) — technology choices and why.
 - [`roadmap.md`](./roadmap.md) — the wider arc, from setup toward a playable
   prototype. No work items; those are in `plan.md`.

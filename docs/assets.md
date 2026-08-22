@@ -99,17 +99,11 @@ fighting game* and cannot be automated away by any approach.
 ## Primary path: sprite sheets + our own editor
 
 Active plan: use ripped **sprite sheets** and process them with our own
-browser-based entity editor. See [`tooling.md`](./tooling.md).
+browser-based entity editor. See [`entity-editor.md`](./entity-editor.md).
 
-### MUGEN — parked (future accelerator)
-
-MUGEN characters built on Hyper Dimension sprites (e.g. Kamekaze's pack) carry
-frame grouping, timing, anchors and hitboxes/hurtboxes (`.air` Clsn1/Clsn2) as
-parseable data — a shortcut if hand-authoring gets too slow. **Not part of the
-active plan**; kept documented so we can reach for it later.
-
-⚠️ Do not confuse with **"Hyper Dragon Ball Z" (Team Z2)** — a different game
-with original, custom-drawn HD art, not Hyper Dimension's SNES sprites.
+⚠️ When looking for sprites, do not confuse Hyper Dimension with **"Hyper Dragon
+Ball Z" (Team Z2)** — a different game with original, custom-drawn HD art, not
+Hyper Dimension's SNES sprites.
 
 ## What may live in the repo, and what may not
 
@@ -153,7 +147,6 @@ git history clean, which is a property you lose exactly once.
 - **Mesen-S** — SNES emulator with debugger, OAM/tile viewers, PNG export, and a
   Lua scripting API. Research/extraction/RE tool for filling sprite-sheet gaps.
   Not a runtime dependency.
-- **Fighter Factory** — reference/validation viewer for MUGEN data (parked path).
 
 ## Reference material
 
