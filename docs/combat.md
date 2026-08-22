@@ -2,10 +2,9 @@
 
 This file describes **the fight we want**, the way
 [`game-overview.md`](./game-overview.md) describes the 1996 game. It is not a
-queue — [`plan.md`](./plan.md) is the only one — and not a decision log;
-[`decisions.md`](./decisions.md) holds the reasoning behind each choice as it is
-settled. What lives here is the shape, so this conversation does not have to
-happen twice.
+queue — [`plan.md`](./plan.md) is the only one. Gameplay reasoning lives here and
+nowhere else; [`adr/`](./adr/) holds the architecture that carries it. What lives
+here is the shape, so this conversation does not have to happen twice.
 
 Everything below is judged against one brief, settled 2026-08-15: **the fight
 should be dynamic, the way Dragon Ball is dynamic.**
@@ -89,6 +88,15 @@ alone. And **knockback travels with hitstun**, since a reaction's `vel` applies
 every frame it lasts — so tuning how long somebody is held also moves them
 further, which is a coupling to remember when §3's curves arrive.
 
+**Every knockback distance is derived from one that already means something**,
+which is why none of them is a round number picked by feel. A light hit pushes
+at exactly walking speed, so an opponent who walks straight back in neither
+gains nor loses ground while taking it. A heavy travels one whole `pushWidth`
+further, so the gap it opens fits a body. A knockdown goes further than a heavy
+again — being floored should cost more ground than being staggered — and lifts
+about a third of a fighter's height, which is clearly off the feet without being
+a juggle. Retune by moving the thing the distance is measured against.
+
 Blockstun is the same mechanism with its own number, and is deliberately not
 built yet: `guard_hit` still ends with its animation.
 
@@ -165,6 +173,13 @@ Raising the number is not the answer to "can we juggle more". The curves are.
 Chain links that juggle are deliberately not smashes: a juggle keeps a body up
 where a smash puts it back down, and a string that spent the budget on its own
 middle could not end with a knockdown.
+
+**Where the genre puts a cap like this**, so the position is not re-argued:
+Street Fighter charges each move its own juggle cost, Tekken raises gravity
+through the combo and allows one screw, the Marvel/FighterZ line lets hitstun
+decay until the victim simply falls out. In all three the hard cap is the *net*
+under the curves and never the mechanism itself — which is exactly where ours
+should end up once §3 is finished.
 
 ### 5. Vanish — the escape, and why it is not the limiter
 

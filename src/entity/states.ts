@@ -535,7 +535,7 @@ export interface Validation {
 /**
  * Check a hand-authored `states.json` against the entity's animations.
  *
- * States are authored as text for now (see docs/decisions.md), so the one real
+ * States are authored as text for now (ADR 0013), so the one real
  * risk is a silent typo in a cross-reference: an animation or target state that
  * does not exist. Both the game (at load) and the editor's States tab run this,
  * so the same mistake is reported the same way in both places.

@@ -18,8 +18,8 @@ What is actually built here:
 - **Tests over the parts that can be tested** — the state machine, its
   validator, collision and the generators run in Node, free of PixiJS.
 
-The reasoning behind every decision, including the ones that were tried and
-dropped, is in [`docs/decisions.md`](./docs/decisions.md).
+Why the engine is shaped as it is, including what was tried and dropped, is in
+[`docs/adr/`](./docs/adr/) — one architecture decision per file.
 
 ## Stack
 
@@ -132,8 +132,9 @@ pixels. See [`docs/data-format.md`](./docs/data-format.md).
 
 ## Docs
 
-- [`docs/decisions.md`](./docs/decisions.md) — the decision log, newest first.
-  The most useful file here if you want to see how the thing was reasoned about.
+- [`docs/adr/`](./docs/adr/) — the architecture decisions, one per file, each on
+  one screen. The most useful place here if you want to see how the thing was
+  reasoned about.
 - [`docs/plan.md`](./docs/plan.md) — the work queue, and the only one. Finished
   items are deleted from it, so it only ever shrinks.
 - [`docs/data-format.md`](./docs/data-format.md) — the contract between the

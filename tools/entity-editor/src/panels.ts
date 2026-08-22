@@ -267,7 +267,7 @@ export function renderAnims(container: HTMLElement): void {
  * Shows `states.json` and flags broken references. Deliberately read-only:
  * states are relational data that reads and edits well as text, so we buy the
  * part that text cannot give us — validation — and skip the editing UI until
- * the format settles (see docs/decisions.md).
+ * the format settles (ADR 0013).
  */
 export function renderStates(container: HTMLElement): void {
   container.replaceChildren();

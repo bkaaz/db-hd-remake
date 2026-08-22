@@ -170,7 +170,7 @@ export function entityEditorServer(): Plugin {
 
       // The game's sound bank. Unlike an entity section this belongs to no
       // fighter, so it is read on its own rather than assembled from a
-      // directory — see decisions.md, "A voice has an owner; a punch does not".
+      // directory — a voice has an owner and a punch does not (ADR 0011).
       server.middlewares.use("/api/sounds", async (req, res) => {
         const file = path.join(root, SOUND_BANK);
         if (req.method === "POST") {

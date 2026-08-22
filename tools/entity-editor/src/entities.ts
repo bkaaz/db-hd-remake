@@ -4,8 +4,8 @@ import { animationsModified, entitySoundsModified, framesModified } from "./expo
  * The rail of things that can be opened: fighters and spawns.
  *
  * Both are entities and every tab works on either — a spawn is an entity is the
- * whole reason the editor needs nothing new to author one (see `decisions.md`,
- * 2026-08-14). The two groups are not decoration: they decide **where the image
+ * whole reason the editor needs nothing new to author one (ADR 0007). The two
+ * groups are not decoration: they decide **where the image
  * comes from**. A fighter is cut from a ripped sheet at the top of
  * `assets/sheets/`; a spawn's sheet is written by `npm run fx` into `spawns/`
  * beneath it, and is the only picture of it there is.

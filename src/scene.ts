@@ -8,8 +8,8 @@ import type { Keyboard } from "./input/keyboard";
  * the fight a player will actually play is still ahead of us.
  *
  * **Every scene is built from a small serialisable request** — never from
- * objects the previous scene happened to leave behind (see `decisions.md`,
- * 2026-08-14). That is what makes jumping straight to the screen you are
+ * objects the previous scene happened to leave behind (ADR 0008). That is what
+ * makes jumping straight to the screen you are
  * working on free rather than a feature: if a character select can describe a
  * match in three values, so can the address bar.
  *

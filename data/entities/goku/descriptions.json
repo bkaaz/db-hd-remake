@@ -438,7 +438,7 @@
       ]
     },
     "guard_crouch": {
-      "desc": "The crouching guard, and the first frame on this sheet that was not ripped: the rip has no low block at all, which decisions.md recorded as the first known gap on 2026-08-09. Drawn by the owner 2026-08-22 in Goku's own palette, hard-edged, in the style of the standing block at 28.",
+      "desc": "The crouching guard, and the first frame on this sheet that was not ripped: the rip has no low block at all, which was the first known gap in the sheet. Drawn by the owner 2026-08-22 in Goku's own palette, hard-edged, in the style of the standing block at 28.",
       "frames": [
         "182"
       ]

@@ -26,7 +26,7 @@ sha256 — so that coordinates stayed valid wherever the repo was cloned. Neithe
 half of that survived contact with the work: the audio was captured from the
 game's sound test and exists nowhere public, and the sheet is now appended to by
 hand, so it matches no published file. The manifest and its fetch command are
-gone; the README says to ask the author for the pack. See `decisions.md`.
+gone; the README says to ask the author for the pack.
 
 **Layout — three gitignored roots, and each answers one question** (2026-08-22).
 They mirror each other, so where a file goes is never a judgement call:
@@ -105,6 +105,31 @@ browser-based entity editor. See [`entity-editor.md`](./entity-editor.md).
 Ball Z" (Team Z2)** — a different game with original, custom-drawn HD art, not
 Hyper Dimension's SNES sprites.
 
+## The sheet we have, and why it stays
+
+**A bigger rip exists and was measured rather than guessed.** Sprite Database's
+is 3.3× the area of ours and includes the black-haired base form we barely have;
+a single sprite uses 18 colours and its palette values match ours exactly, so the
+same poses are pixel-identical and a script could have carried every frame id,
+anchor and box across. **It was still refused: drop shadows and effects are
+painted into those sprites and cannot be subtracted.** A shadow welded to a frame
+cannot be put under a fighter who is in the air, and an aura welded into a pose
+cannot be switched off — the opposite direction from generating our own effects.
+Gaps get filled another way rather than by swapping the foundation.
+
+**The sheet is 1-bit alpha, and that is a property to protect.** SNES sprites
+were drawn or not drawn; there is no anti-aliasing to preserve. It is also what
+keeps palette swaps possible, since a colour map is only unambiguous while every
+pixel is exactly one palette colour. **So hand-drawn additions must never be
+anti-aliased.**
+
+**Colours that look off-palette usually are not.** The rip carries two spellings
+of the same SNES colour — an exact 5-bit round-trip, `v<<3` against
+bit-replication — so 27 of its colours are one colour written twice, and its 118
+colours are really 91. Choosing between the two is choosing a spelling, not a
+colour. Leave it alone: normalising the sheet would buy a palette-swap tool that
+does not exist yet, and that tool can group by `c>>3` in one line at build time.
+
 ## What may live in the repo, and what may not
 
 The rule is **not** "code yes, images no". Copyright attaches to the expression,
@@ -137,6 +162,14 @@ sheet it is inseparable from it, so it stays gitignored with everything else in
 per-frame "which sheet", and the gaps are mostly composites of ripped frames
 anyway, which could not be committed either. The seam was judged not worth the
 format change. Revisit it if a fighter ever ends up mostly hand-drawn.
+
+**The risk that buys, named rather than hidden:** a hand-edited sheet has
+*versions*, and `frames.json` is coordinates into one of them. Restoring an
+older copy would draw the wrong sprite for every frame above 180 and error on
+none of them. The owner took that knowingly when the manifest and its sha256
+went (2026-08-21); the mitigation is the append-only rule, which keeps existing
+ids true. If it ever bites, what comes back is a hash kept purely as a version
+check — not the fetcher.
 
 That is the whole point of BYOA. It was never a claim of legal cover for a fan
 remake — it removes the single unambiguous risk at a cost of nothing, and keeps

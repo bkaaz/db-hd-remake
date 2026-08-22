@@ -11,7 +11,7 @@ line somebody forgot to remove. What a finished item leaves behind:
 
 | | where |
 |---|---|
-| **why** it was done that way | `decisions.md` (newest first — grows) |
+| **why** it was done that way | `adr/` — one file per decision |
 | **when** | git history |
 | **what** the format now is | `data-format.md` and friends |
 
@@ -152,7 +152,7 @@ so adding a fighter is adding a directory and their slot was reserved from the
 start. The cost of that is a typo looking exactly like "not built yet", which
 the slot showing its own name makes visible enough.
 
-**How a scene is chosen is settled** (`decisions.md`, 2026-08-14): every scene is
+**How a scene is chosen is settled** ([ADR 0008](./adr/0008-a-scene-is-what-its-parameters-say.md)): every scene is
 built from a small serialisable parameter object, never from what the previous
 scene left behind, and the URL supplies it —
 `?scene=debug&p1=goku&p2=goku`. An unknown parameter is a loud error, not a
@@ -160,7 +160,7 @@ quiet fallback. The line that used to sit here — "convenience presets go in
 `package.json`, not into a committed dev-state file" — was overruled on
 2026-08-16 and is now the opposite: the debug scene's setups live in a committed
 file, because restarting a dev server that has been up for days costs more than
-a page reload (`decisions.md`).
+a page reload (same ADR).
 
 *Open:* how a scene *changes* to the next one — whether `step()` returns the
 successor or that wants an event. Decide when the second scene exists, not
@@ -174,42 +174,6 @@ the same fighters the match does; today nothing loads twice.
 *Done when:* `main.ts` is boot plus the crank, and adding a scene does not touch
 it beyond the first one.
 
-## Then: the docs stop repeating the code, and the log becomes ADRs
-
-`decisions.md` reached **2518 lines and 90 entries** in sixteen days. It costs a
-session nothing — nothing loads it, and it is read by `grep` — but the owner
-cannot read it, and a superseded entry looks exactly like a live one.
-
-The rules are settled and now in `CLAUDE.md`. What is left is the work, in this
-order, because each step tests the rule before the next one applies it wider:
-
-1. ~~`data-format.md`~~ — **done 2026-08-22**, 548 lines to 158. All 19 state
-   fields, all 7 attributes and the sound fields had doc comments in the code
-   already; so did the trigger vocabulary and the validator's checklist, which
-   had gone stale twice in one day. What survived is the section-file layout,
-   who writes what, the decisions that explain absences, how a blow travels
-   across files, and the sound id-space rules.
-2. ~~`tooling.md` and `entity-editor.md`~~ — **done 2026-08-22**, 204 lines to
-   87, and one file instead of two. `tooling.md` had kept an `/api/*` endpoint
-   list that went stale twice in a day, a phase table duplicating
-   `entity-editor.md`'s, and layout rules duplicating `assets.md`; what was left
-   answered "why ours", which is the first entry in the editor's own history, so
-   it merged there and the file is gone. `entity-editor.md` had a 2026-08-07
-   target model — one file per entity, `commands`, `onEnter`, a scripting escape
-   hatch — none of which was built and all of which `data-format.md` now lists as
-   absent, so it was not merely duplicated but misleading.
-3. **`decisions.md` → `docs/adr/NNNN-title.md`**, numbered, `Status:` header, one
-   screen each. Architecture only; gameplay folds into `combat.md`, the rest is
-   dropped and stays in git. A sample conversion of four crouch entries came out
-   at 128 lines → two ADRs of ~60, so expect **90 entries → 25-30 ADRs**.
-
-**This one needs the owner, entry by entry** — the call of *ADR / combat.md /
-drop* is a judgement, not a script. Produce the labelled list first; do not
-convert anything before it is reviewed.
-
-*Done when:* no doc restates a type, and `docs/adr/` is what a newcomer reads to
-learn why the engine is shaped as it is.
-
 ## Queued: nothing checks that a `sound` or `hitFx` id exists
 
 Found while splitting the sound bank, where twenty-one references were renamed
@@ -221,6 +185,19 @@ next rename safe instead of nerve-racking.
 
 *Done when:* an unknown `sound` or `hitFx` id is reported at load, the same way
 an unknown animation is.
+
+## Queued: a read-only `npm run check-sheet`
+
+The sheet is hand-edited now, and a drawing session can leave pixels that are
+off-palette or partly transparent without anything saying so — 32 of them
+survived at the belt of frames 187/188 and were found by half an hour of
+throwaway Python. The value is never the fixing: it is being able to ask "did
+this session break anything" in ten seconds. Read-only on purpose — an automatic
+nearest-colour snap is a guess at that distance, and the 1-bit alpha the palette
+work depends on is exactly what a well-meaning fix would round away.
+
+*Done when:* one command reports off-palette pixels and partial alpha per frame,
+and changes nothing.
 
 ## Next: review and tidy the sound slice
 
@@ -260,7 +237,7 @@ rediscover them:
   since the day it was written.
 
 *Done when:* the diff has been read end to end, the dead weight is gone, and
-anything kept on purpose says why — here or in `decisions.md`.
+anything kept on purpose says why — here or in `adr/`.
 
 ## G. Crouch, and crouch attacks
 
@@ -270,7 +247,7 @@ listed here as the standing guard and is in fact Goku exhausted (owner,
 2026-08-15), so the guard is a single frame held on contact, which is all it
 ever needed to be. **The crouching guard was the sheet's first known gap and is
 now closed** — the owner drew 182 rather than taking any of the three ways out
-`decisions.md` had recorded, and it is built and wired (2026-08-22).
+that had been recorded, and it is built and wired (2026-08-22).
 
 *Open:* whether a low blow needs its own reaction. Frame 76 is a hit to the
 stomach, so the sprite exists — the question is whether the fight reads better

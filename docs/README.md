@@ -25,7 +25,7 @@ collect what we want to build **before** writing gameplay code.
 - [`bugs.md`](./bugs.md) — what is known to be broken. Not a queue; write an
   entry the moment you notice one, delete it when it is fixed.
 - [`open-questions.md`](./open-questions.md) — decisions we still owe answers to.
-- [`decisions.md`](./decisions.md) — log of decisions already made.
+- [`adr/`](./adr/) — architecture decisions already made, one per file.
 
 ## Ground rule
 

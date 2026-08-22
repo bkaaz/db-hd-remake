@@ -49,7 +49,7 @@ Verified 2026-08-07.
 
 **Everything above describes the 1996 game. It is context, not a requirement.**
 
-Settled 2026-08-15 (`decisions.md`): the **combat system is ours**. The owner
+Settled 2026-08-15 (`combat.md`): the **combat system is ours**. The owner
 does not like the original's, and that is a main reason this remake exists — so
 the shared health/Ki bar, the Rush Battle System and the rest are things the
 original did, not things we owe. What binds us is the **roster** and the

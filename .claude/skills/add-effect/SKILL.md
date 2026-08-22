@@ -11,8 +11,8 @@ writes a whole entity — the sheet PNG (into `assets/sheets/spawns/`) *and* its
 via `scripts/fx.ts` (file I/O only). Nothing to frame, no editor round-trip.
 
 Why generated: no ripped hit spark exists for this game. The community sheets
-have auras, beams, explosions and smoke (ripped by `Locke_gb7`; see
-`decisions.md`, 2026-08-09) but nothing for a basic blow. Generating also means the art is **ours**, unlike
+have auras, beams, explosions and smoke (ripped by `Locke_gb7`) but nothing for
+a basic blow. Generating also means the art is **ours**, unlike
 the ripped sheets.
 
 ## The four rules that keep generated art from looking bolted on

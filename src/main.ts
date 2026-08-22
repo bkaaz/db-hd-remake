@@ -18,7 +18,7 @@ import { showMessage } from "./ui/hud";
  *
  * Nothing here knows what a fight is. A scene asks to be replaced by returning
  * a request, and this is the only place that turns a request into a scene —
- * which is also why the address bar can do it (see `docs/decisions.md`).
+ * which is also why the address bar can do it (ADR 0008).
  */
 
 const FRAME_TIME = 1 / 60;

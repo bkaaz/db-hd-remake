@@ -7,7 +7,7 @@
  * a new mode three lines instead of a copy of the last one — and what stops the
  * file from having to be updated every time the scene gains a knob.
  *
- * Numbered rather than named, at the owner's call (`decisions.md`, 2026-08-16):
+ * Numbered rather than named, at the owner's call:
  * a number is one character to change in the address bar, and a dummy that does
  * "light, light, pause, jump in, light" has no honest name. The cost — a number
  * meaning nothing a week later — is paid by the recording printing the mode's

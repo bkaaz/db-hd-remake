@@ -1,13 +1,14 @@
 # Open questions
 
 Decisions we still owe answers to. We resolve these before they block work.
-Move resolved ones into [`decisions.md`](./decisions.md).
+Move a resolved one into [`adr/`](./adr/) if it is architecture, into
+[`combat.md`](./combat.md) if it is gameplay.
 
 ## Scope & vision
 
 - **Q1 — Remake fidelity:** 🟡 Partially resolved — **gameplay is ours**, and
   deliberately not faithful: the owner dislikes the original's combat and that
-  is a main reason the remake exists (`decisions.md`, 2026-08-15). The sprites,
+  is a main reason the remake exists (`combat.md`). The sprites,
   the roster and the look stay Hyper Dimension. Still open: how much of the
   presentation beyond that (stage planes, HUD, round flow) we keep.
 - **Q2 — First playable slice:** which characters/stage/moves define "done" for
@@ -36,17 +37,19 @@ Deliberately not answered in one sitting; each gets its own conversation.
 
 - **Q9 — `boot()` is still one long function.** ⏸ Deferred on purpose — most of
   its length is building a fight, which moves into `FightScene`. Fixing it before
-  that means fixing it twice. See `decisions.md`, 2026-08-14.
+  that means fixing it twice.
 - **Q10 — Constants have no home.** ✅ Resolved — they mostly already do. No
   constants file; a value lives beside its only user. The two genuinely shared
-  ones define units, not tuning. See `decisions.md`, 2026-08-14.
+  ones define units, not tuning.
 - **Q11 — `"goku"` is written into `main.ts`.** ✅ Resolved — it is a scene
   parameter, not a constant, and the URL supplies it (Q13).
 - **Q12 — Effects and sounds are tied to one entity.** ✅ Resolved — one game-wide
-  sound bank in `data/audio/`, voices stay with the fighter, effects move to
-  `data/fx/`. See `decisions.md`, 2026-08-14. Migration is queued in `plan.md`.
+  sound bank in `data/audio/`, voices stay with the fighter
+  ([ADR 0011](./adr/0011-where-a-sound-lives.md)), and effects moved out to
+  `data/spawns/` ([ADR 0007](./adr/0007-everything-a-state-spawns-is-an-entity.md)).
 - **Q13 — One scene, assumed everywhere.** ✅ Resolved — a scene is built from
-  plain parameters, chosen by the URL. See `decisions.md`, 2026-08-14. Still
+  plain parameters, chosen by the URL
+  ([ADR 0008](./adr/0008-a-scene-is-what-its-parameters-say.md)). Still
   open, and deliberately so: how a scene *changes* to the next one. That gets
   decided when there are two scenes to move between.
 - **Q14 — Getting straight to a scene while developing.** ✅ Resolved with Q13 —

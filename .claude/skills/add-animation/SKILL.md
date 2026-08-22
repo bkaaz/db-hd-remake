@@ -194,7 +194,8 @@ extends and the box is arbitrary. Say so if it happens.
 
 ### 3. Add the state
 
-`states.json` stays hand-written (see `docs/decisions.md`); it is short and
+`states.json` stays hand-written (`docs/adr/0013-states-stay-hand-authored.md`);
+it is short and
 involves judgement. An attack:
 
 ```jsonc
@@ -242,6 +243,17 @@ schedule and edits in the editor. Do offer the usual verification choices
 - **Frame ids are plain numbers** (`42`), numbered in reading order along each
   row of the sheet then down — so frames that belong to one move are usually
   consecutive. The owner can renumber in the editor, which swaps two frames.
+- **Two frames of one animation must agree about where the body is.** An anchor
+  is a per-frame offset, so if one pose sits 93 px below its head and the next
+  77, the character pops 16 px between them — which is how the jump was broken
+  once. Align them on something the animation keeps still (the head, for an
+  airborne pose) and let a pose's extended legs hang below the anchor, which is
+  what an airborne pose should do anyway.
+- **A rotating body anchors on its centre of mass**, not on its feet. Detection
+  puts the anchor at the bottom of the frame, so a somersault swings around the
+  feet and jitters; offset the silhouette's centre of mass downward by the
+  standing pose's own centre-to-feet distance and the body rotates in place at a
+  consistent height.
 - **An attack with no hit box cannot connect**, and a hit box with no hurt box
   on the target means nothing to hit — both are warnings, not errors.
 - **Timing numbers are generic fighting-game values, not Hyper Dimension frame

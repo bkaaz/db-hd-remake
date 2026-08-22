@@ -74,6 +74,9 @@ export interface Attributes {
    * Game frames both fighters are frozen for when a blow connects — the pause
    * that makes a hit feel like it met something instead of passing through.
    * An attack state may override it with its own `hitstop`.
+   *
+   * Bounded rather than chosen: under ~4 frames it stops registering at 60 FPS,
+   * and past half the reaction it eats the reaction it exists to punctuate.
    */
   hitstop: number;
   /**

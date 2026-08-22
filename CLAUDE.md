@@ -25,9 +25,12 @@ The project owner wants to go **slowly and deliberately**:
   the changes, then stop — commit only when the owner explicitly says to.
 - The primary conversation language with the owner is **Polish**. Code,
   comments, commits, and docs are in **English**.
-- **Record settled decisions** in `docs/decisions.md` (newest first), and keep
-  the affected doc (`data-format.md`, `entity-editor.md`, …) in sync. Three rules
-  it grew on 2026-08-22, after the file reached 2500 lines:
+- **Record a settled piece of architecture as an ADR** — `docs/adr/NNNN-title.md`,
+  one decision per file, **one screen**, opening with a `Status:` line that names
+  the dates and anything it supersedes. The number is an id, not a date: it is
+  assigned in the order ADRs are written, so nothing ever renumbers. Keep the
+  affected doc (`data-format.md`, `entity-editor.md`, …) in sync in the same
+  change. Three rules the 2500-line log it replaced grew on 2026-08-22:
   - **The conclusion and what was rejected — not the reasoning.** An alternative
     nobody took is the one thing no code and no memory can recover. How a problem
     was *found* belongs in the commit message.
@@ -37,8 +40,16 @@ The project owner wants to go **slowly and deliberately**:
     points at the file instead. The code is the source of truth — which only
     holds while something enforces it, so a shape shared by two programs is one
     type, under one `tsconfig`, not two declarations that agree by hand.
-- **The log is not a substitute for asking the owner.** He answers in one
-  sentence what a search of `decisions.md` answers wrongly — it records what was
+  - **`docs/adr/` is the engine, its data and its tools.** How the docs
+    themselves are written belongs here in `CLAUDE.md`, not in an ADR.
+
+  **Rejected, so none of it comes back:** archiving the record by month or by
+  topic (splits on a dimension nobody searches by, and gives `grep` two paths),
+  ADR files without a size cap (a file invites sections, which is what the
+  conversion was for), deleting old entries (a record that gets pruned is one
+  nobody trusts), and keeping a `decisions.md` beside `docs/adr/`.
+- **An ADR is not a substitute for asking the owner.** He answers in one
+  sentence what a search of `docs/adr/` answers wrongly — an ADR records what was
   true when it was written, and the combat system is deliberately unsettled.
   **Gameplay decisions go to `combat.md`**, which is edited, rather than to a log,
   which is appended to: a provisional thing is not log-shaped.
@@ -47,7 +58,7 @@ The project owner wants to go **slowly and deliberately**:
   there in the same change; a new concept gets one line, not a section.
 - **The queue is `docs/plan.md`, and finished items are DELETED from it** — in
   the same change that finishes them, not later. It is the *only* file that
-  lists work to do; the reasoning goes to `decisions.md`, the timing is in git.
+  lists work to do; the reasoning goes to `docs/adr/`, the timing is in git.
   `roadmap.md` and `entity-editor.md` describe the arc and the history and must
   never grow a to-do list again. A queue that only shrinks cannot drift.
 - **Write bugs down in `docs/bugs.md` the moment you notice one** — no need to
@@ -280,9 +291,9 @@ Two properties the tree no longer shows, and both still hold:
 ## Data and assets
 
 - **Naming:** the authored thing is an **Entity** (never "actor", "character" or
-  "fighter" — see `docs/decisions.md`). In code, **`EntityDef`** is the loaded
-  definition (textures + animations + states) and **`Entity`** is one live
-  instance in the world; two Gokus are two entities sharing one `EntityDef`.
+  "fighter"). In code, **`EntityDef`** is the loaded definition (textures +
+  animations + states) and **`Entity`** is one live instance in the world; two
+  Gokus are two entities sharing one `EntityDef`.
 - An entity is a **directory of section files** (`frames.json`,
   `animations.json`, `states.json`, …), not one blob. The dev-server plugin
   assembles them for `GET /api/entity`; the editor saves **one section at a
@@ -305,5 +316,5 @@ attack buttons: a hit picks the reaction it deserves (flinch, stagger or
 knockdown), pauses the game, pushes the defender back and leaves a generated
 spark where the boxes met. A hit still costs no health.
 
-**What is next: `docs/plan.md`** — the queue, and the only one. Full decision
-log: `docs/decisions.md`.
+**What is next: `docs/plan.md`** — the queue, and the only one. Why the engine is
+shaped as it is: `docs/adr/`.

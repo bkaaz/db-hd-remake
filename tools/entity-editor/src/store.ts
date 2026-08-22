@@ -50,7 +50,7 @@ export interface EditorState {
   anims: AnimDef[];
   /**
    * `states.json` as loaded from disk. The States tab is **read-only** — states
-   * are hand-authored for now (see docs/decisions.md), so the editor shows and
+   * are hand-authored for now (ADR 0013), so the editor shows and
    * validates them but never writes them.
    */
   states: StatesFile | null;
