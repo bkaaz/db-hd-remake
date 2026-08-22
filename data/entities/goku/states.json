@@ -133,6 +133,7 @@
       "anim": "crouch",
       "vel": [0, 0],
       "turn": true,
+      "guard": "guard_crouch",
       "transitions": [
         { "when": "pressed:medium", "to": "kick_crouch" },
         { "when": "pressed:heavy", "to": "uppercut" },
@@ -222,6 +223,14 @@
       "turn": false,
       "transitions": [
         { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "guard_crouch": {
+      "anim": "guard_crouch",
+      "vel": [-2.0, 0],
+      "turn": false,
+      "transitions": [
+        { "when": "animEnd", "to": "crouch" }
       ]
     },
     "hurt_heavy": {

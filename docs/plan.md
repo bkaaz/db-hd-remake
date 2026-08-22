@@ -225,11 +225,12 @@ anything kept on purpose says why — here or in `decisions.md`.
 ## G. Crouch, and crouch attacks
 
 Frames settled: 17 is the way down, 18 the held crouch, and the crouching kick
-is 52–53 — all built. **A crouching guard is not on our sheet** and is the first
-known gap. The standing guard is **28 and nothing else**: 11–13 was listed here
-as the standing guard and is in fact Goku exhausted (owner, 2026-08-15), so the
-guard is a single frame held on contact, which is all it ever needed to be.
-Options for the crouching one are recorded in `decisions.md`.
+is 52–53 — all built. The standing guard is **28 and nothing else**: 11–13 was
+listed here as the standing guard and is in fact Goku exhausted (owner,
+2026-08-15), so the guard is a single frame held on contact, which is all it
+ever needed to be. **The crouching guard was the sheet's first known gap and is
+now closed** — the owner drew 182 rather than taking any of the three ways out
+`decisions.md` had recorded, and it is built and wired (2026-08-22).
 
 *Open:* whether a low blow needs its own reaction. Frame 76 is a hit to the
 stomach, so the sprite exists — the question is whether the fight reads better
@@ -356,8 +357,6 @@ queue.
 - **Chip damage and a guard break.** Blocking exists and costs nothing, which is
   right while every attack is a normal; specials should chip, and holding guard
   forever should eventually fail. Both wait for specials.
-- **A crouching guard.** Standing blocking works; low blocking needs a pose our
-  sheet does not have — see `decisions.md` for the three ways out.
 - **Commands and motion recognition** (was phase E) — quarter-circles and the
   rest, the prerequisite for specials. The input **buffer** underneath them is
   done. **Promoted from optional by the button scheme:** `S` is the ki blast,

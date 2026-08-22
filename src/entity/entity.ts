@@ -5,7 +5,7 @@ import { Audio } from "../audio/playback";
 import { Combo } from "../combat/combo";
 import { scaledDamage, scaledHitstun } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
-import { DEFAULT_HIT_FX, guardable, reactionFor, StateMachine } from "./states";
+import { DEFAULT_HIT_FX, guardStateFor, guardable, reactionFor, StateMachine } from "./states";
 
 /**
  * One live entity in the world: sprite + animation playback + state machine +
@@ -294,7 +294,7 @@ export class Entity {
       this.holdingBack &&
       !this.airborne &&
       guardable(this.sm?.def) &&
-      !!this.def.states?.onGuard
+      guardStateFor(this.sm?.def, this.def.states) !== undefined
     );
   }
 
@@ -344,7 +344,7 @@ export class Entity {
    */
   /** Enter this entity's block reaction. False when it cannot block at all. */
   guardHit(): boolean {
-    const state = this.def.states?.onGuard;
+    const state = guardStateFor(this.sm?.def, this.def.states);
     return state !== undefined && this.forceState(state);
   }
 

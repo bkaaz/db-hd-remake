@@ -2,6 +2,34 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-22 — How you cover is a fact about you, so the stance names its own block
+
+- **The first known gap is closed, by a fourth way nobody had listed.**
+  2026-08-09 recorded three routes to a crouching guard — rip it from the ROM
+  with Mesen-S, compose it from the standing guard's torso and the crouch's
+  legs, or ship standing-only blocking. The owner drew it instead (frame 182),
+  which is why the entry that named the gap can go.
+- **`onGuard` was one name for a whole fighter**, so nothing could ask how the
+  defender was standing. A stance may now name its own with `StateDef.guard`,
+  falling back to the file's `onGuard` — `crouch` names `guard_crouch`.
+- **On the stance rather than on the attack**, deliberately. The same jab is
+  blocked standing or crouching depending on what the *defender* was doing, so
+  the field belongs where that fact lives. An attack that must not be blocked
+  low is a different question and would hang off the attack; it does not exist
+  yet and nothing here pre-empts it.
+- **And not a rule in the engine.** "If crouching, use the crouching guard"
+  would put the name of a state into code that has no business knowing any
+  state names, and every fighter would have to spell their stances the same way.
+- **The rule is `guardStateFor` in `states.ts`, beside `guardable`** — pure, so
+  it is tested in Node, rather than a line inside `entity.ts` where PixiJS keeps
+  it out of reach. Five tests, each confirmed to fail against a deliberately
+  broken version before being kept.
+- **The block leaves to `crouch`, not to `idle`.** Standing up out of blockstun
+  would undo a hold the player never released; `crouch`'s own `!held:down`
+  resolves an actual release on the next frame anyway.
+- **No `rank`, mirroring `guard_hit`** — a fighter already blocking can block
+  the next blow, which is the reading from 2026-08-16 and is not re-opened here.
+
 ## 2026-08-22 — The sheet spells 27 of its colours two ways, and we leave it alone
 
 - **Measured because hand-drawn frames looked off-palette, and they were not.** Every

@@ -5,6 +5,7 @@ import { chainLinks, framesOf, startupOf } from "../combat/chains";
 import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
+  guardStateFor,
   guardable,
   reactionFor,
   StateMachine,
@@ -1057,5 +1058,87 @@ describe("guardable", () => {
     expect(guardable({ anim: "hurt", rank: 1 })).toBe(false);
     expect(guardable({ anim: "knockdown", rank: 3 })).toBe(false);
     expect(guardable({ anim: "downed", rank: 4 })).toBe(false);
+  });
+});
+
+describe("guardStateFor", () => {
+  /** A fighter who blocks standing, and blocks differently while crouching. */
+  function fighter(): StatesFile {
+    return {
+      initial: "idle",
+      onGuard: "guard_hit",
+      states: {
+        idle: { anim: "idle", vel: [0, 0], turn: true, transitions: [] },
+        crouch: {
+          anim: "idle",
+          vel: [0, 0],
+          turn: true,
+          guard: "guard_crouch",
+          transitions: [],
+        },
+        guard_hit: { anim: "hurt", vel: [0, 0], turn: false, transitions: [] },
+        guard_crouch: { anim: "hurt", vel: [0, 0], turn: false, transitions: [] },
+      },
+    };
+  }
+
+  it("uses the stance's own block when it declares one", () => {
+    const f = fighter();
+    expect(guardStateFor(f.states.crouch, f)).toBe("guard_crouch");
+  });
+
+  it("falls back to the fighter's default when the stance declares none", () => {
+    const f = fighter();
+    expect(guardStateFor(f.states.idle, f)).toBe("guard_hit");
+  });
+
+  it("cannot block at all when nothing names a guard", () => {
+    const f = fighter();
+    delete f.onGuard;
+    expect(guardStateFor(f.states.idle, f)).toBeUndefined();
+    // The crouch still can: its own is what it asked for, not a fallback.
+    expect(guardStateFor(f.states.crouch, f)).toBe("guard_crouch");
+  });
+
+  it("refuses a guard that names a state which does not exist", () => {
+    const f = fighter();
+    f.states.crouch.guard = "guard_crouhc";
+    expect(guardStateFor(f.states.crouch, f)).toBeUndefined();
+  });
+
+  it("has nothing to offer without a file", () => {
+    expect(guardStateFor(undefined, undefined)).toBeUndefined();
+  });
+});
+
+describe("a stance's own guard, through the validator", () => {
+  function crouching(): StatesFile {
+    const f = machine();
+    f.onGuard = "guard_hit";
+    const leaves = [{ when: "animEnd", to: "idle" } as const];
+    f.states.guard_hit = { anim: "hurt", vel: [0, 0], turn: false, transitions: leaves };
+    f.states.guard_crouch = { anim: "hurt", vel: [0, 0], turn: false, transitions: leaves };
+    f.states.idle.guard = "guard_crouch";
+    return f;
+  }
+
+  it("accepts a stance that names its own block", () => {
+    expect(validateStates(crouching(), ANIMS).errors).toEqual([]);
+  });
+
+  it("reports a guard that names a state which does not exist", () => {
+    const f = crouching();
+    f.states.idle.guard = "guard_crouhc";
+    expect(validateStates(f, ANIMS).errors).toContain(
+      'state "idle": guard state "guard_crouhc" does not exist',
+    );
+  });
+
+  it("does not call a block unreachable just because nothing transitions to it", () => {
+    // It is forced from outside on contact, exactly like a reaction — the thing
+    // reachability already knows about `onGotHit` and every `onHit`.
+    expect(validateStates(crouching(), ANIMS).warnings).not.toContain(
+      'state "guard_crouch" is unreachable (no transition leads to it)',
+    );
   });
 });

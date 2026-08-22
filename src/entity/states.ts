@@ -77,6 +77,19 @@ export interface StateDef {
    */
   ifAirborne?: string;
   /**
+   * The block reaction to use while in this state, instead of the file's
+   * `onGuard`. What it exists for is the crouching guard: blocking is decided
+   * at the moment of contact rather than by standing in a guard state, so the
+   * only thing that still knows whether the defender was low is the state they
+   * were in when the blow arrived.
+   *
+   * It hangs off the *stance* rather than off the attack, because how you
+   * cover is a fact about you: the same jab is blocked standing or crouching
+   * depending on what the defender was doing. An attack that must not be
+   * blocked low is a different question and belongs to the attack.
+   */
+  guard?: string;
+  /**
    * How severe a reaction this is: flinch below stagger below knockdown below
    * lying on the floor. Absent means 0, which is every state that is not a
    * reaction — so any reaction outranks standing there.
@@ -388,6 +401,24 @@ export function guardable(current: StateDef | undefined): boolean {
   return (current?.rank ?? 0) === 0;
 }
 
+/**
+ * Which block reaction covers a blow arriving right now: the stance's own if it
+ * declares one, otherwise the fighter's default. Undefined means this fighter
+ * cannot block at all.
+ *
+ * It reads the state rather than the attack because the stance is the only
+ * thing that still knows the defender was low — blocking is decided at the
+ * moment of contact, not by standing in a guard state, so there is nothing else
+ * left to ask by then.
+ */
+export function guardStateFor(
+  current: StateDef | undefined,
+  file: StatesFile | null | undefined,
+): string | undefined {
+  const name = current?.guard ?? file?.onGuard;
+  return name !== undefined && file?.states[name] ? name : undefined;
+}
+
 export class StateMachine {
   /** Name of the state the entity is in. */
   current: string;
@@ -529,6 +560,12 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
   if (file.onGuard !== undefined && !states[file.onGuard]) {
     errors.push(`onGuard state "${file.onGuard}" does not exist`);
+  }
+
+  for (const [name, def] of Object.entries(states)) {
+    if (def.guard !== undefined && !states[def.guard]) {
+      errors.push(`state "${name}": guard state "${def.guard}" does not exist`);
+    }
   }
 
   for (const [name, def] of Object.entries(states)) {
@@ -695,6 +732,8 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
     if (file.onGuard && states[file.onGuard]) roots.push(file.onGuard);
     for (const def of Object.values(states)) {
       if (def.onHit && states[def.onHit] && !roots.includes(def.onHit)) roots.push(def.onHit);
+      // A stance's own block reaction is forced from outside like any other.
+      if (def.guard && states[def.guard] && !roots.includes(def.guard)) roots.push(def.guard);
     }
     const seen = new Set<string>(roots);
     const queue = [...roots];

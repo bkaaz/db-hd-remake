@@ -159,7 +159,9 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   defender counts as guarding if it is grounded and holding away from its
   opponent — which is also how the genre has always worked, with the guard pose
   appearing only on a blow that actually arrives. Omit the field and the fighter
-  cannot block. Blocking in the air is refused: a jump-in blocked for free
+  cannot block; a **stance can override it** with its own `guard` field (below),
+  which is how the crouching block works. Blocking in the air is refused: a
+  jump-in blocked for free
   removes the point of jumping in.
 - **`anim`** — animation played while in the state (restarts on entry).
 - **`vel`** — `[x, y]` per game frame, in **sprite pixels** — the same unit as
@@ -259,6 +261,20 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   and only some are meant to be able to do it twice. Goku marks two: `uppercut`
   and `kick_finisher`. Chain links that juggle are **not** smashes — a juggle
   keeps a body up, it does not floor it again.
+- **`guard`** — on a **stance** state: the block reaction to use instead of the
+  file's `onGuard` while in it. What it exists for is the crouching guard
+  (built 2026-08-22): blocking is decided at the moment of contact rather than
+  by standing in a guard state, so by the time a blow arrives the state the
+  defender was in is the only thing that still knows they were low.
+
+  It hangs off the stance rather than off the attack because how you cover is a
+  fact about you — the same jab is blocked standing or crouching depending on
+  what the defender was doing. An attack that must not be blocked low is a
+  different question and would belong to the attack.
+
+  Naming a state that does not exist is an **error**. A state reached only as
+  somebody's `guard` is not "unreachable": it is forced from outside on contact,
+  exactly like a reaction.
 - **`ifAirborne`** — on a **reaction** state: the state to use instead when the
   entity being forced into it is off the ground. Without it an airborne
   defender is put into a grounded reaction and snaps to the floor, erasing the
@@ -370,9 +386,10 @@ blockstun — `guard_hit` still ends with its animation.
 see [`decisions.md`](./decisions.md)), so `validateStates()` in `src/entity/states.ts`
 checks it in both places: the game reports problems on screen at load, the
 editor flags them in the States tab. It catches a missing/unknown `initial` or
-`onGotHit`, an `anim`, `to` or `ifAirborne` that does not exist, an unknown
-trigger and a malformed `vel`; it warns about unreachable states — an air
-version counts as reached through the reaction that names it — an `ifAirborne`
+`onGotHit`, an `anim`, `to`, `guard` or `ifAirborne` that does not exist, an
+unknown trigger and a malformed `vel`; it warns about unreachable states — an
+air version counts as reached through the reaction that names it, and a block
+through the stance that names it — an `ifAirborne`
 target that is not itself `airborne`, states with no way out, and
 the classic slip — a state whose only exit is `animEnd` playing a **looping**
 animation, which can never be left.
