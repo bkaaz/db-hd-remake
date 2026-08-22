@@ -183,9 +183,12 @@ cannot read it, and a superseded entry looks exactly like a live one.
 The rules are settled and now in `CLAUDE.md`. What is left is the work, in this
 order, because each step tests the rule before the next one applies it wider:
 
-1. **`data-format.md`** (548 lines) — cut to what a type cannot say: that an
-   entity is a directory of section files, and who may write which. The shape
-   itself is `src/entity/entityFile.ts` as of 2026-08-22.
+1. ~~`data-format.md`~~ — **done 2026-08-22**, 548 lines to 158. All 19 state
+   fields, all 7 attributes and the sound fields had doc comments in the code
+   already; so did the trigger vocabulary and the validator's checklist, which
+   had gone stale twice in one day. What survived is the section-file layout,
+   who writes what, the decisions that explain absences, how a blow travels
+   across files, and the sound id-space rules.
 2. **`tooling.md` and `entity-editor.md`** (~100 each) — same scan, likely small.
 3. **`decisions.md` → `docs/adr/NNNN-title.md`**, numbered, `Status:` header, one
    screen each. Architecture only; gameplay folds into `combat.md`, the rest is

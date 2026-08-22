@@ -21,11 +21,11 @@ how long a drawing is held. → `combat.md` §1
 **Cancel** — interrupting your own attack with the next one instead of playing
 it out. Allowed only when the attack **connected** (hit or blocked, never a
 whiff) and only up to its `cancelBy` frame. Trigger: `cancelable`.
-→ `combat.md` (Chaining), `data-format.md` (`cancelBy`)
+→ `combat.md` (Chaining), `states.ts` (`cancelBy`)
 
 **`cancelBy`** — the last frame of an attack at which a cancel may fire, counted
 from entering the state and ignoring frozen frames. Absent means "until the
-animation ends". → `data-format.md`
+animation ends". → `states.ts`
 
 **Chain (string)** — a run of attacks joined by cancels. It is not a structure
 anywhere: it is a path through `states.json`, derived by `src/combat/chains.ts`
@@ -48,7 +48,7 @@ and minus can be correct when the blow also pushes them out of range.
 **Hitstop** — the freeze on contact, applied to **both** fighters for the same
 number of frames (`hitstop`, 10 on the chain kicks). It is what gives a blow
 weight, and because both sides freeze equally it changes nothing about who acts
-first. → `data-format.md` (`hitstop`)
+first. → `entityFile.ts` (`hitstop`)
 
 **Hitstun** — how long the **defender** is helpless after a blow, counted in
 frames and set by the blow (`hitstun`), not by the length of the reaction
