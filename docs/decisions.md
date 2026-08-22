@@ -2,6 +2,26 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-22 — What the docs are for, now that this file is 2500 lines
+
+- **Rules are in `CLAUDE.md`**; this entry is only what was rejected, which is
+  the half nothing else can recover.
+- **Rejected: archiving by month.** Splits on a dimension nobody searches by and
+  gives `grep` two paths.
+- **Rejected: splitting by topic.** A day's work crosses states, animations, the
+  editor and the sheet; there is no file it belongs to.
+- **Rejected: one file per decision without a size cap.** The ADR format is the
+  right shape, but a file invites sections — converting 25-line entries into
+  "one or two pages" would undo the reason for converting.
+- **Rejected: deleting old entries.** Twice today an entry from 9 August saved
+  guessing. A log that gets pruned is one nobody trusts to hold anything.
+- **Rejected: keeping `decisions.md` beside a new `docs/adr/`** — the same "two
+  places to grep" that killed the monthly archive.
+- **The measurement that started it**, so nobody re-does it: the file costs a
+  session zero tokens (nothing loads it; it is read by `grep` — about 4% of it in
+  a working day), while a day's work adds ~300 lines. Size was never the problem;
+  unreadability by the owner and invisible supersession were.
+
 ## 2026-08-22 — One declaration of the entity file, in `entityFile.ts`
 
 - **Five places declared the same shape** — the game, the editor, `sprites/boxes.ts`,

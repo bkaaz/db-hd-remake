@@ -26,7 +26,22 @@ The project owner wants to go **slowly and deliberately**:
 - The primary conversation language with the owner is **Polish**. Code,
   comments, commits, and docs are in **English**.
 - **Record settled decisions** in `docs/decisions.md` (newest first), and keep
-  the affected doc (`data-format.md`, `entity-editor.md`, …) in sync.
+  the affected doc (`data-format.md`, `entity-editor.md`, …) in sync. Three rules
+  it grew on 2026-08-22, after the file reached 2500 lines:
+  - **The conclusion and what was rejected — not the reasoning.** An alternative
+    nobody took is the one thing no code and no memory can recover. How a problem
+    was *found* belongs in the commit message.
+  - **Supersede, never edit.** Correcting an entry in place destroys the record
+    of what was known when. Write a new one and mark the old.
+  - **Do not restate the code.** If a doc comment already says it, the entry
+    points at the file instead. The code is the source of truth — which only
+    holds while something enforces it, so a shape shared by two programs is one
+    type, under one `tsconfig`, not two declarations that agree by hand.
+- **The log is not a substitute for asking the owner.** He answers in one
+  sentence what a search of `decisions.md` answers wrongly — it records what was
+  true when it was written, and the combat system is deliberately unsettled.
+  **Gameplay decisions go to `combat.md`**, which is edited, rather than to a log,
+  which is appended to: a provisional thing is not log-shaped.
 - **`docs/glossary.md` is one line per term plus a pointer** — never a second
   copy of the design doc. A term whose field or file is renamed gets renamed
   there in the same change; a new concept gets one line, not a section.
@@ -154,9 +169,13 @@ when it works.
 - **A file has to fit in one head.** Past ~150 lines, ask what the second thing
   in it is and give that thing its own file. Length is the symptom; doing two
   jobs is the cause.
-- **The name says *what*, the comment says *why*.** A comment explaining what a
-  line does means the name failed — fix the name instead. The comments already in
-  this repo explain reasoning and trade-offs; keep them that way.
+- **The name says *what*, the comment says *why not*.** A comment earns its
+  lines by what it prevents. State the conclusion once, not the reasoning three
+  ways — past ~4 lines on a field or a function you are usually saying one thing
+  over. **Open with what the code cannot say**: if the first sentence
+  paraphrases the signature or the line below it, delete that sentence. A file
+  header says what the module owns and why it is separate; it is not a history.
+  Self-documenting names cover *what*; they can never cover what was rejected.
 - **`main.ts` is the loop and the wiring, nothing else.** Every rule of the game
   lives in a module named after what it decides.
 - **A module owns one thing** and exports it plus the handful of functions that

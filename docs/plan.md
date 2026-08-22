@@ -174,6 +174,31 @@ the same fighters the match does; today nothing loads twice.
 *Done when:* `main.ts` is boot plus the crank, and adding a scene does not touch
 it beyond the first one.
 
+## Then: the docs stop repeating the code, and the log becomes ADRs
+
+`decisions.md` reached **2518 lines and 90 entries** in sixteen days. It costs a
+session nothing — nothing loads it, and it is read by `grep` — but the owner
+cannot read it, and a superseded entry looks exactly like a live one.
+
+The rules are settled and now in `CLAUDE.md`. What is left is the work, in this
+order, because each step tests the rule before the next one applies it wider:
+
+1. **`data-format.md`** (548 lines) — cut to what a type cannot say: that an
+   entity is a directory of section files, and who may write which. The shape
+   itself is `src/entity/entityFile.ts` as of 2026-08-22.
+2. **`tooling.md` and `entity-editor.md`** (~100 each) — same scan, likely small.
+3. **`decisions.md` → `docs/adr/NNNN-title.md`**, numbered, `Status:` header, one
+   screen each. Architecture only; gameplay folds into `combat.md`, the rest is
+   dropped and stays in git. A sample conversion of four crouch entries came out
+   at 128 lines → two ADRs of ~60, so expect **90 entries → 25-30 ADRs**.
+
+**This one needs the owner, entry by entry** — the call of *ADR / combat.md /
+drop* is a judgement, not a script. Produce the labelled list first; do not
+convert anything before it is reviewed.
+
+*Done when:* no doc restates a type, and `docs/adr/` is what a newcomer reads to
+learn why the engine is shaped as it is.
+
 ## Queued: nothing checks that a `sound` or `hitFx` id exists
 
 Found while splitting the sound bank, where twenty-one references were renamed
