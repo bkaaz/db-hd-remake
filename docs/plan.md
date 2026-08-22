@@ -87,8 +87,9 @@ string. Their animations are still in `animations.json`; nothing in
 crouching light, beside `kick_crouch` and `uppercut`. That also fills the second
 light rung, so the ladder is `L → L → M → H` for real — the standing light
 cancels into the crouching one with the widest margin on the graph (+7,
-`npm run chains`). **Standing and crouching are done; the air row has only a
-medium.**
+`npm run chains`). `punch_air` (43–45) became the air light on 2026-08-23,
+cancelling into `kick_air`. **Standing and crouching are done; the air row is
+missing only its heavy.**
 
 *Done when:* every slot in the L/M/H table names an animation in all three
 stances, each built from the table rather than tuned by hand.

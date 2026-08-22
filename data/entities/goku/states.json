@@ -192,6 +192,25 @@
       ],
       "hitstop": 6
     },
+    "punch_air": {
+      "anim": "punch_air",
+      "airborne": true,
+      "hitstun": 15,
+      "cancelBy": 8,
+      "turn": false,
+      "onHit": "hurt_chain",
+      "damage": 5,
+      "hitstop": 6,
+      "sound": "swing_1",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
+      "transitions": [
+        { "when": ["cancelable", "pressed:medium"], "to": "kick_air" },
+        { "when": "landed", "to": "idle" },
+        { "when": "nearGround", "to": "land" },
+        { "when": "animEnd", "to": "fall" }
+      ]
+    },
     "kick_air": {
       "anim": "kick_air",
       "airborne": true,
@@ -359,6 +378,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:light", "to": "punch_air" },
         { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "falling", "to": "jump_up_fall" },
@@ -372,6 +392,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:light", "to": "punch_air" },
         { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_fwd_air" },
@@ -384,6 +405,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:light", "to": "punch_air" },
         { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" },
@@ -396,6 +418,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:light", "to": "punch_air" },
         { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_back_air" },
@@ -408,6 +431,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:light", "to": "punch_air" },
         { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" },
@@ -419,6 +443,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:light", "to": "punch_air" },
         { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" }
@@ -429,6 +454,7 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        { "when": "pressed:light", "to": "punch_air" },
         { "when": "pressed:medium", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" }

@@ -20,6 +20,20 @@ because a number would only need translating back.
 
 ---
 
+## `npm run anim` picks the wrong active frame when two poses share a box
+
+`src/sprites/boxes.ts:118` · noticed 2026-08-23 · annoying
+
+`activeIndex` ranks frames by how far the silhouette reaches past the anchor and
+breaks ties on the earliest. Goku's 44 and 45 have the same rect and the same
+anchor, so the reach is equal and the hit box lands on 44 — the wind-up — while
+the blow is 45. Nothing in the printed table says the choice was a coin flip,
+and there is no flag to override it, so `punch_air` had to be rewritten by hand
+and re-running the script would undo it.
+
+Reproduce: `npm run anim -- goku probe --frames 43,44,45 --kind attack --dry-run`
+and read which step is starred.
+
 ## Save never tells you it saved
 
 `tools/entity-editor/src/main.ts:192` · noticed 2026-08-22 · annoying

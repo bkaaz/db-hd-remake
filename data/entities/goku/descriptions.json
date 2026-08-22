@@ -79,7 +79,7 @@
       ]
     },
     "punch_air": {
-      "desc": "Striking with the hands while airborne, confirmed by the owner 2026-08-15: 43 the wind-up with the body stretched and the arms drawn up behind, 44 the blow being driven down and forward with both fists, 45 the same still going and the frame it ends on. The counterpart of kick_air. Was catalogued as a \"crouch_attack\" with a `?` — 44 and 45 read as a crouch only because a body pitched forward with the legs trailing looks like one when there is no ground line to judge it against. 47, 49 and 53 were also lumped in here once and turned out to be the air kick, the flying kick and the crouching kick.",
+      "desc": "Striking with the hands while airborne, confirmed by the owner 2026-08-15: 43 the wind-up with the body stretched and the arms drawn up behind, 44 the wind-up continued with the body pitched forward, 45 the blow driven down and out with both fists. Which of 44 and 45 is the strike was corrected by the owner 2026-08-23: it is 45, and 44 doubles as the recovery. The counterpart of kick_air. Was catalogued as a \"crouch_attack\" with a `?` — 44 and 45 read as a crouch only because a body pitched forward with the legs trailing looks like one when there is no ground line to judge it against. 47, 49 and 53 were also lumped in here once and turned out to be the air kick, the flying kick and the crouching kick.",
       "frames": [
         "43",
         "44",
@@ -516,8 +516,8 @@
     "41": "combination kick: knees bent, both fists up, compact",
     "42": "kick_string blow 3, extended: leg out low near the ground, body leaning far back — the LOW kick, 72 px",
     "43": "punch_air, the wind-up: airborne, body stretched out, arms drawn up and back over the head",
-    "44": "punch_air, the strike: pitched forward with both fists driven down and out, legs trailing",
-    "45": "punch_air, still going and the frame it ends on — the same posture, fists lower",
+    "44": "punch_air, the second half of the wind-up: pitched forward with the fists gathered, legs trailing. NOT the strike (owner, 2026-08-23) — it reads like one, which is the mistake to avoid here",
+    "45": "punch_air, the strike and the active frame (owner, 2026-08-23): the same posture with both fists driven down and out. Same rect and anchor as 44, so nothing measurable separates them — see docs/bugs.md",
     "46": "air kick: body compact and leaning back, fists up, legs gathered — the frame before the leg goes out",
     "47": "air kick, the extended frame: lead leg out low and forward, body leaning back to counterbalance",
     "48": "flying kick, the tuck: knees drawn up, fists at the chest, airborne",
