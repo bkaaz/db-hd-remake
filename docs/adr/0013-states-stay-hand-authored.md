@@ -21,7 +21,7 @@ on screen, where a `console.warn` was being read by nobody; the editor shows the
 same problems beside a read-only view, with Save disabled rather than misleading.
 
 **The revisit condition has since been passed, and the answer did not change.**
-It was "when a fighter goes past ~15 states"; there are more than twice that now.
-What the editor grew was a *view* — a graph of what cancels into what, which is
+It was "when a fighter goes past ~15 states", and Goku went well past it. What
+the editor grew was a *view* — a graph of what cancels into what, which is
 the one question the file cannot answer by being read (see
 [0006](./0006-the-chain-graph-is-derived.md)). Authoring stays in text.

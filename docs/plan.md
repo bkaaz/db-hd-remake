@@ -186,6 +186,25 @@ next rename safe instead of nerve-racking.
 *Done when:* an unknown `sound` or `hitFx` id is reported at load, the same way
 an unknown animation is.
 
+## Queued: nothing checks that `combat.md`'s table matches what ships
+
+The strength table in `combat.md` is the source an attack is authored from, and
+it currently agrees with `states.json` down to the number — hitstun 15/20/20,
+`cancelBy` 8/12/—, damage 5/8/13. **It agrees because we were careful, and
+nothing else.** That is the exact condition that let a decision log rot for
+sixteen days while looking healthy, and it is worse here: a doc that is wrong
+about frame data is a doc that makes the next fighter wrong.
+
+Two honest ways out. **A test that parses the table** and asserts every attack
+matches the row for its strength — cheap, and it keeps the table where it is
+read. **Or the table moves into data**, `states.json` is checked against it and
+`combat.md` points at a script that prints it — cleaner, and it makes "which
+strength is this attack" a field rather than a convention. The first is worth
+doing first; the second only pays once a second fighter exists.
+
+*Done when:* changing a number in `combat.md` without changing `states.json`
+fails `npm test`, or the other way round.
+
 ## Queued: a read-only `npm run check-sheet`
 
 The sheet is hand-edited now, and a drawing session can leave pixels that are
@@ -274,8 +293,9 @@ the sheet and not about the blow, and it makes `states.json` unreadable without
 a second window open. Stance is part of the identity where it binds the move:
 `kick_crouch`, `kick_air`.
 
-**The sheet is fully catalogued** as of 2026-08-15 — 180 frames, 44 groups,
-nothing unnamed. What it holds beyond the normals already built: a kick out of
+**The sheet is fully catalogued** — every frame has a description and every move
+a group, in `descriptions.json`, which is where the counts live. What it holds
+beyond the normals already built: a kick out of
 the background, a ki bolt and two Kamehamehas, a hop-and-lunge jump attack, a
 teleport, a throw, a thirteen-frame SSJ3 ultimate, a victory pose, and effect
 sets for the beam, an explosion and the Super Saiyan crackle.
@@ -356,9 +376,10 @@ Real work, carried over from the checklists this file replaced. It gets slotted
 into the sequence above when its turn comes, rather than living in a second
 queue.
 
-- **Name the rest of the sound test.** The capture is cut into 127 clips and
-  eight are identified, so the swings, the hit, the block, the jump, the
-  landing, the crash to the floor and Goku's own grunt are real samples;
+- **Name the rest of the sound test.** The capture is cut into clips of which
+  only a handful are identified — `data/audio/sound-test.json` says which — so
+  the swings, the hit, the block, the jump, the landing, the crash to the floor
+  and Goku's own grunt are real samples;
   `data/audio/sound-test.json` holds a `?` for every clip nobody has listened to
   yet. One known gap behind that: `hit_heavy` borrows the light
   hit's sample until a heavier one is named. Nothing here needs code — a clip

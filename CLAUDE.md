@@ -48,6 +48,14 @@ The project owner wants to go **slowly and deliberately**:
   ADR files without a size cap (a file invites sections, which is what the
   conversion was for), deleting old entries (a record that gets pruned is one
   nobody trusts), and keeping a `decisions.md` beside `docs/adr/`.
+- **A living document names the file or the command, never the count.** How many
+  frames the sheet has, how many states a fighter has, how many clips were cut —
+  another file owns each of those and will change it without telling the doc.
+  Point at that file, or at the command that prints the answer. A **dated** record
+  is the exception and may state a fact as of its date: that is what an ADR's
+  `Status:` line and a commit message are for. The test is the word *now* — in a
+  living doc it is a promise nobody keeps, and in a dated one it is a lie about
+  when the sentence was written.
 - **An ADR is not a substitute for asking the owner.** He answers in one
   sentence what a search of `docs/adr/` answers wrongly — an ADR records what was
   true when it was written, and the combat system is deliberately unsettled.
@@ -309,12 +317,21 @@ Two properties the tree no longer shows, and both still hold:
 ## Current status
 
 The **Entity Editor** authors sprites and animations (framing, background
-color-key, auto-detection, anchors, timed steps, hit/hurt/push boxes); the
-**game** loads an entity and runs it as a **state machine** from `states.json`.
-Goku walks, jumps in three variants, pushes the opponent, and fights with four
-attack buttons: a hit picks the reaction it deserves (flinch, stagger or
-knockdown), pauses the game, pushes the defender back and leaves a generated
-spark where the boxes met. A hit still costs no health.
+color-key, auto-detection, anchors, timed steps, hit/hurt/push boxes), auditions
+the game's sound bank, and draws the cancel graph read-only; the **game** loads
+an entity and runs it as a **state machine** from `states.json`.
+
+Goku walks, jumps in three variants, pushes the opponent, crouches, blocks, and
+attacks with Light / Medium / Heavy from standing, crouching and the air.
+Special is a key with nothing behind it. A blow names how it is taken — flinch,
+stagger, knockdown, or a juggle if it catches a falling body — pauses the game on
+contact, pushes the defender back, costs health, leaves a generated spark where
+the boxes met and makes a noise. Damage and hitstun both decay through a combo,
+and a budget of two re-launches closes the uppercut loop.
+
+**There is still no round.** Health floors at zero and nothing happens: no KO, no
+reset, no second screen. That, and a second player, is what the game is missing
+before it is one.
 
 **What is next: `docs/plan.md`** — the queue, and the only one. Why the engine is
 shaped as it is: `docs/adr/`.

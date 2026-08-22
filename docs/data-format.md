@@ -105,9 +105,12 @@ fighters would each want a copy of it. A grunt *is* his.
 
 ## Tuning `landCue`
 
-It is a distance, but what matters is the frames it buys before touchdown, and
-that depends on the jump. For Goku's 150 px jump: 24 px is about 2.5 frames,
-40 px about 4.5, 60 px about 7, 80 px about 10.
+It is a distance, but what matters is the frames it buys before touchdown — and
+that is not a property of `landCue` alone. A body crossing the threshold on a
+high jump is falling faster than one on a short hop, so the same distance buys
+fewer frames the higher the fighter went. Work it out against the `launch` and
+`gravity` actually in `attributes.json` rather than against a remembered table;
+a jump retuned by a pixel moves every number in it.
 
 ## Deliberately absent
 
