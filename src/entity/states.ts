@@ -568,6 +568,26 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
     }
   }
 
+  // A block that does not block the way it already is stands the defender up
+  // mid-string: the second blow of a blocked sequence arrives while they are
+  // still in the first block, and a block naming no `guard` of its own falls
+  // back to the file's. Found on 2026-08-22 by a crouching guard turning into
+  // a standing one on the second hit.
+  const blocks = new Set<string>(
+    [file.onGuard, ...Object.values(states).map((d) => d.guard)].filter(
+      (n): n is string => n !== undefined && n in states,
+    ),
+  );
+  for (const name of blocks) {
+    const covers = states[name].guard ?? file.onGuard;
+    if (covers !== name) {
+      warnings.push(
+        `state "${name}" is a block, but blocking again from it goes to ` +
+          `"${covers ?? "nothing"}" — a blocked string would change stance mid-way`,
+      );
+    }
+  }
+
   for (const [name, def] of Object.entries(states)) {
     const where = `state "${name}"`;
 

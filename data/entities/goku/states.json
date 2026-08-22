@@ -229,6 +229,7 @@
       "anim": "guard_crouch",
       "vel": [-2.0, 0],
       "turn": false,
+      "guard": "guard_crouch",
       "transitions": [
         { "when": "animEnd", "to": "crouch" }
       ]

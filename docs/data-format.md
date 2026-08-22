@@ -272,6 +272,12 @@ rules**; the entity is a state machine and the engine runs it every game frame.
   what the defender was doing. An attack that must not be blocked low is a
   different question and would belong to the attack.
 
+  **A block names itself.** Because blocking does not raise `rank`, a second
+  blow can arrive while the defender is still in the first block — and then the
+  block is what gets asked how to cover. Omit `guard` there and it falls back to
+  `onGuard`, which stands a crouching fighter up halfway through a blocked
+  string. The validator warns about it.
+
   Naming a state that does not exist is an **error**. A state reached only as
   somebody's `guard` is not "unreachable": it is forced from outside on contact,
   exactly like a reaction.

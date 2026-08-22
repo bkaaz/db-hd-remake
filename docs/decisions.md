@@ -29,6 +29,19 @@ Decisions that are settled. Newest first.
   resolves an actual release on the next frame anyway.
 - **No `rank`, mirroring `guard_hit`** — a fighter already blocking can block
   the next blow, which is the reading from 2026-08-16 and is not re-opened here.
+- **And that is exactly what the first version got wrong.** Because a block can
+  block again, the second blow of a blocked string arrives while the defender is
+  still *in* the first block — so the state being asked how to cover is
+  `guard_crouch`, not `crouch`. Naming no guard of its own, it fell back to
+  `onGuard` and stood the fighter up mid-string, after which every later block
+  was standing. Found by the owner's recording, not by reasoning: the log says
+  `P1 guard_crouch → guard_hit · BLOCKED (was guard_crouch)` in one line.
+- **A block blocks the way it already is**, so `guard_crouch` names itself. The
+  general fallback stays right for `guard_hit`, which is what `onGuard` already
+  says. What makes this safe for the next fighter is not the fix but the
+  **validator warning**: a state used as a block whose own block resolves
+  elsewhere is reported, because forgetting the self-reference is silent until
+  somebody blocks twice in a row.
 
 ## 2026-08-22 — The sheet spells 27 of its colours two ways, and we leave it alone
 

@@ -1117,7 +1117,15 @@ describe("a stance's own guard, through the validator", () => {
     f.onGuard = "guard_hit";
     const leaves = [{ when: "animEnd", to: "idle" } as const];
     f.states.guard_hit = { anim: "hurt", vel: [0, 0], turn: false, transitions: leaves };
-    f.states.guard_crouch = { anim: "hurt", vel: [0, 0], turn: false, transitions: leaves };
+    f.states.guard_crouch = {
+      anim: "hurt",
+      vel: [0, 0],
+      turn: false,
+      // A block blocks the way it already is: without this, a second blow
+      // arriving during the first block falls back to the standing one.
+      guard: "guard_crouch",
+      transitions: leaves,
+    };
     f.states.idle.guard = "guard_crouch";
     return f;
   }
@@ -1132,6 +1140,24 @@ describe("a stance's own guard, through the validator", () => {
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "idle": guard state "guard_crouhc" does not exist',
     );
+  });
+
+  it("warns when a block would change stance halfway through a blocked string", () => {
+    // The bug this exists for: the second blow of a string arrives while the
+    // defender is still in the first block, so the block itself is what gets
+    // asked how to cover. One that names none falls back to the file's and
+    // stands a crouching fighter up (owner's recording, 2026-08-22).
+    const f = crouching();
+    delete f.states.guard_crouch.guard;
+    expect(validateStates(f, ANIMS).warnings).toContain(
+      'state "guard_crouch" is a block, but blocking again from it goes to ' +
+        '"guard_hit" — a blocked string would change stance mid-way',
+    );
+  });
+
+  it("is quiet about a block that covers the same way from itself", () => {
+    const warnings = validateStates(crouching(), ANIMS).warnings.join(" ");
+    expect(warnings).not.toContain("change stance mid-way");
   });
 
   it("does not call a block unreachable just because nothing transitions to it", () => {
