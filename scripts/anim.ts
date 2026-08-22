@@ -24,21 +24,11 @@ import {
   hurtBox,
   hurtBoxesFromMask,
   type AnimKind,
-  type DerivedBox,
-  type FrameRect,
 } from "../src/sprites/boxes.ts";
+import type { Anim, Box, FrameDef, Step } from "../src/entity/entityFile.ts";
 import { validateStates, type StatesFile } from "../src/entity/states.ts";
 import { alphaMask, decodePng, type Rgba } from "../src/sprites/png.ts";
 
-interface Step {
-  frame: string;
-  dur: number;
-  boxes?: DerivedBox[];
-}
-interface Anim {
-  loop: boolean;
-  steps: Step[];
-}
 
 const KINDS: AnimKind[] = ["loop", "attack", "hurt"];
 
@@ -146,22 +136,22 @@ const readJson = async <T>(file: string, fallback: T): Promise<T> => {
 };
 
 /** Frame ids are plain numbers; check the frame exists before using it. */
-function resolveFrameId(token: string, frames: Record<string, FrameRect>): string {
+function resolveFrameId(token: string, frames: Record<string, FrameDef>): string {
   if (frames[token]) return token;
   return die(`no frame "${token}" in frames.json`);
 }
 
-const fmtBox = (b: DerivedBox | null | undefined): string =>
+const fmtBox = (b: Box | null | undefined): string =>
   b ? `${b.x},${b.y} ${b.w}x${b.h}` : "—";
 
-const fmtBoxes = (bs: DerivedBox[]): string => (bs.length ? bs.map(fmtBox).join(" | ") : "—");
+const fmtBoxes = (bs: Box[]): string => (bs.length ? bs.map(fmtBox).join(" | ") : "—");
 
 /**
  * Hurt boxes for one frame. With the sheet available they are fitted to the
  * sprite's actual silhouette in horizontal bands; without it, all we know is
  * the frame's bounding box — one coarse rectangle.
  */
-function hurtFor(sheet: Rgba | null, frame: FrameRect, count: number, inset: number): DerivedBox[] {
+function hurtFor(sheet: Rgba | null, frame: FrameDef, count: number, inset: number): Box[] {
   if (sheet) {
     const boxes = hurtBoxesFromMask(alphaMask(sheet, frame), frame, count, inset);
     if (boxes.length > 0) return boxes;
@@ -176,7 +166,7 @@ async function main(): Promise<void> {
   const framesFile = path.join(dir, "frames.json");
   const animsFile = path.join(dir, "animations.json");
 
-  const frames = await readJson<Record<string, FrameRect>>(framesFile, {});
+  const frames = await readJson<Record<string, FrameDef>>(framesFile, {});
   if (Object.keys(frames).length === 0) die(`no frames in ${framesFile}`);
   const animations = await readJson<Record<string, Anim>>(animsFile, {});
 
@@ -256,7 +246,7 @@ async function main(): Promise<void> {
   }
 
   const steps: Step[] = ids.map((id, i) => {
-    const boxes: DerivedBox[] = hurtFor(sheet, rects[i], opts.hurtBoxes, opts.inset);
+    const boxes: Box[] = hurtFor(sheet, rects[i], opts.hurtBoxes, opts.inset);
     if (guess && i === active) boxes.push(guess.box);
     return { frame: id, dur: durs[i], ...(boxes.length ? { boxes } : {}) };
   });

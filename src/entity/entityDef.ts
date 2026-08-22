@@ -1,104 +1,30 @@
 import { Rectangle, Texture } from "pixi.js";
 import type { Sounds } from "../audio/sounds";
 import type { StatesFile } from "./states";
+import {
+  DEFAULT_ATTRIBUTES,
+  type Anim,
+  type Attributes,
+  type Box,
+  type EntityFile,
+  type FrameDef,
+  type Step,
+} from "./entityFile";
+
+// The on-disk shapes live one file over, PixiJS-free so the editor and the
+// scripts can share them; re-exported because this is where the game reaches
+// for them, and an entity's loaded form is the same data plus textures.
+export type { Anim, Attributes, Box, EntityFile, FrameDef, Step };
+export { DEFAULT_ATTRIBUTES };
 
 /**
  * Loading side of the entity data format (docs/data-format.md). The dev-server
  * plugin assembles `data/entities/<name>/*.json` into one object at
  * `/api/entity`; here we turn that into an `EntityDef` — the immutable
  * definition (textures, animations, states) shared by every live `Entity`.
+ *
+ * The *shape* of what is on disk is `entityFile.ts`; this is the loading half.
  */
-
-export interface FrameDef {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  anchor: [number, number];
-}
-
-export interface Box {
-  type: "hit" | "hurt" | "push";
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-export interface Step {
-  frame: string;
-  dur: number;
-  boxes?: Box[];
-}
-
-export interface Anim {
-  loop: boolean;
-  steps: Step[];
-}
-
-/** Section file `attributes.json` — constants that belong to the fighter. */
-export interface Attributes {
-  /** Downward acceleration in sprite px per game frame, squared. */
-  gravity: number;
-  /**
-   * How far above the ground, in sprite px, a falling entity starts its landing
-   * pose. Roughly the distance covered by the landing animation, so the pose
-   * finishes as the feet touch instead of flashing after the fact.
-   */
-  landCue: number;
-  /**
-   * Width of the body for push collision, in sprite px, centred on the anchor.
-   * Deliberately one number rather than per-frame boxes — see src/combat/push.ts.
-   */
-  pushWidth: number;
-  /**
-   * Game frames both fighters are frozen for when a blow connects — the pause
-   * that makes a hit feel like it met something instead of passing through.
-   * An attack state may override it with its own `hitstop`.
-   */
-  hitstop: number;
-  /**
-   * How much punishment the fighter takes before falling. A round lasts about a
-   * dozen clean hits: roughly 16 light punches or 7 uppercuts.
-   */
-  health: number;
-  /**
-   * Damage an attack does when its own state does not say. A blow that forgot
-   * to state its worth should still cost something, or a missing field would
-   * silently make a move free.
-   */
-  damage: number;
-  /**
-   * Game frames a blow holds its victim helpless when its own state does not
-   * say. Twelve, which is what every reaction animation happens to last today —
-   * so switching the length from the pose to the number changed nothing, which
-   * is how a foundation should arrive.
-   */
-  hitstun: number;
-}
-
-export const DEFAULT_ATTRIBUTES: Attributes = {
-  gravity: 0.3,
-  landCue: 50,
-  pushWidth: 30,
-  hitstop: 6,
-  health: 100,
-  damage: 6,
-  hitstun: 12,
-};
-
-interface EntityFile {
-  name: string;
-  /** Path under `assets/sheets/`, which the server resolves — `spawns/` and all. */
-  sheet: string;
-  frames: Record<string, FrameDef>;
-  animations: Record<string, Anim>;
-  /** Section file `sounds.json`, absent until authored. */
-  sounds?: Sounds;
-  /** Section file `states.json`, absent until authored. */
-  states?: StatesFile;
-  attributes?: Partial<Attributes>;
-}
 
 /** One frame ready to draw: sub-texture plus its pivot. */
 export interface FrameTex {

@@ -1,4 +1,5 @@
 import type { Plugin, ViteDevServer } from "vite";
+import type { EntityFile } from "../../src/entity/entityFile";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -259,7 +260,10 @@ export function entityEditorServer(): Plugin {
         // The caller is told where the picture is rather than working it out,
         // which is the only thing that still separates a fighter from a spawn
         // once both are one transparent sheet.
-        const entity: Record<string, unknown> = {
+        // Only the two fields the server invents can be checked: the sections
+        // are whatever .json files are in the directory, so their names come
+        // from the filesystem rather than from a type.
+        const entity: Pick<EntityFile, "name" | "sheet"> & Record<string, unknown> = {
           name,
           sheet: dir.startsWith(path.join(root, SPAWNS_DIR))
             ? path.posix.join("spawns", `${name}.png`)

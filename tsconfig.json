@@ -17,7 +17,10 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    // The CLI scripts import each other with explicit .ts, which is what tsx
+    // runs; they are typechecked here and never emitted.
+    "allowImportingTsExtensions": true
   },
-  "include": ["src", "tools", "vite.config.ts"]
+  "include": ["src", "tools", "scripts", "vite.config.ts"]
 }

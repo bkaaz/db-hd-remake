@@ -14,7 +14,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { encodePng, decodePng, type Rgba } from "../src/sprites/png.ts";
-import type { FrameRect } from "../src/sprites/boxes.ts";
+import type { FrameDef } from "../src/entity/entityFile.ts";
 
 /** 3x5 pixel digits — enough to label a frame, nothing more. */
 const DIGITS: Record<string, string[]> = {
@@ -67,7 +67,7 @@ function fill(
 }
 
 /** Nearest-neighbour blit of a source rect, scaled, skipping transparent pixels. */
-function blit(dst: Rgba, src: Rgba, rect: FrameRect, dx: number, dy: number, scale: number): void {
+function blit(dst: Rgba, src: Rgba, rect: FrameDef, dx: number, dy: number, scale: number): void {
   for (let y = 0; y < rect.h * scale; y++) {
     const sy = rect.y + Math.floor(y / scale);
     for (let x = 0; x < rect.w * scale; x++) {
@@ -141,8 +141,8 @@ async function main(): Promise<void> {
   const root = process.cwd();
   const frames = JSON.parse(
     await fs.readFile(path.join(root, "data", "entities", entity, "frames.json"), "utf8"),
-  ) as Record<string, FrameRect>;
-  const sheet = decodePng(await fs.readFile(path.join(root, "assets", "sheets", `${entity}.png`)));
+  ) as Record<string, FrameDef>;
+  const source = decodePng(await fs.readFile(path.join(root, "assets", "sheets", `${entity}.png`)));
 
   const ids = parseFrames(spec).filter((id) => {
     if (frames[id]) return true;
@@ -171,7 +171,7 @@ async function main(): Promise<void> {
       // Bottom-centre the sprite in its cell, so poses share a ground line.
       blit(
         sheet,
-        sheet,
+        source,
         rect,
         cx + Math.round((cellW - rect.w * scale) / 2),
         cy + cellH - 4 - rect.h * scale,

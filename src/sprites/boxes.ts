@@ -8,26 +8,16 @@
  * it is deterministic, and it runs in `scripts/anim.ts` rather than costing
  * anyone's attention.
  *
+ * The two shapes it works on — a frame's rectangle and a box — are the file's,
+ * not this module's: declaring them here again is what let `DerivedBox` quietly
+ * lose the `push` type. Type-only imports, so nothing is added to the runtime
+ * graph and this stays testable in Node on its own.
+ *
  * What it cannot know is judgement — how the move should feel, whether a pose
  * reads. Those stay with the owner, who adjusts in the editor.
  */
 
-export interface FrameRect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  /** Pivot in px from the frame's top-left corner. */
-  anchor: [number, number];
-}
-
-export interface DerivedBox {
-  type: "hurt" | "hit";
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
+import type { Box, FrameDef } from "../entity/entityFile";
 
 export type AnimKind = "loop" | "attack" | "hurt";
 
@@ -36,7 +26,7 @@ export type AnimKind = "loop" | "attack" | "hurt";
  * `inset` shrinks it on every side — useful because a tight rect also contains
  * hair spikes and aura, which usually should not be hittable.
  */
-export function hurtBox(frame: FrameRect, inset = 0): DerivedBox | null {
+export function hurtBox(frame: FrameDef, inset = 0): Box | null {
   const w = frame.w - 2 * inset;
   const h = frame.h - 2 * inset;
   if (w <= 0 || h <= 0) return null;
@@ -73,10 +63,10 @@ const merged = (a: Band, b: Band): Band => ({
  */
 export function hurtBoxesFromMask(
   mask: Uint8Array,
-  frame: FrameRect,
+  frame: FrameDef,
   count = 3,
   inset = 0,
-): DerivedBox[] {
+): Box[] {
   const bands: Band[] = [];
   for (let y = 0; y < frame.h; y++) {
     let min = -1;
@@ -117,7 +107,7 @@ export function hurtBoxesFromMask(
 }
 
 /** How far a frame's silhouette reaches in front of its anchor. */
-export function reach(frame: FrameRect): number {
+export function reach(frame: FrameDef): number {
   return frame.w - frame.anchor[0];
 }
 
@@ -125,7 +115,7 @@ export function reach(frame: FrameRect): number {
  * Index of the frame that reaches furthest forward — for an attack that is the
  * extended limb, i.e. the active frame. Ties resolve to the earliest frame.
  */
-export function activeIndex(frames: readonly FrameRect[]): number {
+export function activeIndex(frames: readonly FrameDef[]): number {
   let best = 0;
   for (let i = 1; i < frames.length; i++) {
     if (reach(frames[i]) > reach(frames[best])) best = i;
@@ -134,7 +124,7 @@ export function activeIndex(frames: readonly FrameRect[]): number {
 }
 
 export interface HitGuess {
-  box: DerivedBox;
+  box: Box;
   /**
    * `extension` — measured from how far this frame reaches beyond the others,
    * so the box covers the part that actually sticks out.
@@ -150,7 +140,7 @@ export interface HitGuess {
  * vertically it sits at roughly chest height. Good enough to make the move
  * connect, and meant to be dragged into place by hand afterwards.
  */
-export function hitBox(frames: readonly FrameRect[], index: number): HitGuess {
+export function hitBox(frames: readonly FrameDef[], index: number): HitGuess {
   const frame = frames[index];
   const band = { y: -Math.round(frame.h * 0.72), h: Math.max(4, Math.round(frame.h * 0.22)) };
   const restReach = Math.min(...frames.map(reach));

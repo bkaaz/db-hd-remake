@@ -1,5 +1,6 @@
 import { isModified, markSaved } from "./saved";
-import { state, type Box } from "./store";
+import { state } from "./store";
+import type { Anim, FrameDef, Step } from "../../../src/entity/entityFile";
 import { getSource } from "./imageProcess";
 
 /**
@@ -12,26 +13,11 @@ import { getSource } from "./imageProcess";
  * which of them still differ from disk.
  */
 
-interface FrameOut {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  anchor: [number, number];
-}
-interface StepOut {
-  frame: string;
-  dur: number;
-  boxes?: Box[];
-}
-interface AnimOut {
-  loop: boolean;
-  steps: StepOut[];
-}
+// The three shapes this writes are the file's own — see src/entity/entityFile.ts.
 
 /** The `frames` section: id -> rect + anchor. */
-export function buildFrames(): Record<string, FrameOut> {
-  const frames: Record<string, FrameOut> = {};
+export function buildFrames(): Record<string, FrameDef> {
+  const frames: Record<string, FrameDef> = {};
   for (const f of state.frames) {
     frames[f.id] = { x: f.x, y: f.y, w: f.w, h: f.h, anchor: f.anchor };
   }
@@ -39,13 +25,13 @@ export function buildFrames(): Record<string, FrameOut> {
 }
 
 /** The `animations` section: name -> { loop, steps }. */
-export function buildAnimations(): Record<string, AnimOut> {
-  const animations: Record<string, AnimOut> = {};
+export function buildAnimations(): Record<string, Anim> {
+  const animations: Record<string, Anim> = {};
   for (const a of state.anims) {
     animations[a.name] = {
       loop: a.loop,
       steps: a.steps.map((s) => {
-        const out: StepOut = { frame: s.frame, dur: s.dur };
+        const out: Step = { frame: s.frame, dur: s.dur };
         if (s.boxes.length) out.boxes = s.boxes.map((b) => ({ ...b }));
         return out;
       }),

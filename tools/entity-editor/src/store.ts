@@ -8,29 +8,25 @@
  */
 
 import type { Sounds } from "../../../src/audio/sounds";
+import type {
+  Box,
+  BoxType,
+  EntityFile,
+  FrameDef as FileFrame,
+} from "../../../src/entity/entityFile";
 import type { StatesFile } from "../../../src/entity/states";
+
+export type { Box, BoxType };
 
 export type EditorMode = "frame" | "anchor" | "bg" | "detect";
 
-export type BoxType = "hit" | "hurt" | "push";
-
-/** A collision box on an animation step, in px relative to the frame's anchor. */
-export interface Box {
-  type: BoxType;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-export interface FrameDef {
+/**
+ * A frame as the editor holds it: the file's rectangle plus the id it is keyed
+ * by on disk. The editor works in a list and the file is a map, so the id has to
+ * travel with the rest rather than being the key.
+ */
+export interface FrameDef extends FileFrame {
   id: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  /** Pivot in px, measured from the frame's top-left corner. */
-  anchor: [number, number];
 }
 
 export interface StepDef {
@@ -271,22 +267,8 @@ export function removeAnim(name: string): void {
 
 // --- loading an existing entity file ----------------------------------
 
-export interface EntityFileIn {
-  name: string;
-  /** Path under `assets/sheets/`, as the server resolved it — `spawns/` and all. */
-  sheet: string;
-  frames?: Record<
-    string,
-    { x: number; y: number; w: number; h: number; anchor: [number, number] }
-  >;
-  animations?: Record<
-    string,
-    { loop: boolean; steps: { frame: string; dur: number; boxes?: Box[] }[] }
-  >;
-  states?: StatesFile;
-  sounds?: Sounds;
-  attributes?: { hitstun?: number };
-}
+/** What `/api/entity` returns: the file itself, sections and all. */
+export type EntityFileIn = EntityFile;
 
 /** Hydrate editor state from an assembled entity (reverse of the exporter). */
 export function loadEntity(json: EntityFileIn): void {

@@ -2,6 +2,24 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-22 — One declaration of the entity file, in `entityFile.ts`
+
+- **Five places declared the same shape** — the game, the editor, `sprites/boxes.ts`,
+  `scripts/anim.ts` and the editor's exporter — and they had drifted: `DerivedBox`
+  could not express a `push` box, and the editor's `attributes` named one field
+  of seven with its default repeated as a literal `12`.
+- **PixiJS-free, so the editor can import it.** That is the only reason it is not
+  in `entityDef.ts`, which keeps the loaded form: the same data plus textures.
+- **`scripts/` was never typechecked** — `tsconfig.json` included `src`, `tools`
+  and the Vite config, and nothing else. That is why the drift was invisible
+  there. Added, and it immediately found a live regression: this morning's
+  `atlas` → `sheet` rename had turned `blit(sheet, atlas, …)` into
+  `blit(sheet, sheet, …)`, so `npm run sheet` had been drawing empty cells all
+  day — and I had "verified" it twice by noting that a file appeared.
+- **Rejected: leaving the shapes local** because `boxes.ts` was a leaf module
+  with no imports. Type-only imports add no runtime edge and it still tests in
+  Node alone; a name declared twice is what cost us the `push` type.
+
 ## 2026-08-22 — Going down and being down are two states, not one animation
 
 - **The bug, reported by the owner and visible in one line of the log:** holding

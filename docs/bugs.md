@@ -39,6 +39,31 @@ message belongs somewhere that is not the status bar. The new "Apply to sheet"
 button sidesteps it by not calling `render()` — nothing in the editor's state
 changed, only the disk — which works but is a second convention, not a fix.
 
+## Re-running npm run anim throws away every box that was adjusted by hand
+
+`scripts/anim.ts` · noticed 2026-08-22 · loses work
+
+The script keeps existing *timings* when the frame list is unchanged, and says
+so — but it rebuilds `boxes` from the silhouette every time, unconditionally. A
+hit box widened in the editor, a hurt box nudged off the hair, a push box drawn
+by hand: all replaced on the next run, with nothing printed to say they were
+there.
+
+It is live on data shipped today. `punch_knee`'s hit box is hand-set to 12x7
+because the derived one was a 3px artefact (see the entry below), and its steps
+are a hand-made four-step split. `npm run anim -- goku punch_knee --frames
+187,188 --kind attack` puts back the 3px box and the three-step shape, and only
+the timing reset is mentioned.
+
+Until it is fixed, treat re-running the script on a tuned animation as
+destructive and check `git diff` afterwards.
+
+The fix has a shape: the script already knows which boxes it derived (hurt, and
+the placeholder hit), so it can keep anything it did not put there — a push box
+always, and a hit box whose geometry no longer matches what the derivation would
+produce. That last test is the awkward half and is why this is written down
+rather than done.
+
 ## A new frame's anchor lands in the middle of its rectangle, not under its feet
 
 `tools/entity-editor` · noticed 2026-08-22 · annoying
