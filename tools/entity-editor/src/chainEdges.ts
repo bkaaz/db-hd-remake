@@ -27,26 +27,51 @@ export interface GraphNode {
 export function drawEdges(svg: SVGSVGElement, board: HTMLElement, nodes: Map<string, GraphNode>, links: Edge[]): void {
   const origin = board.getBoundingClientRect();
   svg.replaceChildren();
+  const LANE_GAP = 26;
 
   /**
-   * A link that skips columns is routed through its own lane **below** the row
-   * of nodes, instead of flying across the boxes in between — which is the
-   * layered-drawing trick of giving a long edge waypoints in every layer it
-   * crosses, at our scale where a lane per edge is enough.
+   * A link that skips columns is routed through its own lane **below** the
+   * boxes it flies over — the layered-drawing trick of giving a long edge
+   * waypoints in every layer it crosses, at our scale where a lane per edge is
+   * enough.
+   *
+   * The lane is measured from the columns that edge actually crosses, not from
+   * the whole board: with four openers stacked in the first column, a board-wide
+   * baseline sent an edge that had to clear one box eight hundred pixels down.
    */
-  const long = links.filter((l) => columnsApart(l, nodes) > 1);
+  const placed: { lane: number; from: number; to: number }[] = [];
   const lane = new Map<Edge, number>();
-  long
-    .slice()
-    .sort((a, b) => columnsApart(b, nodes) - columnsApart(a, nodes))
-    .forEach((l, i) => lane.set(l, i));
+  const long = links
+    .filter((l) => columnsApart(l, nodes) > 1)
+    .sort((a, b) => columnsApart(b, nodes) - columnsApart(a, nodes));
+
+  for (const link of long) {
+    const a = nodes.get(link.from)?.depth ?? 0;
+    const b = nodes.get(link.to)?.depth ?? 0;
+    // Only what is genuinely in the way: the columns *between* the two ends,
+    // plus the two boxes themselves. A tall column at either end is not being
+    // flown over — the edge leaves from one of its boxes.
+    const under = [...nodes.values()]
+      .filter((n) => n.depth > a && n.depth < b)
+      .map((n) => n.el.getBoundingClientRect().bottom - origin.top);
+    for (const end of [link.from, link.to]) {
+      const box = nodes.get(end)?.el.getBoundingClientRect();
+      if (box) under.push(box.bottom - origin.top);
+    }
+    let y = Math.max(0, ...under) + LANE_GAP;
+    // Two edges over the same columns must not share a lane; one goes lower.
+    for (const other of placed) {
+      if (other.from <= b && a <= other.to) y = Math.max(y, other.lane + LANE_GAP);
+    }
+    lane.set(link, y);
+    placed.push({ lane: y, from: a, to: b });
+  }
 
   const nodesBottom = Math.max(
     ...[...nodes.values()].map((n) => n.el.getBoundingClientRect().bottom - origin.top),
   );
-  const LANE_GAP = 26;
-  const height = nodesBottom + LANE_GAP * (long.length + 1);
-  board.style.paddingBottom = `${LANE_GAP * (long.length + 1)}px`;
+  const height = Math.max(nodesBottom, ...lane.values()) + LANE_GAP;
+  board.style.paddingBottom = `${Math.max(0, height - nodesBottom)}px`;
   svg.setAttribute("viewBox", `0 0 ${origin.width} ${height}`);
 
   for (const link of links) {
@@ -58,16 +83,15 @@ export function drawEdges(svg: SVGSVGElement, board: HTMLElement, nodes: Map<str
     const x2 = to.left - origin.left;
     const y2 = to.top + to.height / 2 - origin.top;
 
-    const at = lane.get(link);
+    const y = lane.get(link);
     let d: string;
     let label: [number, number];
-    if (at === undefined) {
+    if (y === undefined) {
       // Neighbouring columns: nothing to fly over, so a plain curve.
       const cx = (x1 + x2) / 2;
       d = `M ${x1} ${y1} C ${cx} ${y1}, ${cx} ${y2}, ${x2} ${y2}`;
       label = [cx, (y1 + y2) / 2 - 6];
     } else {
-      const y = nodesBottom + LANE_GAP * (at + 1);
       const bend = 14;
       d =
         `M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x1 + bend} ${y}, ${x1 + bend * 2} ${y}` +
