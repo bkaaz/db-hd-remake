@@ -436,6 +436,40 @@
         "69",
         "70"
       ]
+    },
+    "guard_crouch": {
+      "desc": "The crouching guard, and the first frame on this sheet that was not ripped: the rip has no low block at all, which decisions.md recorded as the first known gap on 2026-08-09. Drawn by the owner 2026-08-22 in Goku's own palette, hard-edged, in the style of the standing block at 28.",
+      "frames": [
+        "182"
+      ]
+    },
+    "hurt_crouch": {
+      "desc": "Two crouching hit reactions, drawn by the owner 2026-08-22. They differ by how far the blow throws him: 184 barely moves, guard still up by the face, while 183 is opened up — torso turned, arm thrown out, head back. The owner's intent is that a strong enough hit carries 184 through into 183, which is the same escalation the standing reactions already make between flinch and stagger.",
+      "frames": [
+        "183",
+        "184"
+      ]
+    },
+    "kick_axe": {
+      "desc": "The leg brought down from overhead. 185 is the new frame (owner, 2026-08-22); the wind-up is 121, which the sheet already had — hop_lunge's second frame, already noted there as standing on its own as a high-leg attack. This is that reuse being taken up.",
+      "frames": [
+        "121",
+        "185"
+      ]
+    },
+    "punch_close": {
+      "desc": "A short punch thrown from the guard, arm out at chest height. 186 is the new frame (owner, 2026-08-22), wound up from 34 — the neutral with both fists at the shoulders that kick_string also starts from. A frame belonging to two moves is expected here; 34 commits no limb, so it winds up either.",
+      "frames": [
+        "34",
+        "186"
+      ]
+    },
+    "punch_knee": {
+      "desc": "A punch thrown from one knee: 187 draws the fist back, 188 puts it straight out. Both drawn by the owner 2026-08-22. The only pair among the new frames that is a complete move on its own, wind-up and blow, with nothing borrowed from the rip.",
+      "frames": [
+        "187",
+        "188"
+      ]
     }
   },
   "frames": {
@@ -594,6 +628,13 @@
     "64": "fx_ki_burst_big: swollen to 26x26 and white-hot",
     "65": "fx_ki_burst_small: torn open, orange",
     "66": "fx_ki_burst_small: an arc of debris left over",
-    "67": "fx_ki_burst_small: the last specks"
+    "67": "fx_ki_burst_small: the last specks",
+    "182": "guard_crouch: low, both forearms up and crossed in front of the face — the standing block's arms on the crouch's legs. Drawn by the owner, not on the rip",
+    "183": "hurt_crouch, the deeper of the two: crouched but opened up, torso turned away, one arm thrown out, head back. Where 184 goes on a strong hit",
+    "184": "hurt_crouch, the shallower: crouched with both fists still up by the face, barely displaced — a flinch that keeps its shape",
+    "185": "kick_axe: the leg brought down from overhead, body leaning back against it. Wound up from 121",
+    "186": "punch_close: a short punch from the guard, arm out at chest height, feet planted. Wound up from 34",
+    "187": "punch_knee, the wind-up: down on one knee, fist drawn back at the hip",
+    "188": "punch_knee, the blow: same knee, arm straight out in front"
   }
 }

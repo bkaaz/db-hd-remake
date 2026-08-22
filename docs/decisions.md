@@ -2,6 +2,37 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-22 — The sheet spells 27 of its colours two ways, and we leave it alone
+
+- **Measured because hand-drawn frames looked off-palette, and they were not.** Every
+  colour GIMP wrote back is the source colour put through an exact 5-bit-per-channel
+  round-trip, `v -> ((v>>3)<<3) | ((v>>3)>>2)` — verified against all 16 affected
+  colours, no exceptions. It is a tool artefact, not a choice made with the mouse.
+- **The reason it cannot be inverted is the interesting part.** Each of the 16 has
+  exactly two possible sources, and the pair is always the same SNES colour expanded
+  to 8 bits two different ways: `v<<3` and bit-replication. The rip carries **both**
+  spellings — 81 colours in the shifted form, and 27 pairs that are one colour written
+  twice. Its 118 colours are 91. That inconsistency predates every edit we have made.
+- **So there is nothing to restore.** Choosing between `(200,128,24)` and
+  `(206,130,24)` is choosing a spelling, not a colour; they are 6 apart and
+  indistinguishable. The owner's offer to name which frames are colour-correct would
+  have spent real knowledge on a choice that does not exist.
+- **Normalising the whole sheet to one form was proposed and dropped.** It would have
+  cut 118 colours to 91 and made the class of bug impossible — but the payoff is a
+  palette-swap tool that does not exist yet, and that tool can group by `c>>3` in one
+  line at build time. The knowledge belongs there, not in a migration of 180 frames.
+- **And it converges rather than compounding**: the round-trip maps the same sources to
+  the same targets, and a snapped pixel is a fixed point, so editing sessions do not
+  keep adding variants.
+- **What is genuinely wrong is 32 pixels**, all in 187 and 188, all at the belt where a
+  soft eraser blended blue into orange: 19 opaque pixels 6–19 away from any palette
+  colour, and 13 with partial alpha. Left for the owner's pencil rather than snapped —
+  at that distance an automatic nearest-colour is a guess, and `alphaMask` (`png.ts`,
+  `a > 0`) is unaffected because all 13 sit inside the silhouette, not on its edge.
+- **A read-only `npm run check-sheet` is wanted but not built.** The value was never
+  fixing these; it is being able to ask "did this drawing session break anything" in ten
+  seconds instead of half an hour of throwaway Python. Deferred, not dropped.
+
 ## 2026-08-22 — Three roots, each answering one question, and a pack that needs no list
 
 - **The filing system is the feature.** `assets/` is exactly what the game
