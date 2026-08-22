@@ -191,9 +191,10 @@ npm run chains -- <entity>
                   # what cancels into what, and how many frames of margin each
                   # link has — the instrument for tuning frame data
 npm run sheet -- <entity> --frames 0-30
-                  # labelled contact sheet into assets/contact/ (gitignored)
+                  # labelled contact sheet into preview/ (gitignored)
 npm run fx        # generate the effect entities (sheet + frames + animations)
                   # from src/fx/generate.ts — no ripped hit spark (--dry-run)
+npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ```
 
 ## Structure
@@ -221,6 +222,7 @@ npm run fx        # generate the effect entities (sheet + frames + animations)
 │   ├── chains.ts                 #   print the cancel graph with its arithmetic
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
 │   ├── fx.ts                     #   write the generated effects out
+│   ├── pack.ts                   #   zip the assets for backup / handover
 │   └── split-audio.ts            #   cut a capture into numbered clips
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/entity-editor/          # the authoring tool (Canvas 2D)
@@ -229,9 +231,17 @@ npm run fx        # generate the effect entities (sheet + frames + animations)
 ├── data/entities/<name>/         # OUR data, committed: frames.json,
 │                                 #   animations.json, states.json, …
 ├── data/audio/sound-test.json    # which clip of the sound-test capture is what
-├── assets/                       # BYOA — gitignored, never committed
-│   └── sheets/                   #   one image per entity, transparency in the
-│                                 #   file; spawns/ holds what npm run fx writes
+├── assets/                       # BYOA, gitignored — EXACTLY what the game reads
+│   ├── sheets/                   #   one image per entity, transparency in the
+│   │                             #   file; spawns/ holds what npm run fx writes
+│   └── audio/sfx/                #   the clips cut from the capture
+├── raw/                          # BYOA, gitignored — what those were made from
+│                                 #   and cannot be regenerated (the capture,
+│                                 #   untouched rips). npm run pack -- --raw
+├── preview/                      # gitignored: images drawn for a person to look
+│                                 #   at (npm run sheet). Nothing reads them back
+├── dist/                         # what leaves the repo: web/ is the build,
+│                                 #   assets/ is what npm run pack writes
 ├── docs/                         # design notes & decisions (read before building)
 ├── vite.config.ts
 └── tsconfig.json

@@ -56,7 +56,7 @@ time.
 To see the sprites, render a labelled contact sheet and look at it:
 
 ```bash
-npm run sheet -- goku --frames 31-45        # → assets/contact/ (gitignored)
+npm run sheet -- goku --frames 31-45        # → preview/ (gitignored)
 ```
 
 The numbers are burnt into the image because "count from the left" is how a

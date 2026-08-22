@@ -53,11 +53,17 @@ This repo ships **only our code + data** — no copyrighted game art. Source ass
 live under `assets/` (gitignored), by type:
 
 ```
-assets/sheets/         one image per entity — the editor and the game read these
-assets/sheets/spawns/  effect sheets, written by npm run fx
-assets/audio/          clips cut from a capture of the game's sound test
-assets/backgrounds/    (future) stage art
+assets/    what the game reads     sheets/goku.png, sheets/spawns/*.png,
+                                   audio/sfx/*.wav
+raw/       what those were made    audio/sound-test.wav (the uncut capture),
+           from                    sheets/*.png (untouched rips)
+preview/   images a script drew    contact sheets from npm run sheet, effect
+           for a person to see     previews — never read back by anything
 ```
+
+The split is the whole filing system: `assets/` is exactly what the game opens,
+`raw/` is exactly what cannot be regenerated, and `preview/` is disposable. All
+three are gitignored.
 
 **Every entity is one image, and its transparency is in the file.** There is no
 second, keyed copy of a sheet anywhere: the background is removed once, in the
@@ -87,12 +93,24 @@ anyone opens that file in an image editor:
   the original rip beside it, so a better rip can still be diffed against what
   this started from.
 
-### What is the pack, and what is derived
+### Packing them up
 
-The pack is `assets/sheets/*.png` and `assets/audio/raw/` — losing those means
-losing work. Everything else under `assets/` comes back from a command:
-`assets/sheets/spawns/` from `npm run fx`, `assets/audio/sfx/` from
-`npm run split-audio`, `assets/contact/` from `npm run sheet`.
+```bash
+npm run pack              # dist/assets/db-hd-assets-<date>.zip   — assets/, ~8 MB
+npm run pack -- --raw     # and db-hd-raw-<date>.zip              — raw/, ~15 MB
+```
+
+Unzip either at the repository root; the paths inside are already correct, and
+each carries a `README.txt` saying so. The repo plus the first archive is a
+working copy, which makes it the thing to hand to another machine or another
+person as well as the thing to keep.
+
+Run the first often — the hand-edited sheet rides in it every time. The second
+is behind a flag because it is mostly a sound capture that has never changed;
+run it when something in `raw/` does.
+
+**Neither is a backup while it sits in `dist/`.** It dies with the same disk the
+repo is on. Copying it somewhere else is the backup.
 
 See [`docs/assets.md`](./docs/assets.md) for why the project is arranged this way.
 

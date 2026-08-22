@@ -51,8 +51,8 @@ get wrong and both silently ruin the result:
 ## 2. Cut it up
 
 ```bash
-npm run split-audio -- assets/audio/raw/sound-test.wav --dry-run   # report only
-npm run split-audio -- assets/audio/raw/sound-test.wav --blip 1    # writes 000.wav …
+npm run split-audio -- raw/audio/sound-test.wav --dry-run   # report only
+npm run split-audio -- raw/audio/sound-test.wav --blip 1    # writes 000.wav …
 ```
 
 It prints every clip with its position, length and peak level, so a bad
@@ -87,8 +87,9 @@ numbering does not shift when the rest follow.
 
 Rename the numbered files to what they are, then point `sounds.json` at them
 with the `file` field, which replaces the synthesised placeholder without any
-state changing. `assets/audio/raw/` is the original and belongs in the backup;
-`sfx/` is output and comes back from this script.
+state changing. The capture lives in `raw/audio/` because nothing at runtime
+reads it; `assets/audio/sfx/` is its output and comes back from this script.
+`npm run pack -- --raw` is what puts the capture into an archive.
 
 ## Why not just record each effect separately
 

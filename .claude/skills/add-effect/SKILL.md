@@ -108,7 +108,7 @@ generator:
 3. `npm run fx` (`--dry-run` to report only). It is seeded, so re-running is
    safe and never silently changes the art.
 4. **Look at it.** Upscale the sheet nearest-neighbour and read the image —
-   there is no substitute. Put previews in `assets/contact/` (gitignored).
+   there is no substitute. Put previews in `preview/` (gitignored).
 5. `npm test` and `npm run typecheck`.
 
 ## Testing generated art

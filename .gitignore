@@ -10,10 +10,14 @@ dist/
 .claude/settings.local.json
 
 # BYOA: copyrighted source assets stay out of the repo (see docs/assets.md).
-# One image per entity lives under assets/sheets/ and none of it is ours to
-# distribute. Our authored data lives in data/ (committed); only code and data/
-# are committed.
+# Our authored data lives in data/ (committed); only code and data/ are.
+#
+#   assets/    what the game reads — one image per entity, plus the cut sfx
+#   raw/       what those were made from: the uncut capture, the untouched rip
+#   preview/   images a script rendered for a person to look at, never read back
 assets/
+raw/
+preview/
 
 # Gameplay recordings (src/log.ts) — a scratch file for debugging a session,
 # rewritten every time recording starts.

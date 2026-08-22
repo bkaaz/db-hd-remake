@@ -2,6 +2,59 @@
 
 Decisions that are settled. Newest first.
 
+## 2026-08-22 — Three roots, each answering one question, and a pack that needs no list
+
+- **The filing system is the feature.** `assets/` is exactly what the game
+  opens, `raw/` is exactly what cannot be regenerated, `preview/` is what a
+  person looks at. All three gitignored. Where a file goes stopped being a
+  judgement call, which is the property that keeps it true a year from now.
+- **`assets/audio/raw/` was misfiled and it mattered by weight.** The game reads
+  `sfx/`, never the capture — so 76 MB of the 86 MB under `assets/` was something
+  nothing at runtime opens. Moving it to `raw/audio/` left `assets/` at ~10 MB,
+  which is what makes handing the game to someone cheap.
+- **So `npm run pack` knows nothing.** One archive is `assets/`, the other is
+  `raw/`; the directories *are* the answer, so there is no file list to drift.
+  That was the argument for the move, more than tidiness.
+- **Two archives, because the two jobs want different sets.** `db-hd-assets-*`
+  (~8 MB) is what the game reads and is the default; `db-hd-raw-*` (~15 MB
+  compressed from 76) sits behind `--raw` because it is mostly a capture that has
+  never changed. The hand-edited sheet rides in both — 412 KB of redundancy, so
+  the thing that is genuinely irreplaceable is carried by the archive made often
+  rather than the one made once.
+- **`dist/` is now everything that leaves the repo**, split `web/` (the Vite
+  build) and `assets/` (the packs). This needed care: Vite empties its `outDir`
+  on every build, so an archive written to `dist/` would be deleted by the next
+  `npm run build` — verified by putting a file there and watching it go. The fix
+  is `outDir: "dist/web"`, and the config carries a comment saying why, because
+  the protection is one line somebody could remove without seeing the cost.
+- **Named for what it is, not for what it protects.** `assets/backups/` was
+  rejected: a backup inside the thing being backed up grows on itself and dies to
+  the same `rm -rf`. `backups/` at the root was rejected too, because the word
+  would be a lie — a zip in the repo survives nothing the repo does not. The
+  script ends by saying that copying it elsewhere is the backup.
+- **`preview/`, not `contact/`.** "Contact sheet" is a photography term and reads
+  at the repo root like contact details. What the directory actually holds is
+  images generated to be looked at — including the effect previews the
+  `add-effect` skill already asks for — and `preview/` says that. `.tmp/` was
+  considered and dropped: it groups by lifetime rather than purpose, which is how
+  a junk drawer starts, and a hidden directory is a poor home for files whose
+  whole point is being opened.
+- **`raw/`, not `originals/` or `raw-assets/`** (owner's call on the first, mine
+  on the second). It is the word the project already used for that capture, the
+  root is otherwise all short single words, and `npm run pack -- --raw` now names
+  the directory it packs. `source/` was ruled out for sitting next to `src/`.
+- **No fetcher, but the rip is in `raw/sheets/goku-rip.png`.** It is not
+  recoverable from the keyed sheet — the canvas zeroed RGB under alpha, so the
+  background colour is gone, though every sprite pixel survives. So it was
+  fetched once, by hand, rather than by rebuilding the machinery deleted the day
+  before. Its sha256 matched the one the old manifest recorded, which is worth
+  noting on its own: deleting the manifest did not lose that hash, git history
+  did its job, and the check cost one command.
+- **And the rip proves the keying was lossless.** Comparing it against the
+  current sheet: 212,193 sprite pixels identical, zero differences, and zero
+  pixels cut that were not the background colour. Future rips get diffed against
+  this, not against a memory of what the sheet used to be.
+
 ## 2026-08-22 — One entity, one image, and the transparency lives in the file
 
 - **`assets/atlases/` is gone, and so is `/api/atlas`.** A fighter had two copies

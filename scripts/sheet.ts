@@ -8,7 +8,7 @@
  *   npm run sheet -- goku --frames 0-30
  *   npm run sheet -- goku --frames 6,7,8 --scale 6 --cols 3
  *
- * Output goes to assets/contact/ — generated, gitignored, throwaway.
+ * Output goes to preview/ — generated, gitignored, throwaway.
  */
 
 import { promises as fs } from "node:fs";
@@ -151,7 +151,7 @@ async function main(): Promise<void> {
   });
   if (ids.length === 0) return;
 
-  const outDir = path.join(root, "assets", "contact");
+  const outDir = path.join(root, "preview");
   await fs.mkdir(outDir, { recursive: true });
   const written: string[] = [];
 

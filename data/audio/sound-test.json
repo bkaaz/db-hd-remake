@@ -1,7 +1,7 @@
 {
   "_comment": "What each clip of the sound-test capture is. `?` means nobody has said yet — the same convention as descriptions.json for sprites. Clip numbers are the files in assets/audio/sfx/, which `npm run split-audio` regenerates from the capture; nothing here is derived, it is all knowledge that only a person listening has.",
-  "source": "assets/audio/raw/sound-test.wav",
-  "split": "npm run split-audio -- assets/audio/raw/sound-test.wav --blip 1",
+  "source": "raw/audio/sound-test.wav",
+  "split": "npm run split-audio -- raw/audio/sound-test.wav --blip 1",
   "clips": {
     "000": "?",
     "001": "?",

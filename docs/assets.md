@@ -28,22 +28,28 @@ game's sound test and exists nowhere public, and the sheet is now appended to by
 hand, so it matches no published file. The manifest and its fetch command are
 gone; the README says to ask the author for the pack. See `decisions.md`.
 
-**Asset layout** — one gitignored root for all BYOA source assets, split by type
-so new kinds (audio, backgrounds, …) have an obvious home:
+**Layout — three gitignored roots, and each answers one question** (2026-08-22).
+They mirror each other, so where a file goes is never a judgement call:
 
 ```
-assets/            # all BYOA source assets (gitignored)
-  sheets/          # character sprite sheets (the editor reads these)
-  audio/           # raw/ the sound-test capture, sfx/ the clips cut from it
-  backgrounds/     # (future) stage art
+raw/       audio/sound-test.wav      sheets/goku-rip.png     what these were made from
+assets/    audio/sfx/*.wav           sheets/goku.png         what the game reads
+preview/                                                     what a person looks at
 ```
 
-**Two of those directories hold originals and the rest is output.**
-`assets/sheets/` and `assets/audio/raw/` are the pack — irreplaceable, backed up
-by the author — with one exception inside the first: `assets/sheets/spawns/`
-holds what `npm run fx` writes. That and `assets/audio/sfx/` and
-`assets/contact/` (from `npm run split-audio` and `npm run sheet`) are allowed to
-be deleted at any time.
+- **`assets/` is exactly what the game opens.** Nothing else. `sheets/spawns/`
+  is the one part of it a command rebuilds (`npm run fx`).
+- **`raw/` is exactly what cannot be regenerated.** The uncut capture that
+  `npm run split-audio` cuts into `assets/audio/sfx/`, and untouched rips.
+  Nothing reads it at runtime.
+- **`preview/` is disposable** — contact sheets and effect previews, rebuilt by
+  `npm run sheet` and `npm run fx`, never read back by code.
+
+**The payoff is that `npm run pack` needs no knowledge.** One archive is
+`assets/`, the other is `raw/`; there is no file list to drift out of date,
+because the directories *are* the answer. The archives land in `dist/assets/`,
+and a copy of one somewhere else is the backup — the file in `dist/` dies with
+the same disk the repo does.
 
 **Attribution lives in the README's Credits section**, one line per sheet naming
 whoever ripped it and where it came from. It moved there when the manifest was

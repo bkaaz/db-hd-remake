@@ -13,6 +13,7 @@
     "fx": "tsx scripts/fx.ts",
     "split-audio": "tsx scripts/split-audio.ts",
     "sheet": "tsx scripts/sheet.ts",
+    "pack": "tsx scripts/pack.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",
