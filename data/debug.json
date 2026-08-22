@@ -3,6 +3,7 @@
     {},
     { "p1": { "at": 0.8 }, "p2": { "at": 0.97 }, "boxes": true },
     { "p2": { "does": ["light 6", "medium 10", "medium 11", "heavy", 120] } },
-    { "p2": { "does": ["medium 24"] } }
+    { "p2": { "does": ["medium 24"] } },
+    { "p2": { "does": ["down 60"] } }
   ]
 }

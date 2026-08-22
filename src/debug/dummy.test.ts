@@ -82,3 +82,27 @@ describe("the debug dummy", () => {
     expect(Dummy.from({ does: ["light 0"] })).toContain("at least one frame");
   });
 });
+
+describe("a dummy that only ever crouches", () => {
+  /** What `data/debug.json` mode 4 says: hold down, forever. */
+  const script = { does: ["down 60"] };
+
+  it("holds down on every frame, including across the loop", () => {
+    const dummy = Dummy.from(script);
+    if (typeof dummy === "string") throw new Error(dummy);
+    // Past the end of the single 60-frame step, so the wrap is covered too.
+    for (let i = 0; i < 130; i++) {
+      expect(dummy.input({ on: true, facing: 1, frozen: false }).down).toBe(true);
+    }
+  });
+
+  it("presses nothing else, so what a blow lands on is the crouch alone", () => {
+    const dummy = Dummy.from(script);
+    if (typeof dummy === "string") throw new Error(dummy);
+    for (let i = 0; i < 130; i++) {
+      const world = dummy.input({ on: true, facing: 1, frozen: false });
+      const { down, ...rest } = world;
+      expect(Object.values(rest).every((v) => v === false)).toBe(true);
+    }
+  });
+});
