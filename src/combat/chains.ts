@@ -109,6 +109,44 @@ export function attacksIn(file: StatesFile): Set<string> {
 }
 
 /**
+ * Attacks no transition anywhere leads to — defined, and waiting for an input.
+ *
+ * The moveset is being authored ahead of its inputs (`combat.md`), so a move
+ * nothing reaches is the normal intermediate state rather than a mistake. It is
+ * also invisible: it has no arrow on the graph and no line in the cancel table,
+ * which is exactly how one gets silently overwritten when the next trigger is
+ * assigned. Asked here rather than by eye, and the list empties itself when the
+ * work is done.
+ */
+export function unassigned(file: StatesFile): string[] {
+  const reached = new Set<string>();
+  for (const def of Object.values(file.states)) {
+    for (const t of def.transitions ?? []) reached.add(t.to);
+  }
+  return [...attacksIn(file)].filter((name) => !reached.has(name)).sort();
+}
+
+/**
+ * Animations no state names — a move that is not even a state yet.
+ *
+ * The other half of `unassigned`, and the half that actually went missing: an
+ * attack state with no trigger at least has a name in `states.json`, while an
+ * animation nobody plays leaves no trace anywhere a reader passes. `kick_low`
+ * sat here for a week after the four-link medium string was replaced by the
+ * ladder, and nothing said so.
+ *
+ * It cannot tell an attack from anything else, because an animation carries no
+ * `onHit` — so a decorative one nothing plays shows up too, which is correct: an
+ * animation nothing reaches is worth seeing whatever it draws.
+ */
+export function animationsWithNoState(file: StatesFile, anims: Record<string, unknown>): string[] {
+  const played = new Set(Object.values(file.states).map((def) => def.anim));
+  return Object.keys(anims)
+    .filter((name) => !played.has(name))
+    .sort();
+}
+
+/**
  * The same openers, gathered by what you press.
  *
  * Standing, walking forward and walking back all open the same attacks with the

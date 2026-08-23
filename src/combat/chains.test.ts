@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { chainLinks, entriesOf, framesOf, openings, startupOf, type AnimSteps } from "./chains";
+import {
+  animationsWithNoState,
+  chainLinks,
+  entriesOf,
+  framesOf,
+  openings,
+  startupOf,
+  unassigned,
+  type AnimSteps,
+} from "./chains";
 import type { StatesFile } from "../entity/states";
 
 /** 4 frames of wind-up, 4 with a hit box, 4 of recovery. */
@@ -174,5 +183,39 @@ describe("reading an animation", () => {
 
   it("counts the whole thing", () => {
     expect(framesOf(swing)).toBe(12);
+  });
+});
+
+describe("unassigned", () => {
+  it("names the attacks nothing leads to, and only those", () => {
+    const f = file();
+    // `a` is opened from idle, `b` and `c` are cancelled into: all three are
+    // reachable, so nothing is waiting.
+    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    expect(unassigned(f)).toEqual([]);
+
+    // A move that exists and nothing reaches — the state the moveset pass
+    // leaves behind, and the one that has no arrow to notice it by.
+    f.states.parked = { anim: "heavy", hitstun: 20, onHit: "hurt", transitions: [] };
+    expect(unassigned(f)).toEqual(["parked"]);
+  });
+
+  it("does not count a state that is not an attack", () => {
+    // `hurt` and `floored` are reached by `onHit`, never by a transition, so a
+    // rule about transitions alone would report both as waiting for a button.
+    const f = file();
+    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    expect(unassigned(f)).not.toContain("hurt");
+    expect(unassigned(f)).not.toContain("floored");
+  });
+});
+
+describe("animationsWithNoState", () => {
+  it("names an animation nothing plays", () => {
+    // The case it was written for: a state was deleted and its animation stayed,
+    // which leaves no trace in states.json for anyone to notice.
+    const f = file();
+    expect(animationsWithNoState(f, anims)).toEqual([]);
+    expect(animationsWithNoState(f, { ...anims, parked: swing })).toEqual(["parked"]);
   });
 });

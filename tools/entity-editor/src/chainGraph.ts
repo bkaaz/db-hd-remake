@@ -1,7 +1,13 @@
-import { attacksIn, chainLinks, openings, type AnimSteps } from "../../../src/combat/chains";
+import {
+  attacksIn,
+  chainLinks,
+  openings,
+  unassigned,
+  type AnimSteps,
+} from "../../../src/combat/chains";
 import type { StatesFile } from "../../../src/entity/states";
 import { drawEdges, type Edge, type GraphNode } from "./chainEdges";
-import { legend } from "./chainLegend";
+import { legend, UNASSIGNED } from "./chainLegend";
 import { highlightOnHover } from "./chainFocus";
 import { hitFrameOf } from "./chainNode";
 
@@ -44,21 +50,33 @@ export function renderChainGraph(
   const all = chainLinks(file, anims, baseHitstun);
   const openers = openings(file);
   const sources = [...new Set(openers.flatMap((o) => o.from))].sort();
+  // States only. An animation with no state at all is the animations tab's
+  // question, not this one — counting it here promised a node this view has
+  // nothing to build from.
+  const waiting = unassigned(file);
   // The graph opens on the state the entity itself starts in — `initial` is the
   // authored answer to "where does this begin", so nothing here has to know
   // that the answer is usually called "idle". "" is the deliberate choice of
   // seeing every attack at once.
   if (from === null) from = sources.includes(file.initial) ? file.initial : "";
-  if (from && !sources.includes(from)) from = "";
+  // The sentinel survives this, but an emptied list does not: once the last
+  // orphan is given a trigger the mode has nothing to show, so it falls back.
+  if (from === UNASSIGNED && waiting.length === 0) from = "";
+  if (from && from !== UNASSIGNED && !sources.includes(from)) from = "";
+  const orphans = from === UNASSIGNED;
   // Copied out of the module variable, which the select is free to change from
   // under this render: everything below has to describe one picture.
-  const start: string = from;
+  const start: string = orphans ? "" : from;
 
   // Chosen a state to start from: only the attacks it opens, and whatever those
   // can still cancel into. Everything else is somebody else's question.
-  const entries = start ? openers.filter((o) => o.from.includes(start)) : openers;
-  const attacks = start ? reachable(entries.map((e) => e.to), all) : attacksIn(file);
-  const links = all.filter((l) => attacks.has(l.from) && attacks.has(l.to));
+  const entries = orphans ? [] : start ? openers.filter((o) => o.from.includes(start)) : openers;
+  const attacks = orphans
+    ? new Set(waiting)
+    : start
+      ? reachable(entries.map((e) => e.to), all)
+      : attacksIn(file);
+  const links = orphans ? [] : all.filter((l) => attacks.has(l.from) && attacks.has(l.to));
   // Every attack gets a node, whether or not it chains: a move that leads
   // nowhere is worth seeing, and after the moveset pass most of them will.
   const shift = start ? 1 : 0;
@@ -92,23 +110,33 @@ export function renderChainGraph(
     : links;
 
   container.append(
-    legend(sources, start, (state) => {
-      from = state;
-      rebuild();
-    }),
+    legend(
+      sources,
+      orphans ? UNASSIGNED : start,
+      (state) => {
+        from = state;
+        rebuild();
+      },
+      waiting.length,
+      shown.length > 0,
+    ),
   );
 
-  if (attacks.size === 0) {
+  // No orphan branch here on purpose: the mode is offered only while one of its
+  // two lists has something in it, so "nothing is unassigned" is a sentence
+  // that can only appear beside a list contradicting it.
+  if (attacks.size === 0 && !orphans) {
     container.append(
       el("p", {
         className: "hint",
         textContent: start
           ? `Nothing opens from ${start}: no transition out of it starts an attack.`
-          : 'No attacks: no state says what it does to whoever it hits.',
+          : "No attacks: no state says what it does to whoever it hits.",
       }),
     );
-    return;
   }
+
+  if (attacks.size === 0) return;
 
   const board = el("div", { className: "chain-board" });
   const edges = document.createElementNS("http://www.w3.org/2000/svg", "svg");

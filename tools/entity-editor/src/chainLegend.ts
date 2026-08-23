@@ -7,18 +7,31 @@
  */
 
 /**
+ * The picker's third mode, beside "every attack" and one starting state. A
+ * sentinel rather than a name, because it has to survive the same select that
+ * otherwise only ever holds state names.
+ */
+export const UNASSIGNED = "\u0000unassigned";
+
+/**
  * What the arrows mean, shown with the arrows themselves rather than described
  * in words: a sample of each stroke beside the sentence about it, because "red"
  * and "dashed" are only names for something the reader can just be shown.
  */
-export function legend(sources: string[], from: string, pickFrom: (state: string) => void): HTMLElement {
+export function legend(
+  sources: string[],
+  from: string,
+  pickFrom: (state: string) => void,
+  waiting: number,
+  arrows: boolean,
+): HTMLElement {
   const rows: [string, string][] = [
     ["chain-edge", "the button that cancels, and the frames of margin"],
     ["chain-edge bad", "no margin left — the defender is up before the next blow, so it is not a combo"],
     ["chain-edge ends", "the blow floors them: the chain ends here whatever you press"],
   ];
   const key = el("div", { className: "chain-key" });
-  for (const [cls, text] of rows) {
+  for (const [cls, text] of arrows ? rows : []) {
     const swatch = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     swatch.setAttribute("viewBox", "0 0 34 10");
     swatch.classList.add("chain-swatch");
@@ -28,20 +41,31 @@ export function legend(sources: string[], from: string, pickFrom: (state: string
     swatch.append(line);
     key.append(el("div", { className: "chain-key-row" }, [swatch, el("span", { textContent: text })]));
   }
-  key.append(
-    el("div", { className: "chain-key-row dims" }, [
-      el("span", { textContent: "Hover an arrow for the whole sum: window, start-up, hitstun, depth." }),
-    ]),
-  );
+  // Only when there is something to hover. A legend for strokes the view does
+  // not draw is worse than no legend: it says the picture is missing them.
+  if (arrows) {
+    key.append(
+      el("div", { className: "chain-key-row dims" }, [
+        el("span", { textContent: "Hover an arrow for the whole sum: window, start-up, hitstun, depth." }),
+      ]),
+    );
+  }
 
   const pick = el("select", { id: "chain-from" });
   pick.append(el("option", { value: "", textContent: "every attack" }));
+  // Only offered while there is something in it: an option that is always
+  // empty is one you stop reading, and this list is meant to empty itself.
+  if (waiting > 0) {
+    pick.append(el("option", { value: UNASSIGNED, textContent: `unassigned (${waiting})` }));
+  }
   for (const name of sources) pick.append(el("option", { value: name, textContent: name }));
   pick.value = from;
   pick.addEventListener("change", () => pickFrom(pick.value));
   key.append(
     el("div", { className: "chain-key-row" }, [
-      el("label", { htmlFor: "chain-from", textContent: "starting from" }),
+      // "starting from" only reads as English for a state name, and the picker
+      // holds two modes beside those.
+      el("label", { htmlFor: "chain-from", textContent: "view" }),
       pick,
     ]),
   );

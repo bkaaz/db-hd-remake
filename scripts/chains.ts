@@ -1,6 +1,12 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { chainLinks, openings, type AnimSteps } from "../src/combat/chains";
+import {
+  animationsWithNoState,
+  chainLinks,
+  openings,
+  unassigned,
+  type AnimSteps,
+} from "../src/combat/chains";
 import type { StatesFile } from "../src/entity/states";
 
 /**
@@ -53,6 +59,15 @@ for (const l of links.sort((a, b) => a.depth - b.depth || a.from.localeCompare(b
       pad(l.depth, 7) +
       `${l.margin >= 0 ? "+" : ""}${l.margin}${verdict}`,
   );
+}
+
+const waiting = unassigned(states);
+if (waiting.length > 0) {
+  console.log(`\nunassigned — attacks defined, and no transition leads to them:\n  ${waiting.join(", ")}`);
+}
+const parked = animationsWithNoState(states, anims);
+if (parked.length > 0) {
+  console.log(`\nno state — animations nothing plays:\n  ${parked.join(", ")}`);
 }
 
 console.log(

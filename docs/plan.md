@@ -78,10 +78,12 @@ What is left is the part only the owner can do: **deciding which pose is which
 strength**, in each of the three stances. Nine normals, and the sheet does not
 label them.
 
-Unassigned and waiting, freed when the four-link medium string was replaced by
-the ladder: the low kick (frames 40–42) and the sweep that used to finish the
-string. Their animations are still in `animations.json`; nothing in
-`states.json` names them.
+**`npm run chains` answers "what is defined and not wired up"** — attacks no
+transition leads to, and animations no state names. `kick_low` spent a week in
+the second list, which nothing in the repo said out loud: deleting its state
+when the four-link medium string was replaced by the ladder left the animation
+with no reader anywhere. It has a state again as of 2026-08-23, with the
+placeholder and no trigger. Ask the command rather than this paragraph.
 
 **The crouching row is full** as of 2026-08-22: `punch_knee` (187–188) is the
 crouching light, beside `kick_crouch` and `uppercut`. That also fills the second
