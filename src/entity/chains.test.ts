@@ -44,6 +44,7 @@ const NOTHING: InputSnapshot = {
   heavy: false,
   special: false,
   qcf: false,
+  qcb: false,
 };
 const QUIET: Signals = {
   animEnded: false,
@@ -76,7 +77,7 @@ class Sim {
   frame(input: Partial<InputSnapshot> = {}, signals: Partial<Signals> = {}): string {
     const at = { ...NOTHING, ...input };
     this.motions.push(at);
-    this.sm.update({ ...at, qcf: this.motions.has("qcf") }, { ...QUIET, ...signals });
+    this.sm.update({ ...at, qcf: this.motions.has("qcf"), qcb: this.motions.has("qcb") }, { ...QUIET, ...signals });
     return this.sm.current;
   }
 
@@ -119,6 +120,22 @@ describe("a diagonal changes stance before it does anything else", () => {
     const s = new Sim();
     s.frame({ down: true });
     expect(s.frame({ fwd: true, medium: true })).toBe("knee_rise");
+  });
+
+  it("reaches the lunge on a rolled quarter circle back", () => {
+    // The mirror, on real data: qcb leaves you holding back, so the trigger has
+    // to be where the roll ends and not only in a crouch.
+    const s = new Sim();
+    s.frame({ down: true });
+    expect(s.frame({ back: true, medium: true })).toBe("hop_lunge");
+  });
+
+  it("keeps back + medium as its own move when nothing was rolled", () => {
+    // kick_low lives on the held diagonal and must not be swallowed by the
+    // motion sitting in front of it.
+    const s = new Sim();
+    s.frame({ back: true });
+    expect(s.frame({ back: true, medium: true })).toBe("kick_low");
   });
 
   it("still gives the plain medium when no motion preceded it", () => {

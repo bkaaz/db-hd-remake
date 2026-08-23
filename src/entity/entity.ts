@@ -543,6 +543,7 @@ export class Entity {
         heavy: this.buffer.has("heavy"),
         special: this.buffer.has("special"),
         qcf: this.motions.has("qcf"),
+        qcb: this.motions.has("qcb"),
       },
       {
         animEnded: this.animEnded,

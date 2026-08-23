@@ -259,6 +259,7 @@ export interface InputSnapshot {
    * each motion the runner knows gets a flag here.
    */
   qcf: boolean;
+  qcb: boolean;
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -301,6 +302,7 @@ export const TRIGGERS = [
   "pressed:heavy",
   "pressed:special",
   "motion:qcf",
+  "motion:qcb",
   "animEnd",
   "stunEnd",
   "falling",
@@ -344,6 +346,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "motion:qcf":
       value = input.qcf;
+      break;
+    case "motion:qcb":
+      value = input.qcb;
       break;
     case "animEnd":
       value = signals.animEnded;

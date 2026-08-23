@@ -58,6 +58,7 @@ const NONE = {
   heavy: false,
   special: false,
   qcf: false,
+  qcb: false,
 };
 const FWD = { ...NONE, fwd: true };
 const ATTACK = { ...NONE, light: true };
@@ -529,6 +530,13 @@ describe("the arithmetic of a blow, against the data we ship", () => {
    *
    * A launcher is exempt: its reaction has no `vel` because the victim is in the
    * air, and being minus against somebody still falling means nothing.
+   *
+   * **An airborne attack is exempt too**, and for a matching reason on the other
+   * side of the blow: its state ends on `landed`, so the frames left in its
+   * animation are not its recovery — the ground is. `hop_lunge` holds its
+   * descending frame for as long as the arc needs and would read as minus one
+   * here while never playing that long. Whatever replaces this check for air
+   * attacks has to know the arc, which this file cannot.
    */
   const advantage = (attack: string): number =>
     // The `- 1` is measured, not derived: collision is resolved after both
@@ -545,7 +553,10 @@ describe("the arithmetic of a blow, against the data we ship", () => {
   );
 
   const grounded = Object.entries(states)
-    .filter(([, d]) => d.onHit !== undefined && states[d.onHit]?.vel !== undefined)
+    .filter(
+      ([, d]) =>
+        d.onHit !== undefined && states[d.onHit]?.vel !== undefined && d.airborne !== true,
+    )
     .map(([name]) => name);
 
   it("finds the blows that keep the victim on the ground", () => {

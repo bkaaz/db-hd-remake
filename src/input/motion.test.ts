@@ -50,3 +50,17 @@ describe("Motions.has", () => {
     expect(m.has("qcf")).toBe(false);
   });
 });
+
+describe("qcb is qcf's mirror, not a second implementation", () => {
+  it("matches down then back", () => {
+    expect(play(at("down"), at("down", "back"), at("back")).has("qcb")).toBe(true);
+    expect(play(at("down"), at("back")).has("qcb")).toBe(true);
+  });
+
+  it("does not answer for its opposite", () => {
+    // The one mistake a mirrored table invites, and the reason both are asserted:
+    // `back` and `fwd` are already facing-relative, so nothing else flips them.
+    expect(play(at("down"), at("fwd")).has("qcb")).toBe(false);
+    expect(play(at("down"), at("back")).has("qcf")).toBe(false);
+  });
+});

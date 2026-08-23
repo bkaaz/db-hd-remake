@@ -275,7 +275,7 @@
       ]
     },
     "hop_lunge": {
-      "desc": "From the original: Goku hops into a long stride and jumps out of it, confirmed by the owner 2026-08-15. 120 is the wind-up, 121 throws the leg high and starts the stride, 122 is airborne and attacking, 123 comes down in a straddle, 124 lands out of it. The owner notes 121 also stands on its own as a high-leg attack, which is exactly the kind of reuse a state gives us for free. Name is provisional.",
+      "desc": "From the original: Goku hops into a long stride and jumps out of it, confirmed by the owner 2026-08-15. 120 is the wind-up — and it is already airborne, both feet off the ground — 121 throws the leg high and starts the stride, 122 is airborne and attacking, 123 comes down in a straddle, 124 lands out of it. Built 2026-08-23 on the qcb motion as two states: `hop_lunge` (120-122, active on 122, carrying the arc) and `hop_lunge_land` (123-124), split there because the landing is drawn and an airborne state has to say what happens when the floor arrives. 121 also stands on its own as a high-leg attack, which kick_axe takes up, and 120 is that move's hop — a frame in three moves is what this catalogue expects.",
       "frames": [
         "120",
         "121",
@@ -588,9 +588,9 @@
     "119": "? the smallest scrap, 5x5",
     "120": "hop_lunge, 1 of 5: the wind-up — airborne with the knees drawn up and the body leaning back. Also kick_axe's first frame (owner, 2026-08-23, from the original): the axe kick is delivered out of a small hop toward the opponent, and this is that hop",
     "121": "hop_lunge, 2 of 5: the leg thrown high as the stride begins — also usable on its own as a high-leg attack, and kick_axe's second frame, the leg raised before the chop",
-    "122": "hop_lunge, 3 of 5: airborne and attacking, body horizontal, leg extended",
-    "123": "hop_lunge, 4 of 5: coming down in a straddle",
-    "124": "hop_lunge, 5 of 5: landing out of the straddle, knee up and compact",
+    "122": "hop_lunge, 3 of 5: airborne mid-stride with the leg out in front — the active frame, and the only one of the five that reaches forward, which is why the box script measures this move correctly where it fails on the vertical ones",
+    "123": "hop_lunge, 4 of 5: coming down in a straddle, arms out. The first frame of the landing, which is its own state",
+    "124": "hop_lunge, 5 of 5: landed out of the straddle, gathering back to a stance",
     "125": "teleport, 1 of 3: standing solid, the frame it starts from",
     "126": "teleport, 2 of 3: half dithered, going",
     "127": "teleport, 3 of 3: nearly gone. Its box was re-cut by hand — auto-detection had cropped it to the surviving dithered pixels",

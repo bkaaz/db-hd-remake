@@ -13,6 +13,7 @@
         { "when": ["held:back", "pressed:light"], "to": "swipe" },
         { "when": "pressed:light", "to": "punch" },
         { "when": ["motion:qcf", "pressed:medium"], "to": "knee_rise" },
+        { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
         { "when": ["held:back", "pressed:medium"], "to": "kick_low" },
         { "when": ["held:fwd", "pressed:medium"], "to": "knee" },
         { "when": "pressed:medium", "to": "kick_mid" },
@@ -47,6 +48,7 @@
         { "when": "held:down", "to": "crouch_down" },
         { "when": ["held:back", "pressed:light"], "to": "swipe" },
         { "when": "pressed:light", "to": "punch" },
+        { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
         { "when": ["held:back", "pressed:medium"], "to": "kick_low" },
         { "when": "pressed:medium", "to": "kick_mid" },
         { "when": ["held:back", "pressed:heavy"], "to": "kick_axe" },
@@ -170,6 +172,7 @@
       "transitions": [
         { "when": "pressed:light", "to": "punch_knee" },
         { "when": ["motion:qcf", "pressed:medium"], "to": "knee_rise" },
+        { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
         { "when": "pressed:medium", "to": "kick_crouch" },
         { "when": "pressed:heavy", "to": "uppercut" },
         { "when": "!held:down", "to": "idle" },
@@ -185,6 +188,7 @@
       "transitions": [
         { "when": "pressed:light", "to": "punch_knee" },
         { "when": ["motion:qcf", "pressed:medium"], "to": "knee_rise" },
+        { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
         { "when": "pressed:medium", "to": "kick_crouch" },
         { "when": "pressed:heavy", "to": "uppercut" },
         { "when": "!held:down", "to": "idle" }
@@ -236,6 +240,36 @@
       "blockSound": "block_1",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
+      ]
+    },
+    "hop_lunge": {
+      "anim": "hop_lunge",
+      "airborne": true,
+      "launch": [2.5, -6.4],
+      "turn": false,
+      "hitstun": 20,
+      "onHit": "hurt_chain",
+      "damage": 8,
+      "hitstop": 8,
+      "sound": "swing_2",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
+      "transitions": [
+        { "when": "nearGround", "to": "hop_lunge_land" }
+      ]
+    },
+    "hop_lunge_land": {
+      "anim": "hop_lunge_land",
+      "airborne": true,
+      "turn": false,
+      "hitstun": 20,
+      "onHit": "hurt_chain",
+      "damage": 8,
+      "hitstop": 8,
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
+      "transitions": [
+        { "when": "landed", "to": "land" }
       ]
     },
     "knee_rise": {

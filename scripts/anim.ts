@@ -13,6 +13,7 @@
  *   npm run anim -- goku walk  --frames 9,10 --kind loop --dur 12
  *   npm run anim -- goku --list
  *   npm run anim -- goku punch --frames 42,43 --kind attack --dry-run
+ *   npm run anim -- goku hop_lunge --frames 120,121,122,123 --align
  */
 
 import { promises as fs } from "node:fs";
@@ -25,6 +26,7 @@ import {
   hurtBoxesFromMask,
   type AnimKind,
 } from "../src/sprites/boxes.ts";
+import { alignedAnchorY } from "../src/sprites/anchors.ts";
 import type { Anim, Box, FrameDef, Step } from "../src/entity/entityFile.ts";
 import { validateStates, type StatesFile } from "../src/entity/states.ts";
 import { alphaMask, decodePng, type Rgba } from "../src/sprites/png.ts";
@@ -52,6 +54,12 @@ interface Options {
   hit: boolean;
   /** Recompute durations even when the frame list is unchanged. */
   retime: boolean;
+  /**
+   * Re-anchor these frames on the silhouette's centre of mass, so an airborne
+   * run stops popping. Rewrites `frames.json`, which every box in every
+   * animation using those frames is relative to — hence the warning it prints.
+   */
+  align: boolean;
   dryRun: boolean;
   list: boolean;
 }
@@ -66,6 +74,7 @@ function parseArgs(argv: string[]): Options {
     hurtBoxes: 3,
     hit: true,
     retime: false,
+    align: false,
     dryRun: false,
     list: false,
   };
@@ -106,6 +115,9 @@ function parseArgs(argv: string[]): Options {
         break;
       case "--no-hit":
         opts.hit = false;
+        break;
+      case "--align":
+        opts.align = true;
         break;
       case "--retime":
         opts.retime = true;
@@ -212,6 +224,19 @@ async function main(): Promise<void> {
   const rects = ids.map((id) => frames[id]);
   const active = activeInListed;
 
+  // The sheet's alpha is the silhouette: hurt boxes are fitted to it and
+  // `--align` measures it. Read before anything that depends on an anchor.
+  const sheetFile = path.join(process.cwd(), "assets", "sheets", `${opts.entity}.png`);
+  let sheet: Rgba | null = null;
+  try {
+    sheet = decodePng(await fs.readFile(sheetFile));
+  } catch (e) {
+    console.log(
+      `  note: ${path.relative(process.cwd(), sheetFile)} unreadable (${String(e)}) —\n` +
+        "        hurt boxes fall back to one bounding box per frame",
+    );
+  }
+
   // Timing is tuned by hand in the editor, and rebuilding an animation to
   // recompute its boxes must not throw that away. If the frame list is the same
   // as what is on disk, the existing durations are kept; if it changed, the
@@ -227,23 +252,47 @@ async function main(): Promise<void> {
   if (opts.durs && opts.durs.length !== ids.length) {
     die(`--durs has ${opts.durs.length} values but there are ${ids.length} frames`);
   }
+  if (opts.align) {
+    if (!sheet) die("--align needs the sheet: it measures the silhouette, not the rectangle");
+    const before = rects.map((f) => f.anchor[1]);
+    const aligned = alignedAnchorY(rects.map((f) => ({ frame: f, mask: alphaMask(sheet, f) })));
+    console.log("  aligned on the silhouette's centre of mass:");
+    for (let i = 0; i < ids.length; i++) {
+      const move = aligned[i] - before[i];
+      console.log(
+        `    ${ids[i].padEnd(5)} anchor y ${String(before[i]).padStart(3)} → ${String(aligned[i]).padStart(3)}` +
+          `  (${move >= 0 ? "+" : ""}${move})`,
+      );
+      // In place: `rects` holds the same objects, and everything below — hurt
+      // boxes, the hit box guess — is relative to the anchor it reads there.
+      rects[i].anchor[1] = aligned[i];
+    }
+    // A box is anchor-relative, so moving an anchor is a change of coordinates
+    // and nothing has to be re-derived: every box on that frame moves with it,
+    // in every animation. Doing it here rather than printing "re-run these" is
+    // the difference between keeping and losing whatever was tuned by hand.
+    const moved = new Map(ids.map((id, i) => [id, aligned[i] - before[i]]));
+    const touched: string[] = [];
+    for (const [other, a] of Object.entries(animations)) {
+      if (other === name) continue;
+      let any = false;
+      for (const st of a.steps) {
+        const shift = moved.get(st.frame);
+        if (!shift) continue;
+        for (const b of st.boxes ?? []) b.y -= shift;
+        any = true;
+      }
+      if (any) touched.push(other);
+    }
+    if (touched.length > 0) {
+      console.log(`  carried the same shift into: ${touched.join(", ")}`);
+    }
+  }
+
   const durs = keepTiming
     ? existing.steps.map((s) => s.dur)
     : (opts.durs ?? durations(opts.kind, ids.length, active, opts.dur));
   const guess = opts.kind === "attack" && opts.hit ? hitBox(rects, active) : null;
-
-  // Hurt boxes are fitted to the sprite itself, so the sheet is read here — its
-  // alpha is the silhouette.
-  const sheetFile = path.join(process.cwd(), "assets", "sheets", `${opts.entity}.png`);
-  let sheet: Rgba | null = null;
-  try {
-    sheet = decodePng(await fs.readFile(sheetFile));
-  } catch (e) {
-    console.log(
-      `  note: ${path.relative(process.cwd(), sheetFile)} unreadable (${String(e)}) —\n` +
-        "        hurt boxes fall back to one bounding box per frame",
-    );
-  }
 
   const steps: Step[] = ids.map((id, i) => {
     const boxes: Box[] = hurtFor(sheet, rects[i], opts.hurtBoxes, opts.inset);
@@ -295,6 +344,10 @@ async function main(): Promise<void> {
     return;
   }
   await fs.mkdir(dir, { recursive: true });
+  if (opts.align) {
+    await fs.writeFile(framesFile, JSON.stringify(frames, null, 2) + "\n");
+    console.log(`  re-anchored in ${path.relative(process.cwd(), framesFile)}`);
+  }
   await fs.writeFile(animsFile, JSON.stringify(animations, null, 2) + "\n");
   console.log(`  ${existed ? "replaced" : "added"} "${name}" in ${path.relative(process.cwd(), animsFile)}`);
   console.log("  timing and the hit box are guesses — adjust in the editor (Reload data first)");
