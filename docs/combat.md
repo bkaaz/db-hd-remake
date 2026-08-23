@@ -400,6 +400,23 @@ advantage (`hitstun − recovery`) — and then checked with `npm run chains`.
 | `onHit` | `hurt_chain` | `hurt_chain` | `hurt_heavy` | |
 | advantage on hit | **+5** | **+5** | **−2** | |
 
+> **The table is not what is in the data right now, and will not be until the
+> calibration pass.** From 2026-08-23 the moveset is being authored ahead of its
+> inputs: what a move *is* — which sprites, in what order, reading as what — is
+> being settled first, and what it costs, what button reaches it and what it
+> cancels into is being left until there is a whole roster of moves to weigh
+> against each other. What a blow *costs* in that period is **one uniform
+> placeholder**, the medium row — `damage`, `hitstun`, `hitstop`, `cancelBy` and
+> the reaction, identical on every move — on purpose: identical numbers are
+> visibly untuned, where a spread of guesses would read as frame data somebody
+> chose. The animation's own timing is not part of that and never was: the owner
+> sets it by eye in the editor, because how long a pose is held is a question
+> about the drawing, and the placeholder only stands in for the arithmetic.
+> The attacks built before it — `punch`, `punch_air`, `kick_mid`, `kick_high`,
+> `kick_axe` and the crouching set — keep their real numbers; flattening working
+> data to make a table look uniform destroys what it took recordings to find.
+> **Delete this note when the calibration pass lands.**
+
 **Cancel upward only**, `S` waits at the top for specials that do not exist, and
 what the string is today is `A Z Z S` — `punch → kick_mid → kick_thrust →
 kick_high`. Three rules go with it:

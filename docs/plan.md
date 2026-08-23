@@ -91,6 +91,13 @@ cancels into the crouching one with the widest margin on the graph (+7,
 cancelling into `kick_air`. **Standing and crouching are done; the air row is
 missing only its heavy.**
 
+**Moves are being defined before their inputs** (owner, 2026-08-23). Which
+sprites are one attack is being settled across the whole sheet first; strength,
+damage, trigger and chain come afterwards, in one pass, when there is a full set
+to weigh against each other. So new attacks arrive as an animation plus a state
+with a uniform placeholder and no trigger, or a temporary one — see the note in
+`combat.md`, which goes when that pass lands.
+
 *Done when:* every slot in the L/M/H table names an animation in all three
 stances, each built from the table rather than tuned by hand.
 
