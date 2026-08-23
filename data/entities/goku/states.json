@@ -263,8 +263,8 @@
       "hitstun": 20,
       "onHit": "hurt_chain",
       "damage": 8,
-      "hitstop": 8,
-      "sound": "jump_1",
+      "rehit": 8,
+      "hitstop": 5,
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [

@@ -82,6 +82,11 @@ lowers the rank the defender is already in, an equal rank re-enters, and rank 0
 is also what resets the combo counter and what decides you may still guard.
 → `combat.md` §7, `states.ts` (`reactionFor`, `guardable`)
 
+**Rehit** — how many frames before a blow may connect **again**, while its hit
+box is still out (`rehit` on the state). Absent means one swing lands once. It is
+what makes a beam ten hits of one sprite rather than ten authored steps.
+→ `combat.md` §1, `combat/swing.ts`
+
 **Recovery** — the frames after the active ones, when the hit box is gone but you
 still cannot act. What makes a whiff punishable. → `combat.md` §1
 

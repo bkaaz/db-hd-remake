@@ -3,6 +3,7 @@ import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { Combo } from "../combat/combo";
+import { Swing } from "../combat/swing";
 import { scaledDamage, scaledHitstun } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
@@ -148,7 +149,8 @@ export class Entity {
    * active for several frames, but it may only connect once per entry into the
    * state — cleared whenever the state changes.
    */
-  private spent = false;
+  /** The attack being thrown: whether it may connect, and whether it has. */
+  private readonly swing = new Swing();
 
   private readonly gravity: number;
   private readonly landCue: number;
@@ -237,7 +239,7 @@ export class Entity {
       step: this.stepIndex,
       steps: this.anim?.steps.length ?? 0,
       framesLeft: this.remaining,
-      hitConfirmed: this.spent,
+      hitConfirmed: this.swing.spent,
       freeze: this.freezeFrames,
       stun: this.stun,
       hp: this.hp,
@@ -261,7 +263,7 @@ export class Entity {
 
   /** True while this entity's current attack can still land. */
   get canHit(): boolean {
-    return !this.spent;
+    return this.swing.canHit;
   }
 
   /**
@@ -275,7 +277,7 @@ export class Entity {
 
   /** Record that the current attack connected; it cannot land again. */
   markHit(): void {
-    this.spent = true;
+    this.swing.hit(this.sm?.def.rehit);
   }
 
   /** The reaction this entity's current attack asks of whoever it hits. */
@@ -438,7 +440,7 @@ export class Entity {
     if (!this.sm) return;
     this.audio?.play(this.sm.def.sound);
     this.setAnim(this.sm.def.anim, forced);
-    this.spent = false;
+    this.swing.reset();
     this.landed = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
     // does so straight after forcing the reaction.
@@ -500,6 +502,10 @@ export class Entity {
     }
 
     if (this.stun > 0) this.stun--;
+    // Below the freeze check with the stun clock: a hit pause freezes both
+    // fighters equally and must not decide when the next hit of a multi-hit
+    // move arrives.
+    this.swing.tick();
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
@@ -548,7 +554,7 @@ export class Entity {
         // never on a whiff, which is exactly what a chain is allowed to continue
         // from. It was already recorded for a different reason: an attack may
         // only land once per entry into its state.
-        hitConfirmed: this.spent,
+        hitConfirmed: this.swing.spent,
       },
     );
     // A press that started a move is spent, so it cannot start a second one

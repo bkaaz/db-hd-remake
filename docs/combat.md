@@ -134,6 +134,31 @@ is retimed.
 The attack carries `smash`, like every launcher: past the budget it still hits
 and still costs health, it just stops lifting (§4).
 
+**A blow may land more than once, and how often is on the blow** (2026-08-23,
+`rehit` on the state, `combat/swing.ts`). Absent, a swing lands once per entry
+into its state, which is every attack that does not set it. Set, the attack may
+connect again that many live frames later, for as long as its hit box is out.
+
+**It is a number on the blow and not steps in the animation**, which is the same
+trade this file already refused once for the active window: a beam is one sprite
+held for half a second, and ten hits must not mean ten authored steps. How often
+a move hits and how it is drawn are different questions.
+
+*A long active window is a defect when a move hits once* — it was standing in for
+hitstop — *and it is the mechanism when a move hits repeatedly.* The window is
+how long the move may keep connecting; `rehit` is how often.
+
+Three things come with it, and none is the field's problem:
+
+- **Every hit scales the next**, so a ten-hit beam ends at the 20% floor. Its
+  per-hit damage is authored knowing that, never as `damage × hits`.
+- **Every hit freezes for `hitstop`**, so the total is what should match a single
+  blow's. `knee_jump` hits twice at 5 rather than once at 12, and the arc it
+  stops is the reason (see `kick_axe` above).
+- **`rehit` with `smash` burns the relaunch budget in two hits** and every hit
+  after that is refused outright. The validator warns; a beam should simply not
+  be a smash.
+
 **A held blow cannot be answered by holding back** (2026-08-16, `guardable` in
 `states.ts`): rank above zero is exactly "somebody else put me here", and a
 fighter there has no guard. Without it every combo was escapable by holding a

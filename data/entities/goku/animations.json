@@ -2942,7 +2942,7 @@
       },
       {
         "frame": "114",
-        "dur": 8,
+        "dur": 2,
         "boxes": [
           {
             "type": "hurt",
@@ -2974,7 +2974,7 @@
     "steps": [
       {
         "frame": "115",
-        "dur": 4,
+        "dur": 12,
         "boxes": [
           {
             "type": "hurt",
@@ -3008,7 +3008,7 @@
       },
       {
         "frame": "115",
-        "dur": 12,
+        "dur": 4,
         "boxes": [
           {
             "type": "hurt",

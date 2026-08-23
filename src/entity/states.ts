@@ -159,6 +159,21 @@ export interface StateDef {
    * before this existed.
    */
   cancelBy?: number;
+
+  /**
+   * Frames before this attack may connect **again**, while its hit box is still
+   * out. Absent means one swing lands once, which is every attack that does not
+   * set it.
+   *
+   * It is on the blow rather than in the animation because how often a move hits
+   * and how it is drawn are different questions: a beam is one sprite held for
+   * half a second, and ten hits should not mean ten authored steps. Three things
+   * come with it and are the caller's problem, not this field's — every hit
+   * scales the next (`combat/scaling.ts`), every hit freezes for `hitstop`, and
+   * a multi-hit blow marked `smash` burns the relaunch budget in two. See
+   * `combat.md`.
+   */
+  rehit?: number;
   /**
    * Effect entity spawned where this state's attack connects. Same idea as
    * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
@@ -707,6 +722,14 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
     if (def.cancelBy !== undefined && (typeof def.cancelBy !== "number" || def.cancelBy < 0)) {
       errors.push(`${where}: "cancelBy" must be a frame of this state, 0 or more`);
+    }
+    if (def.rehit !== undefined && (typeof def.rehit !== "number" || def.rehit < 0)) {
+      errors.push(`${where}: "rehit" must be a number of game frames, 0 or more`);
+    }
+    // A blow that may land twice and lifts twice spends the whole relaunch
+    // budget on itself, and every hit after the second is refused outright.
+    if (def.rehit !== undefined && def.smash) {
+      warnings.push(`${where}: "rehit" with "smash" — the relaunch budget is gone after two hits`);
     }
     if (def.hitstun !== undefined && (typeof def.hitstun !== "number" || def.hitstun < 0)) {
       errors.push(`${where}: "hitstun" must be a number of game frames, 0 or more`);
