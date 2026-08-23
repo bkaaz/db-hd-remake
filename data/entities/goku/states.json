@@ -9,6 +9,7 @@
       "turn": true,
       "transitions": [
         { "when": "held:down", "to": "crouch_down" },
+        { "when": ["held:light", "held:medium"], "to": "charge_start" },
         { "when": ["held:fwd", "pressed:light"], "to": "punch_close" },
         { "when": ["held:back", "pressed:light"], "to": "swipe" },
         { "when": "pressed:light", "to": "punch" },
@@ -30,6 +31,7 @@
       "turn": true,
       "transitions": [
         { "when": "held:down", "to": "crouch_down" },
+        { "when": ["held:light", "held:medium"], "to": "charge_start" },
         { "when": ["held:fwd", "pressed:light"], "to": "punch_close" },
         { "when": "pressed:light", "to": "punch" },
         { "when": ["motion:qcf", "pressed:medium"], "to": "knee_rise" },
@@ -46,6 +48,7 @@
       "turn": true,
       "transitions": [
         { "when": "held:down", "to": "crouch_down" },
+        { "when": ["held:light", "held:medium"], "to": "charge_start" },
         { "when": ["held:back", "pressed:light"], "to": "swipe" },
         { "when": "pressed:light", "to": "punch" },
         { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
@@ -162,6 +165,29 @@
       ],
       "hitstun": 20,
       "hitstop": 12
+    },
+    "charge_start": {
+      "anim": "charge_start",
+      "vel": [0, 0],
+      "turn": true,
+      "sound": "voice_charge",
+      "loopSound": "charge_1",
+      "loopEvery": 12,
+      "transitions": [
+        { "when": "animEnd", "to": "charge" }
+      ]
+    },
+    "charge": {
+      "anim": "charge",
+      "vel": [0, 0],
+      "turn": true,
+      "ki": 0.5,
+      "loopSound": "charge_1",
+      "loopEvery": 12,
+      "transitions": [
+        { "when": "!held:light", "to": "idle" },
+        { "when": "!held:medium", "to": "idle" }
+      ]
     },
     "crouch_down": {
       "anim": "crouch_down",

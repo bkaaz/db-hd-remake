@@ -10,6 +10,12 @@ import { startRecording, stopRecording } from "../log";
  * taken, so leaning on the key does not machine-gun. Auto-repeat is ignored for
  * the same reason — one press, one attack.
  *
+ * An attack key also reports whether it is **still down**, which is a different
+ * question from whether it just went down and does not weaken the edge. A stance
+ * you hold — charging ki on A+Z — cannot be expressed by edges at all: two of
+ * them would have to land on the same frame, and the first to arrive alone
+ * would spend itself on a punch.
+ *
  * The four attack buttons are **Light, Medium, Heavy, Special** — strength, not
  * limb — on the `A S` / `Z X` square that stands in for a pad's four face
  * buttons. Read it by **column, not by row**: the left column is the lighter
@@ -44,6 +50,12 @@ export class Keyboard {
     heavy: false,
     special: false,
   };
+  private readonly down: Attacks = {
+    light: false,
+    medium: false,
+    heavy: false,
+    special: false,
+  };
 
   constructor(target: Window = window) {
     target.addEventListener("keydown", (e) => this.press(e));
@@ -58,7 +70,11 @@ export class Keyboard {
    * that never happens, and taking it twice spends the press on the first call.
    */
   frame(): WorldInput {
-    const input = { ...this.held, ...this.armed };
+    const input = {
+      ...this.held,
+      ...this.armed,
+      holding: { ...this.down },
+    };
     for (const button of ATTACK_BUTTONS) this.armed[button] = false;
     return input;
   }
@@ -79,6 +95,7 @@ export class Keyboard {
     const key = e.key.toLowerCase();
     const attack = ATTACK_KEYS[key];
     if (attack) {
+      this.down[attack] = true;
       // Auto-repeat must not re-arm: holding the key is still one attack.
       if (!e.repeat) this.armed[attack] = true;
       return;
@@ -98,7 +115,12 @@ export class Keyboard {
 
   private release(e: KeyboardEvent): void {
     const direction = DIRECTION_KEYS[e.key];
-    if (direction) this.held[direction] = false;
+    if (direction) {
+      this.held[direction] = false;
+      return;
+    }
+    const attack = ATTACK_KEYS[e.key.toLowerCase()];
+    if (attack) this.down[attack] = false;
   }
 }
 

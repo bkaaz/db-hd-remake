@@ -101,8 +101,11 @@ describe("a dummy that only ever crouches", () => {
     if (typeof dummy === "string") throw new Error(dummy);
     for (let i = 0; i < 130; i++) {
       const world = dummy.input({ on: true, facing: 1, frozen: false });
-      const { down, ...rest } = world;
+      const { down, holding, ...rest } = world;
       expect(Object.values(rest).every((v) => v === false)).toBe(true);
+      // Held buttons are the same claim about a second kind of input: a dummy
+      // that presses nothing must not be leaning on anything either.
+      expect(Object.values(holding).every((v) => v === false)).toBe(true);
     }
   });
 });

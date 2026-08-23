@@ -394,9 +394,10 @@ queue.
   yet. One known gap behind that: `hit_heavy` borrows the light
   hit's sample until a heavier one is named. Nothing here needs code — a clip
   number in `sounds.json` is the whole change.
-- **Ki, and the bar it shares with health.** The original spends one resource
-  for both, so a special costs the same pool that damage eats. Health and damage
-  exist now; the shared half waits for specials to exist at all.
+- **Something that spends ki.** The meter exists and fills (2026-08-23,
+  holding A+Z); nothing takes from it. Vanish, the fast dash and the specials
+  are the three that will, and the field they name is already there — `ki` on
+  the state, negative to spend.
 - **A KO.** Health floors at zero and nothing happens there — no defeat state,
   no round. `Entity.defeated` is there and unused. Round rules belong to Stage 3
   in `roadmap.md`.

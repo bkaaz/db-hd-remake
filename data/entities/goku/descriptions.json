@@ -64,8 +64,9 @@
       ]
     },
     "powerup": {
-      "desc": "Ki charge: standing with fists clenched low inside a bright aura flare, growing over three frames.",
+      "desc": "Ki charge: standing with fists clenched low inside a bright aura flare, growing over three frames. Built 2026-08-23 as `charge_start` (28) into a looping `charge` (29, 30, 31), on held A+Z. **28 is the block as well** — the same drawing serves the guard, which is what `guard_hit` plays; a frame in two moves is expected here and this one should not be tidied away from either. The loop was 29-30 for an afternoon and read as missing its top; 31 is the flare at full size and the swell needs it.",
       "frames": [
+        "28",
         "29",
         "30",
         "31"
@@ -501,7 +502,7 @@
     "25": "dashing forward: torso pitched far forward, trailing leg straight out behind, hair blown back",
     "26": "the pose a dash starts from, same as 24 — the sheet gives each dash its own strip",
     "27": "dashing backwards, low and pitched, arms leading",
-    "28": "the block: braced, arms up and across, taking a blow rather than throwing one. Confirmed by the owner",
+    "28": "the block, confirmed by the owner: 28. Held as a reaction to a blow that arrives, not as a stance you stand in. Also the frame the ki charge drops into (owner, 2026-08-23) before the flare loop takes over",
     "29": "SSJ charging: fists clenched low, bright aura flaring around the whole body",
     "30": "SSJ charging: same pose, larger aura",
     "31": "SSJ charging: same pose, aura at its largest",

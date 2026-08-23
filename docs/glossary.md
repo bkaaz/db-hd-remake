@@ -55,6 +55,11 @@ for the value per strength
 frames and set by the blow (`hitstun`), not by the length of the reaction
 animation. Everything about combos is arithmetic on this number. → `combat.md` §1
 
+**Ki** — the meter, **separate from health** (settled 2026-08-23). Capacity is
+`ki` in `attributes.json`; how fast a state fills or spends it is `ki` on the
+state, per frame, negative to spend. Filled by holding A+Z; nothing spends it
+until Vanish, the fast dash or a special exists. → `combat.md` §Ki
+
 **Launcher** — a blow that lifts a grounded opponent into a juggle instead of
 flooring them. The reaction is `launched`, the opposite end of the same axis as
 **Slam**; the attack carries `smash`, so past the budget it still hits and

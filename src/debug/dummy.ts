@@ -88,7 +88,7 @@ export class Dummy {
     const first = this.frame === 0;
     this.advance();
 
-    const world = { ...NO_INPUT };
+    const world = { ...NO_INPUT, holding: { ...NO_INPUT.holding } };
     for (const token of step?.tokens ?? []) {
       // A button is an edge: held for a whole step it would re-press sixty
       // times a second, which is not what one step of "light" means.
@@ -122,7 +122,10 @@ function press(world: WorldInput, token: string, facing: number): void {
       else world.right = true;
       return;
     default:
-      world[token as keyof WorldInput] = true;
+      // Every other key of WorldInput is a flat boolean; `holding` is the one
+      // that is not, and no timeline token names it — the dummy presses, it
+      // does not lean on a key.
+      world[token as Exclude<keyof WorldInput, "holding">] = true;
   }
 }
 

@@ -4,5 +4,10 @@
     "gain": 0.6,
     "vary": 0.05,
     "file": "042.wav"
+  },
+  "voice_charge": {
+    "gain": 0.55,
+    "vary": 0.04,
+    "file": "045.wav"
   }
 }

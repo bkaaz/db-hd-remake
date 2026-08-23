@@ -11,6 +11,8 @@ export interface HudSetup {
 /** What the HUD reads off the world once per rendered frame. */
 export interface HudFrame {
   playerHealth: number;
+  /** The player's ki meter, 0..1. A separate pool from health — see combat.md. */
+  playerKi: number;
   /** Null when there is no opponent — the preview has none. */
   opponentHealth: number | null;
   /** The player's current state, so the name of what you are doing is visible. */
@@ -25,6 +27,14 @@ const BAR_TOP = 24;
 const BAR_INSET = 20;
 const BAR_MAX_WIDTH = 320;
 const LOW_HEALTH = 0.3;
+/**
+ * The ki meter, under the player's health and deliberately unlike it: half the
+ * height, blue, and it fills from the left rather than draining toward the
+ * centre. Two bars that look alike and move oppositely is how somebody reads
+ * "nearly dead" off a full meter.
+ */
+const KI_HEIGHT = 6;
+const KI_GAP = 4;
 
 /**
  * Health bars and the status line.
@@ -61,10 +71,11 @@ export class Hud {
     this.label.destroy();
   }
 
-  private drawBars({ playerHealth, opponentHealth }: HudFrame): void {
+  private drawBars({ playerHealth, playerKi, opponentHealth }: HudFrame): void {
     const width = Math.min(BAR_MAX_WIDTH, this.app.screen.width / 2 - 30);
     this.bars.clear();
     this.drawBar(BAR_INSET, width, playerHealth, false);
+    this.drawKi(BAR_INSET, width, playerKi);
     if (opponentHealth !== null) {
       this.drawBar(this.app.screen.width - BAR_INSET - width, width, opponentHealth, true);
     }
@@ -82,10 +93,20 @@ export class Hud {
       .fill({ color: fraction > LOW_HEALTH ? 0xf0c040 : 0xd04030 });
   }
 
+  private drawKi(x: number, width: number, fraction: number): void {
+    const y = BAR_TOP + BAR_HEIGHT + KI_GAP;
+    this.bars
+      .rect(x, y, width, KI_HEIGHT)
+      .fill({ color: 0x101828 })
+      .stroke({ color: 0x4a5a7a, width: 1 });
+    const filled = Math.max(0, Math.round(width * fraction));
+    if (filled > 0) this.bars.rect(x, y, filled, KI_HEIGHT).fill({ color: 0x4aa8f0 });
+  }
+
   private statusLine({ state, dummyAttacks, recording }: HudFrame): string {
     const { name } = this.setup;
     return (
-      `${name} · [←/→] walk · [↑] jump · [↓] crouch · [A] light [Z] medium [S] heavy [X] special · ` +
+      `${name} · [←/→] walk · [↑] jump · [↓] crouch · [A] light [Z] medium [S] heavy [X] special · [A+Z] charge · ` +
       `[B] boxes · [D] debug · [L] record: ${recording ? "ON" : "off"} · [T] dummy: ${dummyAttacks ? "on" : "off"} · state: ${state}`
     );
   }

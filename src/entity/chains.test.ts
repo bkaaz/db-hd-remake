@@ -45,6 +45,7 @@ const NOTHING: InputSnapshot = {
   special: false,
   qcf: false,
   qcb: false,
+  holding: { light: false, medium: false, heavy: false, special: false },
 };
 const QUIET: Signals = {
   animEnded: false,
@@ -86,6 +87,60 @@ class Sim {
     return this.frame({ [button]: true }, { hitConfirmed: true });
   }
 }
+
+describe("charging ki is a stance, not a press", () => {
+  /** Both attack keys down — the state an edge cannot describe. */
+  const holdAZ = { holding: { light: true, medium: true, heavy: false, special: false } };
+
+  it("drops into the charge on A+Z and loops there", () => {
+    const s = new Sim();
+    expect(s.frame(holdAZ)).toBe("charge_start");
+    expect(s.frame(holdAZ, { animEnded: true })).toBe("charge");
+    expect(s.frame(holdAZ)).toBe("charge");
+  });
+
+  it("leaves the moment either key comes up", () => {
+    const s = new Sim();
+    s.frame(holdAZ);
+    s.frame(holdAZ, { animEnded: true });
+    const half = { holding: { light: true, medium: false, heavy: false, special: false } };
+    expect(s.frame(half)).toBe("idle");
+  });
+
+  it("is the one state that fills the meter", () => {
+    // A field on the state rather than a rule in the engine, so a special can
+    // name a cost the same way. Nothing else in the file touches it.
+    const states = goku().states;
+    const filling = Object.entries(states)
+      .filter(([, d]) => d.ki !== undefined)
+      .map(([name]) => name);
+    expect(filling).toEqual(["charge"]);
+    expect(states.charge.ki).toBeGreaterThan(0);
+  });
+
+  it("hums through the hand-over from the drop-in to the loop", () => {
+    // Both states name the same loopSound on purpose: the entity only restarts
+    // a loop whose id changed, so naming it twice is what keeps the hum from
+    // clicking when charge_start runs into charge.
+    const states = goku().states;
+    expect(states.charge_start.loopSound).toBe(states.charge.loopSound);
+    expect(states.charge.loopSound).toBeDefined();
+    // And at the same rate, or the seam would change the rhythm even without
+    // restarting the clock.
+    expect(states.charge_start.loopEvery).toBe(states.charge.loopEvery);
+    // The shout is one-shot and belongs only to the frame you drop into.
+    expect(states.charge_start.sound).toBeDefined();
+    expect(states.charge.sound).toBeUndefined();
+  });
+
+  it("does not swallow a single button", () => {
+    // The stance is checked before every attack, so this is the assertion that
+    // keeps it from eating the whole moveset: one key down is still a blow.
+    const s = new Sim();
+    const onlyLight = { light: true, holding: { light: true, medium: false, heavy: false, special: false } };
+    expect(s.frame(onlyLight)).toBe("punch");
+  });
+});
 
 describe("a diagonal changes stance before it does anything else", () => {
   /**

@@ -22,6 +22,7 @@ export interface FightersSetup {
 /** What the HUD needs to know about the pair, once per rendered frame. */
 export interface FightersStatus {
   playerHealth: number;
+  playerKi: number;
   opponentHealth: number | null;
   state: string;
 }
@@ -152,6 +153,7 @@ export class Fighters {
   status(): FightersStatus {
     return {
       playerHealth: this.player.healthFraction,
+      playerKi: this.player.kiFraction,
       opponentHealth: this.opponent?.healthFraction ?? null,
       state: this.player.state,
     };

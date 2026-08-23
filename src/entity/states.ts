@@ -174,6 +174,35 @@ export interface StateDef {
    * `combat.md`.
    */
   rehit?: number;
+
+  /**
+   * Ki gained per frame while in this state, and spent when negative.
+   *
+   * On the state rather than in the engine because charging is not the only
+   * thing that will move it: a special will name a cost the same way, and a
+   * `charge` state that the engine knows by name would be a rule the data
+   * cannot see. Absent means the state leaves the meter alone, which is all of
+   * them but one.
+   */
+  ki?: number;
+
+  /**
+   * A sound **retriggered** for as long as this state lasts, rather than played
+   * once on entering it.
+   *
+   * Not a seamless loop, which repeats at exactly the clip's own length and can
+   * never overlap itself. The original's charge is one short clip fired again
+   * before the last copy has finished, and the copies stacking is what turns a
+   * repeat into a sustain. `loopEvery` is how often.
+   *
+   * Two states naming the same one hand it over rather than restarting the
+   * clock, which is what keeps a hitch out of the seam between a drop-in pose
+   * and its loop.
+   */
+  loopSound?: string;
+
+  /** Frames between copies of `loopSound`. Shorter than the clip is the point. */
+  loopEvery?: number;
   /**
    * Effect entity spawned where this state's attack connects. Same idea as
    * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
@@ -260,6 +289,12 @@ export interface InputSnapshot {
    */
   qcf: boolean;
   qcb: boolean;
+  /**
+   * Attack buttons still down. Separate from the four edges above: a press is a
+   * moment and this is a state, and only the second can express a stance you
+   * hold.
+   */
+  holding: { light: boolean; medium: boolean; heavy: boolean; special: boolean };
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -301,6 +336,10 @@ export const TRIGGERS = [
   "pressed:medium",
   "pressed:heavy",
   "pressed:special",
+  "held:light",
+  "held:medium",
+  "held:heavy",
+  "held:special",
   "motion:qcf",
   "motion:qcb",
   "animEnd",
@@ -343,6 +382,18 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "pressed:special":
       value = input.special;
+      break;
+    case "held:light":
+      value = input.holding.light;
+      break;
+    case "held:medium":
+      value = input.holding.medium;
+      break;
+    case "held:heavy":
+      value = input.holding.heavy;
+      break;
+    case "held:special":
+      value = input.holding.special;
       break;
     case "motion:qcf":
       value = input.qcf;
@@ -727,6 +778,15 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
     if (def.cancelBy !== undefined && (typeof def.cancelBy !== "number" || def.cancelBy < 0)) {
       errors.push(`${where}: "cancelBy" must be a frame of this state, 0 or more`);
+    }
+    if (def.loopEvery !== undefined && (typeof def.loopEvery !== "number" || def.loopEvery < 1)) {
+      errors.push(`${where}: "loopEvery" must be a number of game frames, 1 or more`);
+    }
+    if (def.loopEvery !== undefined && def.loopSound === undefined) {
+      warnings.push(`${where}: "loopEvery" with no "loopSound" — nothing is being repeated`);
+    }
+    if (def.ki !== undefined && typeof def.ki !== "number") {
+      errors.push(`${where}: "ki" must be a number — gained per frame, spent when negative`);
     }
     if (def.rehit !== undefined && (typeof def.rehit !== "number" || def.rehit < 0)) {
       errors.push(`${where}: "rehit" must be a number of game frames, 0 or more`);

@@ -34,6 +34,12 @@ export interface WorldInput {
   heavy: boolean;
   /** The ki blast, and the ender a chain falls into. */
   special: boolean;
+  /**
+   * Whether each attack key is **still down**, which the edges above cannot say.
+   * A stance you hold — charging ki on A+Z — needs it: two edges would have to
+   * land on one frame, and whichever arrived alone would spend itself on a blow.
+   */
+  holding: { light: boolean; medium: boolean; heavy: boolean; special: boolean };
 }
 
 export const NO_INPUT: WorldInput = {
@@ -45,6 +51,7 @@ export const NO_INPUT: WorldInput = {
   medium: false,
   heavy: false,
   special: false,
+  holding: { light: false, medium: false, heavy: false, special: false },
 };
 
 /**
@@ -78,6 +85,8 @@ export interface EntityDebug {
   hp: number;
   vx: number;
   buffer: [button: string, framesLeft: number][];
+  /** The ki meter, in points. */
+  ki: number;
   /** The last few inputs as the engine saw them — see input/history.ts. */
   inputs: string;
   /** Motions complete right now, so a recording can say when one landed. */
@@ -92,6 +101,9 @@ const ATTACK_LABELS = [
   ["heavy", "H"],
   ["special", "S"],
 ] as const satisfies readonly (readonly [keyof WorldInput, string])[];
+
+/** Frames between copies of a retriggered sound when the state names no interval. */
+const HUM_EVERY = 8;
 
 const BOX_COLORS: Record<string, number> = {
   hit: 0xff3b3b,
@@ -157,10 +169,19 @@ export class Entity {
   private readonly pushWidth: number;
   private readonly hitstop: number;
   private readonly maxHealth: number;
+  private readonly maxKi: number;
   private readonly baseDamage: number;
   private readonly baseHitstun: number;
   /** What is left of this fighter, in health points. */
   private hp = 0;
+  /** The ki meter. A separate pool from health — see combat.md. */
+  private ki = 0;
+  /**
+   * A sound retriggered while a state lasts — the charge hum. Id plus frames
+   * until the next copy; a fresh `play` each time, so the copies overlap, which
+   * is what makes a repeat sound like a sustain rather than a stutter.
+   */
+  private hum = { id: "", left: 0 };
   /** Game frames left of a hit pause; while it lasts nothing about the entity moves. */
   private freezeFrames = 0;
   /**
@@ -181,6 +202,7 @@ export class Entity {
     this.pushWidth = def.attributes.pushWidth;
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
+    this.maxKi = def.attributes.ki;
     this.baseDamage = def.attributes.damage;
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
@@ -245,6 +267,7 @@ export class Entity {
       hp: this.hp,
       vx: this.vx,
       buffer: this.buffer.live(),
+      ki: this.ki,
       inputs: this.history.line,
       motions: MOTION_NAMES.filter((m) => this.motions.has(m)),
       combo: { hits: this.combo.hits, damage: this.combo.damage, lifts: this.combo.lifts },
@@ -328,6 +351,11 @@ export class Entity {
   /** Health this entity's current attack takes off. */
   get attackDamage(): number {
     return this.sm?.def.damage ?? this.baseDamage;
+  }
+
+  /** How full the ki meter is, 0..1 — what the ki bar draws. */
+  get kiFraction(): number {
+    return this.maxKi > 0 ? this.ki / this.maxKi : 0;
   }
 
   /** How much of this fighter is left, 0..1 — what a health bar draws. */
@@ -439,6 +467,10 @@ export class Entity {
   private enterState(forced = false): void {
     if (!this.sm) return;
     this.audio?.play(this.sm.def.sound);
+    // Handed over rather than restarted when the next state names the same one:
+    // resetting the clock would put an audible hitch at the seam.
+    const wanted = this.sm.def.loopSound ?? "";
+    if (wanted !== this.hum.id) this.hum = { id: wanted, left: 0 };
     this.setAnim(this.sm.def.anim, forced);
     this.swing.reset();
     this.landed = false;
@@ -506,6 +538,16 @@ export class Entity {
     // fighters equally and must not decide when the next hit of a multi-hit
     // move arrives.
     this.swing.tick();
+    if (this.hum.id) {
+      if (this.hum.left <= 0) {
+        this.audio?.play(this.hum.id);
+        this.hum.left = this.sm.def.loopEvery ?? HUM_EVERY;
+      }
+      this.hum.left--;
+    }
+    // Below the freeze with every other clock: a hit pause must not pay anybody.
+    const perFrame = this.sm.def.ki;
+    if (perFrame) this.ki = Math.max(0, Math.min(this.maxKi, this.ki + perFrame));
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
@@ -544,6 +586,7 @@ export class Entity {
         special: this.buffer.has("special"),
         qcf: this.motions.has("qcf"),
         qcb: this.motions.has("qcb"),
+        holding: input.holding,
       },
       {
         animEnded: this.animEnded,

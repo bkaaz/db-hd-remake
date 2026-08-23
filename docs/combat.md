@@ -582,12 +582,42 @@ Two things that follow, and are easy to miss:
   damage not scaling. Which is exactly what a recording shows and the screen
   does not.
 
+### Ki, and the one state that fills it
+
+**Built 2026-08-23.** A separate meter, `ki` in `attributes.json`, filled by
+holding **A+Z** — `charge_start` drops into the pose, `charge` loops the flare.
+
+**How much a state moves the meter is a field on the state** (`ki`, gained per
+frame, spent when negative), not a rule in the engine. A `charge` the engine
+knew by name would be a rule the data cannot see, and the first special will
+want to name its cost the same way. Today exactly one state sets it, and a test
+asserts that.
+
+**It is held, not pressed, and that needed the keyboard to answer a new
+question.** Attack buttons were edges only — a press arms one frame and disarms
+itself — so two of them would have had to land on the same frame, and whichever
+arrived alone would have spent itself on a punch. `held:light` and its three
+siblings exist now beside the edges; the edge is untouched, so nothing
+machine-guns.
+
+**Charging is a stance, so it settles before any button is read** — the same
+rule crouching already follows, and it sits directly after it in every grounded
+neutral state. Crouching still wins: down is the first word a stance says. The
+forgiving consequence is that pressing A a frame early throws a punch and then
+drops into the charge when it ends, with both keys still down.
+
+Nothing spends it yet. Vanish, the fast dash and the specials are what it is
+for, and all three are still unbuilt.
+
 ## Open
 
-- **The resource.** Shared health/Ki bar (what the original did) or separate.
-  It is coupled to Vanish: if escaping costs health, escaping while nearly dead
-  is impossible — either the best thing in the design or a death spiral. Decide
-  the resource before the escape.
+- ~~**The resource.**~~ Settled 2026-08-23: **separate**, not the original's
+  shared bar. The coupling that made it worth deciding first still holds and now
+  reads the other way — Vanish costs ki, so escaping while nearly dead is
+  *possible*, and the escape's floor is a resource you can refill rather than
+  one you die of spending. What that costs us is the original's tension, where
+  a special and a beating ate the same pool; it can come back as a second cost
+  on the same button rather than as a shared bar.
 - **Whether Vanish also escapes an ongoing combo**, not only guard pressure.
 - ~~**Whether a downed fighter is hittable at all.**~~ Settled 2026-08-15, in
   two halves. Rank 4 made `bounce`, `downed` and `getup` un-interruptible by

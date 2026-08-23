@@ -80,5 +80,11 @@
     "gain": 0.28,
     "vary": 0.1,
     "file": "011.wav"
+  },
+  "charge_1": {
+    "label": "charging ki — one short clip, retriggered so the copies overlap",
+    "gain": 0.22,
+    "vary": 0.0,
+    "file": "013.wav"
   }
 }

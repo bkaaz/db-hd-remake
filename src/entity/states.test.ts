@@ -59,6 +59,7 @@ const NONE = {
   special: false,
   qcf: false,
   qcb: false,
+  holding: { light: false, medium: false, heavy: false, special: false },
 };
 const FWD = { ...NONE, fwd: true };
 const ATTACK = { ...NONE, light: true };

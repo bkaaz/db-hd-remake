@@ -102,6 +102,17 @@ fighters would each want a copy of it. A grunt *is* his.
 - **A reaction naming a `sound` is how a fighter gets a voice** — and that id
   resolves in the fighter's own file rather than the bank, the only kind that
   does.
+- **`sound` plays once on entering the state; `loopSound` is retriggered every
+  `loopEvery` frames until you leave it.** Not a seamless loop: that repeats at
+  exactly the clip's own length and can never overlap itself, and the original's
+  charge is one short clip fired again before the last copy has finished. The
+  copies stacking is what turns a repeat into a sustain, so `loopEvery` shorter
+  than the clip is the point rather than a mistake. **Pick it as the clip's
+  length divided by how many copies should overlap** — measure the `.wav` rather
+  than guessing, because the same interval is a sustain under a long clip and a
+  machine gun under a short one. Goku's charge overlaps three. Two states naming the same
+  `loopSound` hand it over rather than restarting the clock, which keeps a hitch
+  out of the seam between a drop-in pose and its loop.
 
 ## Tuning `landCue`
 

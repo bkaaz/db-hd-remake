@@ -97,6 +97,11 @@ export interface Attributes {
    * is how a foundation should arrive.
    */
   hitstun: number;
+  /**
+   * The ki meter's capacity. A **separate** resource from health, decided
+   * 2026-08-23 — see `combat.md`, which had it open.
+   */
+  ki: number;
 }
 
 export const DEFAULT_ATTRIBUTES: Attributes = {
@@ -107,6 +112,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   health: 100,
   damage: 6,
   hitstun: 12,
+  ki: 100,
 };
 
 /**

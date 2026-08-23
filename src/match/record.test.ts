@@ -20,6 +20,7 @@ const snapshot = (buffer: [string, number][]): EntityDebug => ({
   hp: 100,
   vx: 0,
   buffer,
+  ki: 0,
   inputs: "",
   motions: [],
   combo: { hits: 0, damage: 0, lifts: 0 },
