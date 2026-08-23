@@ -10,6 +10,7 @@
       "transitions": [
         { "when": "pressed:light", "to": "punch" },
         { "when": "pressed:medium", "to": "kick_mid" },
+        { "when": ["held:back", "pressed:heavy"], "to": "kick_axe" },
         { "when": "pressed:heavy", "to": "kick_high" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" },
@@ -37,6 +38,7 @@
       "transitions": [
         { "when": "pressed:light", "to": "punch" },
         { "when": "pressed:medium", "to": "kick_mid" },
+        { "when": ["held:back", "pressed:heavy"], "to": "kick_axe" },
         { "when": "pressed:heavy", "to": "kick_high" },
         { "when": "held:up", "to": "jump_back" },
         { "when": "!held:back", "to": "idle" },
@@ -112,6 +114,25 @@
         { "when": "animEnd", "to": "idle" }
       ],
       "hitstop": 12
+    },
+    "kick_axe": {
+      "anim": "kick_axe",
+      "airborne": true,
+      "launch": [1.5, -3.0],
+      "turn": false,
+      "onHit": "slam",
+      "smash": true,
+      "damage": 13,
+      "sound": "swing_3",
+      "hitSound": "hit_2",
+      "blockSound": "block_1",
+      "hitFx": "spark_2",
+      "transitions": [
+        { "when": "landed", "to": "idle" },
+        { "when": "animEnd", "to": "fall" }
+      ],
+      "hitstun": 20,
+      "hitstop": 6
     },
     "kick_high": {
       "anim": "kick_high",
@@ -309,6 +330,29 @@
       "anim": "knockdown",
       "rank": 3,
       "launch": [-3.5, -2.5],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        { "when": "landed", "to": "bounce" }
+      ]
+    },
+    "slam": {
+      "anim": "knockdown",
+      "rank": 3,
+      "launch": [-2.5, -1.8],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "slam_air",
+      "transitions": [
+        { "when": "landed", "to": "bounce" }
+      ]
+    },
+    "slam_air": {
+      "anim": "knockdown",
+      "rank": 3,
+      "launch": [-1.0, 6.2],
       "airborne": true,
       "turn": false,
       "sound": "voice_hurt",

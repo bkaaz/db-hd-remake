@@ -242,7 +242,7 @@ describe("the string juggles what the uppercut launched", () => {
       .filter(([, def]) => def.smash)
       .map(([name]) => name)
       .sort();
-    expect(marked).toEqual(["kick_high", "uppercut"]);
+    expect(marked).toEqual(["kick_axe", "kick_high", "uppercut"]);
   });
 });
 

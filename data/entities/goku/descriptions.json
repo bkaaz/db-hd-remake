@@ -451,8 +451,9 @@
       ]
     },
     "kick_axe": {
-      "desc": "The leg brought down from overhead. 185 is the new frame (owner, 2026-08-22); the wind-up is 121, which the sheet already had — hop_lunge's second frame, already noted there as standing on its own as a high-leg attack. This is that reuse being taken up.",
+      "desc": "The leg raised and brought down from overhead, out of a small hop toward the opponent. 185 is the new frame (owner, 2026-08-22); the wind-up is 120 then 121, which the sheet already had as hop_lunge's first two — the hop and the leg thrown high. The hop was missed on the first build, which used 121 alone and read wrong against the original (owner, 2026-08-23). This is hop_lunge's opening being reused rather than redrawn.",
       "frames": [
+        "120",
         "121",
         "185"
       ]
@@ -585,8 +586,8 @@
     "117": "? a smaller scrap, 8x8",
     "118": "? a smaller scrap, 8x8",
     "119": "? the smallest scrap, 5x5",
-    "120": "hop_lunge, 1 of 5: the wind-up",
-    "121": "hop_lunge, 2 of 5: the leg thrown high as the stride begins — also usable on its own as a high-leg attack",
+    "120": "hop_lunge, 1 of 5: the wind-up — airborne with the knees drawn up and the body leaning back. Also kick_axe's first frame (owner, 2026-08-23, from the original): the axe kick is delivered out of a small hop toward the opponent, and this is that hop",
+    "121": "hop_lunge, 2 of 5: the leg thrown high as the stride begins — also usable on its own as a high-leg attack, and kick_axe's second frame, the leg raised before the chop",
     "122": "hop_lunge, 3 of 5: airborne and attacking, body horizontal, leg extended",
     "123": "hop_lunge, 4 of 5: coming down in a straddle",
     "124": "hop_lunge, 5 of 5: landing out of the straddle, knee up and compact",
@@ -632,7 +633,7 @@
     "182": "guard_crouch: low, both forearms up and crossed in front of the face — the standing block's arms on the crouch's legs. Drawn by the owner, not on the rip",
     "183": "hurt_crouch, the deeper of the two: crouched but opened up, torso turned away, one arm thrown out, head back. Where 184 goes on a strong hit",
     "184": "hurt_crouch, the shallower: crouched with both fists still up by the face, barely displaced — a flinch that keeps its shape",
-    "185": "kick_axe: the leg brought down from overhead, body leaning back against it. Wound up from 121",
+    "185": "kick_axe: the leg brought down from overhead, body leaning back against it. Wound up from 120 then 121",
     "186": "punch_close: a short punch from the guard, arm out at chest height, feet planted. Wound up from 34",
     "187": "punch_knee, the wind-up: down on one knee, fist drawn back at the hip",
     "188": "punch_knee, the blow: same knee, arm straight out in front"

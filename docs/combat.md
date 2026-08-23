@@ -297,6 +297,47 @@ The scheme hands the moveset its shape — three stances × three strengths is
 | crouching | · | · | · (launcher) | |
 | air | · | · | · | |
 
+**A direction plus a button is a normal of its own, not a variant.** The first
+one exists as of 2026-08-23: back + H is `kick_axe`, where plain H is
+`kick_high`. It costs no new machinery — a `when` is a list that ANDs, so
+`["held:back", "pressed:heavy"]` is a transition like any other, checked before
+the plain heavy so it wins the press. This is where the moves the nine slots
+cannot hold will go, and the price is that every such branch has to be ordered
+by hand.
+
+**`kick_axe` is thrown out of a hop, and that makes the ground its clock.** The
+leg is raised and brought down from above, so the move is `airborne` and ends on
+`landed` rather than on its own animation — which also means Goku can be juggled
+out of it, the price the hop charges. The arc is derived like every other
+distance here: it travels one `pushWidth` at a shade above walking speed, and
+peaks 15 px up on frame 10, three frames before the leg comes down, so the chop
+is always thrown on the way back to the floor.
+
+**Its proportions are the original's** (owner, 2026-08-23): the wind-up is long
+and the extended leg is brief. The hop and the raised leg hold 13 frames between
+them, the chop is on screen for 7 — 4 of them active — because landing at frame
+20 cuts the last step short. So the drawing does not decide how long the strike
+is seen; the arc does, and retiming the hop retimes the pose with it.
+
+**And it is the one attack whose hitstop is below its row** — 6 against the
+heavy's 12 (owner, 2026-08-23). Two reasons, and the first is mechanical: the
+freeze returns above the physics (`entity.ts`), so on an airborne attacker it
+stops the fall as well as the drawing, and a heavy's 12 frames read as the body
+hanging rather than as weight. The second is that this blow already sells its
+impact by putting the opponent on the floor. **Charge an airborne attack's
+hitstop against its arc, not only against its strength.**
+
+**A blow that comes down puts the body down, and that needed a reaction of its
+own.** `knockdown` lifts 64 px before the fall, which is right for an uppercut
+and backwards for an axe kick, so `slam` and `slam_air` sit beside it. Both
+numbers are derived rather than felt. On the ground the lift is 1.8, chosen so
+the fall animation plays exactly once before `landed` fires — an apex of 5 px,
+which is a body dropping rather than flying — and the push is one `pushWidth`,
+so the victim lands at the attacker's feet: a downward blow trades range for the
+spike. In the air the impulse is 6.2 *downward*, the speed a normal knockdown is
+already travelling at when it hits the floor, so a spiked body arrives as hard
+without the flight.
+
 **The chain rule comes with it, and it is one sentence: you may cancel into a
 stronger button, never a weaker one.** `L → M → H → S`. An ordering, not a table
 of permitted transitions — which is why it survives a character gaining a fifth

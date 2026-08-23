@@ -79,6 +79,11 @@ redirect hangs off the reaction, and an attack still names one `onHit`. The flag
 also rides on the reaction, which is what makes it survive a string.
 → [ADR 0002](./adr/0002-the-defenders-situation-is-a-flag.md)
 
+**Slam (spike)** — the knockdown a blow that comes *down* gives: `slam` drops the
+body where it stands instead of lifting it, and its air redirect `slam_air`
+drives an already-juggled body into the floor. The opposite end of the same axis
+as an uppercut's launch. → `combat.md` (The buttons)
+
 **Smash** — a blow allowed to *re*-launch or re-floor a body that is already
 being juggled. Marked on the attack (`smash`), spent from a budget of two per
 combo; past the budget it still hits and still hurts, it just stops lifting.
