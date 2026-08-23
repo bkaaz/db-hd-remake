@@ -87,7 +87,7 @@
       ]
     },
     "knee": {
-      "desc": "A knee strike, confirmed by the owner 2026-08-15: 112 prepares, 113 brings the knee up, 114 drives it further, 115 carries it through the air. **Two moves out of one set, and the short one is a PREFIX of the long one** — a close-range knee that ends at 114, and a travelling knee that continues into 115 and leaves the ground. Worth deciding before it is built: our animations play whole, so a prefix is either two animations sharing three frames, or one animation with a state that leaves early. Was guessed as a rising kick / launcher and is not one.",
+      "desc": "A knee strike, confirmed by the owner 2026-08-15: 112 prepares, 113 brings the knee up, 114 drives it further, 115 carries it through the air. **Two moves out of one set, and the short one is a PREFIX of the long one** — a close-range knee that ends at 114, and a travelling knee that continues into 115 and leaves the ground. The close one was built 2026-08-23 as the state `knee` (112-114, active on 114); the travelling one is still nothing, and taking it will be the first time the repo has to answer whether a prefix is two animations sharing three frames or one animation with a state that leaves early. Was guessed as a rising kick / launcher and is not one.",
       "frames": [
         "112",
         "113",
@@ -578,10 +578,10 @@
     "109": "? the ki bolt, 12 px",
     "110": "? the ki bolt, 10 px",
     "111": "? the ki bolt, 8 px — the far end of the flight",
-    "112": "knee: the preparation, standing and leaning in",
-    "113": "knee: the knee coming up",
-    "114": "knee: driven further up — the frame the close-range version ends on",
-    "115": "knee: carried through the air, feet off the ground — only the travelling version reaches this",
+    "112": "knee, 1 of the strike: the prepare — standing, weight dropped, fists at the sides",
+    "113": "knee, 2 of the strike: leaning in with the knee on its way up. Also the frame the move steps back out through, so it appears twice",
+    "114": "knee, the active frame: the knee driven up highest, body compressed over the standing leg. The blow travels UPWARD, which is why the hit box could not be measured — see docs/bugs.md",
+    "115": "knee, but only for the travelling version: airborne with the leg extended, carrying forward. Not part of the close knee, which ends at 114",
     "116": "? a small yellow scrap, 8x13 — ki bolt tail or impact debris",
     "117": "? a smaller scrap, 8x8",
     "118": "? a smaller scrap, 8x8",

@@ -20,19 +20,30 @@ because a number would only need translating back.
 
 ---
 
-## `npm run anim` picks the wrong active frame when two poses share a box
+## `npm run anim` only knows how far a move reaches sideways
 
-`src/sprites/boxes.ts:118` · noticed 2026-08-23 · annoying
+`src/sprites/boxes.ts:110` · noticed 2026-08-23 · annoying
 
-`activeIndex` ranks frames by how far the silhouette reaches past the anchor and
-breaks ties on the earliest. Goku's 44 and 45 have the same rect and the same
-anchor, so the reach is equal and the hit box lands on 44 — the wind-up — while
-the blow is 45. Nothing in the printed table says the choice was a coin flip,
-and there is no flag to override it, so `punch_air` had to be rewritten by hand
-and re-running the script would undo it.
+`reach` measures the silhouette horizontally, and `activeIndex` and `hitBox`
+are both built on it. Everything a move does vertically is invisible to it, and
+it fails three ways, none of them announced as a guess:
 
-Reproduce: `npm run anim -- goku probe --frames 43,44,45 --kind attack --dry-run`
+- **A tie picks the earlier frame.** 44 and 45 share a rect and an anchor, so the
+  hit box landed on `punch_air`'s wind-up.
+- **A vertical blow gets no box at all.** `arm_sweep` (71-73) sweeps up and over,
+  nothing extends, and the box came back `FALLBACK`.
+- **A vertical blow picks the wrong frame entirely.** For `knee` (112-114) the
+  widest silhouette is 112, the standing prepare, so the box was offered on the
+  frame before the move starts.
+
+All three had to be placed by hand, and re-running the script undoes them.
+
+Reproduce: `npm run anim -- goku probe --frames 112,113,114 --kind attack --dry-run`
 and read which step is starred.
+
+Worth deciding with the fix: whether `--active N` is enough, or whether reach
+should be measured as distance from the anchor in both axes — the second would
+have got all three right without a flag.
 
 ## Save never tells you it saved
 
