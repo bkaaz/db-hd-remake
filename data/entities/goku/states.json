@@ -9,6 +9,7 @@
       "turn": true,
       "transitions": [
         { "when": ["held:fwd", "pressed:light"], "to": "punch_close" },
+        { "when": ["held:back", "pressed:light"], "to": "swipe" },
         { "when": "pressed:light", "to": "punch" },
         { "when": ["held:back", "pressed:medium"], "to": "kick_low" },
         { "when": "pressed:medium", "to": "kick_mid" },
@@ -39,6 +40,7 @@
       "vel": [-1.0, 0],
       "turn": true,
       "transitions": [
+        { "when": ["held:back", "pressed:light"], "to": "swipe" },
         { "when": "pressed:light", "to": "punch" },
         { "when": ["held:back", "pressed:medium"], "to": "kick_low" },
         { "when": "pressed:medium", "to": "kick_mid" },
@@ -213,6 +215,22 @@
         { "when": "animEnd", "to": "crouch" }
       ],
       "hitstop": 8
+    },
+    "swipe": {
+      "anim": "arm_sweep",
+      "vel": [0, 0],
+      "turn": false,
+      "hitstun": 20,
+      "cancelBy": 12,
+      "onHit": "hurt_chain",
+      "damage": 8,
+      "hitstop": 8,
+      "sound": "swing_2",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
+      "transitions": [
+        { "when": "animEnd", "to": "idle" }
+      ]
     },
     "punch_close": {
       "anim": "punch_close",

@@ -95,14 +95,6 @@
         "115"
       ]
     },
-    "deflect": {
-      "desc": "Batting a projectile away, confirmed by the owner 2026-08-15: 71 the wind-up with the arm drawn back low, 72 the active frame — the arm sweeping up and over behind a bright arc of light — 73 the arm left extended above. In the original the same move doubles as **one of the attacks**, so it is one animation behind two states: one that hits, one that turns a ki bolt aside. Was catalogued as \"overhead_swing\" with a `?`. The same gesture as deflect_far (99, 101), which is the far-plane version of this.",
-      "frames": [
-        "71",
-        "72",
-        "73"
-      ]
-    },
     "hurt": {
       "desc": "Hit reactions, standing. 74 alone is the light one — a single flinch after something like the light punch. 74 followed by 75 is the heavier one: the same flinch continued into a real recoil, so the two share a first frame rather than being separate animations. 76 is a hit to the stomach / a low blow. Confirmed by the owner.",
       "frames": [
@@ -471,6 +463,14 @@
         "187",
         "188"
       ]
+    },
+    "arm_sweep": {
+      "desc": "An overhead arm sweep, arm drawn back low then thrown up and over behind a bright arc of light: 71 the wind-up, 72 the active frame, 73 the arm left extended above. Confirmed by the owner 2026-08-15. **Two moves out of one gesture**, which is why the group was renamed from \"deflect\" to the pose on 2026-08-23: it is an arm attack (the state `swipe`, built that day) and it is also what turns a ki bolt aside, and naming the animation after one of those made the other read wrong. The deflecting state does not exist yet. Was catalogued as \"overhead_swing\" with a `?` before it was \"deflect\". The same gesture as deflect_far (99, 101), the far-plane version.",
+      "frames": [
+        "71",
+        "72",
+        "73"
+      ]
     }
   },
   "frames": {
@@ -537,9 +537,9 @@
     "68": "fx_ki_burst_big: 26x29, wider at the base",
     "69": "fx_ki_burst_big: 28x31, the peak",
     "70": "fx_ki_burst_big: 29x31, breaking apart",
-    "71": "deflect, the wind-up: compact, arm drawn back and low",
-    "72": "deflect, the active frame: the arm sweeping up and over behind a bright arc of light",
-    "73": "deflect, after: the arm left extended above the head",
+    "71": "arm_sweep, the wind-up: the arm drawn back and low",
+    "72": "arm_sweep, the active frame: the arm sweeping up and over behind a bright arc of light. The arc is drawn into the sprite, so no fx is spawned for it",
+    "73": "arm_sweep, the follow-through: the arm left extended above — the pose the move recovers on",
     "74": "hit reaction, light: upright, head snapped back, arms flung out and down. Played alone it IS the light reaction; it is also the first frame of the heavier one, which continues into 75",
     "75": "hit reaction, heavy: turned away from the blow, near arm across the face, head dropped — the recoil that follows 74 when the attack is strong enough to need one. Not used alone",
     "76": "hit reaction to the stomach / a low blow — doubled forward, head down and forward, arms hanging loose",
