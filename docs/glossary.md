@@ -55,9 +55,22 @@ for the value per strength
 frames and set by the blow (`hitstun`), not by the length of the reaction
 animation. Everything about combos is arithmetic on this number. → `combat.md` §1
 
+**Launcher** — a blow that lifts a grounded opponent into a juggle instead of
+flooring them. The reaction is `launched`, the opposite end of the same axis as
+**Slam**; the attack carries `smash`, so past the budget it still hits and
+simply stops lifting. → `combat.md` §1, §4
+
 **Link** — hitting again *after* your attack has fully played out, because the
 defender is still in hitstun. Nothing is interrupted; the sum is
 `recovery + next start-up ≤ hitstun`. → `combat.md` (Chaining)
+
+**Motion input** — a **sequence** of directions completed inside a window, where
+a `held:` trigger is one frame. Written the genre's way and always relative to
+facing: **qcf** ↓↘→ (quarter circle forward), **qcb** ↓↙←, **dp** →↓↘ (dragon
+punch), **hcf** ←↙↓↘→ (half circle). Ours are lenient about the diagonals — ↓→
+is a qcf — so the name is the motion hands make, not the shape required. The
+trigger is `motion:<name>`; **which ones exist is `MOTIONS` in
+`input/motion.ts`**, never this line. → `combat.md` (The buttons)
 
 **Proration (scaling)** — every blow after the first is worth 10% less, in both
 damage and hitstun, down to a floor of 20% and 50%. The counter lives on the

@@ -5,6 +5,8 @@ import { Audio } from "../audio/playback";
 import { Combo } from "../combat/combo";
 import { scaledDamage, scaledHitstun } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
+import { InputHistory, MOTION_NAMES } from "../input/history";
+import { Motions } from "../input/motion";
 import { DEFAULT_HIT_FX, guardStateFor, guardable, reactionFor, StateMachine } from "./states";
 
 /**
@@ -75,8 +77,20 @@ export interface EntityDebug {
   hp: number;
   vx: number;
   buffer: [button: string, framesLeft: number][];
+  /** The last few inputs as the engine saw them — see input/history.ts. */
+  inputs: string;
+  /** Motions complete right now, so a recording can say when one landed. */
+  motions: string[];
   combo: { hits: number; damage: number; lifts: number };
 }
+
+/** Strength, not the key: nothing outside `input/keyboard.ts` knows which key is which. */
+const ATTACK_LABELS = [
+  ["light", "L"],
+  ["medium", "M"],
+  ["heavy", "H"],
+  ["special", "S"],
+] as const satisfies readonly (readonly [keyof WorldInput, string])[];
 
 const BOX_COLORS: Record<string, number> = {
   hit: 0xff3b3b,
@@ -108,6 +122,10 @@ export class Entity {
    * *because* they saw the hit land is the one thing a buffer has to prevent.
    */
   private readonly buffer = new InputBuffer();
+  /** What the stick has been doing, for the triggers a single frame cannot answer. */
+  private readonly motions = new Motions();
+  /** Scaffolding: the same inputs again, kept only so a person can read them. */
+  private readonly history = new InputHistory();
   /** The combo being done **to** this fighter — see src/combat/combo.ts. */
   readonly combo = new Combo();
 
@@ -225,6 +243,8 @@ export class Entity {
       hp: this.hp,
       vx: this.vx,
       buffer: this.buffer.live(),
+      inputs: this.history.line,
+      motions: MOTION_NAMES.filter((m) => this.motions.has(m)),
       combo: { hits: this.combo.hits, damage: this.combo.damage, lifts: this.combo.lifts },
     };
   }
@@ -490,6 +510,16 @@ export class Entity {
     const fwd = this.facing > 0 ? input.right : input.left;
     const back = this.facing > 0 ? input.left : input.right;
     this.holdingBack = back;
+    // Below the freeze check, like the buffer's tick: a hit pause must not age
+    // a motion out of existence either. Facing-relative, so turning around does
+    // not turn a quarter circle into its mirror mid-input.
+    const stick = { fwd, back, up: input.up, down: input.down };
+    this.motions.push(stick);
+    this.history.record(
+      stick,
+      ATTACK_LABELS.filter(([button]) => input[button]).map(([, label]) => label),
+      MOTION_NAMES.filter((m) => this.motions.has(m)),
+    );
     // Live conditions, not latches: true only while they hold. `falling` turns
     // on at the apex; `nearGround` narrows that to the last stretch before
     // touchdown, where the landing pose belongs.
@@ -506,6 +536,7 @@ export class Entity {
         medium: this.buffer.has("medium"),
         heavy: this.buffer.has("heavy"),
         special: this.buffer.has("special"),
+        qcf: this.motions.has("qcf"),
       },
       {
         animEnded: this.animEnded,

@@ -405,10 +405,11 @@ queue.
 - **Chip damage and a guard break.** Blocking exists and costs nothing, which is
   right while every attack is a normal; specials should chip, and holding guard
   forever should eventually fail. Both wait for specials.
-- **Commands and motion recognition** (was phase E) — quarter-circles and the
-  rest, the prerequisite for specials. The input **buffer** underneath them is
-  done. **Promoted from optional by the button scheme:** `S` is the ki blast,
-  so a character with no motion inputs has no specials at all.
+- **The rest of the motions.** Recognition itself landed 2026-08-23
+  (`input/motion.ts`, trigger `motion:<name>`) and `qcf` is wired to a normal to
+  prove it. What is left is the other shapes and, with them, the leniency
+  questions each one asks — a dragon punch that also accepts a quarter circle is
+  a different game from one that does not. `MOTIONS` says which exist.
 - **A remapping screen.** All four attack buttons are wired to the ZSNES
   defaults; nothing lets a player change them.
 - **A camera**, and a stage. Round rules and a second player belong to Stage 3

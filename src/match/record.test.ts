@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { EntityDebug } from "../entity/entity";
-import { pressChanges } from "./record";
+import { motionChanges, pressChanges } from "./record";
 
 /**
  * Only the inference is tested, not the formatting. Whether a press was *spent*
@@ -20,6 +20,8 @@ const snapshot = (buffer: [string, number][]): EntityDebug => ({
   hp: 100,
   vx: 0,
   buffer,
+  inputs: "",
+  motions: [],
   combo: { hits: 0, damage: 0, lifts: 0 },
 });
 
@@ -58,5 +60,23 @@ describe("pressChanges", () => {
       "P2 press medium spent",
       "P2 press heavy EXPIRED unused",
     ]);
+  });
+});
+
+describe("motionChanges", () => {
+  const withMotions = (motions: string[]) => ({ ...snapshot([]), motions });
+
+  it("says so the frame a motion completes", () => {
+    expect(motionChanges("P1", withMotions([]), withMotions(["qcf"]))).toEqual(["P1 motion qcf"]);
+  });
+
+  it("says nothing while it stays complete", () => {
+    // It holds for its whole window; a line a frame would be fourteen lines
+    // saying one thing, which is how a log stops being read.
+    expect(motionChanges("P1", withMotions(["qcf"]), withMotions(["qcf"]))).toEqual([]);
+  });
+
+  it("says nothing when it falls out of the window", () => {
+    expect(motionChanges("P1", withMotions(["qcf"]), withMotions([]))).toEqual([]);
   });
 });

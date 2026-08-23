@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { Motions } from "../input/motion";
 import {
   reactionFor,
   StateMachine,
@@ -42,6 +43,7 @@ const NOTHING: InputSnapshot = {
   medium: false,
   heavy: false,
   special: false,
+  qcf: false,
 };
 const QUIET: Signals = {
   animEnded: false,
@@ -62,6 +64,9 @@ const QUIET: Signals = {
  */
 class Sim {
   private readonly sm = new StateMachine(goku());
+  // The real recogniser, fed the same way the entity feeds it, so a test about
+  // a motion is a test of the thing the game runs and not of a boolean.
+  private readonly motions = new Motions();
 
   get state(): string {
     return this.sm.current;
@@ -69,7 +74,9 @@ class Sim {
 
   /** One game frame. Returns the state it left you in. */
   frame(input: Partial<InputSnapshot> = {}, signals: Partial<Signals> = {}): string {
-    this.sm.update({ ...NOTHING, ...input }, { ...QUIET, ...signals });
+    const at = { ...NOTHING, ...input };
+    this.motions.push(at);
+    this.sm.update({ ...at, qcf: this.motions.has("qcf") }, { ...QUIET, ...signals });
     return this.sm.current;
   }
 
@@ -78,6 +85,50 @@ class Sim {
     return this.frame({ [button]: true }, { hitConfirmed: true });
   }
 }
+
+describe("a diagonal changes stance before it does anything else", () => {
+  /**
+   * What this stops, and it took a session of "the input is hard to hit" to
+   * find: `held:fwd` used to be checked before `held:down`, so down-forward
+   * read as walking and the crouching move was two frames away — long enough
+   * that the button almost always landed on the standing one instead, spending
+   * the press on a move nobody asked for.
+   */
+  it("crouches on down-forward rather than walking", () => {
+    expect(new Sim().frame({ down: true, fwd: true })).toBe("crouch_down");
+    expect(new Sim().frame({ down: true, back: true })).toBe("crouch_down");
+  });
+
+  it("gives the crouching medium on down + medium, not the standing one", () => {
+    const s = new Sim();
+    s.frame({ down: true, medium: true });
+    expect(s.frame({ down: true, medium: true })).toBe("kick_crouch");
+  });
+
+  it("reaches the launching knee on a held down-forward + medium", () => {
+    const s = new Sim();
+    s.frame({ down: true, fwd: true, medium: true });
+    expect(s.frame({ down: true, fwd: true, medium: true })).toBe("knee_rise");
+  });
+
+  it("reaches it on a rolled quarter circle, which is what hands actually do", () => {
+    // The whole point of motion:qcf. Down is released before the button, so no
+    // live `held:` condition can see the input any more — and the roll leaves
+    // you in walk_fwd, not in a crouch, which is why the trigger cannot live on
+    // the crouch states alone.
+    const s = new Sim();
+    s.frame({ down: true });
+    expect(s.frame({ fwd: true, medium: true })).toBe("knee_rise");
+  });
+
+  it("still gives the plain medium when no motion preceded it", () => {
+    // The other half: leniency that swallows every forward medium would be
+    // worse than the bug it fixes.
+    const s = new Sim();
+    s.frame({ fwd: true });
+    expect(s.frame({ fwd: true, medium: true })).toBe("knee");
+  });
+});
 
 describe("the ladder — light, then medium, then heavy", () => {
   it("walks punch → kick_mid → kick_thrust → kick_high when every blow connects", () => {
@@ -256,7 +307,7 @@ describe("the string juggles what the uppercut launched", () => {
       .filter(([, def]) => def.smash)
       .map(([name]) => name)
       .sort();
-    expect(marked).toEqual(["kick_axe", "kick_high", "uppercut"]);
+    expect(marked).toEqual(["kick_axe", "kick_high", "knee_rise", "uppercut"]);
   });
 });
 

@@ -119,6 +119,21 @@ or in the air. Rank 4 is the exception, being the floor rather than the blow.
 `entity/chains.test.ts` pins it for every reaction, so the next one cannot
 arrive without a push.
 
+**A blow that lifts needed one too, and its number comes from two places
+agreeing.** `launched` (2026-08-23) puts a grounded opponent into the air and
+leaves them there to be juggled, where `knockdown` would put them on the floor
+and `hurt_chain` would leave them standing. The lift is 4.0, which is an apex of
+**27 px — a third of a fighter's height**, the same yardstick a knockdown's lift
+is measured against. Independently, it has to outlast the move that threw it:
+`knee_rise` lands its blow around frame 7 and `knee_jump`'s box is gone by frame
+22, so anything under 15 frames of hang time would drop the victim before the
+follow-up arrives. 4.0 buys 27. **A launcher is worth checking both ways** — a
+lift tuned only against the follow-up is a number that breaks when the animation
+is retimed.
+
+The attack carries `smash`, like every launcher: past the budget it still hits
+and still costs health, it just stops lifting (§4).
+
 **A held blow cannot be answered by holding back** (2026-08-16, `guardable` in
 `states.ts`): rank above zero is exactly "somebody else put me here", and a
 fighter there has no guard. Without it every combo was escapable by holding a
@@ -304,8 +319,10 @@ business, not the player's. Guard stays on back, which is what FighterZ does and
 what we already do.
 
 **S is the ki blast and the default chain ender, not a special-move button.**
-Real specials are motion inputs, so command recognition is a prerequisite for a
-character having anything beyond normals rather than a later luxury.
+Real specials are motion inputs, which was the prerequisite for a character
+having anything beyond normals rather than a later luxury. Recognition exists as
+of 2026-08-23 — see below — so what stands between here and a special is the
+move, not the input.
 
 The scheme hands the moveset its shape — three stances × three strengths is
 **nine normals**, plus what S does in each:
@@ -315,6 +332,32 @@ The scheme hands the moveset its shape — three stances × three strengths is
 | standing | · | · | · | ki blast |
 | crouching | · | · | · (launcher) | |
 | air | · | · | · | |
+
+**There are three kinds of input, and confusing two of them cost a session**
+(2026-08-23). A **press** is an edge, buffered for twelve frames. A **held
+direction** is a live condition — true only while the key is down, which is what
+every `held:` trigger asks. A **motion** is a sequence of directions inside a
+window, and until this date the engine had no way to see one: rolling ↓ → leaves
+nothing behind for a live condition to read, so the launching knee could only be
+thrown by *holding* down-forward. Nobody holds a quarter circle. `input/motion.ts`
+keeps the short history a sequence is matched against; `motion:qcf` is the first
+trigger built on it.
+
+**The diagonal is not required**, and that is a decision rather than an
+omission: `qcf` is down then forward, so ↓↘→ and ↓→ match alike. Requiring ↘ is
+what makes a motion "not come out", which is the complaint the whole thing
+exists to answer. The price is a false positive — crouch, stand, walk forward,
+and inside fourteen frames that reads as a quarter circle — and **the window is
+what keeps that rare, not the shape.** Fourteen is a little over the press
+buffer's twelve, in that order on purpose: the motion has to still be true on
+the frame the buffered press is spent.
+
+**Stance is settled before anything reads a button.** `held:down → crouch_down`
+is the first transition of every grounded neutral state, because it was not and
+a diagonal read as walking: down-forward went to `walk_fwd`, and a button
+pressed in the two frames that took spent itself on the standing move. The same
+ordering is why down + a button gives the crouching attack at all. It costs one
+frame on a crouch attack pressed from standing, which the buffer covers.
 
 **A direction plus a button is a normal of its own, not a variant.** The first
 one exists as of 2026-08-23: back + H is `kick_axe`, where plain H is

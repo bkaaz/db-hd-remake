@@ -57,6 +57,7 @@ const NONE = {
   medium: false,
   heavy: false,
   special: false,
+  qcf: false,
 };
 const FWD = { ...NONE, fwd: true };
 const ATTACK = { ...NONE, light: true };

@@ -87,7 +87,7 @@
       ]
     },
     "knee": {
-      "desc": "A knee strike, confirmed by the owner 2026-08-15: 112 prepares, 113 brings the knee up, 114 drives it further, 115 carries it through the air. **Two moves out of one set, and the short one is a PREFIX of the long one** — a close-range knee that ends at 114, and a travelling knee that continues into 115 and leaves the ground. The close one was built 2026-08-23 as the state `knee` (112-114, active on 114); the travelling one is still nothing, and taking it will be the first time the repo has to answer whether a prefix is two animations sharing three frames or one animation with a state that leaves early. Was guessed as a rising kick / launcher and is not one.",
+      "desc": "A knee strike, confirmed by the owner 2026-08-15: 112 prepares, 113 brings the knee up, 114 drives it further, 115 carries it through the air. **Two moves out of one set, and the short one is a PREFIX of the long one** — a close-range knee that ends at 114 (`knee`, forward + Z) and a travelling one that continues into 115 and leaves the ground (`knee_rise` → `knee_jump`, down-forward + Z). Both built 2026-08-23, and the prefix turned out to be **two animations sharing three frames**, not one animation with a state that leaves early: nothing can leave an animation early, and the two diverge anyway — the close one steps back down through 113, the travelling one ends on 114 and hands over to the jump. In the original the travelling version lands three blows: 114, then 115, then once more in the air; the third is not built. Was guessed as a rising kick / launcher and is not one.",
       "frames": [
         "112",
         "113",

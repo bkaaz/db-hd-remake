@@ -44,7 +44,9 @@ export class DebugPanel {
     if (!frame) return;
 
     this.right.x = this.app.screen.width - INSET;
-    this.left.text = block("P1", frame.player);
+    // The player's inputs close their own block. Only theirs: the opponent is
+    // the dummy, and a timeline it was handed is not an input anybody made.
+    this.left.text = `${block("P1", frame.player)}\n${frame.player.inputs}`;
     this.right.text = frame.opponent ? block("P2", frame.opponent) : "";
   }
 
@@ -56,12 +58,19 @@ export class DebugPanel {
 const make = (): Text =>
   new Text({ text: "", style: { fill: "#7f9fbf", fontFamily: "monospace", fontSize: 12 } });
 
-/** One fighter, five short lines. Fewer numbers, each of which answers a question. */
+/**
+ * One fighter, five short lines. Fewer numbers, each of which answers a question.
+ *
+ * `framesLeft` is deliberately not among them: it counts down every frame and
+ * restarts at every step, so on screen it is a blur. It is still in
+ * `EntityDebug`, because `logs/session.log` prints it once per event, which is
+ * where a per-frame number can actually be read.
+ */
 function block(who: string, d: EntityDebug): string {
   const buffer = d.buffer.length === 0 ? "—" : d.buffer.map(([b, f]) => `${b} ${f}`).join("  ");
   return [
     `${who}  ${d.state}`,
-    `step ${d.step + 1}/${d.steps} · ${d.framesLeft}f · rank ${d.rank}`,
+    `step ${d.step + 1}/${d.steps} · rank ${d.rank}`,
     `${d.hitConfirmed ? "hit ✓" : "hit —"} · freeze ${d.freeze} · stun ${d.stun} · hp ${d.hp}`,
     `vx ${d.vx.toFixed(1)} · buf ${buffer}`,
     `combo ${d.combo.hits} hits · ${d.combo.damage} dmg · next ×${damageScale(d.combo.hits).toFixed(1)}` +

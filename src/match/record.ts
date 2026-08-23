@@ -35,6 +35,7 @@ export class Recorder {
 
       if (was.state !== now.state) this.say(fighters, `${who} ${was.state} → ${now.state}`);
       for (const line of pressChanges(who, was, now)) this.say(fighters, line);
+      for (const line of motionChanges(who, was, now)) this.say(fighters, line);
       if (was.combo.hits > 0 && now.combo.hits === 0) {
         this.say(
           fighters,
@@ -102,4 +103,15 @@ export function pressChanges(who: string, was: EntityDebug, now: EntityDebug): s
     lines.push(`${who} press ${button} ${left > 1 ? "spent" : "EXPIRED unused"}`);
   }
   return lines;
+}
+
+/**
+ * A motion completing — the answer to "did my roll register at all".
+ *
+ * Only the moment it becomes true. It stays true for the rest of its window and
+ * a line a frame would be fourteen lines saying one thing.
+ */
+export function motionChanges(who: string, was: EntityDebug, now: EntityDebug): string[] {
+  const before = new Set(was.motions);
+  return now.motions.filter((m) => !before.has(m)).map((m) => `${who} motion ${m}`);
 }

@@ -238,6 +238,12 @@ export interface InputSnapshot {
   medium: boolean;
   heavy: boolean;
   special: boolean;
+  /**
+   * A motion input completed inside its window — a *sequence* of directions,
+   * where every `held:` above is one frame. Recognised in `input/motion.ts`;
+   * each motion the runner knows gets a flag here.
+   */
+  qcf: boolean;
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -279,6 +285,7 @@ export const TRIGGERS = [
   "pressed:medium",
   "pressed:heavy",
   "pressed:special",
+  "motion:qcf",
   "animEnd",
   "stunEnd",
   "falling",
@@ -319,6 +326,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "pressed:special":
       value = input.special;
+      break;
+    case "motion:qcf":
+      value = input.qcf;
       break;
     case "animEnd":
       value = signals.animEnded;
