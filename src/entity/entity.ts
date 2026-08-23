@@ -324,6 +324,19 @@ export class Entity {
   }
 
   /**
+   * Face whoever is at `x`. The one thing that turns a fighter outside a
+   * `turn: true` state, and it exists because knockback is facing-relative:
+   * no airborne state recomputes facing, so a fighter hit after crossing the
+   * opponent would be thrown *toward* the blow. Turning them first makes every
+   * reaction's negative `vx` mean "away" again, and stops the hurt animation
+   * playing with their back to it.
+   */
+  turnToward(x: number): void {
+    if (x === this.x) return;
+    this.facing = x > this.x ? 1 : -1;
+  }
+
+  /**
    * Stop dead for `frames` game frames: no state changes, no movement, no
    * animation. The pause on a connecting hit, applied to both fighters so they
    * stick together for a moment instead of one sliding out of the other.

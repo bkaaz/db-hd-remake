@@ -32,6 +32,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackFx: "spark_1",
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
+    turnToward: vi.fn(),
     // Scaled by the combo it lands in, so it is rarely what was asked for.
     hurtBy: vi.fn(() => 5),
     gotHit: vi.fn(),
@@ -46,6 +47,25 @@ const context = (): BlowContext =>
   ({ audio: { play: vi.fn() }, effects: { spawn: vi.fn() } }) as unknown as BlowContext;
 
 describe("landBlow", () => {
+  it("turns the defender to face whoever landed the blow", () => {
+    // The bug this stops: knockback is facing-relative and no airborne state
+    // recomputes facing, so a fighter hit after crossing the opponent used to
+    // be thrown into the blow. The turn has to happen for a blocked blow too —
+    // `guard_hit` pushes along the same axis.
+    // The defender stands at 0; both attackers have to be close enough to
+    // connect, or landBlow returns before anything is applied.
+    const fromRight = body("hit", { placement: { x: 8, y: 0, facing: -1, scale: 1 } });
+    const defender = body("hurt");
+    landBlow(fromRight, defender, context());
+    expect(defender.turnToward).toHaveBeenCalledWith(8);
+
+    const blocking = body("hurt", { guarding: true });
+    const fromLeft = body("hit", { placement: { x: -8, y: 0, facing: 1, scale: 1 } });
+    landBlow(fromLeft, blocking, context());
+    expect(blocking.turnToward).toHaveBeenCalledWith(-8);
+  });
+
+
   it("connects when a hit box reaches a hurt box", () => {
     const attacker = body("hit");
     const defender = body("hurt");

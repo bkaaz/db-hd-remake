@@ -234,6 +234,20 @@ describe("the string juggles what the uppercut launched", () => {
     }
   });
 
+  it("pushes away from the blow in every reaction that can still be moved", () => {
+    // `juggle` shipped as [null, -2.0]. A null keeps the axis, and the axis it
+    // keeps is the victim's own approach — so a fighter who jumped *at* the
+    // opponent was handed jump_fwd's forward speed and flew into the blow.
+    // Rank 4 is exempt: those are the floor, not the blow that put you there.
+    const states = goku().states;
+    for (const [name, def] of Object.entries(states)) {
+      const rank = def.rank ?? 0;
+      if (rank === 0 || rank === 4) continue;
+      const push = def.launch?.[0] ?? def.vel?.[0];
+      expect(push, `${name} has no horizontal knockback`).toBeLessThan(0);
+    }
+  });
+
   it("marks as a smash exactly the blows meant to floor a body", () => {
     // The budget in src/combat/combo.ts is spent by these and nothing else, so
     // a new launcher arriving unmarked is a loop nobody notices until it is

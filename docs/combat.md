@@ -100,6 +100,25 @@ a juggle. Retune by moving the thing the distance is measured against.
 Blockstun is the same mechanism with its own number, and is deliberately not
 built yet: `guard_hit` still ends with its animation.
 
+**A blow turns the fighter taking it** (2026-08-23, `landBlow` →
+`Entity.turnToward`). Knockback is facing-relative and no airborne state
+recomputes facing — a fighter must not spin mid-jump — so a fighter hit after
+crossing the opponent was thrown *into* the blow, and played the hurt animation
+with their back to it. Turning them at the moment of contact is the one place
+facing changes outside a `turn: true` state, and it is what the genre does
+anyway. It applies on block too, because `guard_hit` pushes along the same axis.
+
+**A reaction must name its own horizontal knockback, never inherit one.**
+`juggle` shipped with `[null, -2.0]`, and a null keeps the axis: the speed it
+kept was the victim's own approach, so a fighter who jumped *at* the opponent
+was handed `jump_fwd`'s forward momentum and flew straight into the blow.
+Nothing clears `vx` — not landing, deliberately, since a skidding body is still
+skidding. `juggle` pushes `-0.67` now, the same as `hurt_chain`, whose airborne
+form it is: the same reaction should push the same whether the body is standing
+or in the air. Rank 4 is the exception, being the floor rather than the blow.
+`entity/chains.test.ts` pins it for every reaction, so the next one cannot
+arrive without a push.
+
 **A held blow cannot be answered by holding back** (2026-08-16, `guardable` in
 `states.ts`): rank above zero is exactly "somebody else put me here", and a
 fighter there has no guard. Without it every combo was escapable by holding a

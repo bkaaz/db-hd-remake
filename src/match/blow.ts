@@ -54,6 +54,12 @@ export function landBlow(
   const attack = attacker.state;
   const took = defender.state;
   attacker.markHit();
+  // Before anything is applied: a blow turns the fighter taking it. Every
+  // reaction's knockback is facing-relative and no airborne state keeps facing
+  // current, so without this a fighter who crossed the opponent mid-jump is
+  // thrown into the blow rather than away from it. It is also the genre's
+  // answer — you take a hit facing whoever landed it.
+  defender.turnToward(attacker.placement.x);
   // A blocked blow costs nothing and only moves you. Chip damage belongs to
   // specials, which do not exist yet, so a normal attack on guard is free to
   // eat — deliberately, since a block you cannot afford is not a block.
