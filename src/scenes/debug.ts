@@ -140,6 +140,7 @@ export class DebugScene implements Scene {
       }),
       this.stage.bounds,
     );
+    if (keyboard.takeKiRefill()) this.fighters.fillKi();
     this.fighters.pushApart(this.stage.bounds);
     this.fighters.exchangeBlows();
     this.fighters.note();

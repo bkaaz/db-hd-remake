@@ -210,7 +210,32 @@ export interface StateDef {
    * hop). Nothing here says what the bolt does: it is an entity, and its own
    * states own its damage, its reaction and its speed.
    */
-  fires?: { spawn: string; at: [number, number] };
+  fires?: {
+    spawn: string;
+    at: [number, number];
+    /**
+     * How big the thing comes out at no charge and at full charge. It multiplies
+     * the drawing and the boxes placed through it — a bigger bolt reaches
+     * further — and **not** its speed: velocity is in sprite px per frame
+     * against the world's scale, so folding size into that scale made a fully
+     * charged bolt cross the stage in half the time (found in a recording,
+     * 2026-08-25). Absent means one size.
+     */
+    size?: [number, number];
+  };
+
+  /**
+   * Frames of holding this state for its charge to reach full. The level is a
+   * fraction the *next* thing carries — what a charged move grows is whatever
+   * it throws, not this state.
+   *
+   * A number rather than a rung per level: the owner's kamehameha charges
+   * continuously and its bolt is scaled by how long you held it, so "small" and
+   * "large" are two readings of one value and would be two states pretending to
+   * be a dial. Reaching the top is the `charged` trigger, which is how a move
+   * lets go of itself rather than waiting for a button that can add nothing.
+   */
+  charge?: number;
 
   /**
    * A sound **retriggered** for as long as this state lasts, rather than played
@@ -356,6 +381,19 @@ export interface Signals {
   hitConfirmed: boolean;
   /** Ki in the meter right now — what a state's `cost` is measured against. */
   ki: number;
+  /**
+   * Nothing this entity fired is still in the world. True for anyone who has
+   * thrown nothing, so a state that never fires reads it as "over" — the only
+   * useful reading for a fighter holding a pose until his beam is gone.
+   */
+  spawnEnded: boolean;
+  /**
+   * The charge this entity is filling has reached the top. A separate fact from
+   * the button being let go: a move that is full has nothing left to gain from
+   * being held, and holding it longer than it can charge reads as the game
+   * ignoring you.
+   */
+  charged: boolean;
 }
 
 /** Every trigger the runner understands, for validation and editor UI. */
@@ -376,6 +414,8 @@ export const TRIGGERS = [
   "motion:qcb",
   "animEnd",
   "stunEnd",
+  "spawnEnd",
+  "charged",
   "falling",
   "nearGround",
   "landed",
@@ -438,6 +478,12 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "stunEnd":
       value = signals.stunEnded;
+      break;
+    case "spawnEnd":
+      value = signals.spawnEnded;
+      break;
+    case "charged":
+      value = signals.charged;
       break;
     case "falling":
       value = signals.falling;

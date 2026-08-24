@@ -38,6 +38,14 @@ export class Keyboard {
    * ask twice.
    */
   private modeAsked = false;
+  /**
+   * Fill the ki meter, pressed with Space — a debug key, and the reason it is
+   * an edge like M: it is asked for, not held.
+   *
+   * Trying a move that costs ki otherwise means holding A+Z for twenty seconds
+   * first, and what is being looked at is never the charging.
+   */
+  private kiAsked = false;
   /** Print what the engine thinks for both fighters. Toggled with D. */
   showDebug = true;
   /** Whether a gameplay recording is running. Started and stopped with L. */
@@ -86,6 +94,13 @@ export class Keyboard {
     return asked;
   }
 
+  /** True once per press of Space. Taking it spends it, like an attack button. */
+  takeKiRefill(): boolean {
+    const asked = this.kiAsked;
+    this.kiAsked = false;
+    return asked;
+  }
+
   private press(e: KeyboardEvent): void {
     const direction = DIRECTION_KEYS[e.key];
     if (direction) {
@@ -100,7 +115,8 @@ export class Keyboard {
       if (!e.repeat) this.armed[attack] = true;
       return;
     }
-    if (key === "m") this.modeAsked = !e.repeat;
+    if (key === " ") this.kiAsked = !e.repeat;
+    else if (key === "m") this.modeAsked = !e.repeat;
     else if (key === "t") this.dummyAttacks = !this.dummyAttacks;
     else if (key === "b") this.showBoxes = !this.showBoxes;
     else if (key === "d") this.showDebug = !this.showDebug;

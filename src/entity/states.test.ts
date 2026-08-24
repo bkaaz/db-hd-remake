@@ -76,6 +76,9 @@ const QUIET = {
   hitConfirmed: false,
   /** Full, so a test about triggers is never quietly about affording a move. */
   ki: 100,
+  /** Nothing thrown, so a pose waiting on its own projectile is free to end. */
+  spawnEnded: true,
+  charged: false,
 };
 
 describe("validateStates", () => {

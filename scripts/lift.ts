@@ -80,6 +80,30 @@ const LIFTS: Lift[] = [
       { id: 67, x: 287, y: 883, w: 12, h: 13, dur: 2 },
     ],
   },
+  {
+    name: "kame_bolt",
+    from: "goku.png",
+    anim: { name: "fly", loop: true },
+    hits: true,
+    frames: [
+      { id: 134, x: 260, y: 1708, w: 31, h: 24, dur: 3 },
+      { id: 135, x: 294, y: 1708, w: 31, h: 24, dur: 3 },
+    ],
+  },
+  {
+    name: "ki_burst_big",
+    from: "goku.png",
+    anim: { name: "v1", loop: false },
+    // The large burst, which grows where the small one scatters. 63, 65-67
+    // belong to the small one and are lifted as `ki_burst`.
+    frames: [
+      { id: 62, x: 228, y: 920, w: 16, h: 16, dur: 2 },
+      { id: 64, x: 247, y: 915, w: 26, h: 26, dur: 2 },
+      { id: 68, x: 276, y: 913, w: 26, h: 29, dur: 2 },
+      { id: 69, x: 304, y: 912, w: 28, h: 31, dur: 2 },
+      { id: 70, x: 336, y: 912, w: 29, h: 31, dur: 3 },
+    ],
+  },
 ];
 
 async function main(): Promise<void> {

@@ -398,6 +398,21 @@ queue.
   2026-08-24 (`cost` on the state, checked before the transition fires), so the
   machinery is there and used. Vanish and the fast dash are the two that still
   do not exist.
+- **What the kamehameha is still missing.** The move fires and hurts as of
+  2026-08-25; what is absent is everything between the hands and the bolt.
+  Two pieces, in this order:
+  1. **A spawn that lives as long as its state.** The charge sphere and the
+     muzzle flash (frames 132-133) have to appear on entering a state and be
+     taken away when it is left — today an effect plays its animation out and
+     nothing can end it early. This is the `attachment` ADR 0007 named.
+     The sphere is generated (`npm run fx`) and is the one effect allowed real
+     alpha rather than dither: the original's is colour-math transparency, and
+     a 100 px dithered ball reads as confetti.
+  2. **The beam.** A band from the hands to the bolt's head, so its length
+     changes every frame. Tiled from a one-column sprite, never a stretched
+     one — a stretched pixel stops being square. It needs the owner's position
+     each frame, which is the thing ADR 0014 refused a bolt; that ADR gets
+     superseded rather than edited when this lands.
 - **A KO.** Health floors at zero and nothing happens there — no defeat state,
   no round. `Entity.defeated` is there and unused. Round rules belong to Stage 3
   in `roadmap.md`.

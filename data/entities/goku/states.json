@@ -20,6 +20,7 @@
         { "when": "pressed:medium", "to": "kick_mid" },
         { "when": ["held:back", "pressed:heavy"], "to": "kick_axe" },
         { "when": "pressed:heavy", "to": "kick_high" },
+        { "when": ["held:fwd", "pressed:special"], "to": "kame_charge" },
         { "when": "pressed:special", "to": "ki_blast" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" },
@@ -39,6 +40,7 @@
         { "when": ["held:fwd", "pressed:medium"], "to": "knee" },
         { "when": "pressed:medium", "to": "kick_mid" },
         { "when": "pressed:heavy", "to": "kick_high" },
+        { "when": ["held:fwd", "pressed:special"], "to": "kame_charge" },
         { "when": "pressed:special", "to": "ki_blast" },
         { "when": "held:up", "to": "jump_fwd" },
         { "when": "!held:fwd", "to": "idle" }
@@ -190,6 +192,28 @@
       "transitions": [
         { "when": "!held:light", "to": "idle" },
         { "when": "!held:medium", "to": "idle" }
+      ]
+    },
+    "kame_charge": {
+      "anim": "kame_charge",
+      "vel": [0, 0],
+      "turn": false,
+      "cost": 25,
+      "charge": 45,
+      "sound": ["voice_kame", "charge_2"],
+      "transitions": [
+        { "when": "charged", "to": "kame_fire" },
+        { "when": "!held:special", "to": "kame_fire" }
+      ]
+    },
+    "kame_fire": {
+      "anim": "kame_fire",
+      "vel": [0, 0],
+      "turn": false,
+      "fires": { "spawn": "kame_bolt", "at": [30, -52], "size": [1, 2] },
+      "sound": "blast_2",
+      "transitions": [
+        { "when": "spawnEnd", "to": "idle" }
       ]
     },
     "ki_blast": {

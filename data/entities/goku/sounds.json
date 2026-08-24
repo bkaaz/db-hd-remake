@@ -14,5 +14,10 @@
     "gain": 0.55,
     "vary": 0.04,
     "file": "045.wav"
+  },
+  "voice_kame": {
+    "gain": 0.6,
+    "vary": 0.03,
+    "file": "080.wav"
   }
 }

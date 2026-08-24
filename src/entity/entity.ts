@@ -8,7 +8,14 @@ import { scaledDamage, scaledHitstun } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions } from "../input/motion";
-import { DEFAULT_HIT_FX, guardStateFor, guardable, reactionFor, StateMachine } from "./states";
+import {
+  DEFAULT_HIT_FX,
+  guardStateFor,
+  guardable,
+  reactionFor,
+  StateMachine,
+  type StateDef,
+} from "./states";
 
 /**
  * One live entity in the world: sprite + animation playback + state machine +
@@ -177,7 +184,18 @@ export class Entity {
   /** The ki meter. A separate pool from health — see combat.md. */
   private ki = 0;
   /** Set on entering a state that `fires`; taken by whoever owns projectiles. */
-  private fired: { spawn: string; at: [number, number] } | null = null;
+  private fired: StateDef["fires"] | null = null;
+  /** 0..1, filled by a state that charges and spent by what it throws. */
+  private charge = 0;
+  /**
+   * How much bigger than authored this entity is drawn — a charged bolt comes
+   * out large. It multiplies the drawing and the boxes, which are placed
+   * through the same number, and **nothing else**: `scale` remains the world's
+   * px per sprite px, so a big bolt is not also a fast one.
+   */
+  size = 1;
+  /** How many things this entity has thrown that are still in the world. */
+  private thrown = 0;
   /**
    * A sound retriggered while a state lasts — the charge hum. Id plus frames
    * until the next copy; a fresh `play` each time, so the copies overlap, which
@@ -278,7 +296,7 @@ export class Entity {
 
   /** Where this entity is, for placing authored boxes in the world. */
   get placement(): Placement {
-    return { x: this.x, y: this.y, facing: this.facing, scale: this.scale };
+    return { x: this.x, y: this.y, facing: this.facing, scale: this.scale * this.size };
   }
 
   /** Boxes of one type active on the current animation step. */
@@ -305,16 +323,31 @@ export class Entity {
    * it clears it, so one entry into a state fires one bolt however many frames
    * it lasts.
    */
-  takeFired(): { spawn: string; x: number; y: number; facing: 1 | -1 } | null {
+  takeFired(): { spawn: string; x: number; y: number; facing: 1 | -1; size: number } | null {
     const fires = this.fired;
     if (!fires) return null;
     this.fired = null;
+    this.thrown++;
+    const [small, large] = fires.size ?? [1, 1];
+    const size = small + (large - small) * this.charge;
+    this.charge = 0;
     return {
       spawn: fires.spawn,
       x: this.x + this.facing * fires.at[0] * this.scale,
       y: this.y + fires.at[1] * this.scale,
       facing: this.facing,
+      size,
     };
+  }
+
+  /** Fill the ki meter — the debug key, and nothing in a fight does this. */
+  fillKi(): void {
+    this.ki = this.maxKi;
+  }
+
+  /** One of the things this entity threw has left the world. */
+  spawnEnded(): void {
+    this.thrown = Math.max(0, this.thrown - 1);
   }
 
   /** Record that the current attack connected; it cannot land again. */
@@ -506,6 +539,10 @@ export class Entity {
     // keeps whatever velocity it had, which is what carries a jump through its
     // take-off state into the airborne one.
     this.ki = Math.max(0, this.ki - (this.sm.def.cost ?? 0));
+    // A charge survives exactly one hop — into the state that throws it. Any
+    // other state clears it, so a charge interrupted by a blow is not still
+    // sitting there for the next move that happens to fire something.
+    if (!this.sm.def.fires) this.charge = 0;
     // Latched rather than spawned here: what a bolt is allowed to hit is a fact
     // about the pair, so the thing between the fighters takes it off the latch.
     this.fired = this.sm.def.fires ?? null;
@@ -572,6 +609,8 @@ export class Entity {
       this.hum.left--;
     }
     // Below the freeze with every other clock: a hit pause must not pay anybody.
+    const fill = this.sm.def.charge;
+    if (fill) this.charge = Math.min(1, this.charge + 1 / fill);
     const perFrame = this.sm.def.ki;
     if (perFrame) this.ki = Math.max(0, Math.min(this.maxKi, this.ki + perFrame));
 
@@ -626,6 +665,8 @@ export class Entity {
         // only land once per entry into its state.
         hitConfirmed: this.swing.spent,
         ki: this.ki,
+        spawnEnded: this.thrown === 0,
+        charged: this.charge >= 1,
       },
     );
     // A press that started a move is spent, so it cannot start a second one
@@ -663,7 +704,7 @@ export class Entity {
   render(showBoxes: boolean): void {
     this.sprite.x = this.x;
     this.sprite.y = this.y;
-    this.sprite.scale.x = this.facing * this.scale;
+    this.sprite.scale.set(this.facing * this.scale * this.size, this.scale * this.size);
 
     this.boxG.clear();
     const boxes = showBoxes ? this.currentStep()?.boxes : undefined;

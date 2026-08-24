@@ -6,10 +6,16 @@ import { effectsNamed } from "../entity/states";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { landBlow, type BlowContext, type BlowResult } from "./blow";
 
-/** One bolt in the air, and the only body it is allowed to hit. */
+/** One bolt in the air, the only body it may hit, and who is owed the news. */
 interface Live {
   bolt: Entity;
   foe: Entity;
+  /**
+   * Told when this bolt leaves the world, and nothing else. The bolt itself
+   * still has no way to reach him (ADR 0014) — this is bookkeeping held out
+   * here, so that a fighter can hold a pose until what he threw is gone.
+   */
+  owner: Entity;
 }
 
 /** A blow a bolt landed, and who took it — enough for the recording. */
@@ -71,16 +77,29 @@ export class Projectiles {
    * the engine holds it on its own ground line every frame — which is exactly
    * the flat trajectory wanted, with no gravity and no special case.
    */
-  spawn(from: { spawn: string; x: number; y: number; facing: 1 | -1 }, foe: Entity): void {
+  spawn(
+    from: { spawn: string; x: number; y: number; facing: 1 | -1; size: number },
+    owner: Entity,
+    foe: Entity,
+  ): void {
     const def = this.defs.get(from.spawn);
-    if (!def) return;
+    // Nothing to spawn is still an ending: a fighter holding a pose until his
+    // bolt is gone would hold it for ever if the bolt never existed.
+    if (!def) {
+      owner.spawnEnded();
+      return;
+    }
     const bolt = new Entity(def, this.scale, this.audio);
+    // Bigger, not faster. `size` multiplies the drawing and the boxes placed
+    // through it; the world scale that turns px-per-frame into movement is the
+    // scene's, or a fully charged bolt would cross the stage in half the time.
+    bolt.size = from.size;
     bolt.facing = from.facing;
     bolt.groundY = from.y;
     bolt.x = from.x;
     bolt.y = from.y;
     this.app.stage.addChild(bolt.view);
-    this.live.push({ bolt, foe });
+    this.live.push({ bolt, foe, owner });
   }
 
   /**
@@ -94,7 +113,7 @@ export class Projectiles {
   update(paused: boolean, bounds: Bounds, impact: BlowContext): ProjectileHit[] {
     const hits: ProjectileHit[] = [];
     for (let i = this.live.length - 1; i >= 0; i--) {
-      const { bolt, foe } = this.live[i];
+      const { bolt, foe, owner } = this.live[i];
       if (!paused) bolt.update(NO_INPUT, null, bounds);
       const result = paused ? null : landBlow(bolt, foe, impact);
       if (result) hits.push({ result, foe });
@@ -104,6 +123,7 @@ export class Projectiles {
       if (result || stranded) {
         bolt.view.destroy({ children: true });
         this.live.splice(i, 1);
+        owner.spawnEnded();
       }
     }
     return hits;
@@ -115,7 +135,10 @@ export class Projectiles {
 
   /** Sweep away whatever is still in the air when the scene ends. */
   destroy(): void {
-    for (const { bolt } of this.live) bolt.view.destroy({ children: true });
+    for (const { bolt, owner } of this.live) {
+      bolt.view.destroy({ children: true });
+      owner.spawnEnded();
+    }
     this.live.length = 0;
   }
 }

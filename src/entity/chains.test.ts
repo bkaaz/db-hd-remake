@@ -58,6 +58,9 @@ const QUIET: Signals = {
   hitConfirmed: false,
   /** Full, so a test about triggers is never quietly about affording a move. */
   ki: 100,
+  /** Nothing thrown, so a pose waiting on its own projectile is free to end. */
+  spawnEnded: true,
+  charged: false,
 };
 
 /**
@@ -406,6 +409,25 @@ describe("the buttons reach the moves they are supposed to", () => {
     const s = new Sim();
     expect(s.frame({ special: true })).toBe("ki_blast");
     expect(s.frame({}, { animEnded: true })).toBe("ki_blast_fire");
+  });
+
+  it("forward and special charge the kamehameha, and letting go fires it", () => {
+    const holdX = { holding: { light: false, medium: false, heavy: false, special: true } };
+    const s = new Sim();
+    expect(s.frame({ fwd: true, special: true, ...holdX })).toBe("kame_charge");
+    // It is held, not pressed: the charge lasts exactly as long as the key does.
+    expect(s.frame({ fwd: true, ...holdX })).toBe("kame_charge");
+    expect(s.frame({ fwd: true })).toBe("kame_fire");
+    // And the pose is held until what it threw has left the world.
+    expect(s.frame({}, { spawnEnded: false })).toBe("kame_fire");
+    expect(s.frame({})).toBe("idle");
+  });
+
+  it("lets go of itself once the charge is full", () => {
+    const holdX = { holding: { light: false, medium: false, heavy: false, special: true } };
+    const s = new Sim();
+    s.frame({ fwd: true, special: true, ...holdX });
+    expect(s.frame({ fwd: true, ...holdX }, { charged: true })).toBe("kame_fire");
   });
 
   it("but not on an empty meter — the shipped cost is what is checked", () => {

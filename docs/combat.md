@@ -358,6 +358,21 @@ The scheme hands the moveset its shape — three stances × three strengths is
 | crouching | · | · | · (launcher) | |
 | air | · | · | · | |
 
+**Forward + S is the kamehameha** (2026-08-25), and it is the first charged
+move: holding S fills a level over `charge` frames, and what the level does is
+scale what the move throws — `fires.size` is the multiplier at empty and at
+full, applied to the spawn's drawing and to the boxes placed through it, so its
+hit box grows with the picture. It is **size, not scale**: velocity is quoted in
+sprite px per frame against the world's scale, so a charged bolt is bigger and
+no faster.
+
+**A full charge lets go of itself** (`charged`). Holding past the top can add
+nothing, and a button that stops mattering without saying so reads as the game
+ignoring the player. Charge is a **dial, not rungs**: two states pretending to be small and
+large would be two readings of one number. The firing pose is held until the
+bolt has left the world (`spawnEnd`), which is what a beam needs and what the
+ki blast, whose pose simply ends, does not.
+
 **The standing ki blast is built** (2026-08-24) and is the first thing that
 spends ki: `cost` on the state, paid on entering, and a transition into a move
 nobody can afford does not fire at all. What the bolt does when it arrives is

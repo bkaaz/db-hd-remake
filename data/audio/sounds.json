@@ -104,5 +104,20 @@
     "gain": 0.42,
     "vary": 0.08,
     "file": "008.wav"
+  },
+  "charge_2": {
+    "label": "charging a beam — the kamehameha's; played once and cut off by the shot, never looped",
+    "gain": 0.25,
+    "vary": 0.0,
+    "file": "019.wav"
+  },
+  "blast_2": {
+    "label": "a beam leaving the hands — the kamehameha; shares 008 with burst_1",
+    "kind": "noise",
+    "freq": 320,
+    "decay": 0.2,
+    "gain": 0.45,
+    "vary": 0.04,
+    "file": "008.wav"
   }
 }

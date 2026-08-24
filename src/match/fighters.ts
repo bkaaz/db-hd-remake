@@ -116,7 +116,7 @@ export class Fighters {
   /** A fighter who entered a state that `fires` puts a bolt in the world. */
   private fire(owner: Entity, foe: Entity): void {
     const shot = owner.takeFired();
-    if (shot) this.projectiles.spawn(shot, foe);
+    if (shot) this.projectiles.spawn(shot, owner, foe);
   }
 
   /**
@@ -159,6 +159,11 @@ export class Fighters {
   private gap(): number {
     if (!this.opponent) return 0;
     return Math.abs(this.opponent.x - this.player.x) / this.player.placement.scale;
+  }
+
+  /** Both meters full: the debug key, so a move that costs ki can be tried. */
+  fillKi(): void {
+    for (const fighter of this.both()) fighter.fillKi();
   }
 
   /** Note what changed this frame, for the recording. */

@@ -1,0 +1,18 @@
+{
+  "_comment": "The kamehameha's head. One state, like every bolt: the engine takes it away when it connects or runs out of stage. It is the same drawing at every charge level — how big it comes out is decided by the move that fires it (`fires.size`), and the hit box grows with the drawing because both are placed through the entity's scale.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "fly",
+      "vel": [9, 0],
+      "turn": false,
+      "damage": 8,
+      "hitstun": 20,
+      "hitstop": 8,
+      "onHit": "hurt_chain",
+      "hitFx": "ki_burst_big",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1"
+    }
+  }
+}

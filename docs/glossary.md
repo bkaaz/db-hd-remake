@@ -65,6 +65,11 @@ the throw is drawn in two parts, and the bolt is a spawn with its own
 `states.json` — its damage and its speed are authored there, not on the throw.
 → `combat.md` §Buttons
 
+**Kamehameha** — forward + S: a charged beam. Holding the button fills a level
+(`charge` on the state) which scales the bolt it fires (`fires.size`), and the
+pose is held until that bolt is gone (`spawnEnd`). The beam itself and the
+charge sphere are not built — see `plan.md`. → `combat.md` §Buttons
+
 **Launcher** — a blow that lifts a grounded opponent into a juggle instead of
 flooring them. The reaction is `launched`, the opposite end of the same axis as
 **Slam**; the attack carries `smash`, so past the budget it still hits and
