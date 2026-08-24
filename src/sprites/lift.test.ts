@@ -66,6 +66,31 @@ describe("liftFrames", () => {
     expect(frames[0].anchor).toEqual([3, 2]);
   });
 
+  it("anchors on the rear edge for something emitted from a point", () => {
+    // The muzzle, so the drawing starts where it leaves the hand and grows
+    // forward — centred, half of a bolt sits inside the fighter who threw it.
+    const { frames } = liftFrames(src, [{ x: 0, y: 0, w: 7, h: 5 }], { anchor: "back" });
+    expect(frames[0].anchor).toEqual([0, 2]);
+  });
+
+  it("anchors on the trailing corner for something emitted diagonally", () => {
+    const { frames } = liftFrames(src, [{ x: 0, y: 0, w: 7, h: 5 }], { anchor: "back-bottom" });
+    expect(frames[0].anchor).toEqual([0, 4]);
+  });
+
+  it("lets one frame choose its own anchor, since one bolt has two flights", () => {
+    const { frames } = liftFrames(
+      src,
+      [
+        { x: 0, y: 0, w: 7, h: 5 },
+        { x: 0, y: 0, w: 7, h: 5, anchor: "back-bottom" },
+      ],
+      { anchor: "back" },
+    );
+    expect(frames[0].anchor).toEqual([0, 2]);
+    expect(frames[1].anchor).toEqual([0, 4]);
+  });
+
   it("refuses a rect that leaves the source sheet", () => {
     expect(() => liftFrames(src, [{ x: 60, y: 0, w: 8, h: 4 }])).toThrow(/outside/);
   });

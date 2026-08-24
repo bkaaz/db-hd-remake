@@ -18,7 +18,7 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { liftFrames, type SrcRect } from "../src/sprites/lift";
+import { liftFrames, type AnchorAt, type SrcRect } from "../src/sprites/lift";
 import { decodePng, encodePng } from "../src/sprites/png";
 
 /** One frame taken from the source sheet, and how long it is held. */
@@ -33,6 +33,8 @@ interface Frame extends SrcRect {
 interface Anim {
   name: string;
   loop: boolean;
+  /** Overrides the spawn's anchor mode — a climbing shot trails from a corner. */
+  anchor?: AnchorAt;
   frames: Frame[];
 }
 
@@ -47,6 +49,12 @@ interface Lift {
    * Tighten it in the editor if the tail should not count; re-running overwrites.
    */
   hits?: boolean;
+  /**
+   * Where each frame's anchor sits. A bolt leaves a hand, so `back` puts the
+   * anchor on the muzzle and the drawing in front of it; anything that happens
+   * *at* a point keeps the default centre. See `src/sprites/lift.ts`.
+   */
+  anchor?: AnchorAt;
   /**
    * One entry per way this spawn can look. A bolt drawn once for the level shot
    * and once for the climbing one is **one entity with two animations**, not two
@@ -70,6 +78,8 @@ const LIFTS: Lift[] = [
     name: "ki_bolt",
     from: "goku.png",
     hits: true,
+    // Out of the hand, like the beam: see kame_bolt below.
+    anchor: "back",
     anims: [
       {
         name: "fly",
@@ -105,6 +115,10 @@ const LIFTS: Lift[] = [
     name: "kame_bolt",
     from: "goku.png",
     hits: true,
+    // It comes out of the hands, so the hands are the anchor and the whole head
+    // is in front of them. Centred, half the bolt sat inside Goku's arms, which
+    // the climbing shot made obvious (owner, 2026-08-25).
+    anchor: "back",
     anims: [
       {
         name: "fly",
@@ -120,6 +134,10 @@ const LIFTS: Lift[] = [
       {
         name: "fly_up",
         loop: true,
+        // Its rear is the lower-back corner, because it leaves the hands on a
+        // diagonal: anchored at the middle of the edge, half the ball hangs
+        // below them and reads as coming out of his chest.
+        anchor: "back-bottom",
         frames: [{ id: 136, x: 331, y: 1704, w: 31, h: 31, dur: 3 }],
       },
     ],
@@ -160,8 +178,10 @@ async function main(): Promise<void> {
 
     // Every animation's frames go into one sheet, in order, and each animation
     // then names the slice of it that is hers.
-    const all = lift.anims.flatMap((a) => a.frames);
-    const { sheet, frames } = liftFrames(src, all);
+    const all = lift.anims.flatMap((a) =>
+      a.anchor ? a.frames.map((f) => ({ ...f, anchor: a.anchor })) : a.frames,
+    );
+    const { sheet, frames } = liftFrames(src, all, { anchor: lift.anchor });
     const framesJson: Record<string, unknown> = {};
     frames.forEach((f, i) => {
       framesJson[String(i)] = { x: f.x, y: f.y, w: f.w, h: f.h, anchor: f.anchor };
@@ -175,8 +195,8 @@ async function main(): Promise<void> {
         steps: anim.frames.map((f, i) => ({
           frame: String(at + i),
           dur: f.dur,
-          // Box coordinates are anchor-relative, and these frames are anchored
-          // at their own centre, so the sprite's own rect is the box.
+          // Box coordinates are anchor-relative, so wherever the anchor was put
+          // the box follows it and covers exactly the drawing.
           ...(lift.hits
             ? {
                 boxes: [

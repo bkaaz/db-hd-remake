@@ -213,7 +213,7 @@
       "anim": "kame_fire_up",
       "vel": [0, 0],
       "turn": false,
-      "fires": { "spawn": "kame_bolt", "state": "fly_up", "at": [26, -68], "size": [1, 2] },
+      "fires": { "spawn": "kame_bolt", "state": "fly_up", "at": [27, -61], "size": [1, 2] },
       "sound": "blast_2",
       "transitions": [
         { "when": "animEnd", "to": "idle" }

@@ -19,25 +19,51 @@ export interface SrcRect {
   y: number;
   w: number;
   h: number;
+  /** Overrides the anchor mode for this frame alone. */
+  anchor?: AnchorAt;
 }
 
 /** Where it ended up, in our frame format. */
-export interface LiftedFrame extends SrcRect {
+export interface LiftedFrame {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
   anchor: [number, number];
 }
+
+/** The anchor point a mode asks for, in the frame's own pixels. */
+function anchorFor(at: AnchorAt, r: SrcRect): [number, number] {
+  const midX = Math.round((r.w - 1) / 2);
+  const midY = Math.round((r.h - 1) / 2);
+  if (at === "centre") return [midX, midY];
+  return [0, at === "back" ? midY : r.h - 1];
+}
+
+/**
+ * Where a lifted frame's anchor goes.
+ *
+ * `centre` suits anything that happens *at* a point — a burst, a flash — and
+ * keeps a growing effect from crawling sideways as its frames change size.
+ * `back` puts it on the middle of the frame's rear edge, which is what a thing
+ * **emitted** from somewhere needs: the anchor is then the muzzle, so the
+ * drawing starts at the hand and grows forward instead of straddling it.
+ * `back-bottom` is the same idea for something emitted **diagonally**: the rear
+ * of a climbing shot is its lower-back corner, and anchoring it at the middle
+ * of the edge hangs half the drawing below the hand that threw it.
+ */
+export type AnchorAt = "centre" | "back" | "back-bottom";
 
 /**
  * Copy the rects into a new sheet, laid out in one row.
  *
- * The anchor is each frame's own centre, which is what a thing in flight turns
- * and mirrors around — unlike a fighter, who is anchored at his feet. Frames
- * differ in size (a burst tears itself apart as it goes), so centring each one
- * individually is what keeps the effect from crawling sideways as it plays.
+ * A frame keeps its own anchor rather than sharing one with its neighbours,
+ * because these frames differ in size and each has to sit right on its own.
  */
 export function liftFrames(
   src: Rgba,
   rects: readonly SrcRect[],
-  gap = 1,
+  { gap = 1, anchor = "centre" }: { gap?: number; anchor?: AnchorAt } = {},
 ): { sheet: Rgba; frames: LiftedFrame[] } {
   if (rects.length === 0) throw new Error("nothing to lift");
   for (const r of rects) {
@@ -64,7 +90,7 @@ export function liftFrames(
       y: gap,
       w: r.w,
       h: r.h,
-      anchor: [Math.round((r.w - 1) / 2), Math.round((r.h - 1) / 2)],
+      anchor: anchorFor(r.anchor ?? anchor, r),
     });
     ox += r.w + gap;
   }
