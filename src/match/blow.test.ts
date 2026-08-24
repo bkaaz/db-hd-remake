@@ -32,7 +32,9 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackFx: "spark_1",
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
+    travels: false,
     turnToward: vi.fn(),
+    turnFrom: vi.fn(),
     // Scaled by the combo it lands in, so it is rarely what was asked for.
     hurtBy: vi.fn(() => 5),
     gotHit: vi.fn(),
@@ -47,6 +49,17 @@ const context = (): BlowContext =>
   ({ audio: { play: vi.fn() }, effects: { spawn: vi.fn() } }) as unknown as BlowContext;
 
 describe("landBlow", () => {
+  it("turns the defender away from a bolt's heading, not away from the bolt", () => {
+    // Fired point-blank, a bolt is past the victim's anchor by the time it
+    // connects; turning them toward it would face them away from the shooter,
+    // and knockback is facing-relative, so they would be thrown into the shot.
+    const bolt = body("hit", { travels: true, facing: 1, placement: { x: 8, y: 0, facing: 1, scale: 1 } });
+    const defender = body("hurt");
+    landBlow(bolt, defender, context());
+    expect(defender.turnFrom).toHaveBeenCalledWith(1);
+    expect(defender.turnToward).not.toHaveBeenCalled();
+  });
+
   it("turns the defender to face whoever landed the blow", () => {
     // The bug this stops: knockback is facing-relative and no airborne state
     // recomputes facing, so a fighter hit after crossing the opponent used to

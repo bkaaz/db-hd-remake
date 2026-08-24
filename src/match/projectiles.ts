@@ -78,7 +78,7 @@ export class Projectiles {
    * the flat trajectory wanted, with no gravity and no special case.
    */
   spawn(
-    from: { spawn: string; x: number; y: number; facing: 1 | -1; size: number },
+    from: { spawn: string; state?: string; x: number; y: number; facing: 1 | -1; size: number },
     owner: Entity,
     foe: Entity,
   ): void {
@@ -94,7 +94,13 @@ export class Projectiles {
     // through it; the world scale that turns px-per-frame into movement is the
     // scene's, or a fully charged bolt would cross the stage in half the time.
     bolt.size = from.size;
+    // One drawing, two flights: which one is the move's choice, and the flight
+    // itself is authored in the bolt's own states.
+    if (from.state) bolt.forceState(from.state);
     bolt.facing = from.facing;
+    // Its blows come from where it is heading, not from where it is: see
+    // `Entity.travels`.
+    bolt.travels = true;
     bolt.groundY = from.y;
     bolt.x = from.x;
     bolt.y = from.y;

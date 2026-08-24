@@ -366,12 +366,22 @@ hit box grows with the picture. It is **size, not scale**: velocity is quoted in
 sprite px per frame against the world's scale, so a charged bolt is bigger and
 no faster.
 
+**Back + S is the same beam aimed up** (2026-08-25). It is one bolt, not two:
+how a projectile travels is a fact about the projectile, so both flights are
+states in `data/spawns/kame_bolt/`, and the move names which one it wants with
+`fires.state`. The climbing one is `airborne` with an upward `launch` — the only
+kind of state whose velocity carries — over a `gravity` of 0, because a beam
+that fell would be a thrown rock.
+
 **A full charge lets go of itself** (`charged`). Holding past the top can add
 nothing, and a button that stops mattering without saying so reads as the game
 ignoring the player. Charge is a **dial, not rungs**: two states pretending to be small and
-large would be two readings of one number. The firing pose is held until the
-bolt has left the world (`spawnEnd`), which is what a beam needs and what the
-ki blast, whose pose simply ends, does not.
+large would be two readings of one number. The firing pose lasts a second on its own
+clock (2026-08-25, revised the same day): tying it to the bolt's flight held the
+fighter still for as long as the shot took to cross the stage, which is a
+different number every time and reads as being stuck. `spawnEnd` — the trigger
+for "what I threw has left the world" — stays in the vocabulary and currently
+has no user.
 
 **The standing ki blast is built** (2026-08-24) and is the first thing that
 spends ki: `cost` on the state, paid on entering, and a transition into a move

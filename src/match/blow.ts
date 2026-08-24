@@ -59,7 +59,14 @@ export function landBlow(
   // current, so without this a fighter who crossed the opponent mid-jump is
   // thrown into the blow rather than away from it. It is also the genre's
   // answer — you take a hit facing whoever landed it.
-  defender.turnToward(attacker.placement.x);
+  //
+  // Which side that is depends on what hit you, and a projectile is the case
+  // where position lies: fired point-blank, the bolt is already past the
+  // victim's anchor when it connects, so reading its x turned the defender away
+  // from the shooter and threw them *into* the shot (owner's recording,
+  // 2026-08-25). What travels pushes the way it travels.
+  if (attacker.travels) defender.turnFrom(attacker.facing);
+  else defender.turnToward(attacker.placement.x);
   // A blocked blow costs nothing and only moves you. Chip damage belongs to
   // specials, which do not exist yet, so a normal attack on guard is free to
   // eat — deliberately, since a block you cannot afford is not a block.

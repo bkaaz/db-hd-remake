@@ -302,7 +302,7 @@
       ]
     },
     "fx_kamehameha": {
-      "desc": "The beam's own sprites, not poses: 132 and 133 are a half-round segment, 134 and 135 a comet head, 136 a larger burst. Deferred by the owner 2026-08-15 — the move gets built before its effect does.",
+      "desc": "The beam's own sprites, not poses. Settled by the owner 2026-08-24/25 while the move was built: 132 and 133 are the flash at the hands where the beam leaves them, 134 and 135 the head of the level shot (a comet lying along its flight), and **136 is the head of the shot aimed up** — a ball with its spikes thrown outward, which is what lets one drawing serve a diagonal nothing is allowed to rotate. 136 was catalogued as \"a larger burst\" and is not one; the impact is fx_ki_burst_big. All four are lifted into data/spawns/ by npm run lift.",
       "frames": [
         "132",
         "133",

@@ -222,6 +222,15 @@ export interface StateDef {
      * 2026-08-25). Absent means one size.
      */
     size?: [number, number];
+    /**
+     * Which of the spawn's own states it starts in, when it has more than one
+     * way to travel. The kamehameha's head is one entity with one drawing and
+     * two flights — level and climbing — so the shape stays in the spawn's
+     * `states.json`, where every other fact about how a bolt moves lives, and
+     * the move only says which of them it wants. Absent means the spawn's own
+     * `initial`.
+     */
+    state?: string;
   };
 
   /**

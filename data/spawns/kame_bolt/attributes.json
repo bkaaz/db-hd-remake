@@ -1,0 +1,4 @@
+{
+  "_comment": "A bolt keeps none of a body's physics. `gravity: 0` is what lets the climbing shot fly straight: an airborne state is the only one whose velocity carries, and carrying is all this needs — nothing here should ever arc.",
+  "gravity": 0
+}

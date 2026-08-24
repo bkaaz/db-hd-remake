@@ -93,6 +93,40 @@ class Sim {
   }
 }
 
+describe("the bolt the beam throws", () => {
+  const bolt = (): StatesFile =>
+    JSON.parse(
+      readFileSync(
+        fileURLToPath(new URL("../../data/spawns/kame_bolt/states.json", import.meta.url)),
+        "utf8",
+      ),
+    ) as StatesFile;
+
+  it("climbs on a launch rather than on a velocity, since only momentum carries", () => {
+    const up = bolt().states.fly_up;
+    expect(up.airborne).toBe(true);
+    expect(up.launch?.[1]).toBeLessThan(0);
+    expect(up.launch?.[0]).toBeGreaterThan(0);
+  });
+
+  it("cannot arc, because a beam that fell would be a thrown rock", () => {
+    const attributes = JSON.parse(
+      readFileSync(
+        fileURLToPath(new URL("../../data/spawns/kame_bolt/attributes.json", import.meta.url)),
+        "utf8",
+      ),
+    ) as { gravity?: number };
+    expect(attributes.gravity).toBe(0);
+  });
+
+  it("hits the same way whichever direction it went", () => {
+    const { fly, fly_up: up } = bolt().states;
+    for (const key of ["damage", "hitstun", "hitstop", "onHit", "hitFx"] as const) {
+      expect(up[key]).toEqual(fly[key]);
+    }
+  });
+});
+
 describe("charging ki is a stance, not a press", () => {
   /** Both attack keys down — the state an edge cannot describe. */
   const holdAZ = { holding: { light: true, medium: true, heavy: false, special: false } };
@@ -418,9 +452,45 @@ describe("the buttons reach the moves they are supposed to", () => {
     // It is held, not pressed: the charge lasts exactly as long as the key does.
     expect(s.frame({ fwd: true, ...holdX })).toBe("kame_charge");
     expect(s.frame({ fwd: true })).toBe("kame_fire");
-    // And the pose is held until what it threw has left the world.
+    // The arms stay out on their own clock and not the bolt's: a beam whose
+    // pose lasted as long as its flight held the fighter still for a second
+    // and a half, and the owner would rather it were one number.
     expect(s.frame({}, { spawnEnded: false })).toBe("kame_fire");
-    expect(s.frame({})).toBe("idle");
+    expect(s.frame({}, { animEnded: true })).toBe("idle");
+  });
+
+  it("back and special charge the same beam, aimed up", () => {
+    const holdX = { holding: { light: false, medium: false, heavy: false, special: true } };
+    const s = new Sim();
+    expect(s.frame({ back: true, special: true, ...holdX })).toBe("kame_charge_up");
+    expect(s.frame({ back: true })).toBe("kame_fire_up");
+    expect(s.frame({ back: true }, { animEnded: true })).toBe("idle");
+  });
+
+  it("draws the climbing head differently, since a sprite cannot be rotated", () => {
+    const anims = JSON.parse(
+      readFileSync(
+        fileURLToPath(new URL("../../data/spawns/kame_bolt/animations.json", import.meta.url)),
+        "utf8",
+      ),
+    ) as Record<string, unknown>;
+    const bolt = JSON.parse(
+      readFileSync(
+        fileURLToPath(new URL("../../data/spawns/kame_bolt/states.json", import.meta.url)),
+        "utf8",
+      ),
+    ) as StatesFile;
+    expect(Object.keys(anims).sort()).toEqual(["fly", "fly_up"]);
+    expect(bolt.states.fly.anim).toBe("fly");
+    expect(bolt.states.fly_up.anim).toBe("fly_up");
+  });
+
+  it("aims the same bolt differently rather than throwing a second one", () => {
+    const fires = (name: string): { spawn: string; state?: string } | undefined =>
+      goku().states[name].fires;
+    expect(fires("kame_fire")?.spawn).toBe(fires("kame_fire_up")?.spawn);
+    expect(fires("kame_fire")?.state).toBeUndefined();
+    expect(fires("kame_fire_up")?.state).toBe("fly_up");
   });
 
   it("lets go of itself once the charge is full", () => {

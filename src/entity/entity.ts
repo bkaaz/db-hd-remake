@@ -127,6 +127,17 @@ export class Entity {
   y = 0;
   /** +1 = facing right, −1 = facing left. */
   facing: 1 | -1 = 1;
+  /**
+   * Whether this body's blows arrive from the direction it **travels** rather
+   * than from where it stands. Set on a projectile and on nothing else.
+   *
+   * A fist is attached to a body, so the side a punch came from is the side its
+   * owner is on — which is exactly what turns a defender round on a crossup. A
+   * bolt is born in front of its thrower and has usually flown past the
+   * victim's anchor by the time it connects, so its position is the wrong
+   * answer and its heading is the right one.
+   */
+  travels = false;
 
   /** Vertical velocity in sprite px per frame, negative upward. */
   private vy = 0;
@@ -323,7 +334,14 @@ export class Entity {
    * it clears it, so one entry into a state fires one bolt however many frames
    * it lasts.
    */
-  takeFired(): { spawn: string; x: number; y: number; facing: 1 | -1; size: number } | null {
+  takeFired(): {
+    spawn: string;
+    state?: string;
+    x: number;
+    y: number;
+    facing: 1 | -1;
+    size: number;
+  } | null {
     const fires = this.fired;
     if (!fires) return null;
     this.fired = null;
@@ -333,6 +351,7 @@ export class Entity {
     this.charge = 0;
     return {
       spawn: fires.spawn,
+      state: fires.state,
       x: this.x + this.facing * fires.at[0] * this.scale,
       y: this.y + fires.at[1] * this.scale,
       facing: this.facing,
@@ -436,6 +455,14 @@ export class Entity {
   turnToward(x: number): void {
     if (x === this.x) return;
     this.facing = x > this.x ? 1 : -1;
+  }
+
+  /**
+   * Turn away from a blow **travelling** in `dir` — the same job as
+   * `turnToward` for something that has flown past you. See `travels`.
+   */
+  turnFrom(dir: 1 | -1): void {
+    this.facing = dir < 0 ? 1 : -1;
   }
 
   /**

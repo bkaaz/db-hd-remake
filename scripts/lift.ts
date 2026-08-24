@@ -29,20 +29,31 @@ interface Frame extends SrcRect {
   dur: number;
 }
 
+/** One way the spawn can look, and the frames it is made of. */
+interface Anim {
+  name: string;
+  loop: boolean;
+  frames: Frame[];
+}
+
 interface Lift {
   /** Spawn name: its directory under `data/spawns` and its sheet file. */
   name: string;
   /** Source sheet under `assets/sheets/`. */
   from: string;
-  /** The one animation it gets, and whether that animation repeats. */
-  anim: { name: string; loop: boolean };
   /**
    * Give every frame a hit box covering the whole sprite — what a projectile
    * needs to hurt anybody, and derivable, so it is computed rather than drawn.
    * Tighten it in the editor if the tail should not count; re-running overwrites.
    */
   hits?: boolean;
-  frames: Frame[];
+  /**
+   * One entry per way this spawn can look. A bolt drawn once for the level shot
+   * and once for the climbing one is **one entity with two animations**, not two
+   * entities: how it looks and how it travels are different questions, and the
+   * flight already lives in the spawn's own `states.json`.
+   */
+  anims: Anim[];
 }
 
 /**
@@ -50,58 +61,86 @@ interface Lift {
  * the bolt is a body in flight, the burst is fire-and-forget like a spark and
  * so can be named as any attack's `hitFx`.
  *
- * The bolt travels left on the sheet; a mirror at spawn is exact, so nothing
+ * The bolts travel left on the sheet; a mirror at spawn is exact, so nothing
  * needed redrawing. Order for the burst is the owner's (2026-08-24) and is not
- * the numeric one — 62 and 64 belong to the large burst, which is not lifted.
+ * the numeric one — 62 and 64 belong to the large burst.
  */
 const LIFTS: Lift[] = [
   {
     name: "ki_bolt",
     from: "goku.png",
-    anim: { name: "fly", loop: true },
     hits: true,
-    frames: [
-      { id: 57, x: 148, y: 883, w: 24, h: 12, dur: 3 },
-      { id: 58, x: 176, y: 884, w: 16, h: 10, dur: 3 },
+    anims: [
+      {
+        name: "fly",
+        loop: true,
+        frames: [
+          { id: 57, x: 148, y: 883, w: 24, h: 12, dur: 3 },
+          { id: 58, x: 176, y: 884, w: 16, h: 10, dur: 3 },
+        ],
+      },
     ],
   },
   {
     name: "ki_burst",
     from: "goku.png",
-    // `v1` because an effect's animations are interchangeable takes and the
-    // engine picks one at random — a second take would be `v2`, no code change.
-    anim: { name: "v1", loop: false },
-    frames: [
-      { id: 60, x: 195, y: 881, w: 16, h: 16, dur: 2 },
-      { id: 61, x: 213, y: 881, w: 16, h: 16, dur: 2 },
-      { id: 63, x: 231, y: 881, w: 16, h: 16, dur: 2 },
-      { id: 65, x: 249, y: 881, w: 16, h: 16, dur: 2 },
-      { id: 66, x: 267, y: 883, w: 16, h: 16, dur: 2 },
-      { id: 67, x: 287, y: 883, w: 12, h: 13, dur: 2 },
+    anims: [
+      // `v1` because an effect's animations are interchangeable takes and the
+      // engine picks one at random — a second take would be `v2`, no code change.
+      {
+        name: "v1",
+        loop: false,
+        frames: [
+          { id: 60, x: 195, y: 881, w: 16, h: 16, dur: 2 },
+          { id: 61, x: 213, y: 881, w: 16, h: 16, dur: 2 },
+          { id: 63, x: 231, y: 881, w: 16, h: 16, dur: 2 },
+          { id: 65, x: 249, y: 881, w: 16, h: 16, dur: 2 },
+          { id: 66, x: 267, y: 883, w: 16, h: 16, dur: 2 },
+          { id: 67, x: 287, y: 883, w: 12, h: 13, dur: 2 },
+        ],
+      },
     ],
   },
   {
     name: "kame_bolt",
     from: "goku.png",
-    anim: { name: "fly", loop: true },
     hits: true,
-    frames: [
-      { id: 134, x: 260, y: 1708, w: 31, h: 24, dur: 3 },
-      { id: 135, x: 294, y: 1708, w: 31, h: 24, dur: 3 },
+    anims: [
+      {
+        name: "fly",
+        loop: true,
+        frames: [
+          { id: 134, x: 260, y: 1708, w: 31, h: 24, dur: 3 },
+          { id: 135, x: 294, y: 1708, w: 31, h: 24, dur: 3 },
+        ],
+      },
+      // The climbing shot's head (owner, 2026-08-25). A ball with its spikes
+      // thrown outward rather than a comet lying along its flight, which is
+      // what lets one drawing serve a diagonal nothing is allowed to rotate.
+      {
+        name: "fly_up",
+        loop: true,
+        frames: [{ id: 136, x: 331, y: 1704, w: 31, h: 31, dur: 3 }],
+      },
     ],
   },
   {
     name: "ki_burst_big",
     from: "goku.png",
-    anim: { name: "v1", loop: false },
-    // The large burst, which grows where the small one scatters. 63, 65-67
-    // belong to the small one and are lifted as `ki_burst`.
-    frames: [
-      { id: 62, x: 228, y: 920, w: 16, h: 16, dur: 2 },
-      { id: 64, x: 247, y: 915, w: 26, h: 26, dur: 2 },
-      { id: 68, x: 276, y: 913, w: 26, h: 29, dur: 2 },
-      { id: 69, x: 304, y: 912, w: 28, h: 31, dur: 2 },
-      { id: 70, x: 336, y: 912, w: 29, h: 31, dur: 3 },
+    anims: [
+      // The large burst, which grows where the small one scatters. 63, 65-67
+      // belong to the small one and are lifted as `ki_burst`.
+      {
+        name: "v1",
+        loop: false,
+        frames: [
+          { id: 62, x: 228, y: 920, w: 16, h: 16, dur: 2 },
+          { id: 64, x: 247, y: 915, w: 26, h: 26, dur: 2 },
+          { id: 68, x: 276, y: 913, w: 26, h: 29, dur: 2 },
+          { id: 69, x: 304, y: 912, w: 28, h: 31, dur: 2 },
+          { id: 70, x: 336, y: 912, w: 29, h: 31, dur: 3 },
+        ],
+      },
     ],
   },
 ];
@@ -119,16 +158,22 @@ async function main(): Promise<void> {
       sources.set(lift.from, src);
     }
 
-    const { sheet, frames } = liftFrames(src, lift.frames);
+    // Every animation's frames go into one sheet, in order, and each animation
+    // then names the slice of it that is hers.
+    const all = lift.anims.flatMap((a) => a.frames);
+    const { sheet, frames } = liftFrames(src, all);
     const framesJson: Record<string, unknown> = {};
     frames.forEach((f, i) => {
       framesJson[String(i)] = { x: f.x, y: f.y, w: f.w, h: f.h, anchor: f.anchor };
     });
-    const animations = {
-      [lift.anim.name]: {
-        loop: lift.anim.loop,
-        steps: lift.frames.map((f, i) => ({
-          frame: String(i),
+
+    const animations: Record<string, unknown> = {};
+    let at = 0;
+    for (const anim of lift.anims) {
+      animations[anim.name] = {
+        loop: anim.loop,
+        steps: anim.frames.map((f, i) => ({
+          frame: String(at + i),
           dur: f.dur,
           // Box coordinates are anchor-relative, and these frames are anchored
           // at their own centre, so the sprite's own rect is the box.
@@ -137,8 +182,8 @@ async function main(): Promise<void> {
                 boxes: [
                   {
                     type: "hit",
-                    x: -frames[i].anchor[0],
-                    y: -frames[i].anchor[1],
+                    x: -frames[at + i].anchor[0],
+                    y: -frames[at + i].anchor[1],
                     w: f.w,
                     h: f.h,
                   },
@@ -146,14 +191,13 @@ async function main(): Promise<void> {
               }
             : {}),
         })),
-      },
-    };
+      };
+      at += anim.frames.length;
+    }
 
-    const held = lift.frames.reduce((sum, f) => sum + f.dur, 0);
     console.log(
-      `${lift.name}: ${lift.frames.length} frames from ${lift.from}` +
-        ` (${lift.frames.map((f) => f.id).join(", ")})` +
-        `, sheet ${sheet.width}x${sheet.height}, ${held} game frames`,
+      `${lift.name}: ${all.length} frames from ${lift.from} (${all.map((f) => f.id).join(", ")})` +
+        `, ${lift.anims.length} animation(s), sheet ${sheet.width}x${sheet.height}`,
     );
     if (dryRun) continue;
 
