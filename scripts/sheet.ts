@@ -139,10 +139,18 @@ async function main(): Promise<void> {
   }
 
   const root = process.cwd();
+  // A spawn is an entity and is looked at the same way; only its directory and
+  // the sheet beside it differ, exactly as /api/entity resolves them.
+  const spawn = await fs
+    .access(path.join(root, "data", "spawns", entity))
+    .then(() => true)
+    .catch(() => false);
+  const dir = spawn ? path.join("data", "spawns") : path.join("data", "entities");
+  const image = spawn ? path.join("spawns", `${entity}.png`) : `${entity}.png`;
   const frames = JSON.parse(
-    await fs.readFile(path.join(root, "data", "entities", entity, "frames.json"), "utf8"),
+    await fs.readFile(path.join(root, dir, entity, "frames.json"), "utf8"),
   ) as Record<string, FrameDef>;
-  const source = decodePng(await fs.readFile(path.join(root, "assets", "sheets", `${entity}.png`)));
+  const source = decodePng(await fs.readFile(path.join(root, "assets", "sheets", image)));
 
   const ids = parseFrames(spec).filter((id) => {
     if (frames[id]) return true;

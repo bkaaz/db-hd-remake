@@ -176,6 +176,8 @@ export class Entity {
   private hp = 0;
   /** The ki meter. A separate pool from health — see combat.md. */
   private ki = 0;
+  /** Set on entering a state that `fires`; taken by whoever owns projectiles. */
+  private fired: { spawn: string; at: [number, number] } | null = null;
   /**
    * A sound retriggered while a state lasts — the charge hum. Id plus frames
    * until the next copy; a fresh `play` each time, so the copies overlap, which
@@ -296,6 +298,23 @@ export class Entity {
    */
   get invulnerable(): boolean {
     return !!this.sm?.def.invulnerable;
+  }
+
+  /**
+   * The projectile this entity just launched, in world px, or null — and taking
+   * it clears it, so one entry into a state fires one bolt however many frames
+   * it lasts.
+   */
+  takeFired(): { spawn: string; x: number; y: number; facing: 1 | -1 } | null {
+    const fires = this.fired;
+    if (!fires) return null;
+    this.fired = null;
+    return {
+      spawn: fires.spawn,
+      x: this.x + this.facing * fires.at[0] * this.scale,
+      y: this.y + fires.at[1] * this.scale,
+      facing: this.facing,
+    };
   }
 
   /** Record that the current attack connected; it cannot land again. */
@@ -466,7 +485,10 @@ export class Entity {
    */
   private enterState(forced = false): void {
     if (!this.sm) return;
-    this.audio?.play(this.sm.def.sound);
+    const sounds = this.sm.def.sound;
+    for (const id of typeof sounds === "string" ? [sounds] : (sounds ?? [])) {
+      this.audio?.play(id);
+    }
     // Handed over rather than restarted when the next state names the same one:
     // resetting the clock would put an audible hitch at the seam.
     const wanted = this.sm.def.loopSound ?? "";
@@ -483,6 +505,10 @@ export class Entity {
     // A launch is an impulse, applied once on entry; without one the entity
     // keeps whatever velocity it had, which is what carries a jump through its
     // take-off state into the airborne one.
+    this.ki = Math.max(0, this.ki - (this.sm.def.cost ?? 0));
+    // Latched rather than spawned here: what a bolt is allowed to hit is a fact
+    // about the pair, so the thing between the fighters takes it off the latch.
+    this.fired = this.sm.def.fires ?? null;
     const launch = this.sm.def.launch;
     if (launch) {
       // A null component keeps the axis: a bounce sets how high you come back
@@ -599,6 +625,7 @@ export class Entity {
         // from. It was already recorded for a different reason: an attack may
         // only land once per entry into its state.
         hitConfirmed: this.swing.spent,
+        ki: this.ki,
       },
     );
     // A press that started a move is spent, so it cannot start a second one

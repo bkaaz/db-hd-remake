@@ -11,6 +11,7 @@
     "anim": "tsx scripts/anim.ts",
     "chains": "tsx scripts/chains.ts",
     "fx": "tsx scripts/fx.ts",
+    "lift": "tsx scripts/lift.ts",
     "split-audio": "tsx scripts/split-audio.ts",
     "sheet": "tsx scripts/sheet.ts",
     "pack": "tsx scripts/pack.ts",

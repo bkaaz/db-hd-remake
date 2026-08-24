@@ -358,6 +358,14 @@ The scheme hands the moveset its shape — three stances × three strengths is
 | crouching | · | · | · (launcher) | |
 | air | · | · | · | |
 
+**The standing ki blast is built** (2026-08-24) and is the first thing that
+spends ki: `cost` on the state, paid on entering, and a transition into a move
+nobody can afford does not fire at all. What the bolt does when it arrives is
+authored on the bolt — it is a spawn with a `states.json` of its own — so the
+throw names no damage and no reaction. Everything about how it *hits* is the
+uniform medium placeholder, like every other move (see the table below); what
+is genuinely chosen is the cost and the speed.
+
 **There are three kinds of input, and confusing two of them cost a session**
 (2026-08-23). A **press** is an edge, buffered for twelve frames. A **held
 direction** is a live condition — true only while the key is down, which is what

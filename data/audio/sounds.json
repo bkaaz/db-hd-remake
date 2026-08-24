@@ -86,5 +86,23 @@
     "gain": 0.22,
     "vary": 0.0,
     "file": "013.wav"
+  },
+  "blast_1": {
+    "label": "a ki bolt being fired",
+    "kind": "noise",
+    "freq": 900,
+    "decay": 0.12,
+    "gain": 0.3,
+    "vary": 0.06,
+    "file": "009.wav"
+  },
+  "burst_1": {
+    "label": "a ki bolt going off",
+    "kind": "noise",
+    "freq": 320,
+    "decay": 0.18,
+    "gain": 0.42,
+    "vary": 0.08,
+    "file": "008.wav"
   }
 }

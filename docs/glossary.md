@@ -56,9 +56,14 @@ frames and set by the blow (`hitstun`), not by the length of the reaction
 animation. Everything about combos is arithmetic on this number. → `combat.md` §1
 
 **Ki** — the meter, **separate from health** (settled 2026-08-23). Capacity is
-`ki` in `attributes.json`; how fast a state fills or spends it is `ki` on the
-state, per frame, negative to spend. Filled by holding A+Z; nothing spends it
-until Vanish, the fast dash or a special exists. → `combat.md` §Ki
+`ki` in `attributes.json`; a state fills it at `ki` per frame and a move pays
+`cost` once on entering. Filled by holding A+Z, and a move nobody can pay for
+does not come out. → `combat.md` §Ki
+
+**Ki blast** — the S normal: a bolt thrown across the stage. Two states, because
+the throw is drawn in two parts, and the bolt is a spawn with its own
+`states.json` — its damage and its speed are authored there, not on the throw.
+→ `combat.md` §Buttons
 
 **Launcher** — a blow that lifts a grounded opponent into a juggle instead of
 flooring them. The reaction is `launched`, the opposite end of the same axis as
@@ -115,8 +120,10 @@ combo; past the budget it still hits and still hurts, it just stops lifting.
 **Spawn** — anything a state brings into the world: a hit spark, an aura, a ki
 blast. Not a kind of object — it is an ordinary `Entity`, authored in
 `data/spawns/<name>/`, and *effect*, *attachment* and *projectile* are words for
-how one behaves rather than three types.
-→ [ADR 0007](./adr/0007-everything-a-state-spawns-is-an-entity.md)
+how one behaves rather than three types. A state names one with `hitFx` (on
+contact) or `fires` (on entering).
+→ [ADR 0007](./adr/0007-everything-a-state-spawns-is-an-entity.md),
+[ADR 0014](./adr/0014-a-bolt-is-handed-its-target.md)
 
 **Startup** — the frames from pressing the button to the hit box appearing.
 → `combat.md` §1

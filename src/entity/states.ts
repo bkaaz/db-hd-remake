@@ -178,13 +178,39 @@ export interface StateDef {
   /**
    * Ki gained per frame while in this state, and spent when negative.
    *
-   * On the state rather than in the engine because charging is not the only
-   * thing that will move it: a special will name a cost the same way, and a
-   * `charge` state that the engine knows by name would be a rule the data
-   * cannot see. Absent means the state leaves the meter alone, which is all of
-   * them but one.
+   * On the state rather than in the engine because a `charge` state the engine
+   * knew by name would be a rule the data cannot see. Absent means the state
+   * leaves the meter alone, which is all of them but one. What a special pays
+   * is `cost` below, not a negative rate: the price of a move is not a function
+   * of how long its animation is.
    */
   ki?: number;
+
+  /**
+   * Ki spent **on entering** this state, and the price of admission: a
+   * transition into it does not fire at all when the meter is short.
+   *
+   * One number rather than a cost plus a separate "can afford" trigger, which
+   * are two ways to say one thing and can disagree. A special you cannot pay
+   * for should not come out — not come out and do nothing.
+   *
+   * Distinct from `ki`, which is a rate: charging gains per frame, a special
+   * pays once however long its animation runs.
+   */
+  cost?: number;
+
+  /**
+   * A spawn entity thrown into the world on entering this state — a projectile,
+   * which unlike an effect goes on to hit somebody.
+   *
+   * `at` is where it appears, in sprite px from this entity's anchor and
+   * facing-relative (+x = forward, −y = up), like a box. The moment is the
+   * *entry*, so a move that charges before it fires is two states, which is how
+   * this project already splits every move whose timing is drawn (the knee, the
+   * hop). Nothing here says what the bolt does: it is an entity, and its own
+   * states own its damage, its reaction and its speed.
+   */
+  fires?: { spawn: string; at: [number, number] };
 
   /**
    * A sound **retriggered** for as long as this state lasts, rather than played
@@ -238,8 +264,12 @@ export interface StateDef {
    * only some of them are meant to be able to do it twice.
    */
   smash?: boolean;
-  /** Sound played on entering this state — the swing, not the impact. */
-  sound?: string;
+  /**
+   * Sound played on entering this state — the swing, not the impact. A list
+   * when the moment is more than one noise: a ki blast is the shot *and* the
+   * shout, and those are two clips that have to be able to vary apart.
+   */
+  sound?: string | string[];
   /** Sound this state's attack makes when it lands. */
   hitSound?: string;
   /** Sound this state's attack makes when it is blocked. */
@@ -324,6 +354,8 @@ export interface Signals {
    * has to be punishable or both players just hold the button down.
    */
   hitConfirmed: boolean;
+  /** Ki in the meter right now — what a state's `cost` is measured against. */
+  ki: number;
 }
 
 /** Every trigger the runner understands, for validation and editor UI. */
@@ -588,6 +620,10 @@ export class StateMachine {
         }
         continue;
       }
+      // A special nobody can pay for does not come out. Checked here rather
+      // than in the entity so that the *next* transition still gets its turn:
+      // the move is simply not among the options this frame.
+      if ((this.file.states[t.to].cost ?? 0) > signals.ki) continue;
       if (t.to === this.current) return null;
       this.current = t.to;
       this.pressSpent = pressIn(t.when);
@@ -641,6 +677,15 @@ export function effectsNamed(states: StatesFile | null | undefined): string[] {
   const names = new Set<string>([DEFAULT_HIT_FX]);
   for (const def of Object.values(states?.states ?? {})) {
     if (def.hitFx) names.add(def.hitFx);
+  }
+  return [...names];
+}
+
+/** Every projectile an entity's states can fire, so the game loads those too. */
+export function spawnsNamed(states: StatesFile | null | undefined): string[] {
+  const names = new Set<string>();
+  for (const def of Object.values(states?.states ?? {})) {
+    if (def.fires) names.add(def.fires.spawn);
   }
   return [...names];
 }

@@ -6,6 +6,7 @@ import type { EntityDef } from "../entity/entityDef";
 import type { Effects } from "../fx/effects";
 import type { Stage } from "../stage";
 import { landBlow, type BlowContext } from "./blow";
+import type { Projectiles } from "./projectiles";
 import { Recorder } from "./record";
 import type { DebugFrame } from "../ui/debug";
 
@@ -17,6 +18,8 @@ export interface FightersSetup {
   effects: Effects;
   /** Preview mode shows one body and no fight, so there is no opponent to make. */
   solo: boolean;
+  /** The bolts in the air. They belong here: a bolt is one fighter hitting the other. */
+  projectiles: Projectiles;
 }
 
 /** What the HUD needs to know about the pair, once per rendered frame. */
@@ -48,9 +51,11 @@ export class Fighters {
   private readonly impact: BlowContext;
   /** Turns what happens between the two into lines — see ./record.ts. */
   private readonly recorder = new Recorder();
+  private readonly projectiles: Projectiles;
 
-  constructor({ app, def, scale, audio, effects, solo }: FightersSetup) {
+  constructor({ app, def, scale, audio, effects, solo, projectiles }: FightersSetup) {
     this.impact = { audio, effects };
+    this.projectiles = projectiles;
     this.player = new Entity(def, scale, audio);
     this.opponent = solo ? null : new Entity(def, scale, audio);
     app.stage.addChild(this.player.view);
@@ -86,10 +91,32 @@ export class Fighters {
     }
   }
 
-  /** One game frame for each body. Each is told where the other one stands. */
+  /**
+   * One game frame for each body, then for everything they have thrown.
+   *
+   * The bolts move here rather than in the scene because who a bolt may hit is
+   * a fact about the pair, and this is the object that knows the pair. A bolt
+   * fired this frame does not move or hit until the next one — it appears at
+   * the hand, which is where the player is looking.
+   */
   update(playerInput: WorldInput, opponentInput: WorldInput, bounds: Bounds): void {
     this.player.update(playerInput, this.opponent?.x ?? null, bounds);
     this.opponent?.update(opponentInput, this.player.x, bounds);
+
+    for (const hit of this.projectiles.update(this.frozen, bounds, this.impact)) {
+      const [from, to] = hit.foe === this.player ? ["P2 bolt", "P1"] : ["P1 bolt", "P2"];
+      this.recorder.blow(hit.result, from, to, this.gap(), this.named());
+    }
+    if (this.opponent) {
+      this.fire(this.player, this.opponent);
+      this.fire(this.opponent, this.player);
+    }
+  }
+
+  /** A fighter who entered a state that `fires` puts a bolt in the world. */
+  private fire(owner: Entity, foe: Entity): void {
+    const shot = owner.takeFired();
+    if (shot) this.projectiles.spawn(shot, foe);
   }
 
   /**
@@ -117,13 +144,21 @@ export class Fighters {
    */
   exchangeBlows(): void {
     if (!this.opponent) return;
-    // In SPRITE px, like every reach, box and knockback in the project. World
-    // positions are kept in screen px at a fixed scale, and a gap quoted in
-    // those cannot be compared with the numbers it exists to be compared with.
-    const gap = Math.abs(this.opponent.x - this.player.x) / this.player.placement.scale;
+    const gap = this.gap();
     const named = this.named();
     this.recorder.blow(landBlow(this.player, this.opponent, this.impact), "P1", "P2", gap, named);
     this.recorder.blow(landBlow(this.opponent, this.player, this.impact), "P2", "P1", gap, named);
+  }
+
+  /**
+   * How far apart the two stand, in SPRITE px — like every reach, box and
+   * knockback in the project. World positions are kept in screen px at a fixed
+   * scale, and a gap quoted in those cannot be compared with the numbers it
+   * exists to be compared with.
+   */
+  private gap(): number {
+    if (!this.opponent) return 0;
+    return Math.abs(this.opponent.x - this.player.x) / this.player.placement.scale;
   }
 
   /** Note what changed this frame, for the recording. */
@@ -143,11 +178,13 @@ export class Fighters {
   render(showBoxes: boolean): void {
     this.player.render(showBoxes);
     this.opponent?.render(showBoxes);
+    this.projectiles.render(showBoxes);
   }
 
   /** Take both bodies off the stage; a scene that leaves them leaves ghosts. */
   destroy(): void {
     for (const fighter of this.both()) fighter.view.destroy({ children: true });
+    this.projectiles.destroy();
   }
 
   status(): FightersStatus {

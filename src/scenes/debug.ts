@@ -2,10 +2,11 @@ import { withVoices } from "../audio/bank";
 import { Audio } from "../audio/playback";
 import { soundIdCollisions, validateSounds } from "../audio/sounds";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
-import { effectsNamed, validateStates } from "../entity/states";
+import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
 import type { Keyboard } from "../input/keyboard";
 import { Fighters } from "../match/fighters";
+import { Projectiles } from "../match/projectiles";
 import type { Scene, SceneContext, SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
@@ -82,10 +83,25 @@ export class DebugScene implements Scene {
 
     const notices = reportProblems(ctx, def);
 
-    const effects = await Effects.load(ctx.app, effectsNamed(def.states), SCALE);
     const stage = new Stage(ctx.app);
     const audio = new Audio(withVoices(ctx.bank, def.sounds));
-    const fighters = new Fighters({ app: ctx.app, def, scale: SCALE, audio, effects, solo: false });
+    // Projectiles first: a bolt is an entity with states of its own, so the
+    // burst it leaves is named there and not in the fighter's data.
+    const projectiles = await Projectiles.load(ctx.app, spawnsNamed(def.states), SCALE, audio);
+    const effects = await Effects.load(
+      ctx.app,
+      [...effectsNamed(def.states), ...projectiles.effectsNeeded()],
+      SCALE,
+    );
+    const fighters = new Fighters({
+      app: ctx.app,
+      def,
+      scale: SCALE,
+      audio,
+      effects,
+      solo: false,
+      projectiles,
+    });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     // The mode sets what the overlays *start* as; B and D still toggle them.
     if (mode.boxes !== undefined) ctx.keyboard.showBoxes = mode.boxes;

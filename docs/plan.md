@@ -394,10 +394,10 @@ queue.
   yet. One known gap behind that: `hit_heavy` borrows the light
   hit's sample until a heavier one is named. Nothing here needs code — a clip
   number in `sounds.json` is the whole change.
-- **Something that spends ki.** The meter exists and fills (2026-08-23,
-  holding A+Z); nothing takes from it. Vanish, the fast dash and the specials
-  are the three that will, and the field they name is already there — `ki` on
-  the state, negative to spend.
+- **The rest of what spends ki.** The ki blast pays for itself as of
+  2026-08-24 (`cost` on the state, checked before the transition fires), so the
+  machinery is there and used. Vanish and the fast dash are the two that still
+  do not exist.
 - **A KO.** Health floors at zero and nothing happens there — no defeat state,
   no round. `Entity.defeated` is there and unused. Round rules belong to Stage 3
   in `roadmap.md`.

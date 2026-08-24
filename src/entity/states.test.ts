@@ -5,6 +5,7 @@ import { chainLinks, framesOf, startupOf } from "../combat/chains";
 import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
+  spawnsNamed,
   guardStateFor,
   guardable,
   reactionFor,
@@ -73,6 +74,8 @@ const QUIET = {
   nearGround: false,
   landed: false,
   hitConfirmed: false,
+  /** Full, so a test about triggers is never quietly about affording a move. */
+  ki: 100,
 };
 
 describe("validateStates", () => {
@@ -1032,6 +1035,64 @@ describe("StateMachine", () => {
     const sm = new StateMachine(f);
     expect(sm.update(NONE, QUIET)).toBeNull();
     expect(sm.update(NONE, { ...QUIET, animEnded: true })).toBe("idle");
+  });
+});
+
+describe("a state that costs ki", () => {
+  /** Idle, one button, and a special behind it that has to be paid for. */
+  const machine = (cost: number): StatesFile => ({
+    initial: "idle",
+    states: {
+      idle: {
+        anim: "idle",
+        transitions: [
+          { when: "pressed:special", to: "blast" },
+          { when: "pressed:light", to: "punch" },
+        ],
+      },
+      blast: { anim: "blast", cost },
+      punch: { anim: "punch" },
+    },
+  });
+  const SPECIAL = { ...NONE, special: true };
+
+  it("comes out when the meter covers it", () => {
+    const sm = new StateMachine(machine(10));
+    sm.update(SPECIAL, { ...QUIET, ki: 10 });
+    expect(sm.current).toBe("blast");
+  });
+
+  it("does not come out at all when it does not", () => {
+    const sm = new StateMachine(machine(10));
+    sm.update(SPECIAL, { ...QUIET, ki: 9 });
+    expect(sm.current).toBe("idle");
+  });
+
+  it("leaves the rest of the frame's transitions their turn", () => {
+    const sm = new StateMachine(machine(10));
+    // Both buttons in one frame: the special is unaffordable, so the punch —
+    // listed after it — must still be allowed to fire.
+    sm.update({ ...SPECIAL, light: true }, { ...QUIET, ki: 0 });
+    expect(sm.current).toBe("punch");
+  });
+});
+
+describe("spawnsNamed", () => {
+  const file = (states: StatesFile["states"]): StatesFile => ({ initial: "idle", states });
+
+  it("collects every projectile the states fire, without repeating one", () => {
+    const states = file({
+      idle: { anim: "idle" },
+      blast: { anim: "blast", fires: { spawn: "ki_bolt", at: [30, -50] } },
+      blast_air: { anim: "blast_air", fires: { spawn: "ki_bolt", at: [30, -30] } },
+      big: { anim: "big", fires: { spawn: "ki_bolt_big", at: [30, -50] } },
+    });
+    expect(spawnsNamed(states).sort()).toEqual(["ki_bolt", "ki_bolt_big"]);
+  });
+
+  it("is empty for a fighter who throws nothing, and for no states at all", () => {
+    expect(spawnsNamed(file({ idle: { anim: "idle" } }))).toEqual([]);
+    expect(spawnsNamed(null)).toEqual([]);
   });
 });
 

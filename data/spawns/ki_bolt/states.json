@@ -1,0 +1,18 @@
+{
+  "_comment": "A projectile is an entity, so what its blow does is authored where every other blow's is. It has one state and never leaves it: the engine takes the bolt away when it connects or runs out of stage, because 'gone' is not a pose. `vel` is re-applied every frame while the state is not airborne, which is what keeps the flight flat with no gravity and no special case.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "fly",
+      "vel": [7, 0],
+      "turn": false,
+      "damage": 8,
+      "hitstun": 20,
+      "hitstop": 8,
+      "onHit": "hurt_chain",
+      "hitFx": "ki_burst",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1"
+    }
+  }
+}

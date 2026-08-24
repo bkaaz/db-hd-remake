@@ -56,6 +56,8 @@ const QUIET: Signals = {
   nearGround: false,
   landed: false,
   hitConfirmed: false,
+  /** Full, so a test about triggers is never quietly about affording a move. */
+  ki: 100,
 };
 
 /**
@@ -108,8 +110,8 @@ describe("charging ki is a stance, not a press", () => {
   });
 
   it("is the one state that fills the meter", () => {
-    // A field on the state rather than a rule in the engine, so a special can
-    // name a cost the same way. Nothing else in the file touches it.
+    // A field on the state rather than a rule in the engine. What a special
+    // pays is `cost`, a separate field; nothing else in the file fills.
     const states = goku().states;
     const filling = Object.entries(states)
       .filter(([, d]) => d.ki !== undefined)
@@ -400,7 +402,15 @@ describe("the buttons reach the moves they are supposed to", () => {
     expect(crouched().frame({ heavy: true })).toBe("uppercut");
   });
 
-  it("special is bound to nothing yet — the ki blast is not built", () => {
-    expect(new Sim().frame({ special: true })).toBe("idle");
+  it("special charges the ki blast, which then fires on its own", () => {
+    const s = new Sim();
+    expect(s.frame({ special: true })).toBe("ki_blast");
+    expect(s.frame({}, { animEnded: true })).toBe("ki_blast_fire");
+  });
+
+  it("but not on an empty meter — the shipped cost is what is checked", () => {
+    const cost = goku().states.ki_blast.cost;
+    expect(cost).toBeGreaterThan(0);
+    expect(new Sim().frame({ special: true }, { ki: (cost ?? 0) - 1 })).toBe("idle");
   });
 });

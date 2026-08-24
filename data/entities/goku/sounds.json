@@ -9,5 +9,10 @@
     "gain": 0.55,
     "vary": 0.04,
     "file": "045.wav"
+  },
+  "voice_blast": {
+    "gain": 0.55,
+    "vary": 0.04,
+    "file": "045.wav"
   }
 }
