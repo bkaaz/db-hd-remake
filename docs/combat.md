@@ -173,9 +173,10 @@ Three things come with it, and none is the field's problem:
   after that is refused outright. The validator warns; a beam should simply not
   be a relaunch.
 
-**A held blow cannot be answered by holding back** (2026-08-16, `guardable` in
-`states.ts`): rank above zero is exactly "somebody else put me here", and a
-fighter there has no guard. Without it every combo was escapable by holding a
+**A held blow cannot be answered by guarding** (2026-08-16; since 2026-09-26 a
+validator rule in `states.ts`, since guard is a state rather than a direction):
+rank above zero is exactly "somebody else put me here", and a fighter there has
+no guard. Without it every combo was escapable by holding a
 direction, which would have made all three curves guard something that was never
 inescapable to begin with.
 
@@ -399,8 +400,11 @@ the sheet was catalogued for exactly this. The graph is still derived from
 Crouching and the air have their own, shorter version: in the air, **one attack
 and one smash** for now.
 
-**Guard is a button, not back.** It blocks everything, high or low, standing or
-crouching. **Crouching only lowers the hurt box** — a blow aimed high passes
+**Guard is a button, not back** (built 2026-09-26). Held, it is a stance —
+`guard`, or `guard_low` with down — in the pose that used to appear only on
+contact, and a blow is blocked only in a state marked `guarding`: the stance and
+the blockstun it leads to. So a fighter swinging with guard held is not
+blocking, and walking back is only walking. It blocks everything, high or low. **Crouching only lowers the hurt box** — a blow aimed high passes
 over a crouching body because the boxes miss, not because of a rule. A real
 high/low guard (down + guard for lows) was weighed and deferred: it is a
 guessing layer Burst Limit barely has, and it can be added later on the same
@@ -472,7 +476,7 @@ frame on a crouch attack pressed from standing, which the buffer covers.
 **A direction plus a button is a normal of its own, not a variant.** The first
 one exists as of 2026-08-23: back + H is `kick_axe`, where plain H is
 `kick_high`. It costs no new machinery — a `when` is a list that ANDs, so
-`["held:back", "pressed:heavy"]` is a transition like any other, checked before
+`["held:back", "pressed:smash"]` is a transition like any other, checked before
 the plain heavy so it wins the press. This is where the moves the nine slots
 cannot hold will go, and the price is that every such branch has to be ordered
 by hand.
@@ -686,7 +690,7 @@ asserts that.
 **It is held, not pressed, and that needed the keyboard to answer a new
 question.** Attack buttons were edges only — a press arms one frame and disarms
 itself — so two of them would have had to land on the same frame, and whichever
-arrived alone would have spent itself on a punch. `held:light` and its three
+arrived alone would have spent itself on a punch. `held:attack` and its three
 siblings exist now beside the edges; the edge is untouched, so nothing
 machine-guns.
 

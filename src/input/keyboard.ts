@@ -5,23 +5,21 @@ import { startRecording, stopRecording } from "../log";
  * The keyboard, turned into one game frame of input.
  *
  * Two kinds of key live here and they behave differently. **Directions are
- * held**: pressed stays pressed until released. **Attacks are edge-triggered**:
+ * held**: pressed stays pressed until released. **Buttons are edge-triggered**:
  * a press arms one game frame and disarms itself as soon as that frame is
  * taken, so leaning on the key does not machine-gun. Auto-repeat is ignored for
  * the same reason — one press, one attack.
  *
- * An attack key also reports whether it is **still down**, which is a different
+ * A button also reports whether it is **still down**, which is a different
  * question from whether it just went down and does not weaken the edge. A stance
  * you hold — charging ki on A+Z — cannot be expressed by edges at all: two of
  * them would have to land on the same frame, and the first to arrive alone
  * would spend itself on a punch.
  *
- * The four attack buttons are **Light, Medium, Heavy, Special** — strength, not
- * limb — on the `A S` / `Z X` square that stands in for a pad's four face
- * buttons. Read it by **column, not by row**: the left column is the lighter
- * pair and the right the heavier, which is the rule this project already used
- * when the buttons were punch/kick, and which puts Heavy on the right the way
- * the pad does.
+ * The four buttons are Burst Limit's — **Attack, Guard, Smash, Blast** (the ki
+ * blast) — on the `A S` / `Z X` square that stands in for a pad's four face
+ * buttons. A and S are the two that hit; Z, the guard, sits under the attack
+ * so that holding both charges ki.
  *
  * Remapping comes later; nothing outside this file knows which key is which.
  */
@@ -52,17 +50,17 @@ export class Keyboard {
   recording = false;
 
   private readonly held: Directions = { left: false, right: false, up: false, down: false };
-  private readonly armed: Attacks = {
-    light: false,
-    medium: false,
-    heavy: false,
-    special: false,
+  private readonly armed: Buttons = {
+    attack: false,
+    guard: false,
+    smash: false,
+    blast: false,
   };
-  private readonly down: Attacks = {
-    light: false,
-    medium: false,
-    heavy: false,
-    special: false,
+  private readonly down: Buttons = {
+    attack: false,
+    guard: false,
+    smash: false,
+    blast: false,
   };
 
   constructor(target: Window = window) {
@@ -83,7 +81,7 @@ export class Keyboard {
       ...this.armed,
       holding: { ...this.down },
     };
-    for (const button of ATTACK_BUTTONS) this.armed[button] = false;
+    for (const button of BUTTONS) this.armed[button] = false;
     return input;
   }
 
@@ -108,11 +106,11 @@ export class Keyboard {
       return;
     }
     const key = e.key.toLowerCase();
-    const attack = ATTACK_KEYS[key];
-    if (attack) {
-      this.down[attack] = true;
+    const button = BUTTON_KEYS[key];
+    if (button) {
+      this.down[button] = true;
       // Auto-repeat must not re-arm: holding the key is still one attack.
-      if (!e.repeat) this.armed[attack] = true;
+      if (!e.repeat) this.armed[button] = true;
       return;
     }
     if (key === " ") this.kiAsked = !e.repeat;
@@ -135,15 +133,15 @@ export class Keyboard {
       this.held[direction] = false;
       return;
     }
-    const attack = ATTACK_KEYS[e.key.toLowerCase()];
-    if (attack) this.down[attack] = false;
+    const button = BUTTON_KEYS[e.key.toLowerCase()];
+    if (button) this.down[button] = false;
   }
 }
 
 type Directions = Pick<WorldInput, "left" | "right" | "up" | "down">;
-type Attacks = Pick<WorldInput, "light" | "medium" | "heavy" | "special">;
+type Buttons = Pick<WorldInput, "attack" | "guard" | "smash" | "blast">;
 
-const ATTACK_BUTTONS = ["light", "medium", "heavy", "special"] as const;
+const BUTTONS = ["attack", "guard", "smash", "blast"] as const;
 
 const DIRECTION_KEYS: Record<string, keyof Directions | undefined> = {
   ArrowLeft: "left",
@@ -152,9 +150,9 @@ const DIRECTION_KEYS: Record<string, keyof Directions | undefined> = {
   ArrowDown: "down",
 };
 
-const ATTACK_KEYS: Record<string, keyof Attacks | undefined> = {
-  a: "light",
-  z: "medium",
-  s: "heavy",
-  x: "special",
+const BUTTON_KEYS: Record<string, keyof Buttons | undefined> = {
+  a: "attack",
+  z: "guard",
+  s: "smash",
+  x: "blast",
 };

@@ -167,24 +167,6 @@ pixels with `a > 0` — the already-transparent ones are left alone. The fix, if
 one is wanted, is to drop the all-or-nothing question at load and let the eyedropper
 be the whole interface.
 
-## A fighter blocks in the middle of their own attack
-
-`src/entity/entity.ts` · noticed 2026-08-16 · annoying
-
-The same root as the hitstun one fixed that day, and the half that stayed: guard
-is resolved at the moment of contact from `holdingBack`, and an attack state
-ranks 0, so a fighter who holds back and presses light blocks whatever arrives
-while their own punch is out. A trade becomes a block, and a counter-hit is
-unreachable — which is a real loss, because the counter-hit is the reward for
-whiff-punishing rather than mashing.
-
-To see it: hold back on P1, press light, and have the blow met by P2's. The
-recording says `blocked` on a fighter who was swinging.
-
-Not fixed with the reaction case because the rule wants a boundary decided
-rather than guessed: `onHit` marks an attack, but "no guard while attacking"
-also has to say what happens during recovery, and during `land` and `getup`.
-
 ## A press dies on the frame the move ends
 
 `src/input/buffer.ts` · noticed 2026-08-16 · annoying

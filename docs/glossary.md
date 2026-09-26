@@ -45,6 +45,10 @@ first once a blow has landed. Plus means the attacker, minus means the defender,
 and minus can be correct when the blow also pushes them out of range.
 → `combat.md` §1
 
+**Guard** — a button and the stance it holds (`guard`, `guard_low`). A blow is
+blocked only in a state marked `guarding`: the stance and its blockstun.
+→ `combat.md` (The buttons)
+
 **Hitstop** — the freeze on contact, applied to **both** fighters for the same
 number of frames, set by the blow (`hitstop`) over an entity-wide default. It is
 what gives a blow weight, and because both sides freeze equally it changes
@@ -95,8 +99,8 @@ defender and resets when they get control back. → `combat.md` §3
 **Rank** — how badly a reaction has taken control away: flinch 1, stagger 2,
 knockdown 3, on the floor 4, and 0 for a fighter who is their own. A blow never
 lowers the rank the defender is already in, an equal rank re-enters, and rank 0
-is also what resets the combo counter and what decides you may still guard.
-→ `combat.md` §7, `states.ts` (`reactionFor`, `guardable`)
+is also what resets the combo counter; a reaction may never be `guarding`.
+→ `combat.md` §7, `states.ts` (`reactionFor`)
 
 **Relaunch** — a blow allowed to *re*-launch or re-floor a body that is already
 being juggled. Marked on the attack (`relaunch`; `smash` until 2026-09-26), spent from a budget of two per

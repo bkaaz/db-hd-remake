@@ -98,10 +98,9 @@ export interface StateDef {
   ifCrouching?: string;
   /**
    * The block reaction to use while in this state, instead of the file's
-   * `onGuard`. What it exists for is the crouching guard: blocking is decided
-   * at the moment of contact rather than by standing in a guard state, so the
-   * only thing that still knows whether the defender was low is the state they
-   * were in when the blow arrived.
+   * `onGuard`. What it exists for is the crouching guard: the stance is the
+   * only thing that still knows whether the defender was low when the blow
+   * arrived.
    *
    * It hangs off the *stance* rather than off the attack, because how you
    * cover is a fact about you: the same jab is blocked standing or crouching
@@ -109,6 +108,13 @@ export interface StateDef {
    * blocked low is a different question and belongs to the attack.
    */
   guard?: string;
+  /**
+   * A blow arriving in this state is blocked. The guard is a stance the button
+   * holds you in, and blockstun keeps it — a blocked string stays blocked — so
+   * it is marked on the states rather than read off the button: a fighter who
+   * holds guard through their own attack must not be blocking with it.
+   */
+  guarding?: boolean;
   /**
    * How severe a reaction this is: flinch below stagger below knockdown below
    * lying on the floor. Absent means 0, which is every state that is not a
@@ -338,14 +344,13 @@ export interface InputSnapshot {
   /** Down is a world direction too — it starts a crouch. */
   down: boolean;
   /**
-   * The four attack buttons, by strength rather than by limb — which blow is a
-   * punch and which a kick is the character's business. Each went down **this
-   * frame** (edge, not held).
+   * The four buttons — Burst Limit's attack, guard, smash and ki blast. Each
+   * went down **this frame** (edge, not held).
    */
-  light: boolean;
-  medium: boolean;
-  heavy: boolean;
-  special: boolean;
+  attack: boolean;
+  guard: boolean;
+  smash: boolean;
+  blast: boolean;
   /**
    * A motion input completed inside its window — a *sequence* of directions,
    * where every `held:` above is one frame. Recognised in `input/motion.ts`;
@@ -354,11 +359,11 @@ export interface InputSnapshot {
   qcf: boolean;
   qcb: boolean;
   /**
-   * Attack buttons still down. Separate from the four edges above: a press is a
+   * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
    * hold.
    */
-  holding: { light: boolean; medium: boolean; heavy: boolean; special: boolean };
+  holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean };
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -411,14 +416,14 @@ export const TRIGGERS = [
   "held:back",
   "held:up",
   "held:down",
-  "pressed:light",
-  "pressed:medium",
-  "pressed:heavy",
-  "pressed:special",
-  "held:light",
-  "held:medium",
-  "held:heavy",
-  "held:special",
+  "pressed:attack",
+  "pressed:guard",
+  "pressed:smash",
+  "pressed:blast",
+  "held:attack",
+  "held:guard",
+  "held:smash",
+  "held:blast",
   "motion:qcf",
   "motion:qcb",
   "animEnd",
@@ -452,29 +457,29 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "held:down":
       value = input.down;
       break;
-    case "pressed:light":
-      value = input.light;
+    case "pressed:attack":
+      value = input.attack;
       break;
-    case "pressed:medium":
-      value = input.medium;
+    case "pressed:guard":
+      value = input.guard;
       break;
-    case "pressed:heavy":
-      value = input.heavy;
+    case "pressed:smash":
+      value = input.smash;
       break;
-    case "pressed:special":
-      value = input.special;
+    case "pressed:blast":
+      value = input.blast;
       break;
-    case "held:light":
-      value = input.holding.light;
+    case "held:attack":
+      value = input.holding.attack;
       break;
-    case "held:medium":
-      value = input.holding.medium;
+    case "held:guard":
+      value = input.holding.guard;
       break;
-    case "held:heavy":
-      value = input.holding.heavy;
+    case "held:smash":
+      value = input.holding.smash;
       break;
-    case "held:special":
-      value = input.holding.special;
+    case "held:blast":
+      value = input.holding.blast;
       break;
     case "motion:qcf":
       value = input.qcf;
@@ -580,31 +585,12 @@ export function reactionFor(
 }
 
 /**
- * May a fighter in this state put a guard up at all?
- *
- * **Only if they are their own.** Rank is exactly that question — 0 is standing,
- * walking, attacking; anything above it is a reaction somebody else put them in
- * — so a fighter still taking a blow cannot answer the next one by holding back.
- *
- * This is what makes a combo a combo. All three scalings exist to end a sequence
- * the victim cannot escape, and without this every sequence was escapable by
- * holding a direction: guard is decided at the moment of contact rather than by
- * standing in a guard state, so nothing else was asking whether the defender was
- * in any position to decide anything.
- */
-export function guardable(current: StateDef | undefined): boolean {
-  return (current?.rank ?? 0) === 0;
-}
-
-/**
  * Which block reaction covers a blow arriving right now: the stance's own if it
  * declares one, otherwise the fighter's default. Undefined means this fighter
  * cannot block at all.
  *
- * It reads the state rather than the attack because the stance is the only
- * thing that still knows the defender was low — blocking is decided at the
- * moment of contact, not by standing in a guard state, so there is nothing else
- * left to ask by then.
+ * It reads the state rather than the attack because how you cover is a fact
+ * about you: the same jab is blocked standing or crouching.
  */
 export function guardStateFor(
   current: StateDef | undefined,
@@ -619,7 +605,7 @@ export class StateMachine {
   current: string;
   /**
    * The attack button the last state change consumed, or null — the name alone
-   * (`"medium"`), not the trigger it was spelled with. A press that started a
+   * (`"smash"`), not the trigger it was spelled with. A press that started a
    * move must not start a second one when the move ends and the buffer has not
    * expired yet, so whoever owns the buffer has to be told what was used. Once
    * a transition can require several triggers at once there is no single
@@ -939,6 +925,16 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
 
     if (def.relaunch !== undefined && typeof def.relaunch !== "boolean") {
       errors.push(`${where}: "relaunch" must be true or false`);
+    }
+
+    if (def.guarding !== undefined && typeof def.guarding !== "boolean") {
+      errors.push(`${where}: "guarding" must be true or false`);
+    }
+    // What makes a combo a combo: a fighter a blow already holds cannot answer
+    // the next one. All three scalings exist to end a sequence the victim cannot
+    // escape, and a reaction that blocks would make every one escapable.
+    if (def.guarding && (def.rank ?? 0) > 0) {
+      errors.push(`${where}: a reaction (rank ${def.rank}) cannot be "guarding"`);
     }
 
     if (def.invulnerable !== undefined && typeof def.invulnerable !== "boolean") {

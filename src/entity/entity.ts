@@ -11,7 +11,6 @@ import { Motions } from "../input/motion";
 import {
   DEFAULT_HIT_FX,
   guardStateFor,
-  guardable,
   reactionFor,
   StateMachine,
   type StateDef,
@@ -32,21 +31,19 @@ export interface WorldInput {
   /** Down arrow — held, like up. */
   down: boolean;
   /**
-   * The four attack buttons, by **strength** rather than by limb: which blow is
-   * a punch and which a kick is the character's business, not the player's.
-   * Each went down **this frame** (edge, not held).
+   * The four buttons — Burst Limit's attack, guard, smash and ki blast (`blast`,
+   * because `ki` is the meter). Each went down **this frame** (edge, not held).
    */
-  light: boolean;
-  medium: boolean;
-  heavy: boolean;
-  /** The ki blast, and the ender a chain falls into. */
-  special: boolean;
+  attack: boolean;
+  guard: boolean;
+  smash: boolean;
+  blast: boolean;
   /**
-   * Whether each attack key is **still down**, which the edges above cannot say.
+   * Whether each button is **still down**, which the edges above cannot say.
    * A stance you hold — charging ki on A+Z — needs it: two edges would have to
    * land on one frame, and whichever arrived alone would spend itself on a blow.
    */
-  holding: { light: boolean; medium: boolean; heavy: boolean; special: boolean };
+  holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean };
 }
 
 export const NO_INPUT: WorldInput = {
@@ -54,11 +51,11 @@ export const NO_INPUT: WorldInput = {
   right: false,
   up: false,
   down: false,
-  light: false,
-  medium: false,
-  heavy: false,
-  special: false,
-  holding: { light: false, medium: false, heavy: false, special: false },
+  attack: false,
+  guard: false,
+  smash: false,
+  blast: false,
+  holding: { attack: false, guard: false, smash: false, blast: false },
 };
 
 /**
@@ -101,12 +98,12 @@ export interface EntityDebug {
   combo: { hits: number; damage: number; lifts: number };
 }
 
-/** Strength, not the key: nothing outside `input/keyboard.ts` knows which key is which. */
+/** The button, not the key: nothing outside `input/keyboard.ts` knows which key is which. */
 const ATTACK_LABELS = [
-  ["light", "L"],
-  ["medium", "M"],
-  ["heavy", "H"],
-  ["special", "S"],
+  ["attack", "A"],
+  ["guard", "G"],
+  ["smash", "S"],
+  ["blast", "B"],
 ] as const satisfies readonly (readonly [keyof WorldInput, string])[];
 
 /** Frames between copies of a retriggered sound when the state names no interval. */
@@ -145,8 +142,6 @@ export class Entity {
   private vx = 0;
   /** Latched on touching the ground; cleared when the state changes. */
   private landed = false;
-  /** Whether this entity was holding away from its opponent last frame. */
-  private holdingBack = false;
   /**
    * Presses wait here for a few frames. Ticked below the freeze check, so a hit
    * pause cannot age a press out of existence — losing the input a player makes
@@ -395,21 +390,15 @@ export class Entity {
   }
 
   /**
-   * Is this fighter blocking *right now*?
-   *
-   * There is no guard stance to stand in: holding away is already how you walk
-   * backwards, so a blocking state would fight with `walk_back`. Instead the
-   * block is decided at the moment of contact, which is also how the genre has
-   * always worked — the guard pose only ever appears on a blow that arrives.
-   * Not in the air: a fighter who can block a jump-in for free has removed the
-   * point of jumping in. And not while a blow already has hold of them — see
-   * `guardable`, which is the rule that makes a combo a combo.
+   * Is this fighter blocking *right now*? Only in a state marked `guarding` —
+   * the stance the guard button holds, and the blockstun it leads to — and
+   * never in the air: a fighter who can block a jump-in for free has removed
+   * the point of jumping in.
    */
   get guarding(): boolean {
     return (
-      this.holdingBack &&
+      !!this.sm?.def.guarding &&
       !this.airborne &&
-      guardable(this.sm?.def) &&
       guardStateFor(this.sm?.def, this.def.states) !== undefined
     );
   }
@@ -610,10 +599,10 @@ export class Entity {
     // exactly when a player, having just seen the blow land, reaches for the
     // next attack, and an entity that returns before looking at its input
     // throws that press away. The buffer cannot keep what it is never handed.
-    if (input.light) this.buffer.press("light");
-    if (input.medium) this.buffer.press("medium");
-    if (input.heavy) this.buffer.press("heavy");
-    if (input.special) this.buffer.press("special");
+    if (input.attack) this.buffer.press("attack");
+    if (input.guard) this.buffer.press("guard");
+    if (input.smash) this.buffer.press("smash");
+    if (input.blast) this.buffer.press("blast");
 
     // A hit pause freezes the whole entity, animation included — the pose the
     // blow landed on is exactly what should be held still. The buffer is not
@@ -649,7 +638,6 @@ export class Entity {
 
     const fwd = this.facing > 0 ? input.right : input.left;
     const back = this.facing > 0 ? input.left : input.right;
-    this.holdingBack = back;
     // Below the freeze check, like the buffer's tick: a hit pause must not age
     // a motion out of existence either. Facing-relative, so turning around does
     // not turn a quarter circle into its mirror mid-input.
@@ -672,10 +660,10 @@ export class Entity {
         back,
         up: input.up,
         down: input.down,
-        light: this.buffer.has("light"),
-        medium: this.buffer.has("medium"),
-        heavy: this.buffer.has("heavy"),
-        special: this.buffer.has("special"),
+        attack: this.buffer.has("attack"),
+        guard: this.buffer.has("guard"),
+        smash: this.buffer.has("smash"),
+        blast: this.buffer.has("blast"),
         qcf: this.motions.has("qcf"),
         qcb: this.motions.has("qcb"),
         holding: input.holding,

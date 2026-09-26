@@ -18,9 +18,9 @@ import { NO_INPUT, type WorldInput } from "../entity/entity";
 
 /** What a mode may say about the dummy. */
 export interface Script {
-  /** Steps: `"light"`, `"back 30"`, `"up fwd"`, or a bare number of idle frames. */
+  /** Steps: `"attack"`, `"back 30"`, `"up fwd"`, or a bare number of idle frames. */
   does?: (string | number)[];
-  /** `always` holds back every frame, on top of whatever `does` is doing. */
+  /** `always` holds the guard button every frame, on top of whatever `does` is doing. */
   guard?: "never" | "always";
   loop?: boolean;
 }
@@ -29,10 +29,10 @@ export interface Script {
  * Today's dummy as a script: wait, swing, wait, swing. It is the default so a
  * mode that says nothing about the dummy behaves the way `T` always has.
  */
-const ROTATION = [90, "light", 90, "medium", 90, "heavy", 90, "special"];
+const ROTATION = [90, "attack", 90, "smash", 90, "blast"];
 
 /** Buttons are edges — they fire on the first frame of their step and no more. */
-const BUTTONS = ["light", "medium", "heavy", "special"];
+const BUTTONS = ["attack", "guard", "smash", "blast"];
 /** Directions are held, and two of them are relative to which way the dummy looks. */
 const DIRECTIONS = ["fwd", "back", "up", "down"];
 
@@ -91,13 +91,16 @@ export class Dummy {
     const world = { ...NO_INPUT, holding: { ...NO_INPUT.holding } };
     for (const token of step?.tokens ?? []) {
       // A button is an edge: held for a whole step it would re-press sixty
-      // times a second, which is not what one step of "light" means.
+      // times a second, which is not what one step of "attack" means.
       if (BUTTONS.includes(token) && !first) continue;
       press(world, token, facing);
     }
     // Guard sits on top of the timeline: a dummy that swings and blocks between
-    // swings is one setup, not two.
-    if (this.guarding) press(world, "back", facing);
+    // swings is one setup, not two. Held rather than pressed — the guard is a
+    // stance, and a press every frame would be a tap every frame — and let go
+    // for a step that swings, because a fighter in guard cannot attack.
+    const swings = step?.tokens.some((token) => BUTTONS.includes(token));
+    if (this.guarding && !swings) world.holding.guard = true;
     return world;
   }
 

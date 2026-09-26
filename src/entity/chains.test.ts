@@ -39,13 +39,13 @@ const NOTHING: InputSnapshot = {
   back: false,
   up: false,
   down: false,
-  light: false,
-  medium: false,
-  heavy: false,
-  special: false,
+  attack: false,
+  guard: false,
+  smash: false,
+  blast: false,
   qcf: false,
   qcb: false,
-  holding: { light: false, medium: false, heavy: false, special: false },
+  holding: { attack: false, guard: false, smash: false, blast: false },
 };
 const QUIET: Signals = {
   animEnded: false,
@@ -85,6 +85,11 @@ class Sim {
     this.motions.push(at);
     this.sm.update({ ...at, qcf: this.motions.has("qcf"), qcb: this.motions.has("qcb") }, { ...QUIET, ...signals });
     return this.sm.current;
+  }
+
+  /** Put the fighter somewhere from outside, the way a blow landing does. */
+  force(state: string): void {
+    this.sm.force(state);
   }
 
   /** A blow of ours connected this frame and the player asked for the next one. */
@@ -129,7 +134,7 @@ describe("the bolt the beam throws", () => {
 
 describe("charging ki is a stance, not a press", () => {
   /** Both attack keys down — the state an edge cannot describe. */
-  const holdAZ = { holding: { light: true, medium: true, heavy: false, special: false } };
+  const holdAZ = { holding: { attack: true, guard: true, smash: false, blast: false } };
 
   it("drops into the charge on A+Z and loops there", () => {
     const s = new Sim();
@@ -142,7 +147,7 @@ describe("charging ki is a stance, not a press", () => {
     const s = new Sim();
     s.frame(holdAZ);
     s.frame(holdAZ, { animEnded: true });
-    const half = { holding: { light: true, medium: false, heavy: false, special: false } };
+    const half = { holding: { attack: true, guard: false, smash: false, blast: false } };
     expect(s.frame(half)).toBe("idle");
   });
 
@@ -176,8 +181,8 @@ describe("charging ki is a stance, not a press", () => {
     // The stance is checked before every attack, so this is the assertion that
     // keeps it from eating the whole moveset: one key down is still a blow.
     const s = new Sim();
-    const onlyLight = { light: true, holding: { light: true, medium: false, heavy: false, special: false } };
-    expect(s.frame(onlyLight)).toBe("punch");
+    const onlyAttack = { attack: true, holding: { attack: true, guard: false, smash: false, blast: false } };
+    expect(s.frame(onlyAttack)).toBe("punch");
   });
 });
 
@@ -194,90 +199,33 @@ describe("a diagonal changes stance before it does anything else", () => {
     expect(new Sim().frame({ down: true, back: true })).toBe("crouch_down");
   });
 
-  it("gives the crouching medium on down + medium, not the standing one", () => {
+  it("gives the crouching smash on down + smash, not the standing one", () => {
     const s = new Sim();
-    s.frame({ down: true, medium: true });
-    expect(s.frame({ down: true, medium: true })).toBe("kick_crouch");
-  });
-
-  it("reaches the launching knee on a held down-forward + medium", () => {
-    const s = new Sim();
-    s.frame({ down: true, fwd: true, medium: true });
-    expect(s.frame({ down: true, fwd: true, medium: true })).toBe("knee_rise");
-  });
-
-  it("reaches it on a rolled quarter circle, which is what hands actually do", () => {
-    // The whole point of motion:qcf. Down is released before the button, so no
-    // live `held:` condition can see the input any more — and the roll leaves
-    // you in walk_fwd, not in a crouch, which is why the trigger cannot live on
-    // the crouch states alone.
-    const s = new Sim();
-    s.frame({ down: true });
-    expect(s.frame({ fwd: true, medium: true })).toBe("knee_rise");
-  });
-
-  it("reaches the lunge on a rolled quarter circle back", () => {
-    // The mirror, on real data: qcb leaves you holding back, so the trigger has
-    // to be where the roll ends and not only in a crouch.
-    const s = new Sim();
-    s.frame({ down: true });
-    expect(s.frame({ back: true, medium: true })).toBe("hop_lunge");
-  });
-
-  it("keeps back + medium as its own move when nothing was rolled", () => {
-    // kick_low lives on the held diagonal and must not be swallowed by the
-    // motion sitting in front of it.
-    const s = new Sim();
-    s.frame({ back: true });
-    expect(s.frame({ back: true, medium: true })).toBe("kick_low");
-  });
-
-  it("still gives the plain medium when no motion preceded it", () => {
-    // The other half: leniency that swallows every forward medium would be
-    // worse than the bug it fixes.
-    const s = new Sim();
-    s.frame({ fwd: true });
-    expect(s.frame({ fwd: true, medium: true })).toBe("knee");
+    s.frame({ down: true, smash: true });
+    expect(s.frame({ down: true, smash: true })).toBe("uppercut");
   });
 });
 
-describe("the ladder — light, then medium, then heavy", () => {
-  it("walks punch → kick_mid → kick_thrust → kick_high when every blow connects", () => {
+describe("the rush — attack walks it, smash ends it", () => {
+  it("walks punch → punch_knee → uppercut when every blow connects", () => {
     const s = new Sim();
-    expect(s.frame({ light: true })).toBe("punch");
-    expect(s.confirmAnd("medium")).toBe("kick_mid");
-    expect(s.confirmAnd("medium")).toBe("kick_thrust");
-    expect(s.confirmAnd("heavy")).toBe("kick_high");
+    expect(s.frame({ attack: true })).toBe("punch");
+    expect(s.confirmAnd("attack")).toBe("punch_knee");
+    expect(s.confirmAnd("smash")).toBe("uppercut");
   });
 
-  it("takes the medium rung twice, but only with a different move", () => {
-    // A rung may repeat; a move may never cancel into itself, which would be a
-    // loop with extra steps. So the second medium is a different attack, and
-    // there is no third.
+  it("lets smash end it at the first blow", () => {
     const s = new Sim();
-    s.frame({ medium: true });
-    expect(s.confirmAnd("medium")).toBe("kick_thrust");
-    expect(s.confirmAnd("medium")).toBe("kick_thrust");
+    s.frame({ attack: true });
+    expect(s.confirmAnd("smash")).toBe("kick_high");
   });
 
-  it("only goes up: the heavy ends it, and nothing cancels back down", () => {
-    // The rung a string cannot climb back down is what makes it finite without
-    // any special rule — see combat.md. Every button, on the ender, does
-    // nothing.
+  it("ends at the smash: nothing cancels out of it", () => {
     const s = new Sim();
-    s.frame({ light: true });
-    s.confirmAnd("medium");
-    s.confirmAnd("medium");
-    s.confirmAnd("heavy");
-    expect(s.confirmAnd("light")).toBe("kick_high");
-    expect(s.confirmAnd("medium")).toBe("kick_high");
-    expect(s.confirmAnd("heavy")).toBe("kick_high");
-  });
-
-  it("lets a light skip the medium and end on the heavy", () => {
-    const s = new Sim();
-    s.frame({ light: true });
-    expect(s.confirmAnd("heavy")).toBe("kick_high");
+    s.frame({ attack: true });
+    s.confirmAnd("smash");
+    expect(s.confirmAnd("attack")).toBe("kick_high");
+    expect(s.confirmAnd("smash")).toBe("kick_high");
   });
 
   it("leaves the middle links standing — only an ender may floor", () => {
@@ -285,35 +233,72 @@ describe("the ladder — light, then medium, then heavy", () => {
     // however many links came after it in the data.
     const reaction = (state: string): string | undefined => goku().states[state].onHit;
     expect(reaction("punch")).toBe("hurt_chain");
-    expect(reaction("kick_mid")).toBe("hurt_chain");
-    expect(reaction("kick_thrust")).toBe("hurt_chain");
     expect(reaction("kick_high")).toBe("hurt_heavy");
   });
 
   it("stops on a whiff, however hard the button is pressed", () => {
     const s = new Sim();
-    expect(s.frame({ medium: true })).toBe("kick_mid");
-    expect(s.frame({ heavy: true })).toBe("kick_mid");
-    expect(s.frame({ heavy: true })).toBe("kick_mid");
+    expect(s.frame({ attack: true })).toBe("punch");
+    expect(s.frame({ smash: true })).toBe("punch");
+    expect(s.frame({ attack: true })).toBe("punch");
   });
 
   it("stops when the player does not ask, however well it connected", () => {
     const s = new Sim();
-    s.frame({ medium: true });
-    expect(s.frame({}, { hitConfirmed: true })).toBe("kick_mid");
+    s.frame({ attack: true });
+    expect(s.frame({}, { hitConfirmed: true })).toBe("punch");
   });
 
   it("recovers to idle when the animation runs out instead", () => {
     const s = new Sim();
-    s.frame({ medium: true });
+    s.frame({ attack: true });
     expect(s.frame({}, { animEnded: true })).toBe("idle");
   });
+});
 
-  it("can be started again from idle after it ends", () => {
+describe("the guard is a stance the button holds", () => {
+  const holdGuard = { holding: { attack: false, guard: true, smash: false, blast: false } };
+  const isGuarding = (state: string): boolean => !!goku().states[state].guarding;
+
+  it("stands in guard while held, and leaves it when let go", () => {
     const s = new Sim();
-    s.frame({ medium: true });
-    s.frame({}, { animEnded: true });
-    expect(s.frame({ medium: true })).toBe("kick_mid");
+    expect(s.frame(holdGuard)).toBe("guard");
+    expect(s.frame(holdGuard)).toBe("guard");
+    expect(s.frame()).toBe("idle");
+  });
+
+  it("does not walk while guarding", () => {
+    const s = new Sim();
+    s.frame(holdGuard);
+    expect(s.frame({ fwd: true, ...holdGuard })).toBe("guard");
+    expect(s.frame({ back: true, ...holdGuard })).toBe("guard");
+  });
+
+  it("guards low with down held, from either stance", () => {
+    const s = new Sim();
+    s.frame(holdGuard);
+    expect(s.frame({ down: true, ...holdGuard })).toBe("guard_low");
+    expect(s.frame(holdGuard)).toBe("guard");
+    const crouched = new Sim();
+    crouched.frame({ down: true });
+    expect(crouched.frame({ down: true, ...holdGuard })).toBe("guard_low");
+  });
+
+  it("blocks only in guard — walking back is just walking now", () => {
+    expect(isGuarding("guard")).toBe(true);
+    expect(isGuarding("guard_low")).toBe(true);
+    expect(isGuarding("walk_back")).toBe(false);
+    expect(isGuarding("idle")).toBe(false);
+  });
+
+  it("keeps blocking through blockstun, so a blocked string stays blocked", () => {
+    expect(isGuarding("guard_hit")).toBe(true);
+    expect(isGuarding("guard_crouch")).toBe(true);
+    const s = new Sim();
+    s.frame(holdGuard);
+    s.frame(holdGuard);
+    s.force("guard_hit");
+    expect(s.frame(holdGuard, { animEnded: true })).toBe("guard");
   });
 });
 
@@ -423,32 +408,32 @@ describe("the string juggles what the uppercut launched", () => {
 });
 
 describe("the buttons reach the moves they are supposed to", () => {
-  it("light, medium and heavy each open their own attack from idle", () => {
-    expect(new Sim().frame({ light: true })).toBe("punch");
-    expect(new Sim().frame({ medium: true })).toBe("kick_mid");
-    expect(new Sim().frame({ heavy: true })).toBe("kick_high");
+  it("attack, smash and blast each open their own move from idle", () => {
+    expect(new Sim().frame({ attack: true })).toBe("punch");
+    expect(new Sim().frame({ smash: true })).toBe("kick_high");
+    expect(new Sim().frame({ blast: true })).toBe("ki_blast");
   });
 
-  it("crouching changes what medium and heavy do", () => {
+  it("crouching changes what attack and smash do", () => {
     const crouched = (): Sim => {
       const s = new Sim();
       s.frame({ down: true });
       return s;
     };
-    expect(crouched().frame({ medium: true })).toBe("kick_crouch");
-    expect(crouched().frame({ heavy: true })).toBe("uppercut");
+    expect(crouched().frame({ attack: true })).toBe("punch_knee");
+    expect(crouched().frame({ smash: true })).toBe("uppercut");
   });
 
-  it("special charges the ki blast, which then fires on its own", () => {
+  it("blast charges the ki blast, which then fires on its own", () => {
     const s = new Sim();
-    expect(s.frame({ special: true })).toBe("ki_blast");
+    expect(s.frame({ blast: true })).toBe("ki_blast");
     expect(s.frame({}, { animEnded: true })).toBe("ki_blast_fire");
   });
 
-  it("forward and special charge the kamehameha, and letting go fires it", () => {
-    const holdX = { holding: { light: false, medium: false, heavy: false, special: true } };
+  it("forward and blast charge the kamehameha, and letting go fires it", () => {
+    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true } };
     const s = new Sim();
-    expect(s.frame({ fwd: true, special: true, ...holdX })).toBe("kame_charge");
+    expect(s.frame({ fwd: true, blast: true, ...holdX })).toBe("kame_charge");
     // It is held, not pressed: the charge lasts exactly as long as the key does.
     expect(s.frame({ fwd: true, ...holdX })).toBe("kame_charge");
     expect(s.frame({ fwd: true })).toBe("kame_fire");
@@ -459,10 +444,10 @@ describe("the buttons reach the moves they are supposed to", () => {
     expect(s.frame({}, { animEnded: true })).toBe("idle");
   });
 
-  it("back and special charge the same beam, aimed up", () => {
-    const holdX = { holding: { light: false, medium: false, heavy: false, special: true } };
+  it("back and blast charge the same beam, aimed up", () => {
+    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true } };
     const s = new Sim();
-    expect(s.frame({ back: true, special: true, ...holdX })).toBe("kame_charge_up");
+    expect(s.frame({ back: true, blast: true, ...holdX })).toBe("kame_charge_up");
     expect(s.frame({ back: true })).toBe("kame_fire_up");
     expect(s.frame({ back: true }, { animEnded: true })).toBe("idle");
   });
@@ -494,15 +479,15 @@ describe("the buttons reach the moves they are supposed to", () => {
   });
 
   it("lets go of itself once the charge is full", () => {
-    const holdX = { holding: { light: false, medium: false, heavy: false, special: true } };
+    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true } };
     const s = new Sim();
-    s.frame({ fwd: true, special: true, ...holdX });
+    s.frame({ fwd: true, blast: true, ...holdX });
     expect(s.frame({ fwd: true, ...holdX }, { charged: true })).toBe("kame_fire");
   });
 
   it("but not on an empty meter — the shipped cost is what is checked", () => {
     const cost = goku().states.ki_blast.cost;
     expect(cost).toBeGreaterThan(0);
-    expect(new Sim().frame({ special: true }, { ki: (cost ?? 0) - 1 })).toBe("idle");
+    expect(new Sim().frame({ blast: true }, { ki: (cost ?? 0) - 1 })).toBe("idle");
   });
 });

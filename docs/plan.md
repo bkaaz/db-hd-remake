@@ -36,20 +36,15 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 **Settled 2026-09-26, described in [`combat.md`](./combat.md)** (*The buttons*,
 §5). This is the foundation; everything Burst Limit has beyond it is listed
-there as deferred. Three slices, in this order, each reviewed before the next:
+there as deferred. Two slices left, in this order, each reviewed before the next:
 
-1. **The buttons.** `input/keyboard.ts` goes from light/medium/heavy/special to
-   attack/smash/ki/guard, and guard stops being "hold back": it is the button,
-   standing and crouching, blocking high and low alike. Every trigger in
-   `states.json` follows. Keys: `A` attack, `S` smash, `X` ki, `Z` guard, so
-   charging stays on A+Z.
-   *Done when:* the fight plays as today on the new names, and guard works only
-   on its button.
-2. **The rush tree.** The attacks that exist, re-assigned: Attack walks the
-   string, Smash ends it at any depth; a shorter version crouching; one attack
-   and one smash in the air. No new sprites. *Done when:* `npm run chains` shows
+1. **The rush tree.** Attack walks the string, Smash ends it at any depth; a
+   shorter version crouching; one attack and one smash in the air. Built from
+   the sheet's animations, **not** from today's moves: their numbers were
+   working data and the owner holds none of them (2026-09-26). What stays
+   unassigned is listed by `npm run chains` and needs no other home. *Done when:* `npm run chains` shows
    the tree and every link in it holds.
-3. **Vanish.** Guard tapped just before a blow lands teleports behind the
+2. **Vanish.** Guard tapped just before a blow lands teleports behind the
    attacker, for ki — from neutral, guard, blockstun and the air, never from a
    reaction or one's own attack. The window is a number of frames, and the
    pure part (was the tap early enough) ships with its tests. *Done when:* a

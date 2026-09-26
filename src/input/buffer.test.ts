@@ -69,20 +69,20 @@ describe("InputBuffer", () => {
 
   it("lists what is still usable, longest window first", () => {
     const b = new InputBuffer(8);
-    b.press("light");
+    b.press("attack");
     b.tick();
-    b.press("medium");
+    b.press("guard");
     expect(b.live()).toEqual([
-      ["medium", 8],
-      ["light", 7],
+      ["guard", 8],
+      ["attack", 7],
     ]);
   });
 
   it("forgets a spent or expired press", () => {
     const b = new InputBuffer(2);
-    b.press("light");
-    b.press("medium");
-    b.consume("light");
+    b.press("attack");
+    b.press("guard");
+    b.consume("attack");
     b.tick();
     b.tick();
     expect(b.live()).toEqual([]);

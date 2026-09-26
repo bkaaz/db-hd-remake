@@ -163,7 +163,7 @@ mechanics that need them exist.
         "onHit": "hurt_chain",
         "hitstun": 15,
         "cancelBy": 8,
-        "transitions": [{ "when": ["cancelable", "pressed:medium"], "to": "kick_mid" }]
+        "transitions": [{ "when": ["cancelable", "pressed:attack"], "to": "punch_knee" }]
       }
     }
   },

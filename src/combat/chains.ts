@@ -52,7 +52,7 @@ export interface Entry {
   to: string;
   /** The state you are in when you press — `idle`, `crouch`, `walk_fwd`. */
   from: string;
-  /** The trigger as authored, e.g. `pressed:light` or `held:down + pressed:heavy`. */
+  /** The trigger as authored, e.g. `pressed:attack` or `held:down + pressed:smash`. */
   when: string;
 }
 

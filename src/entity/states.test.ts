@@ -7,7 +7,6 @@ import {
   effectsNamed,
   spawnsNamed,
   guardStateFor,
-  guardable,
   reactionFor,
   StateMachine,
   validateStates,
@@ -54,16 +53,16 @@ const NONE = {
   back: false,
   up: false,
   down: false,
-  light: false,
-  medium: false,
-  heavy: false,
-  special: false,
+  attack: false,
+  guard: false,
+  smash: false,
+  blast: false,
   qcf: false,
   qcb: false,
-  holding: { light: false, medium: false, heavy: false, special: false },
+  holding: { attack: false, guard: false, smash: false, blast: false },
 };
 const FWD = { ...NONE, fwd: true };
-const ATTACK = { ...NONE, light: true };
+const ATTACK = { ...NONE, attack: true };
 const UP = { ...NONE, up: true };
 
 /** Nothing happened to the entity this frame, and nobody is holding it. */
@@ -116,7 +115,7 @@ describe("validateStates", () => {
 
   it("accepts a `when` of several triggers", () => {
     const f = machine();
-    f.states.idle.transitions = [{ when: ["cancelable", "pressed:light"], to: "walk_fwd" }];
+    f.states.idle.transitions = [{ when: ["cancelable", "pressed:attack"], to: "walk_fwd" }];
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
@@ -164,7 +163,7 @@ describe("validateStates", () => {
 
   it("reports a malformed rank", () => {
     const f = machine();
-    (f.states.idle as { rank: unknown }).rank = "heavy";
+    (f.states.idle as { rank: unknown }).rank = "smash";
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "idle": "rank" must be a number, 0 or more',
     );
@@ -289,7 +288,7 @@ describe("validateStates", () => {
     // The classic authoring slip: forgetting to untick "loop" on an attack.
     const f = machine();
     f.states.punch = { anim: "walk", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     expect(validateStates(f, ANIMS).warnings).toContain(
       'state "punch": can never be left — animation "walk" loops, so animEnd never fires',
     );
@@ -298,7 +297,7 @@ describe("validateStates", () => {
   it("accepts the same state once its animation stops looping", () => {
     const f = machine();
     f.states.punch = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
@@ -342,7 +341,7 @@ describe("validateStates", () => {
   it("reports a hitstop that is not a frame count", () => {
     const f = machine();
     f.states.punch = { anim: "punch", hitstop: -1, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "punch": "hitstop" must be a number of game frames, 0 or more',
     );
@@ -351,14 +350,14 @@ describe("validateStates", () => {
   it("accepts a hitstop of zero — an attack that deliberately does not pause", () => {
     const f = machine();
     f.states.punch = { anim: "punch", hitstop: 0, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
   it("reports damage that is not a number", () => {
     const f = machine();
     f.states.punch = { anim: "punch", damage: -3, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toContain(
       'state "punch": "damage" must be a number, 0 or more',
     );
@@ -367,7 +366,7 @@ describe("validateStates", () => {
   it("accepts damage of zero — an attack that only moves the opponent", () => {
     const f = machine();
     f.states.punch = { anim: "punch", damage: 0, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
@@ -396,7 +395,7 @@ describe("validateStates", () => {
     // silently — the attack connects and nothing visible happens.
     const f = machine();
     f.states.punch = { anim: "punch", onHit: "hrut", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     const { errors, warnings } = validateStates(f, ANIMS);
     expect(errors).toEqual([]);
     expect(warnings).toContain(
@@ -409,7 +408,7 @@ describe("validateStates", () => {
     const f = machine();
     f.states.punch = { anim: "punch", onHit: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
     f.states.hurt = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:light", to: "punch" });
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
@@ -600,7 +599,7 @@ describe("the arithmetic of a blow, against the data we ship", () => {
 });
 
 /** idle ⇄ walk_fwd, plus an attack reached with the light button. */
-function withAttack(when: string | string[] = "pressed:light"): StatesFile {
+function withAttack(when: string | string[] = "pressed:attack"): StatesFile {
   const f = machine();
   f.states.punch = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
   f.states.idle.transitions?.push({ when, to: "punch" });
@@ -618,14 +617,14 @@ describe("StateMachine.pressSpent", () => {
   it("names the button a transition consumed, so it cannot fire a second move", () => {
     const sm = new StateMachine(withAttack());
     sm.update(ATTACK, QUIET);
-    expect(sm.pressSpent).toBe("light");
+    expect(sm.pressSpent).toBe("attack");
   });
 
   it("finds the button inside a conjunction", () => {
-    const sm = new StateMachine(withAttack(["cancelable", "pressed:light"]));
+    const sm = new StateMachine(withAttack(["cancelable", "pressed:attack"]));
     sm.update(ATTACK, { ...QUIET, hitConfirmed: true });
     expect(sm.current).toBe("punch");
-    expect(sm.pressSpent).toBe("light");
+    expect(sm.pressSpent).toBe("attack");
   });
 });
 
@@ -637,7 +636,7 @@ describe("cancelBy closes the window a chain fires in", () => {
       anim: "punch",
       cancelBy: 3,
       transitions: [
-        { when: ["cancelable", "pressed:medium"], to: "kick" },
+        { when: ["cancelable", "pressed:guard"], to: "kick" },
         { when: "animEnd", to: "idle" },
       ],
     };
@@ -645,7 +644,7 @@ describe("cancelBy closes the window a chain fires in", () => {
     return f;
   }
   const CONNECTED = { ...QUIET, hitConfirmed: true };
-  const MEDIUM = { ...NONE, medium: true };
+  const MEDIUM = { ...NONE, guard: true };
 
   it("lets the cancel through while the window is open", () => {
     const sm = new StateMachine(windowed());
@@ -687,7 +686,7 @@ describe("cancelBy closes the window a chain fires in", () => {
 });
 
 describe("a `when` of several triggers needs all of them", () => {
-  const CHAIN = ["cancelable", "pressed:light"];
+  const CHAIN = ["cancelable", "pressed:attack"];
 
   it("fires when both hold", () => {
     const sm = new StateMachine(withAttack(CHAIN));
@@ -710,7 +709,7 @@ describe("a `when` of several triggers needs all of them", () => {
   it("still honours a negation inside the list", () => {
     // `back` rather than `fwd`: idle already leaves on held:fwd, and the first
     // matching transition wins, so testing against it would prove nothing.
-    const sm = new StateMachine(withAttack(["!held:back", "pressed:light"]));
+    const sm = new StateMachine(withAttack(["!held:back", "pressed:attack"]));
     sm.update({ ...ATTACK, back: true }, QUIET);
     expect(sm.current).toBe("idle");
     sm.update(ATTACK, QUIET);
@@ -929,7 +928,7 @@ describe("StateMachine", () => {
   it("enters an attack on the button edge, not while it is held", () => {
     const f = machine();
     f.states.punch = { anim: "idle", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions = [{ when: "pressed:light", to: "punch" }];
+    f.states.idle.transitions = [{ when: "pressed:attack", to: "punch" }];
     const sm = new StateMachine(f);
     expect(sm.update(NONE, QUIET)).toBeNull();
     expect(sm.update(ATTACK, QUIET)).toBe("punch");
@@ -1049,15 +1048,15 @@ describe("a state that costs ki", () => {
       idle: {
         anim: "idle",
         transitions: [
-          { when: "pressed:special", to: "blast" },
-          { when: "pressed:light", to: "punch" },
+          { when: "pressed:blast", to: "blast" },
+          { when: "pressed:attack", to: "punch" },
         ],
       },
       blast: { anim: "blast", cost },
       punch: { anim: "punch" },
     },
   });
-  const SPECIAL = { ...NONE, special: true };
+  const SPECIAL = { ...NONE, blast: true };
 
   it("comes out when the meter covers it", () => {
     const sm = new StateMachine(machine(10));
@@ -1075,7 +1074,7 @@ describe("a state that costs ki", () => {
     const sm = new StateMachine(machine(10));
     // Both buttons in one frame: the special is unaffordable, so the punch —
     // listed after it — must still be allowed to fire.
-    sm.update({ ...SPECIAL, light: true }, { ...QUIET, ki: 0 });
+    sm.update({ ...SPECIAL, attack: true }, { ...QUIET, ki: 0 });
     expect(sm.current).toBe("punch");
   });
 });
@@ -1109,7 +1108,7 @@ describe("effectsNamed", () => {
   it("collects every effect the states name, without repeating one", () => {
     const states = file({
       punch: { anim: "punch", hitFx: "spark_1" },
-      heavy: { anim: "heavy", hitFx: "spark_2" },
+      smash: { anim: "smash", hitFx: "spark_2" },
       kick: { anim: "kick", hitFx: "spark_2" },
     });
     expect(effectsNamed(states).sort()).toEqual(["spark_1", "spark_2"]);
@@ -1120,21 +1119,22 @@ describe("effectsNamed", () => {
   });
 });
 
-describe("guardable", () => {
-  it("lets a fighter who is their own put a guard up", () => {
-    expect(guardable({ anim: "idle" })).toBe(true);
-    expect(guardable({ anim: "walk", rank: 0 })).toBe(true);
-    // Nothing to be in yet, at the very first frame of a match.
-    expect(guardable(undefined)).toBe(true);
+describe("guarding", () => {
+  it("refuses a reaction that blocks", () => {
+    // The rule that makes a combo a combo: a fighter a blow already holds
+    // cannot answer the next one, or every sequence is escapable.
+    const f = machine();
+    f.states.idle.rank = 1;
+    f.states.idle.guarding = true;
+    expect(validateStates(f, ANIMS).errors).toContain(
+      'state "idle": a reaction (rank 1) cannot be "guarding"',
+    );
   });
 
-  it("refuses a fighter a blow already has hold of", () => {
-    // The rule that makes a combo a combo: holding back during hitstun used to
-    // block the next blow, which made every sequence escapable by holding a
-    // direction — and all three scalings exist to end sequences that are not.
-    expect(guardable({ anim: "hurt", rank: 1 })).toBe(false);
-    expect(guardable({ anim: "knockdown", rank: 3 })).toBe(false);
-    expect(guardable({ anim: "downed", rank: 4 })).toBe(false);
+  it("lets a fighter who is their own block", () => {
+    const f = machine();
+    f.states.idle.guarding = true;
+    expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 });
 

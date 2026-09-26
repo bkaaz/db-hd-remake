@@ -106,7 +106,7 @@ export class Hud {
   private statusLine({ state, dummyAttacks, recording }: HudFrame): string {
     const { name } = this.setup;
     return (
-      `${name} · [←/→] walk · [↑] jump · [↓] crouch · [A] light [Z] medium [S] heavy [X] special · [A+Z] charge · ` +
+      `${name} · [←/→] walk · [↑] jump · [↓] crouch · [A] attack [S] smash [X] ki [Z] guard · [A+Z] charge · ` +
       `[B] boxes · [D] debug · [L] record: ${recording ? "ON" : "off"} · [T] dummy: ${dummyAttacks ? "on" : "off"} · state: ${state}`
     );
   }

@@ -9,20 +9,16 @@
       "turn": true,
       "transitions": [
         { "when": "held:down", "to": "crouch_down" },
-        { "when": ["held:light", "held:medium"], "to": "charge_start" },
-        { "when": ["held:fwd", "pressed:light"], "to": "punch_close" },
-        { "when": ["held:back", "pressed:light"], "to": "swipe" },
-        { "when": "pressed:light", "to": "punch" },
-        { "when": ["motion:qcf", "pressed:medium"], "to": "knee_rise" },
-        { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
-        { "when": ["held:back", "pressed:medium"], "to": "kick_low" },
-        { "when": ["held:fwd", "pressed:medium"], "to": "knee" },
-        { "when": "pressed:medium", "to": "kick_mid" },
-        { "when": ["held:back", "pressed:heavy"], "to": "kick_axe" },
-        { "when": "pressed:heavy", "to": "kick_high" },
-        { "when": ["held:fwd", "pressed:special"], "to": "kame_charge" },
-        { "when": ["held:back", "pressed:special"], "to": "kame_charge_up" },
-        { "when": "pressed:special", "to": "ki_blast" },
+        { "when": ["held:attack", "held:guard"], "to": "charge_start" },
+        { "when": "held:guard", "to": "guard" },
+        { "when": ["held:fwd", "pressed:attack"], "to": "punch_close" },
+        { "when": ["held:back", "pressed:attack"], "to": "swipe" },
+        { "when": "pressed:attack", "to": "punch" },
+        { "when": ["held:back", "pressed:smash"], "to": "kick_axe" },
+        { "when": "pressed:smash", "to": "kick_high" },
+        { "when": ["held:fwd", "pressed:blast"], "to": "kame_charge" },
+        { "when": ["held:back", "pressed:blast"], "to": "kame_charge_up" },
+        { "when": "pressed:blast", "to": "ki_blast" },
         { "when": "held:fwd", "to": "walk_fwd" },
         { "when": "held:back", "to": "walk_back" },
         { "when": "held:up", "to": "jump_up" }
@@ -34,16 +30,14 @@
       "turn": true,
       "transitions": [
         { "when": "held:down", "to": "crouch_down" },
-        { "when": ["held:light", "held:medium"], "to": "charge_start" },
-        { "when": ["held:fwd", "pressed:light"], "to": "punch_close" },
-        { "when": "pressed:light", "to": "punch" },
-        { "when": ["motion:qcf", "pressed:medium"], "to": "knee_rise" },
-        { "when": ["held:fwd", "pressed:medium"], "to": "knee" },
-        { "when": "pressed:medium", "to": "kick_mid" },
-        { "when": "pressed:heavy", "to": "kick_high" },
-        { "when": ["held:fwd", "pressed:special"], "to": "kame_charge" },
-        { "when": ["held:back", "pressed:special"], "to": "kame_charge_up" },
-        { "when": "pressed:special", "to": "ki_blast" },
+        { "when": ["held:attack", "held:guard"], "to": "charge_start" },
+        { "when": "held:guard", "to": "guard" },
+        { "when": ["held:fwd", "pressed:attack"], "to": "punch_close" },
+        { "when": "pressed:attack", "to": "punch" },
+        { "when": "pressed:smash", "to": "kick_high" },
+        { "when": ["held:fwd", "pressed:blast"], "to": "kame_charge" },
+        { "when": ["held:back", "pressed:blast"], "to": "kame_charge_up" },
+        { "when": "pressed:blast", "to": "ki_blast" },
         { "when": "held:up", "to": "jump_fwd" },
         { "when": "!held:fwd", "to": "idle" }
       ]
@@ -54,16 +48,14 @@
       "turn": true,
       "transitions": [
         { "when": "held:down", "to": "crouch_down" },
-        { "when": ["held:light", "held:medium"], "to": "charge_start" },
-        { "when": ["held:back", "pressed:light"], "to": "swipe" },
-        { "when": "pressed:light", "to": "punch" },
-        { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
-        { "when": ["held:back", "pressed:medium"], "to": "kick_low" },
-        { "when": "pressed:medium", "to": "kick_mid" },
-        { "when": ["held:back", "pressed:heavy"], "to": "kick_axe" },
-        { "when": "pressed:heavy", "to": "kick_high" },
-        { "when": ["held:back", "pressed:special"], "to": "kame_charge_up" },
-        { "when": "pressed:special", "to": "ki_blast" },
+        { "when": ["held:attack", "held:guard"], "to": "charge_start" },
+        { "when": "held:guard", "to": "guard" },
+        { "when": ["held:back", "pressed:attack"], "to": "swipe" },
+        { "when": "pressed:attack", "to": "punch" },
+        { "when": ["held:back", "pressed:smash"], "to": "kick_axe" },
+        { "when": "pressed:smash", "to": "kick_high" },
+        { "when": ["held:back", "pressed:blast"], "to": "kame_charge_up" },
+        { "when": "pressed:blast", "to": "ki_blast" },
         { "when": "held:up", "to": "jump_back" },
         { "when": "!held:back", "to": "idle" }
       ]
@@ -80,9 +72,8 @@
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
-        { "when": ["cancelable", "pressed:light"], "to": "punch_knee" },
-        { "when": ["cancelable", "pressed:medium"], "to": "kick_mid" },
-        { "when": ["cancelable", "pressed:heavy"], "to": "kick_high" },
+        { "when": ["cancelable", "pressed:attack"], "to": "punch_knee" },
+        { "when": ["cancelable", "pressed:smash"], "to": "kick_high" },
         { "when": "animEnd", "to": "idle" }
       ],
       "hitstop": 6
@@ -100,8 +91,7 @@
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
-        { "when": ["cancelable", "pressed:medium"], "to": "kick_thrust" },
-        { "when": ["cancelable", "pressed:heavy"], "to": "kick_high" },
+        { "when": ["cancelable", "pressed:smash"], "to": "kick_high" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -118,7 +108,7 @@
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
-        { "when": ["cancelable", "pressed:heavy"], "to": "kick_high" },
+        { "when": ["cancelable", "pressed:smash"], "to": "kick_high" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -193,8 +183,8 @@
       "loopSound": "charge_1",
       "loopEvery": 12,
       "transitions": [
-        { "when": "!held:light", "to": "idle" },
-        { "when": "!held:medium", "to": "idle" }
+        { "when": "!held:attack", "to": "idle" },
+        { "when": "!held:guard", "to": "idle" }
       ]
     },
     "kame_charge_up": {
@@ -206,7 +196,7 @@
       "sound": ["voice_kame", "charge_2"],
       "transitions": [
         { "when": "charged", "to": "kame_fire_up" },
-        { "when": "!held:special", "to": "kame_fire_up" }
+        { "when": "!held:blast", "to": "kame_fire_up" }
       ]
     },
     "kame_fire_up": {
@@ -228,7 +218,7 @@
       "sound": ["voice_kame", "charge_2"],
       "transitions": [
         { "when": "charged", "to": "kame_fire" },
-        { "when": "!held:special", "to": "kame_fire" }
+        { "when": "!held:blast", "to": "kame_fire" }
       ]
     },
     "kame_fire": {
@@ -267,11 +257,9 @@
       "crouching": true,
       "guard": "guard_crouch",
       "transitions": [
-        { "when": "pressed:light", "to": "punch_knee" },
-        { "when": ["motion:qcf", "pressed:medium"], "to": "knee_rise" },
-        { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
-        { "when": "pressed:medium", "to": "kick_crouch" },
-        { "when": "pressed:heavy", "to": "uppercut" },
+        { "when": "held:guard", "to": "guard_low" },
+        { "when": "pressed:attack", "to": "punch_knee" },
+        { "when": "pressed:smash", "to": "uppercut" },
         { "when": "!held:down", "to": "idle" },
         { "when": "animEnd", "to": "crouch" }
       ]
@@ -283,11 +271,9 @@
       "crouching": true,
       "guard": "guard_crouch",
       "transitions": [
-        { "when": "pressed:light", "to": "punch_knee" },
-        { "when": ["motion:qcf", "pressed:medium"], "to": "knee_rise" },
-        { "when": ["motion:qcb", "pressed:medium"], "to": "hop_lunge" },
-        { "when": "pressed:medium", "to": "kick_crouch" },
-        { "when": "pressed:heavy", "to": "uppercut" },
+        { "when": "held:guard", "to": "guard_low" },
+        { "when": "pressed:attack", "to": "punch_knee" },
+        { "when": "pressed:smash", "to": "uppercut" },
         { "when": "!held:down", "to": "idle" }
       ]
     },
@@ -449,8 +435,7 @@
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
-        { "when": ["cancelable", "pressed:medium"], "to": "kick_crouch" },
-        { "when": ["cancelable", "pressed:heavy"], "to": "uppercut" },
+        { "when": ["cancelable", "pressed:smash"], "to": "uppercut" },
         { "when": "animEnd", "to": "crouch" }
       ],
       "hitstop": 6
@@ -468,7 +453,7 @@
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
-        { "when": ["cancelable", "pressed:medium"], "to": "kick_air" },
+        { "when": ["cancelable", "pressed:smash"], "to": "kick_air" },
         { "when": "landed", "to": "idle" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" }
@@ -549,11 +534,36 @@
         { "when": "landed", "to": "bounce" }
       ]
     },
+    "guard": {
+      "anim": "guard_hit",
+      "vel": [0, 0],
+      "turn": true,
+      "guarding": true,
+      "transitions": [
+        { "when": "held:down", "to": "guard_low" },
+        { "when": "held:attack", "to": "charge_start" },
+        { "when": "!held:guard", "to": "idle" }
+      ]
+    },
+    "guard_low": {
+      "anim": "guard_crouch",
+      "vel": [0, 0],
+      "turn": true,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "guarding": true,
+      "transitions": [
+        { "when": "!held:down", "to": "guard" },
+        { "when": "!held:guard", "to": "crouch" }
+      ]
+    },
     "guard_hit": {
       "anim": "guard_hit",
       "vel": [-2.0, 0],
       "turn": false,
+      "guarding": true,
       "transitions": [
+        { "when": ["animEnd", "held:guard"], "to": "guard" },
         { "when": "animEnd", "to": "idle" }
       ]
     },
@@ -563,7 +573,9 @@
       "turn": false,
       "crouching": true,
       "guard": "guard_crouch",
+      "guarding": true,
       "transitions": [
+        { "when": ["animEnd", "held:guard"], "to": "guard_low" },
         { "when": "animEnd", "to": "crouch" }
       ]
     },
@@ -675,8 +687,8 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:light", "to": "punch_air" },
-        { "when": "pressed:medium", "to": "kick_air" },
+        { "when": "pressed:attack", "to": "punch_air" },
+        { "when": "pressed:smash", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "falling", "to": "jump_up_fall" },
         { "when": "landed", "to": "idle" }
@@ -689,8 +701,8 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:light", "to": "punch_air" },
-        { "when": "pressed:medium", "to": "kick_air" },
+        { "when": "pressed:attack", "to": "punch_air" },
+        { "when": "pressed:smash", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_fwd_air" },
         { "when": "landed", "to": "idle" }
@@ -702,8 +714,8 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:light", "to": "punch_air" },
-        { "when": "pressed:medium", "to": "kick_air" },
+        { "when": "pressed:attack", "to": "punch_air" },
+        { "when": "pressed:smash", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" },
         { "when": "landed", "to": "idle" }
@@ -715,8 +727,8 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:light", "to": "punch_air" },
-        { "when": "pressed:medium", "to": "kick_air" },
+        { "when": "pressed:attack", "to": "punch_air" },
+        { "when": "pressed:smash", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_back_air" },
         { "when": "landed", "to": "idle" }
@@ -728,8 +740,8 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:light", "to": "punch_air" },
-        { "when": "pressed:medium", "to": "kick_air" },
+        { "when": "pressed:attack", "to": "punch_air" },
+        { "when": "pressed:smash", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "fall" },
         { "when": "landed", "to": "idle" }
@@ -740,8 +752,8 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:light", "to": "punch_air" },
-        { "when": "pressed:medium", "to": "kick_air" },
+        { "when": "pressed:attack", "to": "punch_air" },
+        { "when": "pressed:smash", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" }
       ]
@@ -751,8 +763,8 @@
       "airborne": true,
       "turn": false,
       "transitions": [
-        { "when": "pressed:light", "to": "punch_air" },
-        { "when": "pressed:medium", "to": "kick_air" },
+        { "when": "pressed:attack", "to": "punch_air" },
+        { "when": "pressed:smash", "to": "kick_air" },
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" }
       ]

@@ -19,7 +19,7 @@ const swing: AnimSteps = {
     { dur: 4, boxes: [{ type: "hurt" }] },
   ],
 };
-const anims: Record<string, AnimSteps> = { light: swing, medium: swing, heavy: swing };
+const anims: Record<string, AnimSteps> = { attack: swing, blast: swing, smash: swing };
 
 function file(): StatesFile {
   return {
@@ -29,20 +29,20 @@ function file(): StatesFile {
       hurt: { anim: "hurt", rank: 1, vel: [-1, 0] },
       floored: { anim: "hurt", rank: 3 },
       a: {
-        anim: "light",
+        anim: "attack",
         hitstun: 20,
         cancelBy: 8,
         onHit: "hurt",
-        transitions: [{ when: ["cancelable", "pressed:medium"], to: "b" }],
+        transitions: [{ when: ["cancelable", "pressed:blast"], to: "b" }],
       },
       b: {
-        anim: "medium",
+        anim: "blast",
         hitstun: 20,
         cancelBy: 8,
         onHit: "hurt",
-        transitions: [{ when: ["cancelable", "pressed:heavy"], to: "c" }],
+        transitions: [{ when: ["cancelable", "pressed:smash"], to: "c" }],
       },
-      c: { anim: "heavy", hitstun: 20, onHit: "floored", transitions: [] },
+      c: { anim: "smash", hitstun: 20, onHit: "floored", transitions: [] },
     },
   };
 }
@@ -50,17 +50,17 @@ function file(): StatesFile {
 describe("chainLinks", () => {
   it("finds only the transitions that are cancels", () => {
     const f = file();
-    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    f.states.idle.transitions = [{ when: "pressed:attack", to: "a" }];
     expect(chainLinks(f, anims, 12).map((l) => `${l.from}→${l.to}`)).toEqual(["a→b", "b→c"]);
   });
 
   it("names the button, because two cancels out of one attack differ only by it", () => {
     const f = file();
     f.states.a.transitions = [
-      { when: ["cancelable", "pressed:medium"], to: "b" },
-      { when: ["cancelable", "pressed:heavy"], to: "c" },
+      { when: ["cancelable", "pressed:blast"], to: "b" },
+      { when: ["cancelable", "pressed:smash"], to: "c" },
     ];
-    expect(chainLinks(f, anims, 12).map((l) => `${l.on}→${l.to}`)).toContain("heavy→c");
+    expect(chainLinks(f, anims, 12).map((l) => `${l.on}→${l.to}`)).toContain("smash→c");
   });
 
   it("does the sum a link lives or dies by", () => {
@@ -94,11 +94,11 @@ describe("chainLinks", () => {
     // and in two, and the two-step route is where scaling has taken the most.
     const f = file();
     f.states.opener = {
-      anim: "light",
+      anim: "attack",
       hitstun: 20,
       cancelBy: 8,
       onHit: "hurt",
-      transitions: [{ when: ["cancelable", "pressed:medium"], to: "a" }],
+      transitions: [{ when: ["cancelable", "pressed:blast"], to: "a" }],
     };
     const toC = chainLinks(f, anims, 12).find((l) => l.to === "c");
     expect(toC?.depth).toBe(2);
@@ -121,7 +121,7 @@ describe("chainLinks", () => {
 
   it("survives a chain authored as a loop", () => {
     const f = file();
-    f.states.c.transitions = [{ when: ["cancelable", "pressed:light"], to: "a" }];
+    f.states.c.transitions = [{ when: ["cancelable", "pressed:attack"], to: "a" }];
     expect(() => chainLinks(f, anims, 12)).not.toThrow();
   });
 });
@@ -129,30 +129,30 @@ describe("chainLinks", () => {
 describe("entriesOf", () => {
   it("names the ways into a string that are not cancels", () => {
     const f = file();
-    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
-    f.states.crouch = { anim: "crouch", transitions: [{ when: "pressed:medium", to: "b" }] };
+    f.states.idle.transitions = [{ when: "pressed:attack", to: "a" }];
+    f.states.crouch = { anim: "crouch", transitions: [{ when: "pressed:blast", to: "b" }] };
     expect(entriesOf(f)).toEqual([
-      { to: "a", from: "idle", when: "pressed:light" },
-      { to: "b", from: "crouch", when: "pressed:medium" },
+      { to: "a", from: "idle", when: "pressed:attack" },
+      { to: "b", from: "crouch", when: "pressed:blast" },
     ]);
   });
 
   it("spells out a conjunction, because that is the input", () => {
     const f = file();
-    f.states.idle.transitions = [{ when: ["held:down", "pressed:heavy"], to: "c" }];
-    expect(entriesOf(f)[0].when).toBe("held:down + pressed:heavy");
+    f.states.idle.transitions = [{ when: ["held:down", "pressed:smash"], to: "c" }];
+    expect(entriesOf(f)[0].when).toBe("held:down + pressed:smash");
   });
 
   it("ignores links between attacks — those are cancels, not ways in", () => {
     const f = file();
-    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    f.states.idle.transitions = [{ when: "pressed:attack", to: "a" }];
     // a → b is a cancel and already in the graph; it must not be listed twice.
     expect(entriesOf(f).map((e) => e.to)).toEqual(["a"]);
   });
 
   it("says nothing about a state nothing leads to", () => {
     const f = file();
-    f.states.idle.transitions = [{ when: "pressed:light", to: "hurt" }];
+    f.states.idle.transitions = [{ when: "pressed:attack", to: "hurt" }];
     expect(entriesOf(f)).toEqual([]);
   });
 });
@@ -160,18 +160,18 @@ describe("entriesOf", () => {
 describe("openings", () => {
   it("gathers the neutral states that open the same attack the same way", () => {
     const f = file();
-    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
-    f.states.walk = { anim: "walk", transitions: [{ when: "pressed:light", to: "a" }] };
-    expect(openings(f)).toEqual([{ to: "a", when: "pressed:light", from: ["idle", "walk"] }]);
+    f.states.idle.transitions = [{ when: "pressed:attack", to: "a" }];
+    f.states.walk = { anim: "walk", transitions: [{ when: "pressed:attack", to: "a" }] };
+    expect(openings(f)).toEqual([{ to: "a", when: "pressed:attack", from: ["idle", "walk"] }]);
   });
 
   it("keeps two different inputs apart", () => {
     const f = file();
     f.states.idle.transitions = [
-      { when: "pressed:light", to: "a" },
-      { when: ["held:down", "pressed:light"], to: "b" },
+      { when: "pressed:attack", to: "a" },
+      { when: ["held:down", "pressed:attack"], to: "b" },
     ];
-    expect(openings(f).map((o) => o.when)).toEqual(["pressed:light", "held:down + pressed:light"]);
+    expect(openings(f).map((o) => o.when)).toEqual(["pressed:attack", "held:down + pressed:attack"]);
   });
 });
 
@@ -191,12 +191,12 @@ describe("unassigned", () => {
     const f = file();
     // `a` is opened from idle, `b` and `c` are cancelled into: all three are
     // reachable, so nothing is waiting.
-    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    f.states.idle.transitions = [{ when: "pressed:attack", to: "a" }];
     expect(unassigned(f)).toEqual([]);
 
     // A move that exists and nothing reaches — the state the moveset pass
     // leaves behind, and the one that has no arrow to notice it by.
-    f.states.parked = { anim: "heavy", hitstun: 20, onHit: "hurt", transitions: [] };
+    f.states.parked = { anim: "smash", hitstun: 20, onHit: "hurt", transitions: [] };
     expect(unassigned(f)).toEqual(["parked"]);
   });
 
@@ -204,7 +204,7 @@ describe("unassigned", () => {
     // `hurt` and `floored` are reached by `onHit`, never by a transition, so a
     // rule about transitions alone would report both as waiting for a button.
     const f = file();
-    f.states.idle.transitions = [{ when: "pressed:light", to: "a" }];
+    f.states.idle.transitions = [{ when: "pressed:attack", to: "a" }];
     expect(unassigned(f)).not.toContain("hurt");
     expect(unassigned(f)).not.toContain("floored");
   });

@@ -28,38 +28,38 @@ const snapshot = (buffer: [string, number][]): EntityDebug => ({
 
 describe("pressChanges", () => {
   it("says nothing when the buffer did not change", () => {
-    const same = snapshot([["medium", 5]]);
+    const same = snapshot([["blast", 5]]);
     expect(pressChanges("P1", same, same)).toEqual([]);
   });
 
   it("reports a press arriving", () => {
-    expect(pressChanges("P1", snapshot([]), snapshot([["medium", 8]]))).toEqual(["P1 press medium"]);
+    expect(pressChanges("P1", snapshot([]), snapshot([["blast", 8]]))).toEqual(["P1 press blast"]);
   });
 
   it("calls it spent when it went with frames still on it", () => {
     // A transition fired on it — the normal, uninteresting case.
-    expect(pressChanges("P1", snapshot([["medium", 5]]), snapshot([]))).toEqual([
-      "P1 press medium spent",
+    expect(pressChanges("P1", snapshot([["blast", 5]]), snapshot([]))).toEqual([
+      "P1 press blast spent",
     ]);
   });
 
   it("calls it expired when it went on its last frame", () => {
     // The interesting failure: the player asked and nothing was listening.
-    expect(pressChanges("P1", snapshot([["medium", 1]]), snapshot([]))).toEqual([
-      "P1 press medium EXPIRED unused",
+    expect(pressChanges("P1", snapshot([["blast", 1]]), snapshot([]))).toEqual([
+      "P1 press blast EXPIRED unused",
     ]);
   });
 
   it("handles several buttons at once", () => {
     const was = snapshot([
-      ["medium", 4],
-      ["heavy", 1],
+      ["blast", 4],
+      ["smash", 1],
     ]);
-    const now = snapshot([["light", 8]]);
+    const now = snapshot([["attack", 8]]);
     expect(pressChanges("P2", was, now)).toEqual([
-      "P2 press light",
-      "P2 press medium spent",
-      "P2 press heavy EXPIRED unused",
+      "P2 press attack",
+      "P2 press blast spent",
+      "P2 press smash EXPIRED unused",
     ]);
   });
 });

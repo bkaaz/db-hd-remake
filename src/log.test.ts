@@ -26,10 +26,10 @@ describe("what a recording says it is of", () => {
     // is edited freely — two recordings a week apart would both call themselves
     // "mode 0" and describe different fights.
     const out = capture();
-    describes(['debug mode 2: {"p2":{"does":["medium 20"]}}']);
+    describes(['debug mode 2: {"p2":{"does":["guard 20"]}}']);
     startRecording();
     expect(out.lines[0]).toContain("# recording started");
-    expect(out.lines[1]).toBe('# debug mode 2: {"p2":{"does":["medium 20"]}}');
+    expect(out.lines[1]).toBe('# debug mode 2: {"p2":{"does":["guard 20"]}}');
     expect(out.resets[0]).toBe(true);
   });
 
