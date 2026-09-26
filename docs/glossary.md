@@ -1,7 +1,7 @@
 # Glossary
 
 Words this project uses constantly and defines nowhere else. Half of them are
-the genre's, half are ours — `cancelBy`, `rank`, `smash` mean what *this* repo
+the genre's, half are ours — `cancelBy`, `rank`, `relaunch` mean what *this* repo
 says they mean, and no external glossary would tell you.
 
 **One line per term, plus where the real explanation lives.** If an entry needs
@@ -73,7 +73,7 @@ charge sphere are not built — see `plan.md`. → `combat.md` §Buttons
 
 **Launcher** — a blow that lifts a grounded opponent into a juggle instead of
 flooring them. The reaction is `launched`, the opposite end of the same axis as
-**Slam**; the attack carries `smash`, so past the budget it still hits and
+**Slam**; the attack carries `relaunch`, so past the budget it still hits and
 simply stops lifting. → `combat.md` §1, §4
 
 **Link** — hitting again *after* your attack has fully played out, because the
@@ -97,6 +97,11 @@ knockdown 3, on the floor 4, and 0 for a fighter who is their own. A blow never
 lowers the rank the defender is already in, an equal rank re-enters, and rank 0
 is also what resets the combo counter and what decides you may still guard.
 → `combat.md` §7, `states.ts` (`reactionFor`, `guardable`)
+
+**Relaunch** — a blow allowed to *re*-launch or re-floor a body that is already
+being juggled. Marked on the attack (`relaunch`; `smash` until 2026-09-26), spent from a budget of two per
+combo; past the budget it still hits and still hurts, it just stops lifting.
+→ `combat.md` §4
 
 **Rehit** — how many frames before a blow may connect **again**, while its hit
 box is still out (`rehit` on the state). Absent means one swing lands once. It is
@@ -122,14 +127,8 @@ body where it stands instead of lifting it, and its air redirect `slam_air`
 drives an already-juggled body into the floor. The opposite end of the same axis
 as an uppercut's launch. → `combat.md` (The buttons)
 
-**Smash button** — the Burst Limit button that ends a rush. **Not the same thing
-as `smash`** below, which is a flag on any blow and is being renamed `relaunch`
-for exactly that reason (`plan.md`). → `combat.md` (The buttons)
-
-**Smash** — a blow allowed to *re*-launch or re-floor a body that is already
-being juggled. Marked on the attack (`smash`), spent from a budget of two per
-combo; past the budget it still hits and still hurts, it just stops lifting.
-→ `combat.md` §4
+**Smash** — the Burst Limit button that ends a rush. Not a flag: a smash may or
+may not carry `relaunch`. → `combat.md` (The buttons)
 
 **Spawn** — anything a state brings into the world: a hit spark, an aura, a ki
 blast. Not a kind of object — it is an ordinary `Entity`, authored in

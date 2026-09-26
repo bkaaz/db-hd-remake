@@ -1,7 +1,7 @@
 /**
  * How much a combo's Nth blow is worth — the soft half of the limits.
  *
- * The hard rules refuse things: rank refuses a reaction, the smash limit refuses
+ * The hard rules refuse things: rank refuses a reaction, the relaunch limit refuses
  * a lift. Scaling refuses nothing. It makes a long combo *worth* less than a
  * short one, so a fifteen-hit sequence is a display of skill rather than a round
  * won by touching somebody once.

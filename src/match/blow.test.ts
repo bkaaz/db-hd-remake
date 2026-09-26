@@ -27,7 +27,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackDamage: 7,
     attackHitstop: 6,
     attackReaction: "hurt",
-    attackSmash: false,
+    attackRelaunch: false,
     attackHitstun: 12,
     attackFx: "spark_1",
     attackSounds: { hit: "hit_1", block: "block_1" },
@@ -87,7 +87,7 @@ describe("landBlow", () => {
     expect(defender.hurtBy).toHaveBeenCalledWith(7);
     expect(defender.gotHit).toHaveBeenCalledWith({
       reaction: "hurt",
-      smash: false,
+      relaunch: false,
       hitstun: 12,
     });
   });
@@ -148,10 +148,10 @@ describe("landBlow", () => {
   });
 
   it("tells the defender when the blow may lift them", () => {
-    const attacker = body("hit", { attackSmash: true });
+    const attacker = body("hit", { attackRelaunch: true });
     const defender = body("hurt");
     landBlow(attacker, defender, context());
-    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ smash: true }));
+    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ relaunch: true }));
   });
 
   it("hands over how long the blow holds, not how long the pose lasts", () => {

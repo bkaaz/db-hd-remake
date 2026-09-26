@@ -73,7 +73,7 @@ export interface Blow {
   /** The reaction the attacker's state names, if any; the defender's default otherwise. */
   reaction?: string;
   /** Whether it may lift or floor a body that is already helpless. */
-  smash: boolean;
+  relaunch: boolean;
   /** Game frames the defender is held helpless for. */
   hitstun: number;
 }
@@ -380,8 +380,8 @@ export class Entity {
   }
 
   /** Whether this entity's current attack may lift a body that is already helpless. */
-  get attackSmash(): boolean {
-    return !!this.sm?.def.smash;
+  get attackRelaunch(): boolean {
+    return !!this.sm?.def.relaunch;
   }
 
   /** Frames to freeze both fighters for when this entity's attack connects. */
@@ -510,17 +510,17 @@ export class Entity {
 
   gotHit(blow: Blow): boolean {
     if (!this.def.states) return false;
-    // A smash spends from a budget the combo owns, and the budget is checked
+    // A relaunch spends from a budget the combo owns, and the budget is checked
     // before the reaction is chosen: a blow past the limit is refused for the
     // same reason a jab at a floored fighter is, and looks the same from here.
-    if (blow.smash && !this.combo.smashable) return false;
+    if (blow.relaunch && !this.combo.canRelaunch) return false;
     const state = reactionFor(blow.reaction, this.def.states, this.sm?.def);
     if (state === undefined) return false;
     // Read before entering anything: arriving in a state can reset the combo,
     // and the hold this blow earns is decided by the beating up to it.
     const hits = this.combo.hits;
     // Counted only now, because a reaction rank refused changed nothing.
-    if (blow.smash) this.combo.smash();
+    if (blow.relaunch) this.combo.relaunch();
     if (!this.forceState(state)) return false;
     // After entering, because arriving in a state clears the clock — and this
     // blow's hold is the one thing about the reaction the blow gets to decide.

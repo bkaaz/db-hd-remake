@@ -83,7 +83,7 @@ export function landBlow(
     // second blow.
     defender.gotHit({
       reaction: attacker.attackReaction,
-      smash: attacker.attackSmash,
+      relaunch: attacker.attackRelaunch,
       hitstun: attacker.attackHitstun,
     });
     dealt = defender.hurtBy(attacker.attackDamage);

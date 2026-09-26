@@ -29,12 +29,12 @@
  * fight, not a property of a body: a juggle limit one fighter could opt out of
  * is not a limit.
  */
-export const SMASH_LIMIT = 2;
+export const RELAUNCH_LIMIT = 2;
 
 export class Combo {
   private count = 0;
   private total = 0;
-  private smashes = 0;
+  private relaunches = 0;
   /** Severity of the state the fighter is in — 0 while they have control. */
   private rank = 0;
 
@@ -50,7 +50,7 @@ export class Combo {
 
   /** Times this fighter has been lifted *again* since they last had control. */
   get lifts(): number {
-    return this.smashes;
+    return this.relaunches;
   }
 
   /**
@@ -67,8 +67,8 @@ export class Combo {
    * the opener could be eaten by a budget it had no part in spending. Rank 0 is
    * exactly "this fighter is their own", which is the same fact the reset uses.
    */
-  get smashable(): boolean {
-    return this.rank === 0 || this.smashes < SMASH_LIMIT;
+  get canRelaunch(): boolean {
+    return this.rank === 0 || this.relaunches < RELAUNCH_LIMIT;
   }
 
   /** A blow landed on this fighter. Blocked blows are not combo hits. */
@@ -86,8 +86,8 @@ export class Combo {
    * either: one that rank refused changed nothing, so it has no business
    * spending anything.
    */
-  smash(): void {
-    if (this.rank > 0) this.smashes++;
+  relaunch(): void {
+    if (this.rank > 0) this.relaunches++;
   }
 
   /**
@@ -100,7 +100,7 @@ export class Combo {
     if (rank === 0) {
       this.count = 0;
       this.total = 0;
-      this.smashes = 0;
+      this.relaunches = 0;
     }
   }
 }

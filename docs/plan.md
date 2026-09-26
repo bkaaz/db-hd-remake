@@ -36,13 +36,7 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 **Settled 2026-09-26, described in [`combat.md`](./combat.md)** (*The buttons*,
 §5). This is the foundation; everything Burst Limit has beyond it is listed
-there as deferred. Four slices, in this order, each reviewed before the next:
-
-0. **Rename the `smash` flag to `relaunch`** (owner, 2026-09-26). "Smash" is
-   the button now, and a flag of the same name on blows that may or may not come
-   from it would be misread in every `states.json`. A pure rename — field,
-   `SMASH_LIMIT`, tests, docs; ADRs keep the old word, being dated. *Done when:*
-   `grep -rw smash src data` finds only the button.
+there as deferred. Three slices, in this order, each reviewed before the next:
 
 1. **The buttons.** `input/keyboard.ts` goes from light/medium/heavy/special to
    attack/smash/ki/guard, and guard stops being "hold back": it is the button,
@@ -138,7 +132,7 @@ Damage and hitstun scaling both landed 2026-08-16 (`src/combat/scaling.ts`): a
 long combo is worth visibly less than a short one, and a ground loop now ends
 because the defender recovers first. **Launch is the one left** — each successive
 lift raises less, so the body falls out of a juggle instead of being refused a
-hit. Until it exists the smash limit does that job alone, which is why it reads
+hit. Until it exists the relaunch limit does that job alone, which is why it reads
 as a wall rather than as a net under the curve.
 
 It hangs off `Combo.lifts`, which already counts re-launches on the defender and

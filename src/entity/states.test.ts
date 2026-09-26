@@ -178,25 +178,25 @@ describe("validateStates", () => {
     );
   });
 
-  it("reports a malformed smash", () => {
+  it("reports a malformed relaunch", () => {
     const f = machine();
-    (f.states.idle as { smash: unknown }).smash = "yes";
-    expect(validateStates(f, ANIMS).errors).toContain('state "idle": "smash" must be true or false');
+    (f.states.idle as { relaunch: unknown }).relaunch = "yes";
+    expect(validateStates(f, ANIMS).errors).toContain('state "idle": "relaunch" must be true or false');
   });
 
-  it("warns about a smash whose reaction cannot lift anybody", () => {
+  it("warns about a relaunch whose reaction cannot lift anybody", () => {
     // The flag on the wrong half of a pair: it reads as a launcher and behaves
     // like a jab, and nothing says so until a juggle refuses to end.
     const f = machine();
     f.states.hurt = { anim: "hurt", rank: 1, transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.smash = true;
+    f.states.idle.relaunch = true;
     f.states.idle.onHit = "hurt";
     expect(validateStates(f, ANIMS).warnings).toContain(
-      'state "idle": "smash" but its reaction "hurt" neither launches nor has an air version',
+      'state "idle": "relaunch" but its reaction "hurt" neither launches nor has an air version',
     );
   });
 
-  it("stays quiet about a smash whose reaction launches", () => {
+  it("stays quiet about a relaunch whose reaction launches", () => {
     const f = machine();
     f.states.knockdown = {
       anim: "hurt",
@@ -205,9 +205,9 @@ describe("validateStates", () => {
       airborne: true,
       transitions: [{ when: "landed", to: "idle" }],
     };
-    f.states.idle.smash = true;
+    f.states.idle.relaunch = true;
     f.states.idle.onHit = "knockdown";
-    expect(validateStates(f, ANIMS).warnings.filter((w) => w.includes("smash"))).toEqual([]);
+    expect(validateStates(f, ANIMS).warnings.filter((w) => w.includes("relaunch"))).toEqual([]);
   });
 
   it("reports a malformed invulnerable", () => {

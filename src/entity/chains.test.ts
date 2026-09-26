@@ -410,12 +410,12 @@ describe("the string juggles what the uppercut launched", () => {
     }
   });
 
-  it("marks as a smash exactly the blows meant to floor a body", () => {
+  it("marks as a relaunch exactly the blows meant to floor a body", () => {
     // The budget in src/combat/combo.ts is spent by these and nothing else, so
     // a new launcher arriving unmarked is a loop nobody notices until it is
-    // played. The list is short on purpose: a chain link is not a smash.
+    // played. The list is short on purpose: a chain link is not a relaunch.
     const marked = Object.entries(goku().states)
-      .filter(([, def]) => def.smash)
+      .filter(([, def]) => def.relaunch)
       .map(([name]) => name)
       .sort();
     expect(marked).toEqual(["kick_axe", "kick_high", "knee_rise", "uppercut"]);

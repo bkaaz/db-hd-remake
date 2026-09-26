@@ -145,7 +145,7 @@ follow-up arrives. 4.0 buys 27. **A launcher is worth checking both ways** — a
 lift tuned only against the follow-up is a number that breaks when the animation
 is retimed.
 
-The attack carries `smash`, like every launcher: past the budget it still hits
+The attack carries `relaunch`, like every launcher: past the budget it still hits
 and still costs health, it just stops lifting (§4).
 
 **A blow may land more than once, and how often is on the blow** (2026-08-23,
@@ -169,9 +169,9 @@ Three things come with it, and none is the field's problem:
 - **Every hit freezes for `hitstop`**, so the total is what should match a single
   blow's. `knee_jump` hits twice at 5 rather than once at 12, and the arc it
   stops is the reason (see `kick_axe` above).
-- **`rehit` with `smash` burns the relaunch budget in two hits** and every hit
+- **`rehit` with `relaunch` burns the budget in two hits** and every hit
   after that is refused outright. The validator warns; a beam should simply not
-  be a smash.
+  be a relaunch.
 
 **A held blow cannot be answered by holding back** (2026-08-16, `guardable` in
 `states.ts`): rank above zero is exactly "somebody else put me here", and a
@@ -218,9 +218,9 @@ scale of the authoring ahead: three curves in one file, versus a juggle cost to
 be filled in on each of several hundred moves that do not exist yet. The second
 kind of system does not get finished.
 
-### 4. Smash — the hard limit that scaling cannot give
+### 4. Relaunch — the hard limit that scaling cannot give
 
-**Built 2026-08-15** (`smash: true` on the blow, `SMASH_LIMIT` on the counter).
+**Built 2026-08-15** (`relaunch: true` on the blow, `RELAUNCH_LIMIT` on the counter; named `smash` until 2026-09-26, when Smash became a button).
 Scaling is soft: it makes a fourth uppercut weak, never impossible. Some things
 should be impossible. A blow marked as able to **re-launch or re-knock down**
 spends from a budget of two per combo. Past the limit such a blow still hits and
@@ -243,8 +243,8 @@ scaling landed on 2026-08-16, so a long combo is no longer a round; the two that
 would soften the *shape* of a juggle — hitstun and launch — are still unbuilt.
 Raising the number is not the answer to "can we juggle more". The curves are.
 
-Chain links that juggle are deliberately not smashes: a juggle keeps a body up
-where a smash puts it back down, and a string that spent the budget on its own
+Chain links that juggle are deliberately not relaunches: a juggle keeps a body up
+where a relaunch puts it back down, and a string that spent the budget on its own
 middle could not end with a knockdown.
 
 **Where the genre puts a cap like this**, so the position is not re-argued:
@@ -271,7 +271,7 @@ number of frames — is ours to tune.
 | in hitstun or any reaction (rank > 0, §7) | **no** |
 
 **So it does not escape a combo**, and that is what keeps the arithmetic above
-honest: nothing breaks a combo from inside, so scaling and the smash budget
+honest: nothing breaks a combo from inside, so scaling and the relaunch budget
 (§3, §4) are the only things that end one. A resource-bought escape would have
 been a floor with a hole in it anyway — a player out of ki would be juggled to
 death regardless of skill.
@@ -590,11 +590,11 @@ kick_high`. Three rules go with it:
 - **Design a string from its last link**, where scaling has taken the most. If
   the end holds, the beginning holds.
 
-**The ender floors an airborne body and spends a smash for it.** A blow may not
+**The ender floors an airborne body and spends a relaunch for it.** A blow may not
 lower the rank the defender is already in (§7), so the heavy's air reaction has
 to rank with a juggle rather than below it — below it, the blow lands, costs
 health and does nothing. And because it lifts a body that is already helpless it
-is marked `smash`, or an uppercut into a heavy into an uppercut would loop.
+is marked `relaunch`, or an uppercut into a heavy into an uppercut would loop.
 
 **Why the heavy is minus on hit and that is correct**: it pushes the defender
 out of everything's range, so acting second costs nothing. Its reaction had to
@@ -727,4 +727,4 @@ Not a queue — `plan.md` decides what happens when. But the dependencies are
 fixed: **hitstun** comes before anything that scales it, and **reaction rank**
 is independent of all of it and already fixes two known bugs. The counter and
 its three scalings come as one piece, because a counter nothing reads is dead
-weight. Smash, strings, corner knockback and Vanish each stand alone afterwards.
+weight. Relaunch, strings, corner knockback and Vanish each stand alone afterwards.

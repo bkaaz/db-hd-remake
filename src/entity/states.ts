@@ -170,7 +170,7 @@ export interface StateDef {
    * half a second, and ten hits should not mean ten authored steps. Three things
    * come with it and are the caller's problem, not this field's — every hit
    * scales the next (`combat/scaling.ts`), every hit freezes for `hitstop`, and
-   * a multi-hit blow marked `smash` burns the relaunch budget in two. See
+   * a multi-hit blow marked `relaunch` burns the relaunch budget in two. See
    * `combat.md`.
    */
   rehit?: number;
@@ -289,7 +289,7 @@ export interface StateDef {
   invulnerable?: boolean;
   /**
    * Whether this state's attack may lift or floor a body that is already
-   * helpless — a **smash**. Only `SMASH_LIMIT` of them land in one combo; past
+   * helpless — a **relaunch**. Only `RELAUNCH_LIMIT` of them land in one combo; past
    * that the blow still connects and still hurts, but the victim keeps falling
    * on the arc they were already on.
    *
@@ -297,7 +297,7 @@ export interface StateDef {
    * launches, because the two questions differ: every knockdown launches, and
    * only some of them are meant to be able to do it twice.
    */
-  smash?: boolean;
+  relaunch?: boolean;
   /**
    * Sound played on entering this state — the swing, not the impact. A list
    * when the moment is more than one noise: a ki blast is the shot *and* the
@@ -893,8 +893,8 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
     }
     // A blow that may land twice and lifts twice spends the whole relaunch
     // budget on itself, and every hit after the second is refused outright.
-    if (def.rehit !== undefined && def.smash) {
-      warnings.push(`${where}: "rehit" with "smash" — the relaunch budget is gone after two hits`);
+    if (def.rehit !== undefined && def.relaunch) {
+      warnings.push(`${where}: "rehit" with "relaunch" — the relaunch budget is gone after two hits`);
     }
     if (def.hitstun !== undefined && (typeof def.hitstun !== "number" || def.hitstun < 0)) {
       errors.push(`${where}: "hitstun" must be a number of game frames, 0 or more`);
@@ -937,8 +937,8 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
       errors.push(`${where}: "rank" must be a number, 0 or more`);
     }
 
-    if (def.smash !== undefined && typeof def.smash !== "boolean") {
-      errors.push(`${where}: "smash" must be true or false`);
+    if (def.relaunch !== undefined && typeof def.relaunch !== "boolean") {
+      errors.push(`${where}: "relaunch" must be true or false`);
     }
 
     if (def.invulnerable !== undefined && typeof def.invulnerable !== "boolean") {
@@ -952,12 +952,12 @@ export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>
       warnings.push(`${where}: invulnerable and has no transitions — nothing can end it`);
     }
 
-    // A smash is a blow allowed to lift a body twice, so one that cannot lift
+    // A relaunch is a blow allowed to lift a body twice, so one that cannot lift
     // at all is a line that does nothing — usually the flag put on the wrong
     // state of a pair, which is invisible until a juggle refuses to end.
-    if (def.smash && def.onHit && !(states[def.onHit]?.launch || states[def.onHit]?.ifAirborne)) {
+    if (def.relaunch && def.onHit && !(states[def.onHit]?.launch || states[def.onHit]?.ifAirborne)) {
       warnings.push(
-        `${where}: "smash" but its reaction "${def.onHit}" neither launches nor has an air version`,
+        `${where}: "relaunch" but its reaction "${def.onHit}" neither launches nor has an air version`,
       );
     }
 

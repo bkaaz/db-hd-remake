@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Combo, SMASH_LIMIT } from "./combo";
+import { Combo, RELAUNCH_LIMIT } from "./combo";
 
 describe("Combo", () => {
   it("starts at nothing", () => {
@@ -37,18 +37,18 @@ describe("Combo", () => {
     expect(c.damage).toBe(0);
   });
 
-  describe("the smash limit", () => {
+  describe("the relaunch limit", () => {
     /** One blow able to lift, landing on the fighter. False when it is refused. */
     const uppercut = (c: Combo): boolean => {
-      if (!c.smashable) return false;
-      c.smash();
+      if (!c.canRelaunch) return false;
+      c.relaunch();
       c.hit(14);
       c.enter(3); // knocked down
       return true;
     };
 
     it("allows a lift while there is budget left", () => {
-      expect(new Combo().smashable).toBe(true);
+      expect(new Combo().canRelaunch).toBe(true);
     });
 
     it("does not spend the budget on the blow that opens the combo", () => {
@@ -70,22 +70,22 @@ describe("Combo", () => {
       // Rank alone cannot: a knockdown replacing a knockdown is an equal rank,
       // which is exactly what a combo is allowed to do.
       const c = new Combo();
-      for (let i = 0; i < SMASH_LIMIT + 1; i++) expect(uppercut(c)).toBe(true);
+      for (let i = 0; i < RELAUNCH_LIMIT + 1; i++) expect(uppercut(c)).toBe(true);
       expect(uppercut(c)).toBe(false);
     });
 
     it("hands the budget back when the fighter has control again", () => {
       const c = new Combo();
-      for (let i = 0; i < SMASH_LIMIT + 1; i++) uppercut(c);
+      for (let i = 0; i < RELAUNCH_LIMIT + 1; i++) uppercut(c);
       c.enter(0);
       expect(c.lifts).toBe(0);
-      expect(c.smashable).toBe(true);
+      expect(c.canRelaunch).toBe(true);
     });
 
     it("keeps the budget spent while the fighter stays helpless", () => {
       const c = new Combo();
       c.enter(1); // flinching
-      c.smash();
+      c.relaunch();
       c.enter(3); // knocked down
       c.enter(4); // and now on the floor
       expect(c.lifts).toBe(1);

@@ -1,5 +1,5 @@
 import { Application, Text } from "pixi.js";
-import { SMASH_LIMIT } from "../combat/combo";
+import { RELAUNCH_LIMIT } from "../combat/combo";
 import { damageScale } from "../combat/scaling";
 import type { EntityDebug } from "../entity/entity";
 
@@ -74,6 +74,6 @@ function block(who: string, d: EntityDebug): string {
     `${d.hitConfirmed ? "hit ✓" : "hit —"} · freeze ${d.freeze} · stun ${d.stun} · hp ${d.hp}`,
     `vx ${d.vx.toFixed(1)} · buf ${buffer}`,
     `combo ${d.combo.hits} hits · ${d.combo.damage} dmg · next ×${damageScale(d.combo.hits).toFixed(1)}` +
-      ` · lift ${d.combo.lifts}/${SMASH_LIMIT}`,
+      ` · lift ${d.combo.lifts}/${RELAUNCH_LIMIT}`,
   ].join("\n");
 }
