@@ -32,6 +32,36 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
+## Next: the Burst Limit scheme — four buttons, a rush tree, a guard that vanishes
+
+**Settled 2026-09-26, described in [`combat.md`](./combat.md)** (*The buttons*,
+§5). This is the foundation; everything Burst Limit has beyond it is listed
+there as deferred. Four slices, in this order, each reviewed before the next:
+
+0. **Rename the `smash` flag to `relaunch`** (owner, 2026-09-26). "Smash" is
+   the button now, and a flag of the same name on blows that may or may not come
+   from it would be misread in every `states.json`. A pure rename — field,
+   `SMASH_LIMIT`, tests, docs; ADRs keep the old word, being dated. *Done when:*
+   `grep -rw smash src data` finds only the button.
+
+1. **The buttons.** `input/keyboard.ts` goes from light/medium/heavy/special to
+   attack/smash/ki/guard, and guard stops being "hold back": it is the button,
+   standing and crouching, blocking high and low alike. Every trigger in
+   `states.json` follows. Keys: `A` attack, `S` smash, `X` ki, `Z` guard, so
+   charging stays on A+Z.
+   *Done when:* the fight plays as today on the new names, and guard works only
+   on its button.
+2. **The rush tree.** The attacks that exist, re-assigned: Attack walks the
+   string, Smash ends it at any depth; a shorter version crouching; one attack
+   and one smash in the air. No new sprites. *Done when:* `npm run chains` shows
+   the tree and every link in it holds.
+3. **Vanish.** Guard tapped just before a blow lands teleports behind the
+   attacker, for ki — from neutral, guard, blockstun and the air, never from a
+   reaction or one's own attack. The window is a number of frames, and the
+   pure part (was the tap early enough) ships with its tests. *Done when:* a
+   recording shows a vanish out of blockstun, and a tap without ki blocks.
+   Corner and projectile cases are settled in `combat.md` §5.
+
 ## First: what chains into what, derived — never written down
 
 A chain is a **conclusion from `states.json`**, so it is computed, never
@@ -66,17 +96,16 @@ can already do for other sections and which nobody has needed yet.
 
 *Done when:* a string can be tuned from the graph without opening the JSON.
 
-## Then: give every sprite on the sheet a strength and a stance
+## Then: give every sprite on the sheet a place in the rush tree
 
-**The table exists** (`combat.md`, 2026-08-16): L/M/H each name their start-up,
-active, recovery, `hitstun`, `cancelBy`, damage, hitstop and reaction, the ladder
-is `L → L → M → H` with `S` reserved, and the three attacks that exist are built
-from it. Authoring an attack is now "these sprites, this strength" — the numbers
-follow, and `npm run chains` shows what the link is worth.
+**The strength table exists** (`combat.md`, 2026-08-16), and since 2026-09-26 its
+axis is a place in the rush — early attack, late attack, smash — rather than a
+button. Rebuilding it on that axis goes with the rush-tree slice above.
+Authoring an attack stays "these sprites, this place" — the numbers follow, and
+`npm run chains` shows what the link is worth.
 
-What is left is the part only the owner can do: **deciding which pose is which
-strength**, in each of the three stances. Nine normals, and the sheet does not
-label them.
+What is left is the part only the owner can do: **deciding which pose goes
+where** in the tree, in each of the three stances. The sheet does not label them.
 
 **`npm run chains` answers "what is defined and not wired up"** — attacks no
 transition leads to, and animations no state names. `kick_low` spent a week in
@@ -100,7 +129,7 @@ to weigh against each other. So new attacks arrive as an animation plus a state
 with a uniform placeholder and no trigger, or a temporary one — see the note in
 `combat.md`, which goes when that pass lands.
 
-*Done when:* every slot in the L/M/H table names an animation in all three
+*Done when:* every place in the rush tree names an animation in all three
 stances, each built from the table rather than tuned by hand.
 
 ## Then: launch scaling, the last of the three
@@ -278,7 +307,8 @@ ever needed to be. **The crouching guard was the sheet's first known gap and is
 now closed** — the owner drew 182 rather than taking any of the three ways out
 that had been recorded, and it is built and wired (2026-08-22).
 
-*Open:* whether a low blow needs its own reaction. Frame 76 is a hit to the
+Guard has no high/low since 2026-09-26 (`combat.md`, *The buttons*); crouching
+only lowers the hurt box. *Open:* whether a low blow needs its own reaction. Frame 76 is a hit to the
 stomach, so the sprite exists — the question is whether the fight reads better
 with it, or whether high/low is a distinction that costs a reaction per fighter
 and buys little.
@@ -289,12 +319,11 @@ and buys little.
 their timing, their button, or their 12–16 frame active windows is worth
 preserving or retrofitting separately — that work folds into this.
 
-**The button scheme gives the list its shape.** Four buttons, exactly
-FighterZ's: **Light, Medium, Heavy, Special** — strength, not limb, so which
-animation is a punch and which a kick is the character's business, not the
-player's. Three stances × three strengths is **nine normals**, plus what S does
-in each, plus specials. That is what we are looking for on the sheet, rather
-than "some punches and some kicks".
+**The button scheme gives the list its shape.** Burst Limit's four — Attack,
+Smash, Ki, Guard (`combat.md`, 2026-09-26) — so what we are looking for on the
+sheet is a rush string and its smashes in each stance, plus specials, rather
+than "some punches and some kicks". Which animation is a punch and which a kick
+stays the character's business, not the player's.
 
 **Animations are named for what the pose is** — `punch_hook`, `kick_roundhouse`
 — with a number only to separate two that really are alike. A name like
@@ -310,10 +339,10 @@ the background, a ki bolt and two Kamehamehas, a hop-and-lunge jump attack, a
 teleport, a throw, a thirteen-frame SSJ3 ultimate, a victory pose, and effect
 sets for the beam, an explosion and the Super Saiyan crackle.
 
-**What it does not hold is a clean set of nine normals.** The strengths do not
-come labelled, so the remaining work is a judgement call rather than a lookup:
-deciding which pose is Goku's L, which his M, which his H, in each of the three
-stances — and which of the leftovers become specials.
+**What it does not hold is a labelled rush.** The remaining work is a
+judgement call rather than a lookup: deciding which poses make Goku's string and
+which his smashes, in each of the three stances — and which of the leftovers
+become specials.
 
 Two gaps the catalogue turned up and neither is in `combat.md`: **a throw**
 (137–139, and it is the honest answer to blocking costing nothing) and **a turn**
@@ -326,23 +355,10 @@ animation, which is what silently stopped the medium string being a combo; the
 arithmetic is in `combat.md` and a test in `states.test.ts` checks it against the
 shipped data.
 
-*Done when:* every slot in the L/M/H/S table names an animation, and what is
+*Done when:* every place in the rush tree names an animation, and what is
 left over is either assigned to a special or explicitly parked.
 
-## Buttons and chains
-
-**The scheme is settled and described in [`combat.md`](./combat.md)** — Light,
-Medium, Heavy, Special, cancel upward only, guard on back. What is left here is
-the work.
-
-**The engine needs one thing before a chain can be authored:** a trigger for
-"the attack I am in has connected", since a chain continues on a hit or a block
-and never on a whiff. `Entity.spent` already knows the answer at the right
-moment; nothing else is missing, because a chain is an ordinary path through
-the state machine — attack state → `pressed:X` → next attack state.
-
-**The four attack buttons in `input/` are the old punch/kick/heavy pair** and
-have to become L/M/H/S. Small, but it touches every attack state's trigger.
+## Authoring combos in the editor
 
 *Open, and worth deciding before an editor UI is built:* the owner wants to
 author combos in the editor. `states.json` is already the definition of a chain
@@ -367,16 +383,6 @@ can.
 
 *Done when:* a LICENSE file exists and the README says what it covers and what
 it does not.
-
-The state machine already expresses all of this: a chain is attack state →
-`pressed:X` → next attack state. What it lacks is a trigger for "the attack I am
-in has connected", and `Entity.spent` already knows the answer.
-
-*Open, and worth deciding before an editor UI is built:* the owner wants to
-author combos in the editor. `states.json` is already the definition of a chain
-— a second "combos" structure would be a second source of truth to reconcile.
-The likely right answer is a chain-shaped **view** of the states, not a new
-format.
 
 ---
 

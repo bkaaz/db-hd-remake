@@ -57,15 +57,15 @@ animation. Everything about combos is arithmetic on this number. → `combat.md`
 
 **Ki** — the meter, **separate from health** (settled 2026-08-23). Capacity is
 `ki` in `attributes.json`; a state fills it at `ki` per frame and a move pays
-`cost` once on entering. Filled by holding A+Z, and a move nobody can pay for
+`cost` once on entering. Filled by holding A+Z (attack + guard), and a move nobody can pay for
 does not come out. → `combat.md` §Ki
 
-**Ki blast** — the S normal: a bolt thrown across the stage. Two states, because
+**Ki blast** — the Ki button's normal (the old S): a bolt thrown across the stage. Two states, because
 the throw is drawn in two parts, and the bolt is a spawn with its own
 `states.json` — its damage and its speed are authored there, not on the throw.
 → `combat.md` §Buttons
 
-**Kamehameha** — forward + S, or back + S for the same beam aimed up: a charged
+**Kamehameha** — forward + Ki, or back + Ki for the same beam aimed up: a charged
 beam. Holding the button fills a level
 (`charge` on the state) which scales the bolt it fires (`fires.size`), and the
 pose is held until that bolt is gone (`spawnEnd`). The beam itself and the
@@ -106,6 +106,10 @@ what makes a beam ten hits of one sprite rather than ten authored steps.
 **Recovery** — the frames after the active ones, when the hit box is gone but you
 still cannot act. What makes a whiff punishable. → `combat.md` §1
 
+**Rush** — the string the Attack button walks, one blow per press; the Smash
+button ends it at any depth. A tree, derived from `states.json` like any chain.
+→ `combat.md` (The buttons)
+
 **Situation flag** (`airborne`, `crouching`) **and its redirect**
 (`ifAirborne`, `ifCrouching`) — how a defender's circumstances change the
 reaction without any attack knowing about them. The flag marks the state, the
@@ -117,6 +121,10 @@ also rides on the reaction, which is what makes it survive a string.
 body where it stands instead of lifting it, and its air redirect `slam_air`
 drives an already-juggled body into the floor. The opposite end of the same axis
 as an uppercut's launch. → `combat.md` (The buttons)
+
+**Smash button** — the Burst Limit button that ends a rush. **Not the same thing
+as `smash`** below, which is a flag on any blow and is being renamed `relaunch`
+for exactly that reason (`plan.md`). → `combat.md` (The buttons)
 
 **Smash** — a blow allowed to *re*-launch or re-floor a body that is already
 being juggled. Marked on the attack (`smash`), spent from a budget of two per
@@ -133,3 +141,8 @@ contact) or `fires` (on entering).
 
 **Startup** — the frames from pressing the button to the hit box appearing.
 → `combat.md` §1
+
+**Vanish** — guard tapped just before a blow lands: a teleport behind the
+attacker, for ki. From neutral, guard, blockstun and the air; never from a
+reaction or one's own attack, so it counters and never escapes a combo.
+→ `combat.md` §5

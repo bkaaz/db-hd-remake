@@ -17,8 +17,8 @@ is a main reason this remake exists.
 
 | layer | reference | what we take |
 |---|---|---|
-| **rules** | Dragon Ball FighterZ | the combo skeleton: one counter, three scalings, a hard cap on re-launches, and a teleport escape that costs a resource |
-| **flow** | the Budokai games | strings you flow through rather than execute — a low barrier to looking good |
+| **rules** | Dragon Ball FighterZ | the combo skeleton: one counter, three scalings, a hard cap on re-launches |
+| **controls** | Burst Limit, and Budokai 3 before it | four buttons — attack, smash, ki, guard — and strings that one button walks and the other ends (settled 2026-09-26, replacing FighterZ's L/M/H/S; see *The buttons*) |
 
 **We take an architecture, not frame data.** No number in this file or in the
 data is FighterZ's; theirs is undocumented to us and every value here is ours to
@@ -29,6 +29,20 @@ What we deliberately **leave**: 3v3 and assists, Sparking Blast, the Dragon
 Balls, Dramatic Finish. Open rather than rejected: a homing dash (very Dragon
 Ball, but it is a movement system, not a combat one) and how many levels the ki
 resource has.
+
+**Burst Limit is 3D and we are not**, so two things change on the way over
+(owner, 2026-09-26). Where it steps into the depth, we **crouch**. And up is
+**jump**, so its up + button moves have no ground form here: in the air there is
+one attack and one smash for now, because the sheet may not hold more.
+
+**What is the foundation and what is later.** This is where we start, not the
+whole of Burst Limit. Deferred, not rejected, and expected to come (owner):
+the offensive Vanishing Attack (a smash followed up from behind, for ki), the
+throw, Aura Spark and its pursuit, transformation, fatigue, drama pieces and the
+taunt. The forward and back variants of every string (6XXX, 4XXX) wait with them.
+
+**Ki comes back by charging**, as in Budokai 3, where Burst Limit refills it on
+its own.
 
 ## The context that shapes the tuning
 
@@ -240,16 +254,36 @@ decay until the victim simply falls out. In all three the hard cap is the *net*
 under the curves and never the mechanism itself — which is exactly where ours
 should end up once §3 is finished.
 
-### 5. Vanish — the escape, and why it is not the limiter
+### 5. Vanish — a counter, not an escape
 
-A teleport behind the opponent, bought with the resource, on a well-timed input
-while guarding (owner's request, 2026-08-15).
+**Guard pressed at the right moment teleports you behind the attacker**, for ki
+(owner, 2026-08-15; its reach settled 2026-09-26). Pressed just before a blow
+would land, the blow finds nobody; pressed early, it is an ordinary block;
+without the ki, it is an ordinary block too. How wide "just before" is — a
+number of frames — is ours to tune.
 
-It is **not** what stops infinite combos, and the distinction cost one wrong
-turn already: an escape is a resource, resources run out, and a system whose
-only floor is a resource has no floor — a player out of ki would be juggled to
-death regardless of skill. Every working fighter layers a structural limit that
-is always on (§3, §4) with a situational escape. Vanish is the second kind.
+| where you are | vanish? |
+|---|---|
+| neutral, walking, crouching, guarding | yes |
+| **blockstun** — the way out from under a string you are blocking | yes |
+| **in the air** | yes |
+| in your own attack | **no** — it would make every attack cancellable into defence |
+| in hitstun or any reaction (rank > 0, §7) | **no** |
+
+**So it does not escape a combo**, and that is what keeps the arithmetic above
+honest: nothing breaks a combo from inside, so scaling and the smash budget
+(§3, §4) are the only things that end one. A resource-bought escape would have
+been a floor with a hole in it anyway — a player out of ki would be juggled to
+death regardless of skill.
+
+Two cases the rule has to answer (owner, 2026-09-26):
+
+- **In the corner** the teleport still lands behind, against the wall, and
+  swaps sides — the natural way out of §6.
+- **Against a projectile** it lands behind whoever threw it, however far away.
+
+The offensive **Vanishing Attack** — following your own smash from behind — is
+a different move and is deferred (see *Where it comes from*).
 
 ### 6. The corner
 
@@ -338,25 +372,43 @@ mistaken for "just an animation".
 
 ## The buttons
 
-**Light, Medium, Heavy, Special — FighterZ's scheme, taken whole.** Strength
-rather than limb: which blow is a punch and which a kick is the character's
-business, not the player's. Guard stays on back, which is what FighterZ does and
-what we already do.
+**Attack, Smash, Ki, Guard — Burst Limit's four** (owner, 2026-09-26). This
+replaces FighterZ's Light, Medium, Heavy, Special: **strength stops being a
+button and becomes a place in a string.** Medium is gone and its key is the
+guard.
 
-**S is the ki blast and the default chain ender, not a special-move button.**
-Real specials are motion inputs, which was the prerequisite for a character
-having anything beyond normals rather than a later luxury. Recognition exists as
-of 2026-08-23 — see below — so what stands between here and a special is the
-move, not the input.
+| button | Burst Limit | what it does | key |
+|---|---|---|---|
+| **Attack** | X | the rush: pressed again, walks the string one blow further | `A` |
+| **Smash** | Y | ends the string, at any depth, with a heavier blow | `S` |
+| **Ki** | B | the ki blast; forward and back + Ki are the kamehameha — what the old **S** did, and below it keeps that letter | `X` |
+| **Guard** | A | blocks while held; tapped at the right moment, vanishes (§5) | `Z` |
 
-The scheme hands the moveset its shape — three stances × three strengths is
-**nine normals**, plus what S does in each:
+**The rush is a tree, not a ladder.** Attack walks one line; Smash branches off
+it at every depth and ends it:
 
-|          | L | M | H | S |
-|---|---|---|---|---|
-| standing | · | · | · | ki blast |
-| crouching | · | · | · (launcher) | |
-| air | · | · | · | |
+```
+A → A → A → A → A
+↓   ↓   ↓   ↓
+S   S   S   S
+```
+
+It is built from the attacks that already exist, re-assigned rather than drawn —
+the sheet was catalogued for exactly this. The graph is still derived from
+`states.json` and still printed by `npm run chains`; only its edges change.
+Crouching and the air have their own, shorter version: in the air, **one attack
+and one smash** for now.
+
+**Guard is a button, not back.** It blocks everything, high or low, standing or
+crouching. **Crouching only lowers the hurt box** — a blow aimed high passes
+over a crouching body because the boxes miss, not because of a rule. A real
+high/low guard (down + guard for lows) was weighed and deferred: it is a
+guessing layer Burst Limit barely has, and it can be added later on the same
+button.
+
+**Specials are still motion inputs**, and recognition exists as of 2026-08-23 —
+see below — so what stands between here and a special is the move, not the
+input.
 
 **Forward + S is the kamehameha** (2026-08-25), and it is the first charged
 move: holding S fills a level over `charge` frames, and what the level does is
@@ -458,10 +510,9 @@ spike. In the air the impulse is 6.2 *downward*, the speed a normal knockdown is
 already travelling at when it hits the floor, so a spiked body arrives as hard
 without the flight.
 
-**The chain rule comes with it, and it is one sentence: you may cancel into a
-stronger button, never a weaker one.** `L → M → H → S`. An ordering, not a table
-of permitted transitions — which is why it survives a character gaining a fifth
-kick variant. Switching mid-chain lands at the same depth or deeper, never back.
+**The chain rule is the rush tree above**, and it replaces the one that stood
+here — "cancel into a stronger button, never a weaker one", `L → M → H → S` —
+which had no buttons left to order once strength moved into the string.
 
 ## Chaining: two different things worth naming separately
 
@@ -480,6 +531,12 @@ state machine — attack state, `pressed:X`, next attack state — which is the
 shape `states.json` already has.
 
 ### The table an attack is authored from
+
+> **Its columns are the old buttons** (2026-09-26). The arithmetic below — the
+> link, the advantage, `cancelBy` — survives the change of scheme unchanged; what
+> changes is the axis: a row per *place in the rush* (early attack, late attack,
+> smash) instead of per button. Rebuilding it is in `plan.md`. Until then, read
+> L as an early rush blow and H as a smash.
 
 **Settled 2026-08-16, and it is the foundation the moveset will be built on.**
 An attack is not tuned move by move any more: it is given a strength, and the
@@ -618,7 +675,7 @@ Two things that follow, and are easy to miss:
 ### Ki, and the one state that fills it
 
 **Built 2026-08-23.** A separate meter, `ki` in `attributes.json`, filled by
-holding **A+Z** — `charge_start` drops into the pose, `charge` loops the flare.
+holding **A+Z** (attack + guard in the new scheme; the keys do not move) — `charge_start` drops into the pose, `charge` loops the flare.
 
 **How much a state moves the meter is a field on the state** (`ki`, gained per
 frame, spent when negative), not a rule in the engine. A `charge` the engine
@@ -651,7 +708,9 @@ for, and all three are still unbuilt.
   one you die of spending. What that costs us is the original's tension, where
   a special and a beating ate the same pool; it can come back as a second cost
   on the same button rather than as a shared bar.
-- **Whether Vanish also escapes an ongoing combo**, not only guard pressure.
+- ~~**Whether Vanish also escapes an ongoing combo**, not only guard pressure.~~
+  Settled 2026-09-26: **no** — never from a reaction, only from neutral, guard,
+  blockstun and the air (§5).
 - ~~**Whether a downed fighter is hittable at all.**~~ Settled 2026-08-15, in
   two halves. Rank 4 made `bounce`, `downed` and `getup` un-interruptible by
   consequence rather than by special case; the recording then showed the other
