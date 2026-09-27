@@ -36,15 +36,9 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 **Settled 2026-09-26, described in [`combat.md`](./combat.md)** (*The buttons*,
 §5). This is the foundation; everything Burst Limit has beyond it is listed
-there as deferred. Two slices left, in this order, each reviewed before the next:
+there as deferred. One slice left:
 
-1. **The rush tree.** Attack walks the string, Smash ends it at any depth; a
-   shorter version crouching; one attack and one smash in the air. Built from
-   the sheet's animations, **not** from today's moves: their numbers were
-   working data and the owner holds none of them (2026-09-26). What stays
-   unassigned is listed by `npm run chains` and needs no other home. *Done when:* `npm run chains` shows
-   the tree and every link in it holds.
-2. **Vanish.** Guard tapped just before a blow lands teleports behind the
+1. **Vanish.** Guard tapped just before a blow lands teleports behind the
    attacker, for ki — from neutral, guard, blockstun and the air, never from a
    reaction or one's own attack. The window is a number of frames, and the
    pure part (was the tap early enough) ships with its tests. *Done when:* a
@@ -89,12 +83,14 @@ can already do for other sections and which nobody has needed yet.
 
 **The strength table exists** (`combat.md`, 2026-08-16), and since 2026-09-26 its
 axis is a place in the rush — early attack, late attack, smash — rather than a
-button. Rebuilding it on that axis goes with the rush-tree slice above.
-Authoring an attack stays "these sprites, this place" — the numbers follow, and
-`npm run chains` shows what the link is worth.
+button. **Rewriting the table on that axis is still to do**; the first rush
+(2026-09-26) was built reading its M column as a rush attack and H as a smash. Authoring an attack stays "these sprites, this place" —
+the numbers follow, and `npm run chains` shows what the link is worth.
 
-What is left is the part only the owner can do: **deciding which pose goes
-where** in the tree, in each of the three stances. The sheet does not label them.
+A first tree is in place as a starting point. What is left is the part only the
+owner can do: **playing it and deciding which pose goes where**, in each of the
+three stances — the sheet does not label them — and what the moves still
+without a place become.
 
 **`npm run chains` answers "what is defined and not wired up"** — attacks no
 transition leads to, and animations no state names. `kick_low` spent a week in

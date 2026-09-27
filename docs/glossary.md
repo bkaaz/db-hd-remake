@@ -18,6 +18,10 @@ is renamed here in the same change.
 only frames in which it can connect. Authored (2–4 frames), never inherited from
 how long a drawing is held. → `combat.md` §1
 
+**Blown** — the reaction that sends a body away backward in a low flight, into
+a bounce (`blown_bounce`); what the rush's last smash does. → `combat.md` (The
+buttons)
+
 **Cancel** — interrupting your own attack with the next one instead of playing
 it out. Allowed only when the attack **connected** (hit or blocked, never a
 whiff) and only up to its `cancelBy` frame. Trigger: `cancelable`.

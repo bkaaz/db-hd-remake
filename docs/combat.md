@@ -389,16 +389,38 @@ guard.
 it at every depth and ends it:
 
 ```
-A → A → A → A → A
+A → A → A → A
 ↓   ↓   ↓   ↓
-S   S   S   S
+S   S   S   S      (and S alone, from neutral)
 ```
 
-It is built from the attacks that already exist, re-assigned rather than drawn —
-the sheet was catalogued for exactly this. The graph is still derived from
-`states.json` and still printed by `npm run chains`; only its edges change.
+**Built 2026-09-26, as a starting point to be played and changed** (owner).
+Every smash is a different move, and the third one launches — the opening for
+the special that may follow it later. What each place holds is
+`npm run chains -- goku`; the moves left without a place are listed at its end.
 Crouching and the air have their own, shorter version: in the air, **one attack
 and one smash** for now.
+
+**A slow smash cannot sit inside the rush.** `kick_axe` and `hop_lunge` wind up
+for over fifteen frames, more than any link's hitstun leaves, so the first plan
+that put them at depth two and four dropped both. `kick_axe` is the smash from
+neutral instead, where nothing has to connect before it; `hop_lunge` waits. A
+move's place in the tree is decided by its start-up, not only by how it looks.
+
+**One drawing may be two moves.** `kick_high` is the fourth smash and, as
+`kick_high_rush`, the third attack: the same pose, but in the rush it holds the
+opponent for the next blow and at the end it sends them off. How a blow is taken
+belongs to the state, never to the animation. The rush copy is held longer than
+the table's row (24), because its recovery is long and a rush that stops on it
+must not leave its owner punishable — `npm test` checks both.
+
+**The last smash sends the opponent away and Goku stays in the kick** (owner,
+2026-09-26). `blown` is a low flight backward — four `pushWidth`s, apex about
+15 px — into a bounce that skids no further than a knockdown's. The smash has its
+own copy of the animation, `kick_high_smash`, with the extended leg held for
+exactly the flight, so he stands in the pose until the body lands; the rush's
+copy keeps the short hold, since a longer one would break its link. Hitstop is
+untouched — the freeze on contact is both fighters, this is only his.
 
 **Guard is a button, not back** (built 2026-09-26). Held, it is a stance —
 `guard`, or `guard_low` with down — in the pose that used to appear only on
@@ -540,7 +562,7 @@ shape `states.json` already has.
 > link, the advantage, `cancelBy` — survives the change of scheme unchanged; what
 > changes is the axis: a row per *place in the rush* (early attack, late attack,
 > smash) instead of per button. Rebuilding it is in `plan.md`. Until then, read
-> L as an early rush blow and H as a smash.
+> M as a rush attack and H as a smash — which is how the rush tree was built.
 
 **Settled 2026-08-16, and it is the foundation the moveset will be built on.**
 An attack is not tuned move by move any more: it is given a strength, and the
@@ -579,13 +601,11 @@ advantage (`hitstun − recovery`) — and then checked with `npm run chains`.
 > data to make a table look uniform destroys what it took recordings to find.
 > **Delete this note when the calibration pass lands.**
 
-**Cancel upward only**, `S` waits at the top for specials that do not exist, and
-what the string is today is `A Z Z S` — `punch → kick_mid → kick_thrust →
-kick_high`. Three rules go with it:
+**The string is the rush tree** (*The buttons*). Three rules go with it, from
+the ladder it replaced:
 
-- **A rung may be repeated, but only with a different move.** A move cancelling
-  into itself is a loop with extra steps; a second medium, or a crouching light
-  after a standing one, is a different attack on the same step of the ladder.
+- **A move never cancels into itself.** That is a loop with extra steps; every
+  place in the rush is a different move.
 - **There is no fixed number of blows** — that was a wrong turn on 2026-08-16.
   What a string can afford depends entirely on what it climbs *into*: a light
   costs 8 frames of worst case, a heavy 14. Four lights in a row hold with room

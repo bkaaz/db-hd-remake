@@ -34,6 +34,22 @@ const goku = (): StatesFile =>
     ),
   ) as StatesFile;
 
+const anims = (): Record<string, { steps: { frame: string; dur: number; boxes?: { type: string }[] }[] }> =>
+  JSON.parse(
+    readFileSync(
+      fileURLToPath(new URL("../../data/entities/goku/animations.json", import.meta.url)),
+      "utf8",
+    ),
+  );
+
+/** From `attributes.json`, which these numbers are derived against. */
+const { gravity: GRAVITY, pushWidth: PUSH_WIDTH } = JSON.parse(
+  readFileSync(
+    fileURLToPath(new URL("../../data/entities/goku/attributes.json", import.meta.url)),
+    "utf8",
+  ),
+) as { gravity: number; pushWidth: number };
+
 const NOTHING: InputSnapshot = {
   fwd: false,
   back: false,
@@ -182,7 +198,7 @@ describe("charging ki is a stance, not a press", () => {
     // keeps it from eating the whole moveset: one key down is still a blow.
     const s = new Sim();
     const onlyAttack = { attack: true, holding: { attack: true, guard: false, smash: false, blast: false } };
-    expect(s.frame(onlyAttack)).toBe("punch");
+    expect(s.frame(onlyAttack)).toBe("kick_mid");
   });
 });
 
@@ -202,51 +218,92 @@ describe("a diagonal changes stance before it does anything else", () => {
   it("gives the crouching smash on down + smash, not the standing one", () => {
     const s = new Sim();
     s.frame({ down: true, smash: true });
-    expect(s.frame({ down: true, smash: true })).toBe("uppercut");
+    expect(s.frame({ down: true, smash: true })).toBe("knee_rise");
   });
 });
 
 describe("the rush — attack walks it, smash ends it", () => {
-  it("walks punch → punch_knee → uppercut when every blow connects", () => {
-    const s = new Sim();
-    expect(s.frame({ attack: true })).toBe("punch");
-    expect(s.confirmAnd("attack")).toBe("punch_knee");
-    expect(s.confirmAnd("smash")).toBe("uppercut");
-  });
-
-  it("lets smash end it at the first blow", () => {
+  /** A rush of `attacks` connected blows, then a smash — Burst Limit's X…XY. */
+  const rush = (attacks: number): string => {
     const s = new Sim();
     s.frame({ attack: true });
-    expect(s.confirmAnd("smash")).toBe("kick_high");
+    for (let i = 1; i < attacks; i++) s.confirmAnd("attack");
+    return s.confirmAnd("smash");
+  };
+
+  it("walks kick_mid → kick_thrust → kick_high_rush → kick_low when every blow connects", () => {
+    const s = new Sim();
+    expect(s.frame({ attack: true })).toBe("kick_mid");
+    expect(s.confirmAnd("attack")).toBe("kick_thrust");
+    expect(s.confirmAnd("attack")).toBe("kick_high_rush");
+    expect(s.confirmAnd("attack")).toBe("kick_low");
+    // Four is the end of it: a fifth attack has nowhere to go.
+    expect(s.confirmAnd("attack")).toBe("kick_low");
+  });
+
+  it("ends in a different smash at every depth", () => {
+    expect(new Sim().frame({ smash: true })).toBe("kick_axe");
+    expect(rush(1)).toBe("knee");
+    expect(rush(2)).toBe("arm_sweep");
+    expect(rush(3)).toBe("uppercut");
+    expect(rush(4)).toBe("kick_high");
+  });
+
+  it("launches on the third smash, for whatever is thrown after it", () => {
+    expect(goku().states.uppercut.onHit).toBe("launched");
+  });
+
+  it("draws the third blow and the last smash from one pose, and only the smash throws", () => {
+    // The same kick twice, as two states: in the middle of the rush it must
+    // hold the opponent for the next blow, and at the end it must send them off.
+    const { kick_high: smash, kick_high_rush: link } = goku().states;
+    const frames = (anim: string): string[] => anims()[anim].steps.map((s) => s.frame);
+    expect(frames(smash.anim)).toEqual(frames(link.anim));
+    expect(link.onHit).toBe("hurt_chain");
+    expect(smash.onHit).toBe("blown");
+  });
+
+  it("holds the smash's leg out for as long as the body it kicked is in the air", () => {
+    // Only the smash's copy of the pose is held: the rush's would push the
+    // next link out of reach. The hold is the flight, so Goku stands in the
+    // kick until the opponent lands.
+    const [vx, vy] = goku().states.blown.launch as [number, number];
+    const flight = Math.round((2 * -vy) / GRAVITY);
+    const held = (anim: string): number =>
+      anims()[anim].steps.filter((s) => s.frame === "39" && !s.boxes?.some((b) => b.type === "hit"))[0].dur;
+    expect(held(goku().states.kick_high.anim)).toBe(flight);
+    expect(held(goku().states.kick_high_rush.anim)).toBeLessThan(flight);
+    // Four bodies' width: far enough to read as sent away, not across the stage.
+    expect(Math.abs(vx) * flight).toBe(4 * PUSH_WIDTH);
   });
 
   it("ends at the smash: nothing cancels out of it", () => {
     const s = new Sim();
     s.frame({ attack: true });
     s.confirmAnd("smash");
-    expect(s.confirmAnd("attack")).toBe("kick_high");
-    expect(s.confirmAnd("smash")).toBe("kick_high");
+    expect(s.confirmAnd("attack")).toBe("knee");
+    expect(s.confirmAnd("smash")).toBe("knee");
   });
 
-  it("leaves the middle links standing — only an ender may floor", () => {
+  it("leaves the attacks standing — only a smash may floor", () => {
     // A middle link that floored the opponent would end the string at itself,
     // however many links came after it in the data.
-    const reaction = (state: string): string | undefined => goku().states[state].onHit;
-    expect(reaction("punch")).toBe("hurt_chain");
-    expect(reaction("kick_high")).toBe("hurt_heavy");
+    for (const link of ["kick_mid", "kick_thrust", "kick_high_rush", "kick_low"]) {
+      expect(goku().states[link].onHit, link).toBe("hurt_chain");
+    }
   });
 
   it("stops on a whiff, however hard the button is pressed", () => {
     const s = new Sim();
-    expect(s.frame({ attack: true })).toBe("punch");
-    expect(s.frame({ smash: true })).toBe("punch");
-    expect(s.frame({ attack: true })).toBe("punch");
+    expect(s.frame({ attack: true })).toBe("kick_mid");
+    expect(s.frame({ smash: true })).toBe("kick_mid");
+    expect(s.frame({ attack: true })).toBe("kick_mid");
   });
 
   it("stops when the player does not ask, however well it connected", () => {
     const s = new Sim();
     s.frame({ attack: true });
-    expect(s.frame({}, { hitConfirmed: true })).toBe("punch");
+    expect(s.frame({}, { hitConfirmed: true })).toBe("kick_mid");
   });
 
   it("recovers to idle when the animation runs out instead", () => {
@@ -367,7 +424,7 @@ describe("the string juggles what the uppercut launched", () => {
         .filter(([, def]) => pick(def))
         .map(([name]) => name)
         .sort();
-    expect(named((d) => d.invulnerable)).toEqual(["bounce", "downed", "getup"]);
+    expect(named((d) => d.invulnerable)).toEqual(["blown_bounce", "bounce", "downed", "getup"]);
     expect(named((d) => d.rank === 4)).toEqual(named((d) => d.invulnerable));
   });
 
@@ -403,14 +460,14 @@ describe("the string juggles what the uppercut launched", () => {
       .filter(([, def]) => def.relaunch)
       .map(([name]) => name)
       .sort();
-    expect(marked).toEqual(["kick_axe", "kick_high", "knee_rise", "uppercut"]);
+    expect(marked).toEqual(["arm_sweep", "kick_axe", "kick_high", "knee", "knee_rise", "uppercut"]);
   });
 });
 
 describe("the buttons reach the moves they are supposed to", () => {
   it("attack, smash and blast each open their own move from idle", () => {
-    expect(new Sim().frame({ attack: true })).toBe("punch");
-    expect(new Sim().frame({ smash: true })).toBe("kick_high");
+    expect(new Sim().frame({ attack: true })).toBe("kick_mid");
+    expect(new Sim().frame({ smash: true })).toBe("kick_axe");
     expect(new Sim().frame({ blast: true })).toBe("ki_blast");
   });
 
@@ -421,7 +478,7 @@ describe("the buttons reach the moves they are supposed to", () => {
       return s;
     };
     expect(crouched().frame({ attack: true })).toBe("punch_knee");
-    expect(crouched().frame({ smash: true })).toBe("uppercut");
+    expect(crouched().frame({ smash: true })).toBe("knee_rise");
   });
 
   it("blast charges the ki blast, which then fires on its own", () => {
