@@ -545,8 +545,9 @@ which had no buttons left to order once strength moved into the string.
 - **Link** — the attack finishes, control returns, the defender is still in
   hitstun, you attack again. Falls out of §1 for free, and is tuned by hitstun
   against recovery rather than built.
-- **Cancel** — you interrupt your *own* attack with the next one, but only
-  because the first connected. This is what makes strings, and it is where
+- **Cancel** — you interrupt your *own* attack with the next one: once it
+  connected, or — an experiment since 2026-09-29 — once it has visibly missed,
+  for a window as long as a hit's (`missWindow`). This is what makes strings, and it is where
   Budokai's accessibility lives: the same button pressed repeatedly walks a
   fixed chain, direction plus button branches out of it.
 

@@ -90,7 +90,7 @@ const QUIET: Signals = {
  * available", which is what the machine is handed by the entity anyway.
  */
 class Sim {
-  private readonly sm = new StateMachine(goku());
+  private readonly sm = new StateMachine(goku(), anims());
   // The real recogniser, fed the same way the entity feeds it, so a test about
   // a motion is a test of the thing the game runs and not of a boolean.
   private readonly motions = new Motions();
@@ -297,11 +297,29 @@ describe("the rush — attack walks it, smash ends it", () => {
     }
   });
 
-  it("stops on a whiff, however hard the button is pressed", () => {
+  it("does not skip a blow while it may still connect, however hard the button is pressed", () => {
     const s = new Sim();
     expect(s.frame({ attack: true })).toBe("kick_mid");
     expect(s.frame({ smash: true })).toBe("kick_mid");
     expect(s.frame({ attack: true })).toBe("kick_mid");
+  });
+
+  it("walks the whole rush at nothing, the button held down every frame", () => {
+    const s = new Sim();
+    const walked = [s.frame({ attack: true })];
+    for (let i = 0; i < 120 && walked.length < 4; i++) {
+      const now = s.frame({ attack: true });
+      if (now !== walked.at(-1)) walked.push(now);
+    }
+    expect(walked).toEqual(["kick_mid", "kick_thrust", "kick_high_rush", "kick_low"]);
+  });
+
+  it("ends the rush with a smash at nothing too", () => {
+    const s = new Sim();
+    s.frame({ attack: true });
+    let now = "kick_mid";
+    for (let i = 0; i < 60 && now === "kick_mid"; i++) now = s.frame({ smash: true });
+    expect(now).toBe("knee");
   });
 
   it("stops when the player does not ask, however well it connected", () => {

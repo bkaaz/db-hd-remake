@@ -23,9 +23,9 @@ a bounce (`blown_bounce`); what the rush's last smash does. → `combat.md` (The
 buttons)
 
 **Cancel** — interrupting your own attack with the next one instead of playing
-it out. Allowed only when the attack **connected** (hit or blocked, never a
-whiff) and only up to its `cancelBy` frame. Trigger: `cancelable`.
-→ `combat.md` (Chaining), `states.ts` (`cancelBy`)
+it out. On a connection (hit or block) up to its `cancelBy` frame; on a whiff
+for as many frames, once its last hit box is gone. Trigger: `cancelable`.
+→ `combat.md` (Chaining), `combat/swing.ts` (`missWindow`)
 
 **`cancelBy`** — the last frame of an attack at which a cancel may fire, counted
 from entering the state and ignoring frozen frames. Absent means "until the

@@ -5,10 +5,10 @@ import {
   entriesOf,
   framesOf,
   openings,
-  startupOf,
   unassigned,
   type AnimSteps,
 } from "./chains";
+import { startupOf } from "./swing";
 import type { StatesFile } from "../entity/states";
 
 /** 4 frames of wind-up, 4 with a hit box, 4 of recovery. */

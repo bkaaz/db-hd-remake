@@ -235,7 +235,7 @@ export class Entity {
     this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
     this.view.addChild(this.sprite, this.boxG);
-    this.sm = def.states ? new StateMachine(withHitTypes(def.states)) : null;
+    this.sm = def.states ? new StateMachine(withHitTypes(def.states), def.animations) : null;
     if (this.sm) this.setAnim(this.sm.def.anim);
     else this.setAnim(Object.keys(def.animations)[0] ?? "");
   }

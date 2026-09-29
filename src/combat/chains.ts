@@ -1,5 +1,8 @@
 import { pressIn, type StatesFile } from "../entity/states";
 import { scaledHitstun } from "./scaling";
+import { startupOf, type AnimSteps } from "./swing";
+
+export type { AnimSteps };
 
 /**
  * What chains into what, **derived from `states.json`** — and whether the
@@ -15,11 +18,6 @@ import { scaledHitstun } from "./scaling";
  *
  * Pure: takes the two files as plain data, knows nothing about loading them.
  */
-
-/** The little of an animation this needs: how long each step is, and which one hits. */
-export interface AnimSteps {
-  steps: { dur: number; boxes?: { type: string }[] }[];
-}
 
 /** One cancel from one attack into the next, with the sum spelled out. */
 export interface Link {
@@ -54,16 +52,6 @@ export interface Entry {
   from: string;
   /** The trigger as authored, e.g. `pressed:attack` or `held:down + pressed:smash`. */
   when: string;
-}
-
-/** Frames before the hit box appears. */
-export function startupOf(anim: AnimSteps | undefined): number {
-  let before = 0;
-  for (const step of anim?.steps ?? []) {
-    if ((step.boxes ?? []).some((b) => b.type === "hit")) return before;
-    before += step.dur;
-  }
-  return before;
 }
 
 /** Frames the whole animation lasts. */

@@ -55,3 +55,45 @@ export class Swing {
     this.landed = false;
   }
 }
+
+/** The little of an animation a swing's timing needs: step lengths, and which steps hit. */
+export interface AnimSteps {
+  steps: { dur: number; boxes?: { type: string }[] }[];
+}
+
+const hits = (step: AnimSteps["steps"][number]): boolean => (step.boxes ?? []).some((b) => b.type === "hit");
+
+/** Frames before the hit box appears. */
+export function startupOf(anim: AnimSteps | undefined): number {
+  let before = 0;
+  for (const step of anim?.steps ?? []) {
+    if (hits(step)) return before;
+    before += step.dur;
+  }
+  return before;
+}
+
+/** Frames until the last hit box is gone — when a swing that has not connected has missed. */
+export function activeEndOf(anim: AnimSteps | undefined): number {
+  let total = 0;
+  let end = 0;
+  for (const step of anim?.steps ?? []) {
+    total += step.dur;
+    if (hits(step)) end = total;
+  }
+  return end;
+}
+
+/**
+ * The frames of its state, counted from 1 on entering, in which a swing that
+ * **missed** may be cancelled into the next blow (owner, 2026-09-29, an
+ * experiment — what punishes it comes later). It opens once the last hit box
+ * is gone and lasts as long as a hit's window does, so a string keeps the same
+ * rhythm whether it lands or not; `cancelBy` itself stays tuned for the hit.
+ * Null for an animation that cannot hit, and so cannot miss.
+ */
+export function missWindow(anim: AnimSteps | undefined, cancelBy: number | undefined): [number, number] | null {
+  const end = activeEndOf(anim);
+  if (end === 0) return null;
+  return [end + 1, cancelBy === undefined ? Infinity : end + cancelBy - startupOf(anim)];
+}

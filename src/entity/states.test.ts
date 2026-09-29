@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { chainLinks, framesOf, startupOf } from "../combat/chains";
+import { chainLinks, framesOf } from "../combat/chains";
+import { startupOf } from "../combat/swing";
 import { withHitTypes } from "../combat/hitTypes";
 import { BUFFER_FRAMES } from "../input/buffer";
 import {
@@ -692,6 +693,58 @@ describe("cancelBy closes the window a chain fires in", () => {
   });
 });
 
+describe("a string goes on through a miss", () => {
+  // punch: 2 frames of wind-up, 2 with a hit box, 6 of recovery; cancelBy 4,
+  // so a hit may cancel for 2 frames and a miss for 2 frames from frame 5.
+  const PUNCH = {
+    steps: [
+      { dur: 2, boxes: [{ type: "hurt" }] },
+      { dur: 2, boxes: [{ type: "hit" }] },
+      { dur: 6, boxes: [{ type: "hurt" }] },
+    ],
+  };
+  function chained(): StatesFile {
+    const f = withAttack();
+    f.states.punch = {
+      anim: "punch",
+      cancelBy: 4,
+      transitions: [
+        { when: ["cancelable", "pressed:guard"], to: "kick" },
+        { when: "animEnd", to: "idle" },
+      ],
+    };
+    f.states.kick = { anim: "kick", transitions: [] };
+    return f;
+  }
+  const MEDIUM = { ...NONE, guard: true };
+
+  /** Enter the punch, wait `frames` frames having hit nothing, then press. */
+  const pressAfter = (frames: number, anims: Record<string, typeof PUNCH> = { punch: PUNCH }): string => {
+    const sm = new StateMachine(chained(), anims);
+    sm.update(ATTACK, QUIET);
+    for (let i = 0; i < frames; i++) sm.update(NONE, QUIET);
+    sm.update(MEDIUM, QUIET);
+    return sm.current;
+  };
+
+  it("not while the swing may still connect", () => {
+    expect(pressAfter(3)).toBe("punch");
+  });
+
+  it("once the last hit box is gone", () => {
+    expect(pressAfter(4)).toBe("kick");
+  });
+
+  it("for as long as a hit's window lasts, and no longer", () => {
+    expect(pressAfter(5)).toBe("kick");
+    expect(pressAfter(6)).toBe("punch");
+  });
+
+  it("never when the machine does not know the animation", () => {
+    expect(pressAfter(4, {})).toBe("punch");
+  });
+});
+
 describe("a `when` of several triggers needs all of them", () => {
   const CHAIN = ["cancelable", "pressed:attack"];
 
@@ -701,7 +754,7 @@ describe("a `when` of several triggers needs all of them", () => {
     expect(sm.current).toBe("punch");
   });
 
-  it("does not fire on the button alone — a whiff ends a string", () => {
+  it("does not fire on the button alone, while the swing may still connect", () => {
     const sm = new StateMachine(withAttack(CHAIN));
     sm.update(ATTACK, QUIET);
     expect(sm.current).toBe("idle");

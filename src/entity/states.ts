@@ -12,6 +12,7 @@
  */
 
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
+import { missWindow, type AnimSteps } from "../combat/swing";
 
 export interface Transition {
   /**
@@ -396,9 +397,8 @@ export interface Signals {
   landed: boolean;
   /**
    * The attack this entity is in has **connected** — landed or been blocked,
-   * but never merely swung. It is what lets an attack be cancelled into the
-   * next link of a chain, and the reason a whiff ends a string: swinging at air
-   * has to be punishable or both players just hold the button down.
+   * but never merely swung. A swing that has not may still be cancelled once
+   * it has missed; the state machine works that out from its animation.
    */
   hitConfirmed: boolean;
   /** Ki in the meter right now — what a state's `cost` is measured against. */
@@ -517,7 +517,7 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       value = signals.landed;
       break;
     case "cancelable":
-      // Connected *and* still early enough to cancel — the state machine
+      // Connected or missed, *and* inside the window for it — the state machine
       // narrows the signal before it gets here, see StateMachine.update.
       value = signals.hitConfirmed;
       break;
@@ -623,12 +623,19 @@ export class StateMachine {
   pressSpent: string | null = null;
 
   /**
-   * Frames this state has run. Only used by `cancelBy`, and counted here rather
-   * than in the entity so the rule can be tested without a renderer.
+   * Frames this state has run. Only used by the cancel windows, and counted
+   * here rather than in the entity so the rule can be tested without a renderer.
    */
   private elapsed = 0;
 
-  constructor(private readonly file: StatesFile) {
+  /**
+   * `anims` is only read for when a swing misses; without them a miss is
+   * never cancellable, which is what a test about something else wants.
+   */
+  constructor(
+    private readonly file: StatesFile,
+    private readonly anims: Readonly<Record<string, AnimSteps>> = {},
+  ) {
     this.current = file.states[file.initial] ? file.initial : Object.keys(file.states)[0] ?? "";
   }
 
@@ -657,9 +664,9 @@ export class StateMachine {
    */
   update(input: InputSnapshot, signals: Signals): string | null {
     this.elapsed++;
-    // A connection the window has closed on is no longer a cancel, so the
-    // signal is narrowed once, here, rather than at every transition.
-    const now: Signals = { ...signals, hitConfirmed: signals.hitConfirmed && this.cancelable };
+    // The signal is narrowed once, here, rather than at every transition: from
+    // "connected" to "may be cancelled now", which a miss can be too.
+    const now: Signals = { ...signals, hitConfirmed: this.cancelable(signals.hitConfirmed) };
     for (const t of this.def.transitions ?? []) {
       if (!fires(t.when, input, now)) continue;
       if (!this.file.states[t.to]) {
@@ -682,10 +689,15 @@ export class StateMachine {
     return null;
   }
 
-  /** Still inside this attack's cancel window — always true when it has none. */
-  private get cancelable(): boolean {
+  /**
+   * Inside this attack's cancel window: the one for a blow that connected
+   * (the whole attack when it has no `cancelBy`), or the one for a miss.
+   */
+  private cancelable(connected: boolean): boolean {
     const by = this.def.cancelBy;
-    return by === undefined || this.elapsed <= by;
+    if (connected) return by === undefined || this.elapsed <= by;
+    const miss = missWindow(this.anims[this.def.anim], by);
+    return miss !== null && this.elapsed >= miss[0] && this.elapsed <= miss[1];
   }
 }
 
