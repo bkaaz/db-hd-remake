@@ -18,7 +18,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "which": "tsx scripts/which.ts"
   },
   "dependencies": {
     "pixi.js": "^8.6.6"

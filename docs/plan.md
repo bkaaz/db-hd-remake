@@ -47,10 +47,6 @@ The types are `data/hit-types.json` (settled 2026-09-29; what a type decides
 and what stays on the state is in `data-format.md`). Every blow of Goku's
 names one as of the same day.
 
-4. **The `fl30` shorthand** — a script from a frame to its move and the
-   animations using it (e.g. `npm run anim -- goku --which 30`), with a test;
-   the notation goes into the `add-animation` skill. *Done when:* one number
-   gives one answer or a list to choose from.
 5. **A string continues on a whiff** — an experiment; the link check stays for
    the case where the blow lands. *Done when:* a recording shows a whole string
    thrown at nothing.

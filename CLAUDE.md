@@ -225,6 +225,9 @@ npm run typecheck # typecheck only
 npm test          # Vitest, run once (npm run test:watch to keep it running)
 npm run anim -- <entity> <anim> --frames 1,2,3 --kind attack|loop|hurt
                   # build an animation with derived boxes/timing (--list, --dry-run)
+npm run which -- <entity> fl30 la187
+                  # what a blow in the shorthand points at: hit type, the
+                  # move holding that frame, the animations that play it
 npm run chains -- <entity>
                   # what cancels into what, and how many frames of margin each
                   # link has — the instrument for tuning frame data
@@ -245,7 +248,9 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── entity/                   #   entityDef.ts: data + sheet -> EntityDef
 │   │                             #   entity.ts: one live instance in the world
 │   │                             #   states.ts: state-machine runner + validator
+│   │                             #   notation.ts: the fl30 shorthand, read
 │   ├── combat/                   #   hit.ts: box → world, overlap, hit detection
+│   │                             #   hitTypes.ts: what a blow does, by type
 │   │                             #   push.ts: separating two bodies
 │   ├── input/                    #   buffer.ts: the input buffer
 │   ├── audio/                    #   playback.ts: Web Audio, the browser half
@@ -258,6 +263,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   │                             #   nothing in the repo imports from here
 │   ├── anim.ts                   #   build an animation from a frame list
 │   ├── chains.ts                 #   print the cancel graph with its arithmetic
+│   ├── which.ts                  #   read the fl30 shorthand
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
 │   ├── fx.ts                     #   write the generated effects out
 │   ├── pack.ts                   #   zip the assets for backup / handover

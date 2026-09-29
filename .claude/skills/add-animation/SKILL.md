@@ -67,6 +67,28 @@ original game. The sheet fixes which poses exist, roughly in order; the real
 sequence and timing are the owner's knowledge. Never present derived timings as
 Hyper Dimension frame data.
 
+## The shorthand: `fl30 fl39 la187`
+
+The owner writes a blow as a **hit type's two-letter code plus any frame of the
+move** (codes: `data/hit-types.json`). A move is a sequence of such tokens. Read
+them with the script, never by opening the JSON:
+
+```bash
+npm run which -- goku fl30 fl39 la187
+```
+
+For each token it prints the type, the moves in the catalogue holding the frame
+and the animations (with their states) already playing it. Then:
+
+- **One animation** — use it; reply with the translation (`fl30 → punch_jab`).
+- **Several** (`? more than one`) — ask which. Never pick between two
+  animations on the same sprites; they differ in timing on purpose.
+- **None** — build one from the move's frames (below), name it for the pose,
+  and say what you called it.
+
+The type goes on the state as `"type"`; the state sets none of the type's
+numbers (`data-format.md`).
+
 ## Procedure
 
 ### 1. Get the frames
