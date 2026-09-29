@@ -20,17 +20,6 @@ because a number would only need translating back.
 
 ---
 
-## `npm run chains` runs a long state name into the next column
-
-`scripts/chains.ts` · noticed 2026-09-26 · cosmetic
-
-The columns are padded to fixed widths (14 for a state name), and a name that
-fills them leaves no space before the next one: `kick_high_rush` prints as
-`kick_high_rushattack` and `→ kick_high_rush5`. The table is still correct, only
-harder to read. Measuring the widest name before printing would fix it.
-
-To see it: `npm run chains -- goku`.
-
 ## `npm run anim` only knows how far a move reaches sideways
 
 `src/sprites/boxes.ts:110` · noticed 2026-08-23 · annoying

@@ -7,7 +7,7 @@ import {
   unassigned,
   type AnimSteps,
 } from "../src/combat/chains";
-import { withHitTypes } from "../src/combat/hitTypes";
+import { HIT_TYPES, withHitTypes } from "../src/combat/hitTypes";
 import type { StatesFile } from "../src/entity/states";
 
 /**
@@ -36,23 +36,27 @@ if (links.length === 0) {
 }
 
 const pad = (s: string | number, n: number): string => String(s).padEnd(n);
+/** The two-letter code of a state's hit type, the way blows are written down. */
+const code = (state: string): string => HIT_TYPES[states.states[state]?.type ?? ""]?.code ?? "—";
 console.log(`${name} — ${links.length} cancels\n`);
 
 // A cancel graph starts from nowhere without these: what opens each string.
 for (const o of openings(states)) {
-  console.log(`${pad(o.when, 34)}→ ${pad(o.to, 14)}${o.from.join(", ")}`);
+  console.log(`${pad(o.when, 34)}→ ${pad(o.to, 16)}${pad(code(o.to), 4)}${o.from.join(", ")}`);
 }
 console.log();
 console.log(
-  pad("from", 14) + pad("on", 9) + pad("→ into", 16) + pad("window", 8) + pad("start-up", 10) + pad("latest hit", 12) + pad("hitstun", 9) + pad("depth", 7) + "margin",
+  pad("from", 16) + pad("type", 6) + pad("on", 9) + pad("→ into", 18) + pad("type", 6) + pad("window", 8) + pad("start-up", 10) + pad("latest hit", 12) + pad("hitstun", 9) + pad("depth", 7) + "margin",
 );
 
 for (const l of links.sort((a, b) => a.depth - b.depth || a.from.localeCompare(b.from))) {
   const verdict = l.launcher ? "  (launcher — chain ends here)" : l.margin < 0 ? "  ✗ DROPS" : "";
   console.log(
-    pad(l.from, 14) +
+    pad(l.from, 16) +
+      pad(code(l.from), 6) +
       pad(l.on ?? "—", 9) +
-      pad(`→ ${l.to}`, 16) +
+      pad(`→ ${l.to}`, 18) +
+      pad(code(l.to), 6) +
       pad(l.window, 8) +
       pad(l.startup, 10) +
       pad(`+${l.worst}`, 12) +

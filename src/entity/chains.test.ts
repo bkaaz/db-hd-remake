@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { withHitTypes } from "../combat/hitTypes";
 import { Motions } from "../input/motion";
 import {
   reactionFor,
@@ -26,13 +27,16 @@ import {
  * `states.test.ts` and, in the end, by the owner's hands.
  */
 
+/** As the engine runs it: every hit type spelled out. */
 const goku = (): StatesFile =>
-  JSON.parse(
-    readFileSync(
-      fileURLToPath(new URL("../../data/entities/goku/states.json", import.meta.url)),
-      "utf8",
-    ),
-  ) as StatesFile;
+  withHitTypes(
+    JSON.parse(
+      readFileSync(
+        fileURLToPath(new URL("../../data/entities/goku/states.json", import.meta.url)),
+        "utf8",
+      ),
+    ) as StatesFile,
+  );
 
 const anims = (): Record<string, { steps: { frame: string; dur: number; boxes?: { type: string }[] }[] }> =>
   JSON.parse(

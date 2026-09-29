@@ -410,9 +410,9 @@ move's place in the tree is decided by its start-up, not only by how it looks.
 **One drawing may be two moves.** `kick_high` is the fourth smash and, as
 `kick_high_rush`, the third attack: the same pose, but in the rush it holds the
 opponent for the next blow and at the end it sends them off. How a blow is taken
-belongs to the state, never to the animation. The rush copy is held longer than
-the table's row (24), because its recovery is long and a rush that stops on it
-must not leave its owner punishable — `npm test` checks both.
+belongs to the state, never to the animation. A rush that stops on it is
+punishable (−4, accepted 2026-09-29): its recovery is long, and the hit type
+decides the hitstun.
 
 **The last smash sends the opponent away and Goku stays in the kick** (owner,
 2026-09-26). `blown` is a low flight backward — four `pushWidth`s, apex about

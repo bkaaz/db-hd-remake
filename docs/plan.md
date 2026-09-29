@@ -44,12 +44,9 @@ conversation a blow is written as the type's two-letter code plus any frame of
 the move: `fl30 fl39 la187`.
 
 The types are `data/hit-types.json` (settled 2026-09-29; what a type decides
-and what stays on the state is in `data-format.md`). The engine reads them as of
-the same day, and nothing uses them yet.
+and what stays on the state is in `data-format.md`). Every blow of Goku's
+names one as of the same day.
 
-2. **Goku moves onto types** — every blow gets one and loses its own numbers;
-   `npm run chains` shows the type. *Done when:* no blow carries its own
-   numbers, and the owner has played it or recorded it.
 3. **Animation names by pose** — role names (`kick_high_rush`,
    `kick_high_smash`) renamed for what differs in them. *Done when:* no
    animation name says what it is used for.

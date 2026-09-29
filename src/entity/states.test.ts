@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { chainLinks, framesOf, startupOf } from "../combat/chains";
+import { withHitTypes } from "../combat/hitTypes";
 import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
@@ -454,7 +455,7 @@ describe("the arithmetic of a blow, against the data we ship", () => {
     boxes?: { type: string; x: number; w: number }[];
   }
   const anims = read<Record<string, { steps: Step[] }>>("animations.json");
-  const states = read<StatesFile>("states.json").states;
+  const states = withHitTypes(read<StatesFile>("states.json")).states;
   const attributes = read<{ hitstun: number }>("attributes.json");
 
   /**
@@ -583,7 +584,13 @@ describe("the arithmetic of a blow, against the data we ship", () => {
     expect(BUFFER_FRAMES).toBeGreaterThan(left);
   });
 
-  it.each(grounded)("%s does not leave its owner punishable", (name) => {
+  // A rush that stops on its third blow is punishable, accepted by the owner
+  // 2026-09-29: the hit type sets the hitstun, and nothing may hold it longer.
+  const mayBePunished = new Set(["kick_high_rush"]);
+
+  const judged = grounded.filter((n) => !mayBePunished.has(n));
+
+  it.each(judged)("%s does not leave its owner punishable", (name) => {
     const reaction = states[states[name].onHit ?? ""];
     const knockback = Math.abs(reaction?.vel?.[0] ?? 0) * hitstun(name);
     // Phrased as a sentence so a failure names the numbers instead of saying
