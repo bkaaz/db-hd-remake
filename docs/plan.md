@@ -47,9 +47,6 @@ The types are `data/hit-types.json` (settled 2026-09-29; what a type decides
 and what stays on the state is in `data-format.md`). Every blow of Goku's
 names one as of the same day.
 
-5. **A string continues on a whiff** — an experiment; the link check stays for
-   the case where the blow lands. *Done when:* a recording shows a whole string
-   thrown at nothing.
 6. **Docs** — `combat.md` rewritten short (no reference games, no history;
    movement and context stay as a line each), an ADR for animation + type,
    `glossary.md` and `data-format.md`, and the items below this replaces are
