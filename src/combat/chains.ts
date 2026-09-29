@@ -99,7 +99,7 @@ export function attacksIn(file: StatesFile): Set<string> {
 /**
  * Attacks no transition anywhere leads to — defined, and waiting for an input.
  *
- * The moveset is being authored ahead of its inputs (`combat.md`), so a move
+ * The moveset is being authored ahead of its inputs (`plan.md`), so a move
  * nothing reaches is the normal intermediate state rather than a mistake. It is
  * also invisible: it has no arrow on the graph and no line in the cancel table,
  * which is exactly how one gets silently overwritten when the next trigger is

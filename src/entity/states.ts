@@ -185,8 +185,7 @@ export interface StateDef {
    * half a second, and ten hits should not mean ten authored steps. Three things
    * come with it and are the caller's problem, not this field's — every hit
    * scales the next (`combat/scaling.ts`), every hit freezes for `hitstop`, and
-   * a multi-hit blow marked `relaunch` burns the relaunch budget in two. See
-   * `combat.md`.
+   * a multi-hit blow marked `relaunch` burns the relaunch budget in two.
    */
   rehit?: number;
 

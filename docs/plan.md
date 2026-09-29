@@ -32,35 +32,9 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## Now: a blow is an animation plus a hit type
+## Next: Vanish
 
-**Agreed with the owner 2026-09-29.** A blow is described as *which animation*
-plus *which hit type*; the type decides what happens to the opponent and every
-number that goes with it (reaction, damage, hitstun, hitstop, push). One file
-of types is shared by every fighter, so authoring a move — a string or a special
-— is naming poses and types, never tuning numbers. Animations are named for the
-pose, never for the role; several animations may share the same sprites. In
-conversation a blow is written as the type's two-letter code plus any frame of
-the move: `fl30 fl39 la187`.
-
-The types are `data/hit-types.json` (settled 2026-09-29; what a type decides
-and what stays on the state is in `data-format.md`). Every blow of Goku's
-names one as of the same day.
-
-6. **Docs** — `combat.md` rewritten short (no reference games, no history;
-   movement and context stay as a line each), an ADR for animation + type,
-   `glossary.md` and `data-format.md`, and the items below this replaces are
-   deleted: the strength-table rewrite, the `combat.md` table check, the rush
-   tree placement.
-
-Later: `stun`, a ki type (the projectile and how it is taken), penalties for a
-whiffed string.
-
-## Next: the Burst Limit scheme — four buttons, a rush tree, a guard that vanishes
-
-**Settled 2026-09-26, described in [`combat.md`](./combat.md)** (*The buttons*,
-§5). This is the foundation; everything Burst Limit has beyond it is listed
-there as deferred. One slice left:
+Settled 2026-09-26, described in [`combat.md`](./combat.md) §5.
 
 1. **Vanish.** Guard tapped just before a blow lands teleports behind the
    attacker, for ki — from neutral, guard, blockstun and the air, never from a
@@ -102,44 +76,6 @@ the player's move list — and editing timings from the graph, which the editor
 can already do for other sections and which nobody has needed yet.
 
 *Done when:* a string can be tuned from the graph without opening the JSON.
-
-## Then: give every sprite on the sheet a place in the rush tree
-
-**The strength table exists** (`combat.md`, 2026-08-16), and since 2026-09-26 its
-axis is a place in the rush — early attack, late attack, smash — rather than a
-button. **Rewriting the table on that axis is still to do**; the first rush
-(2026-09-26) was built reading its M column as a rush attack and H as a smash. Authoring an attack stays "these sprites, this place" —
-the numbers follow, and `npm run chains` shows what the link is worth.
-
-A first tree is in place as a starting point. What is left is the part only the
-owner can do: **playing it and deciding which pose goes where**, in each of the
-three stances — the sheet does not label them — and what the moves still
-without a place become.
-
-**`npm run chains` answers "what is defined and not wired up"** — attacks no
-transition leads to, and animations no state names. `kick_low` spent a week in
-the second list, which nothing in the repo said out loud: deleting its state
-when the four-link medium string was replaced by the ladder left the animation
-with no reader anywhere. It has a state again as of 2026-08-23, with the
-placeholder and no trigger. Ask the command rather than this paragraph.
-
-**The crouching row is full** as of 2026-08-22: `punch_knee` (187–188) is the
-crouching light, beside `kick_crouch` and `uppercut`. That also fills the second
-light rung, so the ladder is `L → L → M → H` for real — the standing light
-cancels into the crouching one with the widest margin on the graph (+7,
-`npm run chains`). `punch_air` (43–45) became the air light on 2026-08-23,
-cancelling into `kick_air`. **Standing and crouching are done; the air row is
-missing only its heavy.**
-
-**Moves are being defined before their inputs** (owner, 2026-08-23). Which
-sprites are one attack is being settled across the whole sheet first; strength,
-damage, trigger and chain come afterwards, in one pass, when there is a full set
-to weigh against each other. So new attacks arrive as an animation plus a state
-with a uniform placeholder and no trigger, or a temporary one — see the note in
-`combat.md`, which goes when that pass lands.
-
-*Done when:* every place in the rush tree names an animation in all three
-stances, each built from the table rather than tuned by hand.
 
 ## Then: launch scaling, the last of the three
 
@@ -233,25 +169,6 @@ next rename safe instead of nerve-racking.
 
 *Done when:* an unknown `sound` or `hitFx` id is reported at load, the same way
 an unknown animation is.
-
-## Queued: nothing checks that `combat.md`'s table matches what ships
-
-The strength table in `combat.md` is the source an attack is authored from, and
-it currently agrees with `states.json` down to the number — hitstun 15/20/20,
-`cancelBy` 8/12/—, damage 5/8/13. **It agrees because we were careful, and
-nothing else.** That is the exact condition that let a decision log rot for
-sixteen days while looking healthy, and it is worse here: a doc that is wrong
-about frame data is a doc that makes the next fighter wrong.
-
-Two honest ways out. **A test that parses the table** and asserts every attack
-matches the row for its strength — cheap, and it keeps the table where it is
-read. **Or the table moves into data**, `states.json` is checked against it and
-`combat.md` points at a script that prints it — cleaner, and it makes "which
-strength is this attack" a field rather than a convention. The first is worth
-doing first; the second only pays once a second fighter exists.
-
-*Done when:* changing a number in `combat.md` without changing `states.json`
-fails `npm test`, or the other way round.
 
 ## Queued: a read-only `npm run check-sheet`
 
@@ -401,6 +318,9 @@ Real work, carried over from the checklists this file replaced. It gets slotted
 into the sequence above when its turn comes, rather than living in a second
 queue.
 
+- **What follows the hit types** (`combat.md`, *Open*): a `stun` type, a hit
+  type for ki blasts — the projectile and how it is taken — and whatever
+  punishes a string thrown at nothing.
 - **Name the rest of the sound test.** The capture is cut into clips of which
   only a handful are identified — `data/audio/sound-test.json` says which — so
   the swings, the hit, the block, the jump, the landing, the crash to the floor

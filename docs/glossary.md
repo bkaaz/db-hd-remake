@@ -59,30 +59,29 @@ blocked only in a state marked `guarding`: the stance and its blockstun.
 plus a type. → `data/hit-types.json`, `combat/hitTypes.ts`
 
 **Hitstop** — the freeze on contact, applied to **both** fighters for the same
-number of frames, set by the blow (`hitstop`) over an entity-wide default. It is
-what gives a blow weight, and because both sides freeze equally it changes
-nothing about who acts first. → `entityFile.ts` (`hitstop`), `combat.md`'s table
-for the value per strength
+number of frames, set by the blow's hit type. It is what gives a blow weight,
+and because both sides freeze equally it changes nothing about who acts first.
+→ `data/hit-types.json`
 
 **Hitstun** — how long the **defender** is helpless after a blow, counted in
-frames and set by the blow (`hitstun`), not by the length of the reaction
+frames and set by the blow's hit type, not by the length of the reaction
 animation. Everything about combos is arithmetic on this number. → `combat.md` §1
 
 **Ki** — the meter, **separate from health** (settled 2026-08-23). Capacity is
 `ki` in `attributes.json`; a state fills it at `ki` per frame and a move pays
 `cost` once on entering. Filled by holding A+Z (attack + guard), and a move nobody can pay for
-does not come out. → `combat.md` §Ki
+does not come out. → `combat.md` (The buttons)
 
 **Ki blast** — the Ki button's normal (the old S): a bolt thrown across the stage. Two states, because
 the throw is drawn in two parts, and the bolt is a spawn with its own
 `states.json` — its damage and its speed are authored there, not on the throw.
-→ `combat.md` §Buttons
+→ `combat.md` (The buttons)
 
 **Kamehameha** — forward + Ki, or back + Ki for the same beam aimed up: a charged
 beam. Holding the button fills a level
 (`charge` on the state) which scales the bolt it fires (`fires.size`), and the
 pose is held until that bolt is gone (`spawnEnd`). The beam itself and the
-charge sphere are not built — see `plan.md`. → `combat.md` §Buttons
+charge sphere are not built — see `plan.md`. → `combat.md` (The buttons)
 
 **Launcher** — a blow that lifts a grounded opponent into a juggle instead of
 flooring them. The reaction is `launched`, the opposite end of the same axis as
