@@ -83,7 +83,7 @@
       ]
     },
     "kick_thrust": {
-      "anim": "kick_air",
+      "anim": "kick_thrust",
       "vel": [0.4, 0],
       "cancelBy": 13,
       "turn": false,
@@ -126,7 +126,7 @@
       ]
     },
     "kick_high": {
-      "anim": "kick_high_smash",
+      "anim": "kick_high_hold",
       "vel": [0, 0],
       "turn": false,
       "type": "knockback",
@@ -420,7 +420,7 @@
       ]
     },
     "kick_air": {
-      "anim": "kick_air",
+      "anim": "kick_thrust",
       "airborne": true,
       "turn": false,
       "type": "flinch",
@@ -493,7 +493,7 @@
       ]
     },
     "guard": {
-      "anim": "guard_hit",
+      "anim": "guard",
       "vel": [0, 0],
       "turn": true,
       "guarding": true,
@@ -516,7 +516,7 @@
       ]
     },
     "guard_hit": {
-      "anim": "guard_hit",
+      "anim": "guard",
       "vel": [-2.0, 0],
       "turn": false,
       "guarding": true,

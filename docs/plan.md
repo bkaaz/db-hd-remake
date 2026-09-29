@@ -47,9 +47,6 @@ The types are `data/hit-types.json` (settled 2026-09-29; what a type decides
 and what stays on the state is in `data-format.md`). Every blow of Goku's
 names one as of the same day.
 
-3. **Animation names by pose** — role names (`kick_high_rush`,
-   `kick_high_smash`) renamed for what differs in them. *Done when:* no
-   animation name says what it is used for.
 4. **The `fl30` shorthand** — a script from a frame to its move and the
    animations using it (e.g. `npm run anim -- goku --which 30`), with a test;
    the notation goes into the `add-animation` skill. *Done when:* one number

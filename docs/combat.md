@@ -417,7 +417,7 @@ decides the hitstun.
 **The last smash sends the opponent away and Goku stays in the kick** (owner,
 2026-09-26). `blown` is a low flight backward — four `pushWidth`s, apex about
 15 px — into a bounce that skids no further than a knockdown's. The smash has its
-own copy of the animation, `kick_high_smash`, with the extended leg held for
+own copy of the animation, `kick_high_hold`, with the extended leg held for
 exactly the flight, so he stands in the pose until the body lands; the rush's
 copy keeps the short hold, since a longer one would break its link. Hitstop is
 untouched — the freeze on contact is both fighters, this is only his.

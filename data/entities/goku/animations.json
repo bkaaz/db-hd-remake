@@ -1175,7 +1175,7 @@
       }
     ]
   },
-  "kick_high_smash": {
+  "kick_high_hold": {
     "loop": false,
     "steps": [
       {
@@ -1803,7 +1803,7 @@
       }
     ]
   },
-  "kick_air": {
+  "kick_thrust": {
     "loop": false,
     "steps": [
       {
@@ -1923,7 +1923,7 @@
       }
     ]
   },
-  "guard_hit": {
+  "guard": {
     "loop": false,
     "steps": [
       {
