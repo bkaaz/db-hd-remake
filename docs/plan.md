@@ -32,6 +32,43 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 > **One exchange is complete.** Everything below multiplies it.
 
+## Now: a blow is an animation plus a hit type
+
+**Agreed with the owner 2026-09-29.** A blow is described as *which animation*
+plus *which hit type*; the type decides what happens to the opponent and every
+number that goes with it (reaction, damage, hitstun, hitstop, push). One file
+of types is shared by every fighter, so authoring a move — a string or a special
+— is naming poses and types, never tuning numbers. Animations are named for the
+pose, never for the role; several animations may share the same sprites. In
+conversation a blow is written as the type's two-letter code plus any frame of
+the move: `fl30 fl39 la187`.
+
+The types are `data/hit-types.json` (settled 2026-09-29; what a type decides
+and what stays on the state is in `data-format.md`). The engine reads them as of
+the same day, and nothing uses them yet.
+
+2. **Goku moves onto types** — every blow gets one and loses its own numbers;
+   `npm run chains` shows the type. *Done when:* no blow carries its own
+   numbers, and the owner has played it or recorded it.
+3. **Animation names by pose** — role names (`kick_high_rush`,
+   `kick_high_smash`) renamed for what differs in them. *Done when:* no
+   animation name says what it is used for.
+4. **The `fl30` shorthand** — a script from a frame to its move and the
+   animations using it (e.g. `npm run anim -- goku --which 30`), with a test;
+   the notation goes into the `add-animation` skill. *Done when:* one number
+   gives one answer or a list to choose from.
+5. **A string continues on a whiff** — an experiment; the link check stays for
+   the case where the blow lands. *Done when:* a recording shows a whole string
+   thrown at nothing.
+6. **Docs** — `combat.md` rewritten short (no reference games, no history;
+   movement and context stay as a line each), an ADR for animation + type,
+   `glossary.md` and `data-format.md`, and the items below this replaces are
+   deleted: the strength-table rewrite, the `combat.md` table check, the rush
+   tree placement.
+
+Later: `stun`, a ki type (the projectile and how it is taken), penalties for a
+whiffed string.
+
 ## Next: the Burst Limit scheme — four buttons, a rush tree, a guard that vanishes
 
 **Settled 2026-09-26, described in [`combat.md`](./combat.md)** (*The buttons*,

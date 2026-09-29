@@ -3,6 +3,7 @@ import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { Combo } from "../combat/combo";
+import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { scaledDamage, scaledHitstun } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
@@ -234,7 +235,7 @@ export class Entity {
     this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
     this.view.addChild(this.sprite, this.boxG);
-    this.sm = def.states ? new StateMachine(def.states) : null;
+    this.sm = def.states ? new StateMachine(withHitTypes(def.states)) : null;
     if (this.sm) this.setAnim(this.sm.def.anim);
     else this.setAnim(Object.keys(def.animations)[0] ?? "");
   }

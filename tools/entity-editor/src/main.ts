@@ -13,6 +13,7 @@ import { Preview } from "./preview";
 import { BoxEditor } from "./boxEditor";
 import { renderFrames, renderAnims, renderBoxes, renderStates } from "./panels";
 import { renderChainGraph } from "./chainGraph";
+import { withHitTypes } from "../../../src/combat/hitTypes";
 import {
   currentEntity,
   findEntity,
@@ -352,7 +353,7 @@ function drawChains(): void {
   if (!showing) return;
   chainWrap.replaceChildren();
   const byName = Object.fromEntries(state.anims.map((a) => [a.name, { loop: a.loop, steps: a.steps }]));
-  if (state.states) renderChainGraph(chainWrap, state.states, byName, state.baseHitstun);
+  if (state.states) renderChainGraph(chainWrap, withHitTypes(state.states), byName, state.baseHitstun);
 }
 
 // Tab switching (Sprites / Animations / Combos; the rest are placeholders).

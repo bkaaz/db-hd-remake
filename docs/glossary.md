@@ -53,6 +53,11 @@ and minus can be correct when the blow also pushes them out of range.
 blocked only in a state marked `guarding`: the stance and its blockstun.
 → `combat.md` (The buttons)
 
+**Hit type** — what a blow does to whoever it hits (`flinch`, `stagger`,
+`knockback`, `launch`, `slam`), and the only source of its numbers; written
+`fl30` in conversation — code plus any frame of the move. A blow is an animation
+plus a type. → `data/hit-types.json`, `combat/hitTypes.ts`
+
 **Hitstop** — the freeze on contact, applied to **both** fighters for the same
 number of frames, set by the blow (`hitstop`) over an entity-wide default. It is
 what gives a blow weight, and because both sides freeze equally it changes

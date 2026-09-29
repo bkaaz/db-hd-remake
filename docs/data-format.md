@@ -72,6 +72,14 @@ out. The defender is forced into the attack's `onHit`, or their own `onGotHit` i
 it names none — then into that reaction's `ifAirborne` or `ifCrouching` if they
 were off the ground or low.
 
+**A blow's numbers come from its hit type.** A state that says `"type"` gets
+`onHit`, `damage`, `hitstun`, `hitstop` and `relaunch` from
+`data/hit-types.json`, one table shared by every fighter, and may not set any of
+them itself. `states.json` keeps the short form, because the editor saves it
+back; the engine, the validator and `npm run chains` read it spelled out
+(`withHitTypes` in `src/combat/hitTypes.ts`). What two blows of one type may
+differ in — `cancelBy`, the sounds, the spark — stays on the state.
+
 Blocking is decided at the moment of contact rather than by standing in a guard
 state, so the stance is the last thing that still knows the defender was low:
 `StateDef.guard` overrides the file's `onGuard` while in it.
@@ -160,8 +168,7 @@ mechanics that need them exist.
     "states": {
       "punch": {
         "anim": "punch",
-        "onHit": "hurt_chain",
-        "hitstun": 15,
+        "type": "flinch",
         "cancelBy": 8,
         "transitions": [{ "when": ["cancelable", "pressed:attack"], "to": "punch_knee" }]
       }

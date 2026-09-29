@@ -11,6 +11,8 @@
  * scripting escape hatch come in later slices.
  */
 
+import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
+
 export interface Transition {
   /**
    * Trigger expression, e.g. "held:fwd" or "!held:back" — or a **list, all of
@@ -63,6 +65,12 @@ export interface StateDef {
   vel?: [number, number];
   /** Whether the entity may turn to face its opponent while in this state. */
   turn?: boolean;
+  /**
+   * The hit type of this state's attack, which decides `onHit`, `damage`,
+   * `hitstun`, `hitstop` and `relaunch` — a state naming one sets none of
+   * them itself. See `combat/hitTypes.ts`.
+   */
+  type?: string;
   /**
    * The reaction this state's attack forces on whoever it hits — the name of a
    * state **on the defender**, not here. This is how one fighter distinguishes
@@ -731,9 +739,11 @@ export function spawnsNamed(states: StatesFile | null | undefined): string[] {
   return [...names];
 }
 
-export function validateStates(file: StatesFile, anims: Record<string, AnimInfo>): Validation {
-  const errors: string[] = [];
+export function validateStates(authored: StatesFile, anims: Record<string, AnimInfo>): Validation {
+  // Types are checked as written; everything else as the engine will run it.
+  const errors: string[] = hitTypeErrors(authored);
   const warnings: string[] = [];
+  const file = withHitTypes(authored);
   const states = file?.states ?? {};
   const names = Object.keys(states);
 

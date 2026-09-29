@@ -7,6 +7,7 @@ import {
   unassigned,
   type AnimSteps,
 } from "../src/combat/chains";
+import { withHitTypes } from "../src/combat/hitTypes";
 import type { StatesFile } from "../src/entity/states";
 
 /**
@@ -24,7 +25,7 @@ const name = process.argv[2] ?? "goku";
 const dir = path.join("data", "entities", name);
 const read = <T>(file: string): T => JSON.parse(readFileSync(path.join(dir, file), "utf8")) as T;
 
-const states = read<StatesFile>("states.json");
+const states = withHitTypes(read<StatesFile>("states.json"));
 const anims = read<Record<string, AnimSteps>>("animations.json");
 const { hitstun } = read<{ hitstun: number }>("attributes.json");
 
