@@ -4,7 +4,7 @@ import { damageScale } from "../combat/scaling";
 import type { EntityDebug } from "../entity/entity";
 
 /**
- * What the engine thinks, in words, for both fighters — toggled with `D`.
+ * What the engine thinks, in words, for both fighters — toggled with `I`.
  *
  * **Two fixed columns rather than text above each head.** Attached labels tell
  * you whose they are, which matters when there are many bodies; with exactly two

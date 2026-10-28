@@ -45,6 +45,24 @@ export function readLayout(rom: Uint8Array, at: number): Piece[] {
   return pieces;
 }
 
+/**
+ * The whole drawing mirrored about the fighter's origin — what the game does
+ * when the facing or a script's flip (field 0x14) sets OAM's flip bits: each
+ * piece lands on the other side and flips itself.
+ */
+export function flipLayout(pieces: Piece[], h: boolean, v: boolean): Piece[] {
+  return pieces.map((p) => {
+    const size = p.big ? 16 : 8;
+    return {
+      ...p,
+      dx: h ? -p.dx - size : p.dx,
+      dy: v ? -p.dy - size : p.dy,
+      hflip: p.hflip !== h,
+      vflip: p.vflip !== v,
+    };
+  });
+}
+
 /** 16 BGR555 colours as RGB; colour 0 is transparent and stays so. */
 export function readPalette(rom: Uint8Array, at: number): [number, number, number][] {
   const out: [number, number, number][] = [];

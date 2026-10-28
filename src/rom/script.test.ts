@@ -24,8 +24,15 @@ describe("readScript", () => {
     ]);
   });
 
-  it("reads a velocity as two signed words", () => {
-    expect(at0(0xd0, 0x00, 0xfe, 0x80, 0x01, 0x00)).toEqual([{ op: "velocity", vx: -512, vy: 384 }]);
+  it("reads an offset as two signed words of pixels", () => {
+    expect(at0(0xd0, 0x08, 0x00, 0xd0, 0xff, 0x00)).toEqual([{ op: "offset", dx: 8, dy: -48 }]);
+  });
+
+  it("reads e0 as a flip of the whole drawing, by OAM's bits", () => {
+    expect(at0(0xe0, 0xc0, 0xe0, 0x40, 0x00)).toEqual([
+      { op: "flip", h: true, v: true },
+      { op: "flip", h: true, v: false },
+    ]);
   });
 
   it("keeps a command it cannot interpret whole, at the length the engine skips", () => {

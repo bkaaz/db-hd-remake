@@ -47,9 +47,8 @@ export interface SceneContext {
   keyboard: Keyboard;
 }
 
-// `goku` is being rebuilt from the cartridge (docs/plan.md) and has no states
-// yet; the hand-built one plays until it does.
-const DEFAULT_FIGHTER = "goku_old";
+// The cartridge's `goku` (docs/plan.md); the hand-built one is `?p1=goku_old`.
+const DEFAULT_FIGHTER = "goku";
 
 /**
  * Read a request out of the address bar.

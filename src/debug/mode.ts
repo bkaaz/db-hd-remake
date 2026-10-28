@@ -30,7 +30,7 @@ export interface DebugMode {
   p2?: Placement & Script;
   /** Initial value only — `B` still toggles the boxes afterwards. */
   boxes?: boolean;
-  /** Initial value only — `D` still toggles the state readout. */
+  /** Initial value only — `I` still toggles the state readout. */
   debug?: boolean;
 }
 

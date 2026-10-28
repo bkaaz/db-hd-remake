@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH, layoutAt, pointer } from "./cartridge";
-import { drawFrame, readLayout, tilePixel, type Piece } from "./frame";
+import { drawFrame, flipLayout, readLayout, tilePixel, type Piece } from "./frame";
 
 describe("readLayout", () => {
   it("reads signed offsets, the tile and the size bit, up to 0x80", () => {
@@ -41,6 +41,22 @@ function solidTiles(count: number): Uint8Array {
 
 /** Palette whose colour i is (i, 0, 0), so a pixel says which index it came from. */
 const RAMP = Array.from({ length: 16 }, (_, i) => [i, 0, 0] as [number, number, number]);
+
+describe("flipLayout", () => {
+  const piece = (dx: number, dy: number, big: boolean): Piece => ({ dx, dy, tile: 0, big, hflip: false, vflip: false });
+
+  it("mirrors each piece about the origin, by its own size", () => {
+    expect(flipLayout([piece(2, -8, false), piece(4, -16, true)], true, false)).toMatchObject([
+      { dx: -10, dy: -8, hflip: true, vflip: false },
+      { dx: -20, dy: -16, hflip: true, vflip: false },
+    ]);
+    expect(flipLayout([piece(2, -8, false)], false, true)).toMatchObject([{ dx: 2, dy: 0, vflip: true }]);
+  });
+
+  it("undoes a piece's own flip rather than stacking it", () => {
+    expect(flipLayout([{ ...piece(0, 0, false), hflip: true }], true, false)[0].hflip).toBe(false);
+  });
+});
 
 describe("tilePixel", () => {
   it("takes planes 0/1 from the first 16 bytes and 2/3 from the second", () => {

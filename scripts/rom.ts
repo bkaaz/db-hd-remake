@@ -18,10 +18,12 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { GOKU, ROM_PATH, layoutAt, pointer, scriptAt, tileSetOf, tileStream } from "../src/rom/cartridge.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { packSheet, type Placed } from "../src/rom/sheet.ts";
-import { animName, toAnim } from "../src/rom/animation.ts";
+import { animName, moveAnim } from "../src/rom/animation.ts";
+import { readBoxes } from "../src/rom/collision.ts";
 import type { Anim } from "../src/entity/entityFile.ts";
 import { decompress } from "../src/rom/decompress.ts";
-import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
+import { drawFrame, flipLayout, readLayout, readPalette } from "../src/rom/frame.ts";
+import { PLAIN, parseFrameId, type Look } from "../src/rom/look.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
 
 if (!existsSync(ROM_PATH)) {
@@ -95,50 +97,73 @@ if (command === "tiles") {
     }
   }
 } else if (command === "export") {
-  // frame keys are decimal like every other frames.json; drawing ids are hex
-  // everywhere in docs/rom.md — frame "74" is drawing 4a
-  const items: Placed[] = [];
-  for (let d = 0; d < GOKU.drawings; d++) {
-    if (tileSetOf(rom, GOKU, d) === null) continue;
-    // a layout of no pieces is a drawing too: the invisible frame of a vanish
-    const empty = readLayout(rom, pointer(rom, layoutAt(GOKU, d))).length === 0;
-    const blank = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
-    items.push({ id: String(d), ...(empty ? blank : draw(d)) });
-  }
-  const { sheet, frames } = packSheet(items);
-
   // every move id, though many share a script: a state names a move, not a script
   const animations: Record<string, Anim> = {};
   for (let move = 0; move < 0x100; move++) {
     try {
-      const anim = toAnim(readScript(rom, scriptAt(rom, GOKU, move)));
-      const missing = anim?.steps.find((s) => !frames[s.frame]);
-      if (missing) throw new Error(`shows drawing ${hex(+missing.frame)}, which has no picture`);
+      const anim = moveAnim(move, readScript(rom, scriptAt(rom, GOKU, move)), (d) => readBoxes(rom, GOKU.boxes, d));
       if (anim) animations[animName(move)] = anim;
     } catch (e) {
       console.log(`  ${animName(move)} left out: ${(e as Error).message}`);
     }
   }
 
+  // every drawing as drawn, plus each way a move shows one (src/rom/look.ts);
+  // frame ids are decimal like every other frames.json — "74" is drawing 4a
+  const ids = new Set<string>();
+  for (let d = 0; d < GOKU.drawings; d++) if (tileSetOf(rom, GOKU, d) !== null) ids.add(String(d));
+  for (const anim of Object.values(animations)) for (const step of anim.steps) ids.add(step.frame);
+  const items: Placed[] = [];
+  const failed = new Set<string>();
+  for (const id of [...ids].sort((a, b) => parseFrameId(a).drawing - parseFrameId(b).drawing || a.localeCompare(b))) {
+    try {
+      items.push({ id, ...place(id) });
+    } catch (e) {
+      failed.add(id);
+      console.log(`  frame ${id} left out: ${(e as Error).message}`);
+    }
+  }
+  for (const [name, anim] of Object.entries(animations)) {
+    const bad = anim.steps.find((s) => failed.has(s.frame));
+    if (!bad) continue;
+    delete animations[name];
+    console.log(`  ${name} left out: shows frame ${bad.frame}, which has no picture`);
+  }
+  const { sheet, frames } = packSheet(items);
+
   mkdirSync("data/entities/goku", { recursive: true });
   writeFileSync("assets/sheets/goku.png", encodePng(sheet));
   writeFileSync("data/entities/goku/frames.json", JSON.stringify(frames, null, 2) + "\n");
   writeFileSync("data/entities/goku/animations.json", JSON.stringify(animations, null, 2) + "\n");
-  console.log(`wrote ${items.length} drawings into assets/sheets/goku.png (${sheet.width}×${sheet.height}) and frames.json,`);
+  console.log(`wrote ${items.length} frames into assets/sheets/goku.png (${sheet.width}×${sheet.height}) and frames.json,`);
   console.log(`  ${Object.keys(animations).length} moves into animations.json`);
 } else {
   console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | export   (ids in hex)");
   process.exit(1);
 }
 
-function draw(drawing: number) {
+/**
+ * A frame's picture and where the fighter's position falls in it: the drawing
+ * mirrored about its origin, then the origin moved away from the position by
+ * the offset — so the anchor is the position, as the game draws it.
+ */
+function place(id: string): Omit<Placed, "id"> {
+  const { drawing, look } = parseFrameId(id);
+  const blank = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
+  // a layout of no pieces is a drawing too: the invisible frame of a vanish
+  const empty = readLayout(rom, pointer(rom, layoutAt(GOKU, drawing))).length === 0;
+  const { image, origin } = empty ? blank : draw(drawing, look);
+  return { image, origin: { x: origin.x - look.dx, y: origin.y - look.dy } };
+}
+
+function draw(drawing: number, look: Look = PLAIN) {
   const set = tileSetOf(rom, GOKU, drawing);
   if (set === null) throw new Error(`drawing ${hex(drawing)} is unused`);
   const at = tileStream(rom, GOKU, set);
   if (at === null) throw new Error(`drawing ${hex(drawing)} wants tile set ${hex(set)}, an unused slot`);
   return drawFrame(
     decompress(rom, at).data,
-    readLayout(rom, pointer(rom, layoutAt(GOKU, drawing))),
+    flipLayout(readLayout(rom, pointer(rom, layoutAt(GOKU, drawing))), look.h, look.v),
     readPalette(rom, GOKU.palette),
   );
 }
@@ -151,7 +176,8 @@ function describe(op: ScriptOp): string {
         : `${op.frames} frames of ${hex(op.drawing)} (tile set ${hex(tileSetOf(rom, GOKU, op.drawing) ?? 0)})`;
     case "attack": return `attack ${hex(op.id)} ?`;
     case "effect": return `effect ${hex(op.id)} ?`;
-    case "velocity": return `velocity ${op.vx / 256}, ${op.vy / 256} px/frame`;
+    case "offset": return `draw ${op.dx}, ${op.dy} px from the position`;
+    case "flip": return `flip ${op.h ? "h" : ""}${op.v ? "v" : ""}${op.h || op.v ? "" : "off"}`;
     case "hold": return `hold ${hex(op.drawing)} until released ?`;
     case "raw": return op.bytes.map(hex).join(" ") + "  (not read yet)";
   }

@@ -16,8 +16,15 @@ export type ScriptOp =
   | { op: "attack"; id: number }
   /** Fires once per move (counter field 0x6d): `$00:DE9F` with `id` — an effect ? */
   | { op: "effect"; id: number }
-  /** Velocity, signed 8.8 into fields 0x0e / 0x10; x is mirrored facing left. */
-  | { op: "velocity"; vx: number; vy: number }
+  /**
+   * Where the drawing is drawn, in px from the fighter's position (fields
+   * 0x0e / 0x10, added by the sprite routine at $00:818C) — the somersault's
+   * ball is drawn 48 px up. x is mirrored when facing left. Lasts until the
+   * next offset.
+   */
+  | { op: "offset"; dx: number; dy: number }
+  /** Flips the whole drawing (field 0x14, XORed with the facing) until the next flip. */
+  | { op: "flip"; h: boolean; v: boolean }
   /** Hold a drawing until something outside the script moves on ? */
   | { op: "hold"; drawing: number }
   /** Commands whose effect is not read yet, kept whole so nothing is lost. */
@@ -45,8 +52,11 @@ export function readScript(rom: Uint8Array, at: number): ScriptOp[] {
       ops.push({ op: c === 0xa0 ? "attack" : "effect", id: rom[p + 2] });
       p += 3;
     } else if (c === 0xd0) {
-      ops.push({ op: "velocity", vx: signed16(word(p + 1)), vy: signed16(word(p + 3)) });
+      ops.push({ op: "offset", dx: signed16(word(p + 1)), dy: signed16(word(p + 3)) });
       p += 5;
+    } else if (c === 0xe0 && !(rom[p + 1] & 0x3f)) {
+      ops.push({ op: "flip", h: (rom[p + 1] & 0x40) !== 0, v: (rom[p + 1] & 0x80) !== 0 });
+      p += 2;
     } else if (LENGTH[c]) {
       ops.push({ op: "raw", bytes: [...rom.subarray(p, p + LENGTH[c])] });
       p += LENGTH[c];

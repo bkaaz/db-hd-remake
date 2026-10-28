@@ -32,19 +32,22 @@ export interface WorldInput {
   /** Down arrow — held, like up. */
   down: boolean;
   /**
-   * The four buttons — Burst Limit's attack, guard, smash and ki blast (`blast`,
-   * because `ki` is the meter). Each went down **this frame** (edge, not held).
+   * The buttons — Burst Limit's attack, guard, smash and ki blast (`blast`,
+   * because `ki` is the meter), then the original's X (`strike`) and L/R
+   * (`dash`). Each went down **this frame** (edge, not held).
    */
   attack: boolean;
   guard: boolean;
   smash: boolean;
   blast: boolean;
+  strike: boolean;
+  dash: boolean;
   /**
    * Whether each button is **still down**, which the edges above cannot say.
    * A stance you hold — charging ki on A+Z — needs it: two edges would have to
    * land on one frame, and whichever arrived alone would spend itself on a blow.
    */
-  holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean };
+holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean; strike: boolean; dash: boolean };
 }
 
 export const NO_INPUT: WorldInput = {
@@ -56,7 +59,9 @@ export const NO_INPUT: WorldInput = {
   guard: false,
   smash: false,
   blast: false,
-  holding: { attack: false, guard: false, smash: false, blast: false },
+  strike: false,
+  dash: false,
+  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 
 /**
@@ -105,6 +110,8 @@ const ATTACK_LABELS = [
   ["guard", "G"],
   ["smash", "S"],
   ["blast", "B"],
+  ["strike", "K"],
+  ["dash", "D"],
 ] as const satisfies readonly (readonly [keyof WorldInput, string])[];
 
 /** Frames between copies of a retriggered sound when the state names no interval. */
@@ -604,6 +611,8 @@ export class Entity {
     if (input.guard) this.buffer.press("guard");
     if (input.smash) this.buffer.press("smash");
     if (input.blast) this.buffer.press("blast");
+    if (input.strike) this.buffer.press("strike");
+    if (input.dash) this.buffer.press("dash");
 
     // A hit pause freezes the whole entity, animation included — the pose the
     // blow landed on is exactly what should be held still. The buffer is not
@@ -665,6 +674,8 @@ export class Entity {
         guard: this.buffer.has("guard"),
         smash: this.buffer.has("smash"),
         blast: this.buffer.has("blast"),
+        strike: this.buffer.has("strike"),
+        dash: this.buffer.has("dash"),
         qcf: this.motions.has("qcf"),
         qcb: this.motions.has("qcb"),
         holding: input.holding,

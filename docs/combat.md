@@ -19,6 +19,12 @@ well against the CPU, and the reverse is not true.
 | **Smash** | `S` | ends the string, at any depth, with a heavier blow |
 | **Ki** | `X` | the ki blast; forward or back + Ki is the kamehameha |
 | **Guard** | `Z` | held, a stance that blocks; tapped at the right moment, vanishes (§5) |
+| **Strike** | `D` | the original's X — only the cartridge's `goku` uses it so far |
+| **Dash** | `C` | with forward or back, the original's dash (its L/R) — `goku` only |
+
+The table above is `goku_old`'s. The cartridge's `goku` plays the original's
+own moves for now (`plan.md`): A, S, D and X are its Y, B, X and A, with no
+strings between them, until it is reworked to these rules.
 
 **The rush is a tree.** Attack walks one line, Smash branches off it at every
 depth and ends it, and Smash alone is a move of its own:

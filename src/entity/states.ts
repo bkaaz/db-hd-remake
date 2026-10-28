@@ -352,13 +352,16 @@ export interface InputSnapshot {
   /** Down is a world direction too — it starts a crouch. */
   down: boolean;
   /**
-   * The four buttons — Burst Limit's attack, guard, smash and ki blast. Each
+   * The buttons — Burst Limit's attack, guard, smash and ki blast, then the
+   * original's two that ours lacked (`strike`, its X; `dash`, its L/R). Each
    * went down **this frame** (edge, not held).
    */
   attack: boolean;
   guard: boolean;
   smash: boolean;
   blast: boolean;
+  strike: boolean;
+  dash: boolean;
   /**
    * A motion input completed inside its window — a *sequence* of directions,
    * where every `held:` above is one frame. Recognised in `input/motion.ts`;
@@ -371,7 +374,7 @@ export interface InputSnapshot {
    * moment and this is a state, and only the second can express a stance you
    * hold.
    */
-  holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean };
+holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean; strike: boolean; dash: boolean };
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -427,10 +430,14 @@ export const TRIGGERS = [
   "pressed:guard",
   "pressed:smash",
   "pressed:blast",
+  "pressed:strike",
+  "pressed:dash",
   "held:attack",
   "held:guard",
   "held:smash",
   "held:blast",
+  "held:strike",
+  "held:dash",
   "motion:qcf",
   "motion:qcb",
   "animEnd",
@@ -476,6 +483,12 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "pressed:blast":
       value = input.blast;
       break;
+    case "pressed:strike":
+      value = input.strike;
+      break;
+    case "pressed:dash":
+      value = input.dash;
+      break;
     case "held:attack":
       value = input.holding.attack;
       break;
@@ -487,6 +500,12 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "held:blast":
       value = input.holding.blast;
+      break;
+    case "held:strike":
+      value = input.holding.strike;
+      break;
+    case "held:dash":
+      value = input.holding.dash;
       break;
     case "motion:qcf":
       value = input.qcf;

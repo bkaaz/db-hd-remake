@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { animName, toAnim } from "./animation";
+import { animName, moveAnim, toAnim } from "./animation";
 import type { ScriptOp } from "./script";
 
 const show = (frames: number, drawing: number | null): ScriptOp => ({ op: "show", frames, drawing });
@@ -25,8 +25,42 @@ describe("toAnim", () => {
     expect(toAnim([show(0, 9), { op: "hold", drawing: 7 }])?.steps).toEqual([{ frame: "7", dur: 1 }]);
   });
 
+  it("gives each step its drawing's boxes", () => {
+    const boxes = (d: number) => (d === 0x4a ? [{ type: "hit" as const, x: 21, y: -55, w: 28, h: 14 }] : []);
+    expect(toAnim([show(8, 0x46), show(4, 0x4a)], boxes)?.steps).toEqual([
+      { frame: "70", dur: 8 },
+      { frame: "74", dur: 4, boxes: [{ type: "hit", x: 21, y: -55, w: 28, h: 14 }] },
+    ]);
+  });
+
+  it("names the frame of a step shown flipped or offset, until the script resets it", () => {
+    const anim = toAnim([
+      { op: "offset", dx: 0, dy: -48 },
+      show(4, 11),
+      { op: "flip", h: true, v: true },
+      show(4, 11),
+      { op: "offset", dx: 0, dy: 0 },
+      { op: "flip", h: false, v: false },
+      show(4, 9),
+    ]);
+    expect(anim?.steps.map((s) => s.frame)).toEqual(["11_0,-48", "11_hv_0,-48", "9"]);
+  });
+
   it("is null for a script that shows nothing", () => {
     expect(toAnim([show(4, null), { op: "attack", id: 1 }])).toBeNull();
+  });
+});
+
+describe("moveAnim", () => {
+  it("repeats idle, which the original replays, and not an attack", () => {
+    const ops = [show(4, 1)];
+    expect(moveAnim(0x00, ops)?.loop).toBe(true);
+    expect(moveAnim(0x92, ops)?.loop).toBe(false);
+  });
+
+  it("ends the dash on the step the original holds, so it stays there", () => {
+    const anim = moveAnim(0x0a, [show(8, 0x0d), show(8, 0x0e), show(8, 0x0d)]);
+    expect(anim).toEqual({ loop: false, steps: [{ frame: "13", dur: 8 }, { frame: "14", dur: 8 }] });
   });
 });
 

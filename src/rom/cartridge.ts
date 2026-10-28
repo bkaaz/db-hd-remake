@@ -21,6 +21,8 @@ export interface FighterTables {
   palette: number;
   /** Which entry of the script tables is this fighter's (fighter field 0x41). */
   scripts: number;
+  /** 32 bytes per drawing id: its boxes (src/rom/collision.ts). */
+  boxes: number;
 }
 
 export const GOKU: FighterTables = {
@@ -30,6 +32,7 @@ export const GOKU: FighterTables = {
   tileRecords: 0x40b00,
   palette: 0xb0000,
   scripts: 0,
+  boxes: 0x1d8000,
 };
 
 /**
@@ -61,9 +64,13 @@ export function pointer(rom: Uint8Array, at: number): number {
  */
 export const FIGHTER_FIELDS: Record<number, string> = {
   0x00: "character (indexes per-fighter tables)",
+  0x03: "x",
+  0x07: "y",
   0x0a: "drawing",
-  0x0e: "script vx? (set by script command d0)",
-  0x10: "script vy? (set by script command d0)",
+  0x0e: "draw offset x (script d0)",
+  0x10: "draw offset y (script d0)",
+  0x12: "facing (bit 6: left)",
+  0x14: "flip, XORed with the facing (script e0)",
   0x25: "busy (0x80 while a move runs)",
   0x40: "move",
   0x41: "script set (which fighter's scripts)",

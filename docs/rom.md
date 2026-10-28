@@ -30,7 +30,7 @@ tables, and how a drawing is put together, are in `src/rom/cartridge.ts` and
 | where | what |
 |---|---|
 | `0xb0000` … | Goku's palettes, 32 bytes each, by stage lighting and side (PalMod) |
-| `0x1d8000 + 32 × drawing` | read on every drawing change: `x1 y1 x2 y2` (signed, from the origin) up to `0x80` — drawing `4a` holds a body, a head and the outstretched fist: hurt and hit boxes `?` |
+| `0x1d8000 + 32 × drawing` | the drawing's boxes — which slot is what: `src/rom/collision.ts` |
 | `0x1e1000 + 32 × drawing` | read beside it, same shape — a second set of boxes `?` |
 | `0x27b161` | a second Goku palette, "Hair lighting and KI Blast effects" (PalMod) — not used by the export yet |
 | `0x62a15` … | Goku's animation scripts in bank `$0C`: 256 pointers by move id, then the scripts (below) |
@@ -43,8 +43,22 @@ is known of its meaning are in `src/rom/script.ts`, and the table from move id
 to script in `src/rom/cartridge.ts`. `npm run rom -- move 92` prints one;
 the export turns each into an animation named `m92` (`src/rom/animation.ts`).
 
+**Whether a move repeats is not in its script.** The engine restarts every
+script that reaches `00`; the move's code ends it (an attack, once its frames
+are up) or keeps it going (idle, walking), and some code holds one step while
+a button is down (the dash). Only a hold step in the script — crouching's `f0`
+— says it in the data. What the code does, per move, is listed beside
+`moveAnim` until the handlers are read.
+
+**How a step is drawn is in the script too**: `d0` moves the drawing away from
+the fighter's position and `e0` flips it whole, both lasting until set again —
+the sprite routine at `$00:8180` adds the one and XORs the other with the
+facing. The somersault is two drawings, raised 48 px and turned. The export
+makes each such way of showing a drawing a frame of its own
+(`src/rom/look.ts`).
+
 Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
-`b0` / `c0` / `e0` set off — the attack ids are where hit data must be. `b0`
+`b0` / `c0` set off — the attack ids are where hit data must be. `b0`
 spawns an object; the transformation drawings are incomplete without it
 (`bugs.md`).
 
@@ -59,6 +73,7 @@ access to I/O* on; each writes into `logs/`.
 | `log-dma.lua` | every DMA, beside the sprite id — where graphics come from |
 | `trace-tiles.lua` | every ROM read the SA-1 makes while it fills the tile buffer, in order |
 | `trace-anim.lua` | every ROM read around a change of move, step, drawing or tile set |
+| `log-moves.lua` | which move id each action picks, with the pad and velocities — runs at full speed |
 
 Measured on Goku (2026-10-28, training mode): walk 1.5 px/frame forward and
 1.25 back; jump −9.86 px/frame with gravity 0.469; hitstop 8 frames; the

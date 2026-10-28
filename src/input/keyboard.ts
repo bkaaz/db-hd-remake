@@ -16,10 +16,11 @@ import { startRecording, stopRecording } from "../log";
  * them would have to land on the same frame, and the first to arrive alone
  * would spend itself on a punch.
  *
- * The four buttons are Burst Limit's — **Attack, Guard, Smash, Blast** (the ki
+ * Four buttons are Burst Limit's — **Attack, Guard, Smash, Blast** (the ki
  * blast) — on the `A S` / `Z X` square that stands in for a pad's four face
  * buttons. A and S are the two that hit; Z, the guard, sits under the attack
- * so that holding both charges ki.
+ * so that holding both charges ki. **Strike** (D) and **Dash** (C) extend the
+ * square for the original's X and L/R, which the cartridge's Goku plays.
  *
  * Remapping comes later; nothing outside this file knows which key is which.
  */
@@ -44,7 +45,7 @@ export class Keyboard {
    * first, and what is being looked at is never the charging.
    */
   private kiAsked = false;
-  /** Print what the engine thinks for both fighters. Toggled with D. */
+  /** Print what the engine thinks for both fighters. Toggled with I (D is Strike). */
   showDebug = true;
   /** Whether a gameplay recording is running. Started and stopped with L. */
   recording = false;
@@ -55,12 +56,16 @@ export class Keyboard {
     guard: false,
     smash: false,
     blast: false,
+    strike: false,
+    dash: false,
   };
   private readonly down: Buttons = {
     attack: false,
     guard: false,
     smash: false,
     blast: false,
+    strike: false,
+    dash: false,
   };
 
   constructor(target: Window = window) {
@@ -117,7 +122,7 @@ export class Keyboard {
     else if (key === "m") this.modeAsked = !e.repeat;
     else if (key === "t") this.dummyAttacks = !this.dummyAttacks;
     else if (key === "b") this.showBoxes = !this.showBoxes;
-    else if (key === "d") this.showDebug = !this.showDebug;
+    else if (key === "i") this.showDebug = !this.showDebug;
     else if (key === "l") this.toggleRecording();
   }
 
@@ -139,9 +144,9 @@ export class Keyboard {
 }
 
 type Directions = Pick<WorldInput, "left" | "right" | "up" | "down">;
-type Buttons = Pick<WorldInput, "attack" | "guard" | "smash" | "blast">;
+type Buttons = Pick<WorldInput, "attack" | "guard" | "smash" | "blast" | "strike" | "dash">;
 
-const BUTTONS = ["attack", "guard", "smash", "blast"] as const;
+const BUTTONS = ["attack", "guard", "smash", "blast", "strike", "dash"] as const;
 
 const DIRECTION_KEYS: Record<string, keyof Directions | undefined> = {
   ArrowLeft: "left",
@@ -155,4 +160,6 @@ const BUTTON_KEYS: Record<string, keyof Buttons | undefined> = {
   z: "guard",
   s: "smash",
   x: "blast",
+  d: "strike",
+  c: "dash",
 };

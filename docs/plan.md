@@ -42,18 +42,20 @@ reads the code, the emulator only confirms.
 A move id gives its drawings and how long each is held, statically:
 `npm run rom -- move 92`.
 
-The hand-built fighter is `goku_old` now and plays by default; `goku` is the
-cartridge's — every drawing, written by `npm run rom -- export` — and has no
-animations or states yet, so the select screen does not offer it.
-`goku_old` is dropped once the new one has proved itself.
+The hand-built fighter is `goku_old` now (`?p1=goku_old`); `goku` is the
+cartridge's — drawings, animations and boxes written by `npm run rom -- export`,
+states by hand after the original's moves — and plays by default. `goku_old`
+stays: what we built that the original lacks will be brought over later.
 
 Every move is an animation now, `m00`…`mff` (ADR 0017), written by the export.
 
-1. **States for `goku`**, until he plays and becomes the default again — the
-   original's speeds into them. *Open:* which of the 256 move ids are real
-   moves; how much of the original's numbers to take before `combat.md` takes
-   over; and why idle holds each pose 12 frames in its script but 13–14 in a
-   recording, when the attacks match to the frame.
+1. **Check `goku` plays** — first version of his states (2026-10-29): walk,
+   crouch, jumps, dash, four blows, guard, reactions. Not in it: close Y (the
+   original picks it by distance; we have no such trigger), the ki projectile
+   (`b0`, item 2), damage beyond the shared hit types, the dash's recovery
+   pose after the release. *Open:* why idle holds each pose 12 frames in its
+   script but 13–14 in a recording; reading which moves repeat or hold from
+   the move handlers instead of listing them (`src/rom/animation.ts`).
 2. **What `b0` spawns** — read the command and the object it creates, then
    draw the transformation drawings with their overlay (`bugs.md`). The same
    objects are likely the ki blasts and effects, so this is not only hair.

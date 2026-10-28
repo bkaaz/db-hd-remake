@@ -59,9 +59,11 @@ const NONE = {
   guard: false,
   smash: false,
   blast: false,
+  strike: false,
+  dash: false,
   qcf: false,
   qcb: false,
-  holding: { attack: false, guard: false, smash: false, blast: false },
+  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const FWD = { ...NONE, fwd: true };
 const ATTACK = { ...NONE, attack: true };
@@ -414,14 +416,14 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
-  it("keeps the entities we actually ship valid", () => {
+  it.each(["goku_old", "goku"])("keeps the entity we ship, %s, valid", (entity) => {
     // The point of the validator: catch a typo in hand-authored data. Checking
     // the committed states against the committed animations is what makes that
     // guarantee real — warnings are allowed (data is still being authored),
     // errors are not.
     const read = <T>(file: string): T =>
       JSON.parse(
-        readFileSync(fileURLToPath(new URL(`../../data/entities/goku_old/${file}`, import.meta.url)), "utf8"),
+        readFileSync(fileURLToPath(new URL(`../../data/entities/${entity}/${file}`, import.meta.url)), "utf8"),
       ) as T;
     const states = read<StatesFile>("states.json");
     const anims = read<Record<string, AnimInfo>>("animations.json");

@@ -63,9 +63,11 @@ const NOTHING: InputSnapshot = {
   guard: false,
   smash: false,
   blast: false,
+  strike: false,
+  dash: false,
   qcf: false,
   qcb: false,
-  holding: { attack: false, guard: false, smash: false, blast: false },
+  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const QUIET: Signals = {
   animEnded: false,
@@ -154,7 +156,7 @@ describe("the bolt the beam throws", () => {
 
 describe("charging ki is a stance, not a press", () => {
   /** Both attack keys down — the state an edge cannot describe. */
-  const holdAZ = { holding: { attack: true, guard: true, smash: false, blast: false } };
+  const holdAZ = { holding: { attack: true, guard: true, smash: false, blast: false, strike: false, dash: false } };
 
   it("drops into the charge on A+Z and loops there", () => {
     const s = new Sim();
@@ -167,7 +169,7 @@ describe("charging ki is a stance, not a press", () => {
     const s = new Sim();
     s.frame(holdAZ);
     s.frame(holdAZ, { animEnded: true });
-    const half = { holding: { attack: true, guard: false, smash: false, blast: false } };
+    const half = { holding: { attack: true, guard: false, smash: false, blast: false, strike: false, dash: false } };
     expect(s.frame(half)).toBe("idle");
   });
 
@@ -201,7 +203,7 @@ describe("charging ki is a stance, not a press", () => {
     // The stance is checked before every attack, so this is the assertion that
     // keeps it from eating the whole moveset: one key down is still a blow.
     const s = new Sim();
-    const onlyAttack = { attack: true, holding: { attack: true, guard: false, smash: false, blast: false } };
+    const onlyAttack = { attack: true, holding: { attack: true, guard: false, smash: false, blast: false, strike: false, dash: false } };
     expect(s.frame(onlyAttack)).toBe("kick_mid");
   });
 });
@@ -336,7 +338,7 @@ describe("the rush — attack walks it, smash ends it", () => {
 });
 
 describe("the guard is a stance the button holds", () => {
-  const holdGuard = { holding: { attack: false, guard: true, smash: false, blast: false } };
+  const holdGuard = { holding: { attack: false, guard: true, smash: false, blast: false, strike: false, dash: false } };
   const isGuarding = (state: string): boolean => !!goku().states[state].guarding;
 
   it("stands in guard while held, and leaves it when let go", () => {
@@ -510,7 +512,7 @@ describe("the buttons reach the moves they are supposed to", () => {
   });
 
   it("forward and blast charge the kamehameha, and letting go fires it", () => {
-    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true } };
+    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true, strike: false, dash: false } };
     const s = new Sim();
     expect(s.frame({ fwd: true, blast: true, ...holdX })).toBe("kame_charge");
     // It is held, not pressed: the charge lasts exactly as long as the key does.
@@ -524,7 +526,7 @@ describe("the buttons reach the moves they are supposed to", () => {
   });
 
   it("back and blast charge the same beam, aimed up", () => {
-    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true } };
+    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true, strike: false, dash: false } };
     const s = new Sim();
     expect(s.frame({ back: true, blast: true, ...holdX })).toBe("kame_charge_up");
     expect(s.frame({ back: true })).toBe("kame_fire_up");
@@ -558,7 +560,7 @@ describe("the buttons reach the moves they are supposed to", () => {
   });
 
   it("lets go of itself once the charge is full", () => {
-    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true } };
+    const holdX = { holding: { attack: false, guard: false, smash: false, blast: true, strike: false, dash: false } };
     const s = new Sim();
     s.frame({ fwd: true, blast: true, ...holdX });
     expect(s.frame({ fwd: true, ...holdX }, { charged: true })).toBe("kame_fire");
