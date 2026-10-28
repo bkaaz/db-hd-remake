@@ -26,9 +26,9 @@ because a number would only need translating back.
 
 The hair is cut flat at the top and some strands look too thin. These are the
 transformation drawings, and every script that shows them (moves `3c`, `3e`)
-issues a `b0` just before — which spawns an object. Most likely that object
-draws the rest of the hair, in the palette PalMod calls "Hair lighting and KI
-Blast effects" (`0x27B161`); `npm run rom -- export` draws the body alone.
+issues a `b0` just before — which spawns an object that draws the rest of
+the hair, from resource `0x51` in the palette at `0x27B161` (confirmed against
+a VRAM snapshot, `rom.md`); `npm run rom -- export` draws the body alone.
 To see it: `npm run rom -- frame 29`. The work to fix it is in `plan.md`.
 
 ## `npm run anim` only knows how far a move reaches sideways

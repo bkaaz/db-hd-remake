@@ -62,11 +62,21 @@ start step, flags and a palette, and a position from the fighter's, x
 mirrored when facing left. Objects are animated by `$00:843F`: type →
 `$09:B258` → the type's animations → steps of 3-byte pointers to frames in
 the same layout format as a fighter's. Goku's transformation spawns type 0
-animation 5 — the missing top of the hair (tiles `0x40`–`0x47`, `bugs.md`);
-his ki blast is type `a` animation 3, 40 px ahead and 56 px up, drawn from
-tiles `0x150`+. **Where object tiles come from is not found** — not from the
-fighter's tile set, which ends at `0x3e`; a DMA of 0x80 bytes a frame from
-WRAM `$7F:7080` to VRAM `$3840` is the one lead.
+animation 5 — the missing top of the hair; his ki blast is type `a`
+animation 3, 40 px ahead and 56 px up.
+
+**Every graphic is a resource**: one table of 11-byte records at `0x40000`
+(`$08:8000`, looked up by `$00:B265`) — a pointer to tiles, their size,
+a pointer to a palette. Goku's tile set `n` is resource `0x100 + n`; the
+rest are loaded into fixed places in VRAM, and an object's tile numbers
+count from there (a `b0` can shift them, `0x800` words = `0x80` tiles).
+Matched tile by tile against a VRAM snapshot (`tools/re/dump-vram.lua`,
+2026-10-29), all with the hair-lighting palette `0x27B161`:
+
+| what | resource | VRAM | tiles |
+|---|---|---|---|
+| ki blast | `0x31` | `$7500` | raw, 48 |
+| transformation hair | `0x51` | `$6C00` | its tiles 0–7 are the overlay's `0x40`–`0x47` |
 
 Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
 `c0` set off — the attack ids are where hit data must be.
@@ -83,6 +93,7 @@ access to I/O* on; each writes into `logs/`.
 | `trace-tiles.lua` | every ROM read the SA-1 makes while it fills the tile buffer, in order |
 | `trace-anim.lua` | every ROM read around a change of move, step, drawing or tile set |
 | `log-moves.lua` | which move id each action picks, with the pad and velocities — runs at full speed |
+| `dump-vram.lua` | VRAM, palettes and OAM every few frames — which resource each tile on screen came from |
 
 Measured on Goku (2026-10-28, training mode): walk 1.5 px/frame forward and
 1.25 back; jump −9.86 px/frame with gravity 0.469; hitstop 8 frames; the
