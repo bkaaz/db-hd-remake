@@ -38,7 +38,7 @@ load it.
 | section | written by |
 |---|---|
 | `frames.json` | the editor, Sprites tab |
-| `animations.json` | the editor, Animations tab — **and** `npm run anim` |
+| `animations.json` | the editor, Animations tab — **and** `npm run anim`; for `goku`, `npm run rom -- export` writes it whole ([ADR 0017](./adr/0017-the-cartridges-animations-are-named-by-move-id.md)) |
 | `states.json` | **by hand**; the editor's States tab is a read-only view |
 | `sounds.json` | the editor, Sounds tab |
 | `attributes.json` | by hand |

@@ -239,7 +239,8 @@ npm run rom -- frame 4a
                   # a drawing read straight from the cartridge, into
                   # preview/ (frames: draw all, tiles: every tile set;
                   # move 92: the animation script a move plays;
-                  # export: all of them into goku's sheet and frames.json)
+                  # export: rewrites goku's sheet, frames.json and
+                  # animations.json whole — ADR 0017)
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md

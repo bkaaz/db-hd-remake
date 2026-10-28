@@ -100,6 +100,9 @@ is a qcf — so the name is the motion hands make, not the shape required. The
 trigger is `motion:<name>`; **which ones exist is `MOTIONS` in
 `input/motion.ts`**, never this line. → `combat.md` (The buttons)
 
+**Move id** (`m92`) — the original's number for a move, fighter field `0x40`;
+`goku`'s animations are named by it. → ADR 0017, `rom.md`
+
 **Proration (scaling)** — every blow after the first is worth 10% less, in both
 damage and hitstun, down to a floor of 20% and 50%. The counter lives on the
 defender and resets when they get control back. → `combat.md` §3

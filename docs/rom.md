@@ -30,7 +30,9 @@ tables, and how a drawing is put together, are in `src/rom/cartridge.ts` and
 | where | what |
 |---|---|
 | `0xb0000` … | Goku's palettes, 32 bytes each, by stage lighting and side (PalMod) |
-| `0x1d8000 + 32 × drawing` | read on every drawing change: 4-byte entries up to `0x80` — the drawing's boxes `?` |
+| `0x1d8000 + 32 × drawing` | read on every drawing change: `x1 y1 x2 y2` (signed, from the origin) up to `0x80` — drawing `4a` holds a body, a head and the outstretched fist: hurt and hit boxes `?` |
+| `0x1e1000 + 32 × drawing` | read beside it, same shape — a second set of boxes `?` |
+| `0x27b161` | a second Goku palette, "Hair lighting and KI Blast effects" (PalMod) — not used by the export yet |
 | `0x62a15` … | Goku's animation scripts in bank `$0C`: 256 pointers by move id, then the scripts (below) |
 
 **An animation script** is what a move plays: steps that hold a drawing for
@@ -38,10 +40,13 @@ some frames, with commands between them — far Y is `02 ee ee  08 46 00
 a0 00 06  08 4a 00  04 4a 00  10 46 00  00`, frame for frame what a recording
 shows. The engine is at `$01:85FD`; the format, each command's length and what
 is known of its meaning are in `src/rom/script.ts`, and the table from move id
-to script in `src/rom/cartridge.ts`. `npm run rom -- move 92` prints one.
+to script in `src/rom/cartridge.ts`. `npm run rom -- move 92` prints one;
+the export turns each into an animation named `m92` (`src/rom/animation.ts`).
 
 Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
-`b0` / `c0` / `e0` set off — the attack ids are where hit data must be.
+`b0` / `c0` / `e0` set off — the attack ids are where hit data must be. `b0`
+spawns an object; the transformation drawings are incomplete without it
+(`bugs.md`).
 
 ## How it was found
 

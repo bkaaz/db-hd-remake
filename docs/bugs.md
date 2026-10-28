@@ -20,6 +20,17 @@ because a number would only need translating back.
 
 ---
 
+## Goku's black-haired drawings are missing part of the hair
+
+`assets/sheets/goku.png`, drawings `26`–`2a` and `2f`–`34` · noticed 2026-10-28 · cosmetic
+
+The hair is cut flat at the top and some strands look too thin. These are the
+transformation drawings, and every script that shows them (moves `3c`, `3e`)
+issues a `b0` just before — which spawns an object. Most likely that object
+draws the rest of the hair, in the palette PalMod calls "Hair lighting and KI
+Blast effects" (`0x27B161`); `npm run rom -- export` draws the body alone.
+To see it: `npm run rom -- frame 29`. The work to fix it is in `plan.md`.
+
 ## `npm run anim` only knows how far a move reaches sideways
 
 `src/sprites/boxes.ts:110` · noticed 2026-08-23 · annoying

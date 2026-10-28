@@ -7,7 +7,8 @@
  *   npm run rom -- move 92           the animation script a move plays
  *   npm run rom -- moves             every move id whose script reads
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
- *                                    data/entities/goku/frames.json (frame n = drawing n)
+ *                                    data/entities/goku/frames.json (frame n = drawing n),
+ *                                    every move into its animations.json as m00…mff
  *
  * Ids are hex, as the fighter's RAM holds them: the drawing is field 0x0a
  * (src/rom/cartridge.ts), and its tile set comes from the cartridge's table.
@@ -17,6 +18,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { GOKU, ROM_PATH, layoutAt, pointer, scriptAt, tileSetOf, tileStream } from "../src/rom/cartridge.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { packSheet, type Placed } from "../src/rom/sheet.ts";
+import { animName, toAnim } from "../src/rom/animation.ts";
+import type { Anim } from "../src/entity/entityFile.ts";
 import { decompress } from "../src/rom/decompress.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
@@ -97,14 +100,32 @@ if (command === "tiles") {
   const items: Placed[] = [];
   for (let d = 0; d < GOKU.drawings; d++) {
     if (tileSetOf(rom, GOKU, d) === null) continue;
-    if (readLayout(rom, pointer(rom, layoutAt(GOKU, d))).length === 0) continue;
-    items.push({ id: String(d), ...draw(d) });
+    // a layout of no pieces is a drawing too: the invisible frame of a vanish
+    const empty = readLayout(rom, pointer(rom, layoutAt(GOKU, d))).length === 0;
+    const blank = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
+    items.push({ id: String(d), ...(empty ? blank : draw(d)) });
   }
   const { sheet, frames } = packSheet(items);
+
+  // every move id, though many share a script: a state names a move, not a script
+  const animations: Record<string, Anim> = {};
+  for (let move = 0; move < 0x100; move++) {
+    try {
+      const anim = toAnim(readScript(rom, scriptAt(rom, GOKU, move)));
+      const missing = anim?.steps.find((s) => !frames[s.frame]);
+      if (missing) throw new Error(`shows drawing ${hex(+missing.frame)}, which has no picture`);
+      if (anim) animations[animName(move)] = anim;
+    } catch (e) {
+      console.log(`  ${animName(move)} left out: ${(e as Error).message}`);
+    }
+  }
+
   mkdirSync("data/entities/goku", { recursive: true });
   writeFileSync("assets/sheets/goku.png", encodePng(sheet));
   writeFileSync("data/entities/goku/frames.json", JSON.stringify(frames, null, 2) + "\n");
-  console.log(`wrote ${items.length} drawings: assets/sheets/goku.png (${sheet.width}×${sheet.height}), data/entities/goku/frames.json`);
+  writeFileSync("data/entities/goku/animations.json", JSON.stringify(animations, null, 2) + "\n");
+  console.log(`wrote ${items.length} drawings into assets/sheets/goku.png (${sheet.width}×${sheet.height}) and frames.json,`);
+  console.log(`  ${Object.keys(animations).length} moves into animations.json`);
 } else {
   console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | export   (ids in hex)");
   process.exit(1);

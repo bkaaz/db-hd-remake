@@ -47,10 +47,16 @@ cartridge's — every drawing, written by `npm run rom -- export` — and has no
 animations or states yet, so the select screen does not offer it.
 `goku_old` is dropped once the new one has proved itself.
 
-1. **Moves and timings** — `npm run rom -- move` into `goku`'s
-   `animations.json`, speeds into the states, until `goku` plays and becomes
-   the default again. *Open:* which of the 256 move ids are real moves, and
-   how much of the original's numbers to take before `combat.md` takes over.
+Every move is an animation now, `m00`…`mff` (ADR 0017), written by the export.
+
+1. **States for `goku`**, until he plays and becomes the default again — the
+   original's speeds into them. *Open:* which of the 256 move ids are real
+   moves; how much of the original's numbers to take before `combat.md` takes
+   over; and why idle holds each pose 12 frames in its script but 13–14 in a
+   recording, when the attacks match to the frame.
+2. **What `b0` spawns** — read the command and the object it creates, then
+   draw the transformation drawings with their overlay (`bugs.md`). The same
+   objects are likely the ki blasts and effects, so this is not only hair.
 
 > **One exchange is complete.** Everything below multiplies it.
 
