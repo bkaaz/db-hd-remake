@@ -238,7 +238,8 @@ npm run fx        # generate the effect entities (sheet + frames + animations)
 npm run rom -- frame 4a
                   # a drawing read straight from the cartridge, into
                   # preview/ (frames: draw all, tiles: every tile set;
-                  # move 92: the animation script a move plays)
+                  # move 92: the animation script a move plays;
+                  # export: all of them into goku's sheet and frames.json)
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md
@@ -327,10 +328,11 @@ Two properties the tree no longer shows, and both still hold:
   `docs/data-format.md`.
 - **BYOA (Bring Your Own Assets):** copyrighted images/audio are gitignored and
   must **never** enter git history. Only code and `data/` are committed. The
-  source pack is **not downloadable anywhere** — the owner keeps it; the sheet is
-  hand-extended and matches no public rip, so **never re-flow `goku.png`**, only
-  append at the bottom (`frames.json` is coordinates into it). See
-  `docs/assets.md`.
+  source pack is **not downloadable anywhere** — the owner keeps it; the old
+  sheet is hand-extended and matches no public rip, so **never re-flow
+  `goku_old.png`**, only append at the bottom (`frames.json` is coordinates into
+  it). `goku.png` is the opposite: written whole by `npm run rom -- export` from
+  the cartridge, so it is regenerated, never edited. See `docs/assets.md`.
 
 ## Current status
 

@@ -421,7 +421,7 @@ describe("validateStates", () => {
     // errors are not.
     const read = <T>(file: string): T =>
       JSON.parse(
-        readFileSync(fileURLToPath(new URL(`../../data/entities/goku/${file}`, import.meta.url)), "utf8"),
+        readFileSync(fileURLToPath(new URL(`../../data/entities/goku_old/${file}`, import.meta.url)), "utf8"),
       ) as T;
     const states = read<StatesFile>("states.json");
     const anims = read<Record<string, AnimInfo>>("animations.json");
@@ -448,7 +448,7 @@ describe("the arithmetic of a blow, against the data we ship", () => {
    */
   const read = <T>(file: string): T =>
     JSON.parse(
-      readFileSync(fileURLToPath(new URL(`../../data/entities/goku/${file}`, import.meta.url)), "utf8"),
+      readFileSync(fileURLToPath(new URL(`../../data/entities/goku_old/${file}`, import.meta.url)), "utf8"),
     ) as T;
 
   interface Step {

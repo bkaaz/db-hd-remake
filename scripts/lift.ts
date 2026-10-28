@@ -76,7 +76,7 @@ interface Lift {
 const LIFTS: Lift[] = [
   {
     name: "ki_bolt",
-    from: "goku.png",
+    from: "goku_old.png",
     hits: true,
     // Out of the hand, like the beam: see kame_bolt below.
     anchor: "back",
@@ -93,7 +93,7 @@ const LIFTS: Lift[] = [
   },
   {
     name: "ki_burst",
-    from: "goku.png",
+    from: "goku_old.png",
     anims: [
       // `v1` because an effect's animations are interchangeable takes and the
       // engine picks one at random — a second take would be `v2`, no code change.
@@ -113,7 +113,7 @@ const LIFTS: Lift[] = [
   },
   {
     name: "kame_bolt",
-    from: "goku.png",
+    from: "goku_old.png",
     hits: true,
     // It comes out of the hands, so the hands are the anchor and the whole head
     // is in front of them. Centred, half the bolt sat inside Goku's arms, which
@@ -144,7 +144,7 @@ const LIFTS: Lift[] = [
   },
   {
     name: "ki_burst_big",
-    from: "goku.png",
+    from: "goku_old.png",
     anims: [
       // The large burst, which grows where the small one scatters. 63, 65-67
       // belong to the small one and are lifted as `ki_burst`.

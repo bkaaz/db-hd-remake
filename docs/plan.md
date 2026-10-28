@@ -42,12 +42,15 @@ reads the code, the emulator only confirms.
 A move id gives its drawings and how long each is held, statically:
 `npm run rom -- move 92`.
 
-1. **Into our format** — a sheet and `frames.json` from the cartridge, as a
-   **new entity beside `goku`** (settled 2026-10-28); the old one is renamed
-   and dropped only once the new one has proved itself.
-2. **Moves and timings** — `npm run rom -- move`
-   into `animations.json`, speeds into the states. *Open:* how much of the
-   original's numbers to take before `combat.md` takes over.
+The hand-built fighter is `goku_old` now and plays by default; `goku` is the
+cartridge's — every drawing, written by `npm run rom -- export` — and has no
+animations or states yet, so the select screen does not offer it.
+`goku_old` is dropped once the new one has proved itself.
+
+1. **Moves and timings** — `npm run rom -- move` into `goku`'s
+   `animations.json`, speeds into the states, until `goku` plays and becomes
+   the default again. *Open:* which of the 256 move ids are real moves, and
+   how much of the original's numbers to take before `combat.md` takes over.
 
 > **One exchange is complete.** Everything below multiplies it.
 

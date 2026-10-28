@@ -7,7 +7,7 @@ import type { Rgba } from "./png";
  * them — they move on their own and outlive his animation — but their art was
  * drawn on his sheet. This lifts those pixels into a spawn's own image.
  *
- * **The source is never modified.** `goku.png` is hand-extended and matches no
+ * **The source is never modified.** `goku_old.png` is hand-extended and matches no
  * public rip, so re-flowing it would strand every rect in `frames.json`.
  *
  * Pure: no filesystem. `scripts/lift.ts` reads and writes the files.

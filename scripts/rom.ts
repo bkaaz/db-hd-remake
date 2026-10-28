@@ -6,6 +6,8 @@
  *   npm run rom -- frames            draw every drawing, report what fails
  *   npm run rom -- move 92           the animation script a move plays
  *   npm run rom -- moves             every move id whose script reads
+ *   npm run rom -- export            every drawing into assets/sheets/goku.png and
+ *                                    data/entities/goku/frames.json (frame n = drawing n)
  *
  * Ids are hex, as the fighter's RAM holds them: the drawing is field 0x0a
  * (src/rom/cartridge.ts), and its tile set comes from the cartridge's table.
@@ -14,6 +16,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { GOKU, ROM_PATH, layoutAt, pointer, scriptAt, tileSetOf, tileStream } from "../src/rom/cartridge.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
+import { packSheet, type Placed } from "../src/rom/sheet.ts";
 import { decompress } from "../src/rom/decompress.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
@@ -88,8 +91,22 @@ if (command === "tiles") {
       console.log(`${hex(move)}  -- ${(e as Error).message}`);
     }
   }
+} else if (command === "export") {
+  // frame keys are decimal like every other frames.json; drawing ids are hex
+  // everywhere in docs/rom.md — frame "74" is drawing 4a
+  const items: Placed[] = [];
+  for (let d = 0; d < GOKU.drawings; d++) {
+    if (tileSetOf(rom, GOKU, d) === null) continue;
+    if (readLayout(rom, pointer(rom, layoutAt(GOKU, d))).length === 0) continue;
+    items.push({ id: String(d), ...draw(d) });
+  }
+  const { sheet, frames } = packSheet(items);
+  mkdirSync("data/entities/goku", { recursive: true });
+  writeFileSync("assets/sheets/goku.png", encodePng(sheet));
+  writeFileSync("data/entities/goku/frames.json", JSON.stringify(frames, null, 2) + "\n");
+  console.log(`wrote ${items.length} drawings: assets/sheets/goku.png (${sheet.width}×${sheet.height}), data/entities/goku/frames.json`);
 } else {
-  console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves   (ids in hex)");
+  console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | export   (ids in hex)");
   process.exit(1);
 }
 

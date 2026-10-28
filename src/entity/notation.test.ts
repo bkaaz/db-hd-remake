@@ -77,7 +77,7 @@ describe("isAmbiguous", () => {
 describe("goku's data", () => {
   const goku = (file: string) =>
     JSON.parse(
-      readFileSync(fileURLToPath(new URL(`../../data/entities/goku/${file}`, import.meta.url)), "utf8"),
+      readFileSync(fileURLToPath(new URL(`../../data/entities/goku_old/${file}`, import.meta.url)), "utf8"),
     );
 
   it("reads kb39 as both kicks drawn from frame 39, for the owner to choose", () => {

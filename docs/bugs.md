@@ -38,7 +38,7 @@ it fails three ways, none of them announced as a guess:
 
 All three had to be placed by hand, and re-running the script undoes them.
 
-Reproduce: `npm run anim -- goku probe --frames 112,113,114 --kind attack --dry-run`
+Reproduce: `npm run anim -- goku_old probe --frames 112,113,114 --kind attack --dry-run`
 and read which step is starred.
 
 Worth deciding with the fix: whether `--active N` is enough, or whether reach
@@ -52,7 +52,7 @@ have got all three right without a flag.
 `wireSave` puts the result in the status bar and then calls `render()`, which
 sets `statusEl.textContent` unconditionally from the sheet's dimensions and
 counts (`main.ts:336`). The message is overwritten in the same tick, so
-"Saved data/entities/goku/frames.json" never appears — the bar just snaps back to
+"Saved data/entities/goku_old/frames.json" never appears — the bar just snaps back to
 `720x2304px · 180 frames · …`. An error message from a failed save is lost the
 same way, which is the half that matters.
 
@@ -76,7 +76,7 @@ there.
 
 It is live on data shipped today. `punch_knee`'s hit box is hand-set to 12x7
 because the derived one was a 3px artefact (see the entry below), and its steps
-are a hand-made four-step split. `npm run anim -- goku punch_knee --frames
+are a hand-made four-step split. `npm run anim -- goku_old punch_knee --frames
 187,188 --kind attack` puts back the 3px box and the three-step shape, and only
 the timing reset is mentioned.
 
@@ -114,7 +114,7 @@ The fix is computable, which is what makes this worth writing down rather than
 correcting by eye. Correlating the bottom sixteen rows of a frame against the
 stance it belongs to gives the offset exactly — 95–100% coverage on all five
 crouching frames, because the legs really are the same pixels. That could be a
-script (`npm run anchor -- goku 187,188 --like 18`) or a button in the editor;
+script (`npm run anchor -- goku_old 187,188 --like 18`) or a button in the editor;
 either beats nudging until it looks still.
 
 Two things to know before fixing it. Boxes are stored **relative to the anchor**,
@@ -138,7 +138,7 @@ Nothing errors. The printed table looks ordinary and the move is simply almost
 impossible to land, which is the same silent shape as the depth-frame problem
 the skill already warns about.
 
-To see it: `npm run anim -- goku probe --frames 187,188 --kind attack --dry-run`
+To see it: `npm run anim -- goku_old probe --frames 187,188 --kind attack --dry-run`
 and read the hit box against `punch`'s.
 
 The fix is to compare within a band of rows rather than across the whole frame
@@ -154,10 +154,10 @@ placeholder like every other hit box, and the report says when it looks wrong.
 Loading a sheet asks whether the image contains *any* transparency and answers it
 for all 180 frames: if yes, `bgKeyEnabled` starts false. That is the right answer
 for a fully keyed sheet, which every fighter's now is — and the wrong one the
-moment new poses are appended to `goku.png` on the rip's background colour, since
+moment new poses are appended to `goku_old.png` on the rip's background colour, since
 the control that would key them starts switched off.
 
-To see it: append anything opaque to `assets/sheets/goku.png` and load it — the
+To see it: append anything opaque to `assets/sheets/goku_old.png` and load it — the
 "transparent" checkbox is clear and the new rows keep their background.
 
 Nothing is lost and there is a one-click way out: the eyedropper sets

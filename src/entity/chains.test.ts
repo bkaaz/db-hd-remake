@@ -32,7 +32,7 @@ const goku = (): StatesFile =>
   withHitTypes(
     JSON.parse(
       readFileSync(
-        fileURLToPath(new URL("../../data/entities/goku/states.json", import.meta.url)),
+        fileURLToPath(new URL("../../data/entities/goku_old/states.json", import.meta.url)),
         "utf8",
       ),
     ) as StatesFile,
@@ -41,7 +41,7 @@ const goku = (): StatesFile =>
 const anims = (): Record<string, { steps: { frame: string; dur: number; boxes?: { type: string }[] }[] }> =>
   JSON.parse(
     readFileSync(
-      fileURLToPath(new URL("../../data/entities/goku/animations.json", import.meta.url)),
+      fileURLToPath(new URL("../../data/entities/goku_old/animations.json", import.meta.url)),
       "utf8",
     ),
   );
@@ -49,7 +49,7 @@ const anims = (): Record<string, { steps: { frame: string; dur: number; boxes?: 
 /** From `attributes.json`, which these numbers are derived against. */
 const { gravity: GRAVITY, pushWidth: PUSH_WIDTH } = JSON.parse(
   readFileSync(
-    fileURLToPath(new URL("../../data/entities/goku/attributes.json", import.meta.url)),
+    fileURLToPath(new URL("../../data/entities/goku_old/attributes.json", import.meta.url)),
     "utf8",
   ),
 ) as { gravity: number; pushWidth: number };

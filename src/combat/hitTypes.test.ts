@@ -76,7 +76,7 @@ describe("validateStates with hit types", () => {
 
 describe("the shipped types", () => {
   const goku = JSON.parse(
-    readFileSync(fileURLToPath(new URL("../../data/entities/goku/states.json", import.meta.url)), "utf8"),
+    readFileSync(fileURLToPath(new URL("../../data/entities/goku_old/states.json", import.meta.url)), "utf8"),
   ) as StatesFile;
 
   it("each name a reaction goku has", () => {

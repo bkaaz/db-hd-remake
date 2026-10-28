@@ -29,7 +29,7 @@ A → A → A → A
 S   S   S   S      (and S alone, from neutral)
 ```
 
-What each place holds is `npm run chains -- goku`; it also lists the moves with
+What each place holds is `npm run chains -- goku_old`; it also lists the moves with
 no place yet. Crouching has its own shorter rush; the air has one attack and
 one smash. There is no depth to step into, so down is **crouch**, and up is
 **jump**.
