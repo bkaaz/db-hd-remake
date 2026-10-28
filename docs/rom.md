@@ -57,8 +57,19 @@ facing. The somersault is two drawings, raised 48 px and turned. The export
 makes each such way of showing a drawing a frame of its own
 (`src/rom/look.ts`).
 
+**`b0` spawns an object** (handler `$01:873F`): a type and an animation, a
+start step, flags and a palette, and a position from the fighter's, x
+mirrored when facing left. Objects are animated by `$00:843F`: type →
+`$09:B258` → the type's animations → steps of 3-byte pointers to frames in
+the same layout format as a fighter's. Goku's transformation spawns type 0
+animation 5 — the missing top of the hair (tiles `0x40`–`0x47`, `bugs.md`);
+his ki blast is type `a` animation 3, 40 px ahead and 56 px up, drawn from
+tiles `0x150`+. **Where object tiles come from is not found** — not from the
+fighter's tile set, which ends at `0x3e`; a DMA of 0x80 bytes a frame from
+WRAM `$7F:7080` to VRAM `$3840` is the one lead.
+
 Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
-`b0` / `c0` set off — the attack ids are where hit data must be. `b0`
+`c0` set off — the attack ids are where hit data must be. `b0`
 spawns an object; the transformation drawings are incomplete without it
 (`bugs.md`).
 

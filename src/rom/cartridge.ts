@@ -37,17 +37,17 @@ export const GOKU: FighterTables = {
 
 /**
  * A CPU address as an offset into the file, or null where the bus is not ROM.
- * Banks $00-$3F and $80-$BF are LoROM, both onto the first 2 MB: the handler
- * pointers name $8F and land in code that reads the fighter block, so this
- * game leaves the SA-1's mapping registers at a setting that mirrors them.
- * Banks $C0-$FF map the whole file linearly.
+ * The SA-1's default mapping: banks $00-$1F, $20-$3F, $80-$9F and $A0-$BF are
+ * LoROM onto the file's four megabytes in that order, and $C0-$FF map the
+ * whole file linearly. ($8F:B161 is PalMod's 0x27B161, the hair palette.)
  */
 export function toFile(address: number): number | null {
   const bank = address >> 16;
   const addr = address & 0xffff;
   if (bank >= 0xc0) return (bank - 0xc0) * 0x10000 + addr;
-  if ((bank & 0x7f) < 0x40 && addr >= 0x8000) return (bank & 0x3f) * 0x8000 + (addr - 0x8000);
-  return null;
+  if ((bank & 0x7f) >= 0x40 || addr < 0x8000) return null;
+  const megabyte = (bank & 0x80 ? 2 : 0) + ((bank >> 5) & 1); // $00 $20 $80 $A0 → 0 1 2 3
+  return megabyte * 0x100000 + (bank & 0x1f) * 0x8000 + (addr - 0x8000);
 }
 
 /** A 3-byte address (lo, hi, bank) read as an offset into the file. */
