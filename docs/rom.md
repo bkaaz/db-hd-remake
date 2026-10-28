@@ -69,9 +69,7 @@ fighter's tile set, which ends at `0x3e`; a DMA of 0x80 bytes a frame from
 WRAM `$7F:7080` to VRAM `$3840` is the one lead.
 
 Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
-`c0` set off — the attack ids are where hit data must be. `b0`
-spawns an object; the transformation drawings are incomplete without it
-(`bugs.md`).
+`c0` set off — the attack ids are where hit data must be.
 
 ## How it was found
 
