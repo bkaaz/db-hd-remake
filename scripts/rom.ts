@@ -4,13 +4,16 @@
  *   npm run rom -- tiles             every tile set: where it is, whether it unpacks
  *   npm run rom -- frame 4a          drawing 4a, into preview/
  *   npm run rom -- frames            draw every drawing, report what fails
+ *   npm run rom -- move 92           the animation script a move plays
+ *   npm run rom -- moves             every move id whose script reads
  *
  * Ids are hex, as the fighter's RAM holds them: the drawing is field 0x0a
  * (src/rom/cartridge.ts), and its tile set comes from the cartridge's table.
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { GOKU, ROM_PATH, layoutAt, pointer, tileSetOf, tileStream } from "../src/rom/cartridge.ts";
+import { GOKU, ROM_PATH, layoutAt, pointer, scriptAt, tileSetOf, tileStream } from "../src/rom/cartridge.ts";
+import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
@@ -64,8 +67,29 @@ if (command === "tiles") {
     }
   }
   console.log(`${ok} drawings of ${GOKU.drawings} ids drawn`);
+} else if (command === "move" && args.length >= 1) {
+  const move = parseInt(args[0], 16);
+  const at = scriptAt(rom, GOKU, move);
+  console.log(`move ${hex(move)}: script at 0x${at.toString(16)}`);
+  let frame = 0;
+  for (const op of readScript(rom, at)) {
+    console.log(`  ${String(frame).padStart(3)}  ${describe(op)}`);
+    if (op.op === "show") frame += op.frames;
+  }
+  console.log(`  ${String(frame).padStart(3)}  end`);
+} else if (command === "moves") {
+  for (let move = 0; move < 0x100; move++) {
+    try {
+      const ops = readScript(rom, scriptAt(rom, GOKU, move));
+      const frames = ops.reduce((n, op) => n + (op.op === "show" ? op.frames : 0), 0);
+      const drawings = ops.flatMap((op) => (op.op === "show" && op.drawing !== null ? [hex(op.drawing)] : []));
+      console.log(`${hex(move)}  ${String(frames).padStart(3)} frames  ${drawings.join(" ")}`);
+    } catch (e) {
+      console.log(`${hex(move)}  -- ${(e as Error).message}`);
+    }
+  }
 } else {
-  console.error("usage: npm run rom -- tiles | frame <drawing> | frames   (ids in hex)");
+  console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves   (ids in hex)");
   process.exit(1);
 }
 
@@ -79,6 +103,20 @@ function draw(drawing: number) {
     readLayout(rom, pointer(rom, layoutAt(GOKU, drawing))),
     readPalette(rom, GOKU.palette),
   );
+}
+
+function describe(op: ScriptOp): string {
+  switch (op.op) {
+    case "show":
+      return op.drawing === null
+        ? `${op.frames} frames, keep the drawing`
+        : `${op.frames} frames of ${hex(op.drawing)} (tile set ${hex(tileSetOf(rom, GOKU, op.drawing) ?? 0)})`;
+    case "attack": return `attack ${hex(op.id)} ?`;
+    case "effect": return `effect ${hex(op.id)} ?`;
+    case "velocity": return `velocity ${op.vx / 256}, ${op.vy / 256} px/frame`;
+    case "hold": return `hold ${hex(op.drawing)} until released ?`;
+    case "raw": return op.bytes.map(hex).join(" ") + "  (not read yet)";
+  }
 }
 
 function hex(n: number): string {

@@ -19,6 +19,8 @@ export interface FighterTables {
   tileRecords: number;
   /** 16 BGR555 colours: player one, daytime stage (PalMod). */
   palette: number;
+  /** Which entry of the script tables is this fighter's (fighter field 0x41). */
+  scripts: number;
 }
 
 export const GOKU: FighterTables = {
@@ -27,6 +29,7 @@ export const GOKU: FighterTables = {
   drawings: (0x48a54 - 0x4880e) / 3,
   tileRecords: 0x40b00,
   palette: 0xb0000,
+  scripts: 0,
 };
 
 /**
@@ -59,15 +62,35 @@ export function pointer(rom: Uint8Array, at: number): number {
 export const FIGHTER_FIELDS: Record<number, string> = {
   0x00: "character (indexes per-fighter tables)",
   0x0a: "drawing",
+  0x0e: "script vx? (set by script command d0)",
+  0x10: "script vy? (set by script command d0)",
   0x25: "busy (0x80 while a move runs)",
   0x40: "move",
-  0x44: "step timer? (a step ends when $44/$45 reach 0)",
+  0x41: "script set (which fighter's scripts)",
+  0x44: "frames since the move began",
   0x46: "step",
-  0x6c: "phase?",
+  0x6c: "attacks fired so far this move (script a0)",
+  0x6d: "effects fired so far this move (script a1)",
   0x7c: "vx",
   0x7e: "vy",
   0x90: "tile set",
 };
+
+/**
+ * One 3-byte pointer per fighter, read by the script engine at $01:85FD: each
+ * leads to that fighter's 16-bit script pointers, one per move id, in the
+ * same bank. Ten are valid — the roster.
+ */
+const SCRIPT_TABLES = 0x88de;
+
+/** Offset of the animation script a move plays. */
+export function scriptAt(rom: Uint8Array, t: FighterTables, move: number): number {
+  const at = SCRIPT_TABLES + 3 * t.scripts;
+  const list = pointer(rom, at) + 2 * move;
+  const off = toFile((rom[at + 2] << 16) | rom[list] | (rom[list + 1] << 8));
+  if (off === null) throw new Error(`move 0x${move.toString(16)} has no script`);
+  return off;
+}
 
 const RECORD = 11;
 

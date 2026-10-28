@@ -31,25 +31,17 @@ tables, and how a drawing is put together, are in `src/rom/cartridge.ts` and
 |---|---|
 | `0xb0000` … | Goku's palettes, 32 bytes each, by stage lighting and side (PalMod) |
 | `0x1d8000 + 32 × drawing` | read on every drawing change: 4-byte entries up to `0x80` — the drawing's boxes `?` |
-| `0x632xx`, `0x633xx` | **animation scripts** in bank `$0C`, Goku's normals among them (below) |
+| `0x62a15` … | Goku's animation scripts in bank `$0C`: 256 pointers by move id, then the scripts (below) |
 
-**An animation script** is a list of steps, read three bytes at a time:
+**An animation script** is what a move plays: steps that hold a drawing for
+some frames, with commands between them — far Y is `02 ee ee  08 46 00
+a0 00 06  08 4a 00  04 4a 00  10 46 00  00`, frame for frame what a recording
+shows. The engine is at `$01:85FD`; the format, each command's length and what
+is known of its meaning are in `src/rom/script.ts`, and the table from move id
+to script in `src/rom/cartridge.ts`. `npm run rom -- move 92` prints one.
 
-```
-n  drawing  00     hold `drawing` for n frames      (drawing ee: keep the current one)
-a0 xx yy           a command between steps — every attack has one after its
-                   first step, so it likely arms the hit `?`; c0 xx, f0 xx yy too
-00                 end
-```
-
-Far Y is `02 ee ee  08 46 00  a0 00 06  08 4a 00  04 4a 00  10 46 00  00` at
-`0x632cf`, frame for frame what a recording shows; close Y and X sit beside it.
-The steps are data, but **what plays which script** is not found: the handlers
-are 65816 code (a jump table on the step number), and no table from move id to
-script has turned up yet.
-
-Unpacked tiles go to BW-RAM `$0C00` (player one) / `$1600` (player two) and are
-DMA'd to VRAM `$6000` / `$7000` as 4bpp tiles.
+Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
+`b0` / `c0` / `e0` set off — the attack ids are where hit data must be.
 
 ## How it was found
 

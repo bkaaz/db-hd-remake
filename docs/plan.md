@@ -39,14 +39,13 @@ what is known so far: [`rom.md`](./rom.md). The tile format is done
 The owner prefers static analysis to recordings (2026-10-28): `npm run dis`
 reads the code, the emulator only confirms.
 
-1. **What plays which script.** The step format is read (`rom.md`); the table
-   or code that picks a move's script is not. Follow the move handler for far
-   Y in `npm run dis` to where it starts a script. *Done when:* a move id
-   gives its list of (drawing, frames held) without a recording.
-2. **Into our format** — a sheet and `frames.json` from the cartridge, as a
+A move id gives its drawings and how long each is held, statically:
+`npm run rom -- move 92`.
+
+1. **Into our format** — a sheet and `frames.json` from the cartridge, as a
    **new entity beside `goku`** (settled 2026-10-28); the old one is renamed
    and dropped only once the new one has proved itself.
-3. **Moves and timings** — the list from step 1
+2. **Moves and timings** — `npm run rom -- move`
    into `animations.json`, speeds into the states. *Open:* how much of the
    original's numbers to take before `combat.md` takes over.
 

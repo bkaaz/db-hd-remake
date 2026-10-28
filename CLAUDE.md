@@ -237,7 +237,8 @@ npm run fx        # generate the effect entities (sheet + frames + animations)
                   # from src/fx/generate.ts — no ripped hit spark (--dry-run)
 npm run rom -- frame 4a
                   # a drawing read straight from the cartridge, into
-                  # preview/ (frames: draw all, tiles: every tile set)
+                  # preview/ (frames: draw all, tiles: every tile set;
+                  # move 92: the animation script a move plays)
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md
