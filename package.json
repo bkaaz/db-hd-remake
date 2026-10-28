@@ -19,7 +19,9 @@
     "test:watch": "vitest",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "which": "tsx scripts/which.ts"
+    "which": "tsx scripts/which.ts",
+    "rom": "tsx scripts/rom.ts",
+    "dis": "tsx scripts/dis.ts"
   },
   "dependencies": {
     "pixi.js": "^8.6.6"

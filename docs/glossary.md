@@ -127,6 +127,9 @@ still cannot act. What makes a whiff punishable. → `combat.md` §1
 button ends it at any depth. A tree, derived from `states.json` like any chain.
 → `combat.md` (The buttons)
 
+**SA-1** — the cartridge's second 65816; it runs the fight and unpacks the
+sprites, so the original's state is found in its I-RAM. → `rom.md`
+
 **Situation flag** (`airborne`, `crouching`) **and its redirect**
 (`ifAirborne`, `ifCrouching`) — how a defender's circumstances change the
 reaction without any attack knowing about them. The flag marks the state, the

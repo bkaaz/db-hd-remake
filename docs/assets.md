@@ -33,6 +33,7 @@ They mirror each other, so where a file goes is never a judgement call:
 
 ```
 raw/       audio/sound-test.wav      sheets/goku-rip.png     what these were made from
+           rom/*.sfc  (the cartridge, ADR 0016)
 assets/    audio/sfx/*.wav           sheets/goku.png         what the game reads
 preview/                                                     what a person looks at
 ```

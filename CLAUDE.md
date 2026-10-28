@@ -235,6 +235,12 @@ npm run sheet -- <entity> --frames 0-30
                   # labelled contact sheet into preview/ (gitignored)
 npm run fx        # generate the effect entities (sheet + frames + animations)
                   # from src/fx/generate.ts — no ripped hit spark (--dry-run)
+npm run rom -- frame 4a
+                  # a drawing read straight from the cartridge, into
+                  # preview/ (frames: draw all, tiles: every tile set)
+npm run dis -- 0f:ebfc --x16
+                  # the cartridge's 65816 code from that address; find <bytes>
+                  # searches — docs/rom.md
 npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ```
 
@@ -258,7 +264,10 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   │                             #   split.ts + wav.ts: cutting a capture (build-time)
 │   ├── sprites/                  #   boxes.ts: derive boxes/timing from sprites
 │   │                             #   png.ts: minimal PNG read/write (no dependency)
-│   └── fx/                       #   generate.ts: draws the effect pixel art
+│   ├── fx/                       #   generate.ts: draws the effect pixel art
+│   └── rom/                      #   cartridge.ts: where things are in the ROM
+│                                 #   decompress.ts, frame.ts: tiles → a drawing
+│                                 #   disasm.ts, opcodes.ts: reading 65816 code
 ├── scripts/                      # CLI entry points ONLY — one per npm run command;
 │   │                             #   nothing in the repo imports from here
 │   ├── anim.ts                   #   build an animation from a frame list
@@ -269,6 +278,8 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── pack.ts                   #   zip the assets for backup / handover
 │   └── split-audio.ts            #   cut a capture into numbered clips
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
+├── tools/re/                     # Mesen 2 Lua scripts that record the original
+│                                 #   into logs/ (docs/rom.md)
 ├── tools/entity-editor/          # the authoring tool (Canvas 2D)
 │   ├── server.ts                 #   Vite dev-server plugin: /api/* endpoints (Node)
 │   └── src/                      #   editor UI (browser)
@@ -281,7 +292,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   └── audio/sfx/                #   the clips cut from the capture
 ├── raw/                          # BYOA, gitignored — what those were made from
 │                                 #   and cannot be regenerated (the capture,
-│                                 #   untouched rips). npm run pack -- --raw
+│                                 #   untouched rips, the ROM). npm run pack -- --raw
 ├── preview/                      # gitignored: images drawn for a person to look
 │                                 #   at (npm run sheet). Nothing reads them back
 ├── dist/                         # what leaves the repo: web/ is the build,
@@ -298,7 +309,7 @@ Two properties the tree no longer shows, and both still hold:
   `entity/entityDef.ts`. Everything else is plain TypeScript, which is what lets
   Vitest run it in Node.
 - **Some files never reach the browser**: `audio/split.ts`, `audio/wav.ts`,
-  `sprites/png.ts`, `sprites/boxes.ts` and `fx/generate.ts` exist for the CLI in
+  `sprites/png.ts`, `sprites/boxes.ts`, `fx/generate.ts` and `rom/` exist for the CLI in
   `scripts/`. They live in `src/` beside the domain they belong to; nothing the
   game imports reaches them.
 
