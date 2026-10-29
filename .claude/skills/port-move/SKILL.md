@@ -39,8 +39,11 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   original allows it): a command is `["motion:…", "pressed:…"]`, placed
   before the plain press of the same button. A motion `input/motion.ts`
   lacks gets added there with a test.
-- `sound` — the cartridge's ids are **not** our clip numbers (`rom.md`); use
-  a clip the owner has named for that sound, or say none is known.
+- no swing `sound`: the export put the script's sounds on the animation's
+  steps (`sfx`), and they play through the bank's `rom` matches. An id the
+  report lists that no bank entry matches plays nothing — say which, never
+  match one by clip number (`rom.md`). A state's `sound` is only for what
+  no script plays (a jump, a landing).
 
 ## 4. Check
 
@@ -50,7 +53,7 @@ thing to try, and a recording (`L`) for anything about behaviour.
 
 ## What the report cannot tell yet
 
-Sounds placed at a step (they play on entering a state), clip numbers, the
+Which clip most cartridge sound ids are, the
 original's reactions beyond light / heavy / down, a command's conditions.
 All are in `docs/plan.md`, "First: porting a move without help" — say which
 one a move ran into.

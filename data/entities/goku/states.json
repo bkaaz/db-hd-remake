@@ -388,7 +388,6 @@
       "turn": false,
       "type": "light",
       "damage": 25,
-      "sound": "swing_1",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -407,7 +406,6 @@
       "turn": false,
       "type": "heavy",
       "damage": 27,
-      "sound": "swing_1",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -426,7 +424,6 @@
       "turn": false,
       "type": "light",
       "damage": 27,
-      "sound": "swing_1",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -445,7 +442,6 @@
       "turn": false,
       "type": "heavy",
       "damage": 29,
-      "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -464,7 +460,6 @@
       "turn": false,
       "type": "light",
       "damage": 18,
-      "sound": "swing_1",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -493,7 +488,6 @@
       "turn": false,
       "type": "heavy",
       "damage": 24,
-      "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -522,7 +516,6 @@
       "turn": false,
       "type": "heavy",
       "damage": 25,
-      "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -551,7 +544,6 @@
       "turn": false,
       "type": "heavy",
       "damage": 26,
-      "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -580,7 +572,6 @@
       "turn": false,
       "type": "down",
       "damage": 27,
-      "sound": "swing_2",
       "hitSound": "hit_1",
       "blockSound": "block_1",
       "transitions": [
@@ -618,7 +609,6 @@
           -56
         ]
       },
-      "sound": "blast_1",
       "transitions": [
         {
           "when": "animEnd",

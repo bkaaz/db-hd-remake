@@ -3,6 +3,7 @@ import {
   pitchFor,
   rateFor,
   soundIdCollisions,
+  soundForRom,
   validateSounds,
   type SoundSpec,
   type Sounds,
@@ -129,5 +130,23 @@ describe("pitchFor", () => {
     for (const roll of [0, 0.25, 0.5, 0.75, 1]) {
       expect(pitchFor(spec, roll)).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("soundForRom", () => {
+  const swing = { kind: "noise" as const, freq: 1600, decay: 0.07, gain: 0.16 };
+  const bank = { _comment: { gain: 1 }, swing_1: { ...swing, rom: 6 }, swing_2: { ...swing, rom: 7 }, hit_1: swing };
+
+  it("finds the sound matched to a cartridge id", () => {
+    expect(soundForRom(bank, 7)).toBe("swing_2");
+  });
+
+  it("is undefined for an id nobody has matched", () => {
+    expect(soundForRom(bank, 9)).toBeUndefined();
+  });
+
+  it("is refused twice: one sound per cartridge id", () => {
+    const twice = { swing_1: { ...swing, rom: 6 }, swing_3: { ...swing, rom: 6 } };
+    expect(validateSounds(twice).some((e) => e.includes("cartridge id 6"))).toBe(true);
   });
 });

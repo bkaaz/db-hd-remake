@@ -55,9 +55,20 @@ export interface SoundSpec {
    * file, and for the editor's picker to list. Never used to look anything up.
    */
   label?: string;
+  /**
+   * The cartridge's id for this sound, the one its scripts play (`a0`, and
+   * an animation step's `sfx`), when someone has matched it — by ear or by the
+   * move that plays it, never by clip number (docs/rom.md). One sound per id.
+   */
+  rom?: number;
 }
 
 export type Sounds = Record<string, SoundSpec>;
+
+/** The sound matched to a cartridge id, or undefined while nobody has matched it. */
+export function soundForRom(sounds: Sounds, id: number): string | undefined {
+  return Object.keys(sounds).find((name) => !name.startsWith("_") && sounds[name].rom === id);
+}
 
 /**
  * Ids defined in both the game's bank and a fighter's own file.
@@ -75,6 +86,7 @@ export function soundIdCollisions(bank: Sounds, own: Sounds | undefined): string
 /** Problems found in a `sounds.json`, in the same shape the state validator uses. */
 export function validateSounds(sounds: Sounds | undefined): string[] {
   const errors: string[] = [];
+  const byRom = new Map<number, string>();
   for (const [id, s] of Object.entries(sounds ?? {})) {
     // JSON has no comments, so a key starting with "_" is our note to a reader.
     // It is not a sound and must not be validated as one — reporting four
@@ -102,6 +114,11 @@ export function validateSounds(sounds: Sounds | undefined): string[] {
     // until the file has loaded, and if the file is missing it is all there is.
     if (s.file !== undefined && (typeof s.file !== "string" || !s.file.endsWith(".wav"))) {
       errors.push(`${where}: "file" must be the name of a .wav in assets/audio/sfx`);
+    }
+    if (s.rom !== undefined) {
+      const other = byRom.get(s.rom);
+      if (other) errors.push(`${where}: cartridge id ${s.rom} is "${other}" already; one sound per id`);
+      byRom.set(s.rom, id);
     }
   }
   return errors;

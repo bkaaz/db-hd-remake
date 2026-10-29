@@ -35,6 +35,8 @@ export interface StepDef {
   dur: number;
   /** Collision boxes active on this step. */
   boxes: Box[];
+  /** The cartridge's sounds for this step, kept as the export wrote them. */
+  sfx?: number[];
 }
 
 export interface AnimDef {
@@ -287,6 +289,7 @@ export function loadEntity(json: EntityFileIn): void {
       frame: s.frame,
       dur: s.dur,
       boxes: (s.boxes ?? []).map((b) => ({ ...b })),
+      ...(s.sfx ? { sfx: [...s.sfx] } : {}),
     })),
   }));
   sortFrames();

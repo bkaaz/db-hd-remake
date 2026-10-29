@@ -794,7 +794,7 @@ export class Entity {
     this.stepIndex = 0;
     this.animEnded = false;
     this.remaining = Math.max(1, anim.steps[0]?.dur ?? 1);
-    this.applyFrame();
+    this.stepBegins();
   }
 
   private applyFrame(): void {
@@ -821,6 +821,13 @@ export class Entity {
       }
     }
     this.remaining = Math.max(1, this.currentStep()?.dur ?? 1);
+    // A held last step is not a new one beginning: its sound has played.
+    if (!this.animEnded) this.stepBegins();
+    else this.applyFrame();
+  }
+
+  private stepBegins(): void {
     this.applyFrame();
+    for (const id of this.currentStep()?.sfx ?? []) this.audio?.playRom(id);
   }
 }

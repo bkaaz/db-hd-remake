@@ -113,6 +113,10 @@ fighters would each want a copy of it. A grunt *is* his.
 - **A reaction naming a `sound` is how a fighter gets a voice** — and that id
   resolves in the fighter's own file rather than the bank, the only kind that
   does.
+- **A step's `sfx` is what the cartridge plays as that step begins** —
+  its own ids, written by `npm run rom -- export` from the script (ADR 0024).
+  A bank entry says which id it is with `rom`; an id nobody has matched plays
+  nothing. A state's `sound` is for what no script plays.
 - **`sound` plays once on entering the state; `loopSound` is retriggered every
   `loopEvery` frames until you leave it.** Not a seamless loop: that repeats at
   exactly the clip's own length and can never overlap itself, and the original's
@@ -136,8 +140,8 @@ a jump retuned by a pixel moves every number in it.
 
 ## Deliberately absent
 
-Throw boxes · per-box damage, hitstun or knockback · sound triggers per step ·
-per-frame velocity · `onEnter` effects · a scripting escape hatch · blockstun
+Throw boxes · per-box damage, hitstun or knockback · per-frame velocity
+(a state's `velAt` changes it at given frames) · `onEnter` effects · a scripting escape hatch · blockstun
 (`guard_hit` still ends with its animation) · a top-level `"version"`, added when
 the schema first breaks. Most attach naturally to a `step` or a `box` when the
 mechanics that need them exist.

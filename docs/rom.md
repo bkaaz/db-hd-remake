@@ -120,7 +120,10 @@ its own range: `+9` for the effects `05`–`0d`, `+3` for the voices from
 by where the silences fell, not by the sound test, so a clip is **not** an
 id: matching them by an offset gave a wrong hit sound. A melee hit plays
 `09` (`$0D:D1B7`) and the defender's own `30`; a projectile's, `0a` and `30`
-(`$0D:D1E6`).
+(`$0D:D1E6`). The export puts each script's `a0` on the animation step it
+begins (`sfx`); `"rom"` in `data/audio/sounds.json` is which ids are
+matched, by the move that plays them: `06` a punch's swing, `07` a kick's,
+`0b` the ki blast fired.
 
 Not read yet: command `80` (move `9d` uses it), `a1` (`$00:DE9F`, sound
 related), and `c0` (sets fighter field `0x96`).

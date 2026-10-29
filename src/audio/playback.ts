@@ -11,7 +11,7 @@
  * autoplay warnings.
  */
 
-import { pitchFor, rateFor, type Sounds } from "./sounds";
+import { pitchFor, rateFor, soundForRom, type Sounds } from "./sounds";
 
 export class Audio {
   private ctx: AudioContext | null = null;
@@ -21,6 +21,11 @@ export class Audio {
   private loading = false;
 
   constructor(private readonly sounds: Sounds) {}
+
+  /** Play the sound matched to a cartridge id; an unmatched id is silent. */
+  playRom(id: number): void {
+    this.play(soundForRom(this.sounds, id));
+  }
 
   /** Play a sound by id. Unknown ids are silent, deliberately — see below. */
   play(id: string | undefined): void {

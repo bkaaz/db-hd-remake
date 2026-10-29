@@ -48,6 +48,11 @@ export interface Step {
   frame: string;
   dur: number;
   boxes?: Box[];
+  /**
+   * The cartridge's sound ids its script plays as this step begins — written
+   * by the export from `a0`, played through the bank's `rom` match.
+   */
+  sfx?: number[];
 }
 
 export interface Anim {

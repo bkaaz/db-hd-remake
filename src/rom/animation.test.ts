@@ -6,7 +6,7 @@ const show = (frames: number, drawing: number | null): ScriptOp => ({ op: "show"
 
 describe("toAnim", () => {
   it("turns steps into frames held as long, leaving commands out", () => {
-    const anim = toAnim([show(8, 0x46), { op: "sound", id: 6 }, show(4, 0x4a)]);
+    const anim = toAnim([show(8, 0x46), { op: "effect", id: 6 }, show(4, 0x4a)]);
     expect(anim).toEqual({ loop: false, steps: [{ frame: "70", dur: 8 }, { frame: "74", dur: 4 }] });
   });
 
@@ -46,6 +46,11 @@ describe("toAnim", () => {
     expect(anim?.steps.map((s) => s.frame)).toEqual(["11_0,-48", "11_hv_0,-48", "9"]);
   });
 
+  it("gives a step the sounds the script plays as it begins", () => {
+    const anim = toAnim([show(8, 0x46), { op: "sound", id: 6 }, { op: "sound", id: 0x32 }, show(4, 0x4a)]);
+    expect(anim?.steps.map((s) => s.sfx)).toEqual([undefined, [6, 0x32]]);
+  });
+
   it("is null for a script that shows nothing", () => {
     expect(toAnim([show(4, null), { op: "sound", id: 1 }])).toBeNull();
   });
@@ -72,6 +77,12 @@ describe("moveAnims", () => {
     expect(Object.keys(anims)).toEqual(["m9b", "m9b_2"]);
     expect(anims.m9b.steps).toEqual([{ frame: "99", dur: 12 }]);
     expect(anims.m9b_2.steps).toEqual([{ frame: "101", dur: 44 }]);
+  });
+
+  it("moves a sound just before the cut into the part that begins there", () => {
+    const anims = moveAnims(0x9b, [show(12, 0x63), { op: "sound", id: 0xb }, spawn, show(44, 0x65)]);
+    expect(anims.m9b.steps[0].sfx).toBeUndefined();
+    expect(anims.m9b_2.steps[0].sfx).toEqual([0xb]);
   });
 
   it("starts a later part on the drawing, flip and offset the first left up", () => {

@@ -33,6 +33,7 @@ export function buildAnimations(): Record<string, Anim> {
       steps: a.steps.map((s) => {
         const out: Step = { frame: s.frame, dur: s.dur };
         if (s.boxes.length) out.boxes = s.boxes.map((b) => ({ ...b }));
+        if (s.sfx?.length) out.sfx = [...s.sfx];
         return out;
       }),
     };
