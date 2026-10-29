@@ -12,6 +12,7 @@
  */
 
 import type { BallDef } from "../combat/ball";
+import type { BandDef } from "../combat/band";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
 import { missWindow, type AnimSteps } from "../combat/swing";
 
@@ -244,6 +245,11 @@ export interface StateDef {
    * state that `fires` takes it at once.
    */
   ball?: BallDef;
+  /**
+   * The band of light from the hands to the head of the beam this state threw
+   * (`combat/band.ts`) — drawn while the head is in the world.
+   */
+  band?: BandDef;
   fires?: {
     spawn: string;
     at: [number, number];
@@ -265,7 +271,18 @@ export interface StateDef {
      * `initial`.
      */
     state?: string;
+    /**
+     * Spawns put out beside it that never hit and are gone when it is — the
+     * Kamehameha's base at the hands, which lives as long as the beam's head.
+     */
+    with?: { spawn: string; at: [number, number] }[];
   };
+  /**
+   * The step of the animation this state stops on and holds for as long as it
+   * lasts — the Kamehameha's firing pose, held while the beam is in the air
+   * rather than played out into the recovery behind it.
+   */
+  holdStep?: number;
 
   /**
    * Frames of holding this state for its charge to reach full. The level is a
@@ -848,6 +865,7 @@ export function spawnsNamed(states: StatesFile | null | undefined): string[] {
   const names = new Set<string>();
   for (const def of Object.values(states?.states ?? {})) {
     if (def.fires) names.add(def.fires.spawn);
+    for (const w of def.fires?.with ?? []) names.add(w.spawn);
   }
   return [...names];
 }
@@ -1049,6 +1067,16 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       (!Array.isArray(def.ball.at) || def.ball.at.length !== 2 || typeof def.ball.grow !== "number")
     ) {
       errors.push(`${where}: "ball" needs "at" as two numbers and "grow", e.g. { "at": [-10, -38], "grow": 2 }`);
+    }
+    if (
+      def.band !== undefined &&
+      (!Array.isArray(def.band.from) || typeof def.band.size !== "number" || typeof def.band.max !== "number")
+    ) {
+      errors.push(`${where}: "band" needs "from" as two numbers, "size" and "max"`);
+    }
+    const steps = anim?.steps?.length;
+    if (def.holdStep !== undefined && (!Number.isInteger(def.holdStep) || def.holdStep < 0 || (steps !== undefined && def.holdStep >= steps))) {
+      errors.push(`${where}: "holdStep" must be a step of its animation, 0 to ${(steps ?? 1) - 1}`);
     }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);

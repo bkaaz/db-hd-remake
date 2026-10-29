@@ -1164,6 +1164,16 @@ describe("StateMachine", () => {
     });
   });
 
+  it("refuses a holdStep its animation does not have", () => {
+    const f = machine();
+    const anims = { ...ANIMS, pose: { loop: false, steps: [{}, {}] } };
+    f.states.fire = { anim: "pose", holdStep: 2, transitions: [{ when: "spawnEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:blast", to: "fire" });
+    expect(validateStates(f, anims).errors.some((e) => e.includes('"holdStep"'))).toBe(true);
+    f.states.fire.holdStep = 1;
+    expect(validateStates(f, anims).errors.some((e) => e.includes('"holdStep"'))).toBe(false);
+  });
+
   it("carries a launch impulse on the state that starts the jump", () => {
     const f = machine();
     f.states.jump_fwd = { anim: "idle", launch: [2.3, -6.5], airborne: true };
@@ -1239,6 +1249,13 @@ describe("spawnsNamed", () => {
       big: { anim: "big", fires: { spawn: "ki_bolt_big", at: [30, -50] } },
     });
     expect(spawnsNamed(states).sort()).toEqual(["ki_bolt", "ki_bolt_big"]);
+  });
+
+  it("collects what a shot puts out beside it too", () => {
+    const states = file({
+      kame: { anim: "kame", fires: { spawn: "kame_head", at: [36, -51], with: [{ spawn: "kame_base", at: [24, -51] }] } },
+    });
+    expect(spawnsNamed(states).sort()).toEqual(["kame_base", "kame_head"]);
   });
 
   it("is empty for a fighter who throws nothing, and for no states at all", () => {

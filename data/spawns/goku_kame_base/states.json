@@ -1,0 +1,12 @@
+{
+  "_comment": "The charged Kamehameha's base at the hands (object a/16, docs/rom.md): put out beside the beam's head and gone with it. Frames and animation by npm run rom -- export; this file by hand.",
+  "initial": "play",
+  "states": {
+    "play": {
+      "anim": "play",
+      "vel": [0, 0],
+      "turn": false,
+      "transitions": []
+    }
+  }
+}

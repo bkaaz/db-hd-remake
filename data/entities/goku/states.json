@@ -717,75 +717,118 @@
     },
     "kame_fire_s": {
       "anim": "maa_2",
+      "holdStep": 0,
       "vel": [
         0,
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          30,
+          -51
+        ],
+        "size": 2,
+        "max": 5,
+        "flat": true
+      },
       "fires": {
         "spawn": "goku_kame_s",
         "at": [
           36,
           -51
+        ],
+        "with": [
+          {
+            "spawn": "goku_kame_base",
+            "at": [
+              24,
+              -51
+            ]
+          }
         ]
       },
       "transitions": [
         {
           "when": "spawnEnd",
-          "to": "idle"
-        },
-        {
-          "when": "animEnd",
           "to": "idle"
         }
       ]
     },
     "kame_fire_m": {
       "anim": "maa_2",
+      "holdStep": 0,
       "vel": [
         0,
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          30,
+          -51
+        ],
+        "size": 2,
+        "max": 5
+      },
       "fires": {
         "spawn": "goku_kame_m",
         "at": [
           36,
           -51
+        ],
+        "with": [
+          {
+            "spawn": "goku_kame_base",
+            "at": [
+              24,
+              -51
+            ]
+          }
         ]
       },
       "transitions": [
         {
           "when": "spawnEnd",
-          "to": "idle"
-        },
-        {
-          "when": "animEnd",
           "to": "idle"
         }
       ]
     },
     "kame_fire_l": {
       "anim": "maa_2",
+      "holdStep": 0,
       "vel": [
         0,
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          30,
+          -51
+        ],
+        "size": 4,
+        "max": 9
+      },
       "fires": {
         "spawn": "goku_kame_l",
         "at": [
           36,
           -51
+        ],
+        "with": [
+          {
+            "spawn": "goku_kame_base",
+            "at": [
+              24,
+              -51
+            ]
+          }
         ]
       },
       "transitions": [
         {
           "when": "spawnEnd",
-          "to": "idle"
-        },
-        {
-          "when": "animEnd",
           "to": "idle"
         }
       ]

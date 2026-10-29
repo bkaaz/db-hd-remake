@@ -16,6 +16,10 @@ interface Live {
    * here, so that a fighter can hold a pose until what he threw is gone.
    */
   owner: Entity;
+  /** What came out beside it (`fires.with`): drawn and moved, never hitting, gone with it. */
+  companions: Entity[];
+  /** Whether the owner draws a band to it — only this bolt may say where its head is. */
+  beam: boolean;
 }
 
 /** A blow a bolt landed, and who took it — enough for the recording. */
@@ -78,7 +82,16 @@ export class Projectiles {
    * the flat trajectory wanted, with no gravity and no special case.
    */
   spawn(
-    from: { spawn: string; state?: string; x: number; y: number; facing: 1 | -1; size: number },
+    from: {
+      spawn: string;
+      state?: string;
+      x: number;
+      y: number;
+      facing: 1 | -1;
+      size: number;
+      with: { spawn: string; x: number; y: number }[];
+      beam: boolean;
+    },
     owner: Entity,
     foe: Entity,
   ): void {
@@ -105,7 +118,17 @@ export class Projectiles {
     bolt.x = from.x;
     bolt.y = from.y;
     this.app.stage.addChild(bolt.view);
-    this.live.push({ bolt, foe, owner });
+    const companions = from.with.flatMap((w) => {
+      const companion = this.defs.get(w.spawn);
+      if (!companion) return [];
+      const e = new Entity(companion, this.scale, this.audio);
+      e.facing = from.facing;
+      e.groundY = e.y = w.y;
+      e.x = w.x;
+      this.app.stage.addChild(e.view);
+      return [e];
+    });
+    this.live.push({ bolt, foe, owner, companions, beam: from.beam });
   }
 
   /**
@@ -119,16 +142,20 @@ export class Projectiles {
   update(paused: boolean, bounds: Bounds, impact: BlowContext): ProjectileHit[] {
     const hits: ProjectileHit[] = [];
     for (let i = this.live.length - 1; i >= 0; i--) {
-      const { bolt, foe, owner } = this.live[i];
+      const { bolt, foe, owner, companions, beam } = this.live[i];
       if (!paused) bolt.update(NO_INPUT, null, bounds);
+      if (!paused) for (const c of companions) c.update(NO_INPUT, null, bounds);
+      // the thrower draws the band to it, if its state has one (combat/band.ts)
+      if (beam) owner.beamReaches(bolt.x);
       const result = paused ? null : landBlow(bolt, foe, impact);
       if (result) hits.push({ result, foe });
       // Off the end of the stage, where `Entity` has clamped it: nothing here
       // is allowed to hang in a corner waiting for someone to walk into it.
       const stranded = bolt.x <= bounds.min || bolt.x >= bounds.max;
       if (result || stranded) {
-        bolt.view.destroy({ children: true });
+        for (const e of [bolt, ...companions]) e.view.destroy({ children: true });
         this.live.splice(i, 1);
+        if (beam) owner.beamReaches(null);
         owner.spawnEnded();
       }
     }
@@ -136,13 +163,13 @@ export class Projectiles {
   }
 
   render(showBoxes: boolean): void {
-    for (const { bolt } of this.live) bolt.render(showBoxes);
+    for (const { bolt, companions } of this.live) for (const e of [bolt, ...companions]) e.render(showBoxes);
   }
 
   /** Sweep away whatever is still in the air when the scene ends. */
   destroy(): void {
-    for (const { bolt, owner } of this.live) {
-      bolt.view.destroy({ children: true });
+    for (const { bolt, owner, companions } of this.live) {
+      for (const e of [bolt, ...companions]) e.view.destroy({ children: true });
       owner.spawnEnded();
     }
     this.live.length = 0;

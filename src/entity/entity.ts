@@ -3,6 +3,7 @@ import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { BALL_COLOUR, nextRadius } from "../combat/ball";
+import { bandHeights } from "../combat/band";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -179,6 +180,10 @@ export class Entity {
   private ballRadius = 0;
   /** Where the ball was last held, so it shrinks in place once let go. */
   private ballAt: [number, number] = [0, 0];
+  /** Where the head of the beam this entity threw has got to, world px — told by the bolts. */
+  private beamHead: number | null = null;
+  /** Frames the current state's band has been out — it thickens with them. */
+  private bandFrames = 0;
 
   private readonly sm: StateMachine | null;
   /** Set by `preview()`: play one animation and ignore the state machine. */
@@ -372,6 +377,9 @@ export class Entity {
     y: number;
     facing: 1 | -1;
     size: number;
+    with: { spawn: string; x: number; y: number }[];
+    /** Whether the thrower draws its band to this one — the state has a `band`. */
+    beam: boolean;
   } | null {
     const fires = this.fired;
     if (!fires) return null;
@@ -380,19 +388,26 @@ export class Entity {
     const [small, large] = fires.size ?? [1, 1];
     const size = small + (large - small) * this.charge;
     this.charge = 0;
+    const placed = (at: [number, number]) => ({ x: this.x + this.facing * at[0] * this.scale, y: this.y + at[1] * this.scale });
     return {
       spawn: fires.spawn,
       state: fires.state,
-      x: this.x + this.facing * fires.at[0] * this.scale,
-      y: this.y + fires.at[1] * this.scale,
+      ...placed(fires.at),
       facing: this.facing,
       size,
+      with: (fires.with ?? []).map((w) => ({ spawn: w.spawn, ...placed(w.at) })),
+      beam: this.sm?.def.band !== undefined,
     };
   }
 
   /** Fill the ki meter — the debug key, and nothing in a fight does this. */
   fillKi(): void {
     this.ki = this.maxKi;
+  }
+
+  /** Where the head of what this entity threw has flown to; null once it is gone. */
+  beamReaches(x: number | null): void {
+    this.beamHead = x;
   }
 
   /** One of the things this entity threw has left the world. */
@@ -762,6 +777,7 @@ export class Entity {
     const ball = this.sm.def.ball;
     if (ball) this.ballAt = ball.at;
     this.ballRadius = nextRadius(this.ballRadius, ball, this.stateFrames);
+    this.bandFrames = this.sm.def.band && this.beamHead !== null ? this.bandFrames + 1 : 0;
     this.stateFrames++;
 
     this.advanceAnim();
@@ -778,6 +794,15 @@ export class Entity {
       const [dx, dy] = this.ballAt;
       const k = this.scale * this.size;
       this.ballG.circle(this.x + this.facing * dx * k, this.y + dy * k, this.ballRadius * k).fill(BALL_COLOUR);
+    }
+    const band = this.sm?.def.band;
+    if (band && this.beamHead !== null) {
+      const k = this.scale * this.size;
+      const base = this.x + this.facing * band.from[0] * k;
+      const y = this.y + band.from[1] * k;
+      const h = bandHeights(band, this.bandFrames);
+      const [b, t] = [(h.base * k) / 2, (h.head * k) / 2];
+      this.ballG.poly([base, y - b, this.beamHead, y - t, this.beamHead, y + t, base, y + b]).fill(BALL_COLOUR);
     }
 
     this.boxG.clear();
@@ -830,6 +855,7 @@ export class Entity {
     if (!this.anim || this.anim.steps.length === 0) return;
     this.remaining -= 1;
     if (this.remaining > 0) return;
+    if (this.sm?.def.holdStep === this.stepIndex) return;
 
     this.stepIndex += 1;
     if (this.stepIndex >= this.anim.steps.length) {
