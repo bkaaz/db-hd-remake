@@ -54,7 +54,8 @@ blocked only in a state marked `guarding`: the stance and its blockstun.
 → `combat.md` (The buttons)
 
 **Hit type** — what a blow does to whoever it hits (`flinch`, `stagger`,
-`knockback`, `launch`, `slam`), and the only source of its numbers; written
+`knockback`, `launch`, `slam`) — every number of it but the damage, which is
+the blow's own; written
 `fl30` in conversation — code plus any frame of the move. A blow is an animation
 plus a type. → `data/hit-types.json`, `combat/hitTypes.ts`
 

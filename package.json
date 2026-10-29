@@ -9,6 +9,7 @@
     "editor": "vite --port 5174 --open /tools/entity-editor/",
     "build": "tsc --noEmit && vite build",
     "anim": "tsx scripts/anim.ts",
+    "blows": "tsx scripts/blows.ts",
     "chains": "tsx scripts/chains.ts",
     "fx": "tsx scripts/fx.ts",
     "lift": "tsx scripts/lift.ts",

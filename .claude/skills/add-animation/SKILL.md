@@ -86,8 +86,9 @@ and the animations (with their states) already playing it. Then:
 - **None** — build one from the move's frames (below), name it for the pose,
   and say what you called it.
 
-The type goes on the state as `"type"`; the state sets none of the type's
-numbers (`data-format.md`).
+The type goes on the state as `"type"`, beside the blow's own `"damage"` —
+required (ADR 0019); if the owner named none, ask rather than copy a
+neighbour's. The state sets none of the type's numbers (`data-format.md`).
 
 ## Procedure
 

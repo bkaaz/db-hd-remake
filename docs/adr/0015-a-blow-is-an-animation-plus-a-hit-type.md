@@ -1,7 +1,7 @@
 # 0015 — A blow is an animation plus a hit type
 
 **Status:** accepted 2026-09-29 · replaces the per-strength table that stood in
-`combat.md` from 2026-08-16
+`combat.md` from 2026-08-16 · `damage` superseded 2026-10-29 by 0019
 
 A blow is authored as **which animation** plus **which hit type**. The type —
 `data/hit-types.json`, one table for every fighter — decides the reaction and

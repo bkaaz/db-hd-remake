@@ -2,18 +2,19 @@ import table from "../../data/hit-types.json";
 import type { StateDef, StatesFile } from "../entity/states";
 
 /**
- * Hit types: what a blow does to whoever it hits, named once and shared by
- * every fighter (`data/hit-types.json`). A blow is authored as an animation
- * plus a type, and the type is the **only** source of its numbers — a state
- * that names a type may not also set any of them, or the same blow would have
- * two answers to how much it costs.
+ * Hit types: how a blow is taken, named once and shared by every fighter
+ * (`data/hit-types.json`). A blow is authored as an animation plus a type, and
+ * the type is the **only** source of these numbers — a state that names a type
+ * may not also set any of them, or the same blow would have two answers.
  *
- * What stays on the state is what two blows of one type may differ in: the
- * cancel window, the sounds and the spark.
+ * What a blow costs is not one of them: `damage` is the state's own, and a
+ * typed state must give it (ADR 0019). What else stays on the state is what
+ * two blows of one type may differ in: the cancel window, the sounds and the
+ * spark.
  */
 
 /** The fields a type stands for, under the names a state would use for them. */
-export const HIT_FIELDS = ["onHit", "damage", "hitstun", "hitstop", "relaunch"] as const;
+export const HIT_FIELDS = ["onHit", "hitstun", "hitstop", "relaunch"] as const;
 
 export type HitType = Required<Pick<StateDef, (typeof HIT_FIELDS)[number]>> & {
   /** The two letters used when a blow is written down in conversation: `fl30`. */
@@ -46,7 +47,7 @@ export function withHitTypes(
   return { ...file, states };
 }
 
-/** A type nobody defined, or a type with numbers of its own beside it. */
+/** A type nobody defined, a type with numbers of its own beside it, or a typed blow with no damage. */
 export function hitTypeErrors(
   file: StatesFile,
   types: Readonly<Record<string, HitType>> = HIT_TYPES,
@@ -64,6 +65,9 @@ export function hitTypeErrors(
       errors.push(
         `state "${name}": hit type "${def.type}" decides ${own.join(", ")} — remove them from the state`,
       );
+    }
+    if (def.damage === undefined) {
+      errors.push(`state "${name}": a blow of type "${def.type}" needs its own "damage"`);
     }
   }
   return errors;

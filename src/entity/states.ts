@@ -67,9 +67,9 @@ export interface StateDef {
   /** Whether the entity may turn to face its opponent while in this state. */
   turn?: boolean;
   /**
-   * The hit type of this state's attack, which decides `onHit`, `damage`,
-   * `hitstun`, `hitstop` and `relaunch` — a state naming one sets none of
-   * them itself. See `combat/hitTypes.ts`.
+   * The hit type of this state's attack, which decides `onHit`, `hitstun`,
+   * `hitstop` and `relaunch` — a state naming one sets none of them itself,
+   * and must set `damage`. See `combat/hitTypes.ts`.
    */
   type?: string;
   /**
@@ -284,9 +284,9 @@ export interface StateDef {
    */
   hitFx?: string;
   /**
-   * Health this state's attack takes off, overriding the entity's `damage`
-   * attribute. The fourth of the same family: the blow decides how it is taken,
-   * how long the game stops, what it looks like and what it costs.
+   * Health this state's attack takes off — the blow's own, never its hit
+   * type's (ADR 0019); required beside a `type`. Without either, the entity's
+   * `damage` attribute stands in.
    */
   damage?: number;
   /**

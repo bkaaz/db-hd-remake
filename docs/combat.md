@@ -57,10 +57,10 @@ it says so with `cost`, and a move nobody can afford does not come out.
 
 A blow is authored as **which animation** and **which hit type**. The animation
 gives the poses, the boxes and the timing; the type gives everything that
-happens to whoever is hit — the reaction and every number that goes with it.
-Types are one table shared by every fighter, `data/hit-types.json`, and a state
-may not override a type's number: a blow that needs other numbers is another
-type.
+happens to whoever is hit — the reaction and its numbers. What the blow
+costs is its own `damage`, on the state. Types are one table shared by every
+fighter, `data/hit-types.json`, and a state may not override a type's number:
+a blow that needs another reaction is another type.
 
 | type | code | what happens to the opponent |
 |---|---|---|

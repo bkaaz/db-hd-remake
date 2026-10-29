@@ -234,6 +234,8 @@ npm run anim -- <entity> <anim> --frames 1,2,3 --kind attack|loop|hurt
 npm run which -- <entity> fl30 la187
                   # what a blow in the shorthand points at: hit type, the
                   # move holding that frame, the animations that play it
+npm run blows -- <entity>
+                  # every blow: its type spelled out beside its own damage
 npm run chains -- <entity>
                   # what cancels into what, and how many frames of margin each
                   # link has — the instrument for tuning frame data
@@ -281,6 +283,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ├── scripts/                      # CLI entry points ONLY — one per npm run command;
 │   │                             #   nothing in the repo imports from here
 │   ├── anim.ts                   #   build an animation from a frame list
+│   ├── blows.ts                  #   print every blow with its numbers
 │   ├── chains.ts                 #   print the cancel graph with its arithmetic
 │   ├── which.ts                  #   read the fl30 shorthand
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at

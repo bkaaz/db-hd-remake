@@ -1,7 +1,7 @@
 {
-  "flinch": { "code": "fl", "onHit": "hurt_chain", "damage": 8, "hitstun": 20, "hitstop": 8, "relaunch": false },
-  "stagger": { "code": "st", "onHit": "hurt_heavy", "damage": 13, "hitstun": 20, "hitstop": 12, "relaunch": true },
-  "knockback": { "code": "kb", "onHit": "blown", "damage": 13, "hitstun": 20, "hitstop": 12, "relaunch": true },
-  "launch": { "code": "la", "onHit": "launched", "damage": 13, "hitstun": 20, "hitstop": 12, "relaunch": true },
-  "slam": { "code": "sl", "onHit": "slam", "damage": 13, "hitstun": 20, "hitstop": 6, "relaunch": true }
+  "flinch": { "code": "fl", "onHit": "hurt_chain", "hitstun": 20, "hitstop": 8, "relaunch": false },
+  "stagger": { "code": "st", "onHit": "hurt_heavy", "hitstun": 20, "hitstop": 12, "relaunch": true },
+  "knockback": { "code": "kb", "onHit": "blown", "hitstun": 20, "hitstop": 12, "relaunch": true },
+  "launch": { "code": "la", "onHit": "launched", "hitstun": 20, "hitstop": 12, "relaunch": true },
+  "slam": { "code": "sl", "onHit": "slam", "hitstun": 20, "hitstop": 6, "relaunch": true }
 }

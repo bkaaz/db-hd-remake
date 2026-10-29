@@ -5,7 +5,7 @@ import { HIT_TYPES, hitTypeErrors, withHitTypes, type HitType } from "./hitTypes
 import { validateStates, type StatesFile } from "../entity/states";
 
 const TYPES: Record<string, HitType> = {
-  pop: { code: "po", onHit: "hurt", damage: 7, hitstun: 18, hitstop: 9, relaunch: false },
+  pop: { code: "po", onHit: "hurt", hitstun: 18, hitstop: 9, relaunch: false },
 };
 
 /** An idle, a reaction, and one attack shaped by the caller. */
@@ -20,7 +20,7 @@ const fileWith = (attack: StatesFile["states"][string]): StatesFile => ({
 
 describe("withHitTypes", () => {
   it("spells a type out as the fields it stands for", () => {
-    const a = withHitTypes(fileWith({ anim: "jab", type: "pop" }), TYPES).states.a;
+    const a = withHitTypes(fileWith({ anim: "jab", type: "pop", damage: 7 }), TYPES).states.a;
     expect(a).toMatchObject({ onHit: "hurt", damage: 7, hitstun: 18, hitstop: 9, relaunch: false });
     expect(a).not.toHaveProperty("code");
   });
@@ -40,19 +40,27 @@ describe("withHitTypes", () => {
 });
 
 describe("hitTypeErrors", () => {
-  it("accepts a known type standing alone", () => {
-    expect(hitTypeErrors(fileWith({ anim: "jab", type: "pop" }), TYPES)).toEqual([]);
+  it("accepts a known type beside the blow's own damage", () => {
+    expect(hitTypeErrors(fileWith({ anim: "jab", type: "pop", damage: 7 }), TYPES)).toEqual([]);
+  });
+
+  it("refuses a typed blow that does not say what it costs", () => {
+    // No type and no attribute stands in for it: one place, or a missing
+    // number would quietly take one from somewhere else.
+    const errors = hitTypeErrors(fileWith({ anim: "jab", type: "pop" }), TYPES);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain('"damage"');
   });
 
   it("refuses a type nobody defined", () => {
-    const errors = hitTypeErrors(fileWith({ anim: "jab", type: "poke" }), TYPES);
+    const errors = hitTypeErrors(fileWith({ anim: "jab", type: "poke", damage: 7 }), TYPES);
     expect(errors).toHaveLength(1);
     expect(errors[0]).toContain('"poke"');
   });
 
   it("refuses a number beside the type, naming it", () => {
     // The type is the only source of a blow's numbers.
-    const errors = hitTypeErrors(fileWith({ anim: "jab", type: "pop", hitstop: 4 }), TYPES);
+    const errors = hitTypeErrors(fileWith({ anim: "jab", type: "pop", damage: 7, hitstop: 4 }), TYPES);
     expect(errors).toHaveLength(1);
     expect(errors[0]).toContain("hitstop");
   });
@@ -69,7 +77,7 @@ describe("validateStates with hit types", () => {
   it("checks the rest against the spelled-out blow", () => {
     // flinch names `hurt_chain`, which this file lacks — only visible once
     // the type has been spelled out.
-    const { warnings } = validateStates(fileWith({ anim: "jab", type: "flinch" }), anims);
+    const { warnings } = validateStates(fileWith({ anim: "jab", type: "flinch", damage: 7 }), anims);
     expect(warnings.some((w) => w.includes('"hurt_chain"'))).toBe(true);
   });
 });

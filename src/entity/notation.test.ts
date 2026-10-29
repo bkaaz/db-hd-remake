@@ -19,7 +19,7 @@ const DATA: NotationData = {
     jab: { anim: "jab", type: "pop" },
     jab_air: { anim: "jab" },
   },
-  types: { pop: { code: "po", onHit: "hurt", damage: 1, hitstun: 1, hitstop: 1, relaunch: false } },
+  types: { pop: { code: "po", onHit: "hurt", hitstun: 1, hitstop: 1, relaunch: false } },
 };
 
 const read = (token: string): Reading => {
