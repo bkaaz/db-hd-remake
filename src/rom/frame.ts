@@ -21,6 +21,8 @@ export interface Piece {
 }
 
 const END = 0x80;
+/** OAM's name-table bit: the tile is on the second page, 0x100 on. Objects use it. */
+const PAGE = 0x01;
 const BIG = 0x10;
 const HFLIP = 0x40;
 const VFLIP = 0x80;
@@ -32,11 +34,11 @@ export function readLayout(rom: Uint8Array, at: number): Piece[] {
     if (pieces.length === 128) throw new Error(`layout at 0x${at.toString(16)} has no end`);
     const attr = rom[p + 3];
     // a bit not seen yet (a palette, a priority) would be drawn wrong, silently
-    if (attr & ~(BIG | HFLIP | VFLIP)) throw new Error(`layout at 0x${at.toString(16)}: unknown attribute 0x${attr.toString(16)}`);
+    if (attr & ~(PAGE | BIG | HFLIP | VFLIP)) throw new Error(`layout at 0x${at.toString(16)}: unknown attribute 0x${attr.toString(16)}`);
     pieces.push({
       dx: signed(rom[p]),
       dy: signed(rom[p + 1]),
-      tile: rom[p + 2],
+      tile: rom[p + 2] | (attr & PAGE ? 0x100 : 0),
       big: (attr & BIG) !== 0,
       hflip: (attr & HFLIP) !== 0,
       vflip: (attr & VFLIP) !== 0,

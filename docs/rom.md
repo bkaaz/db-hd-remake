@@ -78,6 +78,11 @@ Matched tile by tile against a VRAM snapshot (`tools/re/dump-vram.lua`,
 | ki blast | `0x31` | `$7500` | raw, 48 |
 | transformation hair | `0x51` | `$6C00` | its tiles 0–7 are the overlay's `0x40`–`0x47` |
 
+The export makes each object Goku spawns a spawn entity (ADR 0018); which
+ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
+Object slots: ten of 16 bytes at I-RAM `$3300`; each type's behaviour is its
+own code in bank `$0F`.
+
 Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
 `c0` set off — the attack ids are where hit data must be.
 
@@ -94,6 +99,8 @@ access to I/O* on; each writes into `logs/`.
 | `trace-anim.lua` | every ROM read around a change of move, step, drawing or tile set |
 | `log-moves.lua` | which move id each action picks, with the pad and velocities — runs at full speed |
 | `dump-vram.lua` | VRAM, palettes and OAM every few frames — which resource each tile on screen came from |
+| `log-objects.lua` | every change to the ten object slots — an object's frames, timing and speed |
+| `log-oam.lua` | every sprite in OAM while an object of one type is up — what the game draws, frame by frame |
 
 Measured on Goku (2026-10-28, training mode): walk 1.5 px/frame forward and
 1.25 back; jump −9.86 px/frame with gravity 0.469; hitstop 8 frames; the

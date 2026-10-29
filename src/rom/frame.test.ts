@@ -19,8 +19,12 @@ describe("readLayout", () => {
     ]);
   });
 
+  it("puts a tile with the name-table bit on the second page", () => {
+    expect(readLayout(Uint8Array.from([0, 0, 0x50, 0x01, 0x80]), 0)[0].tile).toBe(0x150);
+  });
+
   it("refuses an attribute it does not know how to draw", () => {
-    expect(() => readLayout(Uint8Array.from([0, 0, 0, 0x01, 0x80]), 0)).toThrow(/unknown attribute/);
+    expect(() => readLayout(Uint8Array.from([0, 0, 0, 0x02, 0x80]), 0)).toThrow(/unknown attribute/);
   });
 });
 

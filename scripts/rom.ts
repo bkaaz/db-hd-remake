@@ -15,15 +15,10 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { GOKU, ROM_PATH, layoutAt, pointer, scriptAt, tileSetOf, tileStream } from "../src/rom/cartridge.ts";
+import { GOKU, ROM_PATH, scriptAt, tileSetOf, tileStream } from "../src/rom/cartridge.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
-import { packSheet, type Placed } from "../src/rom/sheet.ts";
-import { animName, moveAnim } from "../src/rom/animation.ts";
-import { readBoxes } from "../src/rom/collision.ts";
-import type { Anim } from "../src/entity/entityFile.ts";
 import { decompress } from "../src/rom/decompress.ts";
-import { drawFrame, flipLayout, readLayout, readPalette } from "../src/rom/frame.ts";
-import { PLAIN, parseFrameId, type Look } from "../src/rom/look.ts";
+import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/rom/export.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
 
 if (!existsSync(ROM_PATH)) {
@@ -58,7 +53,7 @@ if (command === "tiles") {
 } else if (command === "frame" && args.length >= 1) {
   const drawing = parseInt(args[0], 16);
   const scale = 4;
-  const { image } = draw(drawing);
+  const { image } = drawDrawing(rom, GOKU, drawing);
   mkdirSync("preview", { recursive: true });
   const out = `preview/rom-goku-${hex(drawing)}.png`;
   writeFileSync(out, encodePng(scaled(image, scale)));
@@ -68,7 +63,7 @@ if (command === "tiles") {
   for (let d = 0; d < GOKU.drawings; d++) {
     if (tileSetOf(rom, GOKU, d) === null) continue;
     try {
-      draw(d);
+      drawDrawing(rom, GOKU, d);
       ok++;
     } catch (e) {
       console.log(`${hex(d)}  FAILED: ${(e as Error).message}`);
@@ -97,75 +92,25 @@ if (command === "tiles") {
     }
   }
 } else if (command === "export") {
-  // every move id, though many share a script: a state names a move, not a script
-  const animations: Record<string, Anim> = {};
-  for (let move = 0; move < 0x100; move++) {
-    try {
-      const anim = moveAnim(move, readScript(rom, scriptAt(rom, GOKU, move)), (d) => readBoxes(rom, GOKU.boxes, d));
-      if (anim) animations[animName(move)] = anim;
-    } catch (e) {
-      console.log(`  ${animName(move)} left out: ${(e as Error).message}`);
-    }
+  const fighter = exportFighter(rom, GOKU);
+  for (const note of fighter.notes) console.log(`  ${note}`);
+  write("assets/sheets/goku.png", "data/entities/goku", fighter);
+  console.log(`goku: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
+  for (const [name, spawn] of Object.entries(exportSpawns(rom, GOKU))) {
+    write(`assets/sheets/spawns/${name}.png`, `data/spawns/${name}`, spawn);
+    console.log(`${name}: ${Object.keys(spawn.frames).length} frames`);
   }
-
-  // every drawing as drawn, plus each way a move shows one (src/rom/look.ts);
-  // frame ids are decimal like every other frames.json — "74" is drawing 4a
-  const ids = new Set<string>();
-  for (let d = 0; d < GOKU.drawings; d++) if (tileSetOf(rom, GOKU, d) !== null) ids.add(String(d));
-  for (const anim of Object.values(animations)) for (const step of anim.steps) ids.add(step.frame);
-  const items: Placed[] = [];
-  const failed = new Set<string>();
-  for (const id of [...ids].sort((a, b) => parseFrameId(a).drawing - parseFrameId(b).drawing || a.localeCompare(b))) {
-    try {
-      items.push({ id, ...place(id) });
-    } catch (e) {
-      failed.add(id);
-      console.log(`  frame ${id} left out: ${(e as Error).message}`);
-    }
-  }
-  for (const [name, anim] of Object.entries(animations)) {
-    const bad = anim.steps.find((s) => failed.has(s.frame));
-    if (!bad) continue;
-    delete animations[name];
-    console.log(`  ${name} left out: shows frame ${bad.frame}, which has no picture`);
-  }
-  const { sheet, frames } = packSheet(items);
-
-  mkdirSync("data/entities/goku", { recursive: true });
-  writeFileSync("assets/sheets/goku.png", encodePng(sheet));
-  writeFileSync("data/entities/goku/frames.json", JSON.stringify(frames, null, 2) + "\n");
-  writeFileSync("data/entities/goku/animations.json", JSON.stringify(animations, null, 2) + "\n");
-  console.log(`wrote ${items.length} frames into assets/sheets/goku.png (${sheet.width}×${sheet.height}) and frames.json,`);
-  console.log(`  ${Object.keys(animations).length} moves into animations.json`);
 } else {
   console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | export   (ids in hex)");
   process.exit(1);
 }
 
-/**
- * A frame's picture and where the fighter's position falls in it: the drawing
- * mirrored about its origin, then the origin moved away from the position by
- * the offset — so the anchor is the position, as the game draws it.
- */
-function place(id: string): Omit<Placed, "id"> {
-  const { drawing, look } = parseFrameId(id);
-  const blank = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
-  // a layout of no pieces is a drawing too: the invisible frame of a vanish
-  const empty = readLayout(rom, pointer(rom, layoutAt(GOKU, drawing))).length === 0;
-  const { image, origin } = empty ? blank : draw(drawing, look);
-  return { image, origin: { x: origin.x - look.dx, y: origin.y - look.dy } };
-}
-
-function draw(drawing: number, look: Look = PLAIN) {
-  const set = tileSetOf(rom, GOKU, drawing);
-  if (set === null) throw new Error(`drawing ${hex(drawing)} is unused`);
-  const at = tileStream(rom, GOKU, set);
-  if (at === null) throw new Error(`drawing ${hex(drawing)} wants tile set ${hex(set)}, an unused slot`);
-  return drawFrame(
-    decompress(rom, at).data,
-    flipLayout(readLayout(rom, pointer(rom, layoutAt(GOKU, drawing))), look.h, look.v),
-    readPalette(rom, GOKU.palette),
-  );
+/** Writes the sheet and the two sections the export owns; states stay hand-written. */
+function write(sheetPath: string, dir: string, e: Exported): void {
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(sheetPath, encodePng(e.sheet));
+  writeFileSync(`${dir}/frames.json`, JSON.stringify(e.frames, null, 2) + "\n");
+  writeFileSync(`${dir}/animations.json`, JSON.stringify(e.animations, null, 2) + "\n");
 }
 
 function describe(op: ScriptOp): string {
@@ -177,6 +122,7 @@ function describe(op: ScriptOp): string {
     case "attack": return `attack ${hex(op.id)} ?`;
     case "effect": return `effect ${hex(op.id)} ?`;
     case "offset": return `draw ${op.dx}, ${op.dy} px from the position`;
+    case "spawn": return `spawn object ${hex(op.type)}/${hex(op.anim)} at ${op.dx}, ${op.dy} (tiles +${hex(op.tiles)}, palette ${op.palette})`;
     case "flip": return `flip ${op.h ? "h" : ""}${op.v ? "v" : ""}${op.h || op.v ? "" : "off"}`;
     case "hold": return `hold ${hex(op.drawing)} until released ?`;
     case "raw": return op.bytes.map(hex).join(" ") + "  (not read yet)";

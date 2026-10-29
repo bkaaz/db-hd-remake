@@ -28,7 +28,8 @@ The hair is cut flat at the top and some strands look too thin. These are the
 transformation drawings, and every script that shows them (moves `3c`, `3e`)
 issues a `b0` just before — which spawns an object that draws the rest of
 the hair, from resource `0x51` in the palette at `0x27B161` (confirmed against
-a VRAM snapshot, `rom.md`); `npm run rom -- export` draws the body alone.
+a VRAM snapshot, `rom.md`). The overlay is exported now, as the spawn
+`goku_hair`; nothing plays it yet (`plan.md`).
 To see it: `npm run rom -- frame 29`. The work to fix it is in `plan.md`.
 
 ## `npm run anim` only knows how far a move reaches sideways

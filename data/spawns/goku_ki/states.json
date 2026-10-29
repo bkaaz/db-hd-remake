@@ -1,0 +1,18 @@
+{
+  "_comment": "The cartridge's ki blast (object a/03, docs/rom.md). Its frames and animation are written by npm run rom -- export; this file is by hand, after ki_bolt. 3 px a frame is the recorded speed (log-objects.lua, 2026-10-29); the damage numbers are ki_bolt's until the original's are read.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "vel": [3, 0],
+      "turn": false,
+      "damage": 8,
+      "hitstun": 20,
+      "hitstop": 8,
+      "onHit": "hurt_chain",
+      "hitFx": "ki_burst",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1"
+    }
+  }
+}

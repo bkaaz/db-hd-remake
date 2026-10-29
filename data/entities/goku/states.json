@@ -377,10 +377,28 @@
         0
       ],
       "turn": false,
-      "type": "flinch",
-      "sound": "swing_1",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "ki_fire"
+        }
+      ]
+    },
+    "ki_fire": {
+      "anim": "m9b_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "goku_ki",
+        "at": [
+          40,
+          -56
+        ]
+      },
+      "sound": "blast_1",
       "transitions": [
         {
           "when": "animEnd",

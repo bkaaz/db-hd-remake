@@ -28,6 +28,16 @@ describe("readScript", () => {
     expect(at0(0xd0, 0x08, 0x00, 0xd0, 0xff, 0x00)).toEqual([{ op: "offset", dx: 8, dy: -48 }]);
   });
 
+  it("reads b0 as a spawn: type, animation, tile base, palette and position", () => {
+    // ki: type a, animation 3, 40 px ahead and 56 up; hair: base 0x8800 words
+    const ki = [0xb0, 0x00, 0xca, 0x03, 0x00, 0x00, 0x04, 0x28, 0x00, 0xc8, 0xff, 0, 0, 3, 0, 0];
+    const hair = [0xb0, 0x00, 0x80, 0x05, 0x00, 0x88, 0x88, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    expect(at0(...ki, ...hair, 0x00)).toEqual([
+      { op: "spawn", type: 0xa, anim: 3, tiles: 0, palette: 2, dx: 40, dy: -56 },
+      { op: "spawn", type: 0, anim: 5, tiles: 0x80, palette: 4, dx: 0, dy: 0 },
+    ]);
+  });
+
   it("reads e0 as a flip of the whole drawing, by OAM's bits", () => {
     expect(at0(0xe0, 0xc0, 0xe0, 0x40, 0x00)).toEqual([
       { op: "flip", h: true, v: true },

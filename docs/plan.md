@@ -56,11 +56,12 @@ Every move is an animation now, `m00`…`mff` (ADR 0017), written by the export.
    pose after the release. *Open:* why idle holds each pose 12 frames in its
    script but 13–14 in a recording; reading which moves repeat or hold from
    the move handlers instead of listing them (`src/rom/animation.ts`).
-2. **What `b0` spawns, as spawn entities** — the command, the object system
-   and where the hair's and the ki blast's tiles come from are read
-   (`rom.md`). What is left: how an object's animation is timed, then export
-   each object Goku spawns as an entity of its own (ADR 0007) and fire it
-   from his states — the ki blast first, the hair overlay with it.
+2. **The rest of the objects** — the ki blast is a spawn Goku fires
+   (ADR 0018); the hair overlay is exported (`goku_hair`) but nothing plays
+   it, since there is no pre-fight screen, and `fires` only takes a
+   projectile. Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`).
+   Other objects Goku spawns are not exported yet; each needs a recording of
+   its timing (`tools/re/log-objects.lua`).
 
 > **One exchange is complete.** Everything below multiplies it.
 

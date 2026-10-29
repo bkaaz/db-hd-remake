@@ -271,6 +271,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   └── rom/                      #   cartridge.ts: where things are in the ROM
 │                                 #   decompress.ts, frame.ts: tiles → a drawing
 │                                 #   disasm.ts, opcodes.ts: reading 65816 code
+│                                 #   export.ts: all of it into our entities
 ├── scripts/                      # CLI entry points ONLY — one per npm run command;
 │   │                             #   nothing in the repo imports from here
 │   ├── anim.ts                   #   build an animation from a frame list

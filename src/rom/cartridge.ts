@@ -23,6 +23,40 @@ export interface FighterTables {
   scripts: number;
   /** 32 bytes per drawing id: its boxes (src/rom/collision.ts). */
   boxes: number;
+  /** The objects this fighter spawns that we export, and what they draw from. */
+  objects: Objects;
+}
+
+/**
+ * Where a fighter's objects get their pictures and timing. The loads and the
+ * palettes were matched against a VRAM snapshot, the frame timings read off a
+ * recording of the object slots (docs/rom.md, 2026-10-29) — the object's own
+ * code holds them, not its data.
+ */
+export interface Objects {
+  /** Resources in OBJ VRAM, as the game loads them before a fight. */
+  loads: { resource: number; vram: number }[];
+  /** ROM palette for each OAM palette slot an object uses. */
+  palettes: Record<number, number>;
+  spawns: SpawnDef[];
+}
+
+export interface SpawnDef {
+  /** The spawn entity's name, under data/spawns/. */
+  name: string;
+  type: number;
+  anim: number;
+  /** Frames each step stays up, in order — the object's code decides, so recorded. */
+  steps: number[];
+  loop: boolean;
+  /** Give each frame a hit box over its picture — a projectile. */
+  hits: boolean;
+  /**
+   * A ROM palette to draw with instead of the one its OAM slot holds — for an
+   * object whose slot is swapped while it is up, which a snapshot taken
+   * without it on screen cannot show.
+   */
+  palette?: number;
 }
 
 export const GOKU: FighterTables = {
@@ -33,6 +67,20 @@ export const GOKU: FighterTables = {
   palette: 0xb0000,
   scripts: 0,
   boxes: 0x1d8000,
+  objects: {
+    loads: [
+      { resource: 0x31, vram: 0x7500 },
+      { resource: 0x51, vram: 0x6c00 },
+    ],
+    palettes: { 2: 0x1b4ea, 4: 0x27b161 },
+    spawns: [
+      // slot 2 holds 0x1b4ea whenever no blast is up, and that drew it green
+      // and flashing black in play (2026-10-29); PalMod names 0x27B161 the
+      // "KI Blast effects" palette
+      { name: "goku_ki", type: 0xa, anim: 3, steps: [2, 2], loop: true, hits: true, palette: 0x27b161 },
+      { name: "goku_hair", type: 0, anim: 5, steps: [32, 8, 8, 6], loop: false, hits: false },
+    ],
+  },
 };
 
 /**

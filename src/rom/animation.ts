@@ -80,3 +80,46 @@ export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: numb
   if (hold !== undefined) return { loop: false, steps: anim.steps.slice(0, hold + 1) };
   return { ...anim, loop: loops(move) };
 }
+
+/**
+ * A move's animations, cut where its script spawns an object mid-way: `m9b`
+ * up to the ki blast, `m9b_2` from it on — because our states fire a spawn
+ * when they are entered (ADR 0018). A spawn before anything is shown stays
+ * with the first part; it fires on entry as it is. Each later part starts
+ * where the one before left off: the drawing that is up, flipped and offset
+ * as it was.
+ */
+export function moveAnims(move: number, ops: ScriptOp[], boxesOf?: (drawing: number) => Box[]): Record<string, Anim> {
+  const parts: ScriptOp[][] = [[]];
+  let shown = false;
+  for (const op of ops) {
+    if (op.op === "spawn" && shown) parts.push(carried(parts.flat()));
+    if (op.op === "show" || op.op === "hold") shown = true;
+    parts[parts.length - 1].push(op);
+  }
+  if (parts.length === 1) {
+    const one = moveAnim(move, ops, boxesOf);
+    return one ? { [animName(move)]: one } : {};
+  }
+  const out: Record<string, Anim> = {};
+  parts.forEach((part, i) => {
+    const anim = toAnim(part, boxesOf);
+    if (anim) out[i === 0 ? animName(move) : `${animName(move)}_${i + 1}`] = anim;
+  });
+  return out;
+}
+
+/** What a later part inherits: the last drawing (as a zero-frame step), flip and offset. */
+function carried(before: ScriptOp[]): ScriptOp[] {
+  const last = <K extends ScriptOp["op"]>(kind: K) =>
+    [...before].reverse().find((op): op is Extract<ScriptOp, { op: K }> => op.op === kind);
+  const drawing = [...before].reverse().find((op) => (op.op === "show" || op.op === "hold") && op.drawing !== null);
+  const out: ScriptOp[] = [];
+  const flip = last("flip");
+  const offset = last("offset");
+  if (flip) out.push(flip);
+  if (offset) out.push(offset);
+  if (drawing && (drawing.op === "show" || drawing.op === "hold") && drawing.drawing !== null)
+    out.push({ op: "show", frames: 0, drawing: drawing.drawing });
+  return out;
+}

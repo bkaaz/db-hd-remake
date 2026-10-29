@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { animName, moveAnim, toAnim } from "./animation";
+import { animName, moveAnim, moveAnims, toAnim } from "./animation";
 import type { ScriptOp } from "./script";
 
 const show = (frames: number, drawing: number | null): ScriptOp => ({ op: "show", frames, drawing });
@@ -61,6 +61,28 @@ describe("moveAnim", () => {
   it("ends the dash on the step the original holds, so it stays there", () => {
     const anim = moveAnim(0x0a, [show(8, 0x0d), show(8, 0x0e), show(8, 0x0d)]);
     expect(anim).toEqual({ loop: false, steps: [{ frame: "13", dur: 8 }, { frame: "14", dur: 8 }] });
+  });
+});
+
+describe("moveAnims", () => {
+  const spawn: ScriptOp = { op: "spawn", type: 0xa, anim: 3, tiles: 0, palette: 2, dx: 40, dy: -56 };
+
+  it("cuts a move where it spawns mid-way, the second part named _2", () => {
+    const anims = moveAnims(0x9b, [show(12, 0x63), spawn, show(44, 0x65)]);
+    expect(Object.keys(anims)).toEqual(["m9b", "m9b_2"]);
+    expect(anims.m9b.steps).toEqual([{ frame: "99", dur: 12 }]);
+    expect(anims.m9b_2.steps).toEqual([{ frame: "101", dur: 44 }]);
+  });
+
+  it("starts a later part on the drawing, flip and offset the first left up", () => {
+    const anims = moveAnims(0x9b, [{ op: "offset", dx: 0, dy: -8 }, show(4, 5), spawn, show(4, null)]);
+    expect(anims.m9b_2.steps).toEqual([{ frame: "5_0,-8", dur: 4 }]);
+  });
+
+  it("keeps a move whole when it spawns before showing anything", () => {
+    const anims = moveAnims(0x00, [spawn, show(12, 0), show(12, 1)]);
+    expect(Object.keys(anims)).toEqual(["m00"]);
+    expect(anims.m00.loop).toBe(true);
   });
 });
 

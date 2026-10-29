@@ -25,6 +25,13 @@ export type ScriptOp =
   | { op: "offset"; dx: number; dy: number }
   /** Flips the whole drawing (field 0x14, XORed with the facing) until the next flip. */
   | { op: "flip"; h: boolean; v: boolean }
+  /**
+   * Starts an object (handler $01:873F): its type and animation in the object
+   * system, where its tiles count from (`tiles`, in tiles — the command's
+   * 0x800 words is 0x80), its palette, and where it appears from the fighter's
+   * position, x mirrored facing left. Fires once per move (field 0x6e).
+   */
+  | { op: "spawn"; type: number; anim: number; tiles: number; palette: number; dx: number; dy: number }
   /** Hold a drawing until something outside the script moves on ? */
   | { op: "hold"; drawing: number }
   /** Commands whose effect is not read yet, kept whole so nothing is lost. */
@@ -32,6 +39,7 @@ export type ScriptOp =
 
 /** Bytes per command, by its first byte; steps (01-7f) are 3. */
 const LENGTH: Record<number, number> = { 0xa0: 3, 0xa1: 3, 0xd0: 5, 0xc0: 2, 0xe0: 2, 0xb0: 16, 0xb1: 9, 0x90: 1 };
+const SPAWN_LENGTH = 16;
 
 const KEEP = 0xeeee;
 
@@ -54,6 +62,19 @@ export function readScript(rom: Uint8Array, at: number): ScriptOp[] {
     } else if (c === 0xd0) {
       ops.push({ op: "offset", dx: signed16(word(p + 1)), dy: signed16(word(p + 3)) });
       p += 5;
+    } else if (c === 0xb0) {
+      const base = word(p + 4);
+      ops.push({
+        op: "spawn",
+        type: rom[p + 2] & 0x0f,
+        anim: rom[p + 3],
+        // bit 15 marks a base the engine shifts for player two
+        tiles: (base & 0x7fff) >> 4,
+        palette: (rom[p + 6] >> 1) & 7,
+        dx: signed16(word(p + 7)),
+        dy: signed16(word(p + 9)),
+      });
+      p += SPAWN_LENGTH;
     } else if (c === 0xe0 && !(rom[p + 1] & 0x3f)) {
       ops.push({ op: "flip", h: (rom[p + 1] & 0x40) !== 0, v: (rom[p + 1] & 0x80) !== 0 });
       p += 2;
