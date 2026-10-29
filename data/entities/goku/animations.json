@@ -16773,26 +16773,6 @@
   },
   "maa_2": {
     "loop": false,
-    "steps": []
-  },
-  "maa_3": {
-    "loop": false,
-    "steps": []
-  },
-  "maa_4": {
-    "loop": false,
-    "steps": []
-  },
-  "maa_5": {
-    "loop": false,
-    "steps": []
-  },
-  "maa_6": {
-    "loop": false,
-    "steps": []
-  },
-  "maa_7": {
-    "loop": false,
     "steps": [
       {
         "frame": "137",
@@ -22320,26 +22300,6 @@
     ]
   },
   "md3_2": {
-    "loop": false,
-    "steps": []
-  },
-  "md3_3": {
-    "loop": false,
-    "steps": []
-  },
-  "md3_4": {
-    "loop": false,
-    "steps": []
-  },
-  "md3_5": {
-    "loop": false,
-    "steps": []
-  },
-  "md3_6": {
-    "loop": false,
-    "steps": []
-  },
-  "md3_7": {
     "loop": false,
     "steps": [
       {

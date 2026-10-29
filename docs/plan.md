@@ -88,16 +88,15 @@ The owner's test of the porting (2026-10-29): the **charged** one, `aa`
 size depends on how long. The one flying up (`ab`) waits. What the
 cartridge does is in `rom.md` (`b0`'s counter, `b1`'s drawn effects):
 
-1. **The charge** — release before frame 20, between 20 and 35, or later
-   picks one of three beams; the states say so with `!held:blast` per part.
-2. **The ball and the band** — the charging ball, a circle of radius
+1. **The ball and the band** — the charging ball, a circle of radius
    growing 2 a frame (`b1` kind 2, offset −10, −38), and the beam's band
    from its base to its head (`b1` kind 1): both drawn with colour maths,
    not sprites — effects drawn at runtime, colours from the cartridge.
-3. **The beam** — the chosen head (`goku_kame_s` / `m` / `l`, exported)
+2. **The beam** — the chosen head (`goku_kame_s` / `m` / `l`, exported)
    at vx 4 with its blow (a knockdown for 40, 60 or 80), the base
    (`goku_kame_base`) at the hands; the pose `89` held while it is up
-   (`spawnEnded`).
+   (`spawnEnded`). The charge states fire as they decide; the original
+   shows two more frames of the charging pose first (`$44` set to 42).
 
 ### Then: the rest of Goku
 

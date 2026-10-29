@@ -50,6 +50,8 @@ export const MOTIONS = {
   qcb: ["down", "back"],
   /** The original's half circle, ← ↙ ↓ ↘ → (Quadruple Kick, the Kamehameha). */
   hcf: ["back", "down", "fwd"],
+  /** ↓ ↙ →, back through the bottom and out forward (the charged Kamehameha). */
+  dbf: ["down", "back", "fwd"],
 } as const satisfies Record<string, readonly (keyof Directions)[]>;
 
 export type MotionName = keyof typeof MOTIONS;

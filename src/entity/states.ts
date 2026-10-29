@@ -383,6 +383,7 @@ export interface InputSnapshot {
   qcf: boolean;
   qcb: boolean;
   hcf: boolean;
+  dbf: boolean;
   /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
@@ -417,6 +418,10 @@ export interface Signals {
    * A button with no range is never close.
    */
   close: Readonly<Partial<Record<CloseButton, boolean>>>;
+  /** Filled in by the state machine: frames this state has run (`frames:N`). */
+  framesIn?: number;
+  /** Filled in by the state machine: buttons let go since this state began (`released:`). */
+  released?: ReadonlySet<string>;
   /**
    * The attack this entity is in has **connected** — landed or been blocked,
    * but never merely swung. A swing that has not may still be cancelled once
@@ -444,6 +449,9 @@ export interface Signals {
 export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
 export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
+/** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
+const COUNTED = /^(frames:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+
 /** Every trigger the runner understands, for validation and editor UI. */
 export const TRIGGERS = [
   "held:fwd",
@@ -465,6 +473,7 @@ export const TRIGGERS = [
   "motion:qcf",
   "motion:qcb",
   "motion:hcf",
+  "motion:dbf",
   "animEnd",
   "stunEnd",
   "spawnEnd",
@@ -480,9 +489,21 @@ const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitio
 
 const warned = new Set<string>();
 
+/** `frames:N` and `released:<button>`, or undefined for any other trigger. */
+function counted(key: string, signals: Signals): boolean | undefined {
+  const [kind, arg] = key.split(":");
+  // how long a charge has run decides what it becomes (the Kamehameha)
+  if (kind === "frames") return (signals.framesIn ?? 0) >= Number(arg);
+  // latched: a charge let go stays let go, however the button moves after
+  if (kind === "released") return signals.released?.has(arg) === true;
+  return undefined;
+}
+
 function evaluate(trigger: string, input: InputSnapshot, signals: Signals): boolean {
   const negated = trigger.startsWith("!");
   const key = negated ? trigger.slice(1) : trigger;
+  const count = COUNTED.test(key) ? counted(key, signals) : undefined;
+  if (count !== undefined) return negated ? !count : count;
   let value: boolean;
   switch (key) {
     case "held:fwd":
@@ -541,6 +562,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "motion:hcf":
       value = input.hcf;
+      break;
+    case "motion:dbf":
+      value = input.dbf;
       break;
     case "animEnd":
       value = signals.animEnded;
@@ -687,6 +711,8 @@ export class StateMachine {
    * here rather than in the entity so the rule can be tested without a renderer.
    */
   private elapsed = 0;
+  /** Buttons let go since this state began — `released:`. */
+  private released = new Set<string>();
 
   /**
    * `anims` is only read for when a swing misses; without them a miss is
@@ -713,6 +739,7 @@ export class StateMachine {
     if (!this.file.states[name]) return false;
     this.current = name;
     this.elapsed = 0;
+    this.released = new Set();
     return true;
   }
 
@@ -724,9 +751,15 @@ export class StateMachine {
    */
   update(input: InputSnapshot, signals: Signals): string | null {
     this.elapsed++;
+    for (const [button, down] of Object.entries(input.holding)) if (!down) this.released.add(button);
     // The signal is narrowed once, here, rather than at every transition: from
     // "connected" to "may be cancelled now", which a miss can be too.
-    const now: Signals = { ...signals, hitConfirmed: this.cancelable(signals.hitConfirmed) };
+    const now: Signals = {
+      ...signals,
+      hitConfirmed: this.cancelable(signals.hitConfirmed),
+      framesIn: this.elapsed,
+      released: this.released,
+    };
     for (const t of this.def.transitions ?? []) {
       if (!fires(t.when, input, now)) continue;
       if (!this.file.states[t.to]) {
@@ -744,6 +777,7 @@ export class StateMachine {
       this.current = t.to;
       this.pressSpent = pressIn(t.when);
       this.elapsed = 0;
+      this.released = new Set();
       return this.current;
     }
     return null;
@@ -1065,7 +1099,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
         const key = trigger?.startsWith("!") ? trigger.slice(1) : trigger;
         if (!key) {
           errors.push(`${at}: no "when" trigger`);
-        } else if (!(TRIGGERS as readonly string[]).includes(key)) {
+        } else if (!(TRIGGERS as readonly string[]).includes(key) && !COUNTED.test(key)) {
           errors.push(`${at}: unknown trigger "${key}" (known: ${TRIGGERS.join(", ")})`);
         }
       }

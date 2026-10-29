@@ -36,6 +36,11 @@ describe("Motions.has", () => {
     expect(play(at("down"), at("fwd")).has("hcf")).toBe(false);
   });
 
+  it("matches down, back, then forward — not a half circle's order", () => {
+    expect(play(at("down"), at("down", "back"), at("fwd")).has("dbf")).toBe(true);
+    expect(play(at("back"), at("down"), at("fwd")).has("dbf")).toBe(false);
+  });
+
   it("does not match the directions in the wrong order", () => {
     expect(play(at("fwd"), at("down")).has("qcf")).toBe(false);
   });

@@ -118,7 +118,8 @@
     "label": "charging a beam — the kamehameha's; played once and cut off by the shot, never looped",
     "gain": 0.25,
     "vary": 0.0,
-    "file": "019.wav"
+    "file": "019.wav",
+    "rom": 37
   },
   "blast_2": {
     "label": "a beam leaving the hands — the kamehameha; shares 008 with burst_1",

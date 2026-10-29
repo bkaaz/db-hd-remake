@@ -178,6 +178,7 @@ code that plays them, since a clip's number says nothing:
 | `0d` | a body hitting the floor (knockdown handler `$0F:A217`) | `land_2` |
 | `17` | a blocked melee blow (`$0D:CF55`) | `block_1` |
 | `19` | charging ki, every 8 frames (`$0F:A044`) | `charge_1` |
+| `25` | charging the Kamehameha (`aa`'s script) | `charge_2` |
 | `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | goku's `voice_hurt` |
 | `31` | the voice at KO (`$0D:D10C`) | — |
 | `32` | an attack's shout (the ki blast, specials) | goku's `voice_shout` |

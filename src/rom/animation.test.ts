@@ -79,6 +79,11 @@ describe("moveAnims", () => {
     expect(anims.m9b_2.steps).toEqual([{ frame: "101", dur: 44 }]);
   });
 
+  it("makes one cut of several spawns with no step between them", () => {
+    const anims = moveAnims(0xaa, [show(44, 0x81), spawn, spawn, spawn, show(96, 0x89)]);
+    expect(Object.keys(anims)).toEqual(["maa", "maa_2"]);
+  });
+
   it("moves a sound just before the cut into the part that begins there", () => {
     const anims = moveAnims(0x9b, [show(12, 0x63), { op: "sound", id: 0xb }, spawn, show(44, 0x65)]);
     expect(anims.m9b.steps[0].sfx).toBeUndefined();

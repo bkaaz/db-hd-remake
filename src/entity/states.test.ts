@@ -65,6 +65,7 @@ const NONE = {
   qcf: false,
   qcb: false,
   hcf: false,
+  dbf: false,
   holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const FWD = { ...NONE, fwd: true };
@@ -1117,6 +1118,50 @@ describe("StateMachine", () => {
     f.states.punch = { anim: "punch", damage: 1, velAt: [[8, 1], [4, 2]], transitions: [{ when: "animEnd", to: "idle" }] };
     f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
     expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"velAt"'))).toBe(true);
+  });
+
+  describe("a charge: frames:N and released:<button>", () => {
+    // The charged Kamehameha: let go early and it fires small, but not before
+    // frame 20; held through, it carries on charging.
+    const HOLD = { ...NONE, holding: { ...NONE.holding, blast: true } };
+    function charge() {
+      const f = machine();
+      f.states.charge = {
+        anim: "idle",
+        transitions: [
+          { when: ["frames:20", "released:blast"], to: "small" },
+          { when: "frames:20", to: "more" },
+        ],
+      };
+      f.states.small = { anim: "idle", transitions: [{ when: "animEnd", to: "idle" }] };
+      f.states.more = { anim: "idle", transitions: [{ when: "animEnd", to: "idle" }] };
+      const sm = new StateMachine(f);
+      sm.force("charge");
+      return sm;
+    }
+    const run = (sm: StateMachine, inputs: (typeof NONE)[]) => inputs.map((i) => sm.update(i, QUIET)).filter(Boolean);
+
+    it("waits for the frame, then goes where the release says", () => {
+      const sm = charge();
+      expect(run(sm, [...Array(5).fill(HOLD), ...Array(14).fill(NONE)])).toEqual([]);
+      expect(sm.update(NONE, QUIET)).toBe("small");
+    });
+
+    it("keeps a release once made, even pressed again", () => {
+      const sm = charge();
+      expect(run(sm, [HOLD, NONE, ...Array(18).fill(HOLD)])).toEqual(["small"]);
+    });
+
+    it("carries on when held through", () => {
+      expect(run(charge(), Array(20).fill(HOLD))).toEqual(["more"]);
+    });
+
+    it("forgets a release when the state changes", () => {
+      const sm = charge();
+      run(sm, [NONE]);
+      sm.force("charge");
+      expect(run(sm, Array(20).fill(HOLD))).toEqual(["more"]);
+    });
   });
 
   it("carries a launch impulse on the state that starts the jump", () => {

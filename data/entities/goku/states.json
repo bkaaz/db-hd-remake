@@ -53,6 +53,13 @@
           "to": "attack_x"
         },
         {
+          "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "pressed:blast",
           "to": "ki"
         },
@@ -134,6 +141,13 @@
           "to": "attack_x"
         },
         {
+          "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "pressed:blast",
           "to": "ki"
         },
@@ -209,6 +223,13 @@
         {
           "when": "pressed:strike",
           "to": "attack_x"
+        },
+        {
+          "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
         },
         {
           "when": "pressed:blast",
@@ -610,6 +631,137 @@
         ]
       },
       "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "kame_charge": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": [
+            "frames:20",
+            "released:blast"
+          ],
+          "to": "kame_fire_s"
+        },
+        {
+          "when": "frames:20",
+          "to": "kame_charge_2"
+        }
+      ]
+    },
+    "kame_charge_2": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": [
+            "frames:12",
+            "released:blast"
+          ],
+          "to": "kame_fire_m"
+        },
+        {
+          "when": "frames:16",
+          "to": "kame_charge_3"
+        }
+      ]
+    },
+    "kame_charge_3": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "kame_fire_l"
+        }
+      ]
+    },
+    "kame_fire_s": {
+      "anim": "maa_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "goku_kame_s",
+        "at": [
+          36,
+          -51
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "kame_fire_m": {
+      "anim": "maa_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "goku_kame_m",
+        "at": [
+          36,
+          -51
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "kame_fire_l": {
+      "anim": "maa_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "goku_kame_l",
+        "at": [
+          36,
+          -51
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "idle"
+        },
         {
           "when": "animEnd",
           "to": "idle"

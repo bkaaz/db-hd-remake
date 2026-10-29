@@ -1,0 +1,16 @@
+{
+  "_comment": "The charged Kamehameha's beam head, its smallest charge (object a/13, docs/rom.md). Frames and animation by npm run rom -- export; this file by hand: 4 px a frame is b0's vx, the type and damage the objects' hit table's ($3D:9624). The band behind it and its base are not here yet (plan.md).",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "vel": [4, 0],
+      "turn": false,
+      "type": "down",
+      "damage": 40,
+      "hitFx": "ki_burst_big",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1"
+    }
+  }
+}

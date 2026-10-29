@@ -102,11 +102,13 @@ export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: numb
 export function moveAnims(move: number, ops: ScriptOp[], boxesOf?: (drawing: number) => Box[]): Record<string, Anim> {
   const cutAt = boxesOf ? blowStarts(ops, boxesOf).slice(1) : [];
   const parts: ScriptOp[][] = [[]];
+  // a step shown since the last cut: several spawns at once are one cut
   let shown = false;
   let step = 0;
   for (const op of ops) {
     const isStep = op.op === "show" || op.op === "hold";
     if ((op.op === "spawn" && shown) || (isStep && cutAt.includes(step))) {
+      shown = false;
       // sounds just before the cut play as the next part begins, so they go with it
       const last = parts[parts.length - 1];
       let i = last.length;
