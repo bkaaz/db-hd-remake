@@ -61,27 +61,25 @@ The goal (owner, 2026-10-29): Claude ports a whole move from the cartridge
 how the fight plays comes after. Quadruple Kick showed where porting still
 takes an investigation instead of a procedure. In this order:
 
-1. **A move's port report** — `npm run rom -- port a5`: input, animation
-   parts, each blow's type, damage and stun, its sounds and their frames,
-   the handler's speed schedule, its spawns. States are written from it.
-2. **Sounds on animation steps** — the original plays `a0` at a step of the
+1. **Sounds on animation steps** — the original plays `a0` at a step of the
    script (far Y's swing at frame 10); a state's `sound` plays on entry.
    The export writes each step's sound from the script, so no state picks
-   a swing by hand. A melee hit also plays the defender's voice (`30`).
-3. **Motions from the command table** — every sequence `rom.md` lists, as
+   a swing by hand. Needed: a move's swings fall across its parts (Quadruple
+   Kick's at move frames 8, 18, 36, 54, its parts start 0, 26, 48, 66). A melee hit also plays the defender's voice (`30`).
+2. **Motions from the command table** — every sequence `rom.md` lists, as
    data, with the original's window: each direction within 12 frames of the
    next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
    for the whole motion, which a half circle barely fits.
-4. **The original's reactions** — light, heavy and down are built; in the
+3. **The original's reactions** — light, heavy and down are built; in the
    air (`1a`), crouching (`17`/`18`), the full knockdown (`1b` lies,
    bounces and lies before the get-up `1f`), dizzy (`1d`), and the choice
    between them as `$0D:D29C` makes it.
-5. **Which clip is which id** — matching by number failed (`rom.md`); the
+4. **Which clip is which id** — matching by number failed (`rom.md`); the
    owner records nothing in the emulator, so the sounds come out of the
    cartridge: the sound driver's tables and its BRR samples.
-6. **A move's conditions** — ki, low health (Meteor Smash), the throw's
+5. **A move's conditions** — ki, low health (Meteor Smash), the throw's
    range: bytes 0–3 of the command table.
-7. **Objects without a recording** — an object's timing is in its own code,
+6. **Objects without a recording** — an object's timing is in its own code,
    read as a move's handler is, rather than by `log-objects.lua`.
 
 ### Then: the rest of Goku

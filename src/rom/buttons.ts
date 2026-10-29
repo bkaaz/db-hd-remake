@@ -17,6 +17,13 @@ import { toFile } from "./cartridge";
  * lines are data, which is all this module reads.
  */
 
+/** The table above, by move: what a player presses for each normal. */
+export const NORMALS: Record<number, string> = {
+  0x90: "Y, close", 0x92: "Y, far", 0x94: "↓ + Y", 0x96: "Y, jumping straight up", 0x98: "Y, jumping forward or back",
+  0x91: "B, close", 0x93: "B, far", 0x95: "↓ + B", 0x97: "B, jumping straight up", 0x99: "B, jumping forward or back",
+  0x9a: "X", 0x9b: "A",
+};
+
 /** `$3D:9EDB`: two bytes per fighter — the close line for Y, then for B. */
 const CLOSE_LINES = 0x3d9edb;
 

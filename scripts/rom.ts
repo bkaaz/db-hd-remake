@@ -6,6 +6,7 @@
  *   npm run rom -- frames            draw every drawing, report what fails
  *   npm run rom -- move 92           the animation script a move plays
  *   npm run rom -- moves             every move id whose script reads
+ *   npm run rom -- port a5           all the cartridge says about one move, per part
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
  *                                    data/entities/goku/frames.json (frame n = drawing n),
  *                                    every move into its animations.json as m00…mff
@@ -20,6 +21,8 @@ import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
 import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/rom/export.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
+import { portReport } from "../src/rom/port.ts";
+import { long } from "../src/rom/disasm.ts";
 
 if (!existsSync(ROM_PATH)) {
   console.error(`no cartridge at ${ROM_PATH} — it is the owner's own dump (BYOA)`);
@@ -91,6 +94,21 @@ if (command === "tiles") {
       console.log(`${hex(move)}  -- ${(e as Error).message}`);
     }
   }
+} else if (command === "port" && args.length >= 1) {
+  const r = portReport(rom, GOKU, parseInt(args[0], 16));
+  console.log(`move ${hex(r.move)} — handler ${long(r.handler)}`);
+  console.log(`input: ${r.inputs.join(" | ") || "none from a button or a command"}`);
+  console.log("frames count from each part's start; sounds are the cartridge's ids, not clips");
+  for (const p of r.parts) {
+    const blow = p.blow ? `blow at ${p.blow.frame}: ${p.blow.type}, damage ${p.blow.damage}, stun ${p.blow.stun}` : "no blow";
+    const speed = [`vel ${p.vel}`, ...p.velAt.map(([f, v]) => `${f}: ${v}`)].join(", ");
+    console.log(`\n${p.anim}  (move frames ${p.from}–${p.from + p.frames - 1})`);
+    console.log(`  ${blow}`);
+    console.log(`  speed: ${speed}`);
+    if (p.sounds.length) console.log(`  sounds: ${p.sounds.map((s) => `${s.frame}: ${hex(s.id)}`).join(", ")}`);
+    if (p.spawns.length) console.log(`  spawns: ${p.spawns.map((s) => `${s.frame}: object ${hex(s.type)}/${hex(s.anim)}`).join(", ")}`);
+    if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
+  }
 } else if (command === "export") {
   const fighter = exportFighter(rom, GOKU);
   for (const note of fighter.notes) console.log(`  ${note}`);
@@ -101,7 +119,7 @@ if (command === "tiles") {
     console.log(`${name}: ${Object.keys(spawn.frames).length} frames`);
   }
 } else {
-  console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | export   (ids in hex)");
+  console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | port <id> | export   (ids in hex)");
   process.exit(1);
 }
 

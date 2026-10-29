@@ -181,7 +181,8 @@ There will be many entities and hundreds of animations, so the split is fixed:
 
 Procedure, flags and pitfalls: the **`add-animation` skill**
 (`.claude/skills/add-animation/`), loaded on demand so it costs nothing in
-sessions that are about something else.
+sessions that are about something else. A move of the cartridge's `goku` is
+ported with the **`port-move` skill** instead.
 
 **Effects are generated, not ripped** (`npm run fx`): no hit spark exists to rip,
 and the rules that keep generated pixel art from looking bolted onto 1996
@@ -252,6 +253,9 @@ npm run rom -- frame 4a
                   # move 92: the animation script a move plays;
                   # export: rewrites goku's sheet, frames.json and
                   # animations.json whole — ADR 0017)
+npm run rom -- port a5
+                  # all the cartridge says about one move, per part of its
+                  # animation — what its states are written from
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md

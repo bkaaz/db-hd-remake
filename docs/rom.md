@@ -14,8 +14,10 @@ most of the game logic.
 
 ## Where to start a search
 
-Each of these has led somewhere; `npm run dis -- find <bytes>` lists every
-place a pattern occurs.
+For one move, start with `npm run rom -- port <id>`: what the tables and its
+handler say, already put together (`src/rom/port.ts`). Each of these has
+led somewhere; `npm run dis -- find <bytes>` lists every place a pattern
+occurs.
 
 - **Who sets a move:** `$01:8518`, with the move id in A —
   `find 22 18 85 01`; an `a9 nn` just before it is a move by number.
