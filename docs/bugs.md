@@ -20,6 +20,14 @@ because a number would only need translating back.
 
 ---
 
+## A move that spawns several objects at once is cut into empty parts
+
+*Annoying.* `moveAnims` (`src/rom/animation.ts`) starts a new part at every
+spawn after a shown step, so Super Kamehameha (`aa`), which starts six objects
+on one frame, exports `maa_2` … `maa_6` with no frames at all and only `maa_7`
+playing. To see it: `npm run rom -- port aa`. Spawns with no step between them
+belong to one part.
+
 ## Goku's black-haired drawings are missing part of the hair
 
 `assets/sheets/goku.png`, drawings `26`–`2a` and `2f`–`34` · noticed 2026-10-28 · cosmetic

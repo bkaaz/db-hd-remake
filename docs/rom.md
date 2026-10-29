@@ -106,6 +106,38 @@ Matched tile by tile against a VRAM snapshot (`tools/re/dump-vram.lua`,
 | ki blast | `0x31` | `$7500` | raw, 48 |
 | transformation hair | `0x51` | `$6C00` | its tiles 0–7 are the overlay's `0x40`–`0x47` |
 
+**An object's behaviour is its type's code**: `$0F:B44B` runs the ten slots
+and jumps through a word table by type at `$0F:B467` (type `0` `$0F:B789`,
+`a` the ki blast `$0F:E0D7`); a type may jump again by animation (type `0`:
+`$0F:B79F`). A slot's fields: `+0` type (bit 7: alive), `+1` animation, `+2`
+frame shown, `+3` tile base, `+4` attributes, `+05`–`+07` x and `+08`–`+0A`
+y (8.16), `+0B` a timer, `+0C` / `+0E` vx / vy (8.8) — moved by `$0F:E4EB`.
+`b0`'s last five bytes are the timer's start and vx / vy, x mirrored facing
+left (`$01:87CA`): the ki blast 3.0 / 0, the Kamehameha's beam 3.0 / −3.0.
+The usual animator is `INC $0B,X / CMP #n` then `INC $02,X / CMP #m`: n
+frames a step, m steps, then gone (`JSL $0F:B4ED`). The beam (type `0`
+animation `2`, `$0F:B7BE`) never changes its frame: it lives 80 frames,
+stopped during hitstop, and every 4 frames loads resource `0x130` + (frame
+counter `$74` / 4 mod 4) over its tiles (`JSL $01:84EF`) — it shimmers by
+swapping graphics.
+
+**`b0`'s second byte is a counter** (field `0x6e`): a spawn fires only when
+they match, then counts it up. A handler picks among a script's spawns by
+setting it — the charged Kamehameha (`aa`, handler `$20:8447`) leaves it 0
+for a full charge (A held past frame 35), sets `10` for a release in 20–35
+and `18` before 20, so the frame-44 spawns that fire are type `a`
+animation `21`, `20` or `19` (80 / 60 / 40 damage, vx 4) with animation
+`22` beside it. The pose after (`89`) is cut short once the beam is gone
+(`JSL $0D:EBE0` with `Y` = animation and type).
+
+**`b1` starts an effect that is drawn, not a sprite** (`$01:8834`, counter
+field `0x6f`): kind, position and size into a block per side at `$30BA` /
+`$30CA`, drawn by `$2A:A36D` by kind. Kind 2 is the charging ball
+(`$2A:A58F`): a circle whose half-width per line comes from the table at
+`$2A:A70C` times the radius `+0A`, drawn as a window with colour maths. The
+Kamehameha's handler grows it by 2 a frame (`INC $30C4` twice); once
+released it shrinks by 2 a frame and is gone.
+
 The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 Object slots: ten of 16 bytes at I-RAM `$3300`; each type's behaviour is its

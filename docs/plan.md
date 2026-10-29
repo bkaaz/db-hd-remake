@@ -61,24 +61,41 @@ The goal (owner, 2026-10-29): Claude ports a whole move from the cartridge
 how the fight plays comes after. Quadruple Kick showed where porting still
 takes an investigation instead of a procedure. In this order:
 
-1. **Motions from the command table** — every sequence `rom.md` lists, as
+1. **Objects without a recording** — an object's timing is in its own code,
+   read as a move's handler is, rather than by `log-objects.lua`.
+2. **Motions from the command table** — every sequence `rom.md` lists, as
    data, with the original's window: each direction within 12 frames of the
    next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
    for the whole motion, which a half circle barely fits.
-2. **The original's reactions** — light, heavy and down are built; in the
+3. **The original's reactions** — light, heavy and down are built; in the
    air (`1a`), crouching (`17`/`18`), the full knockdown (`1b` lies,
    bounces and lies before the get-up `1f`), dizzy (`1d`), and the choice
    between them as `$0D:D29C` makes it.
-3. **Which clip is which id** — matched by the code that plays each id
+4. **Which clip is which id** — matched by the code that plays each id
    (`rom.md`, the sounds table); still unmatched: `31` (the voice at KO), a
    jump's take-off (no `$0D:D82E` with a constant plays one), the specials'
    own (`25`, `29`, `2d`, `38`…). Matching by clip number failed; the owner
    records nothing in the emulator, so what is left comes from the
    cartridge — the sound driver's tables and its BRR samples.
-4. **A move's conditions** — ki, low health (Meteor Smash), the throw's
+5. **A move's conditions** — ki, low health (Meteor Smash), the throw's
    range: bytes 0–3 of the command table.
-5. **Objects without a recording** — an object's timing is in its own code,
-   read as a move's handler is, rather than by `log-objects.lua`.
+### Next: the Kamehameha, as the original's
+
+The owner's test of the porting (2026-10-29): the **charged** one, `aa`
+(↓ ↙ → + A) — the ball grows in the hands while A is held, and the beam's
+size depends on how long. The one flying up (`ab`) waits. What the
+cartridge does is in `rom.md` (`b0`'s counter, `b1`'s drawn effects):
+
+1. **Objects from code** — the beams are type `a` animations `19`–`22`;
+   their frames and timing are in type `a`'s code (`$0F:E0D7`), read as a
+   handler is rather than recorded.
+2. **The charge** — release before frame 20, between 20 and 35, or later
+   picks one of three beams; the states say so with `!held:blast` per part.
+3. **The ball** — a circle of radius growing 2 a frame, drawn with colour
+   maths, not a sprite: an effect drawn at runtime, its colour and its
+   offset (`b1`: −10, −38) from the cartridge.
+4. **The beam** — the chosen object, vx 4, its blow (a knockdown for 40,
+   60 or 80); the pose `89` held while it is up (`spawnEnded`).
 
 ### Then: the rest of Goku
 
