@@ -374,6 +374,17 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 
+  it("reports a state that strikes without saying what it costs", () => {
+    // No attribute stands in any more (ADR 0019): a forgotten damage is loud.
+    const f = machine();
+    const swing = { loop: false, steps: [{ boxes: [{ type: "hit" }] }] };
+    f.states.swing = { anim: "swing", transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "swing" });
+    expect(validateStates(f, { ...ANIMS, swing }).errors).toContain(
+      'state "swing": its animation has a hit box, so it needs "damage" — 0 for a blow that only moves',
+    );
+  });
+
   it("reports an onGuard state that does not exist", () => {
     const f = machine();
     f.onGuard = "gaurd";

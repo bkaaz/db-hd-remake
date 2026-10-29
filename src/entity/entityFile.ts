@@ -85,12 +85,6 @@ export interface Attributes {
    */
   health: number;
   /**
-   * Damage an attack does when its own state does not say. A blow that forgot
-   * to state its worth should still cost something, or a missing field would
-   * silently make a move free.
-   */
-  damage: number;
-  /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —
    * so switching the length from the pose to the number changed nothing, which
@@ -110,7 +104,6 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   pushWidth: 30,
   hitstop: 6,
   health: 100,
-  damage: 6,
   hitstun: 12,
   ki: 100,
 };

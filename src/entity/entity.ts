@@ -191,7 +191,6 @@ export class Entity {
   private readonly hitstop: number;
   private readonly maxHealth: number;
   private readonly maxKi: number;
-  private readonly baseDamage: number;
   private readonly baseHitstun: number;
   /** What is left of this fighter, in health points. */
   private hp = 0;
@@ -237,7 +236,6 @@ export class Entity {
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
     this.maxKi = def.attributes.ki;
-    this.baseDamage = def.attributes.damage;
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
@@ -418,7 +416,7 @@ export class Entity {
 
   /** Health this entity's current attack takes off. */
   get attackDamage(): number {
-    return this.sm?.def.damage ?? this.baseDamage;
+    return this.sm?.def.damage ?? 0;
   }
 
   /** How full the ki meter is, 0..1 — what the ki bar draws. */

@@ -285,8 +285,8 @@ export interface StateDef {
   hitFx?: string;
   /**
    * Health this state's attack takes off — the blow's own, never its hit
-   * type's (ADR 0019); required beside a `type`. Without either, the entity's
-   * `damage` attribute stands in.
+   * type's or the entity's (ADR 0019). Required on every state whose
+   * animation has a hit box.
    */
   damage?: number;
   /**
@@ -940,6 +940,11 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
 
     if (def.damage !== undefined && (typeof def.damage !== "number" || def.damage < 0)) {
       errors.push(`${where}: "damage" must be a number, 0 or more`);
+    }
+    // A typed blow is already refused by hitTypeErrors, with a better message.
+    const strikes = anim?.steps?.some((s) => s.boxes?.some((b) => b.type === "hit"));
+    if (strikes && def.damage === undefined && def.type === undefined) {
+      errors.push(`${where}: its animation has a hit box, so it needs "damage" — 0 for a blow that only moves`);
     }
 
     if (

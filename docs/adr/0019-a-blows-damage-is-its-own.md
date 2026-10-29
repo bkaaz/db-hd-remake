@@ -1,7 +1,9 @@
 # 0019 — A blow's damage is its own, not its type's
 
 **Status:** accepted 2026-10-29 · supersedes the part of 0015 that put
-`damage` in the hit type; the rest of 0015 stands
+`damage` in the hit type; the rest of 0015 stands · the entity's `damage`
+attribute, the fallback for an untyped blow, removed the same day: a state
+whose animation has a hit box must give its own
 
 `damage` is no longer a field of a hit type. Every state that names a `type`
 sets its own `damage`, and the validator refuses one that does not — there is
