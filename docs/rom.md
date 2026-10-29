@@ -110,12 +110,19 @@ step by step. The 5 bytes after it:
 | 3 | damage, + attacker field `0x6a` − defender field `0x6b`, never below 0; taken off health (field `0x60`) |
 | 4 | stun: taken off field `0x68`, which refills by 1 about every 16 frames up to 20; at 0 the defender is dizzy (move `1d`, 200 frames) and it refills to 20 |
 
-**Damage, recorded**: player one's blows took exactly byte 3 − 12 off the
-CPU, six moves of six. `0x6a` (attack) was 0 on both sides; `0x6b`
-(defence) is 10 until the round starts, then 8 for the player and 12 for
-the CPU at difficulty 2 `?`. The CPU's blows land 1 off that sum on some
-moves (`90`, `92`, `93`), and its `9e` takes 22 from a record of zeros —
-not read yet.
+**Attack and defence** are set at the round's start (`$01:8112`): `0x6a`
+from the ATTACK option (`$1ACB` / `$1AD1`), `0x6b` from `$1ACD` / `$1AD3`
+plus the fighter's own defence — byte 0 of his attributes (below), 8 for
+Goku. Recorded in Goku against a CPU Vegetto, options at +0: every blow
+either side landed took exactly byte 3 of the attacker's own table minus
+the defender's defence — Goku's 8, Vegetto's 12 — but one: Goku's `ca`
+took 6, not 12; its record sets byte 2 bit 2 (`$D4D4`) `?`.
+
+**A fighter's attributes**: 32 bytes at `$3D:9D9B + 32 × character`
+(`$0D:C4C1` reads one). Byte 0 is defence; then 8.8 words, of which the
+recorded ones match: walk 1.5 forward and 1.25 back (words 0–1), jump
+−9.86 (word 12), gravity 0.469 (word 14). The rest are speeds not
+identified yet.
 
 **Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
 bits of bytes 0–1 as one word: `0x0004` `$D622`, `0x0008` light,
@@ -146,8 +153,9 @@ another field, `0x62` or `0x64` `?`.
 ## Another fighter
 
 Every per-fighter table is reached through a pointer table of **ten 3-byte
-entries, one per fighter** — the roster. Goku is entry 0 in all of them; which
-fighter the other entries are is not mapped yet. Found 2026-10-29 by
+entries, one per fighter** — the roster. Goku is entry 0 in all of them,
+Vegetto entry 4 (his recorded blows match only that hit table); the others
+are not mapped yet. Found 2026-10-29 by
 searching for pointers to Goku's tables:
 
 | what | pointer table | Goku's entry | `FighterTables` field |
