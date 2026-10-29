@@ -31,7 +31,6 @@ tables, and how a drawing is put together, are in `src/rom/cartridge.ts` and
 |---|---|
 | `0xb0000` … | Goku's palettes, 32 bytes each, by stage lighting and side (PalMod) |
 | `0x1d8000 + 32 × drawing` | the drawing's boxes — which slot is what: `src/rom/collision.ts` |
-| `0x1e1000 + 32 × drawing` | read beside it, same shape — a second set of boxes `?` |
 | `0x27b161` | a second Goku palette, "Hair lighting and KI Blast effects" (PalMod) — the ki blast's and the hair overlay's |
 | `0x62a15` … | Goku's animation scripts in bank `$0C`: 256 pointers by move id, then the scripts (below) |
 
@@ -85,6 +84,32 @@ own code in bank `$0F`.
 
 Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
 `c0` set off — the attack ids are where hit data must be.
+
+## Another fighter
+
+Every per-fighter table is reached through a pointer table of **ten 3-byte
+entries, one per fighter** — the roster. Goku is entry 0 in all of them; which
+fighter the other entries are is not mapped yet. Found 2026-10-29 by
+searching for pointers to Goku's tables:
+
+| what | pointer table | Goku's entry | `FighterTables` field |
+|---|---|---|---|
+| layouts, by drawing | `0x487d2` | `$09:880E` | `layouts` |
+| drawing → its tile resource | `0x487f0` | `$09:8A54` | `tileSets` |
+| boxes, by drawing | `0x151aa5` | `$3B:8000` | `boxes` |
+| animation scripts, by move | `0x88de` (`$01:88DE`) | `$0C:AA15` | `scripts` (the index) |
+| resource loaded at VRAM `$6800` | `$01:848B`, 2-byte ids | `0x47` | — |
+
+The **tile-resource table holds a 2-byte resource id per drawing** (`0x012f`
+is resource `0x12f`), not a tile set and a "used" flag as
+`tileSetOf` in `src/rom/cartridge.ts` reads it — right for Goku only because
+all his resources are `0x1xx`. A resource's record names its palette too
+(Goku's: `$16:8000`, the `0xb0000` PalMod lists). The fighter-block field
+`0x41` holds the script-table index, `0x00` the character.
+
+A new fighter: fill a `FighterTables` from these tables, export, then record
+his objects' timing (`log-objects.lua`) and VRAM (`dump-vram.lua`) for
+`objects` — the only part the cartridge's data does not hold.
 
 ## How it was found
 

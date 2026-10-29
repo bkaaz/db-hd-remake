@@ -70,6 +70,11 @@ buttons are A S D X + C (`combat.md`, The buttons).
    Goku spawns are not exported; each needs its timing recorded
    (`tools/re/log-objects.lua`).
 
+5. **Before a second fighter** — `tileSetOf` reads the drawing → resource
+   table as a tile set plus a "used" byte; it is a 2-byte resource id
+   (`rom.md`, Another fighter). Read the tables through the ten-entry pointer
+   tables instead of Goku's addresses, and map which entry is which fighter.
+
 *Open:* idle holds each pose 12 frames in its script but 13–14 in a
 recording; which moves repeat or hold is listed by hand in
 `src/rom/animation.ts` rather than read from the move handlers.
