@@ -1,3 +1,5 @@
+import { scaledDamage, scaledHitstun } from "./scaling";
+
 /**
  * The combo being done **to** one fighter: how many blows have landed since
  * they last had control of themselves, and what those blows cost.
@@ -32,6 +34,13 @@
 export const RELAUNCH_LIMIT = 2;
 
 export class Combo {
+  /**
+   * `limited` false switches off all three of our combo rules — damage and
+   * hitstun scaling and the relaunch budget — for a fighter ported from the
+   * cartridge, which has none of them, until the fight is reworked (plan.md).
+   */
+  constructor(private readonly limited = true) {}
+
   private count = 0;
   private total = 0;
   private relaunches = 0;
@@ -68,7 +77,17 @@ export class Combo {
    * exactly "this fighter is their own", which is the same fact the reset uses.
    */
   get canRelaunch(): boolean {
-    return this.rank === 0 || this.relaunches < RELAUNCH_LIMIT;
+    return !this.limited || this.rank === 0 || this.relaunches < RELAUNCH_LIMIT;
+  }
+
+  /** What the next blow's damage is worth after the combo so far has scaled it. */
+  worth(damage: number): number {
+    return this.limited ? scaledDamage(damage, this.count) : damage;
+  }
+
+  /** How long the next blow holds its victim after the combo so far has shortened it. */
+  hold(hitstun: number): number {
+    return this.limited ? scaledHitstun(hitstun, this.count) : hitstun;
   }
 
   /** A blow landed on this fighter. Blocked blows are not combo hits. */

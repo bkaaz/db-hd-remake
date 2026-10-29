@@ -6,7 +6,7 @@ import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { slowed } from "../combat/knockback";
-import { afterDefence, scaledDamage, scaledHitstun } from "../combat/scaling";
+import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions } from "../input/motion";
@@ -168,7 +168,7 @@ export class Entity {
   /** Scaffolding: the same inputs again, kept only so a person can read them. */
   private readonly history = new InputHistory();
   /** The combo being done **to** this fighter — see src/combat/combo.ts. */
-  readonly combo = new Combo();
+  readonly combo: Combo;
 
   readonly view = new Container();
   private readonly sprite = new Sprite();
@@ -246,6 +246,7 @@ export class Entity {
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
     this.defence = def.attributes.defence;
+    this.combo = new Combo(def.attributes.comboLimits);
     this.maxKi = def.attributes.ki;
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
@@ -516,7 +517,7 @@ export class Entity {
    * Health floors at zero; nothing happens there yet.
    */
   hurtBy(amount: number): number {
-    const dealt = scaledDamage(afterDefence(amount, this.defence), this.combo.hits);
+    const dealt = this.combo.worth(afterDefence(amount, this.defence));
     this.hp = Math.max(0, this.hp - dealt);
     // Counted here rather than beside the reaction, because a blow that is
     // refused a reaction — a jab at someone already on the floor — still landed
@@ -535,13 +536,13 @@ export class Entity {
     if (state === undefined) return false;
     // Read before entering anything: arriving in a state can reset the combo,
     // and the hold this blow earns is decided by the beating up to it.
-    const hits = this.combo.hits;
+    const stun = this.combo.hold(blow.hitstun);
     // Counted only now, because a reaction rank refused changed nothing.
     if (blow.relaunch) this.combo.relaunch();
     if (!this.forceState(state)) return false;
     // After entering, because arriving in a state clears the clock — and this
     // blow's hold is the one thing about the reaction the blow gets to decide.
-    this.stun = scaledHitstun(blow.hitstun, hits);
+    this.stun = stun;
     return true;
   }
 

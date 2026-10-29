@@ -7,5 +7,6 @@
   "closeRange": {
     "attack": 44,
     "smash": 48
-  }
+  },
+  "comboLimits": false
 }

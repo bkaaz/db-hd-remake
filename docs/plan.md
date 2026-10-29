@@ -54,32 +54,49 @@ dash, four blows, guard, reactions, and the ki blast as a spawn (ADR 0018).
 Its states are by hand in `data/entities/goku/states.json`; the original's
 buttons are A S D X + C (`combat.md`, The buttons).
 
-1. **The rest of the buttons** — the dispatcher (`src/rom/buttons.ts`)
-   names every move a button picks: crouching Y / B (`m94`, `m95`) and the
-   jump attacks (`m96`–`m99`) are not states of `goku` yet. Their hit data
-   is in the table already.
-2. **The rest of the specials** — `rom.md` (The buttons) lists every
-   move Goku's command table holds and its input; Quadruple Kick is built.
-   The rest are states to write the same way. Open: the original's
-   matcher wants each direction within 12 frames of the next and the
-   diagonals exact, ours (`input/motion.ts`) any order-preserving pass
-   inside 14 frames for the whole motion — tight for a half circle.
-3. **Sounds when the original plays them** — a state's `sound` plays on
-   entering it; the original's `a0` at a step of the script (far Y's swing
-   at frame 10, Quadruple Kick's at 8, 18, 36, 54), and a melee hit also
-   plays the defender's voice (`30`, clip `045`), which `goku` has none of.
-4. **The original's knockdown** — `reel_down` flies with the original's
-   speeds and lands into our `downed`; the original's `1b` lies, bounces
-   and lies again (~100 frames) before the get-up `1f`.
-5. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
-   off today by the held-step rule in `src/rom/animation.ts`.
-6. **The rest of the objects** — `goku_hair` is exported but nothing plays
-   it: there is no pre-fight screen, and `fires` only takes a projectile.
-   Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`). Other objects
-   Goku spawns are not exported; each needs its timing recorded
-   (`tools/re/log-objects.lua`).
+### First: porting a move without help
 
-7. **Before a second fighter** — `tileSetOf` reads the drawing → resource
+The goal (owner, 2026-10-29): Claude ports a whole move from the cartridge
+— poses, blows, sounds, movement, input — on its own, faithfully; changing
+how the fight plays comes after. Quadruple Kick showed where porting still
+takes an investigation instead of a procedure. In this order:
+
+1. **A move's port report** — `npm run rom -- port a5`: input, animation
+   parts, each blow's type, damage and stun, its sounds and their frames,
+   the handler's speed schedule, its spawns. States are written from it.
+2. **Sounds on animation steps** — the original plays `a0` at a step of the
+   script (far Y's swing at frame 10); a state's `sound` plays on entry.
+   The export writes each step's sound from the script, so no state picks
+   a swing by hand. A melee hit also plays the defender's voice (`30`).
+3. **Motions from the command table** — every sequence `rom.md` lists, as
+   data, with the original's window: each direction within 12 frames of the
+   next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
+   for the whole motion, which a half circle barely fits.
+4. **The original's reactions** — light, heavy and down are built; in the
+   air (`1a`), crouching (`17`/`18`), the full knockdown (`1b` lies,
+   bounces and lies before the get-up `1f`), dizzy (`1d`), and the choice
+   between them as `$0D:D29C` makes it.
+5. **Which clip is which id** — matching by number failed (`rom.md`); the
+   owner records nothing in the emulator, so the sounds come out of the
+   cartridge: the sound driver's tables and its BRR samples.
+6. **A move's conditions** — ki, low health (Meteor Smash), the throw's
+   range: bytes 0–3 of the command table.
+7. **Objects without a recording** — an object's timing is in its own code,
+   read as a move's handler is, rather than by `log-objects.lua`.
+
+### Then: the rest of Goku
+
+1. **The rest of the buttons** — crouching Y / B (`m94`, `m95`) and the
+   jump attacks (`m96`–`m99`) are not states of `goku` yet
+   (`src/rom/buttons.ts`); their hit data is in the table already.
+2. **The rest of the specials** — every move of Goku's command table
+   (`rom.md`, The buttons); Quadruple Kick is built.
+3. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
+   off today by the held-step rule in `src/rom/animation.ts`.
+4. **The rest of the objects** — `goku_hair` is exported but nothing plays
+   it: there is no pre-fight screen, and `fires` only takes a projectile.
+   Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`).
+5. **Before a second fighter** — `tileSetOf` reads the drawing → resource
    table as a tile set plus a "used" byte; it is a 2-byte resource id
    (`rom.md`, Another fighter). Read the tables through the ten-entry pointer
    tables instead of Goku's addresses, and map which entry is which fighter.

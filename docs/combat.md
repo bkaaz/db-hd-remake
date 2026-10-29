@@ -131,6 +131,11 @@ combo from being a round; hitstun scaling ends a ground loop by itself, because
 the defender eventually recovers before the next blow. **Launch** scaling — each
 lift raising less — is not built yet.
 
+**Off for `goku` while he is ported** (owner, 2026-10-29): the attribute
+`comboLimits: false` switches off this and the relaunch budget (§4), so the
+cartridge's numbers can be compared with the original's. On again when the
+fight is reworked.
+
 ### 4. Relaunch
 
 A blow whose type may lift or floor a body that is already helpless spends from

@@ -102,3 +102,32 @@ describe("Combo", () => {
     expect(c.damage).toBe(6);
   });
 });
+
+describe("Combo without our limits", () => {
+  // A fighter ported from the cartridge, compared to the original, which
+  // scales nothing and lets every blow land as it was made.
+  function beaten(limited: boolean): Combo {
+    const c = new Combo(limited);
+    c.enter(2);
+    for (let i = 0; i < 3; i++) {
+      c.relaunch();
+      c.hit(10);
+    }
+    return c;
+  }
+
+  it("leaves the third blow's damage and hitstun whole", () => {
+    expect(beaten(false).worth(19)).toBe(19);
+    expect(beaten(false).hold(26)).toBe(26);
+  });
+
+  it("never refuses a relaunch", () => {
+    expect(beaten(false).canRelaunch).toBe(true);
+  });
+
+  it("scales the same blow when the limits are on", () => {
+    expect(beaten(true).worth(19)).toBeLessThan(19);
+    expect(beaten(true).hold(26)).toBeLessThan(26);
+    expect(beaten(true).canRelaunch).toBe(false);
+  });
+});
