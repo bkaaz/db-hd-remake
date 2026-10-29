@@ -7,6 +7,11 @@
  *   npm run rom -- move 92           the animation script a move plays
  *   npm run rom -- moves             every move id whose script reads
  *   npm run rom -- port a5           all the cartridge says about one move, per part
+ *   npm run rom -- object a 13 32@6c00 [80]
+ *                                    an object's frames into preview/, drawn from
+ *                                    resources loaded where the game loads them
+ *                                    (resource@vram), tile base in tiles, palette of
+ *                                    the first resource
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
  *                                    data/entities/goku/frames.json (frame n = drawing n),
  *                                    every move into its animations.json as m00…mff
@@ -23,6 +28,9 @@ import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
 import { portReport } from "../src/rom/port.ts";
 import { long } from "../src/rom/disasm.ts";
+import { objectFrame } from "../src/rom/object.ts";
+import { objectVram, resourcePalette } from "../src/rom/resource.ts";
+import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 
 if (!existsSync(ROM_PATH)) {
   console.error(`no cartridge at ${ROM_PATH} — it is the owner's own dump (BYOA)`);
@@ -110,6 +118,29 @@ if (command === "tiles") {
     for (const s of p.spawns)
       console.log(`  spawns at ${s.frame}: object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
     if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
+  }
+} else if (command === "object" && args.length >= 3) {
+  const [type, anim] = [parseInt(args[0], 16), parseInt(args[1], 16)];
+  const loads = args.slice(2).filter((a) => a.includes("@")).map((a) => {
+    const [resource, vram] = a.split("@").map((n) => parseInt(n, 16));
+    return { resource, vram };
+  });
+  const base = parseInt(args.find((a) => !a.includes("@") && args.indexOf(a) > 1) ?? "0", 16);
+  const vram = objectVram(rom, loads);
+  const palette = readPalette(rom, resourcePalette(rom, loads[0].resource));
+  mkdirSync("preview", { recursive: true });
+  for (let step = 0; step < 16; step++) {
+    let pieces;
+    try {
+      pieces = readLayout(rom, objectFrame(rom, type, anim, step)).map((p) => ({ ...p, tile: p.tile + base }));
+      if (pieces.length === 0) break;
+    } catch {
+      break;
+    }
+    const { image } = drawFrame(vram, pieces, palette);
+    const out = `preview/rom-object-${hex(type)}-${hex(anim)}-${step}.png`;
+    writeFileSync(out, encodePng(scaled(image, 3)));
+    console.log(`wrote ${out} (${image.width}×${image.height}, ${pieces.length} pieces)`);
   }
 } else if (command === "export") {
   const fighter = exportFighter(rom, GOKU);

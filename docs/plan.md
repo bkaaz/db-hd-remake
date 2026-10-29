@@ -61,8 +61,10 @@ The goal (owner, 2026-10-29): Claude ports a whole move from the cartridge
 how the fight plays comes after. Quadruple Kick showed where porting still
 takes an investigation instead of a procedure. In this order:
 
-1. **Objects without a recording** — an object's timing is in its own code,
-   read as a move's handler is, rather than by `log-objects.lua`.
+1. **Objects without a recording** — an object's timing is in its type's
+   code (`rom.md`); the Kamehameha's were read from it by hand and written
+   into `objects.spawns` with the addresses. What is left: a reader like
+   `handler.ts` for the usual animator, so the port report says it.
 2. **Motions from the command table** — every sequence `rom.md` lists, as
    data, with the original's window: each direction within 12 frames of the
    next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
@@ -86,16 +88,16 @@ The owner's test of the porting (2026-10-29): the **charged** one, `aa`
 size depends on how long. The one flying up (`ab`) waits. What the
 cartridge does is in `rom.md` (`b0`'s counter, `b1`'s drawn effects):
 
-1. **Objects from code** — the beams are type `a` animations `19`–`22`;
-   their frames and timing are in type `a`'s code (`$0F:E0D7`), read as a
-   handler is rather than recorded.
-2. **The charge** — release before frame 20, between 20 and 35, or later
+1. **The charge** — release before frame 20, between 20 and 35, or later
    picks one of three beams; the states say so with `!held:blast` per part.
-3. **The ball** — a circle of radius growing 2 a frame, drawn with colour
-   maths, not a sprite: an effect drawn at runtime, its colour and its
-   offset (`b1`: −10, −38) from the cartridge.
-4. **The beam** — the chosen object, vx 4, its blow (a knockdown for 40,
-   60 or 80); the pose `89` held while it is up (`spawnEnded`).
+2. **The ball and the band** — the charging ball, a circle of radius
+   growing 2 a frame (`b1` kind 2, offset −10, −38), and the beam's band
+   from its base to its head (`b1` kind 1): both drawn with colour maths,
+   not sprites — effects drawn at runtime, colours from the cartridge.
+3. **The beam** — the chosen head (`goku_kame_s` / `m` / `l`, exported)
+   at vx 4 with its blow (a knockdown for 40, 60 or 80), the base
+   (`goku_kame_base`) at the hands; the pose `89` held while it is up
+   (`spawnEnded`).
 
 ### Then: the rest of Goku
 

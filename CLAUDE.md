@@ -256,6 +256,9 @@ npm run rom -- frame 4a
 npm run rom -- port a5
                   # all the cartridge says about one move, per part of its
                   # animation — what its states are written from
+npm run rom -- object a 15 32@6c00 80
+                  # an object's frames into preview/, from the resources
+                  # loaded where the game loads them — to look at
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md

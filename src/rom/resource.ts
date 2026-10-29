@@ -28,6 +28,11 @@ export function readResource(rom: Uint8Array, index: number): Uint8Array {
   return rom.subarray(tiles, tiles + size);
 }
 
+/** The ROM offset of a resource's palette: bytes 5–7 of its record. */
+export function resourcePalette(rom: Uint8Array, index: number): number {
+  return pointer(rom, TABLE + RECORD * index + 5);
+}
+
 /** Where a resource is loaded in VRAM, in words — as the game's code puts it. */
 export interface Load {
   resource: number;

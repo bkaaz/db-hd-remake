@@ -103,11 +103,12 @@ export function exportSpawns(rom: Uint8Array, t: FighterTables): Record<string, 
  * VRAM, held as long as the recording says, in a single animation `play`.
  */
 export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, tiles: number, palette: number): Exported {
-  const vram = objectVram(rom, t.objects.loads);
+  const vram = objectVram(rom, def.loads ?? t.objects.loads);
   const colours = def.palette ?? t.objects.palettes[palette];
   if (colours === undefined) throw new Error(`${def.name}: no ROM palette known for OAM palette ${palette}`);
   const items: Placed[] = def.steps.map((_, step) => {
-    const pieces = readLayout(rom, objectFrame(rom, def.type, def.anim, step)).map((p) => ({ ...p, tile: p.tile + tiles }));
+    const frame = def.frames?.[step] ?? step;
+    const pieces = readLayout(rom, objectFrame(rom, def.type, def.anim, frame)).map((p) => ({ ...p, tile: p.tile + tiles }));
     return { id: String(step), ...drawFrame(vram, pieces, readPalette(rom, colours)) };
   });
   const { sheet, frames } = packSheet(items);

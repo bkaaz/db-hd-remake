@@ -138,6 +138,18 @@ field `0x6f`): kind, position and size into a block per side at `$30BA` /
 Kamehameha's handler grows it by 2 a frame (`INC $30C4` twice); once
 released it shrinks by 2 a frame and is gone.
 
+**The charged Kamehameha's objects** (type `a`, by animation at
+`$0F:E0ED`): its head is animation `19`, `20` or `21` (32×32, 32×48, 48×64),
+showing frame `($74 & 4) / 4` — the two frames flip every 4 frames of the
+global counter — and gone once its owner leaves the move (`$0F:E5FC`);
+`22` is the base at the hands, 24 px ahead of the fighter, a step every 4
+frames, steps 2–4 looped while the beam is drawn, 5–7 on the way out
+(`$0F:E70F`). The beam between them is not an object: the base writes its
+start into the effect block (`$30BC`), and a `b1` effect of kind 1 draws the
+band. All of it is resource `0x32` (loaded at `$6C00`) in that resource's
+own palette — a resource's record holds a palette pointer at bytes 5–7.
+`npm run rom -- object a 15 32@6c00 80` draws an object's frames to look at.
+
 The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 Object slots: ten of 16 bytes at I-RAM `$3300`; each type's behaviour is its

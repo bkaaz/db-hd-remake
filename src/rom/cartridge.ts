@@ -48,8 +48,10 @@ export interface SpawnDef {
   name: string;
   type: number;
   anim: number;
-  /** Frames each step stays up, in order — the object's code decides, so recorded. */
+  /** Frames each step stays up, in order — the object's code decides, read there or recorded. */
   steps: number[];
+  /** Which of the object's frames each step shows, when not 0, 1, 2… */
+  frames?: number[];
   loop: boolean;
   /** Give each frame a hit box over its picture — a projectile. */
   hits: boolean;
@@ -59,7 +61,13 @@ export interface SpawnDef {
    * without it on screen cannot show.
    */
   palette?: number;
+  /** What the move loads into VRAM for this object, in place of the fighter's `loads`. */
+  loads?: { resource: number; vram: number }[];
 }
+
+/** Resource 0x32's palette ($95:DE1C, its record) and where the charged Kamehameha loads its tiles. */
+const KAME_PALETTE = 0x2ade1c;
+const KAME_LOADS = [{ resource: 0x32, vram: 0x6c00 }];
 
 export const GOKU: FighterTables = {
   character: 0,
@@ -82,6 +90,17 @@ export const GOKU: FighterTables = {
       // "KI Blast effects" palette
       { name: "goku_ki", type: 0xa, anim: 3, steps: [2, 2], loop: true, hits: true, palette: 0x27b161 },
       { name: "goku_hair", type: 0, anim: 5, steps: [32, 8, 8, 6], loop: false, hits: false },
+      // the charged Kamehameha's beam head, one per charge (aa, $20:8447): its
+      // frame flips every 4 frames of the global counter ($0F:E601), drawn
+      // from resource 0x32 the move loads at $6C00, in that resource's palette
+      ...[0x13, 0x14, 0x15].map((anim, i) => ({
+        name: `goku_kame_${["s", "m", "l"][i]}`, type: 0xa, anim, steps: [4, 4], loop: true, hits: true,
+        palette: KAME_PALETTE, loads: KAME_LOADS,
+      })),
+      // its base at the hands ($0F:E613): a step every 4 frames, 2–4 looped while
+      // the beam is drawn ($0F:E738); the way in (0–1) and out (5–7) left out
+      { name: "goku_kame_base", type: 0xa, anim: 0x16, steps: [4, 4, 4], frames: [2, 3, 4], loop: true, hits: false,
+        palette: KAME_PALETTE, loads: KAME_LOADS },
     ],
   },
 };
