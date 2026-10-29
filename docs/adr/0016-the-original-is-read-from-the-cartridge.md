@@ -1,6 +1,7 @@
 # 0016 — The original is read from the cartridge
 
-**Status:** accepted 2026-10-28, after a proof of concept the same day
+**Status:** accepted 2026-10-28, after a proof of concept the same day ·
+which instrument comes first superseded 2026-10-29 by 0022
 
 What the remake takes from the original — sprites, palettes, the order and
 timing of a move's poses, walk and jump speeds — is **read out of the owner's

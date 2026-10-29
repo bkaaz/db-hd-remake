@@ -1,7 +1,8 @@
 # The cartridge — what is known
 
 A map of what has been found in the original, and how. Why we read it at all:
-[ADR 0016](./adr/0016-the-original-is-read-from-the-cartridge.md). Addresses
+[ADR 0016](./adr/0016-the-original-is-read-from-the-cartridge.md); how — the
+code first, a recording to confirm: [ADR 0022](./adr/0022-logic-is-read-from-the-code.md). Addresses
 are confirmed unless marked `?`. A field that code reads gets its address in
 that code; this page is for what nothing reads yet.
 
@@ -10,6 +11,25 @@ patch (4 MB, header title overwritten); character data sits where PalMod
 expects it in the clean Japanese 3 MB dump, so the patch appended rather than
 moved. Mapping mode `0x23`: an **SA-1** cartridge — a second 65816 that runs
 most of the game logic.
+
+## Where to start a search
+
+Each of these has led somewhere; `npm run dis -- find <bytes>` lists every
+place a pattern occurs.
+
+- **Who sets a move:** `$01:8518`, with the move id in A —
+  `find 22 18 85 01`; an `a9 nn` just before it is a move by number.
+- **Who reads or writes a field:** `b5 nn` (`LDA $nn,X`), `95 nn` (`STA`),
+  `d6 nn` (`DEC`) — e.g. `find b5 8c`. The other fighter is `JSL $0D:D7DB`,
+  which leaves Y = X ^ `$0300`, and is read as `b9 nn 00` (`LDA $00nn,Y`).
+- **Per-fighter data:** a table indexed by field `0x00`, ×2 or ×32 — the hit
+  table (`$3D:8000`), the attributes (`$3D:9D9B`, through `$0D:C4C1`), the
+  close lines (`$3D:9EDB`). A constant table in bank `$3D` is likely another.
+- **A sound:** `JSL $0D:D82E` with the id in A — `find 22 2e d8 0d`.
+- **Where code lives:** `$01` the animation and object engines, `$0D` the
+  rules of a fight (hits, buttons, the CPU's choices), `$0F` move handlers.
+  `dis` cannot tell code from data: a run of `BRK`, `COP` or `SBC long` is a
+  table, not a routine.
 
 ## RAM — the fighter block
 

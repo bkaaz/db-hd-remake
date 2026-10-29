@@ -76,6 +76,9 @@ The project owner wants to go **slowly and deliberately**:
   Deleted from the file in the same change that fixes it. The owner writes there
   too. It is a list of what is broken, not a queue — `plan.md` stays the only
   place that says what is next.
+- **The cartridge's logic is read from its code first** (`npm run dis`,
+  starting from `rom.md`'s "Where to start a search"); a Mesen recording only
+  confirms a reading or answers what the code search could not (ADR 0022).
 - **What the cartridge reveals goes into `docs/rom.md` as soon as it is
   confirmed** — an address, a table's layout, what a field means, a guess
   marked `?`. It is a map, not a diary: no dates, no how-it-was-found (that is
