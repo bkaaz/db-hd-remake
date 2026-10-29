@@ -26,8 +26,8 @@ local function f16(side, f) return word(IRAM, side.base + f) end
 
 -- Fields by offset in the fighter block: src/rom/cartridge.ts, docs/rom.md.
 local function key(s)
-  return string.format("move=%02x step=%02x hp=%d stun=%d",
-    f8(s, 0x40), f8(s, 0x46), f16(s, 0x60), f16(s, 0x68))
+  return string.format("move=%02x step=%02x hp=%d e62=%d e64=%d stun=%d",
+    f8(s, 0x40), f8(s, 0x46), f16(s, 0x60), f16(s, 0x62), f16(s, 0x64), f16(s, 0x68))
 end
 
 local function detail(s)

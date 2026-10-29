@@ -108,7 +108,14 @@ step by step. The 5 bytes after it:
 | 0–2 | which reaction, as bits — the bit read depends on the defender's situation (below) |
 | 2 | also: `0x20` chip on guard = damage / 8, `0x40` = damage / 16; `0x80` read for the attacker's own move `?` (`$0D:DC8B`) |
 | 3 | damage, + attacker field `0x6a` − defender field `0x6b`, never below 0; taken off health (field `0x60`) |
-| 4 | stun: taken off field `0x68` (20 at the start); at 0 the defender is dizzy |
+| 4 | stun: taken off field `0x68`, which refills by 1 about every 16 frames up to 20; at 0 the defender is dizzy (move `1d`, 200 frames) and it refills to 20 |
+
+**Damage, recorded**: player one's blows took exactly byte 3 − 12 off the
+CPU, six moves of six. `0x6a` (attack) was 0 on both sides; `0x6b`
+(defence) is 10 until the round starts, then 8 for the player and 12 for
+the CPU at difficulty 2 `?`. The CPU's blows land 1 off that sum on some
+moves (`90`, `92`, `93`), and its `9e` takes 22 from a record of zeros —
+not read yet.
 
 **Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
 bits of bytes 0–1 as one word: `0x0004` `$D622`, `0x0008` light,
@@ -116,20 +123,25 @@ bits of bytes 0–1 as one word: `0x0004` `$D622`, `0x0008` light,
 `0x0080` → move `42`/`43`, `0x0400` → move `1e`, `0x0800` `$D670`,
 `0x1000` `$D540`. Airborne, bits of byte 1: `01` → move `1a`, `02`
 knockdown, `04` → move `1e`, `08` `$D670`. Then byte 2 bits 0–2 for both
-(`$D3F3`, `$D46E`, `$D4D4`). Light is move `13` (or `17`/`15`), heavy
-`14` (or `18`/`16`); which of the three hangs on field `0x97` bit 0 and
-`$0D:D7BA` `?`. Hitstun is that move's script — `13` is 14 frames, `14`
-26 — not a number in the record.
+(`$D3F3`, `$D46E`, `$D4D4`). Light is move `15` (`13` when field `0x97`
+bit 0 is set), heavy `16` (`14`); `$0D:D7BA` turns them into `17`/`18`
+`?`. Hitstun is that move's script — light 14 frames, heavy 26 — not a
+number in the record.
 
 **Knockback is per reaction, not per blow**: `$0D:D708` with a reaction
 index sets field `0x8c` and vx / vy (8.8 fixed point, vx turned by the
 attacker's facing) from a table of 6-byte entries at `$0D:D68A`. Light
 (index 2) pushes 2.0 px/frame, heavy (3) 3.0, knockdown (4) 2.0 and
-−4.0 up. What `0x8c` counts is not read yet.
+−4.0 up. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in
+the air, 64 down or dizzy — and counts down a frame at a time outside
+hitstop; what it times is not read yet. A blow sets hitstop (`$30B2`) to
+`0x8a`.
 
-**Health** starts from an option setting (`$1AC9` / `$1ACF`, per side),
-or 80 or 999 in other modes (`$01:8150`, `$01:826F`). Training is mode
-`$1A02 = 3`, where damage is zeroed.
+**Health** starts from the ENERGY option, 400 by default (`$1AC9` /
+`$1ACF`, per side), or 80 or 999 in other modes (`$01:8150`, `$01:826F`).
+Training is mode `$1A02 = 3`, where damage is zeroed. One bar on screen
+holds health and ki, but firing a ki blast leaves `0x60` alone — ki is
+another field, `0x62` or `0x64` `?`.
 
 ## Another fighter
 
