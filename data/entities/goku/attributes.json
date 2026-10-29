@@ -1,5 +1,7 @@
 {
   "gravity": 0.469,
   "pushWidth": 28,
-  "hitstop": 8
+  "hitstop": 8,
+  "health": 400,
+  "defence": 8
 }

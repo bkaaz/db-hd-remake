@@ -54,22 +54,17 @@ dash, four blows, guard, reactions, and the ki blast as a spawn (ADR 0018).
 Its states are by hand in `data/entities/goku/states.json`; the original's
 buttons are A S D X + C (`combat.md`, The buttons).
 
-1. **The original's hit data** — found (`rom.md`, Hit data). The owner's
-   call (2026-10-29): take it **as the game has it** — damage, the reaction,
-   its length and its knockback — and enrich later. Waiting on a recording
-   of a real match (`tools/re/log-hits.lua`) for the health it is measured
-   against, and on how the original's reactions become hit types.
-2. **Close Y by distance** — the original picks `m90` or `m92` by how near the
+1. **Close Y by distance** — the original picks `m90` or `m92` by how near the
    opponent is; the engine has no such trigger yet.
-3. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
+2. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
    off today by the held-step rule in `src/rom/animation.ts`.
-4. **The rest of the objects** — `goku_hair` is exported but nothing plays
+3. **The rest of the objects** — `goku_hair` is exported but nothing plays
    it: there is no pre-fight screen, and `fires` only takes a projectile.
    Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`). Other objects
    Goku spawns are not exported; each needs its timing recorded
    (`tools/re/log-objects.lua`).
 
-5. **Before a second fighter** — `tileSetOf` reads the drawing → resource
+4. **Before a second fighter** — `tileSetOf` reads the drawing → resource
    table as a tile set plus a "used" byte; it is a 2-byte resource id
    (`rom.md`, Another fighter). Read the tables through the ten-entry pointer
    tables instead of Goku's addresses, and map which entry is which fighter.
@@ -396,6 +391,9 @@ queue.
      one — a stretched pixel stops being square. It needs the owner's position
      each frame, which is the thing ADR 0014 refused a bolt; that ADR gets
      superseded rather than edited when this lands.
+- **One set of hit types.** `light` and `heavy` are the original's two
+  reactions, added beside our five rather than mapped onto them (owner,
+  2026-10-29); decide which survive once `goku` plays more than three blows.
 - **The original's stun and chip** (owner, 2026-10-29: later). Every blow
   carries a stun value that empties a gauge into a dizzy, and some chip on
   guard (`rom.md`, Hit data).

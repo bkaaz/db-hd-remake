@@ -3,5 +3,7 @@
   "stagger": { "code": "st", "onHit": "hurt_heavy", "hitstun": 20, "hitstop": 12, "relaunch": true },
   "knockback": { "code": "kb", "onHit": "blown", "hitstun": 20, "hitstop": 12, "relaunch": true },
   "launch": { "code": "la", "onHit": "launched", "hitstun": 20, "hitstop": 12, "relaunch": true },
-  "slam": { "code": "sl", "onHit": "slam", "hitstun": 20, "hitstop": 6, "relaunch": true }
+  "slam": { "code": "sl", "onHit": "slam", "hitstun": 20, "hitstop": 6, "relaunch": true },
+  "light": { "code": "li", "onHit": "reel_light", "hitstun": 14, "hitstop": 8, "relaunch": false },
+  "heavy": { "code": "he", "onHit": "reel_heavy", "hitstun": 26, "hitstop": 8, "relaunch": true }
 }

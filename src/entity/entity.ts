@@ -5,7 +5,8 @@ import { Audio } from "../audio/playback";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
-import { scaledDamage, scaledHitstun } from "../combat/scaling";
+import { slowed } from "../combat/knockback";
+import { afterDefence, scaledDamage, scaledHitstun } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions } from "../input/motion";
@@ -148,6 +149,8 @@ export class Entity {
   private vy = 0;
   /** Horizontal velocity while airborne, facing-relative (momentum). */
   private vx = 0;
+  /** What is left of the shove the current state entered with — see `shove`. */
+  private shove = 0;
   /** Latched on touching the ground; cleared when the state changes. */
   private landed = false;
   /**
@@ -190,6 +193,7 @@ export class Entity {
   private readonly pushWidth: number;
   private readonly hitstop: number;
   private readonly maxHealth: number;
+  private readonly defence: number;
   private readonly maxKi: number;
   private readonly baseHitstun: number;
   /** What is left of this fighter, in health points. */
@@ -235,6 +239,7 @@ export class Entity {
     this.pushWidth = def.attributes.pushWidth;
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
+    this.defence = def.attributes.defence;
     this.maxKi = def.attributes.ki;
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
@@ -486,15 +491,15 @@ export class Entity {
   }
 
   /**
-   * Take damage, **scaled by how long this combo has already run**, and return
-   * what it actually cost. The caller reports that number rather than the one it
-   * asked for: a log or a hit counter showing the unscaled figure would be
-   * describing a blow nobody took.
+   * Take damage, less this fighter's defence and **scaled by how long this
+   * combo has already run**, and return what it actually cost. The caller
+   * reports that number rather than the one it asked for: a log or a hit
+   * counter showing the unscaled figure would be describing a blow nobody took.
    *
    * Health floors at zero; nothing happens there yet.
    */
   hurtBy(amount: number): number {
-    const dealt = scaledDamage(amount, this.combo.hits);
+    const dealt = scaledDamage(afterDefence(amount, this.defence), this.combo.hits);
     this.hp = Math.max(0, this.hp - dealt);
     // Counted here rather than beside the reaction, because a blow that is
     // refused a reaction — a jab at someone already on the floor — still landed
@@ -568,6 +573,7 @@ export class Entity {
     // Latched rather than spawned here: what a bolt is allowed to hit is a fact
     // about the pair, so the thing between the fighters takes it off the latch.
     this.fired = this.sm.def.fires ?? null;
+    this.shove = this.sm.def.shove ?? 0;
     const launch = this.sm.def.launch;
     if (launch) {
       // A null component keeps the axis: a bounce sets how high you come back
@@ -718,7 +724,8 @@ export class Entity {
       }
     } else {
       this.y = this.groundY;
-      this.x += this.facing * (this.sm.def.vel?.[0] ?? 0) * this.scale;
+      this.x += this.facing * ((this.sm.def.vel?.[0] ?? 0) + this.shove) * this.scale;
+      this.shove = slowed(this.shove);
     }
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
 

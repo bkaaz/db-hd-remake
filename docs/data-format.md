@@ -58,9 +58,11 @@ those are entities too and every tab works on them.
   `pushWidth` attribute instead, because a box that followed the animation would
   shove the opponent whenever an arm came out. The type keeps `push` for a case
   that needs it later — a narrower crouch, say.
-- **Knockback has no field.** A reaction faces its attacker, so a negative `vel`
-  x is "backwards, away", and it slides for as long as the reaction lasts. How
-  long that is comes from the blow's `hitstun`, not from the pose: a shorter
+- **Knockback is on the reaction, not the blow.** A reaction faces its
+  attacker, so a negative `vel` x is "backwards, away", and it slides for as
+  long as the reaction lasts. A `shove` is the cartridge's kind: a speed on
+  entering that loses 0.25 a frame until it stops (ADR 0021). How long a
+  reaction lasts comes from the blow's `hitstun`, not from the pose: a shorter
   animation holds its last frame, a longer one is cut off. A drawing has no
   business setting frame data.
 

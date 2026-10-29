@@ -323,8 +323,8 @@
         0
       ],
       "turn": false,
-      "type": "flinch",
-      "damage": 8,
+      "type": "heavy",
+      "damage": 27,
       "sound": "swing_1",
       "hitSound": "hit_1",
       "blockSound": "block_1",
@@ -342,8 +342,8 @@
         0
       ],
       "turn": false,
-      "type": "flinch",
-      "damage": 8,
+      "type": "heavy",
+      "damage": 29,
       "sound": "swing_1",
       "hitSound": "hit_1",
       "blockSound": "block_1",
@@ -361,8 +361,8 @@
         0
       ],
       "turn": false,
-      "type": "flinch",
-      "damage": 8,
+      "type": "light",
+      "damage": 18,
       "sound": "swing_1",
       "hitSound": "hit_1",
       "blockSound": "block_1",
@@ -571,6 +571,60 @@
         0
       ],
       "turn": false,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_light": {
+      "anim": "m15",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "ifAirborne": "juggle",
+      "ifCrouching": "reel_light_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_light_crouch": {
+      "anim": "m17",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_heavy": {
+      "anim": "m16",
+      "rank": 2,
+      "shove": -3,
+      "turn": false,
+      "ifAirborne": "hurt_heavy_air",
+      "ifCrouching": "reel_heavy_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_heavy_crouch": {
+      "anim": "m18",
+      "rank": 2,
+      "shove": -3,
+      "turn": false,
+      "crouching": true,
       "transitions": [
         {
           "when": "stunEnd",

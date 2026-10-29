@@ -85,6 +85,12 @@ export interface Attributes {
    */
   health: number;
   /**
+   * Taken off every blow this fighter takes, before the combo scales it — the
+   * cartridge's rule (docs/rom.md, Hit data), which is why a fighter read from
+   * it carries the original's raw damage. Zero for one built by hand.
+   */
+  defence: number;
+  /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —
    * so switching the length from the pose to the number changed nothing, which
@@ -104,6 +110,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   pushWidth: 30,
   hitstop: 6,
   health: 100,
+  defence: 0,
   hitstun: 12,
   ki: 100,
 };

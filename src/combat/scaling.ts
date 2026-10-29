@@ -62,6 +62,16 @@ export function hitstunScale(hits: number): number {
 }
 
 /**
+ * What a blow is worth against a body before any combo touches it: its damage
+ * less the defender's defence, never below nothing. The cartridge's rule
+ * (docs/rom.md, Hit data); it runs first because the original has no scaling,
+ * so its numbers only hold for an opener.
+ */
+export function afterDefence(damage: number, defence: number): number {
+  return Math.max(0, damage - defence);
+}
+
+/**
  * A blow's damage after scaling, in whole health points.
  *
  * Rounded, and never below one: an attack that connects has to cost something,

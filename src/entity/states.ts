@@ -64,6 +64,12 @@ export interface StateDef {
    * gravity exists and is ignored for now.
    */
   vel?: [number, number];
+  /**
+   * A shove on entering, in px per frame and facing-relative like `vel` — the
+   * cartridge's knockback, which loses 0.25 a frame until it stops
+   * (`combat/knockback.ts`). On top of `vel`, on the ground only.
+   */
+  shove?: number;
   /** Whether the entity may turn to face its opponent while in this state. */
   turn?: boolean;
   /**
@@ -952,6 +958,9 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       (!Array.isArray(def.vel) || def.vel.length !== 2 || def.vel.some((v) => typeof v !== "number"))
     ) {
       errors.push(`${where}: "vel" must be two numbers, e.g. [0.83, 0]`);
+    }
+    if (def.shove !== undefined && typeof def.shove !== "number") {
+      errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);
     }
 
     // Unlike `vel`, a component may be null — that means "keep this axis".

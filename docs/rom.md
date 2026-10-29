@@ -97,7 +97,7 @@ Looked up **at contact**, from the attacker's move and step — nothing in
 the script names it. Melee: `$0D:D189`; a projectile/object: `$0D:D1DA`,
 through its own table at `$3D:9624`.
 
-**The table** (`$0D:D7E5`): `$3D:8000` + 2 × character → that fighter's
+**The table** (`$0D:D7E5`, read by `src/rom/hits.ts`): `$3D:8000` + 2 × character → that fighter's
 pointers, one per move from `0x90` (`move − 0x90`) → a list of 6-byte
 records. The first record whose byte 0 is ≥ the attacker's step (field
 `0x46`) is used; `ff` means every step — one move can hit differently
@@ -136,13 +136,14 @@ bit 0 is set), heavy `16` (`14`); `$0D:D7BA` turns them into `17`/`18`
 number in the record.
 
 **Knockback is per reaction, not per blow**: `$0D:D708` with a reaction
-index sets field `0x8c` and vx / vy (8.8 fixed point, vx turned by the
-attacker's facing) from a table of 6-byte entries at `$0D:D68A`. Light
-(index 2) pushes 2.0 px/frame, heavy (3) 3.0, knockdown (4) 2.0 and
-−4.0 up. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in
-the air, 64 down or dizzy — and counts down a frame at a time outside
-hitstop; what it times is not read yet. A blow sets hitstop (`$30B2`) to
-`0x8a`.
+index sets field `0x8c`, the push speed `0x88` (8.8 fixed point, turned by
+the attacker's facing) and vy from a table of 6-byte entries at `$0D:D68A`.
+Light (index 2) pushes 2.0 px/frame, heavy (3) 3.0, knockdown (4) 2.0 and
+−4.0 up. The push **slows by 0.25 every frame** until it stops
+(`$0D:EC5F`, which slows vx the same way) — 9 px in all for light, 19.5
+for heavy. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in
+the air, 64 down or dizzy — the frames a push of that speed lasts, and
+counts down outside hitstop. A blow sets hitstop (`$30B2`) to `0x8a`.
 
 **Health** starts from the ENERGY option, 400 by default (`$1AC9` /
 `$1ACF`, per side), or 80 or 999 in other modes (`$01:8150`, `$01:826F`).

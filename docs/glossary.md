@@ -40,6 +40,10 @@ back between the blows. The player's word for it, and the editor tab's name; the
 docs and the code say *chain*, *link* and *cancel* when the distinction matters.
 → `combat.md`
 
+**Defence** — an attribute taken off every blow a fighter takes, before
+scaling; the cartridge's rule, so `goku` carries the original's raw damage
+and defence 8. → ADR 0020, `rom.md` (Hit data)
+
 **Depth** — how many blows landed before a link fires, by the **longest** route
 into it. Scaling shortens hitstun as depth grows, so a string can hold at its
 opener and break at its third link. → `combat.md` §3
@@ -133,6 +137,10 @@ button ends it at any depth. A tree, derived from `states.json` like any chain.
 
 **SA-1** — the cartridge's second 65816; it runs the fight and unpacks the
 sprites, so the original's state is found in its I-RAM. → `rom.md`
+
+**Shove** — a reaction's knockback as the cartridge does it: a speed on
+entering that dies out by 0.25 a frame. Not `push`, which keeps two bodies
+apart. → ADR 0021, `combat/knockback.ts`
 
 **Situation flag** (`airborne`, `crouching`) **and its redirect**
 (`ifAirborne`, `ifCrouching`) — how a defender's circumstances change the

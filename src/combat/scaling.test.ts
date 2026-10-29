@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { damageScale, hitstunScale, scaledDamage, scaledHitstun } from "./scaling";
+import { afterDefence, damageScale, hitstunScale, scaledDamage, scaledHitstun } from "./scaling";
+
+describe("defence", () => {
+  it("takes the defender's defence off the blow", () => {
+    // Goku's far Y on Goku: 27 in the cartridge's table, 8 his defence.
+    expect(afterDefence(27, 8)).toBe(19);
+  });
+
+  it("leaves a blow weaker than the defence worth nothing, not less", () => {
+    expect(afterDefence(5, 8)).toBe(0);
+  });
+});
 
 describe("combo scaling", () => {
   it("gives the opener all of itself", () => {
