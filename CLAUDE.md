@@ -343,9 +343,13 @@ color-key, auto-detection, anchors, timed steps, hit/hurt/push boxes), auditions
 the game's sound bank, and draws the cancel graph read-only; the **game** loads
 an entity and runs it as a **state machine** from `states.json`.
 
-Goku walks, jumps in three variants, pushes the opponent, crouches, blocks, and
-attacks with Light / Medium / Heavy from standing, crouching and the air.
-Special is a key with nothing behind it. A blow names how it is taken — flinch,
+Two Gokus: **`goku`**, read out of the owner's cartridge (`docs/rom.md`, ADR
+0016–0018) — the original's drawings, animation scripts, boxes and ki blast,
+with states written after the original's moves — plays by default;
+**`goku_old`**, the hand-built one (`?p1=goku_old`), keeps everything below,
+which is what will be brought over to the new one later. goku_old walks, jumps
+in three variants, pushes the opponent, crouches, blocks, and attacks with
+Light / Medium / Heavy from standing, crouching and the air. A blow names how it is taken — flinch,
 stagger, knockdown, or a juggle if it catches a falling body — pauses the game on
 contact, pushes the defender back, costs health, leaves a generated spark where
 the boxes met and makes a noise. Damage and hitstun both decay through a combo,

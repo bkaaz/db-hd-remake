@@ -32,7 +32,7 @@ tables, and how a drawing is put together, are in `src/rom/cartridge.ts` and
 | `0xb0000` … | Goku's palettes, 32 bytes each, by stage lighting and side (PalMod) |
 | `0x1d8000 + 32 × drawing` | the drawing's boxes — which slot is what: `src/rom/collision.ts` |
 | `0x1e1000 + 32 × drawing` | read beside it, same shape — a second set of boxes `?` |
-| `0x27b161` | a second Goku palette, "Hair lighting and KI Blast effects" (PalMod) — not used by the export yet |
+| `0x27b161` | a second Goku palette, "Hair lighting and KI Blast effects" (PalMod) — the ki blast's and the hair overlay's |
 | `0x62a15` … | Goku's animation scripts in bank `$0C`: 256 pointers by move id, then the scripts (below) |
 
 **An animation script** is what a move plays: steps that hold a drawing for

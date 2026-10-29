@@ -49,19 +49,30 @@ stays: what we built that the original lacks will be brought over later.
 
 Every move is an animation now, `m00`…`mff` (ADR 0017), written by the export.
 
-1. **Check `goku` plays** — first version of his states (2026-10-29): walk,
-   crouch, jumps, dash, four blows, guard, reactions. Not in it: close Y (the
-   original picks it by distance; we have no such trigger), the ki projectile
-   (`b0`, item 2), damage beyond the shared hit types, the dash's recovery
-   pose after the release. *Open:* why idle holds each pose 12 frames in its
-   script but 13–14 in a recording; reading which moves repeat or hold from
-   the move handlers instead of listing them (`src/rom/animation.ts`).
-2. **The rest of the objects** — the ki blast is a spawn Goku fires
-   (ADR 0018); the hair overlay is exported (`goku_hair`) but nothing plays
-   it, since there is no pre-fight screen, and `fires` only takes a
-   projectile. Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`).
-   Other objects Goku spawns are not exported yet; each needs a recording of
-   its timing (`tools/re/log-objects.lua`).
+`goku` plays (owner, 2026-10-29): walk, crouch and stand up, three jumps,
+dash, four blows, guard, reactions, and the ki blast as a spawn (ADR 0018).
+Its states are by hand in `data/entities/goku/states.json`; the original's
+buttons are A S D X + C (`combat.md`, The buttons).
+
+1. **The original's hit data** — next, recommended (2026-10-29). Every blow of
+   `goku` still takes the shared `flinch` numbers. A script's `a0` hands an
+   attack id to `$0D:D82E`; behind it must be each blow's damage, hitstun and
+   knockback. Read it with `npm run dis`, then decide with the owner how much
+   of it the states take (`combat-direction`: the original's numbers are a
+   start, not the rules).
+2. **Close Y by distance** — the original picks `m90` or `m92` by how near the
+   opponent is; the engine has no such trigger yet.
+3. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
+   off today by the held-step rule in `src/rom/animation.ts`.
+4. **The rest of the objects** — `goku_hair` is exported but nothing plays
+   it: there is no pre-fight screen, and `fires` only takes a projectile.
+   Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`). Other objects
+   Goku spawns are not exported; each needs its timing recorded
+   (`tools/re/log-objects.lua`).
+
+*Open:* idle holds each pose 12 frames in its script but 13–14 in a
+recording; which moves repeat or hold is listed by hand in
+`src/rom/animation.ts` rather than read from the move handlers.
 
 > **One exchange is complete.** Everything below multiplies it.
 
