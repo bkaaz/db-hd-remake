@@ -88,13 +88,23 @@ export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: numb
  * with the first part; it fires on entry as it is. Each later part starts
  * where the one before left off: the drawing that is up, flipped and offset
  * as it was.
+ *
+ * Cut too where each blow after the first begins (`blowStarts`), so every
+ * blow of a multi-hit move is a state of its own, with its own damage and
+ * type (ADR 0023).
  */
 export function moveAnims(move: number, ops: ScriptOp[], boxesOf?: (drawing: number) => Box[]): Record<string, Anim> {
+  const cutAt = boxesOf ? blowStarts(ops, boxesOf).slice(1) : [];
   const parts: ScriptOp[][] = [[]];
   let shown = false;
+  let step = 0;
   for (const op of ops) {
-    if (op.op === "spawn" && shown) parts.push(carried(parts.flat()));
-    if (op.op === "show" || op.op === "hold") shown = true;
+    const isStep = op.op === "show" || op.op === "hold";
+    if ((op.op === "spawn" && shown) || (isStep && cutAt.includes(step))) parts.push(carried(parts.flat()));
+    if (isStep) {
+      shown = true;
+      step++;
+    }
     parts[parts.length - 1].push(op);
   }
   if (parts.length === 1) {
@@ -107,6 +117,27 @@ export function moveAnims(move: number, ops: ScriptOp[], boxesOf?: (drawing: num
     if (anim) out[i === 0 ? animName(move) : `${animName(move)}_${i + 1}`] = anim;
   });
   return out;
+}
+
+/**
+ * The steps where a blow begins: a step showing a hit box after one that did
+ * not. Counted as the engine counts steps (field 0x46) — every show and hold,
+ * from 0 — so a blow's step is what the hit table is keyed by (src/rom/hits.ts).
+ */
+export function blowStarts(ops: ScriptOp[], boxesOf: (drawing: number) => Box[]): number[] {
+  const starts: number[] = [];
+  let current: number | null = null;
+  let striking = false;
+  let step = 0;
+  for (const op of ops) {
+    if (op.op !== "show" && op.op !== "hold") continue;
+    if (op.drawing !== null) current = op.drawing;
+    const strikes = current !== null && boxesOf(current).some((b) => b.type === "hit");
+    if (strikes && !striking) starts.push(step);
+    striking = strikes;
+    step++;
+  }
+  return starts;
 }
 
 /** What a later part inherits: the last drawing (as a zero-frame step), flip and offset. */

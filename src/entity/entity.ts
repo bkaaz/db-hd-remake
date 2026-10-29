@@ -12,6 +12,7 @@ import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions } from "../input/motion";
 import {
   DEFAULT_HIT_FX,
+  groundSpeed,
   guardStateFor,
   reactionFor,
   StateMachine,
@@ -152,6 +153,8 @@ export class Entity {
   private vx = 0;
   /** What is left of the shove the current state entered with — see `shove`. */
   private shove = 0;
+  /** Frames the current state has moved for — what `velAt` is keyed by. */
+  private stateFrames = 0;
   /** Latched on touching the ground; cleared when the state changes. */
   private landed = false;
   /**
@@ -588,6 +591,7 @@ export class Entity {
     // about the pair, so the thing between the fighters takes it off the latch.
     this.fired = this.sm.def.fires ?? null;
     this.shove = this.sm.def.shove ?? 0;
+    this.stateFrames = 0;
     const launch = this.sm.def.launch;
     if (launch) {
       // A null component keeps the axis: a bounce sets how high you come back
@@ -696,6 +700,7 @@ export class Entity {
         dash: this.buffer.has("dash"),
         qcf: this.motions.has("qcf"),
         qcb: this.motions.has("qcb"),
+        hcf: this.motions.has("hcf"),
         holding: input.holding,
       },
       {
@@ -739,10 +744,11 @@ export class Entity {
       }
     } else {
       this.y = this.groundY;
-      this.x += this.facing * ((this.sm.def.vel?.[0] ?? 0) + this.shove) * this.scale;
+      this.x += this.facing * (groundSpeed(this.sm.def, this.stateFrames) + this.shove) * this.scale;
       this.shove = slowed(this.shove);
     }
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
+    this.stateFrames++;
 
     this.advanceAnim();
   }

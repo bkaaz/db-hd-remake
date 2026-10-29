@@ -48,6 +48,8 @@ export const MOTION_FRAMES = 14;
 export const MOTIONS = {
   qcf: ["down", "fwd"],
   qcb: ["down", "back"],
+  /** The original's half circle, ← ↙ ↓ ↘ → (Quadruple Kick, the Kamehameha). */
+  hcf: ["back", "down", "fwd"],
 } as const satisfies Record<string, readonly (keyof Directions)[]>;
 
 export type MotionName = keyof typeof MOTIONS;

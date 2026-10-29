@@ -65,6 +65,13 @@ export interface StateDef {
    */
   vel?: [number, number];
   /**
+   * Forward speed changing during the state: `[frame, px per frame]` pairs,
+   * each holding from that frame of the state until the next — how the
+   * original's move code walks a fighter through a move (Quadruple Kick's
+   * `$20:8663`). Before the first, `vel` holds. Ground only.
+   */
+  velAt?: [number, number][];
+  /**
    * A shove on entering, in px per frame and facing-relative like `vel` — the
    * cartridge's knockback, which loses 0.25 a frame until it stops
    * (`combat/knockback.ts`). On top of `vel`, on the ground only.
@@ -375,6 +382,7 @@ export interface InputSnapshot {
    */
   qcf: boolean;
   qcb: boolean;
+  hcf: boolean;
   /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
@@ -456,6 +464,7 @@ export const TRIGGERS = [
   "held:dash",
   "motion:qcf",
   "motion:qcb",
+  "motion:hcf",
   "animEnd",
   "stunEnd",
   "spawnEnd",
@@ -529,6 +538,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "motion:qcb":
       value = input.qcb;
+      break;
+    case "motion:hcf":
+      value = input.hcf;
       break;
     case "animEnd":
       value = signals.animEnded;
@@ -607,6 +619,13 @@ export const pressIn = (when: string | string[]): string | null => {
  * connected and still hurt, it just did not interrupt. That is what stops a jab
  * from rescuing someone mid-knockdown or standing a floored fighter up.
  */
+/** Forward speed on the ground `frame` frames into a state: its `velAt`, else its `vel`. */
+export function groundSpeed(def: StateDef, frame: number): number {
+  let speed = def.vel?.[0] ?? 0;
+  for (const [at, vx] of def.velAt ?? []) if (frame >= at) speed = vx;
+  return speed;
+}
+
 export function reactionFor(
   onHit: string | undefined,
   defender: StatesFile,
@@ -975,6 +994,14 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       (!Array.isArray(def.vel) || def.vel.length !== 2 || def.vel.some((v) => typeof v !== "number"))
     ) {
       errors.push(`${where}: "vel" must be two numbers, e.g. [0.83, 0]`);
+    }
+    if (
+      def.velAt !== undefined &&
+      (!Array.isArray(def.velAt) ||
+        def.velAt.some((p, i) => !Array.isArray(p) || p.length !== 2 || p.some((v) => typeof v !== "number") ||
+          (i > 0 && p[0] <= def.velAt![i - 1][0])))
+    ) {
+      errors.push(`${where}: "velAt" must be [frame, px per frame] pairs with the frames rising, e.g. [[14, 2.375]]`);
     }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);

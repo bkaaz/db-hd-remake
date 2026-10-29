@@ -45,14 +45,22 @@ export function hitRecords(rom: Uint8Array, character: number, move: number): Hi
   }
 }
 
+/** The record a blow starting at `step` takes: the first that covers it. */
+export function recordAt(records: readonly HitRecord[], step: number): HitRecord | undefined {
+  return records.find((r) => r.upToStep === null || r.upToStep >= step);
+}
+
 /** The bits `$0D:D2C0` tests for a standing defender, in its order. */
 const GROUND_ORDER = [0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x400, 0x800, 0x1000];
 
+/** The hit types named after the original's reactions, by the bit that picks each. */
+const REACTION_TYPES: Record<number, string> = { 0x08: "light", 0x10: "heavy", 0x40: "down" };
+
 /**
- * How a standing defender takes the blow: the first of its bits the game
- * tests. Light and heavy are the two our hit types copy so far.
+ * How a standing defender takes the blow, as the hit type named after it: the
+ * first of its bits the game tests. "other" for a reaction no type copies yet.
  */
-export function groundReaction(r: HitRecord): "light" | "heavy" | "other" {
+export function groundReaction(r: HitRecord): string {
   const first = GROUND_ORDER.find((bit) => r.reaction & bit);
-  return first === 0x08 ? "light" : first === 0x10 ? "heavy" : "other";
+  return (first !== undefined && REACTION_TYPES[first]) || "other";
 }

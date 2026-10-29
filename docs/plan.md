@@ -58,15 +58,28 @@ buttons are A S D X + C (`combat.md`, The buttons).
    names every move a button picks: crouching Y / B (`m94`, `m95`) and the
    jump attacks (`m96`–`m99`) are not states of `goku` yet. Their hit data
    is in the table already.
-2. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
+2. **The rest of the specials** — `rom.md` (The buttons) lists every
+   move Goku's command table holds and its input; Quadruple Kick is built.
+   The rest are states to write the same way. Open: the original's
+   matcher wants each direction within 12 frames of the next and the
+   diagonals exact, ours (`input/motion.ts`) any order-preserving pass
+   inside 14 frames for the whole motion — tight for a half circle.
+3. **Sounds when the original plays them** — a state's `sound` plays on
+   entering it; the original's `a0` at a step of the script (far Y's swing
+   at frame 10, Quadruple Kick's at 8, 18, 36, 54), and a melee hit also
+   plays the defender's voice (`30`, clip `045`), which `goku` has none of.
+4. **The original's knockdown** — `reel_down` flies with the original's
+   speeds and lands into our `downed`; the original's `1b` lies, bounces
+   and lies again (~100 frames) before the get-up `1f`.
+5. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
    off today by the held-step rule in `src/rom/animation.ts`.
-3. **The rest of the objects** — `goku_hair` is exported but nothing plays
+6. **The rest of the objects** — `goku_hair` is exported but nothing plays
    it: there is no pre-fight screen, and `fires` only takes a projectile.
    Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`). Other objects
    Goku spawns are not exported; each needs its timing recorded
    (`tools/re/log-objects.lua`).
 
-4. **Before a second fighter** — `tileSetOf` reads the drawing → resource
+7. **Before a second fighter** — `tileSetOf` reads the drawing → resource
    table as a tile set plus a "used" byte; it is a 2-byte resource id
    (`rom.md`, Another fighter). Read the tables through the ten-entry pointer
    tables instead of Goku's addresses, and map which entry is which fighter.

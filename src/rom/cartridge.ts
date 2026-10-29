@@ -8,6 +8,8 @@
 export const ROM_PATH = "raw/rom/Dragon Ball Z - Hyper Dimension (tr).sfc";
 
 export interface FighterTables {
+  /** Fighter field 0x00: the index of the tables reached by it — hits, attributes, close lines. */
+  character: number;
   /** 3-byte LoROM pointers, one per drawing id (fighter field `0x0a`). */
   layouts: number;
   /** 2 bytes per drawing id: its tile set, then 1 if the drawing is used. */
@@ -60,6 +62,7 @@ export interface SpawnDef {
 }
 
 export const GOKU: FighterTables = {
+  character: 0,
   layouts: 0x4880e,
   tileSets: 0x48a54,
   drawings: (0x48a54 - 0x4880e) / 3,

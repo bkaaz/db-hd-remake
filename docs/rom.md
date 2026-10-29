@@ -26,6 +26,13 @@ place a pattern occurs.
   table (`$3D:8000`), the attributes (`$3D:9D9B`, through `$0D:C4C1`), the
   close lines (`$3D:9EDB`). A constant table in bank `$3D` is likely another.
 - **A sound:** `JSL $0D:D82E` with the id in A — `find 22 2e d8 0d`.
+- **What a move does while it plays** — moving, re-arming its hit: its
+  handler. `$0F:8000` runs each fighter's frame and jumps through `JML
+  [$67]`: a 2-byte table per fighter at `$0F:8061` (Goku `$0F:8075`), then 3
+  bytes per move id. A handler keys on field `0x44` (frames since the move
+  began) and sets vx as `LDA #imm / STA $7C,X`, mirrored for facing left;
+  `JSL $0D:D8A2` re-arms the blow for the next hit. The normals share one
+  (`$0F:AA54`); a special has its own — Quadruple Kick's is `$20:8663`.
 - **Where code lives:** `$01` the animation and object engines, `$0D` the
   rules of a fight (hits, buttons, the CPU's choices), `$0F` move handlers.
   `dis` cannot tell code from data: a run of `BRK`, `COP` or `SBC long` is a
@@ -105,8 +112,13 @@ own code in bank `$0F`.
 **`a0` plays a sound**, not a blow: `$0D:D82E` queues the id at `$cb`
 (`$00:DE31`) and `$00:D879` hands it to the APU at `$2141`. For player two
 the id is shifted by the byte at `$0D:D852 + id` — each side's voice sits in
-its own range. The id looks like the sound-test clip number + 3 (`06`
-swing, `07` heavier swing, `0a` hit, `0b` ki bolt) `?`.
+its own range: `+9` for the effects `05`–`0d`, `+3` for the voices from
+`30`. The sound test plays its number as the id, unchanged below `0x50`
+(`$00:D213`, number in `$19A6`) — but the clips of our capture are numbered
+by where the silences fell, not by the sound test, so a clip is **not** an
+id: matching them by an offset gave a wrong hit sound. A melee hit plays
+`09` (`$0D:D1B7`) and the defender's own `30`; a projectile's, `0a` and `30`
+(`$0D:D1E6`).
 
 Not read yet: command `80` (move `9d` uses it), `a1` (`$00:DE9F`, sound
 related), and `c0` (sets fighter field `0x96`).
@@ -122,6 +134,43 @@ fighters (field `0x20`) is under the attacker's own line (`$0D:C4A1`), two
 bytes per fighter at `$3D:9EDB` — Goku 44 for Y, 48 for B. A recording
 agreed: close Y at 41 px, far from 53. The CPU keeps lines of its own for
 deciding what to do (`$0D:F7F6`, `$0D:F95B`, `$0D:F96F`).
+
+**Special moves come first** (`$0D:F085`): a command table of 0x150 bytes
+per fighter at `$3D:9EEF` (offsets `$0D:F5CF`) — 0x88 on the ground, 0x40
+in the air, the rest for mode `$0552` — in 8-byte rows, scanned last row
+first: bytes 0–3 conditions (masks on fighter fields `0x4C`/`0x4D` `?`;
+Meteor Smash's `0x41` and the ki moves' `05`/`0a` are presumably low health
+and ki), byte 4 a sequence, byte 5 the move. A sequence (`$0D:F2E6` + 2 ×
+number, words in bank `$0D`) is a button word, then directions **newest
+first**, ended by `0000`, as the pad's bits facing right: B `8000`, Y `4000`,
+A `0080`, X `0040`, R `0010`; → `0100`, ← `0200`, ↓ `0400`, ↑ `0800`. Goku's
+Quadruple Kick, `a5`: `8002 0100 0500 0400 0600 0200` — ← ↙ ↓ ↘ → + B. The
+button word's low bits (`02`, `08`) and the windows the matcher reads from
+`$6002` / `$6006` / `$600A` are not read yet. The pad's history is a ring
+in BW-RAM at `$63D0` (+`$1E0` for player two).
+
+A blow of a multi-hit move takes the record covering its first active
+step; the records change a step before each kick's hit box ends (ADR 0023).
+Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
+18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
+70 — `goku`'s `quad_kick` states copy it as `velAt`.
+
+| move | input | name |
+|---|---|---|
+| `a5` | ← ↙ ↓ ↘ → B | Quadruple Kick |
+| `a4` | → ↓ ↘ B | Jumping Knee Slash |
+| `a6` | ↓ ↙ ← B | spinning kick |
+| `a7` | ↓ ↘ → Y | Double Punch |
+| `a2` | → B | Double Kick |
+| `9c` / `9e` | ← ↓ ↙ Y / B | teleport towards / away |
+| `a9` | → ← → A | large ki blast |
+| `ab` | ← ↙ ↓ ↘ → A | Kamehameha |
+| `aa` | ↓ ↙ → A | Super Kamehameha |
+| `ad` | ← ↙ ↓ ↘ → ↗ Y | Meteor Smash |
+| `a8` | R + B | side slash |
+| `9d` | close + X | the throw `?` |
+| `a0`, `a1`, `9f` | → ← → / ↓ ↙ ← / ↓ ↘ → + X | not in the move lists `?` |
+| `ac` | in the air | Slash Down Kick |
 
 ## Hit data
 

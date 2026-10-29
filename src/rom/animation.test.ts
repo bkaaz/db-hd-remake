@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { animName, moveAnim, moveAnims, toAnim } from "./animation";
+import { animName, blowStarts, moveAnim, moveAnims, toAnim } from "./animation";
 import type { ScriptOp } from "./script";
 
 const show = (frames: number, drawing: number | null): ScriptOp => ({ op: "show", frames, drawing });
@@ -77,6 +77,17 @@ describe("moveAnims", () => {
   it("starts a later part on the drawing, flip and offset the first left up", () => {
     const anims = moveAnims(0x9b, [{ op: "offset", dx: 0, dy: -8 }, show(4, 5), spawn, show(4, null)]);
     expect(anims.m9b_2.steps).toEqual([{ frame: "5_0,-8", dur: 4 }]);
+  });
+
+  it("cuts a multi-hit move where each blow after the first begins", () => {
+    // Drawings 2 and 4 strike: two blows, named on from _2, as a spawn's parts are.
+    const strike = (d: number) => (d === 2 || d === 4 ? [{ type: "hit" as const, x: 0, y: 0, w: 1, h: 1 }] : []);
+    const ops = [show(4, 1), show(4, 2), show(4, 2), show(6, 3), show(6, 4)];
+    expect(blowStarts(ops, strike)).toEqual([1, 4]);
+    const anims = moveAnims(0xa5, ops, strike);
+    expect(Object.keys(anims)).toEqual(["ma5", "ma5_2"]);
+    expect(anims.ma5.steps.map((s) => s.frame)).toEqual(["1", "2", "2", "3"]);
+    expect(anims.ma5_2.steps.map((s) => s.frame)).toEqual(["4"]);
   });
 
   it("keeps a move whole when it spawns before showing anything", () => {

@@ -8,6 +8,7 @@ import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
   spawnsNamed,
+  groundSpeed,
   guardStateFor,
   reactionFor,
   StateMachine,
@@ -63,6 +64,7 @@ const NONE = {
   dash: false,
   qcf: false,
   qcb: false,
+  hcf: false,
   holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const FWD = { ...NONE, fwd: true };
@@ -1102,6 +1104,19 @@ describe("StateMachine", () => {
     // Another button's range says nothing about this one.
     expect(new StateMachine(f).update(ATTACK, { ...QUIET, close: { smash: true } })).toBe("punch");
     expect(new StateMachine(f).update(ATTACK, { ...QUIET, close: { attack: true } })).toBe("punch_close");
+  });
+
+  it("changes the forward speed at the frames velAt names, vel before the first", () => {
+    const kick = { anim: "punch", vel: [0.5, 0] as [number, number], velAt: [[4, 2.375], [8, 1.25]] as [number, number][] };
+    expect([0, 3, 4, 7, 8, 30].map((f) => groundSpeed(kick, f))).toEqual([0.5, 0.5, 2.375, 2.375, 1.25, 1.25]);
+    expect(groundSpeed({ anim: "idle" }, 5)).toBe(0);
+  });
+
+  it("refuses a velAt whose frames do not rise", () => {
+    const f = machine();
+    f.states.punch = { anim: "punch", damage: 1, velAt: [[8, 1], [4, 2]], transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"velAt"'))).toBe(true);
   });
 
   it("carries a launch impulse on the state that starts the jump", () => {
