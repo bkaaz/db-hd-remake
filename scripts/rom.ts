@@ -119,7 +119,7 @@ function describe(op: ScriptOp): string {
       return op.drawing === null
         ? `${op.frames} frames, keep the drawing`
         : `${op.frames} frames of ${hex(op.drawing)} (tile set ${hex(tileSetOf(rom, GOKU, op.drawing) ?? 0)})`;
-    case "attack": return `attack ${hex(op.id)} ?`;
+    case "sound": return `sound ${hex(op.id)}`;
     case "effect": return `effect ${hex(op.id)} ?`;
     case "offset": return `draw ${op.dx}, ${op.dy} px from the position`;
     case "spawn": return `spawn object ${hex(op.type)}/${hex(op.anim)} at ${op.dx}, ${op.dy} (tiles +${hex(op.tiles)}, palette ${op.palette})`;

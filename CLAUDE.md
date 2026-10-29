@@ -76,6 +76,12 @@ The project owner wants to go **slowly and deliberately**:
   Deleted from the file in the same change that fixes it. The owner writes there
   too. It is a list of what is broken, not a queue — `plan.md` stays the only
   place that says what is next.
+- **What the cartridge reveals goes into `docs/rom.md` as soon as it is
+  confirmed** — an address, a table's layout, what a field means, a guess
+  marked `?`. It is a map, not a diary: no dates, no how-it-was-found (that is
+  the commit message), and a wrong reading is corrected in place, since it is a
+  living doc rather than an ADR. Short entries; a field that code reads gets
+  its address in that code instead (`FIGHTER_FIELDS`, `src/rom/*.ts`).
 - **Editor and engine co-evolve:** every phase is a vertical slice — data model
   + editor + engine + verification. See `docs/entity-editor.md`.
 

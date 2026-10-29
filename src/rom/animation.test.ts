@@ -6,7 +6,7 @@ const show = (frames: number, drawing: number | null): ScriptOp => ({ op: "show"
 
 describe("toAnim", () => {
   it("turns steps into frames held as long, leaving commands out", () => {
-    const anim = toAnim([show(8, 0x46), { op: "attack", id: 6 }, show(4, 0x4a)]);
+    const anim = toAnim([show(8, 0x46), { op: "sound", id: 6 }, show(4, 0x4a)]);
     expect(anim).toEqual({ loop: false, steps: [{ frame: "70", dur: 8 }, { frame: "74", dur: 4 }] });
   });
 
@@ -47,7 +47,7 @@ describe("toAnim", () => {
   });
 
   it("is null for a script that shows nothing", () => {
-    expect(toAnim([show(4, null), { op: "attack", id: 1 }])).toBeNull();
+    expect(toAnim([show(4, null), { op: "sound", id: 1 }])).toBeNull();
   });
 });
 

@@ -19,7 +19,7 @@ describe("readScript", () => {
 
   it("takes the id of a0 / a1 from the third byte, not the counter in the second", () => {
     expect(at0(0xa0, 0x01, 0x32, 0xa1, 0x00, 0x07, 0x00)).toEqual([
-      { op: "attack", id: 0x32 },
+      { op: "sound", id: 0x32 },
       { op: "effect", id: 0x07 },
     ]);
   });

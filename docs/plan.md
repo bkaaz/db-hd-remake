@@ -54,12 +54,11 @@ dash, four blows, guard, reactions, and the ki blast as a spawn (ADR 0018).
 Its states are by hand in `data/entities/goku/states.json`; the original's
 buttons are A S D X + C (`combat.md`, The buttons).
 
-1. **The original's hit data** — next, recommended (2026-10-29). Every blow of
-   `goku` still takes the shared `flinch` numbers. A script's `a0` hands an
-   attack id to `$0D:D82E`; behind it must be each blow's damage, hitstun and
-   knockback. Read it with `npm run dis`, then decide with the owner how much
-   of it the states take (`combat-direction`: the original's numbers are a
-   start, not the rules).
+1. **The original's hit data** — found (`rom.md`, Hit data). The owner's
+   call (2026-10-29): take it **as the game has it** — damage, the reaction,
+   its length and its knockback — and enrich later. Waiting on a recording
+   of a real match (`tools/re/log-hits.lua`) for the health it is measured
+   against, and on how the original's reactions become hit types.
 2. **Close Y by distance** — the original picks `m90` or `m92` by how near the
    opponent is; the engine has no such trigger yet.
 3. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
@@ -397,6 +396,9 @@ queue.
      one — a stretched pixel stops being square. It needs the owner's position
      each frame, which is the thing ADR 0014 refused a bolt; that ADR gets
      superseded rather than edited when this lands.
+- **The original's stun and chip** (owner, 2026-10-29: later). Every blow
+  carries a stun value that empties a gauge into a dizzy, and some chip on
+  guard (`rom.md`, Hit data).
 - **A KO.** Health floors at zero and nothing happens there — no defeat state,
   no round. `Entity.defeated` is there and unused. Round rules belong to Stage 3
   in `roadmap.md`.

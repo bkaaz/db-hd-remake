@@ -82,8 +82,54 @@ ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 Object slots: ten of 16 bytes at I-RAM `$3300`; each type's behaviour is its
 own code in bank `$0F`.
 
-Not read yet: command `80` (move `9d` uses it), and what `a0` / `a1` /
-`c0` set off — the attack ids are where hit data must be.
+**`a0` plays a sound**, not a blow: `$0D:D82E` queues the id at `$cb`
+(`$00:DE31`) and `$00:D879` hands it to the APU at `$2141`. For player two
+the id is shifted by the byte at `$0D:D852 + id` — each side's voice sits in
+its own range. The id looks like the sound-test clip number + 3 (`06`
+swing, `07` heavier swing, `0a` hit, `0b` ki bolt) `?`.
+
+Not read yet: command `80` (move `9d` uses it), `a1` (`$00:DE9F`, sound
+related), and `c0` (sets fighter field `0x96`).
+
+## Hit data
+
+Looked up **at contact**, from the attacker's move and step — nothing in
+the script names it. Melee: `$0D:D189`; a projectile/object: `$0D:D1DA`,
+through its own table at `$3D:9624`.
+
+**The table** (`$0D:D7E5`): `$3D:8000` + 2 × character → that fighter's
+pointers, one per move from `0x90` (`move − 0x90`) → a list of 6-byte
+records. The first record whose byte 0 is ≥ the attacker's step (field
+`0x46`) is used; `ff` means every step — one move can hit differently
+step by step. The 5 bytes after it:
+
+| byte | what |
+|---|---|
+| 0–2 | which reaction, as bits — the bit read depends on the defender's situation (below) |
+| 2 | also: `0x20` chip on guard = damage / 8, `0x40` = damage / 16; `0x80` read for the attacker's own move `?` (`$0D:DC8B`) |
+| 3 | damage, + attacker field `0x6a` − defender field `0x6b`, never below 0; taken off health (field `0x60`) |
+| 4 | stun: taken off field `0x68` (20 at the start); at 0 the defender is dizzy |
+
+**Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
+bits of bytes 0–1 as one word: `0x0004` `$D622`, `0x0008` light,
+`0x0010` heavy, `0x0020` → move `19`, `0x0040` knockdown (move `1b`),
+`0x0080` → move `42`/`43`, `0x0400` → move `1e`, `0x0800` `$D670`,
+`0x1000` `$D540`. Airborne, bits of byte 1: `01` → move `1a`, `02`
+knockdown, `04` → move `1e`, `08` `$D670`. Then byte 2 bits 0–2 for both
+(`$D3F3`, `$D46E`, `$D4D4`). Light is move `13` (or `17`/`15`), heavy
+`14` (or `18`/`16`); which of the three hangs on field `0x97` bit 0 and
+`$0D:D7BA` `?`. Hitstun is that move's script — `13` is 14 frames, `14`
+26 — not a number in the record.
+
+**Knockback is per reaction, not per blow**: `$0D:D708` with a reaction
+index sets field `0x8c` and vx / vy (8.8 fixed point, vx turned by the
+attacker's facing) from a table of 6-byte entries at `$0D:D68A`. Light
+(index 2) pushes 2.0 px/frame, heavy (3) 3.0, knockdown (4) 2.0 and
+−4.0 up. What `0x8c` counts is not read yet.
+
+**Health** starts from an option setting (`$1AC9` / `$1ACF`, per side),
+or 80 or 999 in other modes (`$01:8150`, `$01:826F`). Training is mode
+`$1A02 = 3`, where damage is zeroed.
 
 ## Another fighter
 
@@ -125,9 +171,9 @@ access to I/O* on; each writes into `logs/`.
 | `log-moves.lua` | which move id each action picks, with the pad and velocities — runs at full speed |
 | `dump-vram.lua` | VRAM, palettes and OAM every few frames — which resource each tile on screen came from |
 | `log-objects.lua` | every change to the ten object slots — an object's frames, timing and speed |
+| `log-hits.lua` | both fighters' move, step, health and stun on every change, with what the hit code sets — what a blow cost |
 | `log-oam.lua` | every sprite in OAM while an object of one type is up — what the game draws, frame by frame |
 
 Measured on Goku (2026-10-28, training mode): walk 1.5 px/frame forward and
 1.25 back; jump −9.86 px/frame with gravity 0.469; hitstop 8 frames; the
-defender's reaction to a close Y, 21 frames. Health does not fall in training — find it in
-a real match.
+defender's reaction to a close Y, 21 frames.

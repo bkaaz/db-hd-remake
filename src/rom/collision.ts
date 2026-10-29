@@ -5,7 +5,7 @@
  *
  * What each slot is was read off the records rather than the code, so it is a
  * reading, not a fact: slots 2 and 3 hold the same rectangle exactly on the
- * drawings where the script fires its attack (far Y's fist, X's kick) and
+ * drawings where the script plays its swing (far Y's fist, X's kick) and
  * nowhere else — the hit box; 6 and 7 cover the head and the body on every
  * drawing — the hurt boxes. Slot 0 is a narrow column at the feet on every
  * drawing (the push width, which our engine keeps as one number per fighter);

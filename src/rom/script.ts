@@ -12,8 +12,12 @@
 export type ScriptOp =
   /** Hold a drawing for `frames`; null keeps whichever is up ($EEEE). */
   | { op: "show"; frames: number; drawing: number | null }
-  /** Fires once per move (counter field 0x6c): `$0D:D82E` with `id` — the blow ? */
-  | { op: "attack"; id: number }
+  /**
+   * Fires once per move (counter field 0x6c): queues sound `id` for the APU
+   * ($0D:D82E → $00:DE31). Not the blow — what a blow does is looked up at
+   * contact from the attacker's move and step (docs/rom.md, Hit data).
+   */
+  | { op: "sound"; id: number }
   /** Fires once per move (counter field 0x6d): `$00:DE9F` with `id` — an effect ? */
   | { op: "effect"; id: number }
   /**
@@ -57,7 +61,7 @@ export function readScript(rom: Uint8Array, at: number): ScriptOp[] {
       ops.push({ op: "hold", drawing: word(p + 1) });
       p += 3;
     } else if (c === 0xa0 || c === 0xa1) {
-      ops.push({ op: c === 0xa0 ? "attack" : "effect", id: rom[p + 2] });
+      ops.push({ op: c === 0xa0 ? "sound" : "effect", id: rom[p + 2] });
       p += 3;
     } else if (c === 0xd0) {
       ops.push({ op: "offset", dx: signed16(word(p + 1)), dy: signed16(word(p + 3)) });
