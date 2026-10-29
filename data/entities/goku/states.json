@@ -659,9 +659,10 @@
     "guard_hit": {
       "anim": "m0d",
       "vel": [
-        -2,
+        0,
         0
       ],
+      "shove": -2,
       "turn": false,
       "guarding": true,
       "transitions": [
@@ -681,9 +682,10 @@
     "guard_crouch": {
       "anim": "m0f",
       "vel": [
-        -2,
+        0,
         0
       ],
+      "shove": -2,
       "turn": false,
       "crouching": true,
       "guard": "guard_crouch",
@@ -790,6 +792,7 @@
       "rank": 1,
       "shove": -2,
       "turn": false,
+      "sound": "voice_hurt",
       "ifAirborne": "juggle",
       "ifCrouching": "reel_light_crouch",
       "transitions": [
@@ -804,6 +807,7 @@
       "rank": 1,
       "shove": -2,
       "turn": false,
+      "sound": "voice_hurt",
       "crouching": true,
       "transitions": [
         {
@@ -817,6 +821,7 @@
       "rank": 2,
       "shove": -3,
       "turn": false,
+      "sound": "voice_hurt",
       "ifAirborne": "hurt_heavy_air",
       "ifCrouching": "reel_heavy_crouch",
       "transitions": [
@@ -831,6 +836,7 @@
       "rank": 2,
       "shove": -3,
       "turn": false,
+      "sound": "voice_hurt",
       "crouching": true,
       "transitions": [
         {
@@ -848,6 +854,7 @@
       ],
       "airborne": true,
       "turn": false,
+      "sound": "voice_hurt",
       "transitions": [
         {
           "when": "landed",

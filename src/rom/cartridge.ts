@@ -130,7 +130,7 @@ export const FIGHTER_FIELDS: Record<number, string> = {
   0x44: "frames since the move began",
   0x46: "step",
   0x60: "health",
-  0x62: "health at the start ?",
+  0x62: "health's ceiling (charging ki refills to it)",
   0x64: "ki ?",
   0x68: "stun gauge (20, dizzy at 0)",
   0x6a: "attack (ATTACK option)",

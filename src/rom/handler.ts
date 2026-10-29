@@ -39,7 +39,15 @@ export interface HandlerFact {
   what: string;
   /** A speed set, px per frame, facing right. */
   vx?: number;
+  /** A sound played, as the cartridge's id. */
+  sound?: number;
 }
+
+/** `$0D:D82E`: plays the sound id in A (docs/rom.md). */
+const PLAY_SOUND = 0x0dd82e;
+
+/** Banks holding move handlers and their helpers, not the engine. */
+const OWN_BANKS = new Set([0x0f, 0x10, 0x20]);
 
 const FRAMES = 0x44;
 const VX = 0x7c;
@@ -76,10 +84,19 @@ export function handlerFacts(rom: Uint8Array, entry: number): HandlerFact[] {
         if (v >= 0) facts.push({ frame, what: "sets vx", vx: v / 256 });
       }
       if (ins.mnemonic === "JSL" && KNOWN[ins.operand] !== undefined) facts.push({ frame, what: KNOWN[ins.operand] });
+      if (ins.mnemonic === "JSL" && ins.operand === PLAY_SOUND && prev?.mnemonic === "LDA" && prev.mode === "im") {
+        facts.push({ frame, what: "plays sound", sound: prev.operand & 0xff });
+      }
       const to = target(ins);
-      if (to !== null && ins.mnemonic !== "JSL" && ins.mnemonic !== "JSR") {
+      const call = ins.mnemonic === "JSL" || ins.mnemonic === "JSR";
+      if (to !== null && !call) {
         // equal to the frame compared: the branch is the code for that frame
         queue.push({ at: to, w: ins.after, frame: ins.mnemonic === "BEQ" && compared !== null ? compared : frame });
+      }
+      // a handler's own helpers do part of its work (the jump's landing sound);
+      // the engine's routines it calls are what KNOWN names, not followed
+      if (to !== null && call && KNOWN[to] === undefined && OWN_BANKS.has(to >> 16)) {
+        queue.push({ at: to, w: ins.after, frame });
       }
       if (ends(ins)) break;
       prev = ins;
@@ -93,7 +110,7 @@ export function handlerFacts(rom: Uint8Array, entry: number): HandlerFact[] {
 function dedupe(facts: HandlerFact[]): HandlerFact[] {
   const keys = new Set<string>();
   return facts.filter((f) => {
-    const k = `${f.frame}:${f.what}:${f.vx}`;
+    const k = `${f.frame}:${f.what}:${f.vx}:${f.sound}`;
     if (keys.has(k)) return false;
     keys.add(k);
     return true;

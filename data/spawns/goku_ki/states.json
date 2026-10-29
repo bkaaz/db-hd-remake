@@ -6,10 +6,8 @@
       "anim": "play",
       "vel": [3, 0],
       "turn": false,
-      "damage": 8,
-      "hitstun": 20,
-      "hitstop": 8,
-      "onHit": "hurt_chain",
+      "type": "heavy",
+      "damage": 18,
       "hitFx": "ki_burst",
       "hitSound": "burst_1",
       "blockSound": "burst_1"

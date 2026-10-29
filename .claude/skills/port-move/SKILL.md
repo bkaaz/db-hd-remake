@@ -26,7 +26,10 @@ and stun; the speed the handler sets (`vel`, `velAt`); the sounds and spawns
 with their frames; where the handler re-arms the blow. Frames count from the
 part's start, as a state's do. The input is the command table's.
 
-If the animation parts are missing, `npm run rom -- export` first.
+A spawn's line carries its object's own blow (`$3D:9624`): the projectile's
+states (`data/spawns/<name>/states.json`) take that type and damage, as
+`goku_ki` does. If the animation parts are missing, `npm run rom -- export`
+first.
 
 ## 3. Write the states
 

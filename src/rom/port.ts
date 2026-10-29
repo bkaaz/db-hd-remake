@@ -4,7 +4,7 @@ import { scriptAt, type FighterTables } from "./cartridge";
 import { readBoxes } from "./collision";
 import { arrow, buttonName, readCommands } from "./commands";
 import { handlerAt, handlerFacts } from "./handler";
-import { groundReaction, hitRecords, recordAt } from "./hits";
+import { groundReaction, hitRecords, objectRecord, recordAt, type HitRecord } from "./hits";
 import { readScript } from "./script";
 
 /**
@@ -28,8 +28,10 @@ export interface PartReport {
   frames: number;
   /** The blow whose hit box rises in this part, if one does. */
   blow?: { frame: number; type: string; damage: number; stun: number };
-  sounds: { frame: number; id: number }[];
-  spawns: { frame: number; type: number; anim: number }[];
+  /** What the script plays, and what the handler plays (`handler: true`). */
+  sounds: { frame: number; id: number; handler?: true }[];
+  /** Objects started, with what their blow does (`$3D:9624`). */
+  spawns: { frame: number; type: number; anim: number; blow: { type: string; damage: number; stun: number } }[];
   /** What the handler does here: the speed carried in, and the frames it changes. */
   vel: number;
   velAt: [number, number][];
@@ -75,9 +77,18 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
         damage: record.damage,
         stun: record.stun,
       },
-      sounds: events.flatMap((e) => (e.op.op === "sound" && inside(e.frame) ? [{ frame: e.frame - from, id: e.op.id }] : [])),
+      sounds: [
+        ...events.flatMap((e) => (e.op.op === "sound" && inside(e.frame) ? [{ frame: e.frame - from, id: e.op.id }] : [])),
+        ...facts.flatMap((f) =>
+          f.sound !== undefined && f.frame !== null && inside(f.frame)
+            ? [{ frame: f.frame - from, id: f.sound, handler: true as const }]
+            : [],
+        ),
+      ],
       spawns: events.flatMap((e) =>
-        e.op.op === "spawn" && inside(e.frame) ? [{ frame: e.frame - from, type: e.op.type, anim: e.op.anim }] : [],
+        e.op.op === "spawn" && inside(e.frame)
+          ? [{ frame: e.frame - from, type: e.op.type, anim: e.op.anim, blow: blowOf(objectRecord(rom, e.op.type, e.op.anim)) }]
+          : [],
       ),
       vel: speeds.filter((s) => s.frame < from).at(-1)?.vx ?? 0,
       velAt: speeds.filter((s) => inside(s.frame)).map((s) => [s.frame - from, s.vx]),
@@ -92,4 +103,8 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     ...commands.map((c) => `${c.where}: ${[...c.directions.map(arrow), buttonName(c.button)].join(" ")}`),
   ];
   return { move, inputs, handler, parts };
+}
+
+function blowOf(r: HitRecord): { type: string; damage: number; stun: number } {
+  return { type: groundReaction(r), damage: r.damage, stun: r.stun };
 }

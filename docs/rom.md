@@ -121,9 +121,25 @@ by where the silences fell, not by the sound test, so a clip is **not** an
 id: matching them by an offset gave a wrong hit sound. A melee hit plays
 `09` (`$0D:D1B7`) and the defender's own `30`; a projectile's, `0a` and `30`
 (`$0D:D1E6`). The export puts each script's `a0` on the animation step it
-begins (`sfx`); `"rom"` in `data/audio/sounds.json` is which ids are
-matched, by the move that plays them: `06` a punch's swing, `07` a kick's,
-`0b` the ki blast fired.
+begins (`sfx`); `"rom"` in a `sounds.json` is which ids are matched — by the
+code that plays them, since a clip's number says nothing:
+
+| id | played by | ours |
+|---|---|---|
+| `06` / `07` | a punch's / a kick's script | `swing_1` / `swing_2` |
+| `09` | a melee hit (`$0D:D1BC`) | `hit_1` |
+| `0a` | a projectile's hit, a blocked projectile (`$0D:CF6D`, `D1E9`) | — |
+| `0b` | the ki blast fired (script) | `blast_1` |
+| `0c` | landing from a jump (`$0F:9FB8`) | `land_1` |
+| `0d` | a body hitting the floor (knockdown handler `$0F:A217`) | `land_2` |
+| `17` | a blocked melee blow (`$0D:CF55`) | `block_1` |
+| `19` | charging ki, every 8 frames (`$0F:A044`) | `charge_1` |
+| `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | goku's `voice_hurt` |
+| `31` | the voice at KO (`$0D:D10C`) | — |
+| `32` | an attack's shout (the ki blast, specials) | goku's `voice_shout` |
+
+**Charging ki refills health**: `+5` every 8 frames up to field `0x62`
+(`$0F:A059`) — the one bar on screen is both.
 
 Not read yet: command `80` (move `9d` uses it), `a1` (`$00:DE9F`, sound
 related), and `c0` (sets fighter field `0x96`).

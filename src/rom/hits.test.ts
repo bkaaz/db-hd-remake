@@ -4,7 +4,7 @@ import { blowStarts } from "./animation";
 import { GOKU as GOKU_TABLES, ROM_PATH, scriptAt } from "./cartridge";
 import { readBoxes } from "./collision";
 import { readScript } from "./script";
-import { groundReaction, hitRecords, recordAt } from "./hits";
+import { groundReaction, hitRecords, objectRecord, recordAt } from "./hits";
 import type { StatesFile } from "../entity/states";
 
 describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
@@ -34,6 +34,13 @@ describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
   it("reads Vegetto's own table, which is what his recorded blows took", () => {
     // Recorded 2026-10-29: his 9e took 22 off Goku, whose defence is 8.
     expect(hitRecords(rom, VEGETTO, 0x9e).at(-1)?.damage).toBe(30);
+  });
+
+  it("reads goku's ki blast from the objects' table: heavy, 18, stun 2", () => {
+    const ki = objectRecord(rom, 0x0a, 3);
+    expect([groundReaction(ki), ki.damage, ki.stun]).toEqual(["heavy", 18, 2]);
+    const { states } = JSON.parse(readFileSync("data/spawns/goku_ki/states.json", "utf8")) as StatesFile;
+    expect([states.fly.type, states.fly.damage]).toEqual(["heavy", 18]);
   });
 
   it("agrees with every blow goku's states copied from it", () => {

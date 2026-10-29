@@ -105,8 +105,10 @@ if (command === "tiles") {
     console.log(`\n${p.anim}  (move frames ${p.from}–${p.from + p.frames - 1})`);
     console.log(`  ${blow}`);
     console.log(`  speed: ${speed}`);
-    if (p.sounds.length) console.log(`  sounds: ${p.sounds.map((s) => `${s.frame}: ${hex(s.id)}`).join(", ")}`);
-    if (p.spawns.length) console.log(`  spawns: ${p.spawns.map((s) => `${s.frame}: object ${hex(s.type)}/${hex(s.anim)}`).join(", ")}`);
+    if (p.sounds.length)
+      console.log(`  sounds: ${p.sounds.map((s) => `${s.frame}: ${hex(s.id)}${s.handler ? " (handler)" : ""}`).join(", ")}`);
+    for (const s of p.spawns)
+      console.log(`  spawns at ${s.frame}: object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
     if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
   }
 } else if (command === "export") {

@@ -69,12 +69,12 @@ takes an investigation instead of a procedure. In this order:
    air (`1a`), crouching (`17`/`18`), the full knockdown (`1b` lies,
    bounces and lies before the get-up `1f`), dizzy (`1d`), and the choice
    between them as `$0D:D29C` makes it.
-3. **Which clip is which id** — matching by number failed (`rom.md`); the
-   owner records nothing in the emulator, so the sounds come out of the
-   cartridge: the sound driver's tables and its BRR samples. Until then a
-   step's `sfx` plays only the ids the bank has matched (`"rom"` in
-   `data/audio/sounds.json`). Also: a melee hit plays the defender's voice
-   (`30`), and the hit itself is `09`, which no clip is known to be.
+3. **Which clip is which id** — matched by the code that plays each id
+   (`rom.md`, the sounds table); still unmatched: `31` (the voice at KO), a
+   jump's take-off (no `$0D:D82E` with a constant plays one), the specials'
+   own (`25`, `29`, `2d`, `38`…). Matching by clip number failed; the owner
+   records nothing in the emulator, so what is left comes from the
+   cartridge — the sound driver's tables and its BRR samples.
 4. **A move's conditions** — ki, low health (Meteor Smash), the throw's
    range: bytes 0–3 of the command table.
 5. **Objects without a recording** — an object's timing is in its own code,

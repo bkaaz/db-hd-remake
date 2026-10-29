@@ -1,0 +1,15 @@
+{
+  "_comment": "Goku's own voice, and nothing else — the cartridge plays a fighter's voice as 30 (hurt, on every blow taken), 31 (KO) and 32 (an attack's shout), shifted for player two. Which clip is which id: by the code that plays it, rom.md (The sounds).",
+  "voice_hurt": {
+    "gain": 0.6,
+    "vary": 0.05,
+    "file": "042.wav",
+    "rom": 48
+  },
+  "voice_shout": {
+    "gain": 0.55,
+    "vary": 0.04,
+    "file": "045.wav",
+    "rom": 50
+  }
+}

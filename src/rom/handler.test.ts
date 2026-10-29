@@ -20,6 +20,11 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     ]);
   });
 
+  it("reads the sounds a handler's own helpers play: the jump's landing", () => {
+    const jump = handlerFacts(rom, handlerAt(rom, GOKU.character, 0x05));
+    expect(jump.filter((f) => f.what === "plays sound").map((f) => f.sound)).toEqual([0x0c]);
+  });
+
   it("reads where it re-arms the blow, and that frame 0 ends the move", () => {
     expect(quad.filter((f) => f.what === "re-arms the blow").map((f) => f.frame)).toEqual([0x1a, 0x30, 0x46]);
     expect(quad.find((f) => f.what === "ends the move")?.frame).toBe(0);

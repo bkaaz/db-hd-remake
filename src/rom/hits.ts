@@ -45,6 +45,30 @@ export function hitRecords(rom: Uint8Array, character: number, move: number): Hi
   }
 }
 
+/** `$3D:9624`: a 2-byte pointer per object type, to 2-byte pointers by animation. */
+const OBJECT_HITS = 0x3d9624;
+
+/**
+ * What an object's blow does — a projectile's — read by `$0D:D1DA` from the
+ * object's type and animation rather than a fighter's move: one record, the
+ * same five bytes as a move's.
+ */
+export function objectRecord(rom: Uint8Array, type: number, anim: number): HitRecord {
+  const word = (at: number) => rom[at] | (rom[at + 1] << 8);
+  const inBank = (p: number) => {
+    const off = toFile((OBJECT_HITS & 0xff0000) | p);
+    if (off === null) throw new Error(`object hit pointer ${p.toString(16)} is not ROM`);
+    return off;
+  };
+  const at = inBank(word(inBank(word(inBank(OBJECT_HITS & 0xffff) + 2 * type)) + 2 * anim));
+  return {
+    upToStep: null,
+    reaction: rom[at] | (rom[at + 1] << 8) | (rom[at + 2] << 16),
+    damage: rom[at + 3],
+    stun: rom[at + 4],
+  };
+}
+
 /** The record a blow starting at `step` takes: the first that covers it. */
 export function recordAt(records: readonly HitRecord[], step: number): HitRecord | undefined {
   return records.find((r) => r.upToStep === null || r.upToStep >= step);

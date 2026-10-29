@@ -36,7 +36,8 @@
     "decay": 0.11,
     "gain": 0.42,
     "vary": 0.1,
-    "file": "007.wav"
+    "file": "007.wav",
+    "rom": 9
   },
   "hit_2": {
     "label": "hit landed — heavier; shares 007 until a heavier clip is named",
@@ -54,7 +55,8 @@
     "decay": 0.09,
     "gain": 0.3,
     "vary": 0.06,
-    "file": "012.wav"
+    "file": "012.wav",
+    "rom": 23
   },
   "jump_1": {
     "label": "jumping, all three directions",
@@ -69,13 +71,15 @@
     "decay": 0.09,
     "gain": 0.22,
     "vary": 0.1,
-    "file": "010.wav"
+    "file": "010.wav",
+    "rom": 12
   },
   "land_2": {
     "label": "a knocked-down body hitting the floor",
     "gain": 0.35,
     "vary": 0.1,
-    "file": "011.wav"
+    "file": "011.wav",
+    "rom": 13
   },
   "land_3": {
     "label": "the same body settling after the bounce; shares 011 with land_2",
@@ -87,7 +91,8 @@
     "label": "charging ki — one short clip, retriggered so the copies overlap",
     "gain": 0.22,
     "vary": 0.0,
-    "file": "013.wav"
+    "file": "013.wav",
+    "rom": 25
   },
   "blast_1": {
     "label": "a ki bolt being fired",
@@ -106,7 +111,8 @@
     "decay": 0.18,
     "gain": 0.42,
     "vary": 0.08,
-    "file": "008.wav"
+    "file": "008.wav",
+    "rom": 10
   },
   "charge_2": {
     "label": "charging a beam — the kamehameha's; played once and cut off by the shot, never looped",
