@@ -11,6 +11,7 @@
  * scripting escape hatch come in later slices.
  */
 
+import type { BallDef } from "../combat/ball";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
 import { missWindow, type AnimSteps } from "../combat/swing";
 
@@ -237,6 +238,12 @@ export interface StateDef {
    * hop). Nothing here says what the bolt does: it is an entity, and its own
    * states own its damage, its reaction and its speed.
    */
+  /**
+   * The ball this state holds in the hands while it charges — added light, not
+   * a sprite (`combat/ball.ts`). A state without one lets it shrink away; a
+   * state that `fires` takes it at once.
+   */
+  ball?: BallDef;
   fires?: {
     spawn: string;
     at: [number, number];
@@ -1036,6 +1043,12 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
           (i > 0 && p[0] <= def.velAt![i - 1][0])))
     ) {
       errors.push(`${where}: "velAt" must be [frame, px per frame] pairs with the frames rising, e.g. [[14, 2.375]]`);
+    }
+    if (
+      def.ball !== undefined &&
+      (!Array.isArray(def.ball.at) || def.ball.at.length !== 2 || typeof def.ball.grow !== "number")
+    ) {
+      errors.push(`${where}: "ball" needs "at" as two numbers and "grow", e.g. { "at": [-10, -38], "grow": 2 }`);
     }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);

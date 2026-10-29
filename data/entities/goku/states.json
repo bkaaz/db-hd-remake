@@ -644,6 +644,14 @@
         0
       ],
       "turn": false,
+      "ball": {
+        "at": [
+          -10,
+          -38
+        ],
+        "from": 16,
+        "grow": 2
+      },
       "transitions": [
         {
           "when": [
@@ -665,6 +673,13 @@
         0
       ],
       "turn": false,
+      "ball": {
+        "at": [
+          -10,
+          -38
+        ],
+        "grow": 2
+      },
       "transitions": [
         {
           "when": [
@@ -686,6 +701,13 @@
         0
       ],
       "turn": false,
+      "ball": {
+        "at": [
+          -10,
+          -38
+        ],
+        "grow": 2
+      },
       "transitions": [
         {
           "when": "animEnd",

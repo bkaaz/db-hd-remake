@@ -2,6 +2,7 @@ import { Container, Graphics, Sprite } from "pixi.js";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
+import { BALL_COLOUR, nextRadius } from "../combat/ball";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -173,6 +174,11 @@ export class Entity {
   readonly view = new Container();
   private readonly sprite = new Sprite();
   private readonly boxG = new Graphics();
+  /** The charging ball, added light over the fighter — see combat/ball.ts. */
+  private readonly ballG = new Graphics();
+  private ballRadius = 0;
+  /** Where the ball was last held, so it shrinks in place once let go. */
+  private ballAt: [number, number] = [0, 0];
 
   private readonly sm: StateMachine | null;
   /** Set by `preview()`: play one animation and ignore the state machine. */
@@ -251,7 +257,8 @@ export class Entity {
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
-    this.view.addChild(this.sprite, this.boxG);
+    this.ballG.blendMode = "add";
+    this.view.addChild(this.sprite, this.ballG, this.boxG);
     this.sm = def.states ? new StateMachine(withHitTypes(def.states), def.animations) : null;
     if (this.sm) this.setAnim(this.sm.def.anim);
     else this.setAnim(Object.keys(def.animations)[0] ?? "");
@@ -593,6 +600,8 @@ export class Entity {
     this.fired = this.sm.def.fires ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.stateFrames = 0;
+    // the shot takes the ball: the original's beam effect replaces it outright
+    if (this.sm.def.fires) this.ballRadius = 0;
     const launch = this.sm.def.launch;
     if (launch) {
       // A null component keeps the axis: a bounce sets how high you come back
@@ -750,6 +759,9 @@ export class Entity {
       this.shove = slowed(this.shove);
     }
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
+    const ball = this.sm.def.ball;
+    if (ball) this.ballAt = ball.at;
+    this.ballRadius = nextRadius(this.ballRadius, ball, this.stateFrames);
     this.stateFrames++;
 
     this.advanceAnim();
@@ -760,6 +772,13 @@ export class Entity {
     this.sprite.x = this.x;
     this.sprite.y = this.y;
     this.sprite.scale.set(this.facing * this.scale * this.size, this.scale * this.size);
+
+    this.ballG.clear();
+    if (this.ballRadius > 0) {
+      const [dx, dy] = this.ballAt;
+      const k = this.scale * this.size;
+      this.ballG.circle(this.x + this.facing * dx * k, this.y + dy * k, this.ballRadius * k).fill(BALL_COLOUR);
+    }
 
     this.boxG.clear();
     const boxes = showBoxes ? this.currentStep()?.boxes : undefined;

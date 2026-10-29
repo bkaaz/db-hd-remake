@@ -146,7 +146,12 @@ global counter — and gone once its owner leaves the move (`$0F:E5FC`);
 frames, steps 2–4 looped while the beam is drawn, 5–7 on the way out
 (`$0F:E70F`). The beam between them is not an object: the base writes its
 start into the effect block (`$30BC`), and a `b1` effect of kind 1 draws the
-band. All of it is resource `0x32` (loaded at `$6C00`) in that resource's
+band. A drawn effect is added light: the yellow COLDATA 20, 20, 8 (of 31)
+added to BG1, BG2 and sprites inside a window (`$2A:A29A`). The band runs
+from `+2` to `+6` of the block — the head writes its own x there each frame
+and thickens it by 1 every 8 frames up to 5, or 9 for the full charge
+(`$0F:B63D`); its half-height is the block's size × `+0C` / 256, `+0C`
+being `b1`'s last byte × 16. All of it is resource `0x32` (loaded at `$6C00`) in that resource's
 own palette — a resource's record holds a palette pointer at bytes 5–7.
 `npm run rom -- object a 15 32@6c00 80` draws an object's frames to look at.
 
