@@ -1,6 +1,6 @@
 -- Mesen 2 script: one line whenever player one's move, step or drawing
--- changes, with the pad and the velocities — which move id the game picks
--- for each action. Light: reads a handful of bytes a frame, no callbacks on
+-- changes, with the pad, the velocities and the distance to player two —
+-- which move id the game picks for each action, and how near decides it. Light: reads a handful of bytes a frame, no callbacks on
 -- the bus, so the game runs at speed.
 --
 -- Output: logs/moves.txt (gitignored).
@@ -18,6 +18,12 @@ local function word(f)
   local v = byte(f) | (byte(f + 1) << 8)
   return v >= 0x8000 and v - 0x10000 or v
 end
+-- Field 0x20 is x in whole pixels, both sides (the spawn code reads it).
+local function distance()
+  local x1 = byte(0x20) | (byte(0x21) << 8)
+  local x2 = emu.read(0x220, emu.memType.sa1InternalRam) | (emu.read(0x221, emu.memType.sa1InternalRam) << 8)
+  return math.abs(x1 - x2)
+end
 
 local function pad()
   local ok, p = pcall(emu.getInput, 0)
@@ -32,7 +38,7 @@ ref = emu.addEventCallback(function()
   frame = frame + 1
   local now = string.format("move=%02x step=%02x drawing=%02x", byte(0x40), byte(0x46), byte(0x0a))
   if now ~= last then
-    log:write(string.format("f%d %s vx=%d vy=%d pad=%s\n", frame, now, word(0x7c), word(0x7e), pad()))
+    log:write(string.format("f%d %s vx=%d vy=%d dx=%d pad=%s\n", frame, now, word(0x7c), word(0x7e), distance(), pad()))
     last = now
   end
   if frame == FRAMES then

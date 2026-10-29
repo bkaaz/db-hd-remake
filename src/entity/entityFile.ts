@@ -19,7 +19,7 @@
  */
 
 import type { Sounds } from "../audio/sounds";
-import type { StatesFile } from "./states";
+import type { CloseButton, StatesFile } from "./states";
 
 /** What a box does when it overlaps: strike, be struck, or keep bodies apart. */
 export type BoxType = "hit" | "hurt" | "push";
@@ -91,6 +91,13 @@ export interface Attributes {
    */
   defence: number;
   /**
+   * Per button, how near the opponent has to be — under this many sprite px
+   * between the two anchors — for its `close:` trigger: the original's line
+   * between a close and a far normal (src/rom/buttons.ts). A button left out
+   * is never close.
+   */
+  closeRange: Partial<Record<CloseButton, number>>;
+  /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —
    * so switching the length from the pose to the number changed nothing, which
@@ -111,6 +118,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   hitstop: 6,
   health: 100,
   defence: 0,
+  closeRange: {},
   hitstun: 12,
   ki: 100,
 };

@@ -91,6 +91,18 @@ swing, `07` heavier swing, `0a` hit, `0b` ki bolt) `?`.
 Not read yet: command `80` (move `9d` uses it), `a1` (`$00:DE9F`, sound
 related), and `c0` (sets fighter field `0x96`).
 
+## The buttons
+
+**The player's buttons pick a move in `$0D:FEC8`** — the move ids are
+numbers in that code, the same for every fighter; which button picks which
+is the table in `src/rom/buttons.ts`. Pressed buttons are fields `0xE8` /
+`0xE9` (the pad's low and high byte), held directions `0xED`. On the ground
+Y and B have a close and a far move: close when the gap between the two
+fighters (field `0x20`) is under the attacker's own line (`$0D:C4A1`), two
+bytes per fighter at `$3D:9EDB` — Goku 44 for Y, 48 for B. A recording
+agreed: close Y at 41 px, far from 53. The CPU keeps lines of its own for
+deciding what to do (`$0D:F7F6`, `$0D:F95B`, `$0D:F96F`).
+
 ## Hit data
 
 Looked up **at contact**, from the attacker's move and step — nothing in

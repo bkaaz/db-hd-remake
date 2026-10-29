@@ -15,6 +15,7 @@ import {
   guardStateFor,
   reactionFor,
   StateMachine,
+  type CloseButton,
   type StateDef,
 } from "./states";
 
@@ -190,6 +191,7 @@ export class Entity {
 
   private readonly gravity: number;
   private readonly landCue: number;
+  private readonly closeRange: Partial<Record<CloseButton, number>>;
   private readonly pushWidth: number;
   private readonly hitstop: number;
   private readonly maxHealth: number;
@@ -236,6 +238,7 @@ export class Entity {
   ) {
     this.gravity = def.attributes.gravity;
     this.landCue = def.attributes.landCue;
+    this.closeRange = def.attributes.closeRange;
     this.pushWidth = def.attributes.pushWidth;
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
@@ -257,6 +260,17 @@ export class Entity {
   /** Off the ground — a jump arcs over the opponent instead of being blocked. */
   get airborne(): boolean {
     return !!this.sm?.def.airborne;
+  }
+
+  /** Which buttons would pick their close version with the opponent at `opponentX`. */
+  private closeTo(opponentX: number | null): Partial<Record<CloseButton, boolean>> {
+    if (opponentX === null) return {};
+    const gap = Math.abs(opponentX - this.x) / this.scale;
+    const close: Partial<Record<CloseButton, boolean>> = {};
+    for (const [button, range] of Object.entries(this.closeRange) as [CloseButton, number][]) {
+      close[button] = gap < range;
+    }
+    return close;
   }
 
   /** Falling, and within `landCue` of the ground: the last stretch before touchdown. */
@@ -690,6 +704,7 @@ export class Entity {
         falling,
         nearGround,
         landed: this.landed,
+        close: this.closeTo(opponentX),
         // `spent` means this attack has connected — set on a hit and on a block,
         // never on a whiff, which is exactly what a chain is allowed to continue
         // from. It was already recorded for a different reason: an attack may

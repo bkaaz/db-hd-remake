@@ -20,8 +20,22 @@
           "to": "guard"
         },
         {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
           "when": "pressed:attack",
           "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
         },
         {
           "when": "pressed:smash",
@@ -80,8 +94,22 @@
           "to": "guard"
         },
         {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
           "when": "pressed:attack",
           "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
         },
         {
           "when": "pressed:smash",
@@ -136,8 +164,22 @@
           "to": "guard"
         },
         {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
           "when": "pressed:attack",
           "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
         },
         {
           "when": "pressed:smash",
@@ -316,6 +358,25 @@
         }
       ]
     },
+    "attack_y_close": {
+      "anim": "m90",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "light",
+      "damage": 25,
+      "sound": "swing_1",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
     "attack_y": {
       "anim": "m92",
       "vel": [
@@ -324,6 +385,25 @@
       ],
       "turn": false,
       "type": "heavy",
+      "damage": 27,
+      "sound": "swing_1",
+      "hitSound": "hit_1",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_b_close": {
+      "anim": "m91",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "light",
       "damage": 27,
       "sound": "swing_1",
       "hitSound": "hit_1",

@@ -76,6 +76,7 @@ const QUIET = {
   falling: false,
   nearGround: false,
   landed: false,
+  close: {},
   hitConfirmed: false,
   /** Full, so a test about triggers is never quietly about affording a move. */
   ki: 100,
@@ -1086,6 +1087,21 @@ describe("StateMachine", () => {
     expect(sm.update(NONE, { ...QUIET, nearGround: true })).toBe("land");
     expect(sm.update(NONE, { ...QUIET, nearGround: true })).toBeNull();
     expect(sm.update(NONE, { ...QUIET, landed: true })).toBe("idle");
+  });
+
+  it("picks the close version of a button only with the opponent in range", () => {
+    // The original's close Y: the same press, a different move by distance.
+    const f = machine();
+    f.states.idle.transitions = [
+      { when: ["pressed:attack", "close:attack"], to: "punch_close" },
+      { when: "pressed:attack", to: "punch" },
+    ];
+    f.states.punch = { anim: "punch", damage: 1, transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.punch_close = { anim: "punch", damage: 1, transitions: [{ when: "animEnd", to: "idle" }] };
+    expect(new StateMachine(f).update(ATTACK, QUIET)).toBe("punch");
+    // Another button's range says nothing about this one.
+    expect(new StateMachine(f).update(ATTACK, { ...QUIET, close: { smash: true } })).toBe("punch");
+    expect(new StateMachine(f).update(ATTACK, { ...QUIET, close: { attack: true } })).toBe("punch_close");
   });
 
   it("carries a launch impulse on the state that starts the jump", () => {

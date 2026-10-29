@@ -404,6 +404,12 @@ export interface Signals {
   /** The entity touched the ground (latched until the state changes). */
   landed: boolean;
   /**
+   * Per button: the opponent is nearer than the entity's `closeRange` for it —
+   * how the original picks a close normal over a far one with the same button.
+   * A button with no range is never close.
+   */
+  close: Readonly<Partial<Record<CloseButton, boolean>>>;
+  /**
    * The attack this entity is in has **connected** — landed or been blocked,
    * but never merely swung. A swing that has not may still be cancelled once
    * it has missed; the state machine works that out from its animation.
@@ -425,6 +431,10 @@ export interface Signals {
    */
   charged: boolean;
 }
+
+/** The buttons that may have a close version, each its own `close:` trigger. */
+export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
+export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Every trigger the runner understands, for validation and editor UI. */
 export const TRIGGERS = [
@@ -453,6 +463,7 @@ export const TRIGGERS = [
   "falling",
   "nearGround",
   "landed",
+  ...CLOSE_BUTTONS.map((b) => `close:${b}` as const),
   "cancelable",
 ] as const;
 
@@ -539,6 +550,12 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "landed":
       value = signals.landed;
+      break;
+    case "close:attack":
+    case "close:smash":
+    case "close:blast":
+    case "close:strike":
+      value = signals.close[key.slice("close:".length) as CloseButton] === true;
       break;
     case "cancelable":
       // Connected or missed, *and* inside the window for it — the state machine

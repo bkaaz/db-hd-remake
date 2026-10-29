@@ -3,5 +3,9 @@
   "pushWidth": 28,
   "hitstop": 8,
   "health": 400,
-  "defence": 8
+  "defence": 8,
+  "closeRange": {
+    "attack": 44,
+    "smash": 48
+  }
 }

@@ -54,8 +54,10 @@ dash, four blows, guard, reactions, and the ki blast as a spawn (ADR 0018).
 Its states are by hand in `data/entities/goku/states.json`; the original's
 buttons are A S D X + C (`combat.md`, The buttons).
 
-1. **Close Y by distance** — the original picks `m90` or `m92` by how near the
-   opponent is; the engine has no such trigger yet.
+1. **The rest of the buttons** — the dispatcher (`src/rom/buttons.ts`)
+   names every move a button picks: crouching Y / B (`m94`, `m95`) and the
+   jump attacks (`m96`–`m99`) are not states of `goku` yet. Their hit data
+   is in the table already.
 2. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
    off today by the held-step rule in `src/rom/animation.ts`.
 3. **The rest of the objects** — `goku_hair` is exported but nothing plays
