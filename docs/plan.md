@@ -70,9 +70,10 @@ takes an investigation instead of a procedure. In this order:
    next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
    for the whole motion, which a half circle barely fits.
 3. **The original's reactions** — light, heavy and down are built; in the
-   air (`1a`), crouching (`17`/`18`), the full knockdown (`1b` lies,
-   bounces and lies before the get-up `1f`), dizzy (`1d`), and the choice
-   between them as `$0D:D29C` makes it.
+   air (`1a`), crouching (`17`/`18`), the full knockdown — ours lands once
+   and gets up, with the first dust; the original's bounces, raises dust
+   again and lies before the get-up (`rom.md`, A knockdown) — dizzy
+   (`1d`), and the choice between them as `$0D:D29C` makes it.
 4. **Which clip is which id** — matched by the code that plays each id
    (`rom.md`, the sounds table); still unmatched: `31` (the voice at KO), a
    jump's take-off (no `$0D:D82E` with a constant plays one), the specials'
@@ -89,28 +90,27 @@ size depends on how long. The one flying up (`ab`) waits. What the
 cartridge does is in `rom.md` (`b0`'s counter, `b1`'s drawn effects):
 
 Built: the charge, the ball, the three beams with their base and band
-(ADR 0025). What still differs from the original:
+(ADR 0025), the explosion each head becomes, the pose held after it, the
+base's way in and out, the band thinning away, the victim's fire (ADR 0027)
+and Goku's line. What
+still differs from the original:
 
-- the base's way in (frames 0–1) and out (5–7) are left out;
 - the charge fires as it decides; the original shows two more frames of
   the charging pose first (`$44` set to 42);
-- what the head does when it hits — `rom.md`: it becomes its explosion and
-  the pose holds 16 / 12 / 8 frames more; ours is gone on contact, which
-  ends the pose at once;
 - the beam ends with the move in the original ($0F:E5FC), long after it has
   left the screen; with no stage or camera that showed it vanishing in mid
   air, so Goku holds the firing pose (`holdStep`) until the head hits or
   leaves the field (owner, 2026-10-29), and the recovery after it (8 frames
   of drawing `00`) is skipped;
-- when a beam ends the original thins its band away (`$2A:A3F7`: size −1 a
-  frame) rather than dropping it;
 - the white screen is built as the original's but switched off
   (`SCREEN_FLASH` in `src/stage.ts`): full white over our near-black window
   is blinding (owner, 2026-10-29). Turn it on with a stage, whitening its
   art as the original does; consider a player setting for flash strength;
 - the thrower's own palette changes every 4 frames while the beam is out
   (`log-palettes.lua`); the victim's fire and the white screen are built
-  (ADR 0026).
+  (ADR 0027);
+- a big explosion that knocks its victim down sets the game's `$37` to `16`
+  (`rom.md`) — what that does is not read.
 
 ### Then: the rest of Goku
 

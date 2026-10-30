@@ -1,0 +1,8 @@
+{
+  "mirrors": false,
+  "copies": {
+    "count": 1,
+    "step": 1,
+    "spread": [4, 11]
+  }
+}

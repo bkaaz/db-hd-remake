@@ -3,8 +3,8 @@ import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { BALL_COLOUR, nextRadius } from "../combat/ball";
-import { bandHeights } from "../combat/band";
-import { variantAt, type PaletteRun } from "../combat/palettes";
+import { bandHeights, type BandDef } from "../combat/band";
+import { burnVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -85,8 +85,8 @@ export interface Blow {
   relaunch: boolean;
   /** Game frames the defender is held helpless for. */
   hitstun: number;
-  /** The colours it leaves on the defender (`hitPalettes`). */
-  palettes?: PaletteRun;
+  /** Whether it sets the defender burning (`burns`). */
+  burns?: boolean;
 }
 
 /** One fighter's innards, for the debug readout only — see `Entity.debug`. */
@@ -187,6 +187,8 @@ export class Entity {
   private beamHead: number | null = null;
   /** Frames the current state's band has been out — it thickens with them. */
   private bandFrames = 0;
+  /** A band whose head is gone, thinning where it stood whatever state comes next. */
+  private fading: { band: BandDef; frames: number; gone: number; head: number } | null = null;
 
   private readonly sm: StateMachine | null;
   /** Set by `preview()`: play one animation and ignore the state machine. */
@@ -221,6 +223,8 @@ export class Entity {
   private ki = 0;
   /** Set on entering a state that `fires`; taken by whoever owns projectiles. */
   private fired: StateDef["fires"] | null = null;
+  /** The `groundFx` of the state just entered, until the fighters take it. */
+  private groundFx: string | null = null;
   /** 0..1, filled by a state that charges and spent by what it throws. */
   private charge = 0;
   /**
@@ -240,9 +244,9 @@ export class Entity {
   private hum = { id: "", left: 0 };
   /** Game frames left of a hit pause; while it lasts nothing about the entity moves. */
   private freezeFrames = 0;
-  /** The palette run a blow left, and how far into it — counted through hitstop too. */
-  private paletteRun: PaletteRun | null = null;
-  private paletteFrame = 0;
+  /** Burning, and how far into the fire palettes — counted outside hitstop, as the original's is. */
+  private burning = false;
+  private burnFrame = 0;
   private shownVariant: string | null = null;
   /**
    * Game frames left of being held helpless by the last blow. Ticked below the
@@ -372,6 +376,13 @@ export class Entity {
     return !!this.sm?.def.invulnerable;
   }
 
+  /** The effect a state just entered puts on the floor under this entity, in world px — taken once. */
+  takeGroundFx(): { name: string; x: number; y: number } | null {
+    const name = this.groundFx;
+    this.groundFx = null;
+    return name ? { name, x: this.x, y: this.groundY } : null;
+  }
+
   /**
    * The projectile this entity just launched, in world px, or null — and taking
    * it clears it, so one entry into a state fires one bolt however many frames
@@ -414,6 +425,11 @@ export class Entity {
 
   /** Where the head of what this entity threw has flown to; null once it is gone. */
   beamReaches(x: number | null): void {
+    const band = this.sm?.def.band;
+    if (x === null && band && this.beamHead !== null) {
+      this.fading = { band, frames: this.bandFrames, gone: 0, head: this.beamHead };
+    }
+    if (x !== null) this.fading = null;
     this.beamHead = x;
   }
 
@@ -447,9 +463,9 @@ export class Entity {
     return this.sm?.def.hitFlash ?? 0;
   }
 
-  /** The palette run this entity's current attack leaves on whoever it hits. */
-  get attackPalettes(): PaletteRun | undefined {
-    return this.sm?.def.hitPalettes;
+  /** Whether this entity's current attack sets whoever it hits burning. */
+  get attackBurns(): boolean {
+    return !!this.sm?.def.burns;
   }
 
   /** Frames this entity's current attack holds whoever it hits. */
@@ -499,6 +515,16 @@ export class Entity {
   /** Effect entity this entity's current attack leaves at the point of contact. */
   get attackFx(): string {
     return this.sm?.def.hitFx ?? DEFAULT_HIT_FX;
+  }
+
+  /** The effect this entity's blow becomes where it lands, if it is a projectile's (`burstsInto`). */
+  get attackBurst(): string | undefined {
+    return this.sm?.def.burstsInto;
+  }
+
+  /** Which step of its animation this entity is on — an effect's copies wait for one. */
+  get animStep(): number {
+    return this.stepIndex;
   }
 
   /**
@@ -582,18 +608,19 @@ export class Entity {
     // After entering, because arriving in a state clears the clock — and this
     // blow's hold is the one thing about the reaction the blow gets to decide.
     this.stun = stun;
-    if (blow.palettes) {
-      this.paletteRun = blow.palettes;
-      this.paletteFrame = 0;
+    if (blow.burns && this.def.attributes.burn.length > 0) {
+      this.burning = true;
+      // the original's counter is the game's, shared: where in the fire a burn
+      // starts is no fact about the blow, so it starts anywhere
+      this.burnFrame = Math.floor(Math.random() * 2 * this.def.attributes.burn.length);
       this.showVariant();
     }
     return true;
   }
 
-  /** Draw the current frame from the variant the palette run is on, or from the own sheet. */
+  /** Draw the current frame from the fire palette burning is on, or from the own sheet. */
   private showVariant(): void {
-    const variant = this.paletteRun ? variantAt(this.paletteRun, this.paletteFrame) : null;
-    if (!variant) this.paletteRun = null;
+    const variant = this.burning ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? null) : null;
     if (variant === this.shownVariant) return;
     this.shownVariant = variant;
     this.applyFrame();
@@ -644,6 +671,7 @@ export class Entity {
     // Latched rather than spawned here: what a bolt is allowed to hit is a fact
     // about the pair, so the thing between the fighters takes it off the latch.
     this.fired = this.sm.def.fires ?? null;
+    this.groundFx = this.sm.def.groundFx ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.stateFrames = 0;
     // the shot takes the ball: the original's beam effect replaces it outright
@@ -665,6 +693,11 @@ export class Entity {
   preview(name: string): void {
     this.previewing = true;
     this.setAnim(name);
+  }
+
+  /** Where a spawn goes once its bolt is gone (`onRelease`), if anywhere. */
+  get releaseState(): string | undefined {
+    return this.def.states?.onRelease;
   }
 
   /** A non-looping animation has reached its end — for effects, time to go. */
@@ -695,13 +728,12 @@ export class Entity {
     // A hit pause freezes the whole entity, animation included — the pose the
     // blow landed on is exactly what should be held still. The buffer is not
     // ticked below either, so the pause cannot age a press out of existence.
-    // before the freeze: the fire starts on the frame of contact and burns through the hitstop
-    if (this.paletteRun) this.paletteFrame++;
-    this.showVariant();
     if (this.freezeFrames > 0) {
       this.freezeFrames--;
       return;
     }
+    if (this.burning) this.burnFrame++;
+    this.showVariant();
 
     if (this.stun > 0) this.stun--;
     // Below the freeze check with the stun clock: a hit pause freezes both
@@ -801,6 +833,8 @@ export class Entity {
         // that followed had to invent a speed it could not know.
         this.vy = 0;
         this.landed = true;
+        // the fire goes out when the body lands, its own palette back ($0D:CB47)
+        this.burning = false;
       }
     } else {
       this.y = this.groundY;
@@ -812,6 +846,11 @@ export class Entity {
     if (ball) this.ballAt = ball.at;
     this.ballRadius = nextRadius(this.ballRadius, ball, this.stateFrames);
     this.bandFrames = this.sm.def.band && this.beamHead !== null ? this.bandFrames + 1 : 0;
+    if (this.fading) {
+      this.fading.gone++;
+      const { band, frames, gone } = this.fading;
+      if (bandHeights(band, frames, gone).head === 0) this.fading = null;
+    }
     this.stateFrames++;
 
     this.advanceAnim();
@@ -830,14 +869,8 @@ export class Entity {
       this.ballG.circle(this.x + this.facing * dx * k, this.y + dy * k, this.ballRadius * k).fill(BALL_COLOUR);
     }
     const band = this.sm?.def.band;
-    if (band && this.beamHead !== null) {
-      const k = this.scale * this.size;
-      const base = this.x + this.facing * band.from[0] * k;
-      const y = this.y + band.from[1] * k;
-      const h = bandHeights(band, this.bandFrames);
-      const [b, t] = [(h.base * k) / 2, (h.head * k) / 2];
-      this.ballG.poly([base, y - b, this.beamHead, y - t, this.beamHead, y + t, base, y + b]).fill(BALL_COLOUR);
-    }
+    if (band && this.beamHead !== null) this.drawBand(band, this.bandFrames, 0, this.beamHead);
+    else if (this.fading) this.drawBand(this.fading.band, this.fading.frames, this.fading.gone, this.fading.head);
 
     this.boxG.clear();
     const boxes = showBoxes ? this.currentStep()?.boxes : undefined;
@@ -848,6 +881,15 @@ export class Entity {
       const r = boxToWorld(b, at);
       this.boxG.rect(r.x, r.y, r.w, r.h).stroke({ color: BOX_COLORS[b.type] ?? 0xffffff, width: 1 });
     }
+  }
+
+  private drawBand(band: BandDef, frames: number, gone: number, head: number): void {
+    const k = this.scale * this.size;
+    const base = this.x + this.facing * band.from[0] * k;
+    const y = this.y + band.from[1] * k;
+    const h = bandHeights(band, frames, gone);
+    const [b, t] = [(h.base * k) / 2, (h.head * k) / 2];
+    this.ballG.poly([base, y - b, head, y - t, head, y + t, base, y + b]).fill(BALL_COLOUR);
   }
 
   // --- animation playback --------------------------------------------------
@@ -909,6 +951,8 @@ export class Entity {
 
   private stepBegins(): void {
     this.applyFrame();
-    for (const id of this.currentStep()?.sfx ?? []) this.audio?.playRom(id);
+    const step = this.currentStep();
+    for (const id of step?.sfx ?? []) this.audio?.playRom(id);
+    if (step?.voice !== undefined) this.audio?.playLine(step.voice);
   }
 }

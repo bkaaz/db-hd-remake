@@ -27,8 +27,13 @@ export interface BandDef {
 
 const THICKEN_EVERY = 8;
 
-/** How tall the band is at the hands and at the head, in sprite px, `frames` after it appeared. */
-export function bandHeights(def: BandDef, frames: number): { base: number; head: number } {
-  const size = Math.min(def.max, def.size + Math.floor(frames / THICKEN_EVERY));
+/**
+ * How tall the band is at the hands and at the head, in sprite px, `frames`
+ * after it appeared — and, `gone` frames after its head is gone, one size
+ * thinner a frame where it stands ($2A:A3F7, set going by `$0F:B4ED` as the
+ * head's slot is freed), down to nothing.
+ */
+export function bandHeights(def: BandDef, frames: number, gone = 0): { base: number; head: number } {
+  const size = Math.max(0, Math.min(def.max, def.size + Math.floor(frames / THICKEN_EVERY)) - gone);
   return { base: 2 * size, head: (def.flat ? 2 : 4) * size };
 }

@@ -178,9 +178,27 @@ own palette, field `0x17`). The 15 are `$95:C78E` on, 32 bytes each.
 for its head (`JSL $0D:EBE0`, type and animation in the player's slots) and,
 not finding it, jumps the move to frame 124 / 128 / 132 — 16 / 12 / 8 more
 frames of the firing pose, then 8 of drawing `00`. The base plays its way
-out (steps 5–7). A big explosion's first frame with the defender knocked
+out (steps 5–7). The band thins away where it stands: freeing an object's
+slot (`$0F:B4ED`) sets byte 1 of its owner's `b1` block when `$0F:B527`
+(by type, then animation) says so — type `a`, animations `10`–`16` — and
+from then the block's size drops by 1 a frame until it is gone (`$2A:A3F7`;
+the flat kind 4, `$2A:A78D`, the same). A big explosion's first frame with the defender knocked
 down sets the game's `$37` to `16` (`$0F:E261`) — what that does is not read.
 The `a/0d` beside the defender are its knockdown's, not the beam's.
+
+**A knockdown** (move `1b`, and `1e`; handler `$0F:A217`, by step through
+`$0F:A22D`) rises in drawing `59` until vy turns, falls in `32`, and hits
+the floor: dust, sound `0d`, and a bounce (`$0D:EC12`: vy = −¼ of the
+landing speed, field `0x33`, at most 2.0 up; it also sets `$E3` to `8008`,
+or `8108` at that cap — a shake `?`), drawing `33` for 4 frames then `32`
+in the air. The second landing raises dust again, plays `0c` and stops it;
+it lies in `34` for 32 frames and gets up (move `1f`). Each step is a jump
+of field `0x44` into the one script (`0x20`, `0x40`, `0x64`).
+
+**Dust** is object `a/0d` (`$0D:DE6C`): put at the body's x on the floor
+line (y 200), in the explosions' OAM slot and tiles, 4 steps of 6 frames
+(`$0F:E559`). Every fall onto the floor calls it — 35 places, the other
+characters' reactions and specials among them (`find 22 6c de 0d`).
 
 **A spoken line is `a1`**, not an effect (`$00:DE9F`): its id picks a
 sample from `$00:DB98` (3 bytes each) streamed to the sound chip

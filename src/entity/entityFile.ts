@@ -53,6 +53,8 @@ export interface Step {
    * by the export from `a0`, played through the bank's `rom` match.
    */
   sfx?: number[];
+  /** The spoken line its script starts as this step begins (`a1`), played through the fighter's `line` match. */
+  voice?: number;
 }
 
 export interface Anim {
@@ -110,9 +112,23 @@ export interface Attributes {
   closeRange: Partial<Record<CloseButton, number>>;
   /**
    * The palette variants this fighter has sheets for — `<sheet>@<name>.png`,
-   * written by `npm run rom -- export` — that a blow's `hitPalettes` can show.
+   * written by `npm run rom -- export` — for the entity to draw from in place
+   * of its own (ADR 0026).
    */
   palettes: string[];
+  /** Of those, the ones burning steps through, in order ($0D:EC98). */
+  burn: string[];
+  /**
+   * For an effect: whether each one is shown mirrored at random, as the
+   * generated sparks are; an effect taken from the cartridge is not.
+   */
+  mirrors: boolean;
+  /**
+   * For an effect: how many copies of itself it puts out, on which step of its
+   * animation, how far away (px, each axis, either side) — the original's big
+   * explosions ($0F:E1A9). A copy carries one fewer.
+   */
+  copies: { count: number; step: number; spread: [number, number] };
   /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —
@@ -137,6 +153,9 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   comboLimits: true,
   closeRange: {},
   palettes: [],
+  burn: [],
+  mirrors: true,
+  copies: { count: 0, step: 0, spread: [0, 0] },
   hitstun: 12,
   ki: 100,
 };

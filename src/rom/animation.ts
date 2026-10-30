@@ -59,10 +59,12 @@ export function toAnim(ops: ScriptOp[], boxesOf: (drawing: number) => Box[] = ()
   let look: Look = PLAIN;
   // an a0 plays as the engine walks past it, which is as the next step begins
   let sfx: number[] = [];
+  let voice: number | undefined;
   for (const op of ops) {
     if (op.op === "flip") look = { ...look, h: op.h, v: op.v };
     if (op.op === "offset") look = { ...look, dx: op.dx, dy: op.dy };
     if (op.op === "sound") sfx.push(op.id);
+    if (op.op === "voice") voice = op.id;
     if (op.op !== "show" && op.op !== "hold") continue;
     if (op.drawing !== null) current = op.drawing;
     // a hold lasts until something outside the script ends it: one frame here
@@ -72,7 +74,9 @@ export function toAnim(ops: ScriptOp[], boxesOf: (drawing: number) => Box[] = ()
     const boxes = placeBoxes(boxesOf(current), look);
     if (boxes.length) step.boxes = boxes;
     if (sfx.length) step.sfx = sfx;
+    if (voice !== undefined) step.voice = voice;
     sfx = [];
+    voice = undefined;
     steps.push(step);
   }
   return { loop: false, steps };
@@ -112,7 +116,7 @@ export function moveAnims(move: number, ops: ScriptOp[], boxesOf?: (drawing: num
       // sounds just before the cut play as the next part begins, so they go with it
       const last = parts[parts.length - 1];
       let i = last.length;
-      while (i > 0 && last[i - 1].op === "sound") i--;
+      while (i > 0 && (last[i - 1].op === "sound" || last[i - 1].op === "voice")) i--;
       parts.push([...carried(parts.flat()), ...last.splice(i)]);
     }
     if (isStep) {

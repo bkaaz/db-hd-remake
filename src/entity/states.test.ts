@@ -389,6 +389,14 @@ describe("validateStates", () => {
     );
   });
 
+  it("reports an onRelease state that does not exist, and forces the one that does", () => {
+    const f = machine();
+    f.onRelease = "leave";
+    expect(validateStates(f, ANIMS).errors).toContain('onRelease state "leave" does not exist');
+    f.states.leave = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
+    expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
+  });
+
   it("reports an onGuard state that does not exist", () => {
     const f = machine();
     f.onGuard = "gaurd";
@@ -1164,13 +1172,6 @@ describe("StateMachine", () => {
     });
   });
 
-  it("refuses hitPalettes that are not variant and frames pairs", () => {
-    const f = machine();
-    f.states.punch = { anim: "punch", damage: 1, hitPalettes: [["fire4", 0]], transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
-    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"hitPalettes"'))).toBe(true);
-  });
-
   it("refuses a holdStep its animation does not have", () => {
     const f = machine();
     const anims = { ...ANIMS, pose: { loop: false, steps: [{}, {}] } };
@@ -1283,8 +1284,9 @@ describe("effectsNamed", () => {
       punch: { anim: "punch", hitFx: "spark_1" },
       smash: { anim: "smash", hitFx: "spark_2" },
       kick: { anim: "kick", hitFx: "spark_2" },
+      downed: { anim: "downed", groundFx: "dust" },
     });
-    expect(effectsNamed(states).sort()).toEqual(["spark_1", "spark_2"]);
+    expect(effectsNamed(states).sort()).toEqual(["dust", "spark_1", "spark_2"]);
   });
 
   it("survives an entity with no states at all", () => {

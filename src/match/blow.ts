@@ -87,14 +87,19 @@ export function landBlow(
       reaction: attacker.attackReaction,
       relaunch: attacker.attackRelaunch,
       hitstun: attacker.attackHitstun,
-      palettes: attacker.attackPalettes,
+      burns: attacker.attackBurns,
     });
     dealt = defender.hurtBy(attacker.attackDamage);
   }
-  // The spark belongs at the deepest point of the blow, not at either fighter's
-  // anchor and not at the middle of the overlap — see impactPoint.
-  const at = impactPoint(where, attacker.facing);
-  effects.spawn(attacker.attackFx, at.x, at.y);
+  // A projectile that bursts does so at the middle of the overlap, as the
+  // original's are rewritten in place; a spark belongs at the deepest point of
+  // the blow — see impactPoint.
+  const burst = attacker.attackBurst;
+  if (burst) effects.spawn(burst, where.x + where.w / 2, where.y + where.h / 2);
+  else {
+    const at = impactPoint(where, attacker.facing);
+    effects.spawn(attacker.attackFx, at.x, at.y);
+  }
   // Both sides pause, not just the one taking it: freezing only the defender
   // lets the attacker walk on through the moment of contact.
   const stop = attacker.attackHitstop;

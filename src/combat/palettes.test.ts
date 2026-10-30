@@ -1,15 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { variantAt } from "./palettes";
+import { burnVariant } from "./palettes";
 
-// The Kamehameha's fire as recorded: 4 for the 10 frames of hitstop, then 5–9 two each.
-const fire: [string, number][] = [["fire4", 10], ["fire5", 2], ["fire6", 2], ["fire7", 2], ["fire8", 2], ["fire9", 2]];
+const fire = Array.from({ length: 15 }, (_, i) => `fire${i}`);
 
-describe("a palette run", () => {
-  it("holds each variant for its frames, in order", () => {
-    expect([0, 9, 10, 11, 12, 19].map((f) => variantAt(fire, f))).toEqual(["fire4", "fire4", "fire5", "fire5", "fire6", "fire9"]);
+describe("burning", () => {
+  it("steps to the next fire palette every 2 frames", () => {
+    expect([0, 1, 2, 3, 4].map((f) => burnVariant(fire, f))).toEqual(["fire0", "fire0", "fire1", "fire1", "fire2"]);
   });
 
-  it("is over after its last frame: the sprite's own palette again", () => {
-    expect(variantAt(fire, 20)).toBeNull();
+  it("goes round all of them, for as long as it lasts", () => {
+    expect(burnVariant(fire, 29)).toBe("fire14");
+    expect(burnVariant(fire, 30)).toBe("fire0");
+  });
+
+  it("shows nothing on a fighter with no burn sheets", () => {
+    expect(burnVariant([], 3)).toBeUndefined();
   });
 });

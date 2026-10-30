@@ -17,6 +17,13 @@ describe("the beam's band", () => {
     expect(bandHeights(full, 400)).toEqual({ base: 18, head: 36 });
   });
 
+  it("thins by one unit a frame once the head is gone, to nothing", () => {
+    expect(bandHeights(full, 400, 1)).toEqual({ base: 16, head: 32 });
+    expect(bandHeights(full, 400, 8)).toEqual({ base: 2, head: 4 });
+    expect(bandHeights(full, 400, 9)).toEqual({ base: 0, head: 0 });
+    expect(bandHeights(full, 400, 20)).toEqual({ base: 0, head: 0 });
+  });
+
   it("stays flat for the small shot: as tall at the head as at the hands", () => {
     expect(bandHeights({ from: [30, -51], size: 2, max: 5, flat: true }, 0)).toEqual({ base: 4, head: 4 });
   });

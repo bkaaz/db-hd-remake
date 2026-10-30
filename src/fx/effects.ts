@@ -2,6 +2,7 @@ import type { Application } from "pixi.js";
 import type { Bounds } from "../combat/push";
 import { Entity, NO_INPUT } from "../entity/entity";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
+import { copyOffset } from "./burst";
 
 /**
  * The sparks a blow leaves behind: entities with no state machine — one
@@ -11,9 +12,17 @@ import { loadEntityDef, type EntityDef } from "../entity/entityDef";
  * that has not run the script has no sheet for them. That is not fatal; the
  * game says so once and fights on without sparks.
  */
+/** One effect on screen, and what is left of its copies (`attributes.copies`). */
+interface Live {
+  fx: Entity;
+  name: string;
+  copiesLeft: number;
+  copied: boolean;
+}
+
 export class Effects {
   private readonly defs = new Map<string, EntityDef>();
-  private readonly live: Entity[] = [];
+  private readonly live: Live[] = [];
 
   private constructor(
     private readonly app: Application,
@@ -41,18 +50,18 @@ export class Effects {
    * printed over and over. The mirror doubles that for free and, unlike a
    * rotation, is exact — it moves whole pixels, so nothing is resampled.
    */
-  spawn(name: string, x: number, y: number): void {
+  spawn(name: string, x: number, y: number, copiesLeft?: number): void {
     const def = this.defs.get(name);
     if (!def) return;
     const variants = Object.keys(def.animations);
     if (variants.length === 0) return;
     const fx = new Entity(def, this.scale);
     fx.preview(variants[Math.floor(Math.random() * variants.length)]);
-    fx.facing = Math.random() < 0.5 ? 1 : -1;
+    fx.facing = def.attributes.mirrors && Math.random() < 0.5 ? -1 : 1;
     fx.x = x;
     fx.y = y;
     this.app.stage.addChild(fx.view);
-    this.live.push(fx);
+    this.live.push({ fx, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false });
   }
 
   /**
@@ -65,8 +74,15 @@ export class Effects {
    */
   update(paused: boolean, bounds: Bounds): void {
     for (let i = this.live.length - 1; i >= 0; i--) {
-      const fx = this.live[i];
+      const live = this.live[i];
+      const { fx } = live;
       if (!paused) fx.update(NO_INPUT, null, bounds);
+      const copies = this.defs.get(live.name)?.attributes.copies;
+      if (copies && !live.copied && live.copiesLeft > 0 && fx.animStep >= copies.step) {
+        live.copied = true;
+        const [dx, dy] = [copyOffset(Math.random(), copies.spread), copyOffset(Math.random(), copies.spread)];
+        this.spawn(live.name, fx.x + dx * this.scale, fx.y + dy * this.scale, live.copiesLeft - 1);
+      }
       if (fx.finished) {
         fx.view.destroy({ children: true });
         this.live.splice(i, 1);
@@ -76,12 +92,12 @@ export class Effects {
 
   /** Sweep away whatever is still in the air when the scene ends. */
   destroy(): void {
-    for (const fx of this.live) fx.view.destroy({ children: true });
+    for (const { fx } of this.live) fx.view.destroy({ children: true });
     this.live.length = 0;
   }
 
   /** Effects never show their boxes — they have none worth looking at. */
   render(): void {
-    for (const fx of this.live) fx.render(false);
+    for (const { fx } of this.live) fx.render(false);
   }
 }

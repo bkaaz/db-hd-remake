@@ -31,7 +31,8 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackHitstun: 12,
     attackFx: "spark_1",
     attackFlash: 0,
-    attackPalettes: undefined,
+    attackBurst: undefined,
+    attackBurns: false,
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
     travels: false,
@@ -82,13 +83,21 @@ describe("landBlow", () => {
 
 
   it("asks for the white screen and passes the fire on, unless it is blocked", () => {
-    const fire: [string, number][] = [["fire4", 10]];
-    const beam = body("hit", { attackFlash: 16, attackPalettes: fire } as Partial<Entity>);
+    const beam = body("hit", { attackFlash: 16, attackBurns: true } as Partial<Entity>);
     const defender = body("hurt");
     expect(landBlow(beam, defender, context())?.flash).toBe(16);
-    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ palettes: fire }));
+    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ burns: true }));
     const guard = body("hurt", { guarding: true });
     expect(landBlow(beam, guard, context())?.flash).toBe(0);
+  });
+
+  it("puts a projectile's burst at the middle of the overlap, in place of its spark", () => {
+    const bolt = body("hit", { attackBurst: "burst_l" } as Partial<Entity>);
+    const ctx = context();
+    landBlow(bolt, body("hurt"), ctx);
+    // both boxes cover 0..10 x -10..0 at the origin: the middle is (5, -5)
+    expect(ctx.effects.spawn).toHaveBeenCalledWith("burst_l", 5, -5);
+    expect(ctx.effects.spawn).toHaveBeenCalledTimes(1);
   });
 
   it("connects when a hit box reaches a hurt box", () => {
@@ -101,6 +110,7 @@ describe("landBlow", () => {
       reaction: "hurt",
       relaunch: false,
       hitstun: 12,
+      burns: false,
     });
   });
 

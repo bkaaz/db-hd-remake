@@ -37,6 +37,8 @@ export interface StepDef {
   boxes: Box[];
   /** The cartridge's sounds for this step, kept as the export wrote them. */
   sfx?: number[];
+  /** The cartridge's spoken line for this step, kept as the export wrote it. */
+  voice?: number;
 }
 
 export interface AnimDef {
@@ -290,6 +292,7 @@ export function loadEntity(json: EntityFileIn): void {
       dur: s.dur,
       boxes: (s.boxes ?? []).map((b) => ({ ...b })),
       ...(s.sfx ? { sfx: [...s.sfx] } : {}),
+      ...(s.voice !== undefined ? { voice: s.voice } : {}),
     })),
   }));
   sortFrames();

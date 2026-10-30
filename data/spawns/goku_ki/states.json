@@ -1,5 +1,5 @@
 {
-  "_comment": "The cartridge's ki blast (object a/03, docs/rom.md). Its frames and animation are written by npm run rom -- export; this file is by hand, after ki_bolt. 3 px a frame is b0's vx; its type and damage are the objects' hit table's ($3D:9624).",
+  "_comment": "The cartridge's ki blast (object a/03, docs/rom.md). Its frames and animation are written by npm run rom -- export; this file is by hand, after ki_bolt. 3 px a frame is b0's vx; its type and damage are the objects' hit table's ($3D:9624); where it hits it becomes a/01 ($2A:8E31).",
   "initial": "fly",
   "states": {
     "fly": {
@@ -8,7 +8,7 @@
       "turn": false,
       "type": "heavy",
       "damage": 18,
-      "hitFx": "ki_burst",
+      "burstsInto": "goku_burst",
       "hitSound": "burst_1",
       "blockSound": "burst_1"
     }

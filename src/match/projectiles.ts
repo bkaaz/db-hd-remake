@@ -44,6 +44,8 @@ export interface ProjectileHit {
 export class Projectiles {
   private readonly defs = new Map<string, EntityDef>();
   private readonly live: Live[] = [];
+  /** Companions whose bolt is gone, playing their `onRelease` state out. */
+  private readonly leaving: Entity[] = [];
 
   private constructor(
     private readonly app: Application,
@@ -153,17 +155,34 @@ export class Projectiles {
       // is allowed to hang in a corner waiting for someone to walk into it.
       const stranded = bolt.x <= bounds.min || bolt.x >= bounds.max;
       if (result || stranded) {
-        for (const e of [bolt, ...companions]) e.view.destroy({ children: true });
+        bolt.view.destroy({ children: true });
+        for (const c of companions) this.release(c);
         this.live.splice(i, 1);
         if (beam) owner.beamReaches(null);
         owner.spawnEnded();
       }
     }
+    for (let i = this.leaving.length - 1; i >= 0; i--) {
+      const c = this.leaving[i];
+      if (!paused) c.update(NO_INPUT, null, bounds);
+      if (c.finished) {
+        c.view.destroy({ children: true });
+        this.leaving.splice(i, 1);
+      }
+    }
     return hits;
+  }
+
+  /** A companion whose bolt is gone: into its way out if it has one, else gone now. */
+  private release(c: Entity): void {
+    const out = c.releaseState;
+    if (out && c.forceState(out)) this.leaving.push(c);
+    else c.view.destroy({ children: true });
   }
 
   render(showBoxes: boolean): void {
     for (const { bolt, companions } of this.live) for (const e of [bolt, ...companions]) e.render(showBoxes);
+    for (const c of this.leaving) c.render(showBoxes);
   }
 
   /** Sweep away whatever is still in the air when the scene ends. */
@@ -172,6 +191,8 @@ export class Projectiles {
       for (const e of [bolt, ...companions]) e.view.destroy({ children: true });
       owner.spawnEnded();
     }
+    for (const c of this.leaving) c.view.destroy({ children: true });
     this.live.length = 0;
+    this.leaving.length = 0;
   }
 }

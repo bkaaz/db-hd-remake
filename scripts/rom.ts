@@ -174,7 +174,7 @@ function describe(op: ScriptOp): string {
         ? `${op.frames} frames, keep the drawing`
         : `${op.frames} frames of ${hex(op.drawing)} (tile set ${hex(tileSetOf(rom, GOKU, op.drawing) ?? 0)})`;
     case "sound": return `sound ${hex(op.id)}`;
-    case "effect": return `effect ${hex(op.id)} ?`;
+    case "voice": return `spoken line ${hex(op.id)}`;
     case "offset": return `draw ${op.dx}, ${op.dy} px from the position`;
     case "spawn": return `spawn object ${hex(op.type)}/${hex(op.anim)} at ${op.dx}, ${op.dy} (tiles +${hex(op.tiles)}, palette ${op.palette})`;
     case "flip": return `flip ${op.h ? "h" : ""}${op.v ? "v" : ""}${op.h || op.v ? "" : "off"}`;

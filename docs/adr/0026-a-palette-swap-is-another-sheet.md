@@ -1,6 +1,7 @@
 # 0026 — A palette swap is the same sheet drawn in another palette
 
-**Status:** accepted 2026-10-29
+**Status:** accepted 2026-10-29 · how long the swap lasts superseded
+2026-10-30 by 0027
 
 When the original recolours a fighter — the Kamehameha's fire on whoever it
 hits — the export draws the whole sheet again in each palette it steps

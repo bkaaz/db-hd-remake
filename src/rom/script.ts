@@ -18,8 +18,12 @@ export type ScriptOp =
    * contact from the attacker's move and step (docs/rom.md, Hit data).
    */
   | { op: "sound"; id: number }
-  /** Fires once per move (counter field 0x6d): `$00:DE9F` with `id` — an effect ? */
-  | { op: "effect"; id: number }
+  /**
+   * Fires once per move (counter field 0x6d): a spoken line, sample `id` of
+   * the table at $00:DB98 streamed to the sound chip ($00:DE9F, $00:DB61) —
+   * the shout `32` instead when a line is already playing.
+   */
+  | { op: "voice"; id: number }
   /**
    * Where the drawing is drawn, in px from the fighter's position (fields
    * 0x0e / 0x10, added by the sprite routine at $00:818C) — the somersault's
@@ -61,7 +65,7 @@ export function readScript(rom: Uint8Array, at: number): ScriptOp[] {
       ops.push({ op: "hold", drawing: word(p + 1) });
       p += 3;
     } else if (c === 0xa0 || c === 0xa1) {
-      ops.push({ op: c === 0xa0 ? "sound" : "effect", id: rom[p + 2] });
+      ops.push({ op: c === 0xa0 ? "sound" : "voice", id: rom[p + 2] });
       p += 3;
     } else if (c === 0xd0) {
       ops.push({ op: "offset", dx: signed16(word(p + 1)), dy: signed16(word(p + 3)) });

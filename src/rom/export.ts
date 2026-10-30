@@ -104,6 +104,8 @@ export function exportSpawns(rom: Uint8Array, t: FighterTables): Record<string, 
       if (def && !out[def.name]) out[def.name] = exportSpawn(rom, t, def, op.tiles, op.palette);
     }
   }
+  // the rest come from code, not a script: an explosion a projectile turns into
+  for (const def of t.objects.spawns) if (!out[def.name]) out[def.name] = exportSpawn(rom, t, def, 0, 2);
   return out;
 }
 
@@ -115,17 +117,34 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
   const vram = objectVram(rom, def.loads ?? t.objects.loads);
   const colours = def.palette ?? t.objects.palettes[palette];
   if (colours === undefined) throw new Error(`${def.name}: no ROM palette known for OAM palette ${palette}`);
-  const items: Placed[] = def.steps.map((_, step) => {
-    const frame = def.frames?.[step] ?? step;
+  // each animation as the object's frames it shows and how long each is held
+  const wanted: Record<string, { frames: number[]; durs: number[]; loop: boolean }> = def.animations
+    ? Object.fromEntries(
+        Object.entries(def.animations).map(([name, a]) => [name, { frames: a.frames, durs: a.frames.map(() => a.dur), loop: a.loop }]),
+      )
+    : { play: { frames: def.steps.map((_, step) => def.frames?.[step] ?? step), durs: def.steps, loop: def.loop } };
+  const parts = Object.entries(wanted).map(([name, a]) => ({
+    name,
+    loop: a.loop,
+    shows: a.frames.map((frame, i) => ({ frame, dur: a.durs[i] })),
+  }));
+  const drawn = [...new Set(parts.flatMap((p) => p.shows.map((s) => s.frame)))];
+  const items: Placed[] = drawn.map((frame) => {
     const pieces = readLayout(rom, objectFrame(rom, def.type, def.anim, frame)).map((p) => ({ ...p, tile: p.tile + tiles }));
-    return { id: String(step), ...drawFrame(vram, pieces, readPalette(rom, colours)) };
+    return { id: String(frame), ...drawFrame(vram, pieces, readPalette(rom, colours)) };
   });
   const { sheet, frames } = packSheet(items);
-  const steps = def.steps.map((dur, step) => {
-    const f = frames[String(step)];
-    // a projectile hits with the whole of its picture: computed, not read
-    const box = { type: "hit" as const, x: -f.anchor[0], y: -f.anchor[1], w: f.w, h: f.h };
-    return def.hits ? { frame: String(step), dur, boxes: [box] } : { frame: String(step), dur };
-  });
-  return { sheet, frames, animations: { play: { loop: def.loop, steps } }, notes: [] };
+  const animations: Record<string, Anim> = {};
+  for (const part of parts) {
+    animations[part.name] = {
+      loop: part.loop,
+      steps: part.shows.map(({ frame, dur }) => {
+        const f = frames[String(frame)];
+        // a projectile hits with the whole of its picture: computed, not read
+        const box = { type: "hit" as const, x: -f.anchor[0], y: -f.anchor[1], w: f.w, h: f.h };
+        return def.hits ? { frame: String(frame), dur, boxes: [box] } : { frame: String(frame), dur };
+      }),
+    };
+  }
+  return { sheet, frames, animations, notes: [] };
 }

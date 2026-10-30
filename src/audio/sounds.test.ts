@@ -3,6 +3,7 @@ import {
   pitchFor,
   rateFor,
   soundIdCollisions,
+  soundForLine,
   soundForRom,
   validateSounds,
   type SoundSpec,
@@ -149,4 +150,12 @@ describe("soundForRom", () => {
     const twice = { swing_1: { ...swing, rom: 6 }, swing_3: { ...swing, rom: 6 } };
     expect(validateSounds(twice).some((e) => e.includes("cartridge id 6"))).toBe(true);
   });
+
+describe("soundForLine", () => {
+  it("finds the voice matched to a spoken line, apart from the sound ids", () => {
+    const voices = { voice_kame: { gain: 0.6, file: "080.wav", line: 0 }, voice_hurt: { gain: 0.6, file: "042.wav", rom: 0x30 } };
+    expect(soundForLine(voices, 0)).toBe("voice_kame");
+    expect(soundForLine(voices, 0x30)).toBeUndefined();
+  });
+});
 });

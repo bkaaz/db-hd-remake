@@ -54,6 +54,12 @@ export interface SpawnDef {
   steps: number[];
   /** Which of the object's frames each step shows, when not 0, 1, 2… */
   frames?: number[];
+  /**
+   * Named animations in place of the one `play` that `steps` makes — an object
+   * whose code plays a way in, a loop and a way out ($0F:E70F): the object's
+   * frames each shows, frames each is held, and whether it repeats.
+   */
+  animations?: Record<string, { frames: number[]; dur: number; loop: boolean }>;
   loop: boolean;
   /** Give each frame a hit box over its picture — a projectile. */
   hits: boolean;
@@ -71,11 +77,17 @@ export interface SpawnDef {
 const KAME_PALETTE = 0x2ade1c;
 const KAME_LOADS = [{ resource: 0x32, vram: 0x6c00 }];
 
+/** The fire a Kamehameha leaves on whoever it hits: 15 palettes of 32 bytes from $95:C78E (docs/rom.md). */
+const FIRE = Object.fromEntries(Array.from({ length: 15 }, (_, n) => [`fire${n}`, 0x2ac78e + 32 * n]));
+
 /**
- * The fire a Kamehameha leaves on whoever it hits: 15 palettes of 32 bytes
- * from $95:C78E, of which a hit steps through 4–9 (docs/rom.md).
+ * The explosions' frames ($0F:E2A9), tiles — resource 0x30 at $6500 for the
+ * first flash, 0x31 at $7500 for the rest, matched against a VRAM snapshot
+ * (2026-10-30) — and resource 0x31's own palette, the one in OAM slot 2.
  */
-const FIRE = Object.fromEntries([4, 5, 6, 7, 8, 9].map((n) => [`fire${n}`, 0x2ac78e + 32 * n]));
+const BURST_STEPS = [6, 8, 3, 4, 3, 3, 3];
+const BURST_LOADS = [{ resource: 0x30, vram: 0x6500 }, { resource: 0x31, vram: 0x7500 }];
+const BURST_PALETTE = 0x27ae98;
 
 export const GOKU: FighterTables = {
   character: 0,
@@ -106,10 +118,24 @@ export const GOKU: FighterTables = {
         name: `goku_kame_${["s", "m", "l"][i]}`, type: 0xa, anim, steps: [4, 4], loop: true, hits: true,
         palette: KAME_PALETTE, loads: KAME_LOADS,
       })),
-      // its base at the hands ($0F:E613): a step every 4 frames, 2–4 looped while
-      // the beam is drawn ($0F:E738); the way in (0–1) and out (5–7) left out
-      { name: "goku_kame_base", type: 0xa, anim: 0x16, steps: [4, 4, 4], frames: [2, 3, 4], loop: true, hits: false,
-        palette: KAME_PALETTE, loads: KAME_LOADS },
+      // its base at the hands ($0F:E613): a step every 4 frames ($0F:E70F) —
+      // 0–1 in, 2–4 looped while the beam is drawn ($0F:E738), 5–7 out, gone at 8
+      { name: "goku_kame_base", type: 0xa, anim: 0x16, steps: [], loop: false, hits: false,
+        palette: KAME_PALETTE, loads: KAME_LOADS,
+        animations: {
+          in: { frames: [0, 1], dur: 4, loop: false },
+          loop: { frames: [2, 3, 4], dur: 4, loop: true },
+          out: { frames: [5, 6, 7], dur: 4, loop: false },
+        } },
+      // what a projectile becomes where it hits ($2A:8E31): no script spawns
+      // these, so their tiles count from 0 ($2A:8F84 clears the base); all
+      // step through $0F:E2A9 and are gone
+      ...([["goku_burst", 0x01], ["goku_kame_burst_s", 0x02], ["goku_kame_burst_m", 0x17], ["goku_kame_burst_l", 0x18]] as const).map(
+        ([name, anim]) => ({ name, type: 0xa, anim, steps: BURST_STEPS, loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS }),
+      ),
+      // the dust a body raises hitting the floor ($0D:DE6C, from the knockdown
+      // handler): 6 frames a step ($0F:E559), in the explosions' slot and tiles
+      { name: "goku_dust", type: 0xa, anim: 0x0d, steps: [6, 6, 6, 6], loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS },
     ],
   },
 };

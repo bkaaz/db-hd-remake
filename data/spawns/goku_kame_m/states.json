@@ -1,5 +1,5 @@
 {
-  "_comment": "The charged Kamehameha's beam head, its middle charge (object a/14, docs/rom.md). Frames and animation by npm run rom -- export; this file by hand: 4 px a frame is b0's vx, the type and damage the objects' hit table's ($3D:9624). Its hit turns the screen white for 16 frames and sets the defender on fire as recorded: fire palette 4 through the hitstop, then 5–9 two frames each (rom.md).",
+  "_comment": "The charged Kamehameha's beam head, its middle charge (object a/14, docs/rom.md). Frames and animation by npm run rom -- export; this file by hand: 4 px a frame is b0's vx, the type and damage the objects' hit table's ($3D:9624). Its hit turns the screen white for 16 frames and sets the defender burning until it lands (rom.md).",
   "initial": "fly",
   "states": {
     "fly": {
@@ -8,18 +8,11 @@
       "turn": false,
       "type": "down",
       "damage": 60,
-      "hitFx": "ki_burst_big",
+      "burstsInto": "goku_kame_burst_m",
       "hitSound": "burst_1",
       "blockSound": "burst_1",
       "hitFlash": 16,
-      "hitPalettes": [
-        ["fire4", 10],
-        ["fire5", 2],
-        ["fire6", 2],
-        ["fire7", 2],
-        ["fire8", 2],
-        ["fire9", 2]
-      ]
+      "burns": true
     }
   }
 }

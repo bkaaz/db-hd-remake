@@ -61,9 +61,16 @@ export interface SoundSpec {
    * move that plays it, never by clip number (docs/rom.md). One sound per id.
    */
   rom?: number;
+  /** The spoken line this is, by `a1`'s id ($00:DB98) — a fighter's own voice. */
+  line?: number;
 }
 
 export type Sounds = Record<string, SoundSpec>;
+
+/** The voice matched to a spoken line's id, or undefined while nobody has matched it. */
+export function soundForLine(sounds: Sounds, id: number): string | undefined {
+  return Object.keys(sounds).find((name) => !name.startsWith("_") && sounds[name].line === id);
+}
 
 /** The sound matched to a cartridge id, or undefined while nobody has matched it. */
 export function soundForRom(sounds: Sounds, id: number): string | undefined {

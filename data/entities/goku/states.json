@@ -751,6 +751,21 @@
       "transitions": [
         {
           "when": "spawnEnd",
+          "to": "kame_end_s"
+        }
+      ]
+    },
+    "kame_end_s": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:8",
           "to": "idle"
         }
       ]
@@ -790,6 +805,21 @@
       "transitions": [
         {
           "when": "spawnEnd",
+          "to": "kame_end_m"
+        }
+      ]
+    },
+    "kame_end_m": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:12",
           "to": "idle"
         }
       ]
@@ -829,6 +859,21 @@
       "transitions": [
         {
           "when": "spawnEnd",
+          "to": "kame_end_l"
+        }
+      ]
+    },
+    "kame_end_l": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:16",
           "to": "idle"
         }
       ]
@@ -1195,6 +1240,7 @@
     "downed": {
       "anim": "m1f",
       "rank": 4,
+      "groundFx": "goku_dust",
       "invulnerable": true,
       "vel": [
         0,

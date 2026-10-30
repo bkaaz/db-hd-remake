@@ -13,7 +13,6 @@
 
 import type { BallDef } from "../combat/ball";
 import type { BandDef } from "../combat/band";
-import type { PaletteRun } from "../combat/palettes";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
 import { missWindow, type AnimSteps } from "../combat/swing";
 
@@ -247,13 +246,25 @@ export interface StateDef {
    */
   ball?: BallDef;
   /**
-   * What this state's blow does to the colour of whoever it hits: palette
-   * variants and their frames, `[["fire4", 10], …]` (`combat/palettes.ts`) —
-   * shown only on a defender with sheets for them (`palettes`).
+   * Whether this state's blow sets whoever it hits burning, until they land —
+   * the Kamehameha's ($2A:99CC, `combat/palettes.ts`); shown on a defender with
+   * `burn` sheets.
    */
-  hitPalettes?: PaletteRun;
+  burns?: boolean;
   /** Frames the whole screen goes white when this state's blow lands — the Kamehameha's 16. */
   hitFlash?: number;
+  /**
+   * What this state's blow turns into where it lands — an effect put at the
+   * middle of the boxes' overlap ($2A:8D63) in place of its `hitFx`: the
+   * original's projectiles, each rewritten into its explosion ($2A:8E31).
+   */
+  burstsInto?: string;
+  /**
+   * An effect put on the floor under the entity as this state begins — the
+   * dust a body raises hitting the ground, which the original puts at the
+   * body's x on the floor line ($0D:DE6C), whatever the drawing shows.
+   */
+  groundFx?: string;
 
   /**
    * The band of light from the hands to the head of the beam this state threw
@@ -381,6 +392,12 @@ export interface StatesFile {
    * no state has to remember to handle being hit.
    */
   onGotHit?: string;
+  /**
+   * For a spawn put out beside a bolt (`fires.with`): the state it is forced
+   * into when the bolt is gone, played out before it goes too — the
+   * Kamehameha's base on its way out ($0F:E70F). Absent: gone with the bolt.
+   */
+  onRelease?: string;
   /**
    * State forced on this entity when it blocks a blow: the same idea as
    * `onGotHit`, for the case where the defender was holding back at the moment
@@ -866,6 +883,8 @@ export function effectsNamed(states: StatesFile | null | undefined): string[] {
   const names = new Set<string>([DEFAULT_HIT_FX]);
   for (const def of Object.values(states?.states ?? {})) {
     if (def.hitFx) names.add(def.hitFx);
+    if (def.burstsInto) names.add(def.burstsInto);
+    if (def.groundFx) names.add(def.groundFx);
   }
   return [...names];
 }
@@ -905,6 +924,10 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
 
   if (file.onGuard !== undefined && !states[file.onGuard]) {
     errors.push(`onGuard state "${file.onGuard}" does not exist`);
+  }
+
+  if (file.onRelease !== undefined && !states[file.onRelease]) {
+    errors.push(`onRelease state "${file.onRelease}" does not exist`);
   }
 
   for (const [name, def] of Object.entries(states)) {
@@ -1088,13 +1111,6 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     if (def.holdStep !== undefined && (!Number.isInteger(def.holdStep) || def.holdStep < 0 || (steps !== undefined && def.holdStep >= steps))) {
       errors.push(`${where}: "holdStep" must be a step of its animation, 0 to ${(steps ?? 1) - 1}`);
     }
-    if (
-      def.hitPalettes !== undefined &&
-      (!Array.isArray(def.hitPalettes) ||
-        def.hitPalettes.some((p) => !Array.isArray(p) || typeof p[0] !== "string" || !(p[1] > 0)))
-    ) {
-      errors.push(`${where}: "hitPalettes" must be [variant, frames] pairs, e.g. [["fire4", 10]]`);
-    }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);
     }
@@ -1176,6 +1192,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     const roots = [file.initial];
     if (file.onGotHit && states[file.onGotHit]) roots.push(file.onGotHit);
     if (file.onGuard && states[file.onGuard]) roots.push(file.onGuard);
+    if (file.onRelease && states[file.onRelease]) roots.push(file.onRelease);
     for (const def of Object.values(states)) {
       if (def.onHit && states[def.onHit] && !roots.includes(def.onHit)) roots.push(def.onHit);
       // A stance's own block reaction is forced from outside like any other.

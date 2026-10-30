@@ -114,6 +114,10 @@ export class Fighters {
       this.fire(this.player, this.opponent);
       this.fire(this.opponent, this.player);
     }
+    for (const fighter of this.both()) {
+      const fx = fighter.takeGroundFx();
+      if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);
+    }
   }
 
   /** A fighter who entered a state that `fires` puts a bolt in the world. */
