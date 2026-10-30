@@ -83,29 +83,26 @@ takes an investigation instead of a procedure. In this order:
 5. **A move's conditions** — ki, low health (Meteor Smash), the throw's
    range: bytes 0–3 of the command table.
 
-### Next: the camera, then an arena
+### Next: around the arena
 
-What the cartridge does is in `rom.md` (The camera). The owner, 2026-10-30:
-both as the original, and every size one value to change, not a hunt —
+The camera, its shake and arena 0 are the original's (`rom.md`, The
+camera); every size one value to change, not a hunt (owner, 2026-10-30) —
 the game's screen and its scale are `src/view.ts` (ADR 0029), the camera
-and its shake `src/camera/` (ADR 0030). *Open:* whether its 64-px push
+and its shake `src/camera/` (ADR 0030), arenas `src/arena/` (ADR 0031). *Open:* whether its 64-px push
 band grows with a wider screen — decided when the screen is widened.
 
-1. **Turn `SCREEN_FLASH` on** now that there is an arena to whiten
-   (`src/stage.ts`) — the original turns BG palettes 2–7 white for 16
-   frames. Consider a player setting for its strength.
-2. **The original's HUD** (owner, 2026-10-30) — its art, layout and bars
+1. **The original's HUD** (owner, 2026-10-30) — its art, layout and bars
    read from the cartridge, replacing ours, which moves into the game's
    screen as it is until then.
-3. **A shove into the screen's edge passes to the attacker**, reversed, for
+2. **A shove into the screen's edge passes to the attacker**, reversed, for
    the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
    corner, decides whether it replaces what we have.
-4. **Our tools around the game's screen** (owner, 2026-10-30) — the
+3. **Our tools around the game's screen** (owner, 2026-10-30) — the
    debug scene's panel, status line and notices laid out in the space
    around the scaled screen, and a picker there for the arena and the
    fighters: a choice rewrites the query string, which rebuilds the scene
    from its parameters (ADR 0008).
-5. **Where the original starts a round** — the fighters' x and the
+4. **Where the original starts a round** — the fighters' x and the
    camera's (`$0D:D7A0`, `$01:8B84`), read from the code. Ours start at
    35% / 65% of the world under a centred camera, which puts both in the
    push band, so the first step scrolls.
@@ -130,10 +127,9 @@ still differs from the original:
   air, so Goku holds the firing pose (`holdStep`) until the head hits or
   leaves the field (owner, 2026-10-29), and the recovery after it (8 frames
   of drawing `00`) is skipped;
-- the white screen is built as the original's but switched off
-  (`SCREEN_FLASH` in `src/stage.ts`): full white over our near-black window
-  is blinding (owner, 2026-10-29). Turn it on with a stage, whitening its
-  art as the original does; consider a player setting for flash strength;
+- the white screen whitens an arena as the original does, not the debug
+  grid (`Backdrop.whitens`); a player setting for its strength is worth
+  considering (owner, 2026-10-29);
 - the thrower's own palette changes every 4 frames while the beam is out
   (`log-palettes.lua`); the victim's fire and the white screen are built
   (ADR 0027);

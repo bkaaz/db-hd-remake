@@ -3,15 +3,14 @@ import { VIEW } from "./view";
 
 /** The original's arena, in game px: 512 wide, the floor at 200 (`rom.md`, The camera). */
 export const WORLD = { width: 512, floor: 200 };
-/**
- * Whether a blow's `hitFlash` turns the backdrop white, as the original
- * whitens its stage's art. Off until there is an arena to whiten: the
- * placeholder going white is blinding (owner, 2026-10-29).
- */
-const SCREEN_FLASH = false;
-
 /** What stands behind the fighters: the debug grid, or an arena (`src/arena/`). */
 export interface Backdrop {
+  /**
+   * Whether a blow's `hitFlash` turns it white, as the original whitens its
+   * stage's art (BG palettes 2–7). An arena does; the debug grid does not —
+   * the whole dark field going white is blinding (owner, 2026-10-29).
+   */
+  readonly whitens: boolean;
   /** Place it for the screen standing at `x`, `y` in the world — each layer at its own speed. */
   scroll(x: number, y: number): void;
   destroy(): void;
@@ -52,7 +51,7 @@ export class Stage {
 
   /** Turn the backdrop white for `frames` — the flash of a big hit. */
   flash(frames: number): void {
-    if (SCREEN_FLASH) this.flashLeft = Math.max(this.flashLeft, frames);
+    if (this.backdrop.whitens) this.flashLeft = Math.max(this.flashLeft, frames);
   }
 
   /** One game frame of the flash, if one is running. */

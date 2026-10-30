@@ -41,6 +41,7 @@ async function picture(url: string): Promise<Texture> {
 
 /** An arena on screen: its layers back to front, each scrolling at its own speed. */
 export class ArenaBackdrop implements Backdrop {
+  readonly whitens = true;
   private readonly sprites: { sprite: Sprite; scroll: [number, number] }[];
 
   constructor(parent: Container, arena: LoadedArena) {
