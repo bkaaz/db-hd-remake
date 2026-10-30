@@ -7,7 +7,30 @@
 
 import type { ArenaFile } from "../arena/arenaFile";
 import type { Rgba } from "../sprites/png";
+import type { FighterTables } from "./cartridge";
+import { paletteRecord } from "./resource";
 import { BG1, BG2, drawLayer, loadStage, stack } from "./stage";
+
+/** Each stage id's lighting, picking the fighters' palettes: `0x40` + 16 × character + this ($01:82B5). */
+const LIGHTING = 0x8304;
+
+/**
+ * A fighter's palette in each lighting the arenas have that differs from
+ * the one it is exported in — the palette the original loads for player one
+ * on that stage. Named by the lighting, which is how the game asks for it.
+ */
+export function lightingPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const source of Object.values(ARENAS)) {
+    for (const [time, stage] of Object.entries(source.ids)) {
+      const { at } = paletteRecord(rom, 0x40 + 16 * t.character + (rom[LIGHTING + stage] & 0x0f));
+      if (at === t.palette) continue;
+      if (out[time] !== undefined && out[time] !== at) throw new Error(`two palettes are both "${time}"`);
+      out[time] = at;
+    }
+  }
+  return out;
+}
 
 interface ArenaSource {
   /** The stage id of each lighting, in the order `times` lists them. */

@@ -254,6 +254,8 @@ export class Entity {
   private burning = false;
   private burnFrame = 0;
   private shownVariant: string | null = null;
+  /** The palette the arena's light gives it, drawn whenever it is not burning; null is its own sheet's. */
+  private lighting: string | null = null;
   /**
    * Game frames left of being held helpless by the last blow. Ticked below the
    * freeze check, like the buffer: a hit pause freezes both fighters equally, so
@@ -631,9 +633,25 @@ export class Entity {
     return true;
   }
 
-  /** Draw the current frame from the fire palette burning is on, or from the own sheet. */
+  /**
+   * Be drawn in the palette an arena's lighting gives, as the original loads
+   * one per stage ($01:82B5). False, and its own colours kept, when it has
+   * no sheet in that palette.
+   */
+  light(time: string): boolean {
+    if (!this.def.variants.has(time)) return false;
+    this.lighting = time;
+    this.showVariant();
+    return true;
+  }
+
+  /**
+   * Draw the current frame from the fire palette burning is on, or else in
+   * the arena's light — burning over, the original reloads the fighter's own
+   * palette for the stage (field `0x17`).
+   */
   private showVariant(): void {
-    const variant = this.burning ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? null) : null;
+    const variant = this.burning ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting) : this.lighting;
     if (variant === this.shownVariant) return;
     this.shownVariant = variant;
     this.applyFrame();

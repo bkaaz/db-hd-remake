@@ -35,7 +35,7 @@ import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
-import { ARENAS, exportArena } from "../src/rom/arena.ts";
+import { ARENAS, exportArena, lightingPalettes } from "../src/rom/arena.ts";
 
 if (!existsSync(ROM_PATH)) {
   console.error(`no cartridge at ${ROM_PATH} — it is the owner's own dump (BYOA)`);
@@ -170,7 +170,8 @@ if (command === "tiles") {
     console.log("wrote preview/rom-stages.png (a row per arena, its lightings across)");
   }
 } else if (command === "export") {
-  const fighter = exportFighter(rom, GOKU);
+  // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
+  const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write("assets/sheets/goku.png", "data/entities/goku", fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {

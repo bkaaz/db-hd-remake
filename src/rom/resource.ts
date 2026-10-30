@@ -33,6 +33,15 @@ export function resourcePalette(rom: Uint8Array, index: number): number {
   return pointer(rom, TABLE + RECORD * index + 5);
 }
 
+/** The palettes: 5-byte records at $09:8000, read by $00:B2D6 — a pointer and a size. */
+const PALETTES = 0x48000;
+
+/** The ROM offset of palette record `id`'s first byte, and its size; a size of 0 means packed. */
+export function paletteRecord(rom: Uint8Array, id: number): { at: number; size: number } {
+  const rec = PALETTES + 5 * id;
+  return { at: pointer(rom, rec), size: rom[rec + 3] | (rom[rec + 4] << 8) };
+}
+
 /** Where a resource is loaded in VRAM, in words — as the game's code puts it. */
 export interface Load {
   resource: number;

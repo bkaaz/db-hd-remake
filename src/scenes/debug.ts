@@ -124,6 +124,9 @@ export class DebugScene implements Scene {
       projectiles,
     });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
+    if (arena && arena.time !== arena.times[0] && !fighters.light(arena.time)) {
+      notices.push(showMessage(ctx.app, `${def.name}: no sheet for "${arena.time}" — in its own colours`, true));
+    }
     // Over the two of them, so a mode set in a corner shows the corner.
     const camera = new Camera({ screen: VIEW.width, world: stage.width, floor: stage.groundY });
     camera.centreOn(fighters.player.x, fighters.opponent?.x ?? fighters.player.x);

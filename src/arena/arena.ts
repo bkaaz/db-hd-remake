@@ -4,6 +4,9 @@ import type { ArenaFile } from "./arenaFile";
 
 /** An arena read from disk, in one lighting: each layer's picture and how it scrolls. */
 export interface LoadedArena {
+  /** The lighting it was read in, and all it has — the first is the fighters' own colours. */
+  time: string;
+  times: string[];
   layers: { texture: Texture; scroll: [number, number] }[];
 }
 
@@ -24,7 +27,7 @@ export async function loadArena(name: string, time: string | null): Promise<Load
       scroll: layer.scroll,
     })),
   );
-  return { layers };
+  return { time: lighting, times: file.times, layers };
 }
 
 async function picture(url: string): Promise<Texture> {

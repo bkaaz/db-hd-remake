@@ -91,11 +91,9 @@ the game's screen and its scale are `src/view.ts` (ADR 0029), the camera
 and its shake `src/camera/` (ADR 0030). *Open:* whether its 64-px push
 band grows with a wider screen — decided when the screen is widened.
 
-1. **The fighters in the arena's light** — the tournament plays
-   (`?arena=tournament&time=night`, ADR 0031), but the fighters keep the
-   day's palette; the original picks theirs by the stage id
-   (`$01:82B5`, `rom.md`, A stage id). Then turn `SCREEN_FLASH` on,
-   whitening the arena's art.
+1. **Turn `SCREEN_FLASH` on** now that there is an arena to whiten
+   (`src/stage.ts`) — the original turns BG palettes 2–7 white for 16
+   frames. Consider a player setting for its strength.
 2. **The original's HUD** (owner, 2026-10-30) — its art, layout and bars
    read from the cartridge, replacing ours, which moves into the game's
    screen as it is until then.
@@ -154,7 +152,10 @@ still differs from the original:
 4. **The rest of the objects** — `goku_hair` is exported but nothing plays
    it: there is no pre-fight screen, and `fires` only takes a projectile.
    Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`).
-5. **Before a second fighter** — `tileSetOf` reads the drawing → resource
+5. **Player two's colours in a mirror match** — the same fighter on both
+   sides takes the next palette (`rom.md`, A stage id); today both Gokus
+   look alike.
+6. **Before a second fighter** — `tileSetOf` reads the drawing → resource
    table as a tile set plus a "used" byte; it is a 2-byte resource id
    (`rom.md`, Another fighter). Read the tables through the ten-entry pointer
    tables instead of Goku's addresses, and map which entry is which fighter.

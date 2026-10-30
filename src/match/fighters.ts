@@ -77,6 +77,14 @@ export class Fighters {
     if (this.opponent) world.addChild(this.opponent.view);
   }
 
+  /**
+   * Both fighters in an arena's lighting. False when one has no sheet for it
+   * and keeps its own colours, for the caller to say so.
+   */
+  light(time: string): boolean {
+    return this.both().map((f) => f.light(time)).every(Boolean);
+  }
+
   /** True while a hit pause holds either body — everything else must hold too. */
   get frozen(): boolean {
     return this.player.frozen || !!this.opponent?.frozen;

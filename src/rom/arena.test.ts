@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { Rgba } from "../sprites/png";
-import { ARENAS, exportArena } from "./arena";
-import { ROM_PATH } from "./cartridge";
+import { ARENAS, exportArena, lightingPalettes } from "./arena";
+import { GOKU, ROM_PATH } from "./cartridge";
 import { stageRecord } from "./stage";
 
 /** Whether any pixel in rows [from, to) is drawn. */
@@ -49,6 +49,10 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
     const [day, night] = [tournament.images["court@day"], tournament.images["court@night"]];
     expect(at(night, 256, 180)[3]).toBe(255);
     expect(at(night, 256, 180)).not.toEqual(at(day, 256, 180));
+  });
+
+  it("gives Goku the palettes the original loads by evening and by night, the day's being his sheet's own", () => {
+    expect(lightingPalettes(rom, GOKU)).toEqual({ evening: 0xb0040, night: 0xb0080 });
   });
 
   it("scrolls the sky at half the camera's speed, lined up at x 128", () => {

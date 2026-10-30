@@ -10,6 +10,8 @@
   },
   "comboLimits": false,
   "palettes": [
+    "evening",
+    "night",
     "fire0",
     "fire1",
     "fire2",
