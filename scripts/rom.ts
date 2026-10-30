@@ -1,7 +1,7 @@
 /**
  * Read Goku out of the owner's cartridge (ADR 0016).
  *
- *   npm run rom -- tiles             every tile set: where it is, whether it unpacks
+ *   npm run rom -- tiles             every resource goku's drawings use: where, whether it unpacks
  *   npm run rom -- frame 4a          drawing 4a, into preview/
  *   npm run rom -- frames            draw every drawing, report what fails
  *   npm run rom -- move 92           the animation script a move plays
@@ -14,6 +14,8 @@
  *                                    the first resource
  *   npm run rom -- stage [id …]      a stage's two background layers, flat, into
  *                                    preview/ — every stage when no id is given
+ *   npm run rom -- roster            every fighter: drawings, resources, palette, boxes
+ *   … --fighter vegetto              any reading command above, for another fighter
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
  *                                    data/entities/goku/frames.json (frame n = drawing n),
  *                                    every move into its animations.json as m00…mff;
@@ -25,7 +27,8 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { GOKU, ROM_PATH, scriptAt, tileSetOf, tileStream } from "../src/rom/cartridge.ts";
+import { GOKU, ROM_PATH, scriptAt, tileResourceOf } from "../src/rom/cartridge.ts";
+import { fighterNamed, fighterTables, ROSTER } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
 import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/rom/export.ts";
@@ -33,7 +36,7 @@ import { encodePng, type Rgba } from "../src/sprites/png.ts";
 import { portReport } from "../src/rom/port.ts";
 import { long } from "../src/rom/disasm.ts";
 import { objectFrame } from "../src/rom/object.ts";
-import { objectVram, resourcePalette } from "../src/rom/resource.ts";
+import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
 import { ARENAS, exportArena, lightingPalettes } from "../src/rom/arena.ts";
@@ -44,20 +47,28 @@ if (!existsSync(ROM_PATH)) {
   process.exit(1);
 }
 const rom = new Uint8Array(readFileSync(ROM_PATH));
-const [command, ...args] = process.argv.slice(2);
+// `--fighter <name>` reads another fighter of the roster; the export stays Goku's
+const argv = process.argv.slice(2);
+const named = argv.indexOf("--fighter");
+const T = named >= 0 ? fighterNamed(rom, argv[named + 1]) : GOKU;
+if (named >= 0) argv.splice(named, 2);
+const [command, ...args] = argv;
 
 if (command === "tiles") {
   let ok = 0;
   let bad = 0;
-  for (let i = 0; i < 0x100; i++) {
-    let at: number | null;
-    try {
-      at = tileStream(rom, GOKU, i);
-    } catch {
-      console.log(`${hex(i)}  not a record — the table ends here`);
-      break;
+  // every resource a drawing of the fighter's is cut from, once
+  const resources = new Set<number>();
+  for (let d = 0; d < T.drawings; d++) {
+    const r = tileResourceOf(rom, T, d);
+    if (r !== null) resources.add(r);
+  }
+  for (const i of [...resources].sort((a, b) => a - b)) {
+    const at = resourceStream(rom, i);
+    if (at === null) {
+      console.log(`${hex(i)}  an unused slot`);
+      continue;
     }
-    if (at === null) continue;
     try {
       const { data } = decompress(rom, at);
       console.log(`${hex(i)}  0x${at.toString(16)}  ${data.length / 32} tiles`);
@@ -71,26 +82,26 @@ if (command === "tiles") {
 } else if (command === "frame" && args.length >= 1) {
   const drawing = parseInt(args[0], 16);
   const scale = 4;
-  const { image } = drawDrawing(rom, GOKU, drawing);
+  const { image } = drawDrawing(rom, T, drawing);
   mkdirSync("preview", { recursive: true });
-  const out = `preview/rom-goku-${hex(drawing)}.png`;
+  const out = `preview/rom-${ROSTER[T.character]}-${hex(drawing)}.png`;
   writeFileSync(out, encodePng(scaled(image, scale)));
   console.log(`wrote ${out} (${image.width}×${image.height}, shown ×${scale})`);
 } else if (command === "frames") {
   let ok = 0;
-  for (let d = 0; d < GOKU.drawings; d++) {
-    if (tileSetOf(rom, GOKU, d) === null) continue;
+  for (let d = 0; d < T.drawings; d++) {
+    if (tileResourceOf(rom, T, d) === null) continue;
     try {
-      drawDrawing(rom, GOKU, d);
+      drawDrawing(rom, T, d);
       ok++;
     } catch (e) {
       console.log(`${hex(d)}  FAILED: ${(e as Error).message}`);
     }
   }
-  console.log(`${ok} drawings of ${GOKU.drawings} ids drawn`);
+  console.log(`${ok} drawings of ${T.drawings} ids drawn`);
 } else if (command === "move" && args.length >= 1) {
   const move = parseInt(args[0], 16);
-  const at = scriptAt(rom, GOKU, move);
+  const at = scriptAt(rom, T, move);
   console.log(`move ${hex(move)}: script at 0x${at.toString(16)}`);
   let frame = 0;
   for (const op of readScript(rom, at)) {
@@ -101,7 +112,7 @@ if (command === "tiles") {
 } else if (command === "moves") {
   for (let move = 0; move < 0x100; move++) {
     try {
-      const ops = readScript(rom, scriptAt(rom, GOKU, move));
+      const ops = readScript(rom, scriptAt(rom, T, move));
       const frames = ops.reduce((n, op) => n + (op.op === "show" ? op.frames : 0), 0);
       const drawings = ops.flatMap((op) => (op.op === "show" && op.drawing !== null ? [hex(op.drawing)] : []));
       console.log(`${hex(move)}  ${String(frames).padStart(3)} frames  ${drawings.join(" ")}`);
@@ -110,7 +121,7 @@ if (command === "tiles") {
     }
   }
 } else if (command === "port" && args.length >= 1) {
-  const r = portReport(rom, GOKU, parseInt(args[0], 16));
+  const r = portReport(rom, T, parseInt(args[0], 16));
   console.log(`move ${hex(r.move)} — handler ${long(r.handler)}`);
   console.log(`input: ${r.inputs.join(" | ") || "none from a button or a command"}`);
   console.log("frames count from each part's start; sounds are the cartridge's ids, not clips");
@@ -175,6 +186,12 @@ if (command === "tiles") {
   mkdirSync("preview", { recursive: true });
   writeFileSync("preview/rom-hud.png", encodePng(scaled(drawHud(rom), 3)));
   console.log("wrote preview/rom-hud.png");
+} else if (command === "roster") {
+  ROSTER.forEach((name, c) => {
+    const t = fighterTables(rom, c);
+    const page = tileResourceOf(rom, t, 0) ?? 0;
+    console.log(`${c} ${name.padEnd(8)} ${t.drawings} drawings, resources ${hex(page >> 8)}xx, palette 0x${t.palette.toString(16)}, boxes 0x${t.boxes.toString(16)}`);
+  });
 } else if (command === "export") {
   // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
   const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU) } });
@@ -220,7 +237,7 @@ function describe(op: ScriptOp): string {
     case "show":
       return op.drawing === null
         ? `${op.frames} frames, keep the drawing`
-        : `${op.frames} frames of ${hex(op.drawing)} (tile set ${hex(tileSetOf(rom, GOKU, op.drawing) ?? 0)})`;
+        : `${op.frames} frames of ${hex(op.drawing)} (resource ${hex(tileResourceOf(rom, T, op.drawing) ?? 0)})`;
     case "sound": return `sound ${hex(op.id)}`;
     case "voice": return `spoken line ${hex(op.id)}`;
     case "offset": return `draw ${op.dx}, ${op.dy} px from the position`;

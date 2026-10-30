@@ -29,6 +29,13 @@ export function readResource(rom: Uint8Array, index: number): Uint8Array {
   return rom.subarray(tiles, tiles + size);
 }
 
+/** Where a resource's stream starts, or null for a record of `ff` — an unused slot. */
+export function resourceStream(rom: Uint8Array, index: number): number | null {
+  const at = TABLE + RECORD * index;
+  if (rom[at] === 0xff && rom[at + 1] === 0xff && rom[at + 2] === 0xff) return null;
+  return pointer(rom, at);
+}
+
 /** The ROM offset of a resource's palette: bytes 5–7 of its record. */
 export function resourcePalette(rom: Uint8Array, index: number): number {
   return pointer(rom, TABLE + RECORD * index + 5);

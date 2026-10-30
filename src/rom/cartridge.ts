@@ -12,13 +12,10 @@ export interface FighterTables {
   character: number;
   /** 3-byte LoROM pointers, one per drawing id (fighter field `0x0a`). */
   layouts: number;
-  /** 2 bytes per drawing id: its tile set, then 1 if the drawing is used. */
+  /** 2 bytes per drawing id: the resource its tiles are, 0 for a drawing not used. */
   tileSets: number;
   /** How many drawing ids the two tables above cover. */
   drawings: number;
-  /** 11-byte records, one per tile set (fighter field `0x90`); first 3 bytes
-   *  point at a compressed stream, a record of `ff` is an unused slot. */
-  tileRecords: number;
   /** 16 BGR555 colours: player one, daytime stage (PalMod). */
   palette: number;
   /** Which entry of the script tables is this fighter's (fighter field 0x41). */
@@ -95,7 +92,6 @@ export const GOKU: FighterTables = {
   layouts: 0x4880e,
   tileSets: 0x48a54,
   drawings: (0x48a54 - 0x4880e) / 3,
-  tileRecords: 0x40b00,
   palette: 0xb0000,
   scripts: 0,
   boxes: 0x1d8000,
@@ -222,22 +218,16 @@ export function scriptAt(rom: Uint8Array, t: FighterTables, move: number): numbe
   return off;
 }
 
-const RECORD = 11;
-
-/** Offset of tile set `index`'s stream, or null for an unused slot. */
-export function tileStream(rom: Uint8Array, t: FighterTables, index: number): number | null {
-  const at = t.tileRecords + RECORD * index;
-  if (rom[at] === 0xff && rom[at + 1] === 0xff && rom[at + 2] === 0xff) return null;
-  return pointer(rom, at);
-}
-
 export function layoutAt(t: FighterTables, id: number): number {
   return t.layouts + 3 * id;
 }
 
-/** The tile set a drawing is cut from, or null if the drawing is unused. */
-export function tileSetOf(rom: Uint8Array, t: FighterTables, drawing: number): number | null {
+/**
+ * The resource a drawing's tiles are — Goku's `0x1xx`, the next fighter's
+ * `0x2xx` — or null if the drawing is unused (`rom.md`, Another fighter).
+ */
+export function tileResourceOf(rom: Uint8Array, t: FighterTables, drawing: number): number | null {
   if (drawing >= t.drawings) throw new Error(`drawing ${drawing} is past the table's ${t.drawings}`);
   const at = t.tileSets + 2 * drawing;
-  return rom[at + 1] ? rom[at] : null;
+  return rom[at] | (rom[at + 1] << 8) || null;
 }

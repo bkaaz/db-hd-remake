@@ -592,9 +592,11 @@ another field, `0x62` or `0x64` `?`.
 ## Another fighter
 
 Every per-fighter table is reached through a pointer table of **ten 3-byte
-entries, one per fighter** — the roster. Goku is entry 0 in all of them,
-Vegetto entry 4 (his recorded blows match only that hit table); the others
-are not mapped yet. Found 2026-10-29 by
+entries, one per fighter** — the roster, read by `src/rom/roster.ts`
+(`npm run rom -- roster`), named from the HUD's names (`$00:C511`): Goku,
+Vegeta, Gohan, Gotenks, Vegetto, Piccolo, Freeza, Cell, Mr. Buu, Buu — an
+eleventh name, 魔人ブウ, stands in for Mr. Buu's in some modes. The
+script-table index (field `0x41`) is the character too. Found 2026-10-29 by
 searching for pointers to Goku's tables:
 
 | what | pointer table | Goku's entry | `FighterTables` field |
@@ -606,15 +608,14 @@ searching for pointers to Goku's tables:
 | resource loaded at VRAM `$6800` | `$01:848B`, 2-byte ids | `0x47` | — |
 
 The **tile-resource table holds a 2-byte resource id per drawing** (`0x012f`
-is resource `0x12f`), not a tile set and a "used" flag as
-`tileSetOf` in `src/rom/cartridge.ts` reads it — right for Goku only because
-all his resources are `0x1xx`. A resource's record names its palette too
+is resource `0x12f`), 0 for a drawing not used; each fighter's sit in his
+own page — Goku `0x1xx`, Vegeta `0x2xx` … Buu `0xAxx`. A resource's record names its palette too
 (Goku's: `$16:8000`, the `0xb0000` PalMod lists). The fighter-block field
 `0x41` holds the script-table index, `0x00` the character.
 
-A new fighter: fill a `FighterTables` from these tables, export, then record
-his objects' timing (`log-objects.lua`) and VRAM (`dump-vram.lua`) for
-`objects` — the only part the cartridge's data does not hold.
+A new fighter's tables are `fighterNamed(rom, "vegetto")`; what they
+lack is `objects` — his objects' pictures and timing, read from their
+types' code by the reader to come (`plan.md`).
 
 ## How it was found
 

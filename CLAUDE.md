@@ -259,6 +259,9 @@ npm run rom -- port a5
 npm run rom -- object a 15 32@6c00 80
                   # an object's frames into preview/, from the resources
                   # loaded where the game loads them — to look at
+npm run rom -- roster
+                  # every fighter of the cartridge; any reading command
+                  # takes --fighter <name> (port, move, frame…)
 npm run rom -- hud
                   # the original's HUD as its loader leaves it, into preview/
 npm run rom -- stage 0
@@ -303,7 +306,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │                                 #   disasm.ts, opcodes.ts: reading 65816 code
 │                                 #   export.ts: all of it into our entities
 │                                 #   stage.ts, lzss.ts, arena.ts: the arenas
-│                                 #   hud.ts: the HUD
+│                                 #   hud.ts: the HUD; roster.ts: every fighter
 ├── scripts/                      # CLI entry points ONLY — one per npm run command;
 │   │                             #   nothing in the repo imports from here
 │   ├── anim.ts                   #   build an animation from a frame list

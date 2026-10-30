@@ -8,13 +8,13 @@
 import type { Anim, FrameDef } from "../entity/entityFile";
 import type { Rgba } from "../sprites/png";
 import { animName, jumpCuts, moveAnims, stepStarts } from "./animation";
-import { layoutAt, pointer, scriptAt, tileSetOf, tileStream, type FighterTables, type SpawnDef } from "./cartridge";
+import { layoutAt, pointer, scriptAt, tileResourceOf, type FighterTables, type SpawnDef } from "./cartridge";
 import { readBoxes } from "./collision";
 import { decompress } from "./decompress";
 import { drawFrame, flipLayout, readLayout, readPalette, type Drawing } from "./frame";
 import { PLAIN, parseFrameId, type Look } from "./look";
 import { objectFrame } from "./object";
-import { objectVram } from "./resource";
+import { objectVram, resourceStream } from "./resource";
 import { handlerAt, handlerFacts } from "./handler";
 import { readScript, type ScriptOp } from "./script";
 import { packSheet, type Placed } from "./sheet";
@@ -31,10 +31,10 @@ export interface Exported {
 
 /** One drawing as the fighter's sprite shows it, before any offset. */
 export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, look: Look = PLAIN, palette = t.palette): Drawing {
-  const set = tileSetOf(rom, t, drawing);
-  if (set === null) throw new Error(`drawing ${drawing} is unused`);
-  const at = tileStream(rom, t, set);
-  if (at === null) throw new Error(`drawing ${drawing} wants tile set ${set}, an unused slot`);
+  const resource = tileResourceOf(rom, t, drawing);
+  if (resource === null) throw new Error(`drawing ${drawing} is unused`);
+  const at = resourceStream(rom, resource);
+  if (at === null) throw new Error(`drawing ${drawing} wants resource ${resource.toString(16)}, an unused slot`);
   const pieces = flipLayout(readLayout(rom, pointer(rom, layoutAt(t, drawing))), look.h, look.v);
   return drawFrame(decompress(rom, at).data, pieces, readPalette(rom, palette));
 }
@@ -75,7 +75,7 @@ export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
 
   // every drawing as drawn, plus each way a move shows one (src/rom/look.ts)
   const ids = new Set<string>();
-  for (let d = 0; d < t.drawings; d++) if (tileSetOf(rom, t, d) !== null) ids.add(String(d));
+  for (let d = 0; d < t.drawings; d++) if (tileResourceOf(rom, t, d) !== null) ids.add(String(d));
   for (const anim of Object.values(animations)) for (const step of anim.steps) ids.add(step.frame);
   const items: Placed[] = [];
   const variantItems: Record<string, Placed[]> = Object.fromEntries(Object.keys(t.variants ?? {}).map((v) => [v, []]));

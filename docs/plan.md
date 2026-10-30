@@ -58,33 +58,31 @@ built from the report alone.
 | an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
 | a fighter's attributes (defence, walk, jump, gravity) | **by hand** (`attributes.json`) |
 | knockback by reaction (`$0D:D68A`), which reaction (`$0D:D29C`) | **partly** (`hits.ts` names the reaction) |
-| the roster: which entry is which fighter, his tables | **by hand**, Goku only |
+| the roster: which entry is which fighter, his tables | `roster.ts` |
 | the sound driver, HDMA, the camera, the shake, burning's palettes | recordings or one-off — stays prose |
 
-The readers, in order — each a slice, each shown in `port`:
+The roster is read (`src/rom/roster.ts`, `npm run rom -- roster`; any
+reading command takes `--fighter <name>`). The readers left, in order —
+each a slice, each shown in `port`:
 
-1. **The roster** — every per-fighter pointer table read by character
-   (`FighterTables` built, not written), named from the HUD's name tiles
-   (`$00:C511`). *Done when:* the tables built for Goku equal today's
-   `GOKU`, and `port --fighter <name>` runs for every entry.
-2. **A command whole** — cost, the opponent's move, and the conditions,
+1. **A command whole** — cost, the opponent's move, and the conditions,
    read from the code that builds the flags they are masked against.
    *Done when:* `port` says Goku's Kamehameha costs 10 and the throw
    needs the opponent close and grounded, in words.
-3. **Every script command** — `80`, `c0`, `b1`, `90`, and which spawns a
+2. **Every script command** — `80`, `c0`, `b1`, `90`, and which spawns a
    `b0` counter lets fire. *Done when:* `port 9d` shows both tracks and
    `port aa` the three heads by the counter the handler sets.
-4. **Handler calls with their arguments** — `KNOWN` grows an argument
+3. **Handler calls with their arguments** — `KNOWN` grows an argument
    reader per routine. *Done when:* `port aa` gives the frame jumps when the
    head is gone, `port 1b` the bounce and shake, `port 0c` charging and the
    glow — what `rom.md` says of each, verified.
-5. **Object types** — timing, life, speed, on-hit, copies, read from the
+4. **Object types** — timing, life, speed, on-hit, copies, read from the
    type's code by its usual patterns. *Done when:* the export writes the
    Kamehameha's and the ki blast's spawns without the hand-written
    `objects` in `cartridge.ts`.
-6. **Attributes and knockback** — the export writes `attributes.json`'s
+5. **Attributes and knockback** — the export writes `attributes.json`'s
    numbers and the reactions' knockback. *Done when:* Goku's equal today's.
-7. **The throw from the report alone** — the exam.
+6. **The throw from the report alone** — the exam.
 
 ## Now: Goku from the cartridge
 
@@ -209,10 +207,6 @@ still differs from the original:
 5. **Player two's colours in a mirror match** — the same fighter on both
    sides takes the next palette (`rom.md`, A stage id); today both Gokus
    look alike.
-6. **Before a second fighter** — `tileSetOf` reads the drawing → resource
-   table as a tile set plus a "used" byte; it is a 2-byte resource id
-   (`rom.md`, Another fighter). Read the tables through the ten-entry pointer
-   tables instead of Goku's addresses, and map which entry is which fighter.
 
 *Open:* idle holds each pose 12 frames in its script but 13–14 in a
 recording; which moves repeat or hold is listed by hand in
