@@ -169,6 +169,17 @@ describe("validateStates", () => {
     );
   });
 
+  it("reports a rebound that is malformed or not in the air", () => {
+    const f = machine();
+    const error = 'state "idle": "rebound" needs a share and a min above 0, in an airborne state, e.g. { "share": 0.25, "min": 2 }';
+    f.states.idle.rebound = { share: 0.25, min: 2 };
+    expect(validateStates(f, ANIMS).errors).toContain(error);
+    f.states.idle.airborne = true;
+    expect(validateStates(f, ANIMS).errors).not.toContain(error);
+    f.states.idle.rebound = { share: 0, min: 2 };
+    expect(validateStates(f, ANIMS).errors).toContain(error);
+  });
+
   it("reports a malformed rank", () => {
     const f = machine();
     (f.states.idle as { rank: unknown }).rank = "smash";

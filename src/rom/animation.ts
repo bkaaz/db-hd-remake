@@ -101,10 +101,15 @@ export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: numb
  *
  * Cut too where each blow after the first begins (`blowStarts`), so every
  * blow of a multi-hit move is a state of its own, with its own damage and
- * type (ADR 0023).
+ * type (ADR 0023) — and at the steps in `cuts` (`jumpCuts`).
  */
-export function moveAnims(move: number, ops: ScriptOp[], boxesOf?: (drawing: number) => Box[]): Record<string, Anim> {
-  const cutAt = boxesOf ? blowStarts(ops, boxesOf).slice(1) : [];
+export function moveAnims(
+  move: number,
+  ops: ScriptOp[],
+  boxesOf?: (drawing: number) => Box[],
+  cuts: number[] = [],
+): Record<string, Anim> {
+  const cutAt = [...(boxesOf ? blowStarts(ops, boxesOf).slice(1) : []), ...cuts];
   const parts: ScriptOp[][] = [[]];
   // a step shown since the last cut: several spawns at once are one cut
   let shown = false;
@@ -156,6 +161,36 @@ export function blowStarts(ops: ScriptOp[], boxesOf: (drawing: number) => Box[])
     step++;
   }
   return starts;
+}
+
+/** The move's frame each step of the script starts on, counted as the engine counts steps. */
+export function stepStarts(ops: ScriptOp[]): number[] {
+  const starts: number[] = [];
+  let frame = 0;
+  for (const op of ops) {
+    if (op.op !== "show" && op.op !== "hold") continue;
+    starts.push(frame);
+    frame += op.op === "hold" ? 1 : op.frames;
+  }
+  return starts;
+}
+
+/**
+ * The steps a handler jumps to from another step (`handlerFacts`' `to`, on a
+ * `step`) — the knockdown's fall, its floor and its lying: what decides when
+ * each comes is the handler, landing or turning to fall, so each is a part a
+ * state can wait in. A jump inside the step it runs on holds a pose and cuts
+ * nothing.
+ */
+export function jumpCuts(ops: ScriptOp[], jumps: { step?: number; to?: number }[]): number[] {
+  const starts = stepStarts(ops);
+  const cuts = new Set<number>();
+  for (const { step, to } of jumps) {
+    if (step === undefined || to === undefined) continue;
+    const target = starts.indexOf(to);
+    if (target > 0 && target !== step) cuts.add(target);
+  }
+  return [...cuts].sort((a, b) => a - b);
 }
 
 /** What a later part inherits: the last drawing (as a zero-frame step), flip and offset. */

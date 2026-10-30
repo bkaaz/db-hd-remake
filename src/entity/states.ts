@@ -13,6 +13,7 @@
 
 import type { BallDef } from "../combat/ball";
 import type { BandDef } from "../combat/band";
+import type { ReboundDef } from "../combat/rebound";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
 import { missWindow, type AnimSteps } from "../combat/swing";
 
@@ -44,6 +45,12 @@ export interface StateDef {
    * launcher and wrong for the next.
    */
   launch?: [number | null, number | null];
+  /**
+   * Up again on entering, at a share of the speed the body last landed with
+   * (`combat/rebound.ts`) — the knockdown's bounce. Horizontal speed is kept,
+   * as the original keeps its push through the bounce.
+   */
+  rebound?: ReboundDef;
   /**
    * While true the entity is off the ground: gravity pulls on it every frame
    * and its velocity carries (momentum), instead of `vel` being re-applied.
@@ -1123,6 +1130,11 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
         def.launch.some((v) => v !== null && typeof v !== "number"))
     ) {
       errors.push(`${where}: "launch" must be two numbers or nulls, e.g. [null, -2.4]`);
+    }
+
+    const rebound = def.rebound;
+    if (rebound !== undefined && !(rebound.share > 0 && rebound.min > 0 && def.airborne)) {
+      errors.push(`${where}: "rebound" needs a share and a min above 0, in an airborne state, e.g. { "share": 0.25, "min": 2 }`);
     }
 
     if (def.rank !== undefined && (typeof def.rank !== "number" || def.rank < 0)) {

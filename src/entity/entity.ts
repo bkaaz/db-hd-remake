@@ -4,6 +4,7 @@ import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { BALL_COLOUR, nextRadius } from "../combat/ball";
 import { bandHeights, type BandDef } from "../combat/band";
+import { reboundSpeed } from "../combat/rebound";
 import { burnVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
@@ -162,6 +163,8 @@ export class Entity {
   private stateFrames = 0;
   /** Latched on touching the ground; cleared when the state changes. */
   private landed = false;
+  /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
+  private landedAt = 0;
   /**
    * Presses wait here for a few frames. Ticked below the freeze check, so a hit
    * pause cannot age a press out of existence — losing the input a player makes
@@ -683,6 +686,8 @@ export class Entity {
       if (launch[0] !== null) this.vx = launch[0];
       if (launch[1] !== null) this.vy = launch[1];
     }
+    const rebound = this.sm.def.rebound;
+    if (rebound) this.vy = reboundSpeed(rebound, this.landedAt);
   }
 
   /**
@@ -831,6 +836,7 @@ export class Entity {
         // speed — a body skidding at 4.5 px a frame is still skidding — and
         // pretending it does made every bounce start from nothing, so the state
         // that followed had to invent a speed it could not know.
+        this.landedAt = this.vy;
         this.vy = 0;
         this.landed = true;
         // the fire goes out when the body lands, its own palette back ($0D:CB47)

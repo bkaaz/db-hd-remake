@@ -118,6 +118,8 @@ if (command === "tiles") {
     for (const s of p.spawns)
       console.log(`  spawns at ${s.frame}: object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
     if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
+    for (const step of new Set(p.onSteps.map((f) => f.step)))
+      console.log(`  handler on step ${step}: ${p.onSteps.filter((f) => f.step === step).map((f) => f.what).join(", ")}`);
   }
 } else if (command === "object" && args.length >= 3) {
   const [type, anim] = [parseInt(args[0], 16), parseInt(args[1], 16)];

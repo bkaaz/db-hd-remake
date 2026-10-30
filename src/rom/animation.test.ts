@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { animName, blowStarts, moveAnim, moveAnims, toAnim } from "./animation";
+import { animName, blowStarts, jumpCuts, moveAnim, moveAnims, toAnim } from "./animation";
 import type { ScriptOp } from "./script";
 
 const show = (frames: number, drawing: number | null): ScriptOp => ({ op: "show", frames, drawing });
@@ -115,6 +115,30 @@ describe("moveAnims", () => {
     const anims = moveAnims(0x00, [spawn, show(12, 0), show(12, 1)]);
     expect(Object.keys(anims)).toEqual(["m00"]);
     expect(anims.m00.loop).toBe(true);
+  });
+});
+
+describe("jumpCuts", () => {
+  // the knockdown's script: rising, falling, the floor, the bounce, lying
+  const knockdown = [show(32, 59), show(32, 32), show(4, 33), show(32, 32), show(32, 34)];
+
+  it("cuts where the handler jumps from one step to the start of another", () => {
+    const jumps = [{ step: 0, to: 32 }, { step: 1, to: 64 }, { step: 2, to: 100 }, { step: 3, to: 100 }];
+    expect(jumpCuts(knockdown, jumps)).toEqual([1, 2, 4]);
+  });
+
+  it("does not cut for a jump that holds a pose inside its own step", () => {
+    expect(jumpCuts(knockdown, [{ step: 1, to: 48 }, { step: 1, to: 32 }])).toEqual([]);
+  });
+
+  it("ignores a jump read without a step — a handler keyed on frames", () => {
+    expect(jumpCuts(knockdown, [{ to: 32 }])).toEqual([]);
+  });
+
+  it("gives moveAnims the parts a state waits in", () => {
+    const anims = moveAnims(0x1b, knockdown, undefined, [1, 2, 4]);
+    expect(Object.keys(anims)).toEqual(["m1b", "m1b_2", "m1b_3", "m1b_4"]);
+    expect(anims.m1b_3.steps.map((s) => [s.frame, s.dur])).toEqual([["33", 4], ["32", 32]]);
   });
 });
 

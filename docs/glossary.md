@@ -123,6 +123,11 @@ being juggled. Marked on the attack (`relaunch`; `smash` until 2026-09-26), spen
 combo; past the budget it still hits and still hurts, it just stops lifting.
 → `combat.md` §4
 
+**Rebound** — a body going back up off the floor at a share of the speed it
+landed with, never under a floor (`rebound` on the state): the knockdown's
+bounce.
+→ `combat/rebound.ts`
+
 **Rehit** — how many frames before a blow may connect **again**, while its hit
 box is still out (`rehit` on the state). Absent means one swing lands once. It is
 what makes a beam ten hits of one sprite rather than ten authored steps.

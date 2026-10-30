@@ -21,9 +21,12 @@ npm run rom -- port a5
 ```
 
 It gives, per **part** of the move's animation (`ma5`, `ma5_2`, … — one per
-blow, ADR 0023; one per spawn, ADR 0018): the blow's frame, hit type, damage
-and stun; the speed the handler sets (`vel`, `velAt`); the sounds and spawns
-with their frames; where the handler re-arms the blow. Frames count from the
+blow, ADR 0023; one per spawn, ADR 0018; one per step a by-step handler
+jumps to, ADR 0028): the blow's frame, hit type, damage and stun; the speed
+the handler sets (`vel`, `velAt`); the sounds and spawns with their frames;
+where the handler re-arms the blow; and, for a handler that runs by step,
+what it does on each (`handler on step N`) — on a condition the report does
+not read, so look at the code for it (landing, turning to fall). Frames count from the
 part's start, as a state's do. The input is the command table's.
 
 A spawn's line carries its object's own blow (`$3D:9624`): the projectile's

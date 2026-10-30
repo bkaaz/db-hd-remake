@@ -69,11 +69,12 @@ takes an investigation instead of a procedure. In this order:
    data, with the original's window: each direction within 12 frames of the
    next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
    for the whole motion, which a half circle barely fits.
-3. **The original's reactions** — light, heavy and down are built; in the
-   air (`1a`), crouching (`17`/`18`), the full knockdown — ours lands once
-   and gets up, with the first dust; the original's bounces, raises dust
-   again and lies before the get-up (`rom.md`, A knockdown) — dizzy
-   (`1d`), and the choice between them as `$0D:D29C` makes it.
+3. **The original's reactions** — light, heavy and the knockdown are
+   built; in the air (`1a`), crouching (`17`/`18`), dizzy (`1d`), and the
+   choice between them as `$0D:D29C` makes it. The reactions brought from
+   goku_old (`hurt_air`, `launched`, `blown` …) still land straight into
+   `downed`. The knockdown's `$E3` on its bounce (a shake `?`) is not
+   built.
 4. **Which clip is which id** — matched by the code that plays each id
    (`rom.md`, the sounds table); still unmatched: `31` (the voice at KO), a
    jump's take-off (no `$0D:D82E` with a constant plays one), the specials'

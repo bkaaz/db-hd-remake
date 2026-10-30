@@ -7,7 +7,7 @@
 
 import type { Anim, FrameDef } from "../entity/entityFile";
 import type { Rgba } from "../sprites/png";
-import { animName, moveAnims } from "./animation";
+import { animName, jumpCuts, moveAnims, stepStarts } from "./animation";
 import { layoutAt, pointer, scriptAt, tileSetOf, tileStream, type FighterTables, type SpawnDef } from "./cartridge";
 import { readBoxes } from "./collision";
 import { decompress } from "./decompress";
@@ -15,7 +15,8 @@ import { drawFrame, flipLayout, readLayout, readPalette, type Drawing } from "./
 import { PLAIN, parseFrameId, type Look } from "./look";
 import { objectFrame } from "./object";
 import { objectVram } from "./resource";
-import { readScript } from "./script";
+import { handlerAt, handlerFacts } from "./handler";
+import { readScript, type ScriptOp } from "./script";
 import { packSheet, type Placed } from "./sheet";
 
 export interface Exported {
@@ -38,6 +39,15 @@ export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, 
   return drawFrame(decompress(rom, at).data, pieces, readPalette(rom, palette));
 }
 
+/** Where the move's handler cuts its script (`jumpCuts`); none when it cannot be read. */
+function handlerCuts(rom: Uint8Array, t: FighterTables, move: number, ops: ScriptOp[]): number[] {
+  try {
+    return jumpCuts(ops, handlerFacts(rom, handlerAt(rom, t.character, move), stepStarts(ops).length));
+  } catch {
+    return [];
+  }
+}
+
 const BLANK: Drawing = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
 
 export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
@@ -47,7 +57,8 @@ export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
   const animations: Record<string, Anim> = {};
   for (let move = 0; move < 0x100; move++) {
     try {
-      Object.assign(animations, moveAnims(move, readScript(rom, scriptAt(rom, t, move)), (d) => readBoxes(rom, t.boxes, d)));
+      const ops = readScript(rom, scriptAt(rom, t, move));
+      Object.assign(animations, moveAnims(move, ops, (d) => readBoxes(rom, t.boxes, d), handlerCuts(rom, t, move, ops)));
     } catch (e) {
       notes.push(`${animName(move)} left out: ${(e as Error).message}`);
     }

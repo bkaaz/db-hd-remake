@@ -35,6 +35,8 @@ occurs.
   began) and sets vx as `LDA #imm / STA $7C,X`, mirrored for facing left;
   `JSL $0D:D8A2` re-arms the blow for the next hit. The normals share one
   (`$0F:AA54`); a special has its own — Quadruple Kick's is `$20:8663`.
+  Some key on the script's step instead (field `0x46`), through a table and
+  `JMP ($0064)` — the knockdown's `$0F:A217`; `handler.ts` follows both.
 - **Where code lives:** `$01` the animation and object engines, `$0D` the
   rules of a fight (hits, buttons, the CPU's choices), `$0F` move handlers.
   `dis` cannot tell code from data: a run of `BRK`, `COP` or `SBC long` is a
@@ -189,8 +191,9 @@ The `a/0d` beside the defender are its knockdown's, not the beam's.
 **A knockdown** (move `1b`, and `1e`; handler `$0F:A217`, by step through
 `$0F:A22D`) rises in drawing `59` until vy turns, falls in `32`, and hits
 the floor: dust, sound `0d`, and a bounce (`$0D:EC12`: vy = −¼ of the
-landing speed, field `0x33`, at most 2.0 up; it also sets `$E3` to `8008`,
-or `8108` at that cap — a shake `?`), drawing `33` for 4 frames then `32`
+landing speed, field `0x33`, but never under 2.0 up — so an ordinary
+knockdown, landing at 4.0, leaves at 2.0; it also sets `$E3` to `8108` —
+a shake `?`), drawing `33` for 4 frames then `32`
 in the air. The second landing raises dust again, plays `0c` and stops it;
 it lies in `34` for 32 frames and gets up (move `1f`). Each step is a jump
 of field `0x44` into the one script (`0x20`, `0x40`, `0x64`).

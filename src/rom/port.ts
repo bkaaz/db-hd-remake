@@ -1,9 +1,9 @@
-import { blowStarts, moveAnims } from "./animation";
+import { blowStarts, jumpCuts, moveAnims, stepStarts } from "./animation";
 import { NORMALS } from "./buttons";
 import { scriptAt, type FighterTables } from "./cartridge";
 import { readBoxes } from "./collision";
 import { arrow, buttonName, readCommands } from "./commands";
-import { handlerAt, handlerFacts } from "./handler";
+import { handlerAt, handlerFacts, type HandlerFact } from "./handler";
 import { groundReaction, hitRecords, objectRecord, recordAt, type HitRecord } from "./hits";
 import { readScript } from "./script";
 
@@ -36,15 +36,21 @@ export interface PartReport {
   vel: number;
   velAt: [number, number][];
   rearms: number[];
+  /**
+   * What a handler that runs by step does on the steps of this part — on the
+   * condition it tests (landing, turning to fall), which this does not read:
+   * the address is in the report.
+   */
+  onSteps: { step: number; what: string }[];
 }
 
 export function portReport(rom: Uint8Array, t: FighterTables, move: number): PortReport {
   const ops = readScript(rom, scriptAt(rom, t, move));
   const boxesOf = (d: number) => readBoxes(rom, t.boxes, d);
-  const anims = moveAnims(move, ops, boxesOf);
   const records = hitRecords(rom, t.character, move);
   const handler = handlerAt(rom, t.character, move);
-  const facts = handlerFacts(rom, handler);
+  const facts = handlerFacts(rom, handler, stepStarts(ops).length);
+  const anims = moveAnims(move, ops, boxesOf, jumpCuts(ops, facts));
 
   // the move's frame each step and each command falls on
   const stepFrame: number[] = [];
@@ -58,6 +64,7 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     }
   }
   const blows = blowStarts(ops, boxesOf).map((step) => ({ step, frame: stepFrame[step] }));
+  const stepped = facts.filter((f): f is HandlerFact & { step: number } => f.step !== undefined);
 
   const parts: PartReport[] = [];
   let from = 0;
@@ -93,6 +100,7 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
       vel: speeds.filter((s) => s.frame < from).at(-1)?.vx ?? 0,
       velAt: speeds.filter((s) => inside(s.frame)).map((s) => [s.frame - from, s.vx]),
       rearms: facts.filter((f) => f.what === "re-arms the blow" && f.frame !== null && inside(f.frame)).map((f) => f.frame! - from),
+      onSteps: stepped.filter((f) => inside(stepFrame[f.step])).map((f) => ({ step: f.step, what: describe(f) })),
     });
     from += frames;
   }
@@ -103,6 +111,15 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     ...commands.map((c) => `${c.where}: ${[...c.directions.map(arrow), buttonName(c.button)].join(" ")}`),
   ];
   return { move, inputs, handler, parts };
+}
+
+function describe(f: HandlerFact): string {
+  const hex = (n: number) => n.toString(16).padStart(2, "0");
+  if (f.to !== undefined) return `jumps to move frame ${f.to}`;
+  if (f.sound !== undefined) return `plays sound ${hex(f.sound)}`;
+  if (f.move !== undefined) return `sets move ${hex(f.move)}`;
+  if (f.vx !== undefined) return `sets vx ${f.vx}`;
+  return f.what;
 }
 
 function blowOf(r: HitRecord): { type: string; damage: number; stun: number } {

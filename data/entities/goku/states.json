@@ -1119,8 +1119,76 @@
       "sound": "voice_hurt",
       "transitions": [
         {
+          "when": "falling",
+          "to": "down_fall"
+        },
+        {
           "when": "landed",
-          "to": "downed"
+          "to": "down_bounce"
+        }
+      ]
+    },
+    "down_fall": {
+      "anim": "m1b_2",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ]
+    },
+    "down_bounce": {
+      "anim": "m1b_3",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "groundFx": "goku_dust",
+      "sound": "land_2",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "down_lie"
+        }
+      ]
+    },
+    "down_lie": {
+      "anim": "m1b_4",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "goku_dust",
+      "sound": "land_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "get_up"
+        }
+      ]
+    },
+    "get_up": {
+      "anim": "m1f",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     },
@@ -1240,7 +1308,6 @@
     "downed": {
       "anim": "m1f",
       "rank": 4,
-      "groundFx": "goku_dust",
       "invulnerable": true,
       "vel": [
         0,
