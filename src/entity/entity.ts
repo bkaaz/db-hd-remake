@@ -723,6 +723,9 @@ export class Entity {
     // about the pair, so the thing between the fighters takes it off the latch.
     this.fired = this.sm.def.fires ?? null;
     this.groundFx = this.sm.def.groundFx ?? null;
+    // a special's price; below 1 it leaves 1, as the original does ($0D:EEF7)
+    const price = this.sm.def.healthCost;
+    if (price) this.hp = Math.max(1, this.hp - price);
     this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.stateFrames = 0;

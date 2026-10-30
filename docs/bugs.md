@@ -20,14 +20,15 @@ because a number would only need translating back.
 
 ---
 
-## The Kamehameha fires without a sound
+## A charge does not take over a punch begun a frame before
 
-`goku`, move `aa` (↓ ↙ → + A, release) · noticed by the owner 2026-10-30 · annoying
+`goku`, A then S a frame apart · noticed 2026-10-30 · annoying
 
-The beam leaves the hands in silence: the charge (`25`) and Goku's line are
-heard, the shot is not. Which id the original plays there is not read yet —
-likely in `aa`'s script or the beam's object code (`rom.md`, the sounds
-table).
+In the original, Y pressed a frame before B starts the far Y (`92`) for one
+frame, and the charge takes over (`tools/re/log-charge.lua`). Ours plays the
+punch and no charge: only idle and walking look for A + S. Whether the
+normals' handler checks for Y + B all through or only at their start is not
+read.
 
 ## Goku's black-haired drawings are missing part of the hair
 

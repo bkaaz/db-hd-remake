@@ -95,6 +95,13 @@ describe("moveAnims", () => {
     expect(anims.m9b_2.steps[0].sfx).toEqual([0xb]);
   });
 
+  it("moves a sound after the last step into the next part, past commands between it and the cut", () => {
+    const effect: ScriptOp = { op: "raw", bytes: [0xb1, 1, 1, 0xf0, 0xff, 0xcd, 0xff, 4, 0x20] };
+    const anims = moveAnims(0xaa, [show(44, 0x81), { op: "sound", id: 0xa }, effect, spawn, show(96, 0x89)]);
+    expect(anims.maa.steps[0].sfx).toBeUndefined();
+    expect(anims.maa_2.steps[0].sfx).toEqual([0xa]);
+  });
+
   it("starts a later part on the drawing, flip and offset the first left up", () => {
     const anims = moveAnims(0x9b, [{ op: "offset", dx: 0, dy: -8 }, show(4, 5), spawn, show(4, null)]);
     expect(anims.m9b_2.steps).toEqual([{ frame: "5_0,-8", dur: 4 }]);

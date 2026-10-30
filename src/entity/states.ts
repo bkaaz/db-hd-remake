@@ -232,6 +232,13 @@ export interface StateDef {
   heal?: HealDef;
 
   /**
+   * Health a special costs as it starts — the original's one pool, byte 3 of
+   * its command row ($0D:EED7, `rom.md`, The buttons) — never taking the
+   * last point. Health, not ki, for now, as `heal` is.
+   */
+  healthCost?: number;
+
+  /**
    * Ki spent **on entering** this state, and the price of admission: a
    * transition into it does not fire at all when the meter is short.
    *
@@ -1142,6 +1149,9 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
         !Number.isInteger(def.shake.frames) || def.shake.frames < 1)
     ) {
       errors.push(`${where}: "shake" needs "pattern" 0 to ${SHAKE_PATTERNS - 1} and "frames" 1 or more, e.g. { "pattern": 1, "frames": 8 }`);
+    }
+    if (def.healthCost !== undefined && !(Number.isInteger(def.healthCost) && def.healthCost >= 1)) {
+      errors.push(`${where}: "healthCost" must be a whole number of health, 1 or more`);
     }
     if (
       def.heal !== undefined &&

@@ -714,6 +714,7 @@
     },
     "kame_charge": {
       "anim": "maa",
+      "healthCost": 10,
       "vel": [
         0,
         0

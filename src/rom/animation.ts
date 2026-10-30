@@ -118,11 +118,17 @@ export function moveAnims(
     const isStep = op.op === "show" || op.op === "hold";
     if ((op.op === "spawn" && shown) || (isStep && cutAt.includes(step))) {
       shown = false;
-      // sounds just before the cut play as the next part begins, so they go with it
+      // sounds after the last step play as the next part begins, so they go
+      // with it — the Kamehameha's shot has an effect command between its
+      // sound and the cut, and was silent while only the sounds right before
+      // the cut were moved
       const last = parts[parts.length - 1];
-      let i = last.length;
-      while (i > 0 && (last[i - 1].op === "sound" || last[i - 1].op === "voice")) i--;
-      parts.push([...carried(parts.flat()), ...last.splice(i)]);
+      let lastStep = last.length - 1;
+      while (lastStep >= 0 && last[lastStep].op !== "show" && last[lastStep].op !== "hold") lastStep--;
+      const tail = last.splice(lastStep + 1);
+      const isSound = (o: ScriptOp) => o.op === "sound" || o.op === "voice";
+      last.push(...tail.filter((o) => !isSound(o)));
+      parts.push([...carried(parts.flat()), ...tail.filter(isSound)]);
     }
     if (isStep) {
       shown = true;

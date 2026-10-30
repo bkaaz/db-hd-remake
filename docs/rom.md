@@ -236,7 +236,7 @@ code that plays them, since a clip's number says nothing:
 |---|---|---|
 | `06` / `07` | a punch's / a kick's script | `swing_1` / `swing_2` |
 | `09` | a melee hit (`$0D:D1BC`) | `hit_1` |
-| `0a` | a projectile's hit, a blocked projectile (`$0D:CF6D`, `D1E9`) | — |
+| `0a` | a projectile's hit, a blocked projectile (`$0D:CF6D`, `D1E9`); the Kamehameha's shot (`aa`'s script) | `burst_1` |
 | `0b` | the ki blast fired (script) | `blast_1` |
 | `0c` | landing from a jump (`$0F:9FB8`) | `land_1` |
 | `0d` | a body hitting the floor (knockdown handler `$0F:A217`) | `land_2` |
@@ -429,9 +429,13 @@ deciding what to do (`$0D:F7F6`, `$0D:F95B`, `$0D:F96F`).
 **Special moves come first** (`$0D:F085`): a command table of 0x150 bytes
 per fighter at `$3D:9EEF` (offsets `$0D:F5CF`) — 0x88 on the ground, 0x40
 in the air, the rest for mode `$0552` — in 8-byte rows, scanned last row
-first: bytes 0–3 conditions (masks on fighter fields `0x4C`/`0x4D` `?`;
-Meteor Smash's `0x41` and the ki moves' `05`/`0a` are presumably low health
-and ki), byte 4 a sequence, byte 5 the move. A sequence (`$0D:F2E6` + 2 ×
+first: bytes 0–2 conditions (masks on fighter fields `0x4C`/`0x4D` `?`;
+Meteor Smash's `0x41` presumably low health), byte 3 the move's **cost**,
+byte 4 a sequence, byte 5 the move. The cost comes off the health as the
+move starts, never below 1 (`$0D:EED7`) — none in training (`$1A02 = 3`)
+or while `$1B15` is set. Goku's: the large ki blast `a9` 5, the
+Kamehameha `aa` / `ab` 10, the same in the air (`d2` 5, `d3` / `d4` 10),
+everything else 0. A sequence (`$0D:F2E6` + 2 ×
 number, words in bank `$0D`) is a button word, then directions **newest
 first**, ended by `0000`, as the pad's bits facing right: B `8000`, Y `4000`,
 A `0080`, X `0040`, R `0010`; → `0100`, ← `0200`, ↓ `0400`, ↑ `0800`. Goku's
