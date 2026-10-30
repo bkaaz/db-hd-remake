@@ -16,6 +16,8 @@ export interface BlowResult {
   blocked: boolean;
   /** The state the defender was in when it arrived. */
   took: string;
+  /** Frames of white screen it asks for (`hitFlash`); none when blocked. */
+  flash: number;
 }
 
 /** What a landing blow needs besides the two bodies: a noise and a spark. */
@@ -85,6 +87,7 @@ export function landBlow(
       reaction: attacker.attackReaction,
       relaunch: attacker.attackRelaunch,
       hitstun: attacker.attackHitstun,
+      palettes: attacker.attackPalettes,
     });
     dealt = defender.hurtBy(attacker.attackDamage);
   }
@@ -97,5 +100,5 @@ export function landBlow(
   const stop = attacker.attackHitstop;
   attacker.freeze(stop);
   defender.freeze(stop);
-  return { attack, damage: dealt, blocked, took };
+  return { attack, damage: dealt, blocked, took, flash: blocked ? 0 : attacker.attackFlash };
 }

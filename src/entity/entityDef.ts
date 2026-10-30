@@ -42,6 +42,8 @@ export interface EntityDef {
   states: StatesFile | null;
   sounds: Sounds;
   attributes: Attributes;
+  /** Each palette variant's sheet, cut into the same frames as `frames`. */
+  variants: Map<string, Map<string, Texture>>;
 }
 
 /** Fetch an entity plus its sheet and build per-frame textures. */
@@ -50,11 +52,7 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = ((await res.json()) as { entity: EntityFile }).entity;
 
-  const sheetImg = new Image();
-  sheetImg.src = `/api/sheet?name=${encodeURIComponent(data.sheet)}`;
-  await sheetImg.decode();
-  const sheet = Texture.from(sheetImg);
-  sheet.source.scaleMode = "nearest";
+  const sheet = await loadSheet(data.sheet);
 
   const frames = new Map<string, FrameTex>();
   for (const [id, f] of Object.entries(data.frames ?? {})) {
@@ -66,12 +64,34 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
     });
   }
 
+  const attributes = { ...DEFAULT_ATTRIBUTES, ...(data.attributes ?? {}) };
+  // the same rectangles on a sheet drawn in another palette (npm run rom -- export)
+  const variants = new Map<string, Map<string, Texture>>();
+  for (const name of attributes.palettes) {
+    const variant = await loadSheet(data.sheet.replace(/(\.png)$/, `@${name}$1`));
+    const cut = new Map<string, Texture>();
+    for (const [id, f] of Object.entries(data.frames ?? {})) {
+      cut.set(id, new Texture({ source: variant.source, frame: new Rectangle(f.x, f.y, f.w, f.h) }));
+    }
+    variants.set(name, cut);
+  }
+
   return {
     name: data.name,
     frames,
     animations: data.animations ?? {},
     states: data.states ?? null,
     sounds: data.sounds ?? {},
-    attributes: { ...DEFAULT_ATTRIBUTES, ...(data.attributes ?? {}) },
+    attributes,
+    variants,
   };
+}
+
+async function loadSheet(name: string): Promise<Texture> {
+  const img = new Image();
+  img.src = `/api/sheet?name=${encodeURIComponent(name)}`;
+  await img.decode();
+  const sheet = Texture.from(img);
+  sheet.source.scaleMode = "nearest";
+  return sheet;
 }

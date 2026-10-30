@@ -27,6 +27,8 @@ export interface FighterTables {
   boxes: number;
   /** The objects this fighter spawns that we export, and what they draw from. */
   objects: Objects;
+  /** Other palettes the whole sheet is drawn in too, by name — sheet `<name>@<variant>.png`. */
+  variants?: Record<string, number>;
 }
 
 /**
@@ -69,8 +71,15 @@ export interface SpawnDef {
 const KAME_PALETTE = 0x2ade1c;
 const KAME_LOADS = [{ resource: 0x32, vram: 0x6c00 }];
 
+/**
+ * The fire a Kamehameha leaves on whoever it hits: 15 palettes of 32 bytes
+ * from $95:C78E, of which a hit steps through 4–9 (docs/rom.md).
+ */
+const FIRE = Object.fromEntries([4, 5, 6, 7, 8, 9].map((n) => [`fire${n}`, 0x2ac78e + 32 * n]));
+
 export const GOKU: FighterTables = {
   character: 0,
+  variants: FIRE,
   layouts: 0x4880e,
   tileSets: 0x48a54,
   drawings: (0x48a54 - 0x4880e) / 3,

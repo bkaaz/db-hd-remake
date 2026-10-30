@@ -24,16 +24,18 @@ export interface Exported {
   animations: Record<string, Anim>;
   /** What was left out, and why — a line each. */
   notes: string[];
+  /** The same sheet drawn in another palette, frame for frame (`FighterTables.variants`). */
+  variants?: Record<string, Rgba>;
 }
 
 /** One drawing as the fighter's sprite shows it, before any offset. */
-export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, look: Look = PLAIN): Drawing {
+export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, look: Look = PLAIN, palette = t.palette): Drawing {
   const set = tileSetOf(rom, t, drawing);
   if (set === null) throw new Error(`drawing ${drawing} is unused`);
   const at = tileStream(rom, t, set);
   if (at === null) throw new Error(`drawing ${drawing} wants tile set ${set}, an unused slot`);
   const pieces = flipLayout(readLayout(rom, pointer(rom, layoutAt(t, drawing))), look.h, look.v);
-  return drawFrame(decompress(rom, at).data, pieces, readPalette(rom, t.palette));
+  return drawFrame(decompress(rom, at).data, pieces, readPalette(rom, palette));
 }
 
 const BLANK: Drawing = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
@@ -56,6 +58,7 @@ export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
   for (let d = 0; d < t.drawings; d++) if (tileSetOf(rom, t, d) !== null) ids.add(String(d));
   for (const anim of Object.values(animations)) for (const step of anim.steps) ids.add(step.frame);
   const items: Placed[] = [];
+  const variantItems: Record<string, Placed[]> = Object.fromEntries(Object.keys(t.variants ?? {}).map((v) => [v, []]));
   const failed = new Set<string>();
   for (const id of [...ids].sort((a, b) => parseFrameId(a).drawing - parseFrameId(b).drawing || a.localeCompare(b))) {
     try {
@@ -64,7 +67,12 @@ export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
       const empty = readLayout(rom, pointer(rom, layoutAt(t, drawing))).length === 0;
       const { image, origin } = empty ? BLANK : drawDrawing(rom, t, drawing, look);
       // the anchor is the fighter's position: the drawing sits `look`'s offset away from it
-      items.push({ id, image, origin: { x: origin.x - look.dx, y: origin.y - look.dy } });
+      const at = { x: origin.x - look.dx, y: origin.y - look.dy };
+      items.push({ id, image, origin: at });
+      // same size, same order, so packSheet lays every variant out the same
+      for (const [v, palette] of Object.entries(t.variants ?? {})) {
+        variantItems[v].push({ id, image: empty ? BLANK.image : drawDrawing(rom, t, drawing, look, palette).image, origin: at });
+      }
     } catch (e) {
       failed.add(id);
       notes.push(`frame ${id} left out: ${(e as Error).message}`);
@@ -76,7 +84,8 @@ export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
     delete animations[name];
     notes.push(`${name} left out: shows frame ${bad.frame}, which has no picture`);
   }
-  return { ...packSheet(items), animations, notes };
+  const variants = Object.fromEntries(Object.entries(variantItems).map(([v, list]) => [v, packSheet(list).sheet]));
+  return { ...packSheet(items), animations, notes, variants };
 }
 
 /** Each object the fighter's moves spawn that we export, with the tiles and palette its `b0` gives. */

@@ -13,6 +13,7 @@
 
 import type { BallDef } from "../combat/ball";
 import type { BandDef } from "../combat/band";
+import type { PaletteRun } from "../combat/palettes";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
 import { missWindow, type AnimSteps } from "../combat/swing";
 
@@ -245,6 +246,15 @@ export interface StateDef {
    * state that `fires` takes it at once.
    */
   ball?: BallDef;
+  /**
+   * What this state's blow does to the colour of whoever it hits: palette
+   * variants and their frames, `[["fire4", 10], …]` (`combat/palettes.ts`) —
+   * shown only on a defender with sheets for them (`palettes`).
+   */
+  hitPalettes?: PaletteRun;
+  /** Frames the whole screen goes white when this state's blow lands — the Kamehameha's 16. */
+  hitFlash?: number;
+
   /**
    * The band of light from the hands to the head of the beam this state threw
    * (`combat/band.ts`) — drawn while the head is in the world.
@@ -1077,6 +1087,13 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     const steps = anim?.steps?.length;
     if (def.holdStep !== undefined && (!Number.isInteger(def.holdStep) || def.holdStep < 0 || (steps !== undefined && def.holdStep >= steps))) {
       errors.push(`${where}: "holdStep" must be a step of its animation, 0 to ${(steps ?? 1) - 1}`);
+    }
+    if (
+      def.hitPalettes !== undefined &&
+      (!Array.isArray(def.hitPalettes) ||
+        def.hitPalettes.some((p) => !Array.isArray(p) || typeof p[0] !== "string" || !(p[1] > 0)))
+    ) {
+      errors.push(`${where}: "hitPalettes" must be [variant, frames] pairs, e.g. [["fire4", 10]]`);
     }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);

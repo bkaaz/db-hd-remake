@@ -109,6 +109,11 @@ export interface Attributes {
    */
   closeRange: Partial<Record<CloseButton, number>>;
   /**
+   * The palette variants this fighter has sheets for — `<sheet>@<name>.png`,
+   * written by `npm run rom -- export` — that a blow's `hitPalettes` can show.
+   */
+  palettes: string[];
+  /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —
    * so switching the length from the pose to the number changed nothing, which
@@ -131,6 +136,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   defence: 0,
   comboLimits: true,
   closeRange: {},
+  palettes: [],
   hitstun: 12,
   ki: 100,
 };

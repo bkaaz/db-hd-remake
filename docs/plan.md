@@ -94,14 +94,23 @@ Built: the charge, the ball, the three beams with their base and band
 - the base's way in (frames 0–1) and out (5–7) are left out;
 - the charge fires as it decides; the original shows two more frames of
   the charging pose first (`$44` set to 42);
-- whether the head lives on after it hits — ours is gone on contact;
+- what the head does when it hits — `rom.md`: it becomes its explosion and
+  the pose holds 16 / 12 / 8 frames more; ours is gone on contact, which
+  ends the pose at once;
 - the beam ends with the move in the original ($0F:E5FC), long after it has
   left the screen; with no stage or camera that showed it vanishing in mid
   air, so Goku holds the firing pose (`holdStep`) until the head hits or
   leaves the field (owner, 2026-10-29), and the recovery after it (8 frames
   of drawing `00`) is skipped;
 - when a beam ends the original thins its band away (`$2A:A3F7`: size −1 a
-  frame) rather than dropping it.
+  frame) rather than dropping it;
+- the white screen is built as the original's but switched off
+  (`SCREEN_FLASH` in `src/stage.ts`): full white over our near-black window
+  is blinding (owner, 2026-10-29). Turn it on with a stage, whitening its
+  art as the original does; consider a player setting for flash strength;
+- the thrower's own palette changes every 4 frames while the beam is out
+  (`log-palettes.lua`); the victim's fire and the white screen are built
+  (ADR 0026).
 
 ### Then: the rest of Goku
 

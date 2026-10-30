@@ -1164,6 +1164,13 @@ describe("StateMachine", () => {
     });
   });
 
+  it("refuses hitPalettes that are not variant and frames pairs", () => {
+    const f = machine();
+    f.states.punch = { anim: "punch", damage: 1, hitPalettes: [["fire4", 0]], transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"hitPalettes"'))).toBe(true);
+  });
+
   it("refuses a holdStep its animation does not have", () => {
     const f = machine();
     const anims = { ...ANIMS, pose: { loop: false, steps: [{}, {}] } };

@@ -4,6 +4,7 @@ import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
 import { BALL_COLOUR, nextRadius } from "../combat/ball";
 import { bandHeights } from "../combat/band";
+import { variantAt, type PaletteRun } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -84,6 +85,8 @@ export interface Blow {
   relaunch: boolean;
   /** Game frames the defender is held helpless for. */
   hitstun: number;
+  /** The colours it leaves on the defender (`hitPalettes`). */
+  palettes?: PaletteRun;
 }
 
 /** One fighter's innards, for the debug readout only — see `Entity.debug`. */
@@ -237,6 +240,10 @@ export class Entity {
   private hum = { id: "", left: 0 };
   /** Game frames left of a hit pause; while it lasts nothing about the entity moves. */
   private freezeFrames = 0;
+  /** The palette run a blow left, and how far into it — counted through hitstop too. */
+  private paletteRun: PaletteRun | null = null;
+  private paletteFrame = 0;
+  private shownVariant: string | null = null;
   /**
    * Game frames left of being held helpless by the last blow. Ticked below the
    * freeze check, like the buffer: a hit pause freezes both fighters equally, so
@@ -435,6 +442,16 @@ export class Entity {
     return this.sm?.def.hitstop ?? this.hitstop;
   }
 
+  /** Frames of white screen this entity's current attack asks for when it lands. */
+  get attackFlash(): number {
+    return this.sm?.def.hitFlash ?? 0;
+  }
+
+  /** The palette run this entity's current attack leaves on whoever it hits. */
+  get attackPalettes(): PaletteRun | undefined {
+    return this.sm?.def.hitPalettes;
+  }
+
   /** Frames this entity's current attack holds whoever it hits. */
   get attackHitstun(): number {
     return this.sm?.def.hitstun ?? this.baseHitstun;
@@ -565,7 +582,21 @@ export class Entity {
     // After entering, because arriving in a state clears the clock — and this
     // blow's hold is the one thing about the reaction the blow gets to decide.
     this.stun = stun;
+    if (blow.palettes) {
+      this.paletteRun = blow.palettes;
+      this.paletteFrame = 0;
+      this.showVariant();
+    }
     return true;
+  }
+
+  /** Draw the current frame from the variant the palette run is on, or from the own sheet. */
+  private showVariant(): void {
+    const variant = this.paletteRun ? variantAt(this.paletteRun, this.paletteFrame) : null;
+    if (!variant) this.paletteRun = null;
+    if (variant === this.shownVariant) return;
+    this.shownVariant = variant;
+    this.applyFrame();
   }
 
   /** Enter a state because something happened *to* this entity (being hit). */
@@ -664,6 +695,9 @@ export class Entity {
     // A hit pause freezes the whole entity, animation included — the pose the
     // blow landed on is exactly what should be held still. The buffer is not
     // ticked below either, so the pause cannot age a press out of existence.
+    // before the freeze: the fire starts on the frame of contact and burns through the hitstop
+    if (this.paletteRun) this.paletteFrame++;
+    this.showVariant();
     if (this.freezeFrames > 0) {
       this.freezeFrames--;
       return;
@@ -847,7 +881,8 @@ export class Entity {
     if (!step) return;
     const ft = this.def.frames.get(step.frame);
     if (!ft) return;
-    this.sprite.texture = ft.tex;
+    const variant = this.shownVariant ? this.def.variants.get(this.shownVariant)?.get(step.frame) : undefined;
+    this.sprite.texture = variant ?? ft.tex;
     this.sprite.anchor.set(ft.anchor[0] / ft.w, ft.anchor[1] / ft.h);
   }
 

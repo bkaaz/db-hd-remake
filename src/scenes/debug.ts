@@ -143,6 +143,8 @@ export class DebugScene implements Scene {
     if (keyboard.takeKiRefill()) this.fighters.fillKi();
     this.fighters.pushApart(this.stage.bounds);
     this.fighters.exchangeBlows();
+    this.stage.flash(this.fighters.takeFlash());
+    this.stage.tick();
     this.fighters.note();
     tickLog();
     this.effects.update(this.fighters.frozen, this.stage.bounds);

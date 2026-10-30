@@ -1,6 +1,6 @@
 -- Mesen 2 script: one line per frame in which any spawned object changes —
 -- the ten 16-byte object slots at SA-1 I-RAM $3300-$339F (docs/rom.md), and
--- which move player one is in. An object's frame timing and speed live in
+-- which move each player is in. An object's frame timing and speed live in
 -- its type's own code; this reads them off instead.
 --
 -- Output: logs/objects.txt (gitignored). Light enough to run at full speed.
@@ -34,7 +34,8 @@ ref = emu.addEventCallback(function()
   end
   if #lines > 0 then
     local move = emu.read(0x140, emu.memType.sa1InternalRam)
-    log:write(string.format("f%d move=%02x\n%s\n", frame, move, table.concat(lines, "\n")))
+    local p2 = emu.read(0x240, emu.memType.sa1InternalRam)
+    log:write(string.format("f%d move=%02x p2=%02x\n%s\n", frame, move, p2, table.concat(lines, "\n")))
   end
   if frame == FRAMES then
     emu.removeEventCallback(ref, emu.eventType.endFrame)

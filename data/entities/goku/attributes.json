@@ -8,5 +8,13 @@
     "attack": 44,
     "smash": 48
   },
-  "comboLimits": false
+  "comboLimits": false,
+  "palettes": [
+    "fire4",
+    "fire5",
+    "fire6",
+    "fire7",
+    "fire8",
+    "fire9"
+  ]
 }

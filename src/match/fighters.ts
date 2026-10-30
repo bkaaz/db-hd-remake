@@ -43,6 +43,8 @@ export interface FightersStatus {
  * move in here, and it only stays readable while that stays true.
  */
 export class Fighters {
+  /** The longest white screen any blow landed this frame asked for. */
+  private flash = 0;
   readonly player: Entity;
   /** Null in preview mode: one fighter, nobody to hit. */
   readonly opponent: Entity | null;
@@ -104,6 +106,7 @@ export class Fighters {
     this.opponent?.update(opponentInput, this.player.x, bounds);
 
     for (const hit of this.projectiles.update(this.frozen, bounds, this.impact)) {
+      this.flash = Math.max(this.flash, hit.result.flash);
       const [from, to] = hit.foe === this.player ? ["P2 bolt", "P1"] : ["P1 bolt", "P2"];
       this.recorder.blow(hit.result, from, to, this.gap(), this.named());
     }
@@ -146,8 +149,18 @@ export class Fighters {
     if (!this.opponent) return;
     const gap = this.gap();
     const named = this.named();
-    this.recorder.blow(landBlow(this.player, this.opponent, this.impact), "P1", "P2", gap, named);
-    this.recorder.blow(landBlow(this.opponent, this.player, this.impact), "P2", "P1", gap, named);
+    for (const [from, to, a, d] of [["P1", "P2", this.player, this.opponent], ["P2", "P1", this.opponent, this.player]] as const) {
+      const result = landBlow(a, d, this.impact);
+      if (result) this.flash = Math.max(this.flash, result.flash);
+      this.recorder.blow(result, from, to, gap, named);
+    }
+  }
+
+  /** The white screen a blow asked for this frame, in frames — taken, so it is asked once. */
+  takeFlash(): number {
+    const frames = this.flash;
+    this.flash = 0;
+    return frames;
   }
 
   /**

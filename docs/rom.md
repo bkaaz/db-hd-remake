@@ -157,6 +157,42 @@ small shot's, is `2 × size` all along (`$2A:A78D`). All of it is resource `0x32
 own palette — a resource's record holds a palette pointer at bytes 5–7.
 `npm run rom -- object a 15 32@6c00 80` draws an object's frames to look at.
 
+**What a projectile becomes when it hits** (`$2A:8E31`): by the hitting
+object's type (`$92 & 0F` of the defender, table `$2A:8E4B`), then its
+animation (`$93`, type `a`'s table `$2A:98EB`), the slot is killed and
+rewritten as an explosion at the middle of the boxes' overlap (`$2A:8D63`):
+the ki blast `a/03` → `a/01`; the Kamehameha's heads `a/13` / `14` / `15` →
+`a/02` / `17` / `18`, and those set the defender burning (`$2A:99CC`: field
+`0x26` bit 7, when `0x25` has bit 3). `a/18` and `a/17` copy themselves on
+their step 1, 4–11 px away at random, while their `+0C` is under 2 / 1 —
+three explosions and two (`$0F:E1A9`); all step through `$0F:E2A9`'s
+6 8 3 4 3 3 3 frames and are gone. Recorded for all three (2026-10-30).
+
+**Burning** (`$0D:EC98`): every 2 frames a counter shared by both players
+steps through the 15 fire palettes (`0x180` + 0–14, `JSL $01:8316`) — so
+where in them a burn starts depends on the game, not the blow — until the
+body lands (`$0D:CB47`: vy ≥ 0 and y ≥ 200 clears the bit and reloads its
+own palette, field `0x17`). The 15 are `$95:C78E` on, 32 bytes each.
+
+**The Kamehameha after its head is gone**: from frame 52 the handler looks
+for its head (`JSL $0D:EBE0`, type and animation in the player's slots) and,
+not finding it, jumps the move to frame 124 / 128 / 132 — 16 / 12 / 8 more
+frames of the firing pose, then 8 of drawing `00`. The base plays its way
+out (steps 5–7). A big explosion's first frame with the defender knocked
+down sets the game's `$37` to `16` (`$0F:E261`) — what that does is not read.
+The `a/0d` beside the defender are its knockdown's, not the beam's.
+
+**A spoken line is `a1`**, not an effect (`$00:DE9F`): its id picks a
+sample from `$00:DB98` (3 bytes each) streamed to the sound chip
+(`$00:DB61`); when one is already playing the fighter shouts `32` instead.
+The Kamehameha says line 0 (`$13:D7D0`) on its first frame.
+
+**The Kamehameha's hit lights the defender up** (`dump-vram.lua`,
+`log-palettes.lua`): the burning above, and BG palettes 2–7 turn white for
+16 frames. While the beam is out the thrower's own palette changes every 4
+frames (resources `0x130`–`0x133` through `$01:84EF`) — which colours is not
+read.
+
 The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 Object slots: ten of 16 bytes at I-RAM `$3300`; each type's behaviour is its
@@ -347,6 +383,7 @@ access to I/O* on; each writes into `logs/`.
 | `dump-vram.lua` | VRAM, palettes and OAM every few frames — which resource each tile on screen came from |
 | `log-objects.lua` | every change to the ten object slots — an object's frames, timing and speed |
 | `log-hits.lua` | both fighters' move, step, health and stun on every change, with what the hit code sets — what a blow cost |
+| `log-palettes.lua` | every palette change, every frame, with both fighters' moves — what a palette swap steps through and for how long |
 | `log-oam.lua` | every sprite in OAM while an object of one type is up — what the game draws, frame by frame |
 
 Measured on Goku (2026-10-28, training mode): walk 1.5 px/frame forward and

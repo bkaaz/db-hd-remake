@@ -146,6 +146,9 @@ if (command === "tiles") {
   const fighter = exportFighter(rom, GOKU);
   for (const note of fighter.notes) console.log(`  ${note}`);
   write("assets/sheets/goku.png", "data/entities/goku", fighter);
+  for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
+    writeFileSync(`assets/sheets/goku@${variant}.png`, encodePng(sheet));
+  }
   console.log(`goku: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
   for (const [name, spawn] of Object.entries(exportSpawns(rom, GOKU))) {
     write(`assets/sheets/spawns/${name}.png`, `data/spawns/${name}`, spawn);

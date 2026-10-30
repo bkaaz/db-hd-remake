@@ -30,6 +30,8 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackRelaunch: false,
     attackHitstun: 12,
     attackFx: "spark_1",
+    attackFlash: 0,
+    attackPalettes: undefined,
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
     travels: false,
@@ -78,6 +80,16 @@ describe("landBlow", () => {
     expect(blocking.turnToward).toHaveBeenCalledWith(-8);
   });
 
+
+  it("asks for the white screen and passes the fire on, unless it is blocked", () => {
+    const fire: [string, number][] = [["fire4", 10]];
+    const beam = body("hit", { attackFlash: 16, attackPalettes: fire } as Partial<Entity>);
+    const defender = body("hurt");
+    expect(landBlow(beam, defender, context())?.flash).toBe(16);
+    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ palettes: fire }));
+    const guard = body("hurt", { guarding: true });
+    expect(landBlow(beam, guard, context())?.flash).toBe(0);
+  });
 
   it("connects when a hit box reaches a hurt box", () => {
     const attacker = body("hit");

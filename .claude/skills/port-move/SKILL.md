@@ -31,6 +31,35 @@ states (`data/spawns/<name>/states.json`) take that type and damage, as
 `goku_ki` does. If the animation parts are missing, `npm run rom -- export`
 first.
 
+## Before writing anything: the whole move, as the original plays it
+
+Investigate first, implement after (owner, 2026-10-30) — the Kamehameha
+showed every place a move hides behaviour. For each, find the code, or
+record it (`tools/re/`) when the code will not give it up; write what you
+found in `rom.md` before any state:
+
+1. **Input and conditions** — the button table or the command table; bytes
+   0–3 of a command row (ki, health, range).
+2. **The script** — every command: `a0` sounds, **`a1` a spoken line**,
+   `b0` spawns **and their counter** (which of several fire), `b1` drawn
+   effects (ball, band), `c0`, offsets, flips.
+3. **The handler** — speeds by frame, re-arms, **frame jumps** (`$44` set:
+   a move that skips ahead when something happens), what it **checks**
+   (an object still alive, a button still held) and the levels that gives.
+4. **Each object** — its type's code by animation: frames and timing, how
+   it moves, how long it lives and what ends it, the band or effect it
+   feeds, **what it becomes when it hits** (`$2A:8E31`) or lands, and the
+   copies an explosion makes of itself.
+5. **The blow** — the move's or the object's record; what the hit sets on
+   the defender (**burning**, a palette run, the screen) and **what ends
+   it** (landing).
+6. **Sounds and voices** — which id each place plays, matched by the code
+   that plays it; the defender's voice on a hit.
+7. **How it ends** — when the head is gone, when the pose holds, the
+   recovery; the base's way in and out.
+
+Then say what you could not find, and ask before guessing it.
+
 ## 3. Write the states
 
 One state per part, chained by `animEnd`, the last back to `idle`:
