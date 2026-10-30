@@ -51,6 +51,9 @@ those are entities too and every tab works on them.
 An arena is not an entity: `data/arenas/<name>/arena.json` says how its
 layers scroll, and `npm run rom -- export` writes it whole, with its
 pictures in `assets/arenas/<name>/`. Its shape: `src/arena/arenaFile.ts`.
+The HUD is the same kind of thing: `data/hud/hud.json` and
+`assets/hud/hud.png`, written whole by the export, shape in
+`src/hud/hudFile.ts`.
 
 ## Decisions the shape does not explain
 

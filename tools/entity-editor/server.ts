@@ -29,6 +29,8 @@ const ROSTER = path.join("data", "roster.json");
 const DEBUG_MODES = path.join("data", "debug.json");
 const ARENA_DATA = path.join("data", "arenas");
 const ARENA_IMAGES = path.join("assets", "arenas");
+const HUD_DATA = path.join("data", "hud", "hud.json");
+const HUD_IMAGE = path.join("assets", "hud", "hud.png");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
 
 /**
@@ -168,6 +170,21 @@ export function entityEditorServer(): Plugin {
           const buf = await fs.readFile(file);
           res.statusCode = 200;
           res.setHeader("Content-Type", layer ? "image/png" : "application/json");
+          res.end(buf);
+        } catch {
+          sendJson(res, 404, { error: `no ${path.relative(root, file)}` });
+        }
+      });
+
+      // The original's HUD (used by the game): hud.json, or with `image` its
+      // picture — both written by `npm run rom -- export`.
+      server.middlewares.use("/api/hud", async (req, res) => {
+        const image = new URL(req.url ?? "", "http://localhost").searchParams.has("image");
+        const file = path.join(root, image ? HUD_IMAGE : HUD_DATA);
+        try {
+          const buf = await fs.readFile(file);
+          res.statusCode = 200;
+          res.setHeader("Content-Type", image ? "image/png" : "application/json");
           res.end(buf);
         } catch {
           sendJson(res, 404, { error: `no ${path.relative(root, file)}` });

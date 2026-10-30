@@ -362,7 +362,8 @@ The knockdown's bounce sets `8108` (`$0D:EC34`): pattern 1, 7 frames,
 BG3, 2 bits a pixel, loaded by `$00:C430`: tiles from resource `0x0F` at
 VRAM `$3000` (`$0510` = 3), a 32×32 map packed at `$00:A441` for `$3800`
 (`$050D` = `$38`), palette record `0x0F` from colour 0 — `npm run rom --
-hud` draws it as loaded (`src/rom/hud.ts`). Rows 0–3 are the band seen in
+hud` draws it as loaded; the export cuts it for the game
+(`src/rom/hud.ts`, ADR 0032). Rows 0–3 are the band seen in
 play: the ornament, the round gauges, two yellow bars, 気 between them, a
 number at each end ("100" in the map; the fight writes the health). Rows
 4–23 hold red segmented bars of falling length `?` (a gauge's steps,
@@ -380,10 +381,16 @@ from column 5 (player two: 17, mirrored): `v` = shown health / 2 — at
 least 1 while any is left, less 1 from 2 up — filling a 5-px cap, eight
 8-px tiles and a 5-px cap, so 74 px is full: a fight starts at 400 and
 the bar only moves below 150 — the number is the health (owner, and
-`shoot-stage.lua` screenshots). Low, the bar changes colour — yellow,
-orange, dark red, red, not in step with the number `?` (a palette cycle
-not read). The round dial at each end fills cyan: the ki `?`. `$00:C71C`
-is not read.
+`shoot-stage.lua` screenshots). Its colour 2 is set every frame
+(`$00:C5CE` → `$00:C6DE`, called from `$0E:8366`; CGRAM `$0114`, player
+two `$011C`): yellow `37FF` from 81 up, and below a 12-frame cycle of the
+game's frame count `$74`, 3 frames each — `000C`, `37FF`, `0ABF`, `00DC`
+(dark red, yellow, orange, red), both bars in step.
+
+**The round dial** beside each number (`$00:C71C`): field `0x66` picks
+it — tile `0x17` + 3 × the value at row 2, column 4, and the next two
+below; player two's at column 26, mirrored. What sets `0x66` — charging
+ki, the owner says, which makes it turn `?` — is not read.
 Behind the band the screen is black in play, though BG3's colour 0 is
 clear there — channel 0's window table (`$00:BBBA`, 30 lines first) is
 the likely cause `?`.

@@ -76,6 +76,10 @@ number of frames, set by the blow's hit type. It is what gives a blow weight,
 and because both sides freeze equally it changes nothing about who acts first.
 → `data/hit-types.json`
 
+**HUD** — the original's band over the fight: health as a number from 400, a
+bar that moves below 150, the names. Ours is the status line outside the
+screen. → `src/hud/`, ADR 0032
+
 **Hitstun** — how long the **defender** is helpless after a blow, counted in
 frames and set by the blow's hit type, not by the length of the reaction
 animation. Everything about combos is arithmetic on this number. → `combat.md` §1

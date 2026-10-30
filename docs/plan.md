@@ -91,13 +91,11 @@ the game's screen and its scale are `src/view.ts` (ADR 0029), the camera
 and its shake `src/camera/` (ADR 0030), arenas `src/arena/` (ADR 0031). *Open:* whether its 64-px push
 band grows with a wider screen — decided when the screen is widened.
 
-1. **The original's HUD** (owner, 2026-10-30), replacing ours — what the
-   loader leaves is in `rom.md` (The HUD), in three slices:
-   1. its band in the game's screen — the ornament, frames, 気, the black
-      behind it and the names;
-   2. the health bars and numbers as the fight writes them — read first
-      (`$00:C57D`, `$00:C71C` and whatever updates the map);
-   3. the ki gauge and the red bars below the band, once read.
+1. **Charging, and the dial that shows it** (owner, 2026-10-30) — charging
+   adds energy, and the small dial beside the number turns as it grows:
+   field `0x66`, drawn by `$00:C71C` (`rom.md`, The HUD); read what sets
+   it first. Ki shows in our status line until then. The red bars below
+   the band are not read either.
 2. **A shove into the screen's edge passes to the attacker**, reversed, for
    the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
    corner, decides whether it replaces what we have.

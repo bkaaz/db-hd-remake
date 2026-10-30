@@ -10,7 +10,7 @@ import {
 } from "./scene";
 import { DebugScene } from "./scenes/debug";
 import { SelectScene } from "./scenes/select";
-import { showMessage } from "./ui/hud";
+import { showMessage } from "./ui/status";
 
 /**
  * Game entry point: put a renderer on the page, load what every scene needs,

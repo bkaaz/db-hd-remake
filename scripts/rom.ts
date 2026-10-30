@@ -17,7 +17,8 @@
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
  *                                    data/entities/goku/frames.json (frame n = drawing n),
  *                                    every move into its animations.json as m00…mff;
- *                                    each arena into assets/arenas/ and data/arenas/
+ *                                    each arena into assets/arenas/ and data/arenas/,
+ *                                    the HUD into assets/hud/ and data/hud/
  *
  * Ids are hex, as the fighter's RAM holds them: the drawing is field 0x0a
  * (src/rom/cartridge.ts), and its tile set comes from the cartridge's table.
@@ -36,7 +37,7 @@ import { objectVram, resourcePalette } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
 import { ARENAS, exportArena, lightingPalettes } from "../src/rom/arena.ts";
-import { drawHud } from "../src/rom/hud.ts";
+import { drawHud, exportHud } from "../src/rom/hud.ts";
 
 if (!existsSync(ROM_PATH)) {
   console.error(`no cartridge at ${ROM_PATH} — it is the owner's own dump (BYOA)`);
@@ -195,6 +196,12 @@ if (command === "tiles") {
     writeFileSync(`data/arenas/${name}/arena.json`, JSON.stringify(file, null, 2) + "\n");
     console.log(`${name}: ${file.layers.length} layers × ${file.times.length} lightings`);
   }
+  const hud = exportHud(rom, { goku: GOKU.character });
+  mkdirSync("assets/hud", { recursive: true });
+  mkdirSync("data/hud", { recursive: true });
+  writeFileSync("assets/hud/hud.png", encodePng(hud.image));
+  writeFileSync("data/hud/hud.json", JSON.stringify(hud.file, null, 2) + "\n");
+  console.log(`hud: names for ${Object.keys(hud.file.names).join(", ")}`);
 } else {
   console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | port <id> | stage [id …] | export   (ids in hex)");
   process.exit(1);

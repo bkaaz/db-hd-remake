@@ -39,8 +39,8 @@ preview/                                                     what a person looks
 ```
 
 - **`assets/` is exactly what the game opens.** Nothing else. `sheets/spawns/`
-  and `arenas/` are rebuilt by a command (`npm run fx`, `npm run rom --
-  export`), and so is `sheets/goku.png`.
+  `arenas/` and `hud/` are rebuilt by a command (`npm run fx`, `npm run
+  rom -- export`), and so is `sheets/goku.png`.
 - **`raw/` is exactly what cannot be regenerated.** The uncut capture that
   `npm run split-audio` cuts into `assets/audio/sfx/`, and untouched rips.
   Nothing reads it at runtime.

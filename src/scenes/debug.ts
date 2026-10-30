@@ -19,7 +19,8 @@ import { GridBackdrop } from "../arena/grid";
 import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
 import { DebugPanel } from "../ui/debug";
-import { Hud, showMessage } from "../ui/hud";
+import { Hud } from "../hud/hud";
+import { StatusLine, showMessage } from "../ui/status";
 import type { Text } from "pixi.js";
 
 /**
@@ -57,7 +58,9 @@ export class DebugScene implements Scene {
     private readonly req: DebugRequest,
     private readonly modes: number,
     private readonly effects: Effects,
-    private readonly hud: Hud,
+    /** The original's HUD; null when it has not been exported, which a notice says. */
+    private readonly hud: Hud | null,
+    private readonly status: StatusLine,
     private readonly panel: DebugPanel,
     /** Notices about broken data; they belong to this scene and go with it. */
     private readonly notices: Text[],
@@ -138,7 +141,13 @@ export class DebugScene implements Scene {
 
     const noStates = !def.states;
     if (noStates) notices.push(showMessage(ctx.app, `${def.name}: no states.json`, true));
-    const hud = new Hud(ctx.app, view.hud, { name: def.name, belowMessage: noStates });
+    const status = new StatusLine(ctx.app, { name: def.name, belowMessage: noStates });
+    const health = fighters.status().health;
+    const hud = await Hud.load(view.hud, [
+      { name: def.name, health: health[0] },
+      health[1] === null ? null : { name: def.name, health: health[1] },
+    ]);
+    if (typeof hud === "string") notices.push(showMessage(ctx.app, hud, true));
 
     return new DebugScene(
       view,
@@ -151,7 +160,8 @@ export class DebugScene implements Scene {
       req,
       count,
       effects,
-      hud,
+      typeof hud === "string" ? null : hud,
+      status,
       new DebugPanel(ctx.app),
       notices,
     );
@@ -177,6 +187,7 @@ export class DebugScene implements Scene {
     if (keyboard.takeKiRefill()) this.fighters.fillKi();
     this.fighters.exchangeBlows();
     this.stage.flash(this.fighters.takeFlash());
+    this.hud?.tick(this.fighters.status().health);
     const shake = this.fighters.takeShake();
     if (shake) this.shake.start(shake);
     this.shake.tick();
@@ -202,7 +213,8 @@ export class DebugScene implements Scene {
   }
 
   render(keyboard: Keyboard): void {
-    this.hud.draw({
+    this.hud?.draw();
+    this.status.draw({
       ...this.fighters.status(),
       dummyAttacks: keyboard.dummyAttacks,
       recording: keyboard.recording,
@@ -218,7 +230,8 @@ export class DebugScene implements Scene {
     this.stage.destroy();
     this.fighters.destroy();
     this.effects.destroy();
-    this.hud.destroy();
+    this.hud?.destroy();
+    this.status.destroy();
     this.panel.destroy();
     for (const notice of this.notices) notice.destroy();
     this.view.destroy();

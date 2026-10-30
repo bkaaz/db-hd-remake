@@ -31,11 +31,11 @@ export interface FightersSetup {
   projectiles: Projectiles;
 }
 
-/** What the HUD needs to know about the pair, once per rendered frame. */
+/** What the HUD and the status line need to know about the pair. */
 export interface FightersStatus {
-  playerHealth: number;
+  /** Each side's health in the original's units; null where there is no opponent. */
+  health: [number, number | null];
   playerKi: number;
-  opponentHealth: number | null;
   state: string;
 }
 
@@ -248,9 +248,8 @@ export class Fighters {
 
   status(): FightersStatus {
     return {
-      playerHealth: this.player.healthFraction,
+      health: [this.player.health, this.opponent?.health ?? null],
       playerKi: this.player.kiFraction,
-      opponentHealth: this.opponent?.healthFraction ?? null,
       state: this.player.state,
     };
   }

@@ -517,6 +517,11 @@ export class Entity {
     return this.maxKi > 0 ? this.ki / this.maxKi : 0;
   }
 
+  /** How much health is left, in the original's units — what the HUD's number shows. */
+  get health(): number {
+    return this.hp;
+  }
+
   /** How much of this fighter is left, 0..1 — what a health bar draws. */
   get healthFraction(): number {
     return this.maxHealth > 0 ? this.hp / this.maxHealth : 0;

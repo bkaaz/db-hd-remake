@@ -292,6 +292,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   │                             #   png.ts: minimal PNG read/write (no dependency)
 │   ├── fx/                       #   generate.ts: draws the effect pixel art
 │   ├── camera/                   #   camera.ts, push.ts, shake.ts: the original's
+│   ├── hud/                      #   the original's HUD: hudFile.ts, health.ts, hud.ts
 │   ├── arena/                    #   arenaFile.ts: an arena's shape on disk
 │   │                             #   arena.ts, grid.ts: what stands behind a fight
 │   └── rom/                      #   cartridge.ts: where things are in the ROM
@@ -299,6 +300,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │                                 #   disasm.ts, opcodes.ts: reading 65816 code
 │                                 #   export.ts: all of it into our entities
 │                                 #   stage.ts, lzss.ts, arena.ts: the arenas
+│                                 #   hud.ts: the HUD
 ├── scripts/                      # CLI entry points ONLY — one per npm run command;
 │   │                             #   nothing in the repo imports from here
 │   ├── anim.ts                   #   build an animation from a frame list
@@ -318,11 +320,13 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ├── data/entities/<name>/         # OUR data, committed: frames.json,
 │                                 #   animations.json, states.json, …
 ├── data/arenas/<name>/           # arena.json: how an arena's layers scroll
+├── data/hud/hud.json             # where the original's HUD puts what
 ├── data/audio/sound-test.json    # which clip of the sound-test capture is what
 ├── assets/                       # BYOA, gitignored — EXACTLY what the game reads
 │   ├── sheets/                   #   one image per entity, transparency in the
 │   │                             #   file; spawns/ holds what npm run fx writes
 │   ├── arenas/<name>/            #   each layer of an arena, once per lighting
+│   ├── hud/hud.png               #   the HUD's band and its parts' tiles
 │   └── audio/sfx/                #   the clips cut from the capture
 ├── raw/                          # BYOA, gitignored — what those were made from
 │                                 #   and cannot be regenerated (the capture,
