@@ -302,7 +302,7 @@ flat. What each shows is read off that drawing:
 
 | arena | ids: day, evening, night | mode | scroll (`$00:BFB3`) | shows |
 |---|---|---|---|---|
-| 0 | 0, 1, 2 | 1 | `D7` | a gate and a tiled court — the tournament `?` |
+| 0 | 0, 1, 2 | 1 | `D7` | the tournament's gate and court (天下一武道会 on the roof) |
 | 1 | 3, 4, 5 | 2, vertical | `E9` | the sky over the clouds, a lookout far off |
 | 2 | 6, 7, 8 | 7, vertical | `FF` | a planet's map from above, clouds — not drawn whole |
 | 3 | 9, 10, 11 | 1 | `D7` | a domed palace — Kami's Lookout `?` |
@@ -310,6 +310,30 @@ flat. What each shows is read off that drawing:
 | 5 | 13, 14, 15 | 1 | `D7` | rocky plains |
 | 6 | 16 (lighting `4`) | 2, vertical | `E9` | a crater with violet lightning |
 | 7 | 17 (lighting `4`) | 1 | `D7` | a dark sky, rocks and water |
+
+**How a stage's layers scroll.** Every stage gets the same HDMA
+($00:B783): channel 2 writes BG1HOFS and channel 3 BG2HOFS, indirectly,
+from three blocks of lines — 31 lines from `$7A` / `$7E`, then 64 from
+`$055C` / `$0566`, then the rest from `$0560` / `$056A` (tables `$00:BA93`,
+`$00:BBB0`). The second block grows by the camera's rise each frame, so
+its lower edge stays on world row 95 (`$00:BFD7` rewrites its count, for
+the `D7` stages). Both layers' vertical scroll is the camera's y, shake
+included (`$7C`, `$80`). Then each arena's own handler, by stage id
+(`$00:BCB5`), sets those values from the camera's whole-pixel x (`$0560`):
+arena 0's (`$00:BCD9`) puts the camera's x in `$7A`, `$0560`, `$0566`,
+`$056A` and half of it plus 64 in `$055C` — BG1's middle block, its sky,
+moves at half speed, centred at x 128; the rest moves with the camera.
+Nothing writes `$7E` (zeroed at `$00:96F4`), so BG2's top 31 lines do
+not scroll — unseen, since the HUD is an opaque band over exactly those
+lines. The values are the S-CPU's, in WRAM (`tools/re/shoot-stage.lua`,
+arena 0 at night). Each arena's set-up by number:
+`$00:B867` (arena 0's, `$00:B877`, starts `$0560` at 128).
+
+**Arena 0's layers**: BG1 is the sky (tile rows 0–11) and the bushes
+(12–16), all low priority; BG2 is the building and the floor — its roof
+(rows 0–11) high priority, the rest low. So, back to front: BG2's low
+tiles, BG1, the roof. The fighters are drawn over the bushes and the sky;
+over the roof too `?` (their OAM priority is not read). The roof carries 天下一武道会: arena 0 is the tournament.
 
 **The shake is `$E3`** (`$0D:C558`): bit 15 on, bits 8–11 a pattern, the low
 byte frames. Each frame it counts down and adds `$0D:C593`[pattern][frames

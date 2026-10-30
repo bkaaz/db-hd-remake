@@ -1,0 +1,23 @@
+{
+  "times": [
+    "day",
+    "evening",
+    "night"
+  ],
+  "layers": [
+    {
+      "name": "sky",
+      "scroll": [
+        0.5,
+        64
+      ]
+    },
+    {
+      "name": "court",
+      "scroll": [
+        1,
+        0
+      ]
+    }
+  ]
+}

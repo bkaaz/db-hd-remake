@@ -94,18 +94,19 @@ band grows with a wider screen — decided when the screen is widened.
 1. **Arena 0 from the cartridge** (owner, 2026-10-30) — stage ids 0, 1, 2,
    its day, evening and night; the fighters' palette changes with them
    (`rom.md`, The camera). Then turn `SCREEN_FLASH` on, whitening the
-   arena's art. The grid stays as the debug arena (owner, 2026-10-30): the
-   arena is a scene parameter, like `p1`, so changing it is one word in the
-   address bar.
+   arena's art. The grid stays the debug scene's arena unless `arena` is
+   given (owner, 2026-10-30): a scene parameter, like `p1`.
 2. **The original's HUD** (owner, 2026-10-30) — its art, layout and bars
    read from the cartridge, replacing ours, which moves into the game's
    screen as it is until then.
 3. **A shove into the screen's edge passes to the attacker**, reversed, for
    the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
    corner, decides whether it replaces what we have.
-4. **A picker beside the debug scene** (owner, 2026-10-30) — arena and
-   fighters chosen from a list, which rebuilds the scene from its
-   parameters (ADR 0008).
+4. **Our tools around the game's screen** (owner, 2026-10-30) — the
+   debug scene's panel, status line and notices laid out in the space
+   around the scaled screen, and a picker there for the arena and the
+   fighters: a choice rewrites the query string, which rebuilds the scene
+   from its parameters (ADR 0008).
 5. **Where the original starts a round** — the fighters' x and the
    camera's (`$0D:D7A0`, `$01:8B84`), read from the code. Ours start at
    35% / 65% of the world under a centred camera, which puts both in the

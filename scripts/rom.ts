@@ -16,7 +16,8 @@
  *                                    preview/ — every stage when no id is given
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
  *                                    data/entities/goku/frames.json (frame n = drawing n),
- *                                    every move into its animations.json as m00…mff
+ *                                    every move into its animations.json as m00…mff;
+ *                                    each arena into assets/arenas/ and data/arenas/
  *
  * Ids are hex, as the fighter's RAM holds them: the drawing is field 0x0a
  * (src/rom/cartridge.ts), and its tile set comes from the cartridge's table.
@@ -33,7 +34,8 @@ import { long } from "../src/rom/disasm.ts";
 import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
-import { drawLayer, loadStage, stack, STAGE_COUNT } from "../src/rom/stage.ts";
+import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
+import { ARENAS, exportArena } from "../src/rom/arena.ts";
 
 if (!existsSync(ROM_PATH)) {
   console.error(`no cartridge at ${ROM_PATH} — it is the owner's own dump (BYOA)`);
@@ -154,8 +156,8 @@ if (command === "tiles") {
   for (const id of ids) {
     const stage = loadStage(rom, id);
     const { mode, wide, arena } = stage.record;
-    const [bg1, bg2] = [drawLayer(stage, 0x4000), drawLayer(stage, 0x4800)];
-    const both = stack(bg2, bg1);
+    const [bg1, bg2] = [drawLayer(stage, BG1), drawLayer(stage, BG2)];
+    const both = drawStage(stage);
     const out = `preview/rom-stage-${hex(id)}.png`;
     writeFileSync(out, encodePng(scaled(both, 2)));
     writeFileSync(`preview/rom-stage-${hex(id)}-bg1.png`, encodePng(scaled(bg1, 2)));
@@ -178,6 +180,14 @@ if (command === "tiles") {
   for (const [name, spawn] of Object.entries(exportSpawns(rom, GOKU))) {
     write(`assets/sheets/spawns/${name}.png`, `data/spawns/${name}`, spawn);
     console.log(`${name}: ${Object.keys(spawn.frames).length} frames`);
+  }
+  for (const [name, source] of Object.entries(ARENAS)) {
+    const { file, images } = exportArena(rom, source);
+    mkdirSync(`assets/arenas/${name}`, { recursive: true });
+    mkdirSync(`data/arenas/${name}`, { recursive: true });
+    for (const [image, rgba] of Object.entries(images)) writeFileSync(`assets/arenas/${name}/${image}.png`, encodePng(rgba));
+    writeFileSync(`data/arenas/${name}/arena.json`, JSON.stringify(file, null, 2) + "\n");
+    console.log(`${name}: ${file.layers.length} layers × ${file.times.length} lightings`);
   }
 } else {
   console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | port <id> | stage [id …] | export   (ids in hex)");

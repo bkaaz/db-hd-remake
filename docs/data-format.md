@@ -48,6 +48,10 @@ and a tab can work on different sections without overwriting each other. The
 game only ever reads. `npm run fx` writes whole entities into `data/spawns/`;
 those are entities too and every tab works on them.
 
+An arena is not an entity: `data/arenas/<name>/arena.json` says how its
+layers scroll, and `npm run rom -- export` writes it whole, with its
+pictures in `assets/arenas/<name>/`. Its shape: `src/arena/arenaFile.ts`.
+
 ## Decisions the shape does not explain
 
 - **Timing is in game frames at 60 FPS, never milliseconds.** Frame data is

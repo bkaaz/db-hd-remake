@@ -77,11 +77,24 @@ export function loadStage(rom: Uint8Array, id: number): LoadedStage {
   return { record, vram, colours };
 }
 
+/** Which of a layer's tiles to draw: by their priority bit, and by tile row. */
+export interface LayerPart {
+  priority?: "high" | "low";
+  /** From this tile row, up to and not including the second. */
+  rows?: [number, number];
+}
+
+/** Where BG1's and BG2's maps start in VRAM, in words — `$050B` / `$050C`. */
+export const BG1 = 0x4000;
+export const BG2 = 0x4800;
+
 /**
  * One 4bpp layer whose map starts at VRAM word `map`, tiles at word 0 (the
- * game sets `$210B` to 0): the whole map, colour 0 of each palette clear.
+ * game sets `$210B` to 0): the whole map or the `part` asked for, colour 0
+ * of each palette clear.
  */
-export function drawLayer(stage: LoadedStage, map: number): Rgba {
+export function drawLayer(stage: LoadedStage, map: number, part: LayerPart = {}): Rgba {
+  const [firstRow, endRow] = part.rows ?? [0, 32];
   const cols = stage.record.wide ? 64 : 32;
   const width = cols * 8;
   const height = 32 * 8;
@@ -95,6 +108,8 @@ export function drawLayer(stage: LoadedStage, map: number): Rgba {
       const palette = (entry >> 10) & 7;
       const hflip = (entry & 0x4000) !== 0;
       const vflip = (entry & 0x8000) !== 0;
+      if (part.priority && (entry & 0x2000 ? "high" : "low") !== part.priority) continue;
+      if (ty < firstRow || ty >= endRow) continue;
       for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
           const index = tilePixel(stage.vram, tile, hflip ? 7 - x : x, vflip ? 7 - y : y);
@@ -108,11 +123,27 @@ export function drawLayer(stage: LoadedStage, map: number): Rgba {
   return { width, height, data };
 }
 
-/** `over` drawn on top of `under`, where it is not clear. */
-export function stack(under: Rgba, over: Rgba): Rgba {
-  const data = Uint8Array.from(under.data);
-  for (let i = 0; i < data.length; i += 4) {
-    if (over.data[i + 3]) data.set(over.data.subarray(i, i + 4), i);
+/** Layers drawn back to front, each where it is not clear. */
+export function stack(...layers: Rgba[]): Rgba {
+  const [first, ...rest] = layers;
+  const data = Uint8Array.from(first.data);
+  for (const over of rest) {
+    for (let i = 0; i < data.length; i += 4) {
+      if (over.data[i + 3]) data.set(over.data.subarray(i, i + 4), i);
+    }
   }
-  return { width: under.width, height: under.height, data };
+  return { width: first.width, height: first.height, data };
+}
+
+/**
+ * The two layers as mode 1 orders them, back to front ($2105 bit 3 clear):
+ * BG2's low tiles, BG1's low, BG2's high, BG1's high.
+ */
+export function drawStage(stage: LoadedStage): Rgba {
+  return stack(
+    drawLayer(stage, BG2, { priority: "low" }),
+    drawLayer(stage, BG1, { priority: "low" }),
+    drawLayer(stage, BG2, { priority: "high" }),
+    drawLayer(stage, BG1, { priority: "high" }),
+  );
 }
