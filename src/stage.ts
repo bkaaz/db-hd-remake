@@ -1,12 +1,9 @@
 import { Graphics, type Container } from "pixi.js";
-import type { Bounds } from "./combat/push";
 import { VIEW } from "./view";
 
 /** The original's arena, in game px: 512 wide, the floor at 200 (`rom.md`, The camera). */
 const WORLD_WIDTH = 512;
 const FLOOR_Y = 200;
-/** How near the screen's edge a fighter may stand — the original's 16 px. */
-const SCREEN_MARGIN = 16;
 /**
  * Whether a blow's `hitFlash` turns the backdrop white, as the original
  * whitens its stage's art. Off until there is an arena to whiten: the
@@ -20,16 +17,15 @@ const GRID = 32;
 const SKY = 32;
 
 /**
- * The playfield: where the floor is, where the screen stands over it and so
- * how far a fighter may walk, and the backdrop that shows it.
+ * The playfield: how wide the world is, where the floor is, and the backdrop
+ * that shows them. Where the screen stands over it is the camera's.
  *
  * It owns those numbers and nothing else — deliberately, the stage does not
  * know there are bodies standing on it. Whoever owns the bodies places them.
  */
 export class Stage {
   readonly groundY = FLOOR_Y;
-  /** The screen's left edge in the world. Fixed until the camera moves it. */
-  scrollX = 0;
+  readonly width = WORLD_WIDTH;
 
   private readonly art = new Graphics();
   private readonly white = new Graphics().rect(0, -SKY, WORLD_WIDTH, VIEW.height + SKY).fill(0xffffff);
@@ -41,20 +37,9 @@ export class Stage {
     backdrop.addChild(this.art, this.white);
   }
 
-  /** Where a fighter may stand: inside the screen, by the margin. */
-  get bounds(): Bounds {
-    return { min: this.scrollX + SCREEN_MARGIN, max: this.scrollX + VIEW.width - SCREEN_MARGIN };
-  }
-
   /** A horizontal position as a fraction across the world — 0.5 is the middle. */
   xAt(fraction: number): number {
     return WORLD_WIDTH * fraction;
-  }
-
-  /** Put the screen over the middle of `a` and `b`, as far as the world reaches. */
-  centreOn(a: number, b: number): void {
-    const x = (a + b) / 2 - VIEW.width / 2;
-    this.scrollX = Math.max(0, Math.min(WORLD_WIDTH - VIEW.width, x));
   }
 
   /** Turn the backdrop white for `frames` — the flash of a big hit. */

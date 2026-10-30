@@ -1,5 +1,6 @@
 import type { Container } from "pixi.js";
 import type { Audio } from "../audio/playback";
+import type { Camera } from "../camera/camera";
 import { separate, type Bounds } from "../combat/push";
 import { Entity, type WorldInput } from "../entity/entity";
 import type { EntityDef } from "../entity/entityDef";
@@ -9,6 +10,12 @@ import { landBlow, type BlowContext } from "./blow";
 import type { Projectiles } from "./projectiles";
 import { Recorder } from "./record";
 import type { DebugFrame } from "../ui/debug";
+
+/** Where things may go this frame: bodies within the world, bolts within the screen. */
+export interface Field {
+  bodies: Bounds;
+  shots: Bounds;
+}
 
 export interface FightersSetup {
   /** The layer the bodies stand in — the game's world, in game px. */
@@ -55,6 +62,8 @@ export class Fighters {
   /** Turns what happens between the two into lines — see ./record.ts. */
   private readonly recorder = new Recorder();
   private readonly projectiles: Projectiles;
+  /** Where each body stood before this frame moved it — what the camera reads its push from. */
+  private from: [number, number] = [0, 0];
 
   constructor({ world, def, scale, audio, effects, solo, projectiles }: FightersSetup) {
     this.impact = { audio, effects };
@@ -94,11 +103,12 @@ export class Fighters {
    * fired this frame does not move or hit until the next one — it appears at
    * the hand, which is where the player is looking.
    */
-  update(playerInput: WorldInput, opponentInput: WorldInput, bounds: Bounds): void {
-    this.player.update(playerInput, this.opponent?.x ?? null, bounds);
-    this.opponent?.update(opponentInput, this.player.x, bounds);
+  update(playerInput: WorldInput, opponentInput: WorldInput, field: Field): void {
+    this.from = [this.player.x, this.opponent?.x ?? 0];
+    this.player.update(playerInput, this.opponent?.x ?? null, field.bodies);
+    this.opponent?.update(opponentInput, this.player.x, field.bodies);
 
-    for (const hit of this.projectiles.update(this.frozen, bounds, this.impact)) {
+    for (const hit of this.projectiles.update(this.frozen, field.shots, this.impact)) {
       this.flash = Math.max(this.flash, hit.result.flash);
       const [from, to] = hit.foe === this.player ? ["P2 bolt", "P1"] : ["P1 bolt", "P2"];
       this.recorder.blow(hit.result, from, to, this.gap(), this.named());
@@ -111,6 +121,21 @@ export class Fighters {
       const fx = fighter.takeGroundFx();
       if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);
     }
+  }
+
+  /**
+   * Let the camera follow this frame's moves, and stand where it says: it may
+   * stop a body at the screen's edge, or put one back that drifted past it.
+   */
+  keepInView(camera: Camera): void {
+    const { player, opponent } = this;
+    const placed = camera.follow(
+      { from: this.from[0], to: player.x },
+      opponent ? { from: this.from[1], to: opponent.x } : null,
+    );
+    player.x = placed.a;
+    if (opponent && placed.b !== null) opponent.x = placed.b;
+    camera.lift(this.both().map((f) => f.y));
   }
 
   /** A fighter who entered a state that `fires` puts a bolt in the world. */

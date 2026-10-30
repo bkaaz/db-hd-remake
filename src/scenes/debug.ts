@@ -10,8 +10,10 @@ import { Projectiles } from "../match/projectiles";
 import type { Scene, SceneContext, SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
+import { Camera } from "../camera/camera";
+import { CameraNotes } from "../camera/note";
 import { Stage } from "../stage";
-import { GameView } from "../view";
+import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
 import { DebugPanel } from "../ui/debug";
 import { Hud, showMessage } from "../ui/hud";
@@ -42,6 +44,8 @@ export class DebugScene implements Scene {
   private constructor(
     private readonly view: GameView,
     private readonly stage: Stage,
+    private readonly camera: Camera,
+    private readonly cameraNotes: CameraNotes,
     private readonly fighters: Fighters,
     /** The second body's timeline — see src/debug/dummy.ts. */
     private readonly dummy: Dummy,
@@ -112,7 +116,8 @@ export class DebugScene implements Scene {
     });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     // Over the two of them, so a mode set in a corner shows the corner.
-    stage.centreOn(fighters.player.x, fighters.opponent?.x ?? fighters.player.x);
+    const camera = new Camera({ screen: VIEW.width, world: stage.width, floor: stage.groundY });
+    camera.centreOn(fighters.player.x, fighters.opponent?.x ?? fighters.player.x);
     // The mode sets what the overlays *start* as; B and D still toggle them.
     if (mode.boxes !== undefined) ctx.keyboard.showBoxes = mode.boxes;
     if (mode.debug !== undefined) ctx.keyboard.showDebug = mode.debug;
@@ -126,6 +131,8 @@ export class DebugScene implements Scene {
     return new DebugScene(
       view,
       stage,
+      camera,
+      new CameraNotes(camera),
       fighters,
       dummy,
       req,
@@ -147,16 +154,21 @@ export class DebugScene implements Scene {
         // Read before the bodies move, which is the freeze this frame will use.
         frozen: this.fighters.frozen,
       }),
-      this.stage.bounds,
+      { bodies: this.camera.world, shots: this.camera.screen },
     );
+    // Pushed apart before the camera reads the moves, as the original evens
+    // out two bodies' speeds before its camera ($0D:C8F0): a camera that saw
+    // the walk and not the push would scroll every other frame.
+    this.fighters.pushApart(this.camera.world);
+    this.fighters.keepInView(this.camera);
     if (keyboard.takeKiRefill()) this.fighters.fillKi();
-    this.fighters.pushApart(this.stage.bounds);
     this.fighters.exchangeBlows();
     this.stage.flash(this.fighters.takeFlash());
     this.stage.tick();
     this.fighters.note();
+    this.cameraNotes.note(this.camera);
     tickLog();
-    this.effects.update(this.fighters.frozen, this.stage.bounds);
+    this.effects.update(this.fighters.frozen, this.camera.screen);
     return this.nextMode(keyboard);
   }
 
@@ -179,7 +191,7 @@ export class DebugScene implements Scene {
       recording: keyboard.recording,
     });
     this.panel.draw(keyboard.showDebug ? this.fighters.debug() : null);
-    this.view.scroll(this.stage.scrollX, 0);
+    this.view.scroll(this.camera.x, this.camera.y);
     this.fighters.render(keyboard.showBoxes);
     this.effects.render();
   }

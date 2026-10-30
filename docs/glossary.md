@@ -116,6 +116,9 @@ trigger is `motion:<name>`; **which ones exist is `MOTIONS` in
 damage and hitstun, down to a floor of 20% and 50%. The counter lives on the
 defender and resets when they get control back. → `combat.md` §3
 
+**Push band** — the screen's outer 64 px: a fighter in it, moving toward that
+edge, scrolls the camera; nobody else does. → `src/camera/push.ts`, ADR 0030
+
 **Rank** — how badly a reaction has taken control away: flinch 1, stagger 2,
 knockdown 3, on the floor 4, and 0 for a fighter who is their own. A blow never
 lowers the rank the defender is already in, an equal rank re-enters, and rank 0
