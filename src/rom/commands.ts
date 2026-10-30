@@ -67,6 +67,7 @@ const ARROWS: Record<number, string> = {
   0x01: "→", 0x02: "←", 0x04: "↓", 0x08: "↑", 0x05: "↘", 0x06: "↙", 0x09: "↗", 0x0a: "↖",
 };
 const BUTTONS: [number, string][] = [[0x8000, "B"], [0x4000, "Y"], [0x0080, "A"], [0x0040, "X"]];
+const SHOULDERS: [number, string][] = [[0x0020, "L"], [0x0010, "R"]];
 
 /** A direction byte as an arrow, facing right; `?` for anything else. */
 export function arrow(direction: number): string {
@@ -74,13 +75,20 @@ export function arrow(direction: number): string {
 }
 
 /**
- * The button a command's first word asks for. Bit `0x0008` wants a direction
- * held with it (Double Kick, → + B), bit `0x1000` the shoulder buttons
- * (side slash) — `$0D:F15F`.
+ * What a command's first word asks for. Its bits in `C1C0` — B, Y, A, X and
+ * → — must all be down ($0D:F10A). Bit `0x0008` asks for its directions and
+ * shoulder buttons exactly (Double Kick, → + B); bit `0x1000` for any one of
+ * them, beyond those already required (side slash, R + B; the throw's
+ * ↓ ← → is met by its → already) — $0D:F15F.
  */
 export function buttonName(word: number): string {
-  const names = BUTTONS.filter(([bit]) => word & bit).map(([, name]) => name);
-  if (word & 0x1000) names.unshift("L or R");
-  const held = word & 0x0008 ? arrow(word >> 8) + " + " : "";
-  return held + names.join(" + ");
+  const required = word & 0xc1c0;
+  const extra = word & 0x0f30;
+  const names = BUTTONS.filter(([bit]) => required & bit).map(([, name]) => name);
+  const directions = (bits: number) => (bits & 0x0f00 ? [arrow(bits >> 8)] : []);
+  const shoulders = (bits: number) => SHOULDERS.filter(([bit]) => bits & bit).map(([, name]) => name);
+  let first = directions(required);
+  if (word & 0x0008) first = [...directions(extra), ...shoulders(extra)];
+  else if (word & 0x1000 && !(extra & required)) first = [...first, [...directions(extra), ...shoulders(extra)].join(" or ")];
+  return [...first, ...names].join(" + ");
 }

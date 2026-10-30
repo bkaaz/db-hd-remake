@@ -129,6 +129,7 @@ if (command === "tiles") {
     if (c.cost) console.log(`costs: ${c.cost} health`);
     if (c.opponentMove !== null) console.log(`puts the opponent in move ${hex(c.opponentMove)}`);
   }
+  for (const c of r.counters) console.log(`the handler sets the spawn counter to ${hex(c.counter)}${c.frame === null ? "" : `, where it compares the frame with ${c.frame}`}`);
   console.log("frames count from each part's start; sounds are the cartridge's ids, not clips");
   for (const p of r.parts) {
     const blow = p.blow ? `blow at ${p.blow.frame}: ${p.blow.type}, damage ${p.blow.damage}, stun ${p.blow.stun}` : "no blow";
@@ -139,7 +140,7 @@ if (command === "tiles") {
     if (p.sounds.length)
       console.log(`  sounds: ${p.sounds.map((s) => `${s.frame}: ${hex(s.id)}${s.handler ? " (handler)" : ""}`).join(", ")}`);
     for (const s of p.spawns)
-      console.log(`  spawns at ${s.frame}: object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
+      console.log(`  spawns at ${s.frame} (counter ${hex(s.counter)}): object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
     if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
     for (const step of new Set(p.onSteps.map((f) => f.step)))
       console.log(`  handler on step ${step}: ${p.onSteps.filter((f) => f.step === step).map((f) => f.what).join(", ")}`);
@@ -239,14 +240,21 @@ function write(sheetPath: string, dir: string, e: Exported): void {
 
 function describe(op: ScriptOp): string {
   switch (op.op) {
-    case "show":
-      return op.drawing === null
+    case "show": {
+      const shown = op.drawing === null
         ? `${op.frames} frames, keep the drawing`
         : `${op.frames} frames of ${hex(op.drawing)} (resource ${hex(tileResourceOf(rom, T, op.drawing) ?? 0)})`;
+      const opponent = op.opponent?.map((d, c) => `${ROSTER[c]} ${d === null ? "keeps" : hex(d)}`).join(", ");
+      return opponent ? `${shown}; the opponent shows ${opponent}` : shown;
+    }
     case "sound": return `sound ${hex(op.id)}`;
     case "voice": return `spoken line ${hex(op.id)}`;
     case "offset": return `draw ${op.dx}, ${op.dy} px from the position`;
-    case "spawn": return `spawn object ${hex(op.type)}/${hex(op.anim)} at ${op.dx}, ${op.dy} (tiles +${hex(op.tiles)}, palette ${op.palette})`;
+    case "spawn": return `spawn object ${hex(op.type)}/${hex(op.anim)} at ${op.dx}, ${op.dy} (tiles +${hex(op.tiles)}, palette ${op.palette}) when the counter is ${hex(op.counter)}`;
+    case "effect": return `draw effect kind ${op.kind} at ${op.dx}, ${op.dy}, size ${op.size}, param ${hex(op.param)} when the counter is ${hex(op.counter)}`;
+    case "field96": return `field 0x96 = ${hex(op.value)}`;
+    case "stop": return "stop here until the move's code moves on";
+    case "opponent": return "the opponent's track: each step after shows him a drawing of his own, by his character";
     case "flip": return `flip ${op.h ? "h" : ""}${op.v ? "v" : ""}${op.h || op.v ? "" : "off"}`;
     case "hold": return `hold ${hex(op.drawing)} until released ?`;
     case "raw": return op.bytes.map(hex).join(" ") + "  (not read yet)";

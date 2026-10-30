@@ -8,7 +8,14 @@ describe("buttonName", () => {
     expect(buttonName(0x8002)).toBe("B");
     expect(buttonName(0x8108)).toBe("→ + B");
     expect(buttonName(0x0082)).toBe("A");
-    expect(buttonName(0x9010)).toBe("L or R + B");
+    expect(buttonName(0x9010)).toBe("R + B");
+    expect(buttonName(0x1740)).toBe("→ + X");
+  });
+
+  it("names a direction held exactly (0x0008) even though no button bit asks for it", () => {
+    // freeza's c2 and c3
+    expect(buttonName(0x4808)).toBe("↑ + Y");
+    expect(buttonName(0x8408)).toBe("↓ + B");
   });
 });
 

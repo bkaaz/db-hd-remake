@@ -127,7 +127,8 @@ swapping graphics.
 they match, then counts it up. A handler picks among a script's spawns by
 setting it — the charged Kamehameha (`aa`, handler `$20:8447`) leaves it 0
 for a full charge (A held past frame 35), sets `10` for a release in 20–35
-and `18` before 20, so the frame-44 spawns that fire are type `a`
+and `18` before 20 — into `0x6f` too (`$20:84DD`), so the `b1` effects follow
+the same choice — so the frame-44 spawns that fire are type `a`
 animation `21`, `20` or `19` (80 / 60 / 40 damage, vx 4) with animation
 `22` beside it. The pose after (`89`) is cut short once the beam is gone
 (`JSL $0D:EBE0` with `Y` = animation and type).
@@ -307,8 +308,9 @@ On frame 2 it loads palette field `0x17` + 8 — a glow while charging
 (`$0F:A072`, Goku's `0x48` by day) — and the own palette again at the
 end; not built.
 
-Not read yet: command `80` (move `9d` uses it), `a1` (`$00:DE9F`, sound
-related), and `c0` (sets fighter field `0x96`).
+`90` stops the script; `c0 v` sets fighter field `0x96` to `v`, whose
+reader is not found `?`; `80` is the opponent's track (The throw, below).
+`src/rom/script.ts` reads every command a Goku script uses.
 
 ## The camera
 
@@ -414,7 +416,7 @@ The knockdown's bounce sets `8108` (`$0D:EC34`): pattern 1, 7 frames,
 −4 +2 −2 +3 −3 +2 −2. Others: `8208` (`$0F:A51A`), `8220` (`$10:CBFB`),
 `8008` (`$20:8D26` …) — whose `?`.
 
-**The throw** (`9d`, close + X; its command row `25 10 40 00 2f 9d 30
+**The throw** (`9d`, → + X — the button word `1740`, `$0D:F15F`; its command row `25 10 40 00 2f 9d 30
 00`). Byte 6 of a command row, when not 0, is the move the **opponent**
 is put in as the command starts (`$0D:EF05`) — `30` for the throw:
 held. Its conditions (`25 10 40`): both on the ground, the opponent not
@@ -529,7 +531,7 @@ Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 | `aa` | ↓ ↙ → A | Super Kamehameha |
 | `ad` | ← ↙ ↓ ↘ → ↗ Y | Meteor Smash |
 | `a8` | R + B | side slash |
-| `9d` | close + X | the throw (The throw, above) |
+| `9d` | → + X, in grab range | the throw (The throw, above) |
 | `a0`, `a1`, `9f` | → ← → / ↓ ↙ ← / ↓ ↘ → + X | not in the move lists `?` |
 | `ac` | in the air | Slash Down Kick |
 

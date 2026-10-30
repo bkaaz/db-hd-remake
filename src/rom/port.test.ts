@@ -8,6 +8,24 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
   const quad = portReport(rom, GOKU, 0xa5);
 
+  it("reads the throw: → + X, in Goku's grab range, holding the opponent in move 30", () => {
+    const thrown = portReport(rom, GOKU, 0x9d);
+    expect(thrown.inputs).toEqual(["ground: → + X"]);
+    expect(thrown.commands[0].opponentMove).toBe(0x30);
+    expect(thrown.commands[0].needs.at(-1)).toMatch(/within 42 px/);
+  });
+
+  it("picks the Kamehameha's head by the spawn counter the handler sets", () => {
+    const kame = portReport(rom, GOKU, 0xaa);
+    const heads = kame.parts.flatMap((p) => p.spawns).filter((s) => s.blow.damage > 0);
+    expect(heads.map((s) => [s.counter, s.anim, s.blow.damage])).toEqual([
+      [0x00, 0x15, 80],
+      [0x10, 0x14, 60],
+      [0x18, 0x13, 40],
+    ]);
+    expect(kame.counters.map((c) => c.counter).sort()).toEqual([0x10, 0x18]);
+  });
+
   it("asks for Quadruple Kick the way the command table does", () => {
     expect(quad.inputs).toEqual(["ground: ← ↙ ↓ ↘ → B"]);
   });

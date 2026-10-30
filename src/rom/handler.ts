@@ -54,6 +54,8 @@ export interface HandlerFact {
   to?: number;
   /** The move it sets in its place. */
   move?: number;
+  /** The spawn counter it sets (field 0x6e): which of the script's spawns fire. */
+  counter?: number;
 }
 
 /** `$0D:D82E`: plays the sound id in A (docs/rom.md). */
@@ -66,6 +68,8 @@ const OWN_BANKS = new Set([0x0f, 0x10, 0x20]);
 const SET_MOVE = 0x018518;
 
 const FRAMES = 0x44;
+/** Field 0x6e: a `b0` fires only while it equals the command's counter (`script.ts`). */
+const SPAWN_COUNTER = 0x6e;
 const STEP = 0x46;
 const VX = 0x7c;
 /** Where a handler that jumps by step puts the entry before `JMP ($0064)`. */
@@ -111,6 +115,9 @@ export function handlerFacts(rom: Uint8Array, entry: number, steps = 0): Handler
         const v = (constant << 16) >> 16;
         // the facing-left copy is the same speed negated
         if (v >= 0) add({ frame, what: "sets vx", vx: v / 256 });
+      }
+      if (ins.mnemonic === "STA" && ins.mode === "dx" && ins.operand === SPAWN_COUNTER && constant !== null) {
+        add({ frame, what: "sets the spawn counter", counter: constant & 0xff });
       }
       if (ins.mnemonic === "STA" && ins.mode === "dx" && ins.operand === FRAMES && constant !== null) {
         add({ frame, what: "jumps to frame", to: constant & 0xff });

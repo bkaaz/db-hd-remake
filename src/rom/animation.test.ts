@@ -75,7 +75,7 @@ describe("moveAnim", () => {
 });
 
 describe("moveAnims", () => {
-  const spawn: ScriptOp = { op: "spawn", type: 0xa, anim: 3, tiles: 0, palette: 2, dx: 40, dy: -56 };
+  const spawn: ScriptOp = { op: "spawn", counter: 0, type: 0xa, anim: 3, tiles: 0, palette: 2, dx: 40, dy: -56 };
 
   it("cuts a move where it spawns mid-way, the second part named _2", () => {
     const anims = moveAnims(0x9b, [show(12, 0x63), spawn, show(44, 0x65)]);

@@ -18,6 +18,8 @@ export interface PortReport {
   move: number;
   /** How a player asks for it: a button, or a command's directions and button. */
   inputs: string[];
+  /** The spawn counters the handler sets, on the move's frame it reads when it does (null: not a frame it compares). */
+  counters: { frame: number | null; counter: number }[];
   /** For each command that picks it: what it needs, what it costs, what it does to the opponent. */
   commands: { needs: string[]; cost: number; opponentMove: number | null }[];
   handler: number;
@@ -34,7 +36,7 @@ export interface PartReport {
   /** What the script plays, and what the handler plays (`handler: true`). */
   sounds: { frame: number; id: number; handler?: true }[];
   /** Objects started, with what their blow does (`$3D:9624`). */
-  spawns: { frame: number; type: number; anim: number; blow: { type: string; damage: number; stun: number } }[];
+  spawns: { frame: number; counter: number; type: number; anim: number; blow: { type: string; damage: number; stun: number } }[];
   /** What the handler does here: the speed carried in, and the frames it changes. */
   vel: number;
   velAt: [number, number][];
@@ -97,7 +99,7 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
       ],
       spawns: events.flatMap((e) =>
         e.op.op === "spawn" && inside(e.frame)
-          ? [{ frame: e.frame - from, type: e.op.type, anim: e.op.anim, blow: blowOf(objectRecord(rom, e.op.type, e.op.anim)) }]
+          ? [{ frame: e.frame - from, counter: e.op.counter, type: e.op.type, anim: e.op.anim, blow: blowOf(objectRecord(rom, e.op.type, e.op.anim)) }]
           : [],
       ),
       vel: speeds.filter((s) => s.frame < from).at(-1)?.vx ?? 0,
@@ -118,6 +120,7 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     move,
     inputs,
     commands: commands.map((c) => ({ needs: describeConditions(c.conditions, context), cost: c.cost, opponentMove: c.opponentMove })),
+    counters: facts.filter((f) => f.counter !== undefined).map((f) => ({ frame: f.frame, counter: f.counter! })),
     handler,
     parts,
   };

@@ -15107,6 +15107,26 @@
       }
     ]
   },
+  "m9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "105",
+        "dur": 10
+      },
+      {
+        "frame": "106",
+        "dur": 10
+      },
+      {
+        "frame": "107",
+        "dur": 32,
+        "sfx": [
+          7
+        ]
+      }
+    ]
+  },
   "m9e": {
     "loop": false,
     "steps": [

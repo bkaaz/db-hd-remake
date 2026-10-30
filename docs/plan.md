@@ -45,15 +45,14 @@ built from the report alone.
 
 | fact | read by |
 |---|---|
-| scripts' steps, sounds, lines, spawns, offsets, flips | `script.ts`, the export |
+| scripts' steps, sounds, lines, spawns and their counters, offsets, flips, effects (`b1`), `c0`, `90`, the opponent's track (`80`) | `script.ts`, the export |
 | boxes, drawings, tiles, palettes, resources | `collision.ts`, `frame.ts`, `resource.ts` |
 | a blow's record, an object's record | `hits.ts` |
 | a handler's frames, speeds, re-arms, sounds, moves set, by-step jumps | `handler.ts` (`KNOWN`, no arguments) |
 | a command's directions and button; the close lines | `commands.ts`, `buttons.ts` |
 | stages, arenas, the HUD, lightings, sound samples | `stage.ts`, `arena.ts`, `hud.ts`, `brr.ts` |
 | a command's conditions, cost and the opponent's move (bytes 0–3, 6) | `conditions.ts`, `commands.ts` |
-| script commands `80` (the opponent's track), `c0`, `b1`, `90`; `b0`'s counter | **by hand / raw** |
-| a handler's calls with their arguments — the throw's launch, holding the opponent, looking for an object, the counter it sets, the shake, charging's shared code, the glow | **by hand** |
+| a handler's calls with their arguments — the throw's launch, holding the opponent, looking for an object, the shake, charging's shared code, the glow | **by hand** |
 | an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
 | a fighter's attributes (defence, walk, jump, gravity) | **by hand** (`attributes.json`) |
 | knockback by reaction (`$0D:D68A`), which reaction (`$0D:D29C`) | **partly** (`hits.ts` names the reaction) |
@@ -64,20 +63,17 @@ The roster is read (`src/rom/roster.ts`, `npm run rom -- roster`; any
 reading command takes `--fighter <name>`). The readers left, in order —
 each a slice, each shown in `port`:
 
-1. **Every script command** — `80`, `c0`, `b1`, `90`, and which spawns a
-   `b0` counter lets fire. *Done when:* `port 9d` shows both tracks and
-   `port aa` the three heads by the counter the handler sets.
-2. **Handler calls with their arguments** — `KNOWN` grows an argument
+1. **Handler calls with their arguments** — `KNOWN` grows an argument
    reader per routine. *Done when:* `port aa` gives the frame jumps when the
    head is gone, `port 1b` the bounce and shake, `port 0c` charging and the
    glow — what `rom.md` says of each, verified.
-3. **Object types** — timing, life, speed, on-hit, copies, read from the
+2. **Object types** — timing, life, speed, on-hit, copies, read from the
    type's code by its usual patterns. *Done when:* the export writes the
    Kamehameha's and the ki blast's spawns without the hand-written
    `objects` in `cartridge.ts`.
-4. **Attributes and knockback** — the export writes `attributes.json`'s
+3. **Attributes and knockback** — the export writes `attributes.json`'s
    numbers and the reactions' knockback. *Done when:* Goku's equal today's.
-5. **The throw from the report alone** — the exam.
+4. **The throw from the report alone** — the exam.
 
 ## Now: Goku from the cartridge
 
