@@ -259,6 +259,8 @@ npm run rom -- port a5
 npm run rom -- object a 15 32@6c00 80
                   # an object's frames into preview/, from the resources
                   # loaded where the game loads them — to look at
+npm run rom -- hud
+                  # the original's HUD as its loader leaves it, into preview/
 npm run rom -- stage 0
                   # a stage's background layers, flat, into preview/; with
                   # no id every stage and rom-stages.png, all on one sheet

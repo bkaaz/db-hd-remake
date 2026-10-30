@@ -357,6 +357,23 @@ The knockdown's bounce sets `8108` (`$0D:EC34`): pattern 1, 7 frames,
 −4 +2 −2 +3 −3 +2 −2. Others: `8208` (`$0F:A51A`), `8220` (`$10:CBFB`),
 `8008` (`$20:8D26` …) — whose `?`.
 
+## The HUD
+
+BG3, 2 bits a pixel, loaded by `$00:C430`: tiles from resource `0x0F` at
+VRAM `$3000` (`$0510` = 3), a 32×32 map packed at `$00:A441` for `$3800`
+(`$050D` = `$38`), palette record `0x0F` from colour 0 — `npm run rom --
+hud` draws it as loaded (`src/rom/hud.ts`). Rows 0–3 are the band seen in
+play: the ornament, the round gauges, two yellow bars, 気 between them, a
+number at each end ("100" in the map; the fight writes the health). Rows
+4–23 hold red segmented bars of falling length `?` (a gauge's steps,
+picked by scroll?). For game modes `4`, `9`, `14`, `16` (`$DD`) the map's
+priority bits are cleared from row 2 on. Then `$00:C4A5` writes each
+fighter's name — 9 tiles from `$00:C511` by character — into the map's
+copy at `$7F:70CC` / `$70E2`; `$00:C57D` and `$00:C71C` are not read.
+Behind the band the screen is black in play, though BG3's colour 0 is
+clear there — channel 0's window table (`$00:BBBA`, 30 lines first) is
+the likely cause `?`.
+
 ## The buttons
 
 **The player's buttons pick a move in `$0D:FEC8`** — the move ids are

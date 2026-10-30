@@ -11,6 +11,7 @@
 
 import { pointer } from "./cartridge";
 import { decompress } from "./decompress";
+import { lzss } from "./lzss";
 
 const TABLE = 0x40000;
 const RECORD = 11;
@@ -31,6 +32,25 @@ export function readResource(rom: Uint8Array, index: number): Uint8Array {
 /** The ROM offset of a resource's palette: bytes 5–7 of its record. */
 export function resourcePalette(rom: Uint8Array, index: number): number {
   return pointer(rom, TABLE + RECORD * index + 5);
+}
+
+/**
+ * A resource as the S-CPU loads it ($00:B2AB) — the stages' and the HUD's:
+ * the record's size, or packed (`lzss`) when the size is 0.
+ */
+export function cpuResource(rom: Uint8Array, index: number): Uint8Array {
+  const at = TABLE + RECORD * index;
+  return unpacked(rom, pointer(rom, at), rom[at + 3] | (rom[at + 4] << 8));
+}
+
+/** Palette record `id`'s colours as the S-CPU loads them ($00:B2FC), BGR555 words. */
+export function cpuPalette(rom: Uint8Array, id: number): Uint8Array {
+  const { at, size } = paletteRecord(rom, id);
+  return unpacked(rom, at, size);
+}
+
+function unpacked(rom: Uint8Array, from: number, size: number): Uint8Array {
+  return size === 0 ? lzss(rom, from) : rom.subarray(from, from + size);
 }
 
 /** The palettes: 5-byte records at $09:8000, read by $00:B2D6 — a pointer and a size. */

@@ -36,6 +36,7 @@ import { objectVram, resourcePalette } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
 import { ARENAS, exportArena, lightingPalettes } from "../src/rom/arena.ts";
+import { drawHud } from "../src/rom/hud.ts";
 
 if (!existsSync(ROM_PATH)) {
   console.error(`no cartridge at ${ROM_PATH} — it is the owner's own dump (BYOA)`);
@@ -169,6 +170,10 @@ if (command === "tiles") {
     writeFileSync("preview/rom-stages.png", encodePng(grid(rows.filter(Boolean))));
     console.log("wrote preview/rom-stages.png (a row per arena, its lightings across)");
   }
+} else if (command === "hud") {
+  mkdirSync("preview", { recursive: true });
+  writeFileSync("preview/rom-hud.png", encodePng(scaled(drawHud(rom), 3)));
+  console.log("wrote preview/rom-hud.png");
 } else if (command === "export") {
   // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
   const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU) } });

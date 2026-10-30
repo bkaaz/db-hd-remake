@@ -8,16 +8,13 @@
 
 import { pointer } from "./cartridge";
 import { lzss } from "./lzss";
-import { paletteRecord } from "./resource";
+import { cpuPalette, cpuResource } from "./resource";
 import { tilePixel } from "./frame";
 import type { Rgba } from "../sprites/png";
 
 /** 9 bytes per stage id, found through $00:BBC4. */
 const STAGES = 0x3be0;
 export const STAGE_COUNT = 18;
-
-/** The graphics resources: 11-byte records, $08:8000 ($00:B265). */
-const RESOURCES = 0x40000;
 
 export interface StageRecord {
   /** Tile resource, loaded to VRAM $0000. */
@@ -46,15 +43,6 @@ export function stageRecord(rom: Uint8Array, id: number): StageRecord {
   };
 }
 
-/** A pointer and a size; a size of 0 means the bytes are packed (`lzss`). */
-function load(rom: Uint8Array, at: number): Uint8Array {
-  return unpack(rom, pointer(rom, at), rom[at + 3] | (rom[at + 4] << 8));
-}
-
-function unpack(rom: Uint8Array, from: number, size: number): Uint8Array {
-  return size === 0 ? lzss(rom, from) : rom.subarray(from, from + size);
-}
-
 export interface LoadedStage {
   record: StageRecord;
   /** 64 KB, byte-addressed: VRAM word w is at 2w. */
@@ -66,11 +54,10 @@ export interface LoadedStage {
 export function loadStage(rom: Uint8Array, id: number): LoadedStage {
   const record = stageRecord(rom, id);
   const vram = new Uint8Array(0x10000);
-  vram.set(load(rom, RESOURCES + 11 * record.tiles), 0);
+  vram.set(cpuResource(rom, record.tiles), 0);
   vram.set(lzss(rom, record.maps), 0x4000 * 2);
   const colours: [number, number, number][] = Array.from({ length: 256 }, () => [0, 0, 0]);
-  const { at, size } = paletteRecord(rom, record.palette);
-  const cg = unpack(rom, at, size);
+  const cg = cpuPalette(rom, record.palette);
   const first = id === 12 ? 48 : 32; // $00:B6D2
   for (let i = 0; 2 * i + 1 < cg.length && first + i < 256; i++) {
     const c = cg[2 * i] | (cg[2 * i + 1] << 8);
