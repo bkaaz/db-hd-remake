@@ -235,6 +235,15 @@ sound chip's RAM (`tools/re/dump-spc.lua`; sample directory at `$1A00`,
 effects in samples `10`–`19`, `1e`, `1f`, `22`, `23`) decoded at the
 pitch each request played it (`log-dsp.lua`) and correlated with our
 clips. A sound is a sample at a pitch: `06` and `07` are both sample `17`.
+A sound whose pitch slides is compared along its slide, frame by frame as
+the recording played it (`npm run samples -- --sweep`): at one pitch the
+hit matched the ki shot's clip, which is what the owner heard. The
+Kamehameha's shot is `0a` from its script, and the sound lasts while the
+beam flies: a strike (`16` @ `03EB` with `14` @ `0785`, 10 frames), then a
+rising rush (`15`, `021F` → `05DF`) over a long low tone (`14` @ `03F9`).
+Its hit is a ki blast's — `0a` and `30` on the defender's side, other
+voices, so the shot sounds on (recorded from afar, the spoken line
+over). The explosion object (`$0F:E1A9`) asks for no sound.
 
 | id | sample @ pitch | clip, likeness | the next |
 |---|---|---|---|
@@ -244,12 +253,15 @@ clips. A sound is a sample at a pitch: `06` and `07` are both sample `17`.
 | `0d` | `16` @ `029D` | `011` 0.80 | 0.56 |
 | `32` (Goku) | `1f` @ `03F6` | `045` 0.92 | 0.11 |
 | `33` | `22` @ `03F6` | `058` 0.82 | 0.21 |
-| `09` / `12`, `0a` | `14` @ `0785` with `16` @ `03EB` | `008` 0.67 `?` | 0.34 |
+| `09` / `12` | `14` sliding `0785` → `0613` over 30 frames | `007` 0.41 | 0.17 |
+| `0a` / `13` | `14` @ `0785` for 16 frames, then @ `03F9` | `008` 0.31 | 0.21 |
 | `19` | `18` @ `0237`…, looped | none `?` | — |
 
-So the table below had `06` and `07` one clip off (`003`/`004` for
-`004`/`005` — `005` is no jump), and `09`'s clip is likely `008`, not
-`007`. The sound test plays its number as the id, unchanged below `0x50`
+`06` and `07` had been one clip off (`003`/`004` for `004`/`005` — `005`
+is no jump: the original plays nothing when Goku jumps, as far as the
+code shows); the bank now
+names them by id (`swing_06`, `swing_07`, `hit_09`), and `goku_old` keeps
+the old names. The sound test plays its number as the id, unchanged below `0x50`
 (`$00:D213`, number in `$19A6`) — but the clips of our capture are numbered
 by where the silences fell, not by the sound test, so a clip is **not** an
 id: matching them by an offset gave a wrong hit sound. A melee hit plays
@@ -260,8 +272,8 @@ code that plays them, since a clip's number says nothing:
 
 | id | played by | ours |
 |---|---|---|
-| `06` / `07` | a punch's / a kick's script | `swing_1` / `swing_2` |
-| `09` | a melee hit (`$0D:D1BC`) | `hit_1` |
+| `06` / `07` | a punch's / a kick's script (`06` for Goku's near B too) | `swing_06` / `swing_07` |
+| `09` | a melee hit (`$0D:D1BC`) | `hit_09` |
 | `0a` | a projectile's hit, a blocked projectile (`$0D:CF6D`, `D1E9`); the Kamehameha's shot (`aa`'s script) | `burst_1` |
 | `0b` | the ki blast fired (script) | `blast_1` |
 | `0c` | landing from a jump (`$0F:9FB8`) | `land_1` |

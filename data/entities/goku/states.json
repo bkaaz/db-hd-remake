@@ -330,7 +330,6 @@
       ],
       "airborne": true,
       "turn": false,
-      "sound": "jump_1",
       "transitions": [
         {
           "when": "landed",
@@ -346,7 +345,6 @@
       ],
       "airborne": true,
       "turn": false,
-      "sound": "jump_1",
       "transitions": [
         {
           "when": "landed",
@@ -362,7 +360,6 @@
       ],
       "airborne": true,
       "turn": false,
-      "sound": "jump_1",
       "transitions": [
         {
           "when": "landed",
@@ -430,7 +427,7 @@
       "turn": false,
       "type": "light",
       "damage": 25,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {
@@ -448,7 +445,7 @@
       "turn": false,
       "type": "heavy",
       "damage": 27,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {
@@ -466,7 +463,7 @@
       "turn": false,
       "type": "light",
       "damage": 27,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {
@@ -484,7 +481,7 @@
       "turn": false,
       "type": "heavy",
       "damage": 29,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {
@@ -502,7 +499,7 @@
       "turn": false,
       "type": "light",
       "damage": 18,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {
@@ -530,7 +527,7 @@
       "turn": false,
       "type": "heavy",
       "damage": 24,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {
@@ -558,7 +555,7 @@
       "turn": false,
       "type": "heavy",
       "damage": 25,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {
@@ -586,7 +583,7 @@
       "turn": false,
       "type": "heavy",
       "damage": 26,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {
@@ -614,7 +611,7 @@
       "turn": false,
       "type": "down",
       "damage": 27,
-      "hitSound": "hit_1",
+      "hitSound": "hit_09",
       "blockSound": "block_1",
       "transitions": [
         {

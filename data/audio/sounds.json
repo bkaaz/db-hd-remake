@@ -1,5 +1,26 @@
 {
   "_comment": "The game's sound bank: every effect any fighter can play. An id names the sound, never who uses it — a state picks a variant, so giving a kick a different swing is one string, not a new definition. Numbers are append-only: swing_7 must always mean what it means today, because states.json points at it. `label` is what it sounds like, for a person reading this and for the editor's picker. Voices are not here — they belong to a fighter, in data/entities/<name>/sounds.json. Files are clips in assets/audio/sfx/; data/audio/sound-test.json says what each of the 127 is.",
+  "swing_06": {
+    "label": "a punch's swing — sound 06, sample 17 at 06B3, clip 004 by comparison (npm run samples, 0.99)",
+    "gain": 0.16,
+    "vary": 0.12,
+    "file": "004.wav",
+    "rom": 6
+  },
+  "swing_07": {
+    "label": "a kick's swing — sound 07, sample 17 at 0504, clip 005 by comparison (0.99)",
+    "gain": 0.16,
+    "vary": 0.12,
+    "file": "005.wav",
+    "rom": 7
+  },
+  "hit_09": {
+    "label": "a melee blow landing — sound 09, sample 14 sliding from 0785 to 0613, clip 007 by comparison along the slide (0.41, the next 0.17)",
+    "gain": 0.42,
+    "vary": 0.1,
+    "file": "007.wav",
+    "rom": 9
+  },
   "swing_1": {
     "label": "swing, hand",
     "kind": "noise",
@@ -7,8 +28,7 @@
     "decay": 0.07,
     "gain": 0.16,
     "vary": 0.12,
-    "file": "003.wav",
-    "rom": 6
+    "file": "003.wav"
   },
   "swing_2": {
     "label": "swing, leg",
@@ -17,8 +37,7 @@
     "decay": 0.07,
     "gain": 0.16,
     "vary": 0.12,
-    "file": "004.wav",
-    "rom": 7
+    "file": "004.wav"
   },
   "swing_3": {
     "label": "swing, leg — heavier",
@@ -36,8 +55,7 @@
     "decay": 0.11,
     "gain": 0.42,
     "vary": 0.1,
-    "file": "007.wav",
-    "rom": 9
+    "file": "007.wav"
   },
   "hit_2": {
     "label": "hit landed — heavier; shares 007 until a heavier clip is named",

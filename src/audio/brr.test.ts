@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeBrr, sampleEntry } from "./brr";
+import { decodeBrr, playAt, sampleEntry } from "./brr";
 
 /** RAM holding `blocks` from address 0. */
 function ram(...blocks: number[][]): Uint8Array {
@@ -37,5 +37,21 @@ describe("BRR", () => {
     const r = new Uint8Array(0x10000);
     r.set([0x00, 0x20, 0x09, 0x20], 0x3000 + 4 * 2);
     expect(sampleEntry(r, 0x30, 2)).toEqual({ start: 0x2000, loop: 0x2009 });
+  });
+});
+
+describe("playAt", () => {
+  const ramp = Int16Array.from({ length: 3200 }, (_, i) => i);
+
+  it("plays a sample at its native rate at pitch 0x1000, a frame at a time", () => {
+    const out = playAt(ramp, [0x1000, 0x1000], 32000);
+    expect(out.length).toBe(Math.ceil(32000 / 60) * 2);
+    expect(Math.round(out[100] * 32768)).toBe(100);
+  });
+
+  it("goes through it twice as fast at twice the pitch, from the frame it changes", () => {
+    const out = playAt(ramp, [0x1000, 0x2000], 32000);
+    const frame = Math.ceil(32000 / 60);
+    expect(Math.round(out[frame + 10] * 32768) - Math.round(out[frame] * 32768)).toBe(20);
   });
 });

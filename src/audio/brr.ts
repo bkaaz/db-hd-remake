@@ -67,3 +67,19 @@ export function decodeBrr(ram: Uint8Array, start: number, limit = 4096): Int16Ar
   }
   return Int16Array.from(out);
 }
+
+/**
+ * A decoded sample played as the chip would, its pitch set once a frame
+ * (`pitches`, 0x1000 = native), at `rate` Hz — until the sample or the
+ * pitches run out. Nearest sample, no interpolation: enough to tell sounds
+ * apart, not to listen to for pleasure.
+ */
+export function playAt(sample: Int16Array, pitches: number[], rate: number): Float32Array {
+  const out: number[] = [];
+  let pos = 0;
+  for (const pitch of pitches) {
+    const step = (NATIVE_RATE * pitch) / 0x1000 / rate;
+    for (let i = 0; i < rate / 60 && pos < sample.length; i++, pos += step) out.push(sample[Math.floor(pos)] / 32768);
+  }
+  return Float32Array.from(out);
+}
