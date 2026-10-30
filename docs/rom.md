@@ -223,7 +223,12 @@ own code in bank `$0F`.
 (`$00:DE31`) and `$00:D879` hands it to the APU at `$2141`. For player two
 the id is shifted by the byte at `$0D:D852 + id` — each side's voice sits in
 its own range: `+9` for the effects `05`–`0d`, `+3` for the voices from
-`30`. The sound test plays its number as the id, unchanged below `0x50`
+`30`. **A sound asked for again restarts its voices** — those of a
+different sound play on (`tools/re/log-dsp.lua`, 2026-10-30: two hits 17
+frames apart re-key the hit's two voices and the hurt voice's; charging's
+`19` every 8 frames). Player one hitting player two asks for `06` (the
+swing, the attacker's), `12` (the hit, `09` + 9: the defender's side) and
+`33` (`30` + 3, the defender's voice). The sound test plays its number as the id, unchanged below `0x50`
 (`$00:D213`, number in `$19A6`) — but the clips of our capture are numbered
 by where the silences fell, not by the sound test, so a clip is **not** an
 id: matching them by an offset gave a wrong hit sound. A melee hit plays

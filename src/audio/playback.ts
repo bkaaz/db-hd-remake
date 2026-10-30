@@ -13,16 +13,38 @@
 
 import { pitchFor, rateFor, soundForLine, soundForRom, type Sounds } from "./sounds";
 
-export class Audio {
+/** What a fighter, or anything it throws, plays its sounds through. */
+export interface SoundPlayer {
+  play(id: string | undefined): void;
+  playRom(id: number): void;
+  playLine(id: number): void;
+}
+
+/**
+ * A sound asked for again while it still plays starts again: the earlier
+ * copy stops. The original's sound driver restarts a sound's voices so
+ * (`tools/re/log-dsp.lua`, `rom.md`, The sounds) — per side, since player
+ * two's sounds are other ids in the original and never cut player one's.
+ */
+export class Audio implements SoundPlayer {
   private ctx: AudioContext | null = null;
   private noise: AudioBuffer | null = null;
   /** Decoded samples by file name, empty until the context exists. */
   private readonly samples = new Map<string, AudioBuffer>();
   private loading = false;
-  /** The copy of each `cut` sound still playing, for the next to stop. */
+  /** The copy of each sound still playing, by side and id, for the next to stop. */
   private readonly playing = new Map<string, AudioScheduledSourceNode>();
 
   constructor(private readonly sounds: Sounds) {}
+
+  /** The same sounds, restarting only their own copies: one side of the fight. */
+  side(name: string): SoundPlayer {
+    return {
+      play: (id) => this.play(id, name),
+      playRom: (id) => this.play(soundForRom(this.sounds, id), name),
+      playLine: (id) => this.play(soundForLine(this.sounds, id), name),
+    };
+  }
 
   /** Say the spoken line matched to a cartridge id; an unmatched one is silent. */
   playLine(id: number): void {
@@ -34,8 +56,8 @@ export class Audio {
     this.play(soundForRom(this.sounds, id));
   }
 
-  /** Play a sound by id. Unknown ids are silent, deliberately — see below. */
-  play(id: string | undefined): void {
+  /** Play a sound by id, for `side`. Unknown ids are silent, deliberately — see below. */
+  play(id: string | undefined, side = ""): void {
     if (!id) return;
     const spec = this.sounds[id];
     // A missing sound is not worth a crash or a warning per frame: sound is the
@@ -59,10 +81,7 @@ export class Audio {
       // The recording carries its own envelope, so nothing is ramped here; the
       // wobble is the same one the synth uses, applied as speed.
       src.playbackRate.setValueAtTime(rateFor(spec, Math.random()), ctx.currentTime);
-      if (spec.cut) {
-        this.playing.get(id)?.stop();
-        this.playing.set(id, src);
-      }
+      this.restart(`${side}:${id}`, src);
       src.connect(gain);
       src.start();
       return;
@@ -80,6 +99,7 @@ export class Audio {
       // Falling pitch: a flat tone reads as a UI beep, not as an impact.
       osc.frequency.exponentialRampToValueAtTime(freq * 0.5, ctx.currentTime + spec.decay);
       osc.connect(gain);
+      this.restart(`${side}:${id}`, osc);
       osc.start();
       osc.stop(ctx.currentTime + spec.decay);
       return;
@@ -93,8 +113,25 @@ export class Audio {
     filter.Q.setValueAtTime(1.2, ctx.currentTime);
     src.connect(filter);
     filter.connect(gain);
+    this.restart(`${side}:${id}`, src);
     src.start();
     src.stop(ctx.currentTime + spec.decay);
+  }
+
+  /** Stop the copy of this sound still playing, and remember the new one. */
+  private restart(key: string, node: AudioScheduledSourceNode): void {
+    const before = this.playing.get(key);
+    if (before) {
+      try {
+        before.stop();
+      } catch {
+        // already stopped, or never started
+      }
+    }
+    this.playing.set(key, node);
+    node.addEventListener("ended", () => {
+      if (this.playing.get(key) === node) this.playing.delete(key);
+    });
   }
 
   private context(): AudioContext | null {

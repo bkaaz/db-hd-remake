@@ -113,7 +113,7 @@ export class DebugScene implements Scene {
     const audio = new Audio(withVoices(ctx.bank, def.sounds));
     // Projectiles first: a bolt is an entity with states of its own, so the
     // burst it leaves is named there and not in the fighter's data.
-    const projectiles = await Projectiles.load(view.world, spawnsNamed(def.states), SPRITE_SCALE, audio);
+    const projectiles = await Projectiles.load(view.world, spawnsNamed(def.states), SPRITE_SCALE);
     const effects = await Effects.load(
       view.world,
       [...effectsNamed(def.states), ...projectiles.effectsNeeded()],

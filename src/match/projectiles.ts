@@ -1,5 +1,4 @@
 import type { Container } from "pixi.js";
-import type { Audio } from "../audio/playback";
 import type { Bounds } from "../combat/push";
 import { Entity, NO_INPUT } from "../entity/entity";
 import { effectsNamed } from "../entity/states";
@@ -51,7 +50,6 @@ export class Projectiles {
     /** The game's world, in game px. */
     private readonly world: Container,
     private readonly scale: number,
-    private readonly audio: Audio,
   ) {}
 
   /** Load the named spawns, tolerating any that are missing, like effects. */
@@ -59,9 +57,8 @@ export class Projectiles {
     world: Container,
     names: string[],
     scale: number,
-    audio: Audio,
   ): Promise<Projectiles> {
-    const projectiles = new Projectiles(world, scale, audio);
+    const projectiles = new Projectiles(world, scale);
     for (const name of names) {
       try {
         projectiles.defs.set(name, await loadEntityDef(name));
@@ -105,7 +102,8 @@ export class Projectiles {
       owner.spawnEnded();
       return;
     }
-    const bolt = new Entity(def, this.scale, this.audio);
+    // it sounds on its thrower's side, as the original plays it by the thrower
+    const bolt = new Entity(def, this.scale, owner.sounds);
     // Bigger, not faster. `size` multiplies the drawing and the boxes placed
     // through it; the world scale that turns px-per-frame into movement is the
     // scene's, or a fully charged bolt would cross the stage in half the time.
@@ -124,7 +122,7 @@ export class Projectiles {
     const companions = from.with.flatMap((w) => {
       const companion = this.defs.get(w.spawn);
       if (!companion) return [];
-      const e = new Entity(companion, this.scale, this.audio);
+      const e = new Entity(companion, this.scale, owner.sounds);
       e.facing = from.facing;
       e.groundY = e.y = w.y;
       e.x = w.x;

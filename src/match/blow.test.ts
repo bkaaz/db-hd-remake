@@ -43,13 +43,14 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     gotHit: vi.fn(),
     guardHit: vi.fn(() => true),
     freeze: vi.fn(),
+    sound: vi.fn(),
     ...extra,
   };
   return stub as unknown as Entity;
 }
 
 const context = (): BlowContext =>
-  ({ audio: { play: vi.fn() }, effects: { spawn: vi.fn() } }) as unknown as BlowContext;
+  ({ effects: { spawn: vi.fn() } }) as unknown as BlowContext;
 
 describe("landBlow", () => {
   it("turns the defender away from a bolt's heading, not away from the bolt", () => {
@@ -158,7 +159,8 @@ describe("landBlow", () => {
       const ctx = context();
       landBlow(attacker, defender, ctx);
       expect(ctx.effects.spawn).not.toHaveBeenCalled();
-      expect(ctx.audio.play).not.toHaveBeenCalled();
+      expect(defender.sound).not.toHaveBeenCalled();
+      expect(attacker.sound).not.toHaveBeenCalled();
     });
 
     it("freezes nobody, so the attacker keeps swinging through", () => {
@@ -199,5 +201,14 @@ describe("landBlow", () => {
     expect(result?.blocked).toBe(true);
     expect(result?.damage).toBe(0);
     expect(defender.hurtBy).not.toHaveBeenCalled();
+  });
+});
+
+describe("the noise of a blow", () => {
+  it("is played on the defender's side, as the original plays it", () => {
+    const [attacker, defender] = [body("hit"), body("hurt")];
+    landBlow(attacker, defender, context());
+    expect(defender.sound).toHaveBeenCalledWith("hit_1");
+    expect(attacker.sound).not.toHaveBeenCalled();
   });
 });

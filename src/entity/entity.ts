@@ -3,7 +3,7 @@ import type { ShakeDef } from "../camera/shake";
 import { healFrame } from "../combat/heal";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
-import { Audio } from "../audio/playback";
+import type { SoundPlayer } from "../audio/playback";
 import { BALL_COLOUR, nextRadius } from "../combat/ball";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
@@ -271,7 +271,7 @@ export class Entity {
   constructor(
     private readonly def: EntityDef,
     private readonly scale: number,
-    private readonly audio: Audio | null = null,
+    private readonly audio: SoundPlayer | null = null,
   ) {
     this.gravity = def.attributes.gravity;
     this.landCue = def.attributes.landCue;
@@ -519,6 +519,20 @@ export class Entity {
   /** How full the ki meter is, 0..1 — what the ki bar draws. */
   get kiFraction(): number {
     return this.maxKi > 0 ? this.ki / this.maxKi : 0;
+  }
+
+  /**
+   * Play a sound on this entity's side of the fight — for what happens to
+   * it, like the noise of a blow it takes, which the original plays as the
+   * defender's ($0D:D1B7, shifted by the defender's side).
+   */
+  sound(id: string | undefined): void {
+    this.audio?.play(id);
+  }
+
+  /** What this entity plays through, for what it throws to play through too. */
+  get sounds(): SoundPlayer | null {
+    return this.audio;
   }
 
   /** Start from this much health, never past the full amount — a debug setting. */

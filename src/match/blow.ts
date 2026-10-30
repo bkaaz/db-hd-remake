@@ -1,4 +1,3 @@
-import type { Audio } from "../audio/playback";
 import { contact, impactPoint } from "../combat/hit";
 import type { Entity } from "../entity/entity";
 import type { Effects } from "../fx/effects";
@@ -20,9 +19,8 @@ export interface BlowResult {
   flash: number;
 }
 
-/** What a landing blow needs besides the two bodies: a noise and a spark. */
+/** What a landing blow needs besides the two bodies: a spark. Its noise is the defender's. */
 export interface BlowContext {
-  audio: Audio;
   effects: Effects;
 }
 
@@ -37,7 +35,7 @@ export interface BlowContext {
 export function landBlow(
   attacker: Entity,
   defender: Entity,
-  { audio, effects }: BlowContext,
+  { effects }: BlowContext,
 ): BlowResult | null {
   if (!attacker.canHit) return null;
   // Before anything is spent or spawned: an invulnerable defender is not hit
@@ -74,7 +72,8 @@ export function landBlow(
   // eat — deliberately, since a block you cannot afford is not a block.
   const blocked = defender.guarding && defender.guardHit();
   const noise = attacker.attackSounds;
-  audio.play(blocked ? noise.block : noise.hit);
+  // the defender's side plays it, as the original's does ($0D:D1B7)
+  defender.sound(blocked ? noise.block : noise.hit);
   // What the blow was worth, after the combo it lands in has scaled it — the
   // number the defender actually lost, which is the only one worth reporting.
   let dealt = 0;

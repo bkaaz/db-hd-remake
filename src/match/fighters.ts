@@ -71,10 +71,11 @@ export class Fighters {
   private from: [number, number] = [0, 0];
 
   constructor({ world, def, scale, audio, effects, solo, projectiles }: FightersSetup) {
-    this.impact = { audio, effects };
+    this.impact = { effects };
     this.projectiles = projectiles;
-    this.player = new Entity(def, scale, audio);
-    this.opponent = solo ? null : new Entity(def, scale, audio);
+    // a side each, so that one's sound never cuts the other's (src/audio/playback.ts)
+    this.player = new Entity(def, scale, audio.side("p1"));
+    this.opponent = solo ? null : new Entity(def, scale, audio.side("p2"));
     world.addChild(this.player.view);
     if (this.opponent) world.addChild(this.opponent.view);
   }
