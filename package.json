@@ -22,7 +22,8 @@
     "typecheck": "tsc --noEmit",
     "which": "tsx scripts/which.ts",
     "rom": "tsx scripts/rom.ts",
-    "dis": "tsx scripts/dis.ts"
+    "dis": "tsx scripts/dis.ts",
+    "samples": "tsx scripts/samples.ts"
   },
   "dependencies": {
     "pixi.js": "^8.6.6"

@@ -74,12 +74,13 @@ takes an investigation instead of a procedure. In this order:
    choice between them as `$0D:D29C` makes it. The reactions brought from
    goku_old (`hurt_air`, `launched`, `blown` …) still land straight into
    `downed`.
-4. **Which clip is which id** — matched by the code that plays each id
-   (`rom.md`, the sounds table); still unmatched: `31` (the voice at KO), a
-   jump's take-off (no `$0D:D82E` with a constant plays one), the specials'
-   own (`25`, `29`, `2d`, `38`…). Matching by clip number failed; the owner
-   records nothing in the emulator, so what is left comes from the
-   cartridge — the sound driver's tables and its BRR samples.
+4. **Which clip is which id** — now compared, not assumed: the chip's
+   samples against our clips (`npm run samples`, `rom.md`, The sounds).
+   `06` / `07` were one clip off and `09`'s clip is likely `008`; put the
+   bank right, then compare what the first recording did not play — `30`
+   for player one, `31` (KO), `0b`, the specials' own (`25`, `29`, `2d`,
+   `38`…) — by recording them with `log-dsp.lua`. A jump plays nothing
+   found so far.
 5. **A move's conditions** — ki, low health (Meteor Smash), the throw's
    range: bytes 0–3 of the command table.
 

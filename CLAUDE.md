@@ -264,6 +264,8 @@ npm run rom -- hud
 npm run rom -- stage 0
                   # a stage's background layers, flat, into preview/; with
                   # no id every stage and rom-stages.png, all on one sheet
+npm run samples   # the sound chip's samples (logs/spc.bin) against our
+                  # clips, best three each — docs/rom.md, The sounds
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md
@@ -288,6 +290,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── audio/                    #   playback.ts: Web Audio, the browser half
 │   │                             #   sounds.ts: the shapes, pure
 │   │                             #   split.ts + wav.ts: cutting a capture (build-time)
+│   │                             #   brr.ts + compare.ts: the chip's samples (build-time)
 │   ├── sprites/                  #   boxes.ts: derive boxes/timing from sprites
 │   │                             #   png.ts: minimal PNG read/write (no dependency)
 │   ├── fx/                       #   generate.ts: draws the effect pixel art
@@ -310,7 +313,8 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
 │   ├── fx.ts                     #   write the generated effects out
 │   ├── pack.ts                   #   zip the assets for backup / handover
-│   └── split-audio.ts            #   cut a capture into numbered clips
+│   ├── split-audio.ts            #   cut a capture into numbered clips
+│   └── samples.ts                #   the cartridge's sound samples against our clips
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/re/                     # Mesen 2 Lua scripts that record the original
 │                                 #   into logs/ (docs/rom.md)

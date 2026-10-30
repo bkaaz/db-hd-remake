@@ -228,7 +228,28 @@ different sound play on (`tools/re/log-dsp.lua`, 2026-10-30: two hits 17
 frames apart re-key the hit's two voices and the hurt voice's; charging's
 `19` every 8 frames). Player one hitting player two asks for `06` (the
 swing, the attacker's), `12` (the hit, `09` + 9: the defender's side) and
-`33` (`30` + 3, the defender's voice). The sound test plays its number as the id, unchanged below `0x50`
+`33` (`30` + 3, the defender's voice).
+
+**Which clip is which id, compared** (`npm run samples`, 2026-10-30): the
+sound chip's RAM (`tools/re/dump-spc.lua`; sample directory at `$1A00`,
+effects in samples `10`–`19`, `1e`, `1f`, `22`, `23`) decoded at the
+pitch each request played it (`log-dsp.lua`) and correlated with our
+clips. A sound is a sample at a pitch: `06` and `07` are both sample `17`.
+
+| id | sample @ pitch | clip, likeness | the next |
+|---|---|---|---|
+| `06` | `17` @ `06B3` | `004` 0.99 | 0.53 |
+| `07` | `17` @ `0504` | `005` 0.99 | 0.25 |
+| `0c` | `16` @ `02EF` | `010` 0.86 | 0.49 |
+| `0d` | `16` @ `029D` | `011` 0.80 | 0.56 |
+| `32` (Goku) | `1f` @ `03F6` | `045` 0.92 | 0.11 |
+| `33` | `22` @ `03F6` | `058` 0.82 | 0.21 |
+| `09` / `12`, `0a` | `14` @ `0785` with `16` @ `03EB` | `008` 0.67 `?` | 0.34 |
+| `19` | `18` @ `0237`…, looped | none `?` | — |
+
+So the table below had `06` and `07` one clip off (`003`/`004` for
+`004`/`005` — `005` is no jump), and `09`'s clip is likely `008`, not
+`007`. The sound test plays its number as the id, unchanged below `0x50`
 (`$00:D213`, number in `$19A6`) — but the clips of our capture are numbered
 by where the silences fell, not by the sound test, so a clip is **not** an
 id: matching them by an offset gave a wrong hit sound. A melee hit plays
