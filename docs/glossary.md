@@ -35,6 +35,10 @@ for as many frames, once its last hit box is gone. Trigger: `cancelable`.
 from entering the state and ignoring frozen frames. Absent means "until the
 animation ends". → `states.ts`
 
+**Charging** — holding A + S with the cartridge's `goku`: a dial on the HUD
+turns, and each turn gives back 5 health (`heal` on the state; health, not ki,
+for now). → `combat/heal.ts`, `combat.md` (The buttons)
+
 **Chain (string)** — a run of attacks joined by cancels. It is not a structure
 anywhere: it is a path through `states.json`, derived by `src/combat/chains.ts`
 and printed by `npm run chains`. → `plan.md`

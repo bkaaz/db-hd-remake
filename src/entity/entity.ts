@@ -1,5 +1,6 @@
 import { Container, Graphics, Sprite } from "pixi.js";
 import type { ShakeDef } from "../camera/shake";
+import { healFrame } from "../combat/heal";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
@@ -225,6 +226,9 @@ export class Entity {
   private hp = 0;
   /** The ki meter. A separate pool from health — see combat.md. */
   private ki = 0;
+  /** The charging dial the HUD shows, and the frames charged, which pace it ($0F:A020). */
+  private dialAt = 0;
+  private healClock = 0;
   /** Set on entering a state that `fires`; taken by whoever owns projectiles. */
   private fired: StateDef["fires"] | null = null;
   /** The `groundFx` of the state just entered, until the fighters take it. */
@@ -517,6 +521,16 @@ export class Entity {
     return this.maxKi > 0 ? this.ki / this.maxKi : 0;
   }
 
+  /** Start from this much health, never past the full amount — a debug setting. */
+  setHealth(hp: number): void {
+    this.hp = Math.min(this.maxHealth, hp);
+  }
+
+  /** Where the charging dial stands — what the HUD's round dial shows. */
+  get dial(): number {
+    return this.dialAt;
+  }
+
   /** How much health is left, in the original's units — what the HUD's number shows. */
   get health(): number {
     return this.hp;
@@ -677,7 +691,8 @@ export class Entity {
    * its `launch` was applied only on the transition path, and a knockdown is
    * never transitioned into.
    */
-  private enterState(forced = false): void {
+  /** `restart` plays its animation from the top even when the state names the one already playing. */
+  private enterState(restart = false): void {
     if (!this.sm) return;
     const sounds = this.sm.def.sound;
     for (const id of typeof sounds === "string" ? [sounds] : (sounds ?? [])) {
@@ -687,7 +702,7 @@ export class Entity {
     // resetting the clock would put an audible hitch at the seam.
     const wanted = this.sm.def.loopSound ?? "";
     if (wanted !== this.hum.id) this.hum = { id: wanted, left: 0 };
-    this.setAnim(this.sm.def.anim, forced);
+    this.setAnim(this.sm.def.anim, restart);
     this.swing.reset();
     this.landed = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
@@ -791,6 +806,12 @@ export class Entity {
     if (fill) this.charge = Math.min(1, this.charge + 1 / fill);
     const perFrame = this.sm.def.ki;
     if (perFrame) this.ki = Math.max(0, Math.min(this.maxKi, this.ki + perFrame));
+    const heal = this.sm.def.heal;
+    if (heal) {
+      const { dial, gain } = healFrame(this.dialAt, this.healClock++, heal);
+      this.dialAt = dial;
+      this.hp = Math.min(this.maxHealth, this.hp + gain);
+    }
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
@@ -816,6 +837,7 @@ export class Entity {
     const falling = this.airborne && this.vy > 0;
     const nearGround = this.nearGround;
 
+    const before = this.sm.current;
     const changed = this.sm.update(
       {
         fwd,
@@ -854,7 +876,8 @@ export class Entity {
     // A press that started a move is spent, so it cannot start a second one
     // when the move ends and the buffer has not expired yet.
     if (changed && this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
-    if (changed) this.enterState();
+    // Back into the same state is its animation played again (a loop's pass).
+    if (changed) this.enterState(changed === before);
     this.buffer.tick();
 
     // Velocities are authored in sprite pixels, like box coordinates, and X is

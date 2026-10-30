@@ -21,6 +21,13 @@
         },
         {
           "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
+        },
+        {
+          "when": [
             "pressed:attack",
             "close:attack"
           ],
@@ -109,6 +116,13 @@
         },
         {
           "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
+        },
+        {
+          "when": [
             "pressed:attack",
             "close:attack"
           ],
@@ -190,6 +204,13 @@
         {
           "when": "held:guard",
           "to": "guard"
+        },
+        {
+          "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
         },
         {
           "when": [
@@ -613,6 +634,60 @@
         {
           "when": "animEnd",
           "to": "ki_fire"
+        }
+      ]
+    },
+    "charge_start": {
+      "anim": "m0c",
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "charge"
+        }
+      ]
+    },
+    "charge": {
+      "anim": "m0c_2",
+      "vel": [
+        0,
+        0
+      ],
+      "heal": {
+        "every": 2,
+        "turn": 13,
+        "gain": 5
+      },
+      "loopSound": "charge_1",
+      "loopEvery": 8,
+      "transitions": [
+        {
+          "when": [
+            "animEnd",
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "charge_end"
+        }
+      ]
+    },
+    "charge_end": {
+      "anim": "m0c_3",
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     },

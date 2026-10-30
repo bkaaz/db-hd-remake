@@ -247,8 +247,27 @@ code that plays them, since a clip's number says nothing:
 | `31` | the voice at KO (`$0D:D10C`) | — |
 | `32` | an attack's shout (the ki blast, specials) | goku's `voice_shout` |
 
-**Charging ki refills health**: `+5` every 8 frames up to field `0x62`
-(`$0F:A059`) — the one bar on screen is both.
+**Charging ki refills health** (`$0F:A020`): every 2 frames of the game's
+count `$74` the dial (field `0x66`) steps 1; at 12 it goes back to 0 and
+the health gains 5, up to field `0x62` — +5 every 26 frames, the dial
+turning once for each. Field `0x62` is the starting health and nothing
+lowers it (`$01:8164`). The charging sound plays every 8 frames. It is move
+`0c`, set by `$0D:F983` while B and Y are held (field `0xEC` & `C000`) on
+the ground; Goku's handler (`$20:8182`) jumps into the shared code above
+while both stay held, and on entering step 4 sends the script back to
+frame 6, so drawings `12`–`14` loop; let go, the pass plays out to `00`.
+Recorded (`tools/re/log-charge.lua`): the dial steps every 2 frames, +5
+every 26, sound `19` asked for every 8 — a frame of the game is a frame
+of the screen. Each request restarts the voice (`tools/re/log-dsp.lua`,
+voice 6, sample `0x18`, about 4 frames after it): its pitch starts at
+`0237`, rises to `0258` from the 4th frame and is cut by the next — so
+what is heard is the sound's first 8 frames, again and again (`cut` in
+`data/audio/sounds.json`).
+Y pressed a frame before B starts the far Y (`92`) for one frame, and the
+charge takes over — the normals' handler checks for Y + B too `?`.
+On frame 2 it loads palette field `0x17` + 8 — a glow while charging
+(`$0F:A072`, Goku's `0x48` by day) — and the own palette again at the
+end; not built.
 
 Not read yet: command `80` (move `9d` uses it), `a1` (`$00:DE9F`, sound
 related), and `c0` (sets fighter field `0x96`).
@@ -389,8 +408,8 @@ game's frame count `$74`, 3 frames each — `000C`, `37FF`, `0ABF`, `00DC`
 
 **The round dial** beside each number (`$00:C71C`): field `0x66` picks
 it — tile `0x17` + 3 × the value at row 2, column 4, and the next two
-below; player two's at column 26, mirrored. What sets `0x66` — charging
-ki, the owner says, which makes it turn `?` — is not read.
+below; player two's at column 26, mirrored. Charging turns it (`$0F:A020`,
+"Charging ki refills health" above).
 Behind the band the screen is black in play, though BG3's colour 0 is
 clear there — channel 0's window table (`$00:BBBA`, 30 lines first) is
 the likely cause `?`.

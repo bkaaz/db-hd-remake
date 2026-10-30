@@ -19,6 +19,8 @@ export class Audio {
   /** Decoded samples by file name, empty until the context exists. */
   private readonly samples = new Map<string, AudioBuffer>();
   private loading = false;
+  /** The copy of each `cut` sound still playing, for the next to stop. */
+  private readonly playing = new Map<string, AudioScheduledSourceNode>();
 
   constructor(private readonly sounds: Sounds) {}
 
@@ -57,6 +59,10 @@ export class Audio {
       // The recording carries its own envelope, so nothing is ramped here; the
       // wobble is the same one the synth uses, applied as speed.
       src.playbackRate.setValueAtTime(rateFor(spec, Math.random()), ctx.currentTime);
+      if (spec.cut) {
+        this.playing.get(id)?.stop();
+        this.playing.set(id, src);
+      }
       src.connect(gain);
       src.start();
       return;

@@ -14,6 +14,7 @@
 import type { BallDef } from "../combat/ball";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
+import type { HealDef } from "../combat/heal";
 import { SHAKE_PATTERNS, type ShakeDef } from "../camera/shake";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
 import { missWindow, type AnimSteps } from "../combat/swing";
@@ -222,6 +223,13 @@ export interface StateDef {
    * of how long its animation is.
    */
   ki?: number;
+
+  /**
+   * Charging as the original does it (`combat/heal.ts`): a dial that steps
+   * while in this state, each turn giving back health — health, not ki, for
+   * now, as the original has one pool.
+   */
+  heal?: HealDef;
 
   /**
    * Ki spent **on entering** this state, and the price of admission: a
@@ -838,7 +846,10 @@ export class StateMachine {
       // than in the entity so that the *next* transition still gets its turn:
       // the move is simply not among the options this frame.
       if ((this.file.states[t.to].cost ?? 0) > signals.ki) continue;
-      if (t.to === this.current) return null;
+      // Back into itself only when its animation ended, which plays it again —
+      // a loop that runs while something holds and finishes its pass after:
+      // the original's charge. Without `animEnd` it would restart every frame.
+      if (t.to === this.current && !triggersOf(t.when).includes("animEnd")) return null;
       this.current = t.to;
       this.pressSpent = pressIn(t.when);
       this.elapsed = 0;
@@ -1131,6 +1142,12 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
         !Number.isInteger(def.shake.frames) || def.shake.frames < 1)
     ) {
       errors.push(`${where}: "shake" needs "pattern" 0 to ${SHAKE_PATTERNS - 1} and "frames" 1 or more, e.g. { "pattern": 1, "frames": 8 }`);
+    }
+    if (
+      def.heal !== undefined &&
+      ![def.heal.every, def.heal.turn, def.heal.gain].every((n) => Number.isInteger(n) && n >= 1)
+    ) {
+      errors.push(`${where}: "heal" needs "every", "turn" and "gain", whole numbers 1 or more, e.g. { "every": 2, "turn": 13, "gain": 5 }`);
     }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);

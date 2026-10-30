@@ -47,6 +47,13 @@ export interface SoundSpec {
    */
   file?: string;
   /**
+   * A new copy stops the one still playing, as the original's sound driver
+   * restarts the voice — so a sound asked for every few frames is heard as
+   * its first few frames, over and over. Recorded for charging's `19`
+   * (`tools/re/log-dsp.lua`, 2026-10-30); likely every effect's `?`.
+   */
+  cut?: boolean;
+  /**
    * What this sounds like, in words — "swing, leg — heavier".
    *
    * Ids in the bank are numbered rather than descriptive, because at three

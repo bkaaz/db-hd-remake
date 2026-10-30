@@ -91,11 +91,10 @@ the game's screen and its scale are `src/view.ts` (ADR 0029), the camera
 and its shake `src/camera/` (ADR 0030), arenas `src/arena/` (ADR 0031). *Open:* whether its 64-px push
 band grows with a wider screen — decided when the screen is widened.
 
-1. **Charging, and the dial that shows it** (owner, 2026-10-30) — charging
-   adds energy, and the small dial beside the number turns as it grows:
-   field `0x66`, drawn by `$00:C71C` (`rom.md`, The HUD); read what sets
-   it first. Ki shows in our status line until then. The red bars below
-   the band are not read either.
+1. **The charge's glow** — the original swaps the fighter's palette for
+   its own + 8 while charging (`rom.md`, Charging ki refills health): a
+   variant sheet per lighting, as the lightings are (ADR 0026). The red
+   bars below the HUD's band are not read either.
 2. **A shove into the screen's edge passes to the attacker**, reversed, for
    the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
    corner, decides whether it replaces what we have.

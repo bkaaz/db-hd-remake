@@ -98,6 +98,18 @@ const LAYOUT = {
 };
 /** The first digit's tile ($00:C60A). */
 const DIGITS = 0x3e;
+/**
+ * The dial's first tile and its cells, in tile order ($00:C731): player
+ * one's top at row 2 column 4 and two below; player two's laid out mirrored
+ * by the swap at $00:C74E.
+ */
+const DIAL = {
+  tile: 0x17,
+  cells: [
+    [[4, 2], [4, 3], [5, 3]],
+    [[27, 2], [27, 3], [26, 3]],
+  ] as [[Cell, Cell, Cell], [Cell, Cell, Cell]],
+};
 
 /**
  * The band with every rewritten cell left empty, then a row of tiles for
@@ -139,6 +151,12 @@ export function exportHud(rom: Uint8Array, fighters: Record<string, number>): { 
   if (attributes("number", 1) !== parts[0][1] || attributes("name", 1) !== parts[1][1]) {
     throw new Error("the HUD's two players' numbers or names differ in colour");
   }
+  DIAL.cells.forEach((cells, player) => {
+    for (const [col, row] of cells) {
+      rewritten.add(`${col},${row}`);
+      if ((cell(hud, col, row) & 0xfc00) !== parts[2 + player][1]) throw new Error("the HUD's dial is not in its bar's colours");
+    }
+  });
   for (const [y, attr, colour] of parts) for (let t = 0; t < GLYPHS; t++) drawTile(hud, attr | t, img, 8 * t, y, colour);
   for (let row = 0; row < BAND_ROWS; row++) {
     for (let col = 0; col < 32; col++) if (!rewritten.has(`${col},${row}`)) drawTile(hud, cell(hud, col, row), img, 8 * col, 8 * row);
@@ -161,6 +179,7 @@ export function exportHud(rom: Uint8Array, fighters: Record<string, number>): { 
         flash: BAR_FLASH,
       },
       name: { at: LAYOUT.name.at },
+      dial: DIAL,
       names,
     },
   };

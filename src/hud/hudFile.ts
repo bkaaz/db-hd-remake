@@ -26,6 +26,12 @@ export interface HudFile {
    * to left ($00:C6A2).
    */
   bar: { first: number[]; middle: number[]; last: number[]; at: [Cell, Cell]; flash: BarFlash };
+  /**
+   * The charging dial ($00:C71C): position n is tiles `tile` + 3n, +1, +2 in
+   * these three cells per player — drawn from the bar's rows, whose
+   * colours and flips its cells share.
+   */
+  dial: { tile: number; cells: [[Cell, Cell, Cell], [Cell, Cell, Cell]] };
   /** Nine tiles of a fighter's name ($00:C511), 0 for none. */
   name: { at: [Cell, Cell] };
   names: Record<string, number[]>;

@@ -43,6 +43,11 @@ export interface DebugRequest {
   arena?: string;
   /** One of that arena's lightings; none means its first. */
   time?: string;
+  /**
+   * Player one's health to start from, out of the full amount — which stays
+   * what charging refills to, as the original's starting health does.
+   */
+  hp?: number;
 }
 
 /**
@@ -82,6 +87,7 @@ export function queryFor(request: SceneRequest): string {
     q.set("mode", String(request.mode));
     if (request.arena) q.set("arena", request.arena);
     if (request.time) q.set("time", request.time);
+    if (request.hp !== undefined) q.set("hp", String(request.hp));
   }
   return `?${q.toString()}`;
 }
@@ -99,6 +105,8 @@ export function requestFromUrl(url: URL): SceneRequest | string {
     const arena = q.get("arena");
     const time = q.get("time");
     if (time !== null && arena === null) return `time "${time}" needs an arena`;
+    const hp = q.get("hp");
+    if (hp !== null && !(Number.isInteger(Number(hp)) && Number(hp) >= 1)) return `hp "${hp}" is not a whole number of health, 1 or more`;
     return {
       scene: "debug",
       p1,
@@ -106,6 +114,7 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       mode,
       ...(arena !== null && { arena }),
       ...(time !== null && { time }),
+      ...(hp !== null && { hp: Number(hp) }),
     };
   }
   return `unknown scene "${scene}" — try select or debug`;

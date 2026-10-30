@@ -1531,3 +1531,47 @@ describe("ifCrouching, through the validator", () => {
     );
   });
 });
+
+describe("a state that goes back into itself", () => {
+  /** A loop while the attack button is held, played out to its end once it is let go. */
+  function looping(): StatesFile {
+    const f = withAttack();
+    f.states.punch = {
+      anim: "punch",
+      transitions: [
+        { when: ["animEnd", "held:attack"], to: "punch" },
+        { when: "animEnd", to: "idle" },
+      ],
+    };
+    return f;
+  }
+  const ENDED = { ...QUIET, animEnded: true };
+  const HOLD = { ...NONE, holding: { ...NONE.holding, attack: true } };
+
+  it("plays again when its animation ends and the condition holds", () => {
+    const sm = new StateMachine(looping());
+    sm.update(ATTACK, QUIET); // idle -> punch
+    expect(sm.update(HOLD, ENDED)).toBe("punch");
+  });
+
+  it("does not restart before its animation ends, held or not", () => {
+    const sm = new StateMachine(looping());
+    sm.update(ATTACK, QUIET);
+    expect(sm.update(HOLD, QUIET)).toBeNull();
+  });
+
+  it("leaves once let go, at the end of the pass", () => {
+    const sm = new StateMachine(looping());
+    sm.update(ATTACK, QUIET);
+    expect(sm.update(NONE, QUIET)).toBeNull();
+    expect(sm.update(NONE, ENDED)).toBe("idle");
+  });
+
+  it("still ignores a transition into itself with no animEnd in it", () => {
+    const HOLD = { ...NONE, holding: { ...NONE.holding, attack: true } };
+    const f = withAttack();
+    f.states.idle.transitions?.unshift({ when: "held:attack", to: "idle" });
+    const sm = new StateMachine(f);
+    expect(sm.update(HOLD, QUIET)).toBeNull();
+  });
+});

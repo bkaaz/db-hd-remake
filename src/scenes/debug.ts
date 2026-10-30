@@ -80,7 +80,9 @@ export class DebugScene implements Scene {
     // means nothing, because mode 0 is the everyday scratch setup.
     describes([
       `debug mode ${req.mode}: ${JSON.stringify(mode)}`,
-      `p1=${req.p1} p2=${req.p2}`,
+      `p1=${req.p1} p2=${req.p2}` +
+        (req.arena ? ` arena=${req.arena}${req.time ? ` time=${req.time}` : ""}` : "") +
+        (req.hp !== undefined ? ` hp=${req.hp}` : ""),
     ]);
 
     const dummy = Dummy.from(mode.p2);
@@ -127,6 +129,7 @@ export class DebugScene implements Scene {
       projectiles,
     });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
+    if (req.hp !== undefined) fighters.player.setHealth(req.hp);
     if (arena && arena.time !== arena.times[0] && !fighters.light(arena.time)) {
       notices.push(showMessage(ctx.app, `${def.name}: no sheet for "${arena.time}" — in its own colours`, true));
     }
@@ -187,7 +190,8 @@ export class DebugScene implements Scene {
     if (keyboard.takeKiRefill()) this.fighters.fillKi();
     this.fighters.exchangeBlows();
     this.stage.flash(this.fighters.takeFlash());
-    this.hud?.tick(this.fighters.status().health);
+    const { health, dial } = this.fighters.status();
+    this.hud?.tick(health, dial);
     const shake = this.fighters.takeShake();
     if (shake) this.shake.start(shake);
     this.shake.tick();

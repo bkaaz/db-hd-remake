@@ -88,10 +88,11 @@
     "file": "011.wav"
   },
   "charge_1": {
-    "label": "charging ki — one short clip, retriggered so the copies overlap",
+    "label": "charging ki — asked for every 8 frames, each copy cutting the last: its first 8 frames, over and over",
     "gain": 0.22,
     "vary": 0.0,
     "file": "013.wav",
+    "cut": true,
     "rom": 25
   },
   "blast_1": {

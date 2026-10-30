@@ -24,7 +24,11 @@ well against the CPU, and the reverse is not true.
 
 The table above is `goku_old`'s. The cartridge's `goku` plays the original's
 own moves for now (`plan.md`): A, S, D and X are its Y, B, X and A, with no
-strings between them, until it is reworked to these rules.
+strings between them, until it is reworked to these rules. Holding A and S
+together charges, as the original's Y + B does — and, as the original's,
+the charge refills **health**, the one pool the original has; our ki meter
+is left alone for now, to stay near the original while it is ported, and
+will change (owner, 2026-10-30).
 
 **The rush is a tree.** Attack walks one line, Smash branches off it at every
 depth and ends it, and Smash alone is a move of its own:

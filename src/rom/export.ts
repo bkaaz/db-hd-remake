@@ -41,12 +41,21 @@ export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, 
 
 /** Where the move's handler cuts its script (`jumpCuts`); none when it cannot be read. */
 function handlerCuts(rom: Uint8Array, t: FighterTables, move: number, ops: ScriptOp[]): number[] {
+  const byHand = HAND_CUTS[move] ?? [];
   try {
-    return jumpCuts(ops, handlerFacts(rom, handlerAt(rom, t.character, move), stepStarts(ops).length));
+    return [...new Set([...jumpCuts(ops, handlerFacts(rom, handlerAt(rom, t.character, move), stepStarts(ops).length)), ...byHand])];
   } catch {
-    return [];
+    return byHand;
   }
 }
+
+/**
+ * Cuts read by hand from handlers `handler.ts` does not follow yet. Charging
+ * (`0c`, Goku's `$20:81C2`): entering step 4 while Y and B are held sends
+ * the script back to frame 6, step 1 — a loop a state can repeat, cut at
+ * both its ends.
+ */
+const HAND_CUTS: Record<number, number[]> = { 0x0c: [1, 4] };
 
 const BLANK: Drawing = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
 
