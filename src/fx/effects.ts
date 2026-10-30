@@ -1,4 +1,4 @@
-import type { Application } from "pixi.js";
+import type { Container } from "pixi.js";
 import type { Bounds } from "../combat/push";
 import { Entity, NO_INPUT } from "../entity/entity";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
@@ -25,13 +25,14 @@ export class Effects {
   private readonly live: Live[] = [];
 
   private constructor(
-    private readonly app: Application,
+    /** The game's world, in game px. */
+    private readonly world: Container,
     private readonly scale: number,
   ) {}
 
   /** Load the named effects, tolerating any that have not been generated. */
-  static async load(app: Application, names: string[], scale: number): Promise<Effects> {
-    const effects = new Effects(app, scale);
+  static async load(world: Container, names: string[], scale: number): Promise<Effects> {
+    const effects = new Effects(world, scale);
     for (const name of names) {
       try {
         effects.defs.set(name, await loadEntityDef(name));
@@ -60,7 +61,7 @@ export class Effects {
     fx.facing = def.attributes.mirrors && Math.random() < 0.5 ? -1 : 1;
     fx.x = x;
     fx.y = y;
-    this.app.stage.addChild(fx.view);
+    this.world.addChild(fx.view);
     this.live.push({ fx, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false });
   }
 

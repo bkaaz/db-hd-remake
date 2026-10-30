@@ -11,13 +11,18 @@ import type { Scene, SceneContext, SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
 import { Stage } from "../stage";
+import { GameView } from "../view";
 import { describes, tickLog } from "../log";
 import { DebugPanel } from "../ui/debug";
 import { Hud, showMessage } from "../ui/hud";
 import type { Text } from "pixi.js";
 
-/** SNES sprites are small — scale up, nearest-neighbour. */
-const SCALE = 3;
+/**
+ * Sprites are drawn at their own size: the world is in game px and the view
+ * scales the whole screen (src/view.ts). The entities' `scale` stays a
+ * parameter only until nothing passes them anything else.
+ */
+const SPRITE_SCALE = 1;
 
 /**
  * The debug scene: two bodies on a stage, hitting each other, with everything
@@ -35,6 +40,7 @@ const SCALE = 3;
  */
 export class DebugScene implements Scene {
   private constructor(
+    private readonly view: GameView,
     private readonly stage: Stage,
     private readonly fighters: Fighters,
     /** The second body's timeline — see src/debug/dummy.ts. */
@@ -81,41 +87,44 @@ export class DebugScene implements Scene {
       console.warn(`[debug] p2="${req.p2}" ignored — both sides are ${req.p1} for now`);
     }
 
+    // First, so the notices below are drawn over the game's screen.
+    const view = new GameView(ctx.app);
     const notices = reportProblems(ctx, def);
 
-    const stage = new Stage(ctx.app);
+    const stage = new Stage(view.backdrop);
     const audio = new Audio(withVoices(ctx.bank, def.sounds));
     // Projectiles first: a bolt is an entity with states of its own, so the
     // burst it leaves is named there and not in the fighter's data.
-    const projectiles = await Projectiles.load(ctx.app, spawnsNamed(def.states), SCALE, audio);
+    const projectiles = await Projectiles.load(view.world, spawnsNamed(def.states), SPRITE_SCALE, audio);
     const effects = await Effects.load(
-      ctx.app,
+      view.world,
       [...effectsNamed(def.states), ...projectiles.effectsNeeded()],
-      SCALE,
+      SPRITE_SCALE,
     );
     const fighters = new Fighters({
-      app: ctx.app,
+      world: view.world,
       def,
-      scale: SCALE,
+      scale: SPRITE_SCALE,
       audio,
       effects,
       solo: false,
       projectiles,
     });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
+    // Over the two of them, so a mode set in a corner shows the corner.
+    stage.centreOn(fighters.player.x, fighters.opponent?.x ?? fighters.player.x);
     // The mode sets what the overlays *start* as; B and D still toggle them.
     if (mode.boxes !== undefined) ctx.keyboard.showBoxes = mode.boxes;
     if (mode.debug !== undefined) ctx.keyboard.showDebug = mode.debug;
-    // Writing a timeline is asking for it to run, so the dummy starts switched
-    // on rather than waiting for `T` — which still stops and restarts it.
-    if (mode.p2?.does) ctx.keyboard.dummyAttacks = true;
-    stage.onResize(() => fighters.fit(stage));
+    // The dummy waits for `T`, even with a timeline written in the mode
+    // (owner, 2026-10-30).
 
     const noStates = !def.states;
     if (noStates) notices.push(showMessage(ctx.app, `${def.name}: no states.json`, true));
-    const hud = new Hud(ctx.app, { name: def.name, belowMessage: noStates });
+    const hud = new Hud(ctx.app, view.hud, { name: def.name, belowMessage: noStates });
 
     return new DebugScene(
+      view,
       stage,
       fighters,
       dummy,
@@ -170,6 +179,7 @@ export class DebugScene implements Scene {
       recording: keyboard.recording,
     });
     this.panel.draw(keyboard.showDebug ? this.fighters.debug() : null);
+    this.view.scroll(this.stage.scrollX, 0);
     this.fighters.render(keyboard.showBoxes);
     this.effects.render();
   }
@@ -181,6 +191,7 @@ export class DebugScene implements Scene {
     this.hud.destroy();
     this.panel.destroy();
     for (const notice of this.notices) notice.destroy();
+    this.view.destroy();
   }
 }
 

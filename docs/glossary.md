@@ -53,6 +53,10 @@ first once a blow has landed. Plus means the attacker, minus means the defender,
 and minus can be correct when the blow also pushes them out of range.
 → `combat.md` §1
 
+**Game pixel** — one pixel of the original's screen: the unit of every
+position, speed and box; the view scales them all at once.
+→ `src/view.ts`, ADR 0029
+
 **Guard** — a button and the stance it holds (`guard`, `guard_low`). A blow is
 blocked only in a state marked `guarding`: the stance and its blockstun.
 → `combat.md` (The buttons)

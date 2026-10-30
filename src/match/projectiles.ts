@@ -1,4 +1,4 @@
-import type { Application } from "pixi.js";
+import type { Container } from "pixi.js";
 import type { Audio } from "../audio/playback";
 import type { Bounds } from "../combat/push";
 import { Entity, NO_INPUT } from "../entity/entity";
@@ -48,19 +48,20 @@ export class Projectiles {
   private readonly leaving: Entity[] = [];
 
   private constructor(
-    private readonly app: Application,
+    /** The game's world, in game px. */
+    private readonly world: Container,
     private readonly scale: number,
     private readonly audio: Audio,
   ) {}
 
   /** Load the named spawns, tolerating any that are missing, like effects. */
   static async load(
-    app: Application,
+    world: Container,
     names: string[],
     scale: number,
     audio: Audio,
   ): Promise<Projectiles> {
-    const projectiles = new Projectiles(app, scale, audio);
+    const projectiles = new Projectiles(world, scale, audio);
     for (const name of names) {
       try {
         projectiles.defs.set(name, await loadEntityDef(name));
@@ -119,7 +120,7 @@ export class Projectiles {
     bolt.groundY = from.y;
     bolt.x = from.x;
     bolt.y = from.y;
-    this.app.stage.addChild(bolt.view);
+    this.world.addChild(bolt.view);
     const companions = from.with.flatMap((w) => {
       const companion = this.defs.get(w.spawn);
       if (!companion) return [];
@@ -127,7 +128,7 @@ export class Projectiles {
       e.facing = from.facing;
       e.groundY = e.y = w.y;
       e.x = w.x;
-      this.app.stage.addChild(e.view);
+      this.world.addChild(e.view);
       return [e];
     });
     this.live.push({ bolt, foe, owner, companions, beam: from.beam });

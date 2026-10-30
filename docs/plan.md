@@ -87,19 +87,26 @@ takes an investigation instead of a procedure. In this order:
 ### Next: the camera, then an arena
 
 What the cartridge does is in `rom.md` (The camera). The owner, 2026-10-30:
-both as the original.
+both as the original, and every size one value to change, not a hunt —
+the game's screen and its scale are `src/view.ts` (ADR 0029).
 
-1. **The camera and the shake** on a placeholder backdrop that shows it
-   moving: a 512-px world, the camera pushed by a fighter in the screen's
-   outer 64 px, the vertical eighth, and `$E3`'s shake moving the backdrop
-   but not the fighters. The knockdown's bounce sets it. *Done when:* a
-   recording of a knockdown shows the shake's 7 frames and a walk to the
-   edge scrolls.
-2. **Arena 0 from the cartridge** (owner, 2026-10-30) — stage ids 0, 1, 2,
+1. **The camera**, pure and tested: pushed by a fighter in the screen's
+   outer 64 px, fighters held 16 px from its edges, the vertical eighth.
+   The fighters' bounds come from it each frame. *Open:* whether the 64 px
+   grows with a wider screen — decided when the screen is widened. *Done
+   when:* a recording shows a walk to the edge scrolling and a jump lifting
+   the view.
+2. **The shake**, `$E3`'s four patterns, moving the backdrop and not the
+   fighters; the knockdown's bounce sets it. *Done when:* a recording of a
+   knockdown shows −4 +2 −2 +3 −3 +2 −2.
+3. **Arena 0 from the cartridge** (owner, 2026-10-30) — stage ids 0, 1, 2,
    its day, evening and night; the fighters' palette changes with them
    (`rom.md`, The camera). Then turn `SCREEN_FLASH` on, whitening the
    arena's art.
-3. **A shove into the screen's edge passes to the attacker**, reversed, for
+4. **The original's HUD** (owner, 2026-10-30) — its art, layout and bars
+   read from the cartridge, replacing ours, which moves into the game's
+   screen as it is until then.
+5. **A shove into the screen's edge passes to the attacker**, reversed, for
    the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
    corner, decides whether it replaces what we have.
 

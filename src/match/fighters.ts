@@ -1,4 +1,4 @@
-import type { Application } from "pixi.js";
+import type { Container } from "pixi.js";
 import type { Audio } from "../audio/playback";
 import { separate, type Bounds } from "../combat/push";
 import { Entity, type WorldInput } from "../entity/entity";
@@ -11,7 +11,8 @@ import { Recorder } from "./record";
 import type { DebugFrame } from "../ui/debug";
 
 export interface FightersSetup {
-  app: Application;
+  /** The layer the bodies stand in — the game's world, in game px. */
+  world: Container;
   def: EntityDef;
   scale: number;
   audio: Audio;
@@ -55,13 +56,13 @@ export class Fighters {
   private readonly recorder = new Recorder();
   private readonly projectiles: Projectiles;
 
-  constructor({ app, def, scale, audio, effects, solo, projectiles }: FightersSetup) {
+  constructor({ world, def, scale, audio, effects, solo, projectiles }: FightersSetup) {
     this.impact = { audio, effects };
     this.projectiles = projectiles;
     this.player = new Entity(def, scale, audio);
     this.opponent = solo ? null : new Entity(def, scale, audio);
-    app.stage.addChild(this.player.view);
-    if (this.opponent) app.stage.addChild(this.opponent.view);
+    world.addChild(this.player.view);
+    if (this.opponent) world.addChild(this.opponent.view);
   }
 
   /** True while a hit pause holds either body — everything else must hold too. */
@@ -72,7 +73,7 @@ export class Fighters {
   /**
    * Opening corners, and the floor to stand on.
    *
-   * `at` is a fraction of the stage, and a debug mode may set either side — the
+   * `at` is a fraction of the world, and a debug mode may set either side — the
    * same value twice is legal and means "both in the corner": they start on top
    * of each other and the push that already runs every frame does the rest.
    */
@@ -82,14 +83,6 @@ export class Fighters {
     if (this.opponent) {
       this.opponent.groundY = stage.groundY;
       this.opponent.x = stage.xAt(at.p2 ?? 0.65);
-    }
-  }
-
-  /** After a resize: the new floor, and nobody left standing outside the field. */
-  fit(stage: Stage): void {
-    for (const fighter of this.both()) {
-      fighter.groundY = stage.groundY;
-      fighter.x = Math.max(stage.bounds.min, Math.min(stage.bounds.max, fighter.x));
     }
   }
 

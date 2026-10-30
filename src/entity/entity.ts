@@ -885,7 +885,8 @@ export class Entity {
     const at = this.placement;
     for (const b of boxes) {
       const r = boxToWorld(b, at);
-      this.boxG.rect(r.x, r.y, r.w, r.h).stroke({ color: BOX_COLORS[b.type] ?? 0xffffff, width: 1 });
+      // One window pixel, however far the view scales the world.
+      this.boxG.rect(r.x, r.y, r.w, r.h).stroke({ color: BOX_COLORS[b.type] ?? 0xffffff, pixelLine: true });
     }
   }
 

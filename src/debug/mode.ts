@@ -19,7 +19,7 @@
 
 import type { Script } from "./dummy";
 
-/** Where a fighter starts, as a fraction of the stage: 0 the left wall, 1 the right. */
+/** Where a fighter starts, as a fraction of the world: 0 its left wall, 1 its right. */
 export interface Placement {
   at?: number;
 }

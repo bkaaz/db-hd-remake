@@ -1,4 +1,5 @@
-import { Application, Graphics, Text } from "pixi.js";
+import { Application, Graphics, Text, type Container } from "pixi.js";
+import { VIEW } from "../view";
 
 /** Everything the status line needs that does not change between frames. */
 export interface HudSetup {
@@ -22,10 +23,11 @@ export interface HudFrame {
   recording: boolean;
 }
 
-const BAR_HEIGHT = 14;
-const BAR_TOP = 24;
-const BAR_INSET = 20;
-const BAR_MAX_WIDTH = 320;
+/** The bars are in game px, inside the game's screen; the gap between them is twice the inset. */
+const BAR_HEIGHT = 5;
+const BAR_TOP = 8;
+const BAR_INSET = 8;
+const BAR_WIDTH = VIEW.width / 2 - 2 * BAR_INSET;
 const LOW_HEALTH = 0.3;
 /**
  * The ki meter, under the player's health and deliberately unlike it: half the
@@ -33,11 +35,12 @@ const LOW_HEALTH = 0.3;
  * centre. Two bars that look alike and move oppositely is how somebody reads
  * "nearly dead" off a full meter.
  */
-const KI_HEIGHT = 6;
-const KI_GAP = 4;
+const KI_HEIGHT = 2;
+const KI_GAP = 1;
 
 /**
- * Health bars and the status line.
+ * Health bars, in the game's screen, and the status line, which is ours and
+ * stays outside it in window px.
  *
  * The bars drain **toward the centre**, the way fighters have always drawn
  * them, so the widening gap between the two reads as who is winning without
@@ -48,10 +51,11 @@ export class Hud {
   private readonly label: Text;
 
   constructor(
-    private readonly app: Application,
+    app: Application,
+    screen: Container,
     private readonly setup: HudSetup,
   ) {
-    app.stage.addChild(this.bars);
+    screen.addChild(this.bars);
     this.label = new Text({
       text: "",
       style: { fill: "#88aa88", fontFamily: "monospace", fontSize: 14 },
@@ -72,12 +76,11 @@ export class Hud {
   }
 
   private drawBars({ playerHealth, playerKi, opponentHealth }: HudFrame): void {
-    const width = Math.min(BAR_MAX_WIDTH, this.app.screen.width / 2 - 30);
     this.bars.clear();
-    this.drawBar(BAR_INSET, width, playerHealth, false);
-    this.drawKi(BAR_INSET, width, playerKi);
+    this.drawBar(BAR_INSET, BAR_WIDTH, playerHealth, false);
+    this.drawKi(BAR_INSET, BAR_WIDTH, playerKi);
     if (opponentHealth !== null) {
-      this.drawBar(this.app.screen.width - BAR_INSET - width, width, opponentHealth, true);
+      this.drawBar(VIEW.width - BAR_INSET - BAR_WIDTH, BAR_WIDTH, opponentHealth, true);
     }
   }
 
