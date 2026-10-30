@@ -18,8 +18,12 @@ export interface PortReport {
   move: number;
   /** How a player asks for it: a button, or a command's directions and button. */
   inputs: string[];
-  /** The spawn counters the handler sets, on the move's frame it reads when it does (null: not a frame it compares). */
-  counters: { frame: number | null; counter: number }[];
+  /**
+   * What the handler does on no one frame it compares with: under a bound
+   * ("from frame 52"), a routine's answer ("when its object 0a/15 is gone"),
+   * every frame, or once the script has run out (frame 0).
+   */
+  anyFrame: HandlerFact[];
   /** For each command that picks it: what it needs, what it costs, what it does to the opponent. */
   commands: { needs: string[]; cost: number; opponentMove: number | null }[];
   handler: number;
@@ -41,10 +45,12 @@ export interface PartReport {
   vel: number;
   velAt: [number, number][];
   rearms: number[];
+  /** Anything else the handler does on one frame of this part. */
+  onFrames: { frame: number; what: string }[];
   /**
-   * What a handler that runs by step does on the steps of this part — on the
-   * condition it tests (landing, turning to fall), which this does not read:
-   * the address is in the report.
+   * What a handler that runs by step does on the steps of this part, under
+   * the conditions `handler.ts` reads (a landing); one it cannot read (vy
+   * turning) leaves the fact bare — the address is in the report.
    */
   onSteps: { step: number; what: string }[];
 }
@@ -54,7 +60,7 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
   const boxesOf = (d: number) => readBoxes(rom, t.boxes, d);
   const records = hitRecords(rom, t.character, move);
   const handler = handlerAt(rom, t.character, move);
-  const facts = handlerFacts(rom, handler, stepStarts(ops).length);
+  const facts = handlerFacts(rom, handler, stepStarts(ops).length, t.character);
   const anims = moveAnims(move, ops, boxesOf, jumpCuts(ops, facts));
 
   // the move's frame each step and each command falls on
@@ -105,7 +111,10 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
       vel: speeds.filter((s) => s.frame < from).at(-1)?.vx ?? 0,
       velAt: speeds.filter((s) => inside(s.frame)).map((s) => [s.frame - from, s.vx]),
       rearms: facts.filter((f) => f.what === "re-arms the blow" && f.frame !== null && inside(f.frame)).map((f) => f.frame! - from),
-      onSteps: stepped.filter((f) => inside(stepFrame[f.step])).map((f) => ({ step: f.step, what: describe(f) })),
+      onFrames: facts
+        .filter((f) => f.frame && f.step === undefined && inside(f.frame) && !SHOWN.has(f.what))
+        .map((f) => ({ frame: f.frame! - from, what: describeFact(f) })),
+      onSteps: stepped.filter((f) => inside(stepFrame[f.step])).map((f) => ({ step: f.step, what: describeFact(f) })),
     });
     from += frames;
   }
@@ -120,19 +129,31 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     move,
     inputs,
     commands: commands.map((c) => ({ needs: describeConditions(c.conditions, context), cost: c.cost, opponentMove: c.opponentMove })),
-    counters: facts.filter((f) => f.counter !== undefined).map((f) => ({ frame: f.frame, counter: f.counter! })),
+    anyFrame: facts.filter((f) => !f.frame && f.step === undefined),
     handler,
     parts,
   };
 }
 
-function describe(f: HandlerFact): string {
+/** What a part already lists on its own line. */
+const SHOWN = new Set(["plays sound", "sets vx", "re-arms the blow"]);
+
+/** A fact in words, with what it waits on: "from frame 52, when its object 0a/15 is gone: jumps to move frame 124". */
+export function describeFact(f: HandlerFact): string {
   const hex = (n: number) => n.toString(16).padStart(2, "0");
-  if (f.to !== undefined) return `jumps to move frame ${f.to}`;
-  if (f.sound !== undefined) return `plays sound ${hex(f.sound)}`;
-  if (f.move !== undefined) return `sets move ${hex(f.move)}`;
-  if (f.vx !== undefined) return `sets vx ${f.vx}`;
-  return f.what;
+  const what =
+    f.to !== undefined ? `jumps to move frame ${f.to}`
+    : f.sound !== undefined ? `plays sound ${hex(f.sound)}`
+    : f.move !== undefined ? `sets move ${hex(f.move)}`
+    : f.vx !== undefined ? `sets vx ${f.vx}`
+    : f.counter !== undefined ? `sets the spawn counter to ${hex(f.counter)}`
+    : f.what;
+  const under = [
+    ...(f.frame === 0 ? ["once the script has run out"] : []),
+    ...(f.from !== undefined ? [`from frame ${f.from}`] : []),
+    ...(f.when ? [f.when] : []),
+  ];
+  return under.length ? `${under.join(", ")}: ${what}` : what;
 }
 
 function blowOf(r: HitRecord): { type: string; damage: number; stun: number } {

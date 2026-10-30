@@ -25,9 +25,12 @@ blow, ADR 0023; one per spawn, ADR 0018; one per step a by-step handler
 jumps to, ADR 0028): the blow's frame, hit type, damage and stun; the speed
 the handler sets (`vel`, `velAt`); the sounds and spawns with their frames;
 where the handler re-arms the blow; and, for a handler that runs by step,
-what it does on each (`handler on step N`) — on a condition the report does
-not read, so look at the code for it (landing, turning to fall). Frames count from the
-part's start, as a state's do. The input is the command table's.
+what it does on each (`handler on step N`). What the handler does on no one
+frame comes first, as `handler:` lines, under what it waits on — "from
+frame 52", "when its object 0a/15 is gone", "once it has landed". A test the
+report cannot read (a button held, vy turning) leaves a fact bare: look at
+the code for it. Frames count from the part's start, as a state's do. The
+input is the command table's.
 
 A spawn's line carries its object's own blow (`$3D:9624`): the projectile's
 states (`data/spawns/<name>/states.json`) take that type and damage, as

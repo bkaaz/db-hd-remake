@@ -131,7 +131,8 @@ and `18` before 20 — into `0x6f` too (`$20:84DD`), so the `b1` effects follow
 the same choice — so the frame-44 spawns that fire are type `a`
 animation `21`, `20` or `19` (80 / 60 / 40 damage, vx 4) with animation
 `22` beside it. The pose after (`89`) is cut short once the beam is gone
-(`JSL $0D:EBE0` with `Y` = animation and type).
+(`JSL $0D:EBE0`: `Y` = animation in the high byte, type in the low nibble;
+carry set when none of the owner's object slots holds it).
 
 **`b1` starts an effect that is drawn, not a sprite** (`$01:8834`, counter
 field `0x6f`): kind, position and size into a block per side at `$30BA` /
@@ -290,7 +291,8 @@ code that plays them, since a clip's number says nothing:
 count `$74` the dial (field `0x66`) steps 1; at 12 it goes back to 0 and
 the health gains 5, up to field `0x62` — +5 every 26 frames, the dial
 turning once for each. Field `0x62` is the starting health and nothing
-lowers it (`$01:8164`). The charging sound plays every 8 frames. It is move
+lowers it (`$01:8164`). The charging sound plays every 8 frames — `19`, but `46` for Mr. Buu and
+`17` for Buu (`$0F:A020` asks field `0x00`). It is move
 `0c`, set by `$0D:F983` while B and Y are held (field `0xEC` & `C000`) on
 the ground; Goku's handler (`$20:8182`) jumps into the shared code above
 while both stay held, and on entering step 4 sends the script back to

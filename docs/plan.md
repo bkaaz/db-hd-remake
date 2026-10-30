@@ -48,11 +48,11 @@ built from the report alone.
 | scripts' steps, sounds, lines, spawns and their counters, offsets, flips, effects (`b1`), `c0`, `90`, the opponent's track (`80`) | `script.ts`, the export |
 | boxes, drawings, tiles, palettes, resources | `collision.ts`, `frame.ts`, `resource.ts` |
 | a blow's record, an object's record | `hits.ts` |
-| a handler's frames, speeds, re-arms, sounds, moves set, by-step jumps | `handler.ts` (`KNOWN`, no arguments) |
+| a handler's frames (pinned or bounded), speeds, re-arms, sounds, moves set, by-step jumps, the spawn counter; a routine's arguments in A and Y and its answer in the carry; shared code by character | `handler.ts`, `flow.ts`, `routines.ts` |
 | a command's directions and button; the close lines | `commands.ts`, `buttons.ts` |
 | stages, arenas, the HUD, lightings, sound samples | `stage.ts`, `arena.ts`, `hud.ts`, `brr.ts` |
 | a command's conditions, cost and the opponent's move (bytes 0–3, 6) | `conditions.ts`, `commands.ts` |
-| a handler's calls with their arguments — the throw's launch, holding the opponent, looking for an object, the shake, charging's shared code, the glow | **by hand** |
+| what the throw's launch, holding the opponent, the shake, every-8-frames (`$74`) and the glow do | **by hand** |
 | an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
 | a fighter's attributes (defence, walk, jump, gravity) | **by hand** (`attributes.json`) |
 | knockback by reaction (`$0D:D68A`), which reaction (`$0D:D29C`) | **partly** (`hits.ts` names the reaction) |
@@ -63,10 +63,12 @@ The roster is read (`src/rom/roster.ts`, `npm run rom -- roster`; any
 reading command takes `--fighter <name>`). The readers left, in order —
 each a slice, each shown in `port`:
 
-1. **Handler calls with their arguments** — `KNOWN` grows an argument
-   reader per routine. *Done when:* `port aa` gives the frame jumps when the
-   head is gone, `port 1b` the bounce and shake, `port 0c` charging and the
-   glow — what `rom.md` says of each, verified.
+1. **Handler calls with their arguments** — `ROUTINES` (`routines.ts`)
+   grows an argument reader per routine; `port aa` reads already. *Done
+   when:* `port 1b` gives the bounce and its shake (`$E3`), `port 0c`
+   charging every 8 frames, the jump while held and the glow, and `port 9d`
+   the launch (`$0F:B321`: damage, stun, vx, vy) and the hold (`$0D:DE9A`
+   with `$20:82A5`) — what `rom.md` says of each.
 2. **Object types** — timing, life, speed, on-hit, copies, read from the
    type's code by its usual patterns. *Done when:* the export writes the
    Kamehameha's and the ki blast's spawns without the hand-written

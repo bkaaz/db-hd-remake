@@ -33,7 +33,7 @@ import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
 import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/rom/export.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
-import { portReport } from "../src/rom/port.ts";
+import { describeFact, portReport } from "../src/rom/port.ts";
 import { long } from "../src/rom/disasm.ts";
 import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
@@ -129,7 +129,7 @@ if (command === "tiles") {
     if (c.cost) console.log(`costs: ${c.cost} health`);
     if (c.opponentMove !== null) console.log(`puts the opponent in move ${hex(c.opponentMove)}`);
   }
-  for (const c of r.counters) console.log(`the handler sets the spawn counter to ${hex(c.counter)}${c.frame === null ? "" : `, where it compares the frame with ${c.frame}`}`);
+  for (const f of r.anyFrame) console.log(`handler: ${describeFact(f)}`);
   console.log("frames count from each part's start; sounds are the cartridge's ids, not clips");
   for (const p of r.parts) {
     const blow = p.blow ? `blow at ${p.blow.frame}: ${p.blow.type}, damage ${p.blow.damage}, stun ${p.blow.stun}` : "no blow";
@@ -142,8 +142,9 @@ if (command === "tiles") {
     for (const s of p.spawns)
       console.log(`  spawns at ${s.frame} (counter ${hex(s.counter)}): object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
     if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
+    for (const f of p.onFrames) console.log(`  handler at ${f.frame}: ${f.what}`);
     for (const step of new Set(p.onSteps.map((f) => f.step)))
-      console.log(`  handler on step ${step}: ${p.onSteps.filter((f) => f.step === step).map((f) => f.what).join(", ")}`);
+      console.log(`  handler on step ${step}: ${grouped(p.onSteps.filter((f) => f.step === step).map((f) => f.what))}`);
   }
 } else if (command === "object" && args.length >= 3) {
   const [type, anim] = [parseInt(args[0], 16), parseInt(args[1], 16)];
@@ -259,6 +260,18 @@ function describe(op: ScriptOp): string {
     case "hold": return `hold ${hex(op.drawing)} until released ?`;
     case "raw": return op.bytes.map(hex).join(" ") + "  (not read yet)";
   }
+}
+
+/** Facts in a row, the condition they share said once: "once it has landed: raises dust, bounces; …". */
+function grouped(facts: string[]): string {
+  const groups: { under: string; what: string[] }[] = [];
+  for (const fact of facts) {
+    const i = fact.indexOf(": ");
+    const [under, what] = i < 0 ? ["", fact] : [fact.slice(0, i), fact.slice(i + 2)];
+    if (groups.at(-1)?.under === under) groups.at(-1)!.what.push(what);
+    else groups.push({ under, what: [what] });
+  }
+  return groups.map((g) => (g.under ? `${g.under}: ` : "") + g.what.join(", ")).join("; ");
 }
 
 function hex(n: number): string {

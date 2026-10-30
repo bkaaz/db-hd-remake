@@ -30,12 +30,32 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     const jumps = down.filter((f) => f.to !== undefined).map((f) => [f.step, f.to]);
     expect(jumps).toEqual([[0, 0x20], [1, 0x30], [1, 0x40], [2, 0x64], [3, 0x64]]);
     expect(down.filter((f) => f.what === "raises dust").map((f) => f.step)).toEqual([1, 2, 3]);
-    expect(down.find((f) => f.what === "bounces")?.step).toBe(1);
+    expect(down.find((f) => f.what === "bounces")).toMatchObject({ step: 1, when: "once it has landed" });
     expect(down.find((f) => f.move !== undefined)).toMatchObject({ step: 4, move: 0x1f });
   });
 
   it("reads where it re-arms the blow, and that frame 0 ends the move", () => {
     expect(quad.filter((f) => f.what === "re-arms the blow").map((f) => f.frame)).toEqual([0x1a, 0x30, 0x46]);
     expect(quad.find((f) => f.what === "ends the move")?.frame).toBe(0);
+    // the normals test the frame as a word: LDA $44,X / ORA $45,X
+    const jab = handlerFacts(rom, handlerAt(rom, GOKU.character, 0x92));
+    expect(jab.find((f) => f.what === "ends the move")?.frame).toBe(0);
+  });
+
+  it("reads the Kamehameha's jumps once its head is gone, by which head it looks for", () => {
+    const kame = handlerFacts(rom, handlerAt(rom, GOKU.character, 0xaa));
+    const jumps = kame.filter((f) => f.when !== undefined).map((f) => [f.from, f.when, f.to]);
+    expect(jumps).toEqual([
+      [52, "when its object 0a/15 is gone", 124],
+      [52, "when its object 0a/13 is gone", 132],
+      [52, "when its object 0a/14 is gone", 128],
+    ]);
+  });
+
+  it("follows code the roster shares only the way this fighter goes: charging's sound", () => {
+    const charge = (character: number) =>
+      handlerFacts(rom, handlerAt(rom, GOKU.character, 0x0c), 0, character).filter((f) => f.sound !== undefined).map((f) => f.sound);
+    expect(charge(0)).toEqual([0x19]);
+    expect(charge(8)).toEqual([0x46]);
   });
 });

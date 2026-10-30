@@ -1,5 +1,7 @@
 import { toFile } from "./cartridge";
-import { decode, ends, target, type Instruction, type Widths } from "./disasm";
+import { decode, ends, target, type Widths } from "./disasm";
+import { FRAMES, fieldInA, isBranch, next, track, ways, type Known } from "./flow";
+import { ROUTINES, type Registers } from "./routines";
 
 /**
  * A move's handler — the code `$0F:8000` runs every frame of the move — and
@@ -7,10 +9,13 @@ import { decode, ends, target, type Instruction, type Widths } from "./disasm";
  * speed, and which known routines it calls when. docs/rom.md, Where to start
  * a search, says how handlers are laid out.
  *
- * Read by following its branches, remembering the frame each `CMP #n` on
- * field 0x44 led to — or, for a handler that jumps through a table by the
- * script's step (field 0x46, as the knockdown's `$0F:A217` does), the step
- * each entry runs on. A handler written another way reads as fewer facts,
+ * Read by following every branch with what it tells (`flow.ts`): the frame
+ * a `CMP #n` on field 0x44 pins or bounds, what a routine answered in the
+ * carry (`routines.ts`), the constants loaded before a call — and, for a
+ * handler that jumps through a table by the script's step (field 0x46, as
+ * the knockdown's `$0F:A217` does), the step each entry runs on. A test it
+ * cannot read (a button held, a field of its own) leaves both ways open, so
+ * a handler written another way reads as facts under fewer conditions,
  * never as wrong ones; the address is in the report for reading the rest by
  * hand.
  */
@@ -29,20 +34,13 @@ export function handlerAt(rom: Uint8Array, character: number, move: number): num
   return rom[at] | (rom[at + 1] << 8) | (rom[at + 2] << 16);
 }
 
-/** Routines a handler calls whose meaning is known. */
-const KNOWN: Record<number, string> = {
-  0x0dd8a2: "re-arms the blow",
-  0x0f9fa3: "ends the move",
-  0x0dd7a0: "stops",
-  0x0dcb47: "asks whether it has landed",
-  0x0dde6c: "raises dust",
-  0x0dec12: "bounces",
-  0x0dec5f: "slows the shove",
-};
-
 export interface HandlerFact {
   /** The frame of the move (field 0x44) the code was reached on; null when no comparison led there. */
   frame: number | null;
+  /** The first frame it can be reached on, when only a `BCC`/`BCS` on the frame bounds it. */
+  from?: number;
+  /** What a routine answered on the way here (`routines.ts`): "once it has landed". */
+  when?: string;
   what: string;
   /** A speed set, px per frame, facing right. */
   vx?: number;
@@ -58,16 +56,9 @@ export interface HandlerFact {
   counter?: number;
 }
 
-/** `$0D:D82E`: plays the sound id in A (docs/rom.md). */
-const PLAY_SOUND = 0x0dd82e;
-
 /** Banks holding move handlers and their helpers, not the engine. */
 const OWN_BANKS = new Set([0x0f, 0x10, 0x20]);
 
-/** `$01:8518`: sets the move id in A (docs/rom.md). */
-const SET_MOVE = 0x018518;
-
-const FRAMES = 0x44;
 /** Field 0x6e: a `b0` fires only while it equals the command's counter (`script.ts`). */
 const SPAWN_COUNTER = 0x6e;
 const STEP = 0x46;
@@ -75,93 +66,129 @@ const VX = 0x7c;
 /** Where a handler that jumps by step puts the entry before `JMP ($0064)`. */
 const DISPATCH = 0x64;
 
-/** `steps`: how many steps the move's script has — the length of a by-step table. */
-export function handlerFacts(rom: Uint8Array, entry: number, steps = 0): HandlerFact[] {
+/** One way through the handler: where, and what is known on arriving there. */
+interface Path extends Known {
+  at: number;
+  w: Widths;
+  step?: number;
+  regs: Registers;
+  /** The fighter field A holds, and the flags what it was last compared with (0 for the load itself). */
+  compared?: number | null;
+  field?: number | null;
+}
+
+/**
+ * `steps`: how many steps the move's script has — the length of a by-step
+ * table. `character`: whose handler it is, for code shared by the roster
+ * that asks (charging's sound, `$0F:A020`).
+ */
+export function handlerFacts(rom: Uint8Array, entry: number, steps = 0, character?: number): HandlerFact[] {
   const read = (address: number) => {
     const at = toFile(address);
     if (at === null) throw new Error(`${address.toString(16)} is not ROM`);
     return rom[at];
   };
-  const facts: HandlerFact[] = [];
+  const facts: { fact: HandlerFact; at: number }[] = [];
   const seen = new Set<string>();
   // entered from $0F:8000 with an 8-bit accumulator and 16-bit index registers
-  type Path = { at: number; w: Widths; frame: number | null; step?: number };
-  const queue: Path[] = [{ at: entry, w: { m8: true, x8: false }, frame: null }];
-  while (queue.length > 0 && seen.size < 2000) {
+  const queue: Path[] = [{ at: entry, w: { m8: true, x8: false }, frame: null, regs: { a: null, y: null } }];
+  while (queue.length > 0 && seen.size < 4000) {
     const path = queue.shift()!;
     let { at, w } = path;
-    const { frame, step } = path;
-    let prev: Instruction | null = null;
-    let readsFrames = false;
+    const { frame, from, step, when } = path;
+    const regs = { ...path.regs };
     let readsStep = false;
     let table: number | null = null;
-    let compared: number | null = null;
+    // the frame a CMP on field 0x44 left in the flags, until something else sets them
+    let compared = path.compared ?? null;
+    let field = path.field ?? null;
+    let answer: { set: string; clear: string } | null = null;
     for (;;) {
-      const key = `${at}:${frame}:${step}`;
+      const key = `${at}:${frame}:${from}:${step}:${when}:${regs.a}:${regs.y}:${compared}:${field}`;
       if (seen.has(key)) break;
       seen.add(key);
       const ins = decode(read, at, w);
-      const add = (fact: HandlerFact) => facts.push(step === undefined ? fact : { ...fact, step });
-      const constant = prev?.mnemonic === "LDA" && prev.mode === "im" ? prev.operand : null;
-      if (ins.mnemonic === "LDA") {
-        readsFrames = ins.mode === "dx" && ins.operand === FRAMES;
-        // a BEQ straight after the load asks whether the frame is 0
-        if (readsFrames) compared = 0;
-        if (ins.mode === "dx" && ins.operand === STEP) readsStep = true;
-        if (ins.mode === "lx" && readsStep) table = ins.operand;
-      }
-      if (ins.mnemonic === "CMP" && ins.mode === "im" && readsFrames) compared = ins.operand;
-      if (ins.mnemonic === "STA" && ins.mode === "dx" && ins.operand === VX && constant !== null) {
-        const v = (constant << 16) >> 16;
+      const add = (fact: Omit<HandlerFact, "frame">) =>
+        facts.push({ at, fact: { frame, ...(frame === null && from !== undefined && { from }), ...(when && { when }), ...(step !== undefined && { step }), ...fact } });
+      const asked = answer;
+      answer = null;
+      const flags = compared;
+      if (!isBranch(ins)) compared = null;
+
+      field = fieldInA(ins, field);
+      if (field !== null && (ins.mnemonic === "LDA" || ins.mnemonic === "ORA")) compared = 0;
+      if (field !== null && ins.mnemonic === "CMP" && ins.mode === "im") compared = ins.operand;
+      if (ins.mnemonic === "LDA" && ins.mode === "dx" && ins.operand === STEP) readsStep = true;
+      if (ins.mnemonic === "LDA" && ins.mode === "lx" && readsStep) table = ins.operand;
+      if (ins.mnemonic === "STA" && ins.mode === "dx" && regs.a !== null) {
+        const v = regs.a;
         // the facing-left copy is the same speed negated
-        if (v >= 0) add({ frame, what: "sets vx", vx: v / 256 });
+        if (ins.operand === VX && ((v << 16) >> 16) >= 0) add({ what: "sets vx", vx: v / 256 });
+        if (ins.operand === SPAWN_COUNTER) add({ what: "sets the spawn counter", counter: v & 0xff });
+        if (ins.operand === FRAMES) add({ what: "jumps to frame", to: v & 0xff });
       }
-      if (ins.mnemonic === "STA" && ins.mode === "dx" && ins.operand === SPAWN_COUNTER && constant !== null) {
-        add({ frame, what: "sets the spawn counter", counter: constant & 0xff });
-      }
-      if (ins.mnemonic === "STA" && ins.mode === "dx" && ins.operand === FRAMES && constant !== null) {
-        add({ frame, what: "jumps to frame", to: constant & 0xff });
-      }
-      if (ins.mnemonic === "JSL" && KNOWN[ins.operand] !== undefined) add({ frame, what: KNOWN[ins.operand] });
-      if (ins.mnemonic === "JSL" && ins.operand === PLAY_SOUND && constant !== null) {
-        add({ frame, what: "plays sound", sound: constant & 0xff });
-      }
-      if (ins.mnemonic === "JSL" && ins.operand === SET_MOVE && constant !== null) {
-        add({ frame, what: "sets move", move: constant & 0xff });
+      const routine = ins.mnemonic === "JSL" ? ROUTINES[ins.operand] : undefined;
+      if (routine) {
+        const fact = routine.fact(regs);
+        if (fact) add(fact);
+        answer = routine.carry?.(regs) ?? null;
       }
       // a jump through the by-step table: each entry is the code for its step
       if (ins.mnemonic === "JMP" && ins.mode === "ai" && ins.operand === DISPATCH && table !== null) {
         for (let s = 0; s < steps; s++) {
           const word = read(table + 2 * s) | (read(table + 2 * s + 1) << 8);
-          queue.push({ at: (at & 0xff0000) | word, w: ins.after, frame, step: s });
+          queue.push({ at: (at & 0xff0000) | word, w: ins.after, frame, step: s, when, regs: { ...regs } });
         }
       }
+
       const to = target(ins);
       const call = ins.mnemonic === "JSL" || ins.mnemonic === "JSR";
       if (to !== null && !call) {
-        // equal to the frame compared: the branch is the code for that frame
-        queue.push({ at: to, w: ins.after, frame: ins.mnemonic === "BEQ" && compared !== null ? compared : frame, step });
+        const [taken, through] = ways(ins.mnemonic, { frame, from, when }, { field, compared: flags, asked, character });
+        if (taken) queue.push({ at: to, w: ins.after, step, regs: { ...regs }, compared, field, ...taken });
+        if (!through) break;
+        Object.assign(path, through);
       }
       // a handler's own helpers do part of its work (the jump's landing sound);
-      // the engine's routines it calls are what KNOWN names, not followed
-      if (to !== null && call && KNOWN[to] === undefined && OWN_BANKS.has(to >> 16)) {
-        queue.push({ at: to, w: ins.after, frame, step });
+      // the engine's routines are what ROUTINES names, not followed
+      if (to !== null && call && !routine && OWN_BANKS.has(to >> 16)) {
+        queue.push({ at: to, w: ins.after, frame, from, step, when, regs: { ...regs } });
       }
       if (ends(ins)) break;
-      prev = ins;
+      if (to !== null && !call && (path.frame !== frame || path.from !== from || path.when !== when)) {
+        // falling through learnt something: carry on as a new path
+        queue.push({ at: next(ins), w: ins.after, frame: path.frame, from: path.from, step, when: path.when, regs, compared, field });
+        break;
+      }
+      if (call) {
+        regs.a = regs.y = null;
+        field = null;
+      }
+      else track(ins, regs);
       w = ins.after;
-      at = (at & 0xff0000) | ((at + ins.bytes.length) & 0xffff);
+      at = next(ins);
     }
   }
-  return dedupe(facts).sort((a, b) => (a.frame ?? -1) - (b.frame ?? -1));
+  // by frame, then step, then in the order the code has them
+  const order = (f: HandlerFact) => [f.frame ?? -1, f.step ?? -1];
+  facts.sort((a, b) => order(a.fact)[0] - order(b.fact)[0] || order(a.fact)[1] - order(b.fact)[1] || a.at - b.at);
+  return dedupe(facts.map((f) => f.fact));
 }
 
+/**
+ * Code two paths share is read once per path: the same fact again is dropped,
+ * and so is one under a later bound, or under an answer, than a copy of it
+ * that turns up without — or on any frame, where the copy is on one.
+ */
 function dedupe(facts: HandlerFact[]): HandlerFact[] {
-  const keys = new Set<string>();
-  return facts.filter((f) => {
-    const k = `${f.frame}:${f.step}:${f.what}:${f.vx}:${f.sound}:${f.to}:${f.move}`;
-    if (keys.has(k)) return false;
-    keys.add(k);
-    return true;
-  });
+  const bare = (f: HandlerFact) => JSON.stringify({ ...f, frame: undefined, from: undefined, when: undefined });
+  const weaker = (g: HandlerFact, f: HandlerFact) =>
+    (g.when === undefined || g.when === f.when) &&
+    (g.frame !== null ? g.frame === f.frame : (g.from ?? 0) <= (f.frame ?? f.from ?? 0));
+  const kept: HandlerFact[] = [];
+  for (const f of facts) {
+    if (facts.some((g) => g !== f && bare(g) === bare(f) && weaker(g, f) && !(weaker(f, g) && facts.indexOf(g) > facts.indexOf(f)))) continue;
+    kept.push(f);
+  }
+  return kept;
 }

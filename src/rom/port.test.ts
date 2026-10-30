@@ -23,7 +23,8 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
       [0x10, 0x14, 60],
       [0x18, 0x13, 40],
     ]);
-    expect(kame.counters.map((c) => c.counter).sort()).toEqual([0x10, 0x18]);
+    const counters = kame.anyFrame.filter((f) => f.counter !== undefined);
+    expect(counters.map((f) => [f.from, f.counter])).toEqual([[32, 0x10], [20, 0x18]]);
   });
 
   it("asks for Quadruple Kick the way the command table does", () => {
