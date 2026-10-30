@@ -27,6 +27,8 @@ const SFX_DIR = path.join("assets", "audio", "sfx");
 const SOUND_BANK = path.join("data", "audio", "sounds.json");
 const ROSTER = path.join("data", "roster.json");
 const DEBUG_MODES = path.join("data", "debug.json");
+const ARENA_DATA = path.join("data", "arenas");
+const ARENA_IMAGES = path.join("assets", "arenas");
 const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
 
 /**
@@ -147,6 +149,28 @@ export function entityEditorServer(): Plugin {
         } catch {
           res.statusCode = 404;
           res.end();
+        }
+      });
+
+      // An arena (used by the game): its arena.json, or with `layer` and
+      // `time` one of its pictures. Both written by `npm run rom -- export`;
+      // the pictures are the cartridge's and gitignored, like the sheets.
+      server.middlewares.use("/api/arena", async (req, res) => {
+        const url = new URL(req.url ?? "", "http://localhost");
+        const name = sanitizeName(url.searchParams.get("name") ?? "");
+        if (!name) return sendJson(res, 400, { error: "name required" });
+        const layer = sanitizeName(url.searchParams.get("layer") ?? "");
+        const time = sanitizeName(url.searchParams.get("time") ?? "");
+        const file = layer
+          ? path.join(root, ARENA_IMAGES, name, `${layer}@${time}.png`)
+          : path.join(root, ARENA_DATA, name, "arena.json");
+        try {
+          const buf = await fs.readFile(file);
+          res.statusCode = 200;
+          res.setHeader("Content-Type", layer ? "image/png" : "application/json");
+          res.end(buf);
+        } catch {
+          sendJson(res, 404, { error: `no ${path.relative(root, file)}` });
         }
       });
 

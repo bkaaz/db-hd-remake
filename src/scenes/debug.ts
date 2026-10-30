@@ -7,13 +7,15 @@ import { Effects } from "../fx/effects";
 import type { Keyboard } from "../input/keyboard";
 import { Fighters } from "../match/fighters";
 import { Projectiles } from "../match/projectiles";
-import type { Scene, SceneContext, SceneRequest } from "../scene";
+import type { DebugRequest, Scene, SceneContext, SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
 import { Camera } from "../camera/camera";
 import { CameraNotes } from "../camera/note";
 import { Shake } from "../camera/shake";
 import { Stage } from "../stage";
+import { ArenaBackdrop, loadArena } from "../arena/arena";
+import { GridBackdrop } from "../arena/grid";
 import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
 import { DebugPanel } from "../ui/debug";
@@ -52,7 +54,7 @@ export class DebugScene implements Scene {
     /** The second body's timeline — see src/debug/dummy.ts. */
     private readonly dummy: Dummy,
     /** What built this scene, and how many modes there are to step through. */
-    private readonly req: { p1: string; p2: string; mode: number },
+    private readonly req: DebugRequest,
     private readonly modes: number,
     private readonly effects: Effects,
     private readonly hud: Hud,
@@ -63,7 +65,7 @@ export class DebugScene implements Scene {
 
   static async create(
     ctx: SceneContext,
-    req: { p1: string; p2: string; mode: number },
+    req: DebugRequest,
   ): Promise<Scene | string> {
     // First, so a mode that does not exist says so instead of quietly running
     // the scene as if nothing had been asked for.
@@ -93,11 +95,16 @@ export class DebugScene implements Scene {
       console.warn(`[debug] p2="${req.p2}" ignored — both sides are ${req.p1} for now`);
     }
 
-    // First, so the notices below are drawn over the game's screen.
+    // Before anything is put on screen, so a missing arena leaves nothing behind.
+    const arena = req.arena ? await loadArena(req.arena, req.time ?? null) : null;
+    if (typeof arena === "string") return arena;
+
+    // First on screen, so the notices below are drawn over the game's screen.
     const view = new GameView(ctx.app);
     const notices = reportProblems(ctx, def);
 
-    const stage = new Stage(view.backdrop);
+    const backdrop = arena ? new ArenaBackdrop(view.backdrop, arena) : new GridBackdrop(view.backdrop);
+    const stage = new Stage(view.backdrop, backdrop);
     const audio = new Audio(withVoices(ctx.bank, def.sounds));
     // Projectiles first: a bolt is an entity with states of its own, so the
     // burst it leaves is named there and not in the fighter's data.
@@ -198,7 +205,8 @@ export class DebugScene implements Scene {
       recording: keyboard.recording,
     });
     this.panel.draw(keyboard.showDebug ? this.fighters.debug() : null);
-    this.view.scroll(this.camera.x, this.camera.y, this.shake.offset);
+    this.view.scroll(this.camera.x, this.camera.y);
+    this.stage.scroll(this.camera.x, this.camera.y, this.shake.offset);
     this.fighters.render(keyboard.showBoxes);
     this.effects.render();
   }

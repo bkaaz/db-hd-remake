@@ -91,11 +91,11 @@ the game's screen and its scale are `src/view.ts` (ADR 0029), the camera
 and its shake `src/camera/` (ADR 0030). *Open:* whether its 64-px push
 band grows with a wider screen — decided when the screen is widened.
 
-1. **Arena 0 from the cartridge** (owner, 2026-10-30) — stage ids 0, 1, 2,
-   its day, evening and night; the fighters' palette changes with them
-   (`rom.md`, The camera). Then turn `SCREEN_FLASH` on, whitening the
-   arena's art. The grid stays the debug scene's arena unless `arena` is
-   given (owner, 2026-10-30): a scene parameter, like `p1`.
+1. **The fighters in the arena's light** — the tournament plays
+   (`?arena=tournament&time=night`, ADR 0031), but the fighters keep the
+   day's palette; the original picks theirs by the stage id
+   (`$01:82B5`, `rom.md`, A stage id). Then turn `SCREEN_FLASH` on,
+   whitening the arena's art.
 2. **The original's HUD** (owner, 2026-10-30) — its art, layout and bars
    read from the cartridge, replacing ours, which moves into the game's
    screen as it is until then.

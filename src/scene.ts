@@ -32,9 +32,18 @@ export interface Scene {
 }
 
 /** What to run, in the few values it takes to say it. */
-export type SceneRequest =
-  | { scene: "select" }
-  | { scene: "debug"; p1: string; p2: string; mode: number };
+export type SceneRequest = { scene: "select" } | DebugRequest;
+
+export interface DebugRequest {
+  scene: "debug";
+  p1: string;
+  p2: string;
+  mode: number;
+  /** An arena from `data/arenas/`; none means the debug grid. */
+  arena?: string;
+  /** One of that arena's lightings; none means its first. */
+  time?: string;
+}
 
 /**
  * What every scene is handed: the renderer, the game-wide sound bank, and the
@@ -71,6 +80,8 @@ export function queryFor(request: SceneRequest): string {
     q.set("p1", request.p1);
     q.set("p2", request.p2);
     q.set("mode", String(request.mode));
+    if (request.arena) q.set("arena", request.arena);
+    if (request.time) q.set("time", request.time);
   }
   return `?${q.toString()}`;
 }
@@ -85,7 +96,17 @@ export function requestFromUrl(url: URL): SceneRequest | string {
     const asked = q.get("mode");
     const mode = asked === null ? 0 : Number(asked);
     if (!Number.isInteger(mode)) return `mode "${asked}" is not a mode number`;
-    return { scene: "debug", p1, p2: q.get("p2") ?? p1, mode };
+    const arena = q.get("arena");
+    const time = q.get("time");
+    if (time !== null && arena === null) return `time "${time}" needs an arena`;
+    return {
+      scene: "debug",
+      p1,
+      p2: q.get("p2") ?? p1,
+      mode,
+      ...(arena !== null && { arena }),
+      ...(time !== null && { time }),
+    };
   }
   return `unknown scene "${scene}" — try select or debug`;
 }

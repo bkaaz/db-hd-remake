@@ -14,9 +14,9 @@ export const SCALE = 3;
  * The screen as a Pixi container, centred in the window and scaled by
  * `SCALE`, with what lies past its edges clipped.
  *
- * Three layers, back to front: the backdrop and the world both scroll with
- * the camera — apart, because a shake moves the one and not the other
- * (`rom.md`, The camera) — and the HUD stays where it is put.
+ * Three layers, back to front: the backdrop, the world and the HUD. The
+ * world scrolls with the camera, the backdrop's layers each at their own
+ * speed and with the shake (`rom.md`, The camera), the HUD not at all.
  */
 export class GameView {
   readonly backdrop = new Container();
@@ -36,12 +36,11 @@ export class GameView {
   }
 
   /**
-   * Where the screen's left edge and top stand in the world, in game px, and
-   * how much further the backdrop alone is scrolled — the shake, which
-   * lifts the picture when positive, as the original's scroll register does.
+   * Where the screen's left edge and top stand in the world, in game px. The
+   * backdrop is not moved here: its layers scroll at their own speeds
+   * (`Stage.scroll`).
    */
-  scroll(x: number, y: number, shake = 0): void {
-    this.backdrop.position.set(-x, -(y + shake));
+  scroll(x: number, y: number): void {
     this.world.position.set(-x, -y);
   }
 

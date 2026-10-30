@@ -291,6 +291,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── fx/                       #   generate.ts: draws the effect pixel art
 │   ├── camera/                   #   camera.ts, push.ts, shake.ts: the original's
 │   ├── arena/                    #   arenaFile.ts: an arena's shape on disk
+│   │                             #   arena.ts, grid.ts: what stands behind a fight
 │   └── rom/                      #   cartridge.ts: where things are in the ROM
 │                                 #   decompress.ts, frame.ts: tiles → a drawing
 │                                 #   disasm.ts, opcodes.ts: reading 65816 code

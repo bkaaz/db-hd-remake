@@ -18,6 +18,10 @@ is renamed here in the same change.
 only frames in which it can connect. Authored (2–4 frames), never inherited from
 how long a drawing is held. → `combat.md` §1
 
+**Arena** — what a fight stands in front of: the original's stage art, as
+layers scrolling at their own speeds, in a lighting. Not the `Stage`, which is
+the playfield's numbers. → `data/arenas/`, ADR 0031
+
 **Blown** — the reaction that sends a body away backward in a low flight, into
 a bounce (`blown_bounce`); what the rush's last smash does. → `combat.md` (The
 buttons)
