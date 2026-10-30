@@ -417,8 +417,10 @@ The knockdown's bounce sets `8108` (`$0D:EC34`): pattern 1, 7 frames,
 **The throw** (`9d`, close + X; its command row `25 10 40 00 2f 9d 30
 00`). Byte 6 of a command row, when not 0, is the move the **opponent**
 is put in as the command starts (`$0D:EF05`) — `30` for the throw:
-held. Bytes 0–2 (`25 10 40`) are conditions not read — the range among
-them `?`. The script begins with command `80`: ten 2-byte pointers, one
+held. Its conditions (`25 10 40`): both on the ground, the opponent not
+down or dizzy, not reeling, and within the thrower's grab range of him
+standing still — 42 px for Goku (`$0D:F96F`), unless he is in a move of
+the list his own character gives (`$0D:F931`; Goku's `a8 9c 9e`). The script begins with command `80`: ten 2-byte pointers, one
 per roster character, then the thrower's own steps (`$01:8813`). Each
 frame the engine sets the opponent's drawing from the entry for the
 opponent's character, read in step with the thrower's script
@@ -491,8 +493,10 @@ deciding what to do (`$0D:F7F6`, `$0D:F95B`, `$0D:F96F`).
 **Special moves come first** (`$0D:F085`): a command table of 0x150 bytes
 per fighter at `$3D:9EEF` (offsets `$0D:F5CF`) — 0x88 on the ground, 0x40
 in the air, the rest for mode `$0552` — in 8-byte rows, scanned last row
-first: bytes 0–2 conditions (masks on fighter fields `0x4C`/`0x4D` `?`;
-Meteor Smash's `0x41` presumably low health), byte 3 the move's **cost**,
+first: bytes 0–2 its **conditions** — masks over flags the game rebuilds
+every frame into fighter fields `0x4C`–`0x4E` (`$0D:F650`), each bit read
+in `src/rom/conditions.ts` and named by `port` (Meteor Smash's `41`: on the
+ground, health 80 or less) — byte 3 the move's **cost**,
 byte 4 a sequence, byte 5 the move. The cost comes off the health as the
 move starts, never below 1 (`$0D:EED7`) — none in training (`$1A02 = 3`)
 or while `$1B15` is set. Goku's: the large ki blast `a9` 5, the

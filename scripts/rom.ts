@@ -124,6 +124,11 @@ if (command === "tiles") {
   const r = portReport(rom, T, parseInt(args[0], 16));
   console.log(`move ${hex(r.move)} — handler ${long(r.handler)}`);
   console.log(`input: ${r.inputs.join(" | ") || "none from a button or a command"}`);
+  for (const c of r.commands) {
+    console.log(`needs: ${c.needs.join("; ") || "nothing"}`);
+    if (c.cost) console.log(`costs: ${c.cost} health`);
+    if (c.opponentMove !== null) console.log(`puts the opponent in move ${hex(c.opponentMove)}`);
+  }
   console.log("frames count from each part's start; sounds are the cartridge's ids, not clips");
   for (const p of r.parts) {
     const blow = p.blow ? `blow at ${p.blow.frame}: ${p.blow.type}, damage ${p.blow.damage}, stun ${p.blow.stun}` : "no blow";

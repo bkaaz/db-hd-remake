@@ -3,6 +3,7 @@ import { NORMALS } from "./buttons";
 import { scriptAt, type FighterTables } from "./cartridge";
 import { readBoxes } from "./collision";
 import { arrow, buttonName, readCommands } from "./commands";
+import { commandContext, describeConditions } from "./conditions";
 import { handlerAt, handlerFacts, type HandlerFact } from "./handler";
 import { groundReaction, hitRecords, objectRecord, recordAt, type HitRecord } from "./hits";
 import { readScript } from "./script";
@@ -17,6 +18,8 @@ export interface PortReport {
   move: number;
   /** How a player asks for it: a button, or a command's directions and button. */
   inputs: string[];
+  /** For each command that picks it: what it needs, what it costs, what it does to the opponent. */
+  commands: { needs: string[]; cost: number; opponentMove: number | null }[];
   handler: number;
   parts: PartReport[];
 }
@@ -110,7 +113,14 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     ...(NORMALS[move] ? [NORMALS[move]] : []),
     ...commands.map((c) => `${c.where}: ${[...c.directions.map(arrow), buttonName(c.button)].join(" ")}`),
   ];
-  return { move, inputs, handler, parts };
+  const context = commandContext(rom, t.character);
+  return {
+    move,
+    inputs,
+    commands: commands.map((c) => ({ needs: describeConditions(c.conditions, context), cost: c.cost, opponentMove: c.opponentMove })),
+    handler,
+    parts,
+  };
 }
 
 function describe(f: HandlerFact): string {

@@ -51,8 +51,7 @@ built from the report alone.
 | a handler's frames, speeds, re-arms, sounds, moves set, by-step jumps | `handler.ts` (`KNOWN`, no arguments) |
 | a command's directions and button; the close lines | `commands.ts`, `buttons.ts` |
 | stages, arenas, the HUD, lightings, sound samples | `stage.ts`, `arena.ts`, `hud.ts`, `brr.ts` |
-| a command's cost and the opponent's move (bytes 3, 6) | **by hand** |
-| a command's conditions (bytes 0–2: range, the opponent's state) | **not read** |
+| a command's conditions, cost and the opponent's move (bytes 0–3, 6) | `conditions.ts`, `commands.ts` |
 | script commands `80` (the opponent's track), `c0`, `b1`, `90`; `b0`'s counter | **by hand / raw** |
 | a handler's calls with their arguments — the throw's launch, holding the opponent, looking for an object, the counter it sets, the shake, charging's shared code, the glow | **by hand** |
 | an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
@@ -65,24 +64,20 @@ The roster is read (`src/rom/roster.ts`, `npm run rom -- roster`; any
 reading command takes `--fighter <name>`). The readers left, in order —
 each a slice, each shown in `port`:
 
-1. **A command whole** — cost, the opponent's move, and the conditions,
-   read from the code that builds the flags they are masked against.
-   *Done when:* `port` says Goku's Kamehameha costs 10 and the throw
-   needs the opponent close and grounded, in words.
-2. **Every script command** — `80`, `c0`, `b1`, `90`, and which spawns a
+1. **Every script command** — `80`, `c0`, `b1`, `90`, and which spawns a
    `b0` counter lets fire. *Done when:* `port 9d` shows both tracks and
    `port aa` the three heads by the counter the handler sets.
-3. **Handler calls with their arguments** — `KNOWN` grows an argument
+2. **Handler calls with their arguments** — `KNOWN` grows an argument
    reader per routine. *Done when:* `port aa` gives the frame jumps when the
    head is gone, `port 1b` the bounce and shake, `port 0c` charging and the
    glow — what `rom.md` says of each, verified.
-4. **Object types** — timing, life, speed, on-hit, copies, read from the
+3. **Object types** — timing, life, speed, on-hit, copies, read from the
    type's code by its usual patterns. *Done when:* the export writes the
    Kamehameha's and the ki blast's spawns without the hand-written
    `objects` in `cartridge.ts`.
-5. **Attributes and knockback** — the export writes `attributes.json`'s
+4. **Attributes and knockback** — the export writes `attributes.json`'s
    numbers and the reactions' knockback. *Done when:* Goku's equal today's.
-6. **The throw from the report alone** — the exam.
+5. **The throw from the report alone** — the exam.
 
 ## Now: Goku from the cartridge
 
@@ -135,8 +130,6 @@ takes an investigation instead of a procedure. In this order:
    for player one, `31` (KO), `0b`, the specials' own (`25`, `29`, `2d`,
    `38`…) — by recording them with `log-dsp.lua`. A jump plays nothing
    found so far.
-5. **A move's conditions** — ki, low health (Meteor Smash), the throw's
-   range: bytes 0–3 of the command table.
 
 ### Next: around the arena
 

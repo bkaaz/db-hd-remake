@@ -8,8 +8,12 @@ import { toFile } from "./cartridge";
 export interface Command {
   move: number;
   where: "ground" | "air" | "mode";
-  /** Bytes 0–3 as written: conditions, not read yet (ki, health, range). */
+  /** Bytes 0–2: what it needs, as masks over the frame's flags (`conditions.ts`). */
   conditions: number[];
+  /** Byte 3: health it costs as it starts, never the last point ($0D:EED7). */
+  cost: number;
+  /** Byte 6: the move the opponent is put in as it starts — the throw's hold ($0D:EF05) — or null. */
+  opponentMove: number | null;
   /** The button and any direction held with it, as the pad's bits (`buttonName`). */
   button: number;
   /** Directions to pass through, oldest first, as the pad's high byte. */
@@ -47,7 +51,9 @@ export function readCommands(rom: Uint8Array, character: number): Command[] {
       commands.push({
         move: rom[row + 5],
         where,
-        conditions: [...rom.subarray(row, row + 4)],
+        conditions: [...rom.subarray(row, row + 3)],
+        cost: rom[row + 3],
+        opponentMove: rom[row + 6] || null,
         button: words[0],
         // newest first in the cartridge; a player reads them the other way
         directions: words.slice(1).map((w) => w >> 8).reverse(),

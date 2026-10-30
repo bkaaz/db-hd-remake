@@ -41,8 +41,9 @@ showed every place a move hides behaviour. For each, find the code, or
 record it (`tools/re/`) when the code will not give it up; write what you
 found in `rom.md` before any state:
 
-1. **Input and conditions** — the button table or the command table; bytes
-   0–3 of a command row (ki, health, range).
+1. **Input and conditions** — `port` prints them: the command's input,
+   what it `needs` (its conditions in words, `src/rom/conditions.ts`), what
+   it `costs` and the move it puts the opponent in (a throw's hold).
 2. **The script** — every command: `a0` sounds, **`a1` a spoken line**,
    `b0` spawns **and their counter** (which of several fire), `b1` drawn
    effects (ball, band), `c0`, offsets, flips.
