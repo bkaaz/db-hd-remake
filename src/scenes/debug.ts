@@ -12,6 +12,7 @@ import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
 import { Camera } from "../camera/camera";
 import { CameraNotes } from "../camera/note";
+import { Shake } from "../camera/shake";
 import { Stage } from "../stage";
 import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
@@ -46,6 +47,7 @@ export class DebugScene implements Scene {
     private readonly stage: Stage,
     private readonly camera: Camera,
     private readonly cameraNotes: CameraNotes,
+    private readonly shake: Shake,
     private readonly fighters: Fighters,
     /** The second body's timeline — see src/debug/dummy.ts. */
     private readonly dummy: Dummy,
@@ -133,6 +135,7 @@ export class DebugScene implements Scene {
       stage,
       camera,
       new CameraNotes(camera),
+      new Shake(),
       fighters,
       dummy,
       req,
@@ -164,9 +167,13 @@ export class DebugScene implements Scene {
     if (keyboard.takeKiRefill()) this.fighters.fillKi();
     this.fighters.exchangeBlows();
     this.stage.flash(this.fighters.takeFlash());
+    const shake = this.fighters.takeShake();
+    if (shake) this.shake.start(shake);
+    this.shake.tick();
     this.stage.tick();
     this.fighters.note();
     this.cameraNotes.note(this.camera);
+    this.cameraNotes.shake(this.shake.offset);
     tickLog();
     this.effects.update(this.fighters.frozen, this.camera.screen);
     return this.nextMode(keyboard);
@@ -191,7 +198,7 @@ export class DebugScene implements Scene {
       recording: keyboard.recording,
     });
     this.panel.draw(keyboard.showDebug ? this.fighters.debug() : null);
-    this.view.scroll(this.camera.x, this.camera.y);
+    this.view.scroll(this.camera.x, this.camera.y, this.shake.offset);
     this.fighters.render(keyboard.showBoxes);
     this.effects.render();
   }

@@ -11,6 +11,7 @@ export class CameraNotes {
   private rise: number;
   private sideways = 0;
   private upward = 0;
+  private shaken = 0;
 
   constructor(camera: Camera) {
     this.x = camera.x;
@@ -36,6 +37,17 @@ export class CameraNotes {
     }
     this.x = camera.x;
     this.rise = camera.rise;
+  }
+
+  /**
+   * The shake, a line for each frame it moves the backdrop — the one thing
+   * here worth a line a frame, since those are its numbers — and one when it
+   * is still again.
+   */
+  shake(offset: number): void {
+    if (offset !== 0) logEvent(`backdrop shakes ${offset > 0 ? "+" : ""}${offset}`);
+    else if (this.shaken !== 0) logEvent("backdrop still");
+    this.shaken = offset;
   }
 }
 

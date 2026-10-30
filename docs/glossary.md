@@ -150,6 +150,9 @@ button ends it at any depth. A tree, derived from `states.json` like any chain.
 **SA-1** — the cartridge's second 65816; it runs the fight and unpacks the
 sprites, so the original's state is found in its I-RAM. → `rom.md`
 
+**Shake** — the backdrop jolting up and down while the fighters stay put:
+`shake` on a state, one of the original's four patterns. → `camera/shake.ts`
+
 **Shove** — a reaction's knockback as the cartridge does it: a speed on
 entering that dies out by 0.25 a frame. Not `push`, which keeps two bodies
 apart. → ADR 0021, `combat/knockback.ts`

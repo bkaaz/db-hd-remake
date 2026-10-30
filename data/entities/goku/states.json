@@ -1150,6 +1150,10 @@
         "min": 2
       },
       "groundFx": "goku_dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
       "sound": "land_2",
       "transitions": [
         {

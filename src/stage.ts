@@ -13,8 +13,9 @@ const SCREEN_FLASH = false;
 
 /** The placeholder's grid, coarse enough to see it scroll. */
 const GRID = 32;
-/** How far above the screen's top the backdrop reaches, for the camera to rise into. */
+/** How far the backdrop reaches past the screen: above for the camera to rise into, below for a shake. */
 const SKY = 32;
+const BELOW = 8;
 
 /**
  * The playfield: how wide the world is, where the floor is, and the backdrop
@@ -28,7 +29,7 @@ export class Stage {
   readonly width = WORLD_WIDTH;
 
   private readonly art = new Graphics();
-  private readonly white = new Graphics().rect(0, -SKY, WORLD_WIDTH, VIEW.height + SKY).fill(0xffffff);
+  private readonly white = new Graphics().rect(0, -SKY, WORLD_WIDTH, VIEW.height + SKY + BELOW).fill(0xffffff);
   private flashLeft = 0;
 
   constructor(backdrop: Container) {
@@ -61,10 +62,10 @@ export class Stage {
 
 /** A grid over the whole world, darker below the floor, and the floor's line. */
 function drawPlaceholder(g: Graphics): void {
-  g.rect(0, -SKY, WORLD_WIDTH, VIEW.height + SKY).fill(0x181824);
-  g.rect(0, FLOOR_Y, WORLD_WIDTH, VIEW.height - FLOOR_Y).fill(0x101018);
+  g.rect(0, -SKY, WORLD_WIDTH, VIEW.height + SKY + BELOW).fill(0x181824);
+  g.rect(0, FLOOR_Y, WORLD_WIDTH, VIEW.height + BELOW - FLOOR_Y).fill(0x101018);
   for (let x = 0; x <= WORLD_WIDTH; x += GRID) {
-    g.moveTo(x, -SKY).lineTo(x, VIEW.height).stroke({ color: x % (GRID * 4) ? 0x24243a : 0x3a3a5a, width: 1 });
+    g.moveTo(x, -SKY).lineTo(x, VIEW.height + BELOW).stroke({ color: x % (GRID * 4) ? 0x24243a : 0x3a3a5a, width: 1 });
   }
   for (let y = FLOOR_Y; y > -SKY; y -= GRID) {
     g.moveTo(0, y).lineTo(WORLD_WIDTH, y).stroke({ color: 0x24243a, width: 1 });

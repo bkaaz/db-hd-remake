@@ -35,9 +35,13 @@ export class GameView {
     app.renderer.on("resize", this.centre);
   }
 
-  /** Where the screen's left edge and top stand in the world, in game px. */
-  scroll(x: number, y: number): void {
-    this.backdrop.position.set(-x, -y);
+  /**
+   * Where the screen's left edge and top stand in the world, in game px, and
+   * how much further the backdrop alone is scrolled — the shake, which
+   * lifts the picture when positive, as the original's scroll register does.
+   */
+  scroll(x: number, y: number, shake = 0): void {
+    this.backdrop.position.set(-x, -(y + shake));
     this.world.position.set(-x, -y);
   }
 

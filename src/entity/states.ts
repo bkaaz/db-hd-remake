@@ -14,6 +14,7 @@
 import type { BallDef } from "../combat/ball";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
+import { SHAKE_PATTERNS, type ShakeDef } from "../camera/shake";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
 import { missWindow, type AnimSteps } from "../combat/swing";
 
@@ -272,6 +273,12 @@ export interface StateDef {
    * body's x on the floor line ($0D:DE6C), whatever the drawing shows.
    */
   groundFx?: string;
+  /**
+   * Shake the backdrop as this state begins, as the original's `$E3` does
+   * (`camera/shake.ts`) — the knockdown's bounce sets `{ "pattern": 1,
+   * "frames": 8 }`.
+   */
+  shake?: ShakeDef;
 
   /**
    * The band of light from the hands to the head of the beam this state threw
@@ -1117,6 +1124,13 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     const steps = anim?.steps?.length;
     if (def.holdStep !== undefined && (!Number.isInteger(def.holdStep) || def.holdStep < 0 || (steps !== undefined && def.holdStep >= steps))) {
       errors.push(`${where}: "holdStep" must be a step of its animation, 0 to ${(steps ?? 1) - 1}`);
+    }
+    if (
+      def.shake !== undefined &&
+      (!Number.isInteger(def.shake.pattern) || def.shake.pattern < 0 || def.shake.pattern >= SHAKE_PATTERNS ||
+        !Number.isInteger(def.shake.frames) || def.shake.frames < 1)
+    ) {
+      errors.push(`${where}: "shake" needs "pattern" 0 to ${SHAKE_PATTERNS - 1} and "frames" 1 or more, e.g. { "pattern": 1, "frames": 8 }`);
     }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);

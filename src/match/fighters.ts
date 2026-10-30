@@ -1,6 +1,7 @@
 import type { Container } from "pixi.js";
 import type { Audio } from "../audio/playback";
 import type { Camera } from "../camera/camera";
+import type { ShakeDef } from "../camera/shake";
 import { separate, type Bounds } from "../combat/push";
 import { Entity, type WorldInput } from "../entity/entity";
 import type { EntityDef } from "../entity/entityDef";
@@ -53,6 +54,8 @@ export interface FightersStatus {
 export class Fighters {
   /** The longest white screen any blow landed this frame asked for. */
   private flash = 0;
+  /** The shake a state entered this frame asked for; the later of two wins, as one `$E3` holds one. */
+  private shake: ShakeDef | null = null;
   readonly player: Entity;
   /** Null in preview mode: one fighter, nobody to hit. */
   readonly opponent: Entity | null;
@@ -118,6 +121,7 @@ export class Fighters {
       this.fire(this.opponent, this.player);
     }
     for (const fighter of this.both()) {
+      this.shake = fighter.takeShake() ?? this.shake;
       const fx = fighter.takeGroundFx();
       if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);
     }
@@ -179,6 +183,13 @@ export class Fighters {
   }
 
   /** The white screen a blow asked for this frame, in frames — taken, so it is asked once. */
+  /** The backdrop's shake asked for this frame, or null — taken, so it starts once. */
+  takeShake(): ShakeDef | null {
+    const shake = this.shake;
+    this.shake = null;
+    return shake;
+  }
+
   takeFlash(): number {
     const frames = this.flash;
     this.flash = 0;

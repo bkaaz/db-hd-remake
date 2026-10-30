@@ -20,6 +20,15 @@ because a number would only need translating back.
 
 ---
 
+## The Kamehameha fires without a sound
+
+`goku`, move `aa` (↓ ↙ → + A, release) · noticed by the owner 2026-10-30 · annoying
+
+The beam leaves the hands in silence: the charge (`25`) and Goku's line are
+heard, the shot is not. Which id the original plays there is not read yet —
+likely in `aa`'s script or the beam's object code (`rom.md`, the sounds
+table).
+
 ## Goku's black-haired drawings are missing part of the hair
 
 `assets/sheets/goku.png`, drawings `26`–`2a` and `2f`–`34` · noticed 2026-10-28 · cosmetic

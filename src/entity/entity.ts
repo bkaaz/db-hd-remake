@@ -1,4 +1,5 @@
 import { Container, Graphics, Sprite } from "pixi.js";
+import type { ShakeDef } from "../camera/shake";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement } from "../combat/hit";
 import { Audio } from "../audio/playback";
@@ -228,6 +229,8 @@ export class Entity {
   private fired: StateDef["fires"] | null = null;
   /** The `groundFx` of the state just entered, until the fighters take it. */
   private groundFx: string | null = null;
+  /** The `shake` of the state just entered, until the fighters take it. */
+  private shake: ShakeDef | null = null;
   /** 0..1, filled by a state that charges and spent by what it throws. */
   private charge = 0;
   /**
@@ -384,6 +387,13 @@ export class Entity {
     const name = this.groundFx;
     this.groundFx = null;
     return name ? { name, x: this.x, y: this.groundY } : null;
+  }
+
+  /** The backdrop's shake a state just entered asked for — taken once. */
+  takeShake(): ShakeDef | null {
+    const shake = this.shake;
+    this.shake = null;
+    return shake;
   }
 
   /**
@@ -675,6 +685,7 @@ export class Entity {
     // about the pair, so the thing between the fighters takes it off the latch.
     this.fired = this.sm.def.fires ?? null;
     this.groundFx = this.sm.def.groundFx ?? null;
+    this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.stateFrames = 0;
     // the shot takes the ball: the original's beam effect replaces it outright
