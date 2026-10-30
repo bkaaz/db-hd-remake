@@ -369,7 +369,21 @@ number at each end ("100" in the map; the fight writes the health). Rows
 picked by scroll?). For game modes `4`, `9`, `14`, `16` (`$DD`) the map's
 priority bits are cleared from row 2 on. Then `$00:C4A5` writes each
 fighter's name — 9 tiles from `$00:C511` by character — into the map's
-copy at `$7F:70CC` / `$70E2`; `$00:C57D` and `$00:C71C` are not read.
+copy at `$7F:70CC` / `$70E2`.
+
+**Health on the HUD** (`$00:C57D`, every frame): field `0x64` steps 1 a
+frame toward the health (`0x60`) — the HUD shows `0x64`, so a blow drains
+it rather than cutting it. Its number is three digits ($00:9A4F), each
+two tiles tall, tile `0x3E` + 2 × digit over the next (`$00:C5FC`), at map
+row 2, column 1 (player two: column 28). Its bar ($00:C62D) is ten tiles
+from column 5 (player two: 17, mirrored): `v` = shown health / 2 — at
+least 1 while any is left, less 1 from 2 up — filling a 5-px cap, eight
+8-px tiles and a 5-px cap, so 74 px is full: a fight starts at 400 and
+the bar only moves below 150 — the number is the health (owner, and
+`shoot-stage.lua` screenshots). Low, the bar changes colour — yellow,
+orange, dark red, red, not in step with the number `?` (a palette cycle
+not read). The round dial at each end fills cyan: the ki `?`. `$00:C71C`
+is not read.
 Behind the band the screen is black in play, though BG3's colour 0 is
 clear there — channel 0's window table (`$00:BBBA`, 30 lines first) is
 the likely cause `?`.
