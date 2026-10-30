@@ -73,8 +73,8 @@ takes an investigation instead of a procedure. In this order:
    built; in the air (`1a`), crouching (`17`/`18`), dizzy (`1d`), and the
    choice between them as `$0D:D29C` makes it. The reactions brought from
    goku_old (`hurt_air`, `launched`, `blown` …) still land straight into
-   `downed`. The knockdown's `$E3` on its bounce (a shake `?`) is not
-   built.
+   `downed`. The knockdown's shake on its bounce waits for the camera
+   (below).
 4. **Which clip is which id** — matched by the code that plays each id
    (`rom.md`, the sounds table); still unmatched: `31` (the voice at KO), a
    jump's take-off (no `$0D:D82E` with a constant plays one), the specials'
@@ -83,6 +83,26 @@ takes an investigation instead of a procedure. In this order:
    cartridge — the sound driver's tables and its BRR samples.
 5. **A move's conditions** — ki, low health (Meteor Smash), the throw's
    range: bytes 0–3 of the command table.
+
+### Next: the camera, then an arena
+
+What the cartridge does is in `rom.md` (The camera). The owner, 2026-10-30:
+both as the original.
+
+1. **The camera and the shake** on a placeholder backdrop that shows it
+   moving: a 512-px world, the camera pushed by a fighter in the screen's
+   outer 64 px, the vertical eighth, and `$E3`'s shake moving the backdrop
+   but not the fighters. The knockdown's bounce sets it. *Done when:* a
+   recording of a knockdown shows the shake's 7 frames and a walk to the
+   edge scrolls.
+2. **Arena 0 from the cartridge** (owner, 2026-10-30) — stage ids 0, 1, 2,
+   its day, evening and night; the fighters' palette changes with them
+   (`rom.md`, The camera). Then turn `SCREEN_FLASH` on, whitening the
+   arena's art.
+3. **A shove into the screen's edge passes to the attacker**, reversed, for
+   the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
+   corner, decides whether it replaces what we have.
+
 ### Next: the Kamehameha, as the original's
 
 The owner's test of the porting (2026-10-29): the **charged** one, `aa`
@@ -473,5 +493,4 @@ queue.
   a different game from one that does not. `MOTIONS` says which exist.
 - **A remapping screen.** All four attack buttons are wired to the ZSNES
   defaults; nothing lets a player change them.
-- **A camera**, and a stage. Round rules and a second player belong to Stage 3
-  in `roadmap.md`.
+- **Round rules and a second player** belong to Stage 3 in `roadmap.md`.

@@ -12,6 +12,8 @@
  *                                    resources loaded where the game loads them
  *                                    (resource@vram), tile base in tiles, palette of
  *                                    the first resource
+ *   npm run rom -- stage [id …]      a stage's two background layers, flat, into
+ *                                    preview/ — every stage when no id is given
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
  *                                    data/entities/goku/frames.json (frame n = drawing n),
  *                                    every move into its animations.json as m00…mff
@@ -31,6 +33,7 @@ import { long } from "../src/rom/disasm.ts";
 import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
+import { drawLayer, loadStage, stack, STAGE_COUNT } from "../src/rom/stage.ts";
 
 if (!existsSync(ROM_PATH)) {
   console.error(`no cartridge at ${ROM_PATH} — it is the owner's own dump (BYOA)`);
@@ -144,6 +147,26 @@ if (command === "tiles") {
     writeFileSync(out, encodePng(scaled(image, 3)));
     console.log(`wrote ${out} (${image.width}×${image.height}, ${pieces.length} pieces)`);
   }
+} else if (command === "stage") {
+  const ids = args.length ? args.map((a) => parseInt(a, 16)) : [...Array(STAGE_COUNT).keys()];
+  mkdirSync("preview", { recursive: true });
+  const rows: Rgba[][] = [];
+  for (const id of ids) {
+    const stage = loadStage(rom, id);
+    const { mode, wide, arena } = stage.record;
+    const [bg1, bg2] = [drawLayer(stage, 0x4000), drawLayer(stage, 0x4800)];
+    const both = stack(bg2, bg1);
+    const out = `preview/rom-stage-${hex(id)}.png`;
+    writeFileSync(out, encodePng(scaled(both, 2)));
+    writeFileSync(`preview/rom-stage-${hex(id)}-bg1.png`, encodePng(scaled(bg1, 2)));
+    writeFileSync(`preview/rom-stage-${hex(id)}-bg2.png`, encodePng(scaled(bg2, 2)));
+    console.log(`wrote ${out} (arena ${arena}, mode ${mode}, ${wide ? 64 : 32} tiles wide)`);
+    (rows[arena] ??= []).push(both);
+  }
+  if (args.length === 0) {
+    writeFileSync("preview/rom-stages.png", encodePng(grid(rows.filter(Boolean))));
+    console.log("wrote preview/rom-stages.png (a row per arena, its lightings across)");
+  }
 } else if (command === "export") {
   const fighter = exportFighter(rom, GOKU);
   for (const note of fighter.notes) console.log(`  ${note}`);
@@ -157,7 +180,7 @@ if (command === "tiles") {
     console.log(`${name}: ${Object.keys(spawn.frames).length} frames`);
   }
 } else {
-  console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | port <id> | export   (ids in hex)");
+  console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | port <id> | stage [id …] | export   (ids in hex)");
   process.exit(1);
 }
 
@@ -201,5 +224,24 @@ function scaled(img: Rgba, s: number): Rgba {
       data.set(opaque ? img.data.subarray(src, src + 4) : [64, 64, 64, 255], (y * width + x) * 4);
     }
   }
+  return { width, height, data };
+}
+
+/** Images in rows, each cell as big as the biggest, over the grey ground. */
+function grid(rows: Rgba[][]): Rgba {
+  const cellW = Math.max(...rows.flat().map((i) => i.width));
+  const cellH = Math.max(...rows.flat().map((i) => i.height));
+  const width = cellW * Math.max(...rows.map((r) => r.length));
+  const height = cellH * rows.length;
+  const data = new Uint8Array(width * height * 4);
+  rows.forEach((row, ry) =>
+    row.forEach((img, rx) => {
+      const flat = scaled(img, 1);
+      for (let y = 0; y < img.height; y++) {
+        const at = ((ry * cellH + y) * width + rx * cellW) * 4;
+        data.set(flat.data.subarray(y * img.width * 4, (y + 1) * img.width * 4), at);
+      }
+    }),
+  );
   return { width, height, data };
 }

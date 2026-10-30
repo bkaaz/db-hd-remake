@@ -259,6 +259,9 @@ npm run rom -- port a5
 npm run rom -- object a 15 32@6c00 80
                   # an object's frames into preview/, from the resources
                   # loaded where the game loads them — to look at
+npm run rom -- stage 0
+                  # a stage's background layers, flat, into preview/; with
+                  # no id every stage and rom-stages.png, all on one sheet
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md

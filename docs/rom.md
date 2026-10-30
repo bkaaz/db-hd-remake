@@ -193,7 +193,7 @@ The `a/0d` beside the defender are its knockdown's, not the beam's.
 the floor: dust, sound `0d`, and a bounce (`$0D:EC12`: vy = −¼ of the
 landing speed, field `0x33`, but never under 2.0 up — so an ordinary
 knockdown, landing at 4.0, leaves at 2.0; it also sets `$E3` to `8108` —
-a shake `?`), drawing `33` for 4 frames then `32`
+the stage's shake, The camera below), drawing `33` for 4 frames then `32`
 in the air. The second landing raises dust again, plays `0c` and stops it;
 it lies in `34` for 32 frames and gets up (move `1f`). Each step is a jump
 of field `0x44` into the one script (`0x20`, `0x40`, `0x64`).
@@ -252,6 +252,83 @@ code that plays them, since a clip's number says nothing:
 
 Not read yet: command `80` (move `9d` uses it), `a1` (`$00:DE9F`, sound
 related), and `c0` (sets fighter field `0x96`).
+
+## The camera
+
+`$0D:C542`, once a frame: the horizontal camera (`$0D:C61B`), then the
+vertical (`$0D:CA55`, or `$0D:CB96` on a stage whose `$0552` is set), then
+the shake. It moves the fighters too — their x and y are integrated here,
+gravity included. Positions are 8.8; a fighter's x is fields `0x1f`–`0x21`.
+
+**The world is 512 px wide**: a fighter's x stays in 16–495 (`$0D:C88F`), the
+camera's x (`$0570`, 8.8, whole px in `$0571`) in 0–255 over a 256-px
+screen, and it starts at 128, y at 0 (`$01:8B84`). Screen x = x − `$0571`
+(field `0x03`), screen y = y − `$0574` (field `0x07`).
+
+**Horizontally the camera does not centre** — it is pushed. A fighter whose
+screen x is in the outer 64 px (< 64 or ≥ 192, `$0D:C87F`) and who moves
+toward that edge scrolls it by his own dx; one in the middle moves it not
+at all. Both at one edge and moving toward it: the faster; at opposite
+edges: the larger dx if they move the same way, else the sum. The camera
+stops (and a fighter walking out is held at the old edge) when one fighter
+would leave by one side while the camera moves that way or the other is at
+the far side. A fighter is then kept within 16 px of the screen's edges,
+snapped back once more than 6 px past (`$0D:C7C4`). A whole pixel scrolled
+calls `$00:BC94` (the stage's columns `?`).
+
+**Before that, each fighter's dx for the frame** (`$0D:C8F0`): vx, or the
+shove (fields `0x88`/`0x8c`) while one runs. Two bodies pressed together
+(field `0x97` bit 7 `?`) and moving into each other both get the average of
+their vx. **A shove into the screen's edge** (x < camera + 17, or ≥ camera
++ 240) passes to the other fighter, reversed and added to his dx, for the
+frames it had left — unless the shoved one has no health, field `0x25` bit
+2, or a move in the bit table `$0D:CA35` (moves `11`–`16`, `29`–`32`, `7e`).
+
+**Vertically it follows the higher fighter, by an eighth** (`$0D:CA55`):
+target = (200 − (min y, at least 0, rounded down to 8)) / 8, so 0–25 px up;
+`$0585` steps toward it 1 px a frame and the camera's y is `−$0585`. It does
+not move while either fighter has field `0x27` bit 0 (cleared on landing;
+set by a few special handlers, `$0F:A72B`, `$0F:EC84` … — which moves `?`).
+`$0552` comes from `$00:BA4E` by stage id (`$054E`): set for stages 3–8 and
+16, which scroll vertically by the horizontal rule instead (`$0D:CB96` `?`).
+
+**A stage id is an arena and its lighting.** `$00:BBE0`, 9 bytes per id:
+the arena's tiles (a resource), a palette (the lighting), its packed maps,
+the BG mode and map width, and the arena's number. The lighting also picks
+the fighters' palette (`$01:82B5`: `0x40` + 16 × character +
+`$01:8304`[id]). The loader (`$00:B683`) and the S-CPU's own packing:
+`src/rom/stage.ts`, `src/rom/lzss.ts`; `npm run rom -- stage` draws them
+flat. What each shows is read off that drawing:
+
+| arena | ids: day, evening, night | mode | scroll (`$00:BFB3`) | shows |
+|---|---|---|---|---|
+| 0 | 0, 1, 2 | 1 | `D7` | a gate and a tiled court — the tournament `?` |
+| 1 | 3, 4, 5 | 2, vertical | `E9` | the sky over the clouds, a lookout far off |
+| 2 | 6, 7, 8 | 7, vertical | `FF` | a planet's map from above, clouds — not drawn whole |
+| 3 | 9, 10, 11 | 1 | `D7` | a domed palace — Kami's Lookout `?` |
+| 4 | 12 (lighting `6`) | 1 | `D7` | burning ruins |
+| 5 | 13, 14, 15 | 1 | `D7` | rocky plains |
+| 6 | 16 (lighting `4`) | 2, vertical | `E9` | a crater with violet lightning |
+| 7 | 17 (lighting `4`) | 1 | `D7` | a dark sky, rocks and water |
+
+**The shake is `$E3`** (`$0D:C558`): bit 15 on, bits 8–11 a pattern, the low
+byte frames. Each frame it counts down and adds `$0D:C593`[pattern][frames
+left] to the background's scroll (`$7C`, the Mode 7 centre `$0562`, `$80`)
+— but not to `$0574`, so **the stage shakes and the fighters do not**. The
+offset is from that frame's camera, not cumulative. Entries 1–15 of each
+pattern (entry 0 is never read), played from frames − 1 down to 1 — by the
+low 4 bits only, so a longer shake goes round again:
+
+| pattern | at | 1 … 15, px |
+|---|---|---|
+| 0 | `$0D:C59B` | −1 +1 −2 +2 −1 +1 −2 +2 −1 +1 −2 +2 −1 +1 −1 |
+| 1 | `$0D:C5BB` | −2 +2 −3 +3 −2 +2 −4 +4 −2 +2 −3 +3 −2 +2 −2 |
+| 2 | `$0D:C5DB` | −2 +2 −4 +4 −2 +2 −4 +4 −2 +2 −4 +4 −2 +2 −2 |
+| 3 | `$0D:C5FB` | −2 +4 −6 +4 −2 +4 0 +2 −4 +6 −4 +2 −4 +6 −4 |
+
+The knockdown's bounce sets `8108` (`$0D:EC34`): pattern 1, 7 frames,
+−4 +2 −2 +3 −3 +2 −2. Others: `8208` (`$0F:A51A`), `8220` (`$10:CBFB`),
+`8008` (`$20:8D26` …) — whose `?`.
 
 ## The buttons
 
