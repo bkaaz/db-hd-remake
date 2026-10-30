@@ -414,6 +414,30 @@ The knockdown's bounce sets `8108` (`$0D:EC34`): pattern 1, 7 frames,
 −4 +2 −2 +3 −3 +2 −2. Others: `8208` (`$0F:A51A`), `8220` (`$10:CBFB`),
 `8008` (`$20:8D26` …) — whose `?`.
 
+**The throw** (`9d`, close + X; its command row `25 10 40 00 2f 9d 30
+00`). Byte 6 of a command row, when not 0, is the move the **opponent**
+is put in as the command starts (`$0D:EF05`) — `30` for the throw:
+held. Bytes 0–2 (`25 10 40`) are conditions not read — the range among
+them `?`. The script begins with command `80`: ten 2-byte pointers, one
+per roster character, then the thrower's own steps (`$01:8813`). Each
+frame the engine sets the opponent's drawing from the entry for the
+opponent's character, read in step with the thrower's script
+(`$01:86D3`) — a parallel track whose show steps name the opponent's own
+drawings; move `30` plays no script of its own (`$01:85FD`). Goku throwing
+Goku: thrower `69` 10 frames, `6a` 10, sound `07`, `6b` 32; thrown `17`,
+`18`, `20`. Each frame `$0D:DE9A` puts an opponent in move `30` at the
+thrower's whole-pixel x and y plus `$20:82A5`[opponent's character][the
+thrower's step], x mirrored when facing left — for Goku (+24, 0),
+(+22, 0), (−32, −32). The handler (`$20:81E3`): every frame both
+fighters' burning ends; frame 1 the opponent gets its own palette back and
+turns to face the thrower; frame 20 the opponent says `30` and is
+thrown (`$0F:B321`): 40 damage (less defence, `$0D:D12E`), 3 off the
+stun gauge (dizzy, `1d`, if it runs out; KO, `1c`, at 0 health), else
+move `1b` — the knockdown — at vx 2.5 away and vy −8.0; frame 21 it faces
+the thrower's way. Frame 0 — the script has run out — ends the move
+(`$0F:9FA3`, as `handler.ts` already knows) and sets field `0x27` bit 1
+`?`.
+
 ## The HUD
 
 BG3, 2 bits a pixel, loaded by `$00:C430`: tiles from resource `0x0F` at
@@ -501,7 +525,7 @@ Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 | `aa` | ↓ ↙ → A | Super Kamehameha |
 | `ad` | ← ↙ ↓ ↘ → ↗ Y | Meteor Smash |
 | `a8` | R + B | side slash |
-| `9d` | close + X | the throw `?` |
+| `9d` | close + X | the throw (The throw, above) |
 | `a0`, `a1`, `9f` | → ← → / ↓ ↙ ← / ↓ ↘ → + X | not in the move lists `?` |
 | `ac` | in the air | Slash Down Kick |
 

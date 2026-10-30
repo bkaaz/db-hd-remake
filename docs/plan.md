@@ -30,6 +30,62 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 ---
 
+## Now: reading the cartridge by script
+
+The owner, 2026-10-30: more than any one move, the tools — every structure
+or routine read by hand becomes a reader in `src/rom/` with ROM-gated
+tests, shown by `npm run rom -- port`, so the next move and the next
+character are a script run, not disassembly read again. A question the
+code can answer is never asked. The moves already verified against the
+emulator (the Kamehameha, the knockdown, charging, Quadruple Kick, the ki
+blast) are each reader's test; the throw (`9d`, `rom.md`) is the exam:
+built from the report alone.
+
+**What `rom.md` holds, and who reads it** (inventory, 2026-10-30):
+
+| fact | read by |
+|---|---|
+| scripts' steps, sounds, lines, spawns, offsets, flips | `script.ts`, the export |
+| boxes, drawings, tiles, palettes, resources | `collision.ts`, `frame.ts`, `resource.ts` |
+| a blow's record, an object's record | `hits.ts` |
+| a handler's frames, speeds, re-arms, sounds, moves set, by-step jumps | `handler.ts` (`KNOWN`, no arguments) |
+| a command's directions and button; the close lines | `commands.ts`, `buttons.ts` |
+| stages, arenas, the HUD, lightings, sound samples | `stage.ts`, `arena.ts`, `hud.ts`, `brr.ts` |
+| a command's cost and the opponent's move (bytes 3, 6) | **by hand** |
+| a command's conditions (bytes 0–2: range, the opponent's state) | **not read** |
+| script commands `80` (the opponent's track), `c0`, `b1`, `90`; `b0`'s counter | **by hand / raw** |
+| a handler's calls with their arguments — the throw's launch, holding the opponent, looking for an object, the counter it sets, the shake, charging's shared code, the glow | **by hand** |
+| an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
+| a fighter's attributes (defence, walk, jump, gravity) | **by hand** (`attributes.json`) |
+| knockback by reaction (`$0D:D68A`), which reaction (`$0D:D29C`) | **partly** (`hits.ts` names the reaction) |
+| the roster: which entry is which fighter, his tables | **by hand**, Goku only |
+| the sound driver, HDMA, the camera, the shake, burning's palettes | recordings or one-off — stays prose |
+
+The readers, in order — each a slice, each shown in `port`:
+
+1. **The roster** — every per-fighter pointer table read by character
+   (`FighterTables` built, not written), named from the HUD's name tiles
+   (`$00:C511`). *Done when:* the tables built for Goku equal today's
+   `GOKU`, and `port --fighter <name>` runs for every entry.
+2. **A command whole** — cost, the opponent's move, and the conditions,
+   read from the code that builds the flags they are masked against.
+   *Done when:* `port` says Goku's Kamehameha costs 10 and the throw
+   needs the opponent close and grounded, in words.
+3. **Every script command** — `80`, `c0`, `b1`, `90`, and which spawns a
+   `b0` counter lets fire. *Done when:* `port 9d` shows both tracks and
+   `port aa` the three heads by the counter the handler sets.
+4. **Handler calls with their arguments** — `KNOWN` grows an argument
+   reader per routine. *Done when:* `port aa` gives the frame jumps when the
+   head is gone, `port 1b` the bounce and shake, `port 0c` charging and the
+   glow — what `rom.md` says of each, verified.
+5. **Object types** — timing, life, speed, on-hit, copies, read from the
+   type's code by its usual patterns. *Done when:* the export writes the
+   Kamehameha's and the ki blast's spawns without the hand-written
+   `objects` in `cartridge.ts`.
+6. **Attributes and knockback** — the export writes `attributes.json`'s
+   numbers and the reactions' knockback. *Done when:* Goku's equal today's.
+7. **The throw from the report alone** — the exam.
+
 ## Now: Goku from the cartridge
 
 Everything below waits while this runs — the owner paused combat work on
