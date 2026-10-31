@@ -80,6 +80,14 @@ a button is down (the dash). Only a hold step in the script — crouching's `f0`
 — says it in the data. What the code does, per move, is listed beside
 `moveAnim` until the handlers are read.
 
+**A handler can start a move part-way, inside a step.** The crouching
+attacks `94` / `95` (handler `$0F:AA60`) end through `$0F:A10D`: it sets the
+crouch, `03`, and writes its frame counter `$44` from a byte per character at
+`$0F:A124` — Goku 6, so two of the way down's eight frames show before the
+held crouch (`src/rom/crouch.ts`). Vegeta's knockdown handler jumps to frame
+100, inside his lying step. The export cuts a part where either begins
+(`moveAnims`' `frameCuts`).
+
 **How a step is drawn is in the script too**: `d0` moves the drawing away from
 the fighter's position and `e0` flips it whole, both lasting until set again —
 the sprite routine at `$00:8180` adds the one and XORs the other with the

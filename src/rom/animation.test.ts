@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { animName, blowStarts, jumpCuts, moveAnim, moveAnims, toAnim } from "./animation";
+import { animName, blowStarts, jumpCuts, jumpFrameCuts, moveAnim, moveAnims, toAnim } from "./animation";
 import type { ScriptOp } from "./script";
 
 const show = (frames: number, drawing: number | null): ScriptOp => ({ op: "show", frames, drawing });
@@ -123,6 +123,18 @@ describe("moveAnims", () => {
     expect(Object.keys(anims)).toEqual(["m00"]);
     expect(anims.m00.loop).toBe(true);
   });
+  it("cuts inside a step where another move starts this one part-way, the pose kept", () => {
+    // the crouch: 8 frames on the way down, then held; a crouching attack returns at 6
+    const anims = moveAnims(0x03, [show(8, 5), { op: "hold", drawing: 6 }], undefined, [], [6]);
+    expect(anims.m03.steps).toEqual([{ frame: "5", dur: 6 }]);
+    expect(anims.m03_2.steps.map((s) => [s.frame, s.dur])).toEqual([["5", 2], ["6", 1]]);
+  });
+
+  it("cuts at a step start when the frame is one", () => {
+    const anims = moveAnims(0x03, [show(8, 5), show(4, 6)], undefined, [], [8]);
+    expect(anims.m03.steps).toEqual([{ frame: "5", dur: 8 }]);
+    expect(anims.m03_2.steps).toEqual([{ frame: "6", dur: 4 }]);
+  });
 });
 
 describe("jumpCuts", () => {
@@ -146,6 +158,19 @@ describe("jumpCuts", () => {
     const anims = moveAnims(0x1b, knockdown, undefined, [1, 2, 4]);
     expect(Object.keys(anims)).toEqual(["m1b", "m1b_2", "m1b_3", "m1b_4"]);
     expect(anims.m1b_3.steps.map((s) => [s.frame, s.dur])).toEqual([["33", 4], ["32", 32]]);
+  });
+});
+
+describe("jumpFrameCuts", () => {
+  // Vegeta's: the lying step runs 70–130, and the handler jumps to 100
+  const knockdown = [show(32, 59), show(32, 32), show(6, 33), show(60, 34)];
+
+  it("gives the frame of a jump into the middle of another step", () => {
+    expect(jumpFrameCuts(knockdown, [{ step: 0, to: 32 }, { step: 2, to: 100 }])).toEqual([100]);
+  });
+
+  it("leaves a step start to jumpCuts, and a pose held inside its own step alone", () => {
+    expect(jumpFrameCuts(knockdown, [{ step: 1, to: 64 }, { step: 3, to: 90 }, { to: 100 }])).toEqual([]);
   });
 });
 

@@ -20,20 +20,6 @@ because a number would only need translating back.
 
 ---
 
-## Vegeta's knockdown has no lying part
-
-`npm run rom -- export --fighter vegeta`, move `1b` · noticed 2026-10-31 · annoying
-
-The knockdown's handler is shared (`$0F:A217`) and jumps to frames 32, 48,
-64 and 100 of the move. Goku's script starts a step on each; Vegeta's does
-not — frame 100 falls 30 frames into a 60-frame lying step (70–130). The
-export cuts parts only where a step starts (`jumpCuts`), so Vegeta gets no
-`m1b_4`, his `states.json` has no `down_lie`, and the bounce goes straight
-to getting up on landing: the lying drawing never shows. The fix is to cut
-a step in two where the handler jumps into its middle.
-
-To see it: `npm run rom -- --fighter vegeta move 1b`.
-
 ## A charge does not take over a punch begun a frame before
 
 `goku`, A then S a frame apart · noticed 2026-10-30 · annoying

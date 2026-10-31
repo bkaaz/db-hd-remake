@@ -101,40 +101,54 @@ export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: numb
  *
  * Cut too where each blow after the first begins (`blowStarts`), so every
  * blow of a multi-hit move is a state of its own, with its own damage and
- * type (ADR 0023) — and at the steps in `cuts` (`jumpCuts`).
+ * type (ADR 0023) — and at the steps in `cuts` (`jumpCuts`), and at the
+ * move's frames in `frameCuts`: where another move's handler starts this one
+ * part-way, inside a step as often as not (`crouch.ts`). A step a cut falls
+ * inside is shown in pieces, its count of steps unchanged.
  */
 export function moveAnims(
   move: number,
   ops: ScriptOp[],
   boxesOf?: (drawing: number) => Box[],
   cuts: number[] = [],
+  frameCuts: number[] = [],
 ): Record<string, Anim> {
   const cutAt = [...(boxesOf ? blowStarts(ops, boxesOf).slice(1) : []), ...cuts];
   const parts: ScriptOp[][] = [[]];
   // a step shown since the last cut: several spawns at once are one cut
   let shown = false;
   let step = 0;
+  let frame = 0;
+  const cut = () => {
+    shown = false;
+    // sounds after the last step play as the next part begins, so they go
+    // with it — the Kamehameha's shot has an effect command between its
+    // sound and the cut, and was silent while only the sounds right before
+    // the cut were moved
+    const last = parts[parts.length - 1];
+    let lastStep = last.length - 1;
+    while (lastStep >= 0 && last[lastStep].op !== "show" && last[lastStep].op !== "hold") lastStep--;
+    const tail = last.splice(lastStep + 1);
+    const isSound = (o: ScriptOp) => o.op === "sound" || o.op === "voice";
+    last.push(...tail.filter((o) => !isSound(o)));
+    parts.push([...carried(parts.flat()), ...tail.filter(isSound)]);
+  };
   for (const op of ops) {
-    const isStep = op.op === "show" || op.op === "hold";
-    if ((op.op === "spawn" && shown) || (isStep && cutAt.includes(step))) {
-      shown = false;
-      // sounds after the last step play as the next part begins, so they go
-      // with it — the Kamehameha's shot has an effect command between its
-      // sound and the cut, and was silent while only the sounds right before
-      // the cut were moved
-      const last = parts[parts.length - 1];
-      let lastStep = last.length - 1;
-      while (lastStep >= 0 && last[lastStep].op !== "show" && last[lastStep].op !== "hold") lastStep--;
-      const tail = last.splice(lastStep + 1);
-      const isSound = (o: ScriptOp) => o.op === "sound" || o.op === "voice";
-      last.push(...tail.filter((o) => !isSound(o)));
-      parts.push([...carried(parts.flat()), ...tail.filter(isSound)]);
+    if (op.op !== "show" && op.op !== "hold") {
+      if (op.op === "spawn" && shown) cut();
+      parts[parts.length - 1].push(op);
+      continue;
     }
-    if (isStep) {
-      shown = true;
-      step++;
+    if (cutAt.includes(step) || frameCuts.includes(frame)) cut();
+    const [first, ...rest] = op.op === "show" ? piecesOf(op, frame, frameCuts) : [op];
+    parts[parts.length - 1].push(first);
+    for (const piece of rest) {
+      cut();
+      parts[parts.length - 1].push(piece);
     }
-    parts[parts.length - 1].push(op);
+    shown = true;
+    step++;
+    frame += op.op === "hold" ? 1 : op.frames;
   }
   if (parts.length === 1) {
     const one = moveAnim(move, ops, boxesOf);
@@ -197,6 +211,29 @@ export function jumpCuts(ops: ScriptOp[], jumps: { step?: number; to?: number }[
     if (target > 0 && target !== step) cuts.add(target);
   }
   return [...cuts].sort((a, b) => a - b);
+}
+
+/**
+ * The frames a handler jumps to from another step that fall inside a step
+ * rather than at its start — Vegeta's knockdown lies from frame 100, thirty
+ * frames into his lying step (`moveAnims`' `frameCuts`).
+ */
+export function jumpFrameCuts(ops: ScriptOp[], jumps: { step?: number; to?: number }[]): number[] {
+  const starts = stepStarts(ops);
+  const cuts = new Set<number>();
+  for (const { step, to } of jumps) {
+    if (step === undefined || to === undefined || starts.includes(to)) continue;
+    const inside = starts.filter((start) => start < to).length - 1;
+    if (inside >= 0 && inside !== step) cuts.add(to);
+  }
+  return [...cuts].sort((a, b) => a - b);
+}
+
+/** A shown step cut where a frame cut falls inside it: one piece per stretch. */
+function piecesOf(op: Extract<ScriptOp, { op: "show" }>, start: number, frameCuts: number[]): ScriptOp[] {
+  const inside = frameCuts.filter((f) => f > start && f < start + op.frames).sort((a, b) => a - b);
+  const bounds = [start, ...inside, start + op.frames];
+  return bounds.slice(1).map((end, i) => ({ ...op, frames: end - bounds[i] }));
 }
 
 /** What a later part inherits: the last drawing (as a zero-frame step), flip and offset. */

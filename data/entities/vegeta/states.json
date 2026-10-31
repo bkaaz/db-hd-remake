@@ -13,7 +13,7 @@
       "transitions": [
         {
           "when": "held:down",
-          "to": "crouch"
+          "to": "crouch_down"
         },
         {
           "when": "held:guard",
@@ -108,7 +108,7 @@
       "transitions": [
         {
           "when": "held:down",
-          "to": "crouch"
+          "to": "crouch_down"
         },
         {
           "when": "held:guard",
@@ -199,7 +199,7 @@
       "transitions": [
         {
           "when": "held:down",
-          "to": "crouch"
+          "to": "crouch_down"
         },
         {
           "when": "held:guard",
@@ -280,7 +280,7 @@
         }
       ]
     },
-    "crouch": {
+    "crouch_down": {
       "anim": "m03",
       "vel": [
         0,
@@ -299,6 +299,50 @@
           "to": "attack_x"
         },
         {
+          "when": "pressed:attack",
+          "to": "crouch_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "crouch_b"
+        },
+        {
+          "when": "!held:down",
+          "to": "stand_up"
+        },
+        {
+          "when": "animEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "crouch": {
+      "anim": "m03_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "transitions": [
+        {
+          "when": "held:guard",
+          "to": "guard_low"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "crouch_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "crouch_b"
+        },
+        {
           "when": "!held:down",
           "to": "stand_up"
         }
@@ -314,7 +358,7 @@
       "transitions": [
         {
           "when": "held:down",
-          "to": "crouch"
+          "to": "crouch_down"
         },
         {
           "when": "animEnd",
@@ -657,6 +701,44 @@
         {
           "when": "animEnd",
           "to": "idle"
+        }
+      ]
+    },
+    "crouch_y": {
+      "anim": "m94",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "crouching": true,
+      "type": "heavy",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "crouch_b": {
+      "anim": "m95",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "crouching": true,
+      "type": "heavy",
+      "damage": 21,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "crouch"
         }
       ]
     },
@@ -1075,6 +1157,24 @@
       "transitions": [
         {
           "when": "landed",
+          "to": "down_lie"
+        }
+      ]
+    },
+    "down_lie": {
+      "anim": "m1b_4",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_1",
+      "transitions": [
+        {
+          "when": "animEnd",
           "to": "get_up"
         }
       ]

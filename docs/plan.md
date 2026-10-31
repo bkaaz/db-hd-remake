@@ -204,17 +204,14 @@ still differs from the original:
 
 ### Then: the rest of Goku
 
-1. **The rest of the buttons** — crouching Y / B (`m94`, `m95`) are not
-   states of `goku` yet (`src/rom/buttons.ts`); their hit data is in the
-   table already.
-2. **The rest of the specials** — every move of Goku's command table
+1. **The rest of the specials** — every move of Goku's command table
    (`rom.md`, The buttons); Quadruple Kick is built.
-3. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
+2. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
    off today by the held-step rule in `src/rom/animation.ts`.
-4. **The rest of the objects** — `goku_hair` is exported but nothing plays
+3. **The rest of the objects** — `goku_hair` is exported but nothing plays
    it: there is no pre-fight screen, and `fires` only takes a projectile.
    Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`).
-5. **Player two's colours in a mirror match** — the same fighter on both
+4. **Player two's colours in a mirror match** — the same fighter on both
    sides takes the next palette (`rom.md`, A stage id); today both Gokus
    look alike.
 
@@ -501,6 +498,12 @@ it does not.
 Real work, carried over from the checklists this file replaced. It gets slotted
 into the sequence above when its turn comes, rather than living in a second
 queue.
+
+- **Once the original is ported: what we change of it** (owner, 2026-10-31).
+  The first: a crouching attack flashes two frames of the way down before the
+  held crouch — the original's own (`rom.md`, a handler starting a move
+  part-way), seen in the emulator too. Ours could return straight to the held
+  crouch.
 
 - **What follows the hit types** (`combat.md`, *Open*): a `stun` type, a hit
   type for ki blasts — the projectile and how it is taken — and whatever
