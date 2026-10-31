@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readLives, readSnapshots } from "./recording";
+import { fullestLife, readLives, readSnapshots, type Life } from "./recording";
 
 // a shot (type a, animation 3) at x 100, y 200, vx 3.0 showing frames 0 then 1,
 // which turns into an explosion (a/01) as a hitstop begins, frozen through it
@@ -44,5 +44,21 @@ describe("readLives", () => {
   it("does not count the frames it stood still through the hitstop", () => {
     expect(burst).toMatchObject({ anim: 0x01, from: 14, to: 19 });
     expect(burst.steps).toEqual([{ frame: 0, dur: 1 }, { frame: 1, dur: 2 }]);
+  });
+});
+
+describe("fullestLife", () => {
+  const life = (from: number, to: number, hit: boolean): Life =>
+    ({ slot: 0, type: 1, anim: 4, from, to, steps: [], x: 0, y: 0, vx: 0, vy: 0, hit });
+
+  it("takes the longest life that hit nothing, over a longer one cut by a hit", () => {
+    const whole = life(100, 136, false);
+    expect(fullestLife([life(0, 10, false), life(50, 90, true), whole], 1, 4)).toBe(whole);
+  });
+
+  it("takes the longest of all when every one hit, and nothing for an object never recorded", () => {
+    const longest = life(50, 90, true);
+    expect(fullestLife([life(0, 10, true), longest], 1, 4)).toBe(longest);
+    expect(fullestLife([longest], 1, 3)).toBeUndefined();
   });
 });

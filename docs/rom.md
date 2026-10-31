@@ -112,7 +112,11 @@ Matched tile by tile against a VRAM snapshot (`tools/re/dump-vram.lua`,
 at word Y, Y `$6C00` for player one and `$7C00` for player two, through
 `$00:B265`), drawn in that resource's own palette (its record) — Goku's
 Kamehameha `0x32`, Vegeta's `ac` `0x4d` and his `ad` `a9` `ab` `b1` `0x4f`
-(`npm run rom -- port`).
+(`npm run rom -- port`). `$01:84B3` loads tiles only; the record's palette
+is the first of a run of 32-byte palettes OBJ palette 0 steps through while
+the object is up — `0x27BD24`, `…44`, `…64` … `…A4` in Vegeta's recording,
+`0x2ADE1C` … `…7C` for `0x32` — what steps it, how fast and how far is not
+read `?`.
 
 **An object's behaviour is its type's code** (read: `npm run rom -- code a 3`): `$0F:B44B` runs the ten slots
 and jumps through a word table by type at `$0F:B467` (type `0` `$0F:B789`,
@@ -127,7 +131,15 @@ frames a step, m steps, then gone (`JSL $0F:B4ED`). The beam (type `0`
 animation `2`, `$0F:B7BE`) never changes its frame: it lives 80 frames,
 stopped during hitstop, and every 4 frames loads resource `0x130` + (frame
 counter `$74` / 4 mod 4) over its tiles (`JSL $01:84EF`) — it shimmers by
-swapping graphics.
+swapping graphics. Type `1` jumps by animation through `$0F:B97E`; Vegeta's
+`ad` Big Bang (`1`/`4`, `$0F:BAB6`) runs `+0B` 0–9 and shows the frame
+`$0F:BAE5` names for it (0 for five, 1 for five), with no end of its own.
+
+**An object off the screen is gone** (`$0F:B47D`, after every slot): more
+than `0xA0` px from the screen's middle — the camera's x + `0x80`
+(`$0571`) or y + `0x70` (`$0574`) — on either axis, it is killed
+(`$0F:B4ED`). Type `9` animation `8` and type `8` animations `14` and `15`
+are spared.
 
 **`b0`'s second byte is a counter** (field `0x6e`): a spawn fires only when
 they match, then counts it up. A handler picks among a script's spawns by
@@ -177,6 +189,8 @@ the ki blast `a/03` → `a/01`; the Kamehameha's heads `a/13` / `14` / `15` →
 their step 1, 4–11 px away at random, while their `+0C` is under 2 / 1 —
 three explosions and two (`$0F:E1A9`); all step through `$0F:E2A9`'s
 6 8 3 4 3 3 3 frames and are gone. Recorded for all three (2026-10-30).
+Type `1` by animation at `$2A:8EC7`: `1/04`–`06` → `a/02` (`$2A:8F0B`),
+`1/0b` → `a/02` and burning (`$2A:8F2D`).
 
 **Burning** (`$0D:EC98`): every 2 frames a counter shared by both players
 steps through the 15 fire palettes (`0x180` + 0–14, `JSL $01:8316`) — so
@@ -517,7 +531,10 @@ byte 4 a sequence, byte 5 the move. The cost comes off the health as the
 move starts, never below 1 (`$0D:EED7`) — none in training (`$1A02 = 3`)
 or while `$1B15` is set. Goku's: the large ki blast `a9` 5, the
 Kamehameha `aa` / `ab` 10, the same in the air (`d2` 5, `d3` / `d4` 10),
-everything else 0. A sequence (`$0D:F2E6` + 2 ×
+everything else 0. The move behind health 80 or less is each fighter's
+ultimate, open while his bar is red (owner). Vegeta's, named by the owner:
+`ac` Final Flash, a charged beam as the Kamehameha; `ad` the Big Bang,
+shot upward. A sequence (`$0D:F2E6` + 2 ×
 number, words in bank `$0D`) is a button word, then directions **newest
 first**, ended by `0000`, as the pad's bits facing right: B `8000`, Y `4000`,
 A `0080`, X `0040`, R `0010`; → `0100`, ← `0200`, ↓ `0400`, ↑ `0800`. Goku's

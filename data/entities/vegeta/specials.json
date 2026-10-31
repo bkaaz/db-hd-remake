@@ -1,0 +1,32 @@
+{
+  "_comment": "Vegeta's own specials, by hand; npm run rom -- states --fighter vegeta merges them into states.json (src/rom/specials.ts). big_bang is move ad, the Big Bang shot upward (owner, 2026-10-31) (npm run rom -- port ad --fighter vegeta): on the ground, 10 health, its parts mad / mad_2 / mad_3. The flash at the hands (vegeta_flash, mad_2's first frame) is not put out yet.",
+  "entries": [
+    {
+      "from": ["idle", "walk_fwd", "walk_back"],
+      "when": ["motion:hcf", "pressed:blast"],
+      "to": "big_bang"
+    }
+  ],
+  "states": {
+    "big_bang": {
+      "anim": "mad",
+      "vel": [0, 0],
+      "turn": false,
+      "healthCost": 10,
+      "transitions": [{ "when": "animEnd", "to": "big_bang_2" }]
+    },
+    "big_bang_2": {
+      "anim": "mad_2",
+      "vel": [0, 0],
+      "turn": false,
+      "transitions": [{ "when": "animEnd", "to": "big_bang_3" }]
+    },
+    "big_bang_3": {
+      "anim": "mad_3",
+      "vel": [0, 0],
+      "turn": false,
+      "fires": { "spawn": "vegeta_big_bang", "at": [40, -104], "state": "fly" },
+      "transitions": [{ "when": "animEnd", "to": "idle" }]
+    }
+  }
+}

@@ -101,6 +101,15 @@ export function readLives(text: string): Life[] {
   return lives.sort((a, b) => a.from - b.from || a.slot - b.slot);
 }
 
+/**
+ * The life that shows an object whole: the longest one that hit nothing,
+ * since a hit cuts a life short; the longest of all if every one hit.
+ */
+export function fullestLife(lives: Life[], type: number, anim: number): Life | undefined {
+  const all = lives.filter((l) => l.type === type && l.anim === anim).sort((a, b) => b.to - b.from - (a.to - a.from));
+  return all.find((l) => !l.hit) ?? all[0];
+}
+
 function start(slot: number, frame: number, b: number[]): Life {
   const word = (i: number) => b[i] | (b[i + 1] << 8);
   const signed = (n: number) => ((n << 16) >> 16) / 256;

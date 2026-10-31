@@ -4,6 +4,7 @@
     { "p1": { "at": 0.8 }, "p2": { "at": 0.97 }, "boxes": true },
     { "p2": { "does": ["attack 6", "attack 10", "smash", 120] } },
     { "p2": { "does": ["attack 24"] } },
-    { "p2": { "does": ["down 60"] } }
+    { "p2": { "does": ["down 60"] } },
+    { "p2": { "does": ["up", 60] } }
   ]
 }

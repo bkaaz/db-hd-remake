@@ -28,7 +28,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { GOKU, ROM_PATH, scriptAt, tileResourceOf } from "../src/rom/cartridge.ts";
-import { fighterNamed, fighterTables, ROSTER } from "../src/rom/roster.ts";
+import { fighterNamed, fighterTables, ROSTER, type FighterName } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
 import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/rom/export.ts";
@@ -38,9 +38,11 @@ import { blowOfAnim } from "../src/rom/animBlow.ts";
 import { arrow, buttonName, readCommands } from "../src/rom/commands.ts";
 import { NORMALS } from "../src/rom/buttons.ts";
 import { statesFrom } from "../src/rom/template.ts";
+import { withSpecials, type SpecialsFile } from "../src/rom/specials.ts";
 import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
-import { readLives } from "../src/rom/recording.ts";
+import { fullestLife, readLives } from "../src/rom/recording.ts";
+import { OWN_OBJECTS, ownObjects } from "../src/rom/ownObjects.ts";
 import { moveOf, todo } from "../src/rom/todo.ts";
 import { handlerAt } from "../src/rom/handler.ts";
 import { commandContext } from "../src/rom/conditions.ts";
@@ -213,8 +215,8 @@ if (command === "tiles") {
   const lives = readLives(readFileSync(args[0] ?? "logs/objects-rec.txt", "utf8"));
   const kinds = [...new Set(lives.map((l) => `${hex(l.type)}/${hex(l.anim)}`))];
   for (const kind of kinds.sort()) {
-    const all = lives.filter((l) => `${hex(l.type)}/${hex(l.anim)}` === kind).sort((a, b) => b.to - b.from - (a.to - a.from));
-    const full = all.find((l) => !l.hit) ?? all[0];
+    const all = lives.filter((l) => `${hex(l.type)}/${hex(l.anim)}` === kind);
+    const full = fullestLife(all, all[0].type, all[0].anim)!;
     const becomes = [...new Set(all.flatMap((l) => (l.then ? [`${hex(l.then.type)}/${hex(l.then.anim)}${l.hit ? " on a hit" : ""}`] : [])))];
     console.log(`${kind}  ${all.length}× — longest ${full.to - full.from} frames, vx ${full.vx}, vy ${full.vy}${becomes.length ? `, becomes ${becomes.join(", ")}` : ""}`);
     console.log(`  frames: ${full.steps.map((s) => `${s.frame}×${s.dur}`).join(" ")}`);
@@ -297,7 +299,12 @@ if (command === "tiles") {
       return op && op.op === "spawn" ? [op.dx, op.dy] : null;
     },
   });
-  writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(made.file, null, 2) + "\n");
+  // his own specials, by hand beside it, merged in so a run does not wipe them
+  const specialsPath = `data/entities/${name}/specials.json`;
+  const own = existsSync(specialsPath) ? (JSON.parse(readFileSync(specialsPath, "utf8")) as SpecialsFile) : null;
+  const file = own ? withSpecials(made.file, own) : made.file;
+  writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(file, null, 2) + "\n");
+  if (own) console.log(`his own: ${Object.keys(own.states).join(", ")} (${specialsPath})`);
   for (const [state, why] of Object.entries(made.dropped)) console.log(`dropped ${state}: ${why}`);
   for (const [state, what] of Object.entries(made.lost)) console.log(`${state} lost ${what.join(", ")}`);
   for (const [state, [was, is]] of Object.entries(made.moved)) console.log(`${state} fires from ${is} (goku's ${was})`);
@@ -324,6 +331,16 @@ if (command === "tiles") {
     writeFileSync(`assets/sheets/${name}@${variant}.png`, encodePng(sheet));
   }
   console.log(`${name}: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
+  // his own objects: tiles and palette from code, timing from his recording (ADR 0036)
+  const own = OWN_OBJECTS[name as FighterName];
+  if (own) {
+    const recording = "logs/objects-rec.txt";
+    const spawns = ownObjects(rom, T, own, readLives(readFileSync(recording, "utf8")));
+    for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }))) {
+      write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);
+      console.log(`${spawn}: ${Object.keys(e.frames).length} frames, timed from ${recording}`);
+    }
+  }
 } else if (command === "export") {
   // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
   const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU) } });

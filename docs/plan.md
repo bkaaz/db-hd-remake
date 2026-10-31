@@ -81,7 +81,15 @@ engine does not have. In order:
    at $6c00"), drawn in that resource's own palette; a snapshot only for a
    shared object's colours (`vramMatch.ts`), taken a frame late — OAM shows
    an object the frame after its slot does. The code reader
-   (`npm run rom -- code`) checks it. *Done when:* Vegeta's ki blast and
+   (`npm run rom -- code`) checks it. A fighter's own objects are named in
+   `src/rom/ownObjects.ts` and nothing else is written by hand: `export
+   --fighter` draws and times them; Vegeta's `ad` (Big Bang) fires its ball
+   (`specials.json`, ADR 0038). Still to do, in order: the flash at his
+   hands (`vegeta_flash` — a spawn that never hits and ends with its
+   animation, which `fires` cannot put out), an object gone off the screen
+   (`rom.md`, `$0F:B47D` — ours only at the screen's sides, never above it), the palette run
+   OBJ palette 0 steps through (`rom.md`), and Goku's from a recording of
+   his own. *Done when:* Vegeta's ki blast and
    one special fire from his recording, and Goku's spawns come out of his
    with no hand-written `objects` in `cartridge.ts`.
 2. **Attributes and knockback** — the export writes `attributes.json`'s

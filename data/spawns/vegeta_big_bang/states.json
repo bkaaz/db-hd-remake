@@ -1,0 +1,17 @@
+{
+  "_comment": "Vegeta's Big Bang, ad (object 1/04, docs/rom.md). Frames and animation by npm run rom -- export --fighter vegeta; this file by hand: 4 / -4 px a frame is b0's vx / vy, kept the whole flight ($0F:BAB6 never changes it), so it flies airborne with no gravity, entered through fires.state so its launch applies. Type and damage are the objects' hit table's ($3D:9624); where it hits it becomes a/02 ($2A:8F0B). Its hit and block sounds are the other projectiles' — not read for it.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "airborne": true,
+      "launch": [4, -4],
+      "turn": false,
+      "type": "down",
+      "damage": 50,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1"
+    }
+  }
+}

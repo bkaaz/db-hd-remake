@@ -39,7 +39,8 @@ load it.
 |---|---|
 | `frames.json` | the editor, Sprites tab |
 | `animations.json` | the editor, Animations tab — **and** `npm run anim`; for `goku`, `npm run rom -- export` writes it whole ([ADR 0017](./adr/0017-the-cartridges-animations-are-named-by-move-id.md)) |
-| `states.json` | **by hand**; the editor's States tab is a read-only view |
+| `states.json` | **by hand**; the editor's States tab is a read-only view. Another fighter's is written whole by `npm run rom -- states --fighter <name>` ([ADR 0038](./adr/0038-a-fighters-own-specials-are-merged-into-the-template.md)) |
+| `specials.json` | by hand — another fighter's own specials, merged into his `states.json` by that command; shape in `src/rom/specials.ts` |
 | `sounds.json` | the editor, Sounds tab |
 | `attributes.json` | by hand |
 
