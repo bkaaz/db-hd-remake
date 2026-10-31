@@ -99,8 +99,8 @@ export function step(ins: Instruction, cpu: Cpu): Cpu {
   if (mnemonic === "CMP" && mode === "dx") return { ...next, test: { op: "field", field: operand } };
   if (mnemonic === "BIT" && mode === "im") return { ...next, test: { op: "bit", mask: operand } };
   const field = mode === "dx" ? cpu.x : mode === "ay" ? (cpu.yWho ?? undefined) : undefined;
-  if (mnemonic === "LDA" && (field !== undefined || mode === "d")) {
-    const source: Source = mode === "d" ? { global: operand } : { field: operand, who: field ?? null };
+  if (mnemonic === "LDA" && (field !== undefined || mode === "d" || mode === "a")) {
+    const source: Source = mode === "d" || mode === "a" ? { global: operand } : { field: operand, who: field ?? null };
     return { ...next, regs: { ...next.regs, a: null }, source, mask: undefined, eor: undefined, test: { op: "zero" } };
   }
   if (cpu.source && mnemonic === "AND" && mode === "im")

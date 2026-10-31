@@ -29,20 +29,32 @@ export interface Known {
 export type Asked = { set: string; clear: string } | null;
 
 /** The two ways out of a conditional branch, taken and through; null for one never run. */
-export function ways(mnemonic: string, k: Known, cpu: Cpu, asked: Asked, character?: number): [Known | null, Known | null] {
+/**
+ * `frames`: the field a comparison pins the frame by (a fighter's 0x44, an
+ * object's timer); `names`: what to call the fields a test is said by.
+ */
+export function ways(
+  mnemonic: string,
+  k: Known,
+  cpu: Cpu,
+  asked: Asked,
+  character?: number,
+  frames = FRAMES,
+  names?: Record<number, string>,
+): [Known | null, Known | null] {
   if (asked && mnemonic === "BCS") return split(k, asked.set, asked.clear);
   if (asked && mnemonic === "BCC") return split(k, asked.clear, asked.set);
   const { test, source } = cpu;
   if (!test || test.op === "field" || test.op === "bit") {
-    const said = source && test ? sayTest(mnemonic, source, cpu.mask, test) : null;
+    const said = source && test ? sayTest(mnemonic, source, cpu.mask, test, names) : null;
     return said ? split(k, ...said) : [k, k];
   }
   const value = test.op === "cmp" ? test.value : 0;
   const field = fieldOf(cpu);
-  if (field === FRAMES) return onFrame(mnemonic, value, k);
+  if (field === frames) return onFrame(mnemonic, value, k);
   if (field === CHARACTER && character !== undefined) return onValue(mnemonic, character, value, k);
   if (!source && test.op === "cmp") return onRange(mnemonic, value, k);
-  const said = source ? sayTest(mnemonic, source, cpu.mask, test) : null;
+  const said = source ? sayTest(mnemonic, source, cpu.mask, test, names) : null;
   return said ? split(k, ...said) : [k, k];
 }
 

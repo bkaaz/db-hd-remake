@@ -38,6 +38,7 @@ import { blowOfAnim } from "../src/rom/animBlow.ts";
 import { readCommands } from "../src/rom/commands.ts";
 import { statesFrom } from "../src/rom/template.ts";
 import { grabOf } from "../src/rom/grab.ts";
+import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
 import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
@@ -162,6 +163,11 @@ if (command === "tiles") {
   const move = r.launch ? `m${r.launch.move.toString(16).padStart(2, "0")}` : "";
   const reaction = Object.entries(states.states).find(([, def]) => def.anim === move)?.[0] ?? move;
   console.log(JSON.stringify(grabOf(r, reaction)));
+} else if (command === "code" && args.length >= 2) {
+  // an object's code read: how long it lives, how it steps, what it waits on
+  const [type, anim] = [parseInt(args[0], 16), parseInt(args[1], 16)];
+  console.log(`object ${hex(type)}/${hex(anim)} — code from ${long(objectEntry(rom, type))}; frames are its timer`);
+  for (const f of objectFacts(rom, type, anim)) console.log(`  ${describeFact(f)}`);
 } else if (command === "object" && args.length >= 3) {
   const [type, anim] = [parseInt(args[0], 16), parseInt(args[1], 16)];
   const loads = args.slice(2).filter((a) => a.includes("@")).map((a) => {

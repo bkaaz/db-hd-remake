@@ -108,7 +108,7 @@ Matched tile by tile against a VRAM snapshot (`tools/re/dump-vram.lua`,
 | ki blast | `0x31` | `$7500` | raw, 48 |
 | transformation hair | `0x51` | `$6C00` | its tiles 0–7 are the overlay's `0x40`–`0x47` |
 
-**An object's behaviour is its type's code**: `$0F:B44B` runs the ten slots
+**An object's behaviour is its type's code** (read: `npm run rom -- code a 3`): `$0F:B44B` runs the ten slots
 and jumps through a word table by type at `$0F:B467` (type `0` `$0F:B789`,
 `a` the ki blast `$0F:E0D7`); a type may jump again by animation (type `0`:
 `$0F:B79F`). A slot's fields: `+0` type (bit 7: alive), `+1` animation, `+2`

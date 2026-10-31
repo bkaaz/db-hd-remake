@@ -20,13 +20,30 @@ const FRAME_COUNT = 0x74;
 
 const hex = (n: number) => n.toString(16).padStart(2, "0");
 
-/** A field by its number, and its name where `FIGHTER_FIELDS` has one. */
-function fieldName(n: number): string {
-  return `field ${hex(n)}${FIGHTER_FIELDS[n] ? ` (${FIGHTER_FIELDS[n]})` : ""}`;
+function ordinal(n: number): string {
+  return `${n}${n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th"}`;
 }
 
+/** A field by its number, and its name where the body's table has one. */
+function fieldName(n: number, names: Record<number, string>): string {
+  return `field ${hex(n)}${names[n] ? ` (${names[n]})` : ""}`;
+}
+
+/** The game's own values a test reads, where known. */
+const GLOBALS: Record<number, string> = {
+  0x30b2: "the hitstop ?",
+  0x30ba: "player one's drawn effect",
+  0x30ca: "player two's drawn effect",
+};
+
 /** [taken, through] for a branch on `test` of `source`, or null for a branch the flags do not decide this way. */
-export function sayTest(mnemonic: string, source: Source, mask: number | undefined, test: Test): [string, string] | null {
+export function sayTest(
+  mnemonic: string,
+  source: Source,
+  mask: number | undefined,
+  test: Test,
+  names: Record<number, string> = FIGHTER_FIELDS,
+): [string, string] | null {
   const zero = mnemonic === "BEQ" || mnemonic === "BNE";
   const carry = mnemonic === "BCC" || mnemonic === "BCS";
   const sign = mnemonic === "BMI" || mnemonic === "BPL";
@@ -45,10 +62,11 @@ export function sayTest(mnemonic: string, source: Source, mask: number | undefin
     }
   }
   if ("global" in source && source.global === FRAME_COUNT && zero && test.op === "bit" && ((test.mask + 1) & test.mask) === 0) {
-    return pair(`every ${test.mask + 1}th frame of the game`, `between the game's every ${test.mask + 1}th frames`, mnemonic === "BEQ");
+    const nth = ordinal(test.mask + 1);
+    return pair(`every ${nth} frame of the game`, `between the game's every ${nth} frames`, mnemonic === "BEQ");
   }
 
-  const name = "field" in source ? fieldName(source.field) : `$${hex(source.global)}`;
+  const name = "field" in source ? fieldName(source.field, names) : `$${hex(source.global)}${GLOBALS[source.global] ? ` (${GLOBALS[source.global]})` : ""}`;
   const subject = mask === undefined ? name : `${name} & ${hex(mask)}`;
   if (sign) return pair(`while ${subject} is negative`, `while ${subject} is not negative`, mnemonic === "BMI");
   if (test.op === "zero" && zero) return pair(`when ${subject} is 0`, `when ${subject} is not 0`, mnemonic === "BEQ");

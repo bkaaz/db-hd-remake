@@ -70,10 +70,12 @@ specials and objects do not. The throw (`9d`) followed from the report
 (`npm run rom -- grab 9d`, ADR 0035) — but for the stun gauge, which this
 engine does not have. In order:
 
-1. **Object types** — Vegeta's specials, ki blast and dust wait on it. Four steps: the object's code read as a handler is
-   (`+0B` timer, `+02` frame, `+0C`/`+0E` speed — life, steps, the frame
-   from `$74`, the hitstop pause, gone with its owner's move), shown in
-   `port`; the export's steps / frames / animations / loop taken from it;
+1. **Object types** — Vegeta's specials, ki blast and dust wait on it. The
+   object's code is read (`npm run rom -- code a 3`, `objectCode.ts`:
+   life, steps, the frame from `$74`, the hitstop). Three steps left: the
+   export's steps / frames / animations / loop taken from it — not read
+   yet: a step's length from a table (`$0F:E2A9`), gone with its owner's
+   move (`$0F:E5FC`);
    what an object becomes on a hit (`$2A:8E31`) and its `hits` from its
    blow; the resources and palettes from the code that loads them
    (`$01:84B3`) instead of VRAM snapshots. *Done when:* the export writes

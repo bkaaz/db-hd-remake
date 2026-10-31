@@ -267,6 +267,9 @@ npm run rom -- export --fighter vegeta
 npm run rom -- states --fighter vegeta
                   # his states from goku's: the shared moves on his
                   # animations with his blows, goku's specials dropped
+npm run rom -- code a 3
+                  # an object's code read: how long it lives, how it
+                  # steps, what it waits on (type, animation)
 npm run rom -- grab 9d
                   # a throw's `grab` for its state, from the cartridge:
                   # where each opponent is held, the launch
