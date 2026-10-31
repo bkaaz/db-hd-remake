@@ -52,8 +52,11 @@ html, body {
 }
 
 #setup { grid-area: setup; }
-#p1 { grid-area: p1; justify-self: end; align-self: start; }
-#p2 { grid-area: p2; justify-self: start; align-self: start; }
+/* A player's column: the readout, and under it that player's picks, at one
+   width — the column's, set by the wider of the two. */
+#p1, #p2 { display: grid; align-self: start; }
+#p1 { grid-area: p1; justify-self: end; }
+#p2 { grid-area: p2; justify-self: start; }
 #game { grid-area: game; position: relative; line-height: 0; }
 /* Its height kept when empty, or flipping the readout would move the game. */
 #inputs { grid-area: inputs; min-height: 30px; }
@@ -64,7 +67,26 @@ html, body {
 
 /* --- the bars ------------------------------------------------------------ */
 
-#setup, #bar {
+/* Two lines whether or not the scene fills them, so changing scene does not
+   move the game (src/ui/setup.ts). */
+#setup { display: flex; flex-direction: column; gap: 8px; }
+#setup .line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; min-height: 26px; }
+
+.side-setup {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-items: start;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.side-setup:empty { display: none; }
+.side-setup .field { display: contents; }
+
+#bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -73,7 +95,7 @@ html, body {
 #bar .spacer { flex: 1; }
 .field { display: inline-flex; align-items: center; gap: 6px; }
 .lbl { color: var(--muted); }
-.notice-line { color: var(--warn); flex-basis: 100%; }
+.notice-line { color: var(--warn); }
 
 button, select {
   font: inherit;
@@ -139,6 +161,7 @@ button.record.on { background: #5a2020; border-color: #c04040; color: var(--text
   padding: 6px 10px;
   overflow: hidden;
 }
+.readout { margin-bottom: 8px; }
 .readout:empty, #inputs pre:empty { display: none; }
 #inputs pre { white-space: nowrap; font-size: 13px; }
 

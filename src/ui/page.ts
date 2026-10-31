@@ -11,9 +11,10 @@ import { layout, readScale, REMEMBERED_SCALE, type ScaleChoice } from "./scale";
  * file hands the renderer a size and nothing else.
  */
 export class Page {
+  /** Over the game: what the scene is and where it is fought. */
   readonly setup = part("setup");
-  readonly p1 = part("p1");
-  readonly p2 = part("p2");
+  /** Each player's column, left and right: their readout, their picks under it. */
+  readonly sides = (["p1", "p2"] as const).map((p) => ({ readout: part(`${p}-readout`), setup: part(`${p}-setup`) }));
   readonly inputs = part("inputs");
   readonly bar = part("bar");
   /** Laid over the game's screen: what went wrong with the scene. */
@@ -57,11 +58,11 @@ export class Page {
 
 /**
  * Window px left for the bars above and below the game when `auto` fits it:
- * two rows of setup, the input strip, the switches, `page.css`'s gaps. A
+ * two lines of setup, the input strip, the switches, `page.css`'s gaps. A
  * budget, not a measurement — measured, the bars are empty until the panel
  * has loaded, and their height changes with the scale being chosen.
  */
-const CHROME = 150;
+const CHROME = 160;
 
 function part(id: string): HTMLElement {
   const element = document.getElementById(id);

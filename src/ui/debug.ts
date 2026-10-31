@@ -28,8 +28,8 @@ export class Readouts {
   private readonly inputs = make();
 
   constructor(page: Page) {
-    page.p1.append(this.left);
-    page.p2.append(this.right);
+    page.sides[0].readout.append(this.left);
+    page.sides[1].readout.append(this.right);
     page.inputs.append(this.inputs);
   }
 
