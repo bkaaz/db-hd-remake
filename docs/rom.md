@@ -105,6 +105,15 @@ facing. The somersault is two drawings, raised 48 px and turned. The export
 makes each such way of showing a drawing a frame of its own
 (`src/rom/look.ts`).
 
+**Which fighter is drawn over the other** is one bit for the pair, `$30B0`
+bit 0 (`$00:812E`): clear, player one's sprites go into OAM first and so
+in front; set, player two's. Arming a blow (`$0D:D8A2`) puts the mover in
+front; `$0D:D8D5` puts him behind — Side Slash's handler (`a8`, the 3D
+move, `$20:83DF`) and `$0D:EBB8` call it, the latter from `$0F:A358` (a
+reaction, from its frame 168 `?`) and `$0F:A9E3`. The objects (`$3360`–
+`$3390`) go into OAM before both (`$00:8110`), so in front of them `?`.
+Ours: `Fighters.inFront` (`src/match/fighters.ts`).
+
 **`b0` spawns an object** (handler `$01:873F`): a type and an animation, a
 start step, flags and a palette, and a position from the fighter's, x
 mirrored when facing left. Objects are animated by `$00:843F`: type →

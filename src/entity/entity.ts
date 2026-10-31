@@ -175,6 +175,8 @@ export class Entity {
   private stateFrames = 0;
   /** Latched on touching the ground; cleared when the state changes. */
   private landed = false;
+  /** A blow armed on entering a state, for `takeArmed`. */
+  private armed = false;
   /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
   private landedAt = 0;
   /**
@@ -478,6 +480,16 @@ export class Entity {
     const name = this.groundFx;
     this.groundFx = null;
     return name ? { name, x: this.x, y: this.groundY } : null;
+  }
+
+  /**
+   * Whether a blow was armed since the last ask — a state with a blow
+   * entered, which is how our parts re-arm one (ADR 0043). Taken once.
+   */
+  takeArmed(): boolean {
+    const armed = this.armed;
+    this.armed = false;
+    return armed;
   }
 
   /** The backdrop's shake a state just entered asked for — taken once. */
@@ -799,6 +811,7 @@ export class Entity {
     if (wanted !== this.hum.id) this.hum = { id: wanted, left: 0 };
     this.setAnim(this.sm.def.anim, restart);
     this.swing.reset();
+    if (this.sm.def.type !== undefined) this.armed = true;
     this.landed = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
     // does so straight after forcing the reaction.

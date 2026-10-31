@@ -70,6 +70,12 @@ export class Fighters {
   private readonly projectiles: Projectiles;
   /** Where each body stood before this frame moved it — what the camera reads its push from. */
   private from: [number, number] = [0, 0];
+  /**
+   * The body drawn over the other: the one who last armed a blow — the
+   * original keeps one bit for the pair (`$30B0` bit 0, `$00:812E`) and
+   * arming a blow sets it to the mover (`$0D:D8A2`). Player one at first.
+   */
+  private inFront: Entity;
 
   constructor({ world, p1, p2, scale, audio, effects, projectiles }: FightersSetup) {
     this.impact = { effects };
@@ -77,6 +83,7 @@ export class Fighters {
     // a side each, so that one's sound never cuts the other's (src/audio/playback.ts)
     this.player = new Entity(p1, scale, audio.side("p1", p1.sounds));
     this.opponent = p2 ? new Entity(p2, scale, audio.side("p2", p2.sounds)) : null;
+    this.inFront = this.player;
     world.addChild(this.player.view);
     if (this.opponent) world.addChild(this.opponent.view);
   }
@@ -139,6 +146,7 @@ export class Fighters {
       this.fire(this.opponent, this.player);
     }
     for (const fighter of this.both()) {
+      if (fighter.takeArmed()) this.inFront = fighter;
       this.shake = fighter.takeShake() ?? this.shake;
       const fx = fighter.takeGroundFx();
       if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);
@@ -254,6 +262,11 @@ export class Fighters {
   }
 
   render(showBoxes: boolean): void {
+    const behind = this.inFront === this.player ? this.opponent : this.player;
+    const world = this.inFront.view.parent;
+    if (behind && world && world.getChildIndex(this.inFront.view) < world.getChildIndex(behind.view)) {
+      world.swapChildren(this.inFront.view, behind.view);
+    }
     this.player.render(showBoxes);
     this.opponent?.render(showBoxes);
     this.projectiles.render(showBoxes);
