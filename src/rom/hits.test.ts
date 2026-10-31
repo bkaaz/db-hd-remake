@@ -41,7 +41,7 @@ describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
   it("reads goku's ki blast from the objects' table: heavy, 18, stun 2", () => {
     const ki = objectRecord(rom, 0x0a, 3);
     expect([groundReaction(ki), ki.damage, ki.stun]).toEqual(["heavy", 18, 2]);
-    const { states } = JSON.parse(readFileSync("data/spawns/goku_ki/states.json", "utf8")) as StatesFile;
+    const { states } = JSON.parse(readFileSync("data/spawns/ki_blast/states.json", "utf8")) as StatesFile;
     expect([states.fly.type, states.fly.damage]).toEqual(["heavy", 18]);
   });
 

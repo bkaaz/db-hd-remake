@@ -24,6 +24,22 @@ const made = statesFrom(template, {
   blowOf: (a) => (a === "m92" ? { type: "heavy", damage: 28 } : null),
 });
 
+describe("statesFrom, a shared shot", () => {
+  const shared = { ...template, states: { shot: { anim: "m9b", fires: { spawn: "ki_blast", at: [40, -56] }, transitions: [] } } } as unknown as StatesFile;
+  const his = statesFrom(shared, {
+    has: () => true,
+    special: () => false,
+    foreign: (v) => v.startsWith("goku_"),
+    blowOf: () => null,
+    spawnAt: (a, s) => (a === "m9b" && s === "ki_blast" ? [28, -48] : null),
+  });
+
+  it("keeps it, leaving from where his own script puts it out", () => {
+    expect(his.file.states.shot.fires).toEqual({ spawn: "ki_blast", at: [28, -48] });
+    expect(his.moved).toEqual({ shot: [[40, -56], [28, -48]] });
+  });
+});
+
 describe("statesFrom", () => {
   it("drops the template's specials, though he has an animation of that id, and what he cannot play", () => {
     expect(made.dropped).toEqual({ special: "the template's special ma5", down_lie: "no m1b_4" });

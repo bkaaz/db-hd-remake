@@ -541,6 +541,13 @@
         0
       ],
       "turn": false,
+      "fires": {
+        "spawn": "ki_blast",
+        "at": [
+          28,
+          -48
+        ]
+      },
       "transitions": [
         {
           "when": "animEnd",
@@ -819,6 +826,7 @@
         "share": 0.25,
         "min": 2
       },
+      "groundFx": "dust",
       "shake": {
         "pattern": 1,
         "frames": 8

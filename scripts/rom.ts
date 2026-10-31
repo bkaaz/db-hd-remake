@@ -288,10 +288,19 @@ if (command === "tiles") {
     special: (a) => specials.has(parseInt(a.slice(1, 3), 16)),
     foreign: (v) => v.startsWith("goku_"),
     blowOf: (a) => blowOfAnim(rom, T, a),
+    // a shared object, from the b0 in his own script that puts it out
+    spawnAt: (a, spawn) => {
+      const def = GOKU.objects.spawns.find((sp) => sp.name === spawn);
+      const move = moveOf(a);
+      if (!def || move === null) return null;
+      const op = readScript(rom, scriptAt(rom, T, move)).find((o) => o.op === "spawn" && o.type === def.type && o.anim === def.anim);
+      return op && op.op === "spawn" ? [op.dx, op.dy] : null;
+    },
   });
   writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(made.file, null, 2) + "\n");
   for (const [state, why] of Object.entries(made.dropped)) console.log(`dropped ${state}: ${why}`);
   for (const [state, what] of Object.entries(made.lost)) console.log(`${state} lost ${what.join(", ")}`);
+  for (const [state, [was, is]] of Object.entries(made.moved)) console.log(`${state} fires from ${is} (goku's ${was})`);
   for (const [state, [was, is]] of Object.entries(made.reblown)) console.log(`${state}: ${was} -> ${is}`);
   // a copy is only goku's logic where it runs goku's code: the rest are his own, still to read
   for (const [state, def] of Object.entries(made.file.states)) {

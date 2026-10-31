@@ -887,7 +887,7 @@
       ],
       "turn": false,
       "fires": {
-        "spawn": "goku_ki",
+        "spawn": "ki_blast",
         "at": [
           40,
           -56
@@ -997,14 +997,14 @@
         "flat": true
       },
       "fires": {
-        "spawn": "goku_kame_s",
+        "spawn": "kame_s",
         "at": [
           36,
           -51
         ],
         "with": [
           {
-            "spawn": "goku_kame_base",
+            "spawn": "kame_base",
             "at": [
               24,
               -51
@@ -1051,14 +1051,14 @@
         "max": 5
       },
       "fires": {
-        "spawn": "goku_kame_m",
+        "spawn": "kame_m",
         "at": [
           36,
           -51
         ],
         "with": [
           {
-            "spawn": "goku_kame_base",
+            "spawn": "kame_base",
             "at": [
               24,
               -51
@@ -1105,14 +1105,14 @@
         "max": 9
       },
       "fires": {
-        "spawn": "goku_kame_l",
+        "spawn": "kame_l",
         "at": [
           36,
           -51
         ],
         "with": [
           {
-            "spawn": "goku_kame_base",
+            "spawn": "kame_base",
             "at": [
               24,
               -51
@@ -1413,7 +1413,7 @@
         "share": 0.25,
         "min": 2
       },
-      "groundFx": "goku_dust",
+      "groundFx": "dust",
       "shake": {
         "pattern": 1,
         "frames": 8
@@ -1435,7 +1435,7 @@
         0
       ],
       "turn": false,
-      "groundFx": "goku_dust",
+      "groundFx": "dust",
       "sound": "land_1",
       "transitions": [
         {

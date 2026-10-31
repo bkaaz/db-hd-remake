@@ -15,7 +15,7 @@ describe.skipIf(!existsSync(ROM_PATH))("objects, on the cartridge", () => {
   });
 
   it("exports the ki blast as a spawn of two frames that hit, two frames each", () => {
-    const ki = exportSpawns(rom, GOKU).goku_ki;
+    const ki = exportSpawns(rom, GOKU).ki_blast;
     expect(Object.keys(ki.frames)).toEqual(["0", "1"]);
     expect(ki.animations.play.steps.map((s) => s.dur)).toEqual([2, 2]);
     expect(ki.animations.play.steps.every((s) => s.boxes?.[0].type === "hit")).toBe(true);
@@ -24,13 +24,13 @@ describe.skipIf(!existsSync(ROM_PATH))("objects, on the cartridge", () => {
   it("exports the charged Kamehameha's three beam heads growing with the charge, and a base that comes in, loops and goes out without hitting", () => {
     const spawns = exportSpawns(rom, GOKU);
     const area = (name: string) => spawns[name].frames["0"].w * spawns[name].frames["0"].h;
-    expect(area("goku_kame_s")).toBeLessThan(area("goku_kame_m"));
-    expect(area("goku_kame_m")).toBeLessThan(area("goku_kame_l"));
+    expect(area("kame_s")).toBeLessThan(area("kame_m"));
+    expect(area("kame_m")).toBeLessThan(area("kame_l"));
     for (const size of ["s", "m", "l"]) {
-      const steps = spawns[`goku_kame_${size}`].animations.play.steps;
+      const steps = spawns[`kame_${size}`].animations.play.steps;
       expect(steps.map((s) => [s.dur, s.boxes?.[0]?.type])).toEqual([[4, "hit"], [4, "hit"]]);
     }
-    const base = spawns.goku_kame_base.animations;
+    const base = spawns.kame_base.animations;
     expect(Object.keys(base)).toEqual(["in", "loop", "out"]);
     expect([base.in.loop, base.loop.loop, base.out.loop]).toEqual([false, true, false]);
     expect(Object.values(base).every((a) => a.steps.every((s) => s.dur === 4 && !s.boxes))).toBe(true);

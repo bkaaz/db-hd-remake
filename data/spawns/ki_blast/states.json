@@ -8,7 +8,7 @@
       "turn": false,
       "type": "heavy",
       "damage": 18,
-      "burstsInto": "goku_burst",
+      "burstsInto": "burst",
       "hitSound": "burst_1",
       "blockSound": "burst_1"
     }

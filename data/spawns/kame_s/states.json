@@ -8,7 +8,7 @@
       "turn": false,
       "type": "down",
       "damage": 40,
-      "burstsInto": "goku_kame_burst_s",
+      "burstsInto": "burst_s",
       "hitSound": "burst_1",
       "blockSound": "burst_1",
       "hitFlash": 16,

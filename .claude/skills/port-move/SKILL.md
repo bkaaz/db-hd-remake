@@ -46,7 +46,7 @@ input is the command table's.
 
 A spawn's line carries its object's own blow (`$3D:9624`): the projectile's
 states (`data/spawns/<name>/states.json`) take that type and damage, as
-`goku_ki` does. If the animation parts are missing, `npm run rom -- export`
+`ki_blast` does. If the animation parts are missing, `npm run rom -- export`
 first.
 
 ## Before writing anything: the whole move, as the original plays it

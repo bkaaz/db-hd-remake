@@ -105,18 +105,18 @@ export const GOKU: FighterTables = {
       // slot 2 holds 0x1b4ea whenever no blast is up, and that drew it green
       // and flashing black in play (2026-10-29); PalMod names 0x27B161 the
       // "KI Blast effects" palette
-      { name: "goku_ki", type: 0xa, anim: 3, steps: [2, 2], loop: true, hits: true, palette: 0x27b161 },
+      { name: "ki_blast", type: 0xa, anim: 3, steps: [2, 2], loop: true, hits: true, palette: 0x27b161 },
       { name: "goku_hair", type: 0, anim: 5, steps: [32, 8, 8, 6], loop: false, hits: false },
       // the charged Kamehameha's beam head, one per charge (aa, $20:8447): its
       // frame flips every 4 frames of the global counter ($0F:E601), drawn
       // from resource 0x32 the move loads at $6C00, in that resource's palette
       ...[0x13, 0x14, 0x15].map((anim, i) => ({
-        name: `goku_kame_${["s", "m", "l"][i]}`, type: 0xa, anim, steps: [4, 4], loop: true, hits: true,
+        name: `kame_${["s", "m", "l"][i]}`, type: 0xa, anim, steps: [4, 4], loop: true, hits: true,
         palette: KAME_PALETTE, loads: KAME_LOADS,
       })),
       // its base at the hands ($0F:E613): a step every 4 frames ($0F:E70F) —
       // 0–1 in, 2–4 looped while the beam is drawn ($0F:E738), 5–7 out, gone at 8
-      { name: "goku_kame_base", type: 0xa, anim: 0x16, steps: [], loop: false, hits: false,
+      { name: "kame_base", type: 0xa, anim: 0x16, steps: [], loop: false, hits: false,
         palette: KAME_PALETTE, loads: KAME_LOADS,
         animations: {
           in: { frames: [0, 1], dur: 4, loop: false },
@@ -126,12 +126,12 @@ export const GOKU: FighterTables = {
       // what a projectile becomes where it hits ($2A:8E31): no script spawns
       // these, so their tiles count from 0 ($2A:8F84 clears the base); all
       // step through $0F:E2A9 and are gone
-      ...([["goku_burst", 0x01], ["goku_kame_burst_s", 0x02], ["goku_kame_burst_m", 0x17], ["goku_kame_burst_l", 0x18]] as const).map(
+      ...([["burst", 0x01], ["burst_s", 0x02], ["burst_m", 0x17], ["burst_l", 0x18]] as const).map(
         ([name, anim]) => ({ name, type: 0xa, anim, steps: BURST_STEPS, loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS }),
       ),
       // the dust a body raises hitting the floor ($0D:DE6C, from the knockdown
       // handler): 6 frames a step ($0F:E559), in the explosions' slot and tiles
-      { name: "goku_dust", type: 0xa, anim: 0x0d, steps: [6, 6, 6, 6], loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS },
+      { name: "dust", type: 0xa, anim: 0x0d, steps: [6, 6, 6, 6], loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS },
     ],
   },
 };

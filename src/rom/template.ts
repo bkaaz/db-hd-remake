@@ -25,6 +25,8 @@ export interface Template {
   lost: Record<string, string[]>;
   /** Blows whose numbers became his: state, then [type, damage] before and after. */
   reblown: Record<string, [string, string]>;
+  /** Shots that leave from where his hand is: state, then `at` before and after. */
+  moved: Record<string, [[number, number], [number, number]]>;
 }
 
 export interface Fit {
@@ -36,6 +38,8 @@ export interface Fit {
   foreign: (value: string) => boolean;
   /** His blow for an animation, or null where his cartridge has none. */
   blowOf: (anim: string) => { type: string; damage: number } | null;
+  /** Where his script puts out a shared object an animation fires (its `b0`), or null. */
+  spawnAt?: (anim: string, spawn: string) => [number, number] | null;
 }
 
 export function statesFrom(template: StatesFile, fit: Fit): Template {
@@ -54,6 +58,7 @@ export function statesFrom(template: StatesFile, fit: Fit): Template {
 
   const lost: Record<string, string[]> = {};
   const reblown: Record<string, [string, string]> = {};
+  const moved: Template["moved"] = {};
   const states: StatesFile["states"] = {};
   for (const [name, def] of Object.entries(template.states)) {
     if (name in dropped) continue;
@@ -72,12 +77,18 @@ export function statesFrom(template: StatesFile, fit: Fit): Template {
         Object.assign(state, blow);
       }
     }
+    const fires = state.fires;
+    const at = fires && state.anim ? fit.spawnAt?.(state.anim, fires.spawn) : null;
+    if (fires && at && (at[0] !== fires.at?.[0] || at[1] !== fires.at?.[1])) {
+      moved[name] = [fires.at ?? [0, 0], at];
+      state.fires = { ...fires, at };
+    }
     states[name] = state;
   }
   const top = (name: string | undefined) => (name === undefined ? undefined : (after(name) ?? undefined));
   const file: StatesFile = { ...template, initial: top(template.initial)!, onGotHit: top(template.onGotHit), onGuard: top(template.onGuard), states };
   for (const key of ["onGotHit", "onGuard"] as const) if (file[key] === undefined) delete file[key];
-  return { file, dropped, lost, reblown };
+  return { file, dropped, lost, reblown, moved };
 }
 
 /** Every string anywhere in a value. */
