@@ -62,10 +62,10 @@ The HUD is the same kind of thing: `data/hud/hud.json` and
   integer and deterministic — the fighting-game standard.
 - **Coordinates are relative to the frame's anchor, Y-down** (matching PixiJS),
   so facing is a sign flip on X with no geometry to recompute.
-- **`push` boxes exist in the type and are not used.** Push collision reads the
-  `pushWidth` attribute instead, because a box that followed the animation would
-  shove the opponent whenever an arm came out. The type keeps `push` for a case
-  that needs it later — a narrower crouch, say.
+- **`push` boxes are the body two fighters keep apart with**, the first two
+  of a step's in order: the body, then the head. The export writes them from
+  the cartridge on every step (ADR 0039). An entity that authors none pushes
+  with its `pushWidth` attribute, and only on the ground.
 - **Knockback is on the reaction, not the blow.** A reaction faces its
   attacker, so a negative `vel` x is "backwards, away", and it slides for as
   long as the reaction lasts. A `shove` is the cartridge's kind: a speed on

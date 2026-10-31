@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { separate, type Bounds } from "./push";
+import { bodyOverlap, pushApart, separate, type Bounds } from "./push";
 
 const WIDE: Bounds = { min: -1000, max: 1000 };
 /** Two fighters 20 wide each: they must stay at least 20 apart, centre to centre. */
@@ -55,5 +55,39 @@ describe("separate", () => {
   it("respects bodies of different widths", () => {
     const { ax, bx } = separate({ x: 0, half: 5 }, { x: 10, half: 20 }, WIDE);
     expect(bx - ax).toBe(25);
+  });
+});
+
+/** A body 20 wide and 50 tall standing at x, its feet `up` px above the floor at 0. */
+const rect = (x: number, up = 0) => ({ x: x - 10, y: -50 - up, w: 20, h: 50 });
+
+describe("bodyOverlap", () => {
+  it("measures how far two bodies overlap along x", () => {
+    expect(bodyOverlap([rect(0)], [rect(14)], true)).toBe(6);
+    expect(bodyOverlap([rect(14)], [rect(0)], false)).toBe(6);
+  });
+
+  it("meets a body in the air as one on the ground: the jump that went through", () => {
+    expect(bodyOverlap([rect(0, 30)], [rect(14, 20)], true)).toBe(6);
+  });
+
+  it("lets a body high enough pass over another", () => {
+    expect(bodyOverlap([rect(0, 60)], [rect(14)], true)).toBe(0);
+  });
+
+  it("lets a head meet a body when the bodies miss", () => {
+    const head = { x: 2, y: -70, w: 6, h: 10 };
+    expect(bodyOverlap([rect(0), head], [rect(10, 55)], true)).toBe(8);
+  });
+
+  it("pushes nothing without boxes, as a lying fighter has", () => {
+    expect(bodyOverlap([], [rect(0)], true)).toBe(0);
+  });
+});
+
+describe("pushApart", () => {
+  it("moves each half the overlap, away from the other", () => {
+    expect(pushApart(0, 14, 6, WIDE)).toEqual({ ax: -3, bx: 17 });
+    expect(pushApart(14, 0, 6, WIDE)).toEqual({ ax: 17, bx: -3 });
   });
 });

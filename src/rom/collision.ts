@@ -7,14 +7,15 @@
  * reading, not a fact: slots 2 and 3 hold the same rectangle exactly on the
  * drawings where the script plays its swing (far Y's fist, X's kick) and
  * nowhere else — the hit box; 6 and 7 cover the head and the body on every
- * drawing — the hurt boxes. Slot 0 is a narrow column at the feet on every
- * drawing (the push width, which our engine keeps as one number per fighter);
- * slot 1 a small box at the head, not used yet.
+ * drawing — the hurt boxes. Slots 0 and 1 are read by the code: the body and
+ * the head the two fighters push each other with ($2A:80ED, docs/rom.md).
  */
 
 import type { Box } from "../entity/entityFile";
 
 const SLOTS: [number, Box["type"]][] = [
+  [0, "push"],
+  [1, "push"],
   [2, "hit"],
   [3, "hit"],
   [6, "hurt"],
@@ -34,7 +35,7 @@ export function readBoxes(rom: Uint8Array, table: number, drawing: number): Box[
   return boxes;
 }
 
-/** Slot 0's width: the column the fighter pushes with. */
+/** Slot 0's width: the body a fighter pushes with, as the one number `attributes.json` keeps. */
 export function pushWidth(rom: Uint8Array, table: number, drawing: number): number {
   const at = table + 32 * drawing;
   return signed(rom[at + 2]) - signed(rom[at]);

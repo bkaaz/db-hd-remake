@@ -2,7 +2,7 @@ import { Container, Graphics, Sprite } from "pixi.js";
 import type { ShakeDef } from "../camera/shake";
 import { healFrame } from "../combat/heal";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
-import { boxToWorld, type Placement } from "../combat/hit";
+import { boxToWorld, type Placement, type WorldRect } from "../combat/hit";
 import type { SoundPlayer } from "../audio/playback";
 import { BALL_COLOUR, nextRadius } from "../combat/ball";
 import { bandHeights, type BandDef } from "../combat/band";
@@ -227,6 +227,8 @@ export class Entity {
   /** Held by a thrower (`match/throw.ts`): an animation and nothing else, where he is put. */
   private held = false;
   private readonly pushWidth: number;
+  /** Whether its animations carry `push` boxes (`pushBodies`). */
+  private readonly authorsPush: boolean;
   private readonly hitstop: number;
   private readonly maxHealth: number;
   private readonly defence: number;
@@ -288,6 +290,7 @@ export class Entity {
     this.closeRange = def.attributes.closeRange;
     this.grabRange = def.attributes.grabRange;
     this.pushWidth = def.attributes.pushWidth;
+    this.authorsPush = Object.values(def.animations).some((a) => a.steps.some((st) => st.boxes?.some((b) => b.type === "push")));
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
     this.defence = def.attributes.defence;
@@ -347,6 +350,17 @@ export class Entity {
   /** Half the body's width in world px, for push collision. */
   get pushHalf(): number {
     return (this.pushWidth / 2) * this.scale;
+  }
+
+  /**
+   * The body and head this entity pushes with, in the world, from the current
+   * step's `push` boxes, none while held — or null for an entity whose
+   * animations author none, which pushes with `pushHalf` while `solid` instead.
+   */
+  get pushBodies(): WorldRect[] | null {
+    if (!this.authorsPush) return null;
+    if (this.held) return [];
+    return this.boxes("push").map((b) => boxToWorld(b, this.placement));
   }
 
   /**

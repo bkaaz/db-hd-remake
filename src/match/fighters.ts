@@ -2,7 +2,7 @@ import type { Container } from "pixi.js";
 import type { Audio } from "../audio/playback";
 import type { Camera } from "../camera/camera";
 import type { ShakeDef } from "../camera/shake";
-import { separate, type Bounds } from "../combat/push";
+import { bodyOverlap, pushApart, separate, type Bounds } from "../combat/push";
 import { Entity, type WorldInput } from "../entity/entity";
 import type { EntityDef } from "../entity/entityDef";
 import type { Effects } from "../fx/effects";
@@ -166,14 +166,23 @@ export class Fighters {
   }
 
   /**
-   * Bodies cannot overlap — but only while both are `solid`, so a jump can
-   * carry you over the opponent instead of being blocked by them. A hit pause
-   * suspends this too, or "frozen" would mean everything except the push.
+   * Bodies cannot overlap. Two with push boxes meet wherever those touch, in
+   * the air too ($2A:80ED); otherwise only while both are `solid`, so a
+   * hand-built jump carries over the opponent. A hit pause suspends this too,
+   * or "frozen" would mean everything except the push.
    */
   pushApart(bounds: Bounds): void {
     const { player, opponent } = this;
     if (!opponent) return;
-    if (!player.solid || !opponent.solid || player.frozen || opponent.frozen) return;
+    if (player.frozen || opponent.frozen) return;
+    const [a, b] = [player.pushBodies, opponent.pushBodies];
+    if (a && b) {
+      const { ax, bx } = pushApart(player.x, opponent.x, bodyOverlap(a, b, player.x <= opponent.x), bounds);
+      player.x = ax;
+      opponent.x = bx;
+      return;
+    }
+    if (!player.solid || !opponent.solid) return;
     const { ax, bx } = separate(
       { x: player.x, half: player.pushHalf },
       { x: opponent.x, half: opponent.pushHalf },

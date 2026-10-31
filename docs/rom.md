@@ -679,6 +679,15 @@ for heavy. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in
 the air, 64 down or dizzy — the frames a push of that speed lasts, and
 counts down outside hitstop. A blow sets hitstop (`$30B2`) to `0x8a`.
 
+**Bodies** (`$2A:80ED`, every frame from `$00:8DEA` but in hitstop):
+slots 0 and 1 of the drawing's box record, the body and the head, placed
+by x, y and the draw offset (`$2A:87DE` / `886A`), tested in the plane —
+body/body, head/head, then each against the other's (`$2A:89D0`). The
+first pair that touches gives the overlap along x; each fighter moves half
+of it away from the other, within 16 px of the screen's edges
+(`$2A:8AFB`), and field `0x97` bit 7 is set on both. Skipped while either
+has field `0x96` bit 7 set `?` (a script's `96`).
+
 **Health** starts from the ENERGY option, 400 by default (`$1AC9` /
 `$1ACF`, per side), or 80 or 999 in other modes (`$01:8150`, `$01:826F`).
 Training is mode `$1A02 = 3`, where damage is zeroed. One bar on screen
