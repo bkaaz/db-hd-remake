@@ -26,9 +26,17 @@ describe("Motions.has", () => {
     expect(play(at("down"), at("fwd")).has("qcf")).toBe(true);
   });
 
-  it("matches a held diagonal in two frames, so holding still works", () => {
-    expect(play(at("down", "fwd")).has("qcf")).toBe(false);
+  it("takes a diagonal pressed from neutral as both its directions, so holding still works", () => {
+    expect(play(NEUTRAL, at("down", "fwd")).has("qcf")).toBe(true);
     expect(play(at("down", "fwd"), at("down", "fwd")).has("qcf")).toBe(true);
+  });
+
+  it("counts a direction when it is pressed, so a held ↙ is not both orders", () => {
+    // Final Flash's ↓ ↙ ← → and the Big Bang's ← ↙ ↓ ↘ →, each through a ↙ held two frames
+    const finalFlash = play(NEUTRAL, at("down"), at("down", "back"), at("down", "back"), at("back"), at("fwd"));
+    const bigBang = play(NEUTRAL, at("back"), at("down", "back"), at("down", "back"), at("down"), at("down", "fwd"), at("fwd"));
+    expect([finalFlash.has("dbf"), finalFlash.has("hcf")]).toEqual([true, false]);
+    expect([bigBang.has("hcf"), bigBang.has("dbf")]).toEqual([true, false]);
   });
 
   it("matches a half circle through the bottom, not a quarter circle", () => {

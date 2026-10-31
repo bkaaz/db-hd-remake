@@ -1,0 +1,20 @@
+{
+  "_comment": "Final Flash's head, Vegeta's ac (object 1/0c, docs/rom.md, Final Flash). Frames and animation by npm run rom -- export --fighter vegeta; this file by hand: 4 px a frame is b0's vx, the type and damage the objects' hit table's ($3D:9624); its hit becomes burst_m and sets the defender burning ($2A:8F2D-8F77). Hit and block sounds are the Kamehameha's, not read for it; whether its hit whitens the screen is not read either.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "vel": [
+        4,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 60,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1",
+      "burns": true
+    }
+  }
+}

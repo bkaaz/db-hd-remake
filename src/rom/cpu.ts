@@ -111,7 +111,8 @@ export function step(ins: Instruction, cpu: Cpu): Cpu {
     // LDA $44,X : ORA $45,X asks whether the whole word is 0
     return { ...next, test: { op: "zero" } };
   if (writesA(ins)) {
-    next.regs.a = mnemonic === "LDA" && mode === "im" ? operand : null;
+    // TYA carries Y's constant over: a move set from a choice of LDY #s ($20:9AE8)
+    next.regs.a = mnemonic === "LDA" && mode === "im" ? operand : mnemonic === "TYA" ? cpu.regs.y : null;
     return { ...next, source: null, mask: undefined, eor: undefined, test: mnemonic === "LDA" ? { op: "zero" } : null };
   }
   return next;

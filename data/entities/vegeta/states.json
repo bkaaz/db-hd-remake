@@ -54,6 +54,13 @@
         },
         {
           "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
             "motion:hcf",
             "pressed:blast"
           ],
@@ -142,6 +149,13 @@
         },
         {
           "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
             "motion:hcf",
             "pressed:blast"
           ],
@@ -223,6 +237,13 @@
         {
           "when": "pressed:strike",
           "to": "attack_x"
+        },
+        {
+          "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
         },
         {
           "when": [
@@ -1051,6 +1072,310 @@
         "state": "fly"
       },
       "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "final_flash": {
+      "anim": "mac",
+      "healthCost": 10,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          24,
+          -46
+        ],
+        "from": 16,
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:20",
+            "released:blast"
+          ],
+          "to": "final_flash_fire_s"
+        },
+        {
+          "when": "frames:20",
+          "to": "final_flash_2"
+        }
+      ]
+    },
+    "final_flash_2": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          24,
+          -46
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:12",
+            "released:blast"
+          ],
+          "to": "final_flash_fire_m"
+        },
+        {
+          "when": "frames:16",
+          "to": "final_flash_3"
+        }
+      ]
+    },
+    "final_flash_3": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          24,
+          -46
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "final_flash_fire_l"
+        }
+      ]
+    },
+    "final_flash_fire_s": {
+      "anim": "mac_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 8,
+        "max": 8,
+        "flat": true
+      },
+      "fires": {
+        "spawn": "vegeta_final_flash_s",
+        "at": [
+          36,
+          -46
+        ],
+        "with": [
+          {
+            "spawn": "vegeta_final_flash_base",
+            "at": [
+              18,
+              -46
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "final_flash_hold_s"
+        }
+      ]
+    },
+    "final_flash_hold_s": {
+      "anim": "mb5",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "final_flash_end_s"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "final_flash_end_s": {
+      "anim": "mb5",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:16",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "final_flash_fire_m": {
+      "anim": "mac_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 12,
+        "max": 12,
+        "flat": true
+      },
+      "fires": {
+        "spawn": "vegeta_final_flash_m",
+        "at": [
+          36,
+          -46
+        ],
+        "with": [
+          {
+            "spawn": "vegeta_final_flash_base",
+            "at": [
+              18,
+              -46
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "final_flash_hold_m"
+        }
+      ]
+    },
+    "final_flash_hold_m": {
+      "anim": "mb5",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "final_flash_end_m"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "final_flash_end_m": {
+      "anim": "mb5",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:20",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "final_flash_fire_l": {
+      "anim": "mac_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 16,
+        "max": 16,
+        "flat": true
+      },
+      "fires": {
+        "spawn": "vegeta_final_flash_l",
+        "at": [
+          36,
+          -46
+        ],
+        "with": [
+          {
+            "spawn": "vegeta_final_flash_base",
+            "at": [
+              18,
+              -46
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "final_flash_hold_l"
+        }
+      ]
+    },
+    "final_flash_hold_l": {
+      "anim": "mb5",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "final_flash_end_l"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "final_flash_end_l": {
+      "anim": "mb5",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:24",
+          "to": "idle"
+        },
         {
           "when": "animEnd",
           "to": "idle"

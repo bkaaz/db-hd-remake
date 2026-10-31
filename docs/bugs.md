@@ -20,18 +20,6 @@ because a number would only need translating back.
 
 ---
 
-## ↓ ↙ ← → + A plays Vegeta's Big Bang
-
-`?p1=vegeta`, `src/input/motion.ts` · noticed by the owner 2026-10-31 · breaks play
-
-↓ then ← then → with the ki blast's button comes out as the Big Bang
-(`ad`, `hcf`: ← ↙ ↓ ↘ → in the cartridge). `Motions.has` takes one step a
-frame from any frame holding its direction, so a ↙ frame counts as *back*
-and the next ↙ as *down*: rolling ↓ → ← through ↙ completes back, down,
-forward. That input is Final Flash's (`ac`, ↓ ↙ → A), which is not built
-yet; once it is, which of the two wins is the order the entries happen to
-sit in.
-
 ## Vegeta's knockdown has no lying part
 
 `npm run rom -- export --fighter vegeta`, move `1b` · noticed 2026-10-31 · annoying

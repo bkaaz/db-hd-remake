@@ -1,0 +1,45 @@
+{
+  "in": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "0",
+        "dur": 4
+      },
+      {
+        "frame": "1",
+        "dur": 4
+      }
+    ]
+  },
+  "loop": {
+    "loop": true,
+    "steps": [
+      {
+        "frame": "2",
+        "dur": 4
+      },
+      {
+        "frame": "3",
+        "dur": 4
+      },
+      {
+        "frame": "4",
+        "dur": 4
+      }
+    ]
+  },
+  "out": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "5",
+        "dur": 4
+      },
+      {
+        "frame": "6",
+        "dur": 4
+      }
+    ]
+  }
+}

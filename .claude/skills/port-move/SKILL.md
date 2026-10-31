@@ -55,9 +55,11 @@ first.
 
 - **What puts it out, when, what it costs** — the code: `port` (the `b0`
   spawns, their counters, the handler's choice of counter).
-- **Its tiles and palette** — the code too: the move's handler loads them
-  (`$01:84B3`, in `port` as "loads resource 4f at $6c00" — P1 `$6C00`, P2
-  `$7C00`), drawn in that resource's own palette (its record).
+- **Its tiles and palette** — the code too: the move's handler loads the
+  tiles (`$01:84B3`, in `port` as "loads resource 4f at $6c00" — P1
+  `$6C00`, P2 `$7C00`); the object's own code loads its palette record
+  (`$01:84EF`, a run stepped every 4 frames — `rom.md`). Not the
+  resource's record palette: that matched once by chance.
 - **Its frames, how long each, loop, speed, what it becomes on a hit** — a
   recording: ask the owner for one long session per fighter
   (`tools/re/record-objects.lua`, the list from `npm run rom -- spawns`),

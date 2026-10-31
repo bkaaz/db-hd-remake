@@ -1,0 +1,39 @@
+{
+  "_comment": "Final Flash's base at the hands, Vegeta's ac (object 1/0a, docs/rom.md, Final Flash): put out beside the head, in then looping while it flies, and out once it is gone ($0F:BD2E). Frames and animations by npm run rom -- export --fighter vegeta; this file by hand, after kame_base.",
+  "initial": "in",
+  "onRelease": "out",
+  "states": {
+    "in": {
+      "anim": "in",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "loop"
+        }
+      ]
+    },
+    "loop": {
+      "anim": "loop",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": []
+    },
+    "out": {
+      "anim": "out",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": []
+    }
+  }
+}

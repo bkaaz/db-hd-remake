@@ -30,6 +30,11 @@ describe("step", () => {
     expect(run(ins("LDY", "ix", 0x130a), ins("INY", "imp")).regs.y).toBeNull();
   });
 
+  it("carries Y's constant into A through TYA: Final Flash's next move", () => {
+    expect(run(ins("LDY", "ix", 0xb5), ins("TYA", "imp")).regs.a).toBe(0xb5);
+    expect(run(ins("LDY", "dx", 0x17), ins("TYA", "imp")).regs.a).toBeNull();
+  });
+
   it("follows Y loaded from a field and counted up: the glow's palette", () => {
     expect(run(ins("LDY", "dx", 0x17), ins("INY", "imp"), ins("INY", "imp")).regs.yFrom).toEqual({ field: 0x17, plus: 2 });
     expect(run(ins("LDY", "dx", 0x17), ins("TAY", "imp")).regs.yFrom).toBeUndefined();

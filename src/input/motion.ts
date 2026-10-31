@@ -48,13 +48,15 @@ export const MOTION_FRAMES = 14;
 export const MOTIONS = {
   qcf: ["down", "fwd"],
   qcb: ["down", "back"],
-  /** The original's half circle, ← ↙ ↓ ↘ → (Quadruple Kick, the Kamehameha). */
+  /** The original's half circle, ← ↙ ↓ ↘ → (Quadruple Kick, the Kamehameha, the Big Bang). */
   hcf: ["back", "down", "fwd"],
-  /** ↓ ↙ →, back through the bottom and out forward (the charged Kamehameha). */
+  /** ↓ ↙ →, back through the bottom and out forward (the charged Kamehameha, Final Flash). */
   dbf: ["down", "back", "fwd"],
 } as const satisfies Record<string, readonly (keyof Directions)[]>;
 
 export type MotionName = keyof typeof MOTIONS;
+
+const NEUTRAL: Directions = { fwd: false, back: false, up: false, down: false };
 
 export class Motions {
   /** Oldest first, capped at the window. */
@@ -74,17 +76,21 @@ export class Motions {
   /**
    * Has this motion been completed inside the window?
    *
-   * One step per frame, so a single ↘ frame advances *down* and the next one
-   * advances *forward*: holding the diagonal completes a quarter circle in two
-   * frames, which is what keeps the held input working now that the motion has
-   * replaced it.
+   * A direction counts on the frame it is **pressed**, not on every frame it is
+   * held: counting held frames read a ↙ held for two as back-then-down and as
+   * down-then-back alike, so ↓ ← → came out as the half circle (Vegeta's Big
+   * Bang in place of Final Flash). A diagonal pressed from neutral is both its
+   * directions at once, and one held since before the window counts as pressed
+   * at its start — so holding ↘ still completes a quarter circle.
    */
   has(name: MotionName): boolean {
     const want: readonly (keyof Directions)[] = MOTIONS[name];
     let step = 0;
+    let before = NEUTRAL;
     for (const at of this.history) {
-      if (at[want[step]]) step++;
+      while (step < want.length && at[want[step]] && !before[want[step]]) step++;
       if (step === want.length) return true;
+      before = at;
     }
     return false;
   }

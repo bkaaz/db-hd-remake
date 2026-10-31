@@ -78,18 +78,20 @@ engine does not have. In order:
    into spawns: frames and how long each is held, loop, life, speed, what it
    becomes on a hit. Its tiles and palette come from code: a move's
    handler loads its resource (`$01:84B3`, in `port` as "loads resource 4f
-   at $6c00"), drawn in that resource's own palette; a snapshot only for a
+   at $6c00"), the object's code its palette (`$01:84EF`); a snapshot only for a
    shared object's colours (`vramMatch.ts`), taken a frame late — OAM shows
    an object the frame after its slot does. The code reader
    (`npm run rom -- code`) checks it. A fighter's own objects are named in
    `src/rom/ownObjects.ts` and nothing else is written by hand: `export
    --fighter` draws and times them; Vegeta's `ad` (Big Bang) fires its ball
-   (`specials.json`, ADR 0038). Still to do, in order: the flash at his
+   (`specials.json`, ADR 0038), and his `ac` its Final Flash. Still to do, in order: the flash at his
    hands (`vegeta_flash` — a spawn that never hits and ends with its
    animation, which `fires` cannot put out), an object gone off the screen
    (`rom.md`, `$0F:B47D` — ours only at the screen's sides, never above it), the palette run
-   OBJ palette 0 steps through (`rom.md`), and Goku's from a recording of
-   his own. *Done when:* Vegeta's ki blast and
+   an object's code steps through, every 4 frames (`$01:84EF`, `rom.md`); for
+   Final Flash, whether its hit whitens the screen (not read), the head gone
+   when Vegeta leaves the move (`$0F:BE66`), his fire sheets so burning
+   shows, and his voice (item 3); and Goku's from a recording of his own. *Done when:* Vegeta's ki blast and
    one special fire from his recording, and Goku's spawns come out of his
    with no hand-written `objects` in `cartridge.ts`.
 2. **Attributes and knockback** — the export writes `attributes.json`'s
@@ -198,8 +200,8 @@ still differs from the original:
 - the white screen whitens an arena as the original does, not the debug
   grid (`Backdrop.whitens`); a player setting for its strength is worth
   considering (owner, 2026-10-29);
-- the thrower's own palette changes every 4 frames while the beam is out
-  (`log-palettes.lua`); the victim's fire and the white screen are built
+- the beam's palette steps through records `0x130`–`0x133` every 4 frames
+  while it is out (`rom.md`, `$01:84EF`); the victim's fire and the white screen are built
   (ADR 0027);
 - a big explosion that knocks its victim down sets the game's `$37` to `16`
   (`rom.md`) — what that does is not read.

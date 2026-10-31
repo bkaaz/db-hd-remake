@@ -51,7 +51,10 @@ body because the boxes miss.
 
 **Specials are motion inputs** (`motion:qcf` and friends, `input/motion.ts`). A
 motion is matched loosely — ↓→ counts as a quarter circle — and a short window,
-not a strict shape, is what keeps false positives rare. A direction plus a
+not a strict shape, is what keeps false positives rare. The order is the
+order the directions were **pressed** (owner, 2026-10-31): a ↙ held through
+↓ ← → is not also ← ↓ →, so Final Flash and the Big Bang come out apart;
+the original's exact sequences were the stricter way not taken. A direction plus a
 button is a move of its own, ordered before the plain one in `states.json`.
 
 **Ki is its own meter**, filled by holding Attack + Guard. A state that spends

@@ -110,13 +110,15 @@ Matched tile by tile against a VRAM snapshot (`tools/re/dump-vram.lua`,
 
 **A move loads its objects' tiles** (`$01:84B3`: resource A into OBJ VRAM
 at word Y, Y `$6C00` for player one and `$7C00` for player two, through
-`$00:B265`), drawn in that resource's own palette (its record) — Goku's
-Kamehameha `0x32`, Vegeta's `ac` `0x4d` and his `ad` `a9` `ab` `b1` `0x4f`
-(`npm run rom -- port`). `$01:84B3` loads tiles only; the record's palette
-is the first of a run of 32-byte palettes OBJ palette 0 steps through while
-the object is up — `0x27BD24`, `…44`, `…64` … `…A4` in Vegeta's recording,
-`0x2ADE1C` … `…7C` for `0x32` — what steps it, how fast and how far is not
-read `?`.
+`$00:B265`) — Goku's Kamehameha `0x32`, Vegeta's `ac` `0x4d` and his `ad`
+`a9` `ab` `b1` `0x4f` (`npm run rom -- port`). Tiles only: **an object's
+colours are what its own code loads** (`$01:84EF`: palette record A through
+`$00:B2FC` into CGRAM `$0100` for player one, `$0120` for two — OBJ
+palettes 0 and 1), a run stepped every 4 frames while it is up: the
+Kamehameha's beam and Final Flash's heads records `0x130`–`0x133`
+(`0x2ADE1C` … `…7C`, by `$74`), the Big Bang `0x11C`–`0x120` (`0x27BD24` …
+`…A4`, `$0F:BAAC`, counted in the thrower's field `0xF0`). A resource's
+own record palette is not it — `0x4D`'s is the Big Bang's.
 
 **An object's behaviour is its type's code** (read: `npm run rom -- code a 3`): `$0F:B44B` runs the ten slots
 and jumps through a word table by type at `$0F:B467` (type `0` `$0F:B789`,
@@ -129,9 +131,9 @@ left (`$01:87CA`): the ki blast 3.0 / 0, the Kamehameha's beam 3.0 / −3.0.
 The usual animator is `INC $0B,X / CMP #n` then `INC $02,X / CMP #m`: n
 frames a step, m steps, then gone (`JSL $0F:B4ED`). The beam (type `0`
 animation `2`, `$0F:B7BE`) never changes its frame: it lives 80 frames,
-stopped during hitstop, and every 4 frames loads resource `0x130` + (frame
-counter `$74` / 4 mod 4) over its tiles (`JSL $01:84EF`) — it shimmers by
-swapping graphics. Type `1` jumps by animation through `$0F:B97E`; Vegeta's
+stopped during hitstop, and every 4 frames loads palette record `0x130` +
+(frame counter `$74` / 4 mod 4) into its owner's OBJ palette (`JSL
+$01:84EF`) — it shimmers by swapping colours. Type `1` jumps by animation through `$0F:B97E`; Vegeta's
 `ad` Big Bang (`1`/`4`, `$0F:BAB6`) runs `+0B` 0–9 and shows the frame
 `$0F:BAE5` names for it (0 for five, 1 for five), with no end of its own.
 
@@ -177,6 +179,25 @@ and the outer ones shortened from the base end in proportion (`$2A:A4B6`) —
 `2 × size` tall at the hands opening to `4 × size` at the head; kind 4, the
 small shot's, is `2 × size` all along (`$2A:A78D`). All of it is resource `0x32` (loaded at `$6C00`) in that resource's
 own palette — a resource's record holds a palette pointer at bytes 5–7.
+
+**Final Flash** (Vegeta's `ac`, handler `$20:9A43`) is the charged
+Kamehameha's shape: the same `f0` choice at frames 20 / 32 (counter `18` /
+`10`, jump to frame 42), the ball (kind 2) at 24, −46, resource `0x4D`.
+Frame 44: head `1/0d` / `0c` / `0b` (80 / 60 / 40, vx 4) at 36, −46, base
+`1/0a` at 18, −46, band kind 4 (`2 × size` all along) of size 16 / 12 / 8.
+The heads call `$0F:B63D` with a ceiling of 7 / 12 / 8 — never above the
+size they start at, so the band never thickens; they show frame `($74 &
+0C) / 4` (`0b`) or step every 4th frame mod 5 / 6 (`0c`, `0d`), load palette
+record `0x130` + n every 4 frames (`$0F:BE3D`), and live while
+he is in `ac` or `b5` (`$0F:BE66`). The base sits 18 px ahead of him and
+writes the band's start 8 px further; frames 0–1, 2–4, 5–6 as `kame_base`.
+When `ac`'s script runs out the handler sets move **`b5`** (`b6` in mode
+`$0552`): the firing pose held (`a7` / `a6`, 4 frames each) until the head
+is gone, then a jump to frame 72 / 76 / 80 by size and the move's end at
+96. Hits: `1/0d` → `a/18`, `0c` → `a/17`, `0b` → `a/02` (`$2A:8F77`,
+`8F52`, `8F2D`), all three setting the defender burning. A recording runs slow while the beam
+is out — the emulator drops frames (f2730 of the Big Bang's) — so its
+durations are longer than the code's.
 `npm run rom -- object a 15 32@6c00 80` draws an object's frames to look at.
 
 **What a projectile becomes when it hits** (`$2A:8E31`): by the hitting
@@ -190,7 +211,7 @@ their step 1, 4–11 px away at random, while their `+0C` is under 2 / 1 —
 three explosions and two (`$0F:E1A9`); all step through `$0F:E2A9`'s
 6 8 3 4 3 3 3 frames and are gone. Recorded for all three (2026-10-30).
 Type `1` by animation at `$2A:8EC7`: `1/04`–`06` → `a/02` (`$2A:8F0B`),
-`1/0b` → `a/02` and burning (`$2A:8F2D`).
+`1/0b`–`0d` → `a/02` / `17` / `18` and burning (`$2A:8F2D`–`8F77`).
 
 **Burning** (`$0D:EC98`): every 2 frames a counter shared by both players
 steps through the 15 fire palettes (`0x180` + 0–14, `JSL $01:8316`) — so
@@ -232,9 +253,8 @@ The Kamehameha says line 0 (`$13:D7D0`) on its first frame.
 
 **The Kamehameha's hit lights the defender up** (`dump-vram.lua`,
 `log-palettes.lua`): the burning above, and BG palettes 2–7 turn white for
-16 frames. While the beam is out the thrower's own palette changes every 4
-frames (resources `0x130`–`0x133` through `$01:84EF`) — which colours is not
-read.
+16 frames. While the beam is out the thrower's object palette changes
+every 4 frames (palette records `0x130`–`0x133` through `$01:84EF`, above).
 
 The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.

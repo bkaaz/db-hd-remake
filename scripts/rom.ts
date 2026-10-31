@@ -338,7 +338,7 @@ if (command === "tiles") {
     const spawns = ownObjects(rom, T, own, readLives(readFileSync(recording, "utf8")));
     for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }))) {
       write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);
-      console.log(`${spawn}: ${Object.keys(e.frames).length} frames, timed from ${recording}`);
+      console.log(`${spawn}: ${Object.keys(e.frames).length} frames, shown as ${recording} shows them`);
     }
   }
 } else if (command === "export") {
