@@ -249,7 +249,10 @@ characters' reactions and specials among them (`find 22 6c de 0d`).
 **A spoken line is `a1`**, not an effect (`$00:DE9F`): its id picks a
 sample from `$00:DB98` (3 bytes each) streamed to the sound chip
 (`$00:DB61`); when one is already playing the fighter shouts `32` instead.
-The Kamehameha says line 0 (`$13:D7D0`) on its first frame.
+The Kamehameha says line 0 (`$13:D7D0`) on its first frame, Final Flash
+line `0d` (`$13:ECE0`) as it fires. A line is a word — its length in 9-byte
+BRR blocks `?` (line 0's `07FB`, about a second at 32 kHz) — then the
+blocks, the first all zero.
 
 **The Kamehameha's hit lights the defender up** (`dump-vram.lua`,
 `log-palettes.lua`): the burning above, and BG palettes 2–7 turn white for

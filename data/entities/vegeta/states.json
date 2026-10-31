@@ -1203,6 +1203,15 @@
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 8,
+        "max": 8,
+        "flat": true
+      },
       "transitions": [
         {
           "when": "spawnEnd",
@@ -1278,6 +1287,15 @@
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 12,
+        "max": 12,
+        "flat": true
+      },
       "transitions": [
         {
           "when": "spawnEnd",
@@ -1353,6 +1371,15 @@
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 16,
+        "max": 16,
+        "flat": true
+      },
       "transitions": [
         {
           "when": "spawnEnd",

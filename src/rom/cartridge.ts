@@ -74,8 +74,8 @@ export interface SpawnDef {
 const KAME_PALETTE = 0x2ade1c;
 const KAME_LOADS = [{ resource: 0x32, vram: 0x6c00 }];
 
-/** The fire a Kamehameha leaves on whoever it hits: 15 palettes of 32 bytes from $95:C78E (docs/rom.md). */
-const FIRE = Object.fromEntries(Array.from({ length: 15 }, (_, n) => [`fire${n}`, 0x2ac78e + 32 * n]));
+/** The fire a beam leaves on whoever it hits, the same for every fighter: 15 palettes of 32 bytes from $95:C78E (docs/rom.md). */
+export const FIRE = Object.fromEntries(Array.from({ length: 15 }, (_, n) => [`fire${n}`, 0x2ac78e + 32 * n]));
 
 /**
  * The explosions' frames ($0F:E2A9), tiles — resource 0x30 at $6500 for the

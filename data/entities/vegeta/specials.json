@@ -1,5 +1,5 @@
 {
-  "_comment": "Vegeta's own specials, by hand; npm run rom -- states --fighter vegeta merges them into states.json (src/rom/specials.ts). big_bang is move ad, the Big Bang shot upward (owner, 2026-10-31): on the ground, 10 health, its parts mad / mad_2 / mad_3. The flash at the hands (vegeta_flash, mad_2's first frame) is not put out yet. final_flash is move ac (docs/rom.md, Final Flash): 10 health, A held charges \u2014 let go before frame 20 the small beam, before 32 the medium, else the large (field f0, $20:9A82); the ball grows 2 a frame from 16 at 24, -46. mac_2 fires head, base and band (size 16 / 12 / 8, never thicker); then move b5 holds the pose until the head is gone and 24 / 20 / 16 frames more (jumps to 72 / 76 / 80 of 96). As for Goku's Kamehameha, the charge fires as it decides (the original shows 2 more frames, a jump to frame 42) and the head outlives its thrower's move.",
+  "_comment": "Vegeta's own specials, by hand; npm run rom -- states --fighter vegeta merges them into states.json (src/rom/specials.ts). big_bang is move ad, the Big Bang shot upward (owner, 2026-10-31): on the ground, 10 health, its parts mad / mad_2 / mad_3. The flash at the hands (vegeta_flash, mad_2's first frame) is not put out yet. final_flash is move ac (docs/rom.md, Final Flash): 10 health, A held charges \u2014 let go before frame 20 the small beam, before 32 the medium, else the large (field f0, $20:9A82); the ball grows 2 a frame from 16 at 24, -46. mac_2 fires head, base and band (size 16 / 12 / 8, never thicker); then move b5 holds the pose, the band still drawn, until the head is gone and 24 / 20 / 16 frames more (jumps to 72 / 76 / 80 of 96). As for Goku's Kamehameha, the charge fires as it decides (the original shows 2 more frames, a jump to frame 42) and the head outlives its thrower's move.",
   "entries": [
     {
       "from": [
@@ -203,6 +203,15 @@
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 8,
+        "max": 8,
+        "flat": true
+      },
       "transitions": [
         {
           "when": "spawnEnd",
@@ -278,6 +287,15 @@
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 12,
+        "max": 12,
+        "flat": true
+      },
       "transitions": [
         {
           "when": "spawnEnd",
@@ -353,6 +371,15 @@
         0
       ],
       "turn": false,
+      "band": {
+        "from": [
+          26,
+          -46
+        ],
+        "size": 16,
+        "max": 16,
+        "flat": true
+      },
       "transitions": [
         {
           "when": "spawnEnd",

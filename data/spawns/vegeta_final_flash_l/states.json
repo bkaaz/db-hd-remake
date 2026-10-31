@@ -1,5 +1,5 @@
 {
-  "_comment": "Final Flash's head, Vegeta's ac (object 1/0d, docs/rom.md, Final Flash). Frames and animation by npm run rom -- export --fighter vegeta; this file by hand: 4 px a frame is b0's vx, the type and damage the objects' hit table's ($3D:9624); its hit becomes burst_l and sets the defender burning ($2A:8F2D-8F77). Hit and block sounds are the Kamehameha's, not read for it; whether its hit whitens the screen is not read either.",
+  "_comment": "Final Flash's head, Vegeta's ac (object 1/0d, docs/rom.md, Final Flash). Frames and animation by npm run rom -- export --fighter vegeta; this file by hand: 4 px a frame is b0's vx, the type and damage the objects' hit table's ($3D:9624); its hit becomes burst_l and sets the defender burning ($2A:8F2D-8F77). Hit and block sounds are the Kamehameha's, not read for it; its hit whitens the screen for 16 frames as the Kamehameha's does (owner: the same) \u2014 not read for it.",
   "initial": "fly",
   "states": {
     "fly": {
@@ -14,7 +14,8 @@
       "burstsInto": "burst_l",
       "hitSound": "burst_1",
       "blockSound": "burst_1",
-      "burns": true
+      "burns": true,
+      "hitFlash": 16
     }
   }
 }

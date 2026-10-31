@@ -27,7 +27,7 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { GOKU, ROM_PATH, scriptAt, tileResourceOf } from "../src/rom/cartridge.ts";
+import { FIRE, GOKU, ROM_PATH, scriptAt, tileResourceOf } from "../src/rom/cartridge.ts";
 import { fighterNamed, fighterTables, ROSTER, type FighterName } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
@@ -315,16 +315,16 @@ if (command === "tiles") {
     if (move !== null && handlerAt(rom, T.character, move) !== handlerAt(rom, GOKU.character, move))
       console.log(`${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, T.character, move))}) — to read`);
   }
-  // goku's numbers until the attributes are read (plan.md), his own lightings, no fire yet
+  // goku's numbers until the attributes are read (plan.md); his own lightings, and the fire everyone burns in
   const attributes = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8"));
   writeFileSync(
     `data/entities/${name}/attributes.json`,
-    JSON.stringify({ ...attributes, grabRange: commandContext(rom, T.character).grab, palettes: Object.keys(lightingPalettes(rom, T)), burn: [] }, null, 2) + "\n",
+    JSON.stringify({ ...attributes, grabRange: commandContext(rom, T.character).grab, palettes: [...Object.keys(lightingPalettes(rom, T)), ...Object.keys(FIRE)], burn: Object.keys(FIRE) }, null, 2) + "\n",
   );
   console.log(`${name}: ${Object.keys(made.file.states).length} states; attributes are goku's but the palettes and the grab range`);
 } else if (command === "export" && T !== GOKU) {
-  // his lighting variants only: the fire, the spawns, the arenas and the HUD stay Goku's export
-  const fighter = exportFighter(rom, { ...T, variants: lightingPalettes(rom, T) });
+  // his lightings and the fire; the shared spawns, the arenas and the HUD stay Goku's export
+  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lightingPalettes(rom, T) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write(`assets/sheets/${name}.png`, `data/entities/${name}`, fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
