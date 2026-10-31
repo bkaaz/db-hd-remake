@@ -41,6 +41,8 @@ import { statesFrom } from "../src/rom/template.ts";
 import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
 import { readLives } from "../src/rom/recording.ts";
+import { moveOf, todo } from "../src/rom/todo.ts";
+import { handlerAt } from "../src/rom/handler.ts";
 import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
@@ -165,6 +167,28 @@ if (command === "tiles") {
   const move = r.launch ? `m${r.launch.move.toString(16).padStart(2, "0")}` : "";
   const reaction = Object.entries(states.states).find(([, def]) => def.anim === move)?.[0] ?? move;
   console.log(JSON.stringify(grabOf(r, reaction)));
+} else if (command === "todo" && T !== GOKU) {
+  // what is left to read for him, given goku is ported: moves on code goku's states already play are read
+  const goku = { name: "goku", t: GOKU, states: JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile };
+  const left = todo(rom, T, [goku]);
+  console.log(`read — the same handler as a move goku plays (${left.read.length}):`);
+  for (const r of left.read) console.log(`  ${hex(r.move)}  as goku's ${r.states.join(", ")}`);
+  console.log(`\nto read — handlers no ported move runs (${left.toRead.length}), the most shared first:`);
+  const objects = new Map<string, string>();
+  for (const r of left.toRead) {
+    const report = portReport(rom, T, r.moves[0]);
+    const blows = report.parts.filter((p) => p.blow).length;
+    const spawns = r.moves.flatMap((m) => portReport(rom, T, m).parts.flatMap((p) => p.spawns.map((sp) => `${hex(sp.type)}/${hex(sp.anim)}`)));
+    for (const o of spawns) objects.set(o, hex(r.moves[0]));
+    const asked = r.moves.flatMap((m) => portReport(rom, T, m).inputs);
+    const what = [asked.join(" | ") || "no button", blows ? `${blows} blow${blows > 1 ? "s" : ""}` : "", spawns.length ? `spawns ${[...new Set(spawns)].join(" ")}` : ""];
+    const shared = r.fighters > 1 ? `, run by ${r.fighters} of the roster` : "";
+    console.log(`  ${r.moves.map(hex).join(" ").padEnd(11)} ${long(r.handler)}${shared}  ${what.filter(Boolean).join(", ")}`);
+  }
+  console.log(`\n${left.elsewhere} more moves have a script nobody reaches by a button or plays yet`);
+  const exported = new Set(GOKU.objects.spawns.map((sp) => `${hex(sp.type)}/${hex(sp.anim)}`));
+  const [have, need] = [[...objects.keys()].filter((o) => exported.has(o)), [...objects.keys()].filter((o) => !exported.has(o))];
+  console.log(`objects: already exported ${have.join(" ") || "none"}; to record ${need.join(" ") || "none"}`);
 } else if (command === "spawns") {
   // what to record for this fighter's objects (ADR 0036): every move that puts one out, how to ask for it
   const commands = readCommands(rom, T.character);
@@ -269,6 +293,12 @@ if (command === "tiles") {
   for (const [state, why] of Object.entries(made.dropped)) console.log(`dropped ${state}: ${why}`);
   for (const [state, what] of Object.entries(made.lost)) console.log(`${state} lost ${what.join(", ")}`);
   for (const [state, [was, is]] of Object.entries(made.reblown)) console.log(`${state}: ${was} -> ${is}`);
+  // a copy is only goku's logic where it runs goku's code: the rest are his own, still to read
+  for (const [state, def] of Object.entries(made.file.states)) {
+    const move = moveOf(def.anim);
+    if (move !== null && handlerAt(rom, T.character, move) !== handlerAt(rom, GOKU.character, move))
+      console.log(`${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, T.character, move))}) — to read`);
+  }
   // goku's numbers until the attributes are read (plan.md), his own lightings, no fire yet
   const attributes = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8"));
   writeFileSync(

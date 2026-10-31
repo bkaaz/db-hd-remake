@@ -270,6 +270,10 @@ npm run rom -- states --fighter vegeta
 npm run rom -- code a 3
                   # an object's code read: how long it lives, how it
                   # steps, what it waits on (type, animation)
+npm run rom -- todo --fighter vegeta
+                  # what is left to read for him: moves on code goku's
+                  # states already play are read; the rest, by handler,
+                  # the most shared first
 npm run rom -- spawns --fighter vegeta
                   # every move that puts out an object, and how it is
                   # asked for — what to record (ADR 0036)

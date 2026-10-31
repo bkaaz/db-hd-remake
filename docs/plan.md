@@ -70,7 +70,10 @@ specials and objects do not. The throw (`9d`) followed from the report
 (`npm run rom -- grab 9d`, ADR 0035) — but for the stun gauge, which this
 engine does not have. In order:
 
-1. **Objects from a recording** (ADR 0036) — the owner records a fighter's
+1. **Objects from a recording** (ADR 0036) — first the shared objects named
+   by what they are (`ki_blast`, `burst`, `dust`, `kame_base` …) rather
+   than `goku_*`, a fighter's own colour a variant of the sheet, his own
+   objects (type `1`) under his name (owner, 2026-10-31). Then: the owner records a fighter's
    attacks once (`tools/re/record-objects.lua`, the list from
    `npm run rom -- spawns`); `npm run rom -- objects` turns the recording
    into spawns: frames and how long each is held, loop, life, speed, what it

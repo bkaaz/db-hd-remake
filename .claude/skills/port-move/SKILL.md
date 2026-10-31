@@ -9,6 +9,14 @@ Faithful first, changed later (owner, 2026-10-29): copy what the cartridge
 says, guess nothing, and say where it is silent. `goku` has our combo rules
 off (`comboLimits: false`) so his numbers can be compared with the original.
 
+## 0. Another fighter: what is left to read
+
+`npm run rom -- todo --fighter <name>` — a move on code goku's states
+already play is read (the states template copies it, his numbers by
+script); the rest are listed by handler, one reading each, the ones the
+whole roster runs first. `states --fighter <name>` says which copies run
+code of his own and so are still to read.
+
 ## 1. Find the move
 
 `docs/rom.md`, The buttons, lists every move a button or a command picks.
