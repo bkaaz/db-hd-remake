@@ -27,9 +27,10 @@ the handler sets (`vel`, `velAt`); the sounds and spawns with their frames;
 where the handler re-arms the blow; and, for a handler that runs by step,
 what it does on each (`handler on step N`). What the handler does on no one
 frame comes first, as `handler:` lines, under what it waits on — "from
-frame 52", "when its object 0a/15 is gone", "once it has landed". A test the
-report cannot read (a button held, vy turning) leaves a fact bare: look at
-the code for it. Frames count from the part's start, as a state's do. The
+frame 52", "when its object 0a/15 is gone", "while B + Y held", "every 8th
+frame of the game". A test on a field nobody has named is said plainly
+("when field f0 is 0"): find what writes the field, and name it in
+`FIGHTER_FIELDS` once it is known. Frames count from the part's start, as a state's do. The
 input is the command table's.
 
 A spawn's line carries its object's own blow (`$3D:9624`): the projectile's

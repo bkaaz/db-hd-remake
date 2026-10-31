@@ -172,6 +172,7 @@ export const FIGHTER_FIELDS: Record<number, string> = {
   0x10: "draw offset y (script d0)",
   0x12: "facing (bit 6: left)",
   0x14: "flip, XORed with the facing (script e0)",
+  0x17: "palette, its own (by player and stage)",
   0x1f: "x, fraction",
   0x20: "x, whole px",
   0x22: "y, fraction",
@@ -183,6 +184,7 @@ export const FIGHTER_FIELDS: Record<number, string> = {
   0x41: "script set (which fighter's scripts)",
   0x44: "frames since the move began",
   0x46: "step",
+  0x47: "step, a second count — with 0x46 at $01:86A7, alone at $01:86B2 ?",
   0x60: "health",
   0x62: "health's ceiling (charging ki refills to it)",
   0x64: "ki ?",
@@ -194,12 +196,14 @@ export const FIGHTER_FIELDS: Record<number, string> = {
   0x78: "damage of the last blow taken",
   0x7c: "vx",
   0x7e: "vy",
+  0x7f: "vy, high byte (negative: rising)",
   0x86: "gravity, added to vy each frame in the air",
   0x88: "shove speed (knockback, 8.8)",
   0x8c: "shove frames left",
   0x90: "tile set",
   0x92: "move of the blow that hit",
   0x93: "step of the blow that hit",
+  0xec: "buttons held, the pad's bits",
 };
 
 /**

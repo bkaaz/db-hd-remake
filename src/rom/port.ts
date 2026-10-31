@@ -147,11 +147,12 @@ export function describeFact(f: HandlerFact): string {
     : f.move !== undefined ? `sets move ${hex(f.move)}`
     : f.vx !== undefined ? `sets vx ${f.vx}`
     : f.counter !== undefined ? `sets the spawn counter to ${hex(f.counter)}`
+    : f.shake !== undefined ? `shakes the stage: pattern ${f.shake.pattern}, ${f.shake.frames} frames`
     : f.what;
   const under = [
     ...(f.frame === 0 ? ["once the script has run out"] : []),
     ...(f.from !== undefined ? [`from frame ${f.from}`] : []),
-    ...(f.when ? [f.when] : []),
+    ...(f.when ?? []),
   ];
   return under.length ? `${under.join(", ")}: ${what}` : what;
 }

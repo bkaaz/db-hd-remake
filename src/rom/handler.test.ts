@@ -1,7 +1,14 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
-import { handlerAt, handlerFacts } from "./handler";
+import { handlerAt, handlerFacts, shakeOf } from "./handler";
+
+describe("shakeOf", () => {
+  it("reads $E3's pattern and frames, and nothing without bit 15", () => {
+    expect(shakeOf(0x8108)).toEqual({ pattern: 1, frames: 8 });
+    expect(shakeOf(0x0108)).toBeNull();
+  });
+});
 
 describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
@@ -30,7 +37,11 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     const jumps = down.filter((f) => f.to !== undefined).map((f) => [f.step, f.to]);
     expect(jumps).toEqual([[0, 0x20], [1, 0x30], [1, 0x40], [2, 0x64], [3, 0x64]]);
     expect(down.filter((f) => f.what === "raises dust").map((f) => f.step)).toEqual([1, 2, 3]);
-    expect(down.find((f) => f.what === "bounces")).toMatchObject({ step: 1, when: "once it has landed" });
+    expect(down.find((f) => f.what === "bounces")).toMatchObject({ step: 1, when: ["once it has landed"] });
+    // inside the bounce ($0D:EC12): $E3 = 8108, never the 8008 behind the capped speed
+    expect(down.filter((f) => f.shake).map((f) => [f.step, f.when, f.shake])).toEqual([
+      [1, ["once it has landed"], { pattern: 1, frames: 8 }],
+    ]);
     expect(down.find((f) => f.move !== undefined)).toMatchObject({ step: 4, move: 0x1f });
   });
 
@@ -44,11 +55,11 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
 
   it("reads the Kamehameha's jumps once its head is gone, by which head it looks for", () => {
     const kame = handlerFacts(rom, handlerAt(rom, GOKU.character, 0xaa));
-    const jumps = kame.filter((f) => f.when !== undefined).map((f) => [f.from, f.when, f.to]);
-    expect(jumps).toEqual([
-      [52, "when its object 0a/15 is gone", 124],
-      [52, "when its object 0a/13 is gone", 132],
-      [52, "when its object 0a/14 is gone", 128],
+    const jumps = kame.filter((f) => f.to !== undefined && f.from === 52).map((f) => [f.to, f.when?.at(-1)]);
+    expect(jumps.sort()).toEqual([
+      [124, "when its object 0a/15 is gone"],
+      [128, "when its object 0a/14 is gone"],
+      [132, "when its object 0a/13 is gone"],
     ]);
   });
 
@@ -57,5 +68,12 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
       handlerFacts(rom, handlerAt(rom, GOKU.character, 0x0c), 0, character).filter((f) => f.sound !== undefined).map((f) => f.sound);
     expect(charge(0)).toEqual([0x19]);
     expect(charge(8)).toEqual([0x46]);
+  });
+
+  it("reads charging: its sound every 8th frame while B + Y are held, the loop back, the glow", () => {
+    const charge = handlerFacts(rom, handlerAt(rom, GOKU.character, 0x0c), 0, GOKU.character);
+    expect(charge.find((f) => f.sound === 0x19)?.when).toEqual(["when field f0 is 0", "while B + Y held", "every 8th frame of the game"]);
+    expect(charge.find((f) => f.to === 6)?.when).toContain("when field 47 (step, a second count — with 0x46 at $01:86A7, alone at $01:86B2 ?) is 04");
+    expect(charge.find((f) => f.frame === 2)?.what).toBe("loads its own palette + 8");
   });
 });

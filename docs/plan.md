@@ -52,7 +52,7 @@ built from the report alone.
 | a command's directions and button; the close lines | `commands.ts`, `buttons.ts` |
 | stages, arenas, the HUD, lightings, sound samples | `stage.ts`, `arena.ts`, `hud.ts`, `brr.ts` |
 | a command's conditions, cost and the opponent's move (bytes 0–3, 6) | `conditions.ts`, `commands.ts` |
-| what the throw's launch, holding the opponent, the shake, every-8-frames (`$74`) and the glow do | **by hand** |
+| what the throw's launch and holding the opponent do | **by hand** |
 | an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
 | a fighter's attributes (defence, walk, jump, gravity) | **by hand** (`attributes.json`) |
 | knockback by reaction (`$0D:D68A`), which reaction (`$0D:D29C`) | **partly** (`hits.ts` names the reaction) |
@@ -64,11 +64,10 @@ reading command takes `--fighter <name>`). The readers left, in order —
 each a slice, each shown in `port`:
 
 1. **Handler calls with their arguments** — `ROUTINES` (`routines.ts`)
-   grows an argument reader per routine; `port aa` reads already. *Done
-   when:* `port 1b` gives the bounce and its shake (`$E3`), `port 0c`
-   charging every 8 frames, the jump while held and the glow, and `port 9d`
-   the launch (`$0F:B321`: damage, stun, vx, vy) and the hold (`$0D:DE9A`
-   with `$20:82A5`) — what `rom.md` says of each.
+   grows an argument reader per routine; `port aa`, `1b` and `0c` read
+   already. *Done when:* `port 9d` gives the launch (`$0F:B321`: damage,
+   stun, vx, vy) and the hold (`$0D:DE9A` with `$20:82A5`) — what `rom.md`
+   says of each.
 2. **Object types** — timing, life, speed, on-hit, copies, read from the
    type's code by its usual patterns. *Done when:* the export writes the
    Kamehameha's and the ki blast's spawns without the hand-written
