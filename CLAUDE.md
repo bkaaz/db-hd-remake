@@ -270,6 +270,9 @@ npm run rom -- states --fighter vegeta
 npm run rom -- code a 3
                   # an object's code read: how long it lives, how it
                   # steps, what it waits on (type, animation)
+npm run rom -- spawns --fighter vegeta
+                  # every move that puts out an object, and how it is
+                  # asked for — what to record (ADR 0036)
 npm run rom -- grab 9d
                   # a throw's `grab` for its state, from the cartridge:
                   # where each opponent is held, the launch

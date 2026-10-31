@@ -35,10 +35,12 @@ import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
 import { describeFact } from "../src/rom/describe.ts";
 import { blowOfAnim } from "../src/rom/animBlow.ts";
-import { readCommands } from "../src/rom/commands.ts";
+import { arrow, buttonName, readCommands } from "../src/rom/commands.ts";
+import { NORMALS } from "../src/rom/buttons.ts";
 import { statesFrom } from "../src/rom/template.ts";
 import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
+import { readLives } from "../src/rom/recording.ts";
 import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
@@ -163,6 +165,36 @@ if (command === "tiles") {
   const move = r.launch ? `m${r.launch.move.toString(16).padStart(2, "0")}` : "";
   const reaction = Object.entries(states.states).find(([, def]) => def.anim === move)?.[0] ?? move;
   console.log(JSON.stringify(grabOf(r, reaction)));
+} else if (command === "spawns") {
+  // what to record for this fighter's objects (ADR 0036): every move that puts one out, how to ask for it
+  const commands = readCommands(rom, T.character);
+  for (let move = 0; move < 0x100; move++) {
+    let ops: ScriptOp[];
+    try {
+      ops = readScript(rom, scriptAt(rom, T, move));
+    } catch {
+      continue;
+    }
+    const spawns = ops.flatMap((op) => (op.op === "spawn" ? [op] : []));
+    if (spawns.length === 0) continue;
+    const asked = [
+      ...(NORMALS[move] ? [NORMALS[move]] : []),
+      ...commands.filter((c) => c.move === move).map((c) => `${c.where}: ${[...c.directions.map(arrow), buttonName(c.button)].join(" ")}`),
+    ];
+    const objects = spawns.map((s) => `${hex(s.type)}/${hex(s.anim)}${s.counter ? ` (counter ${hex(s.counter)})` : ""}`);
+    console.log(`${hex(move)}  ${(asked.join(" | ") || "no button: a handler or another move starts it").padEnd(34)}  ${objects.join(", ")}`);
+  }
+} else if (command === "objects") {
+  // a recording of the object slots read back (ADR 0036): each object's lives, the fullest first
+  const lives = readLives(readFileSync(args[0] ?? "logs/objects-rec.txt", "utf8"));
+  const kinds = [...new Set(lives.map((l) => `${hex(l.type)}/${hex(l.anim)}`))];
+  for (const kind of kinds.sort()) {
+    const all = lives.filter((l) => `${hex(l.type)}/${hex(l.anim)}` === kind).sort((a, b) => b.to - b.from - (a.to - a.from));
+    const full = all.find((l) => !l.hit) ?? all[0];
+    const becomes = [...new Set(all.flatMap((l) => (l.then ? [`${hex(l.then.type)}/${hex(l.then.anim)}${l.hit ? " on a hit" : ""}`] : [])))];
+    console.log(`${kind}  ${all.length}× — longest ${full.to - full.from} frames, vx ${full.vx}, vy ${full.vy}${becomes.length ? `, becomes ${becomes.join(", ")}` : ""}`);
+    console.log(`  frames: ${full.steps.map((s) => `${s.frame}×${s.dur}`).join(" ")}`);
+  }
 } else if (command === "code" && args.length >= 2) {
   // an object's code read: how long it lives, how it steps, what it waits on
   const [type, anim] = [parseInt(args[0], 16), parseInt(args[1], 16)];

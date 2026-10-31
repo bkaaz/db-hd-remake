@@ -500,7 +500,9 @@ deciding what to do (`$0D:F7F6`, `$0D:F95B`, `$0D:F96F`).
 
 **Special moves come first** (`$0D:F085`): a command table of 0x150 bytes
 per fighter at `$3D:9EEF` (offsets `$0D:F5CF`) — 0x88 on the ground, 0x40
-in the air, the rest for mode `$0552` — in 8-byte rows, scanned last row
+in the air, the rest for mode `$0552` — the fight above the arena `?`
+(the owner's memory; `$0552` also picks the other vertical camera,
+`$0D:CB96`) — in 8-byte rows, scanned last row
 first: bytes 0–2 its **conditions** — masks over flags the game rebuilds
 every frame into fighter fields `0x4C`–`0x4E` (`$0D:F650`), each bit read
 in `src/rom/conditions.ts` and named by `port` (Meteor Smash's `41`: on the
