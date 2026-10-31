@@ -18,10 +18,9 @@ import { ArenaBackdrop, loadArena } from "../arena/arena";
 import { GridBackdrop } from "../arena/grid";
 import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
-import { DebugPanel } from "../ui/debug";
+import { Readouts } from "../ui/debug";
 import { Hud } from "../hud/hud";
-import { StatusLine, showMessage } from "../ui/status";
-import type { Text } from "pixi.js";
+import { showMessage, type Notice } from "../ui/notices";
 
 /**
  * Sprites are drawn at their own size: the world is in game px and the view
@@ -60,10 +59,9 @@ export class DebugScene implements Scene {
     private readonly effects: Effects,
     /** The original's HUD; null when it has not been exported, which a notice says. */
     private readonly hud: Hud | null,
-    private readonly status: StatusLine,
-    private readonly panel: DebugPanel,
+    private readonly readouts: Readouts,
     /** Notices about broken data; they belong to this scene and go with it. */
-    private readonly notices: Text[],
+    private readonly notices: Notice[],
   ) {}
 
   static async create(
@@ -133,7 +131,7 @@ export class DebugScene implements Scene {
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
     if (arena && arena.time !== arena.times[0] && !fighters.light(arena.time)) {
-      notices.push(showMessage(ctx.app, `${def.name}: no sheet for "${arena.time}" — in its own colours`, true));
+      notices.push(showMessage(ctx.page.notices, `${def.name}: no sheet for "${arena.time}" — in its own colours`, true));
     }
     // Over the two of them, so a mode set in a corner shows the corner.
     const camera = new Camera({ screen: VIEW.width, world: stage.width, floor: stage.groundY });
@@ -141,15 +139,13 @@ export class DebugScene implements Scene {
     // The dummy waits for `T`, even with a timeline written in the mode
     // (owner, 2026-10-30).
 
-    const noStates = !def.states;
-    if (noStates) notices.push(showMessage(ctx.app, `${def.name}: no states.json`, true));
-    const status = new StatusLine(ctx.app, { name: def.name, belowMessage: noStates });
+    if (!def.states) notices.push(showMessage(ctx.page.notices, `${def.name}: no states.json`, true));
     const health = fighters.status().health;
     const hud = await Hud.load(view.hud, [
       { name: def.name, health: health[0] },
       health[1] === null ? null : { name: def.name, health: health[1] },
     ]);
-    if (typeof hud === "string") notices.push(showMessage(ctx.app, hud, true));
+    if (typeof hud === "string") notices.push(showMessage(ctx.page.notices, hud, true));
 
     return new DebugScene(
       view,
@@ -163,8 +159,7 @@ export class DebugScene implements Scene {
       count,
       effects,
       typeof hud === "string" ? null : hud,
-      status,
-      new DebugPanel(ctx.app),
+      new Readouts(ctx.page),
       notices,
     );
   }
@@ -217,12 +212,7 @@ export class DebugScene implements Scene {
 
   render(keyboard: Keyboard): void {
     this.hud?.draw();
-    this.status.draw({
-      ...this.fighters.status(),
-      dummyAttacks: keyboard.toggles.get("dummy"),
-      recording: keyboard.toggles.get("recording"),
-    });
-    this.panel.draw(keyboard.toggles.get("readout") ? this.fighters.debug() : null);
+    this.readouts.draw(keyboard.toggles.get("readout") ? this.fighters.debug() : null);
     this.view.scroll(this.camera.x, this.camera.y);
     this.stage.scroll(this.camera.x, this.camera.y, this.shake.offset);
     this.fighters.render(keyboard.toggles.get("boxes"));
@@ -234,8 +224,7 @@ export class DebugScene implements Scene {
     this.fighters.destroy();
     this.effects.destroy();
     this.hud?.destroy();
-    this.status.destroy();
-    this.panel.destroy();
+    this.readouts.destroy();
     for (const notice of this.notices) notice.destroy();
     this.view.destroy();
   }
@@ -248,8 +237,8 @@ export class DebugScene implements Scene {
  * misbehave; a broken sound only goes silent, which nobody notices until they
  * wonder why one move has no impact.
  */
-function reportProblems(ctx: SceneContext, def: EntityDef): Text[] {
-  const notices: Text[] = [];
+function reportProblems(ctx: SceneContext, def: EntityDef): Notice[] {
+  const notices: Notice[] = [];
   if (def.states) {
     const { errors, warnings } = validateStates(def.states, def.animations);
     for (const w of warnings) console.warn(`[states] ${w}`);
@@ -257,7 +246,7 @@ function reportProblems(ctx: SceneContext, def: EntityDef): Text[] {
     if (errors.length > 0) {
       const shown = errors.slice(0, 5).join("\n");
       const rest = errors.length > 5 ? `\n…and ${errors.length - 5} more (see console)` : "";
-      notices.push(showMessage(ctx.app, `states.json — ${errors.length} problem(s):\n${shown}${rest}`));
+      notices.push(showMessage(ctx.page.notices, `states.json — ${errors.length} problem(s):\n${shown}${rest}`));
     }
   }
   for (const p of validateSounds(def.sounds)) console.error(`[sounds] ${def.name}: ${p}`);

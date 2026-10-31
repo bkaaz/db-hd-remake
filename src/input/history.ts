@@ -14,10 +14,10 @@ import { MOTIONS, type Directions, type MotionName } from "./motion";
  * when the stick moves or a button goes down is what a training mode shows and
  * what a person can read.
  *
- * The buffer is not repeated here — `DebugPanel` already prints it with the
+ * The buffer is not repeated here — `Readouts` already prints it with the
  * frames each press has left.
  *
- * Pure: no PixiJS, no DOM. Scaffolding, like the panel that draws it.
+ * Pure: no PixiJS, no DOM. Scaffolding, like the readouts that draw it.
  */
 
 /** How many entries the line holds before the oldest falls off. */

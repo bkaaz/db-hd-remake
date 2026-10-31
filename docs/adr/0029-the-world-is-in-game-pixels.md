@@ -1,6 +1,7 @@
 # 0029 — The world is in game pixels, inside one scaled screen
 
-**Status:** accepted 2026-10-30
+**Status:** accepted 2026-10-30 · where our tools go and the fixed scale
+superseded by 0041 (2026-10-31)
 
 A fight is drawn into one container the size of the original's screen
 (256×224), centred in the window and scaled as a whole (`GameView` in

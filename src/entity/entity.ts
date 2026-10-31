@@ -599,11 +599,6 @@ export class Entity {
     return this.sm?.def.damage ?? 0;
   }
 
-  /** How full the ki meter is, 0..1 — what the ki bar draws. */
-  get kiFraction(): number {
-    return this.maxKi > 0 ? this.ki / this.maxKi : 0;
-  }
-
   /**
    * Play a sound on this entity's side of the fight — for what happens to
    * it, like the noise of a blow it takes, which the original plays as the

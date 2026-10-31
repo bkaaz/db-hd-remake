@@ -9,6 +9,8 @@ const SCALE = 2;
 const CELL_W = 110;
 const CELL_H = 130;
 const GAP = 8;
+/** Over the grid, for the line that says whose pick it is. */
+const PROMPT_ROOM = 36;
 
 /** A slot in the grid: a name, and whether there is anything behind it yet. */
 interface Slot {
@@ -132,12 +134,21 @@ export class SelectScene implements Scene {
     this.view.destroy({ children: true });
   }
 
-  /** Centre the grid, and put each fighter on the floor of their own cell. */
+  /**
+   * Centre the grid, and put each fighter on the floor of their own cell. The
+   * canvas is the game's screen at the page's scale (ADR 0041); a grid wider
+   * than it is shrunk to fit — this screen is a stand-in, and a fraction of a
+   * scale blurring it is cheaper than a second layout.
+   */
   private readonly place = (): void => {
     const rows = Math.ceil(this.slots.length / this.columns);
     const width = this.columns * CELL_W + (this.columns - 1) * GAP;
-    const left = Math.round((this.app.screen.width - width) / 2);
-    const top = Math.round((this.app.screen.height - rows * (CELL_H + GAP)) / 2);
+    const height = PROMPT_ROOM + rows * (CELL_H + GAP);
+    const { width: screenW, height: screenH } = this.app.screen;
+    const shrink = Math.min(1, screenW / width, screenH / height);
+    this.view.scale.set(shrink);
+    const left = Math.round((screenW / shrink - width) / 2);
+    const top = Math.round((screenH / shrink - height) / 2) + PROMPT_ROOM;
 
     this.slots.forEach((slot, i) => {
       const { x, y } = this.cellAt(i, left, top);
@@ -149,8 +160,8 @@ export class SelectScene implements Scene {
         slot.entity.groundY = slot.entity.y;
       }
     });
-    this.prompt.x = Math.round(this.app.screen.width / 2);
-    this.prompt.y = top - 36;
+    this.prompt.x = Math.round(screenW / shrink / 2);
+    this.prompt.y = top - PROMPT_ROOM;
     this.left = left;
     this.top = top;
   };

@@ -1,6 +1,7 @@
 import type { Application } from "pixi.js";
 import type { Sounds } from "./audio/sounds";
 import type { Keyboard } from "./input/keyboard";
+import type { Page } from "./ui/page";
 
 /**
  * A scene is one screen of the game, and the only thing `main.ts` knows how to
@@ -53,12 +54,14 @@ export interface DebugRequest {
 }
 
 /**
- * What every scene is handed: the renderer, the game-wide sound bank, and the
- * keyboard — which is here rather than only in `step` because a scene may want
+ * What every scene is handed: the renderer, the page around it, the game-wide
+ * sound bank, and the keyboard — which is here rather than only in `step` because a scene may want
  * to *set* a toggle while it is being built, not just read one every frame.
  */
 export interface SceneContext {
   app: Application;
+  /** Where our tools go around the game's screen: readouts, notices. */
+  page: Page;
   bank: Sounds;
   keyboard: Keyboard;
 }

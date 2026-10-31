@@ -4,26 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DBZ: Hyper Dimension — Remake</title>
-    <style>
-      html,
-      body {
-        margin: 0;
-        height: 100%;
-        background: #101018;
-        overflow: hidden;
-      }
-      #app {
-        width: 100%;
-        height: 100%;
-      }
-      /* Keep pixel art crisp instead of blurry when scaled. */
-      canvas {
-        image-rendering: pixelated;
-      }
-    </style>
   </head>
   <body>
-    <div id="app"></div>
+    <!-- The canvas holds the game's screen alone; our tools are laid out
+         around it by src/ui/page.css (ADR 0041). -->
+    <div id="page">
+      <header id="setup"></header>
+      <aside id="p1"></aside>
+      <div id="game"><div id="notices"></div></div>
+      <aside id="p2"></aside>
+      <div id="inputs"></div>
+      <footer id="bar"></footer>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

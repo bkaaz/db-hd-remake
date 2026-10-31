@@ -38,8 +38,6 @@ export interface FightersStatus {
   health: [number, number | null];
   /** Each side's charging dial, as the HUD draws it. */
   dial: [number, number | null];
-  playerKi: number;
-  state: string;
 }
 
 /**
@@ -268,8 +266,6 @@ export class Fighters {
     return {
       health: [this.player.health, this.opponent?.health ?? null],
       dial: [this.player.dial, this.opponent?.dial ?? null],
-      playerKi: this.player.kiFraction,
-      state: this.player.state,
     };
   }
 

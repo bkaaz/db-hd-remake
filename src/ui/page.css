@@ -1,0 +1,167 @@
+/* The page around the game's screen (src/ui/page.ts). The palette is the
+   entity editor's, so the two tools read as one. */
+
+:root {
+  color-scheme: dark;
+  --bg: #101018;
+  --panel: #1a1a22;
+  --panel2: #262630;
+  --line: #33333f;
+  --text: #e6e6ec;
+  --muted: #9a9aac;
+  --accent: #00e0ff;
+  --on: #2b4f3a;
+  --on-line: #4a8a5a;
+  --warn: #e0a060;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.4 system-ui, sans-serif;
+}
+
+/* The game's column is exactly the canvas (--game-width, set by page.ts):
+   an `auto` column would grow to the bars' unwrapped width instead. */
+#page {
+  display: grid;
+  min-height: 100vh;
+  padding: 8px;
+  gap: 6px 12px;
+  align-content: center;
+  grid-template-columns: minmax(0, 1fr) var(--game-width) minmax(0, 1fr);
+  grid-template-areas:
+    ".  setup  ."
+    "p1 game   p2"
+    ".  inputs ."
+    ".  bar    .";
+}
+#page.stacked {
+  justify-content: center;
+  grid-template-columns: calc(var(--game-width) / 2) calc(var(--game-width) / 2);
+  column-gap: 0;
+  grid-template-areas:
+    "setup  setup"
+    "game   game"
+    "inputs inputs"
+    "p1     p2"
+    "bar    bar";
+}
+
+#setup { grid-area: setup; }
+#p1 { grid-area: p1; justify-self: end; align-self: start; }
+#p2 { grid-area: p2; justify-self: start; align-self: start; }
+#game { grid-area: game; position: relative; line-height: 0; }
+/* Its height kept when empty, or flipping the readout would move the game. */
+#inputs { grid-area: inputs; min-height: 30px; }
+#bar { grid-area: bar; }
+#page.stacked #p1, #page.stacked #p2 { justify-self: stretch; min-width: 0; }
+
+#game canvas { display: block; image-rendering: pixelated; }
+
+/* --- the bars ------------------------------------------------------------ */
+
+#setup, #bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+#bar .spacer { flex: 1; }
+.field { display: inline-flex; align-items: center; gap: 6px; }
+.lbl { color: var(--muted); }
+.notice-line { color: var(--warn); flex-basis: 100%; }
+
+button, select {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+button:hover, select:hover { border-color: var(--muted); }
+
+/* A few fixed choices: all of them visible, one click to pick. */
+.seg { display: inline-flex; }
+.seg button { border-radius: 0; margin-left: -1px; color: var(--muted); }
+.seg button:first-child { border-radius: 4px 0 0 4px; margin-left: 0; }
+.seg button:last-child { border-radius: 0 4px 4px 0; }
+.seg button.on { background: var(--on); border-color: var(--on-line); color: var(--text); position: relative; }
+
+/* A switch says its own key, so no line elsewhere has to. */
+kbd {
+  font: 11px ui-monospace, monospace;
+  padding: 0 4px;
+  margin-right: 4px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--muted);
+}
+button.pill { color: var(--muted); }
+button.pill.on { background: var(--on); border-color: var(--on-line); color: var(--text); }
+button.pill.on kbd { color: var(--text); border-color: var(--on-line); }
+button.record.on { background: #5a2020; border-color: #c04040; color: var(--text); }
+
+/* The keys, folded: opened over the game rather than pushing it up. */
+.keys { position: relative; }
+.keys summary { cursor: pointer; color: var(--muted); list-style: none; }
+.keys summary::before { content: "▸ "; }
+.keys[open] summary::before { content: "▾ "; }
+.keys .sheet {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px 12px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+/* --- what the engine thinks ---------------------------------------------- */
+
+.readout, #inputs pre {
+  margin: 0;
+  font: 12px/1.5 ui-monospace, monospace;
+  color: #9fb8d0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  overflow: hidden;
+}
+.readout:empty, #inputs pre:empty { display: none; }
+#inputs pre { white-space: nowrap; font-size: 13px; }
+
+/* --- notices, over the game's screen ------------------------------------- */
+
+#notices {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+.notice {
+  font: 13px ui-monospace, monospace;
+  color: #9fc09f;
+  background: rgba(16, 16, 24, 0.85);
+  padding: 2px 8px;
+  border-radius: 3px;
+  white-space: pre-wrap;
+  text-align: center;
+}
+.notice.loud { margin: auto 0; color: #ffaa66; font-size: 16px; padding: 8px 12px; }

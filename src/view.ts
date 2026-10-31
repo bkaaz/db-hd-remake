@@ -7,12 +7,11 @@ import { Container, Graphics, type Application } from "pixi.js";
  */
 export const VIEW = { width: 256, height: 224 };
 
-/** How many window pixels one game pixel takes. The only place it is chosen. */
-export const SCALE = 3;
-
 /**
- * The screen as a Pixi container, centred in the window and scaled by
- * `SCALE`, with what lies past its edges clipped.
+ * The screen as a Pixi container filling the canvas, scaled to it, with what
+ * lies past its edges clipped. How many window pixels one game pixel takes is
+ * the page's choice (`ui/page.ts`, ADR 0041): the canvas is sized to a whole
+ * multiple of the screen, and this reads the multiple back off it.
  *
  * Three layers, back to front: the backdrop, the world and the HUD. The
  * world scrolls with the camera, the backdrop's layers each at their own
@@ -29,10 +28,9 @@ export class GameView {
   constructor(private readonly app: Application) {
     this.screen.addChild(this.backdrop, this.world, this.hud, this.mask);
     this.screen.mask = this.mask;
-    this.screen.scale.set(SCALE);
     app.stage.addChild(this.screen);
-    this.centre();
-    app.renderer.on("resize", this.centre);
+    this.fit();
+    app.renderer.on("resize", this.fit);
   }
 
   /**
@@ -45,15 +43,11 @@ export class GameView {
   }
 
   destroy(): void {
-    this.app.renderer.off("resize", this.centre);
+    this.app.renderer.off("resize", this.fit);
     this.screen.destroy({ children: true });
   }
 
-  private readonly centre = (): void => {
-    const { width, height } = this.app.screen;
-    this.screen.position.set(
-      Math.round((width - VIEW.width * SCALE) / 2),
-      Math.round((height - VIEW.height * SCALE) / 2),
-    );
+  private readonly fit = (): void => {
+    this.screen.scale.set(this.app.screen.width / VIEW.width);
   };
 }

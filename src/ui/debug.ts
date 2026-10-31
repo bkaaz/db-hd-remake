@@ -1,17 +1,17 @@
-import { Application, Text } from "pixi.js";
 import { RELAUNCH_LIMIT } from "../combat/combo";
 import { damageScale } from "../combat/scaling";
 import type { EntityDebug } from "../entity/entity";
+import type { Page } from "./page";
 
 /**
  * What the engine thinks, in words, for both fighters — toggled with `I`.
  *
- * **Two fixed columns rather than text above each head.** Attached labels tell
- * you whose they are, which matters when there are many bodies; with exactly two
- * they only cost. Fighters stand 30–60 px apart during a combo, which is
- * precisely when these numbers are being read, so attached blocks would overlap
- * and jitter exactly then — and swap sides on a cross-up. Left is always the
- * player, right always the opponent.
+ * **Two fixed blocks beside the game rather than text above each head.**
+ * Attached labels tell you whose they are, which matters when there are many
+ * bodies; with exactly two they only cost. Fighters stand 30–60 px apart
+ * during a combo, which is precisely when these numbers are being read, so
+ * attached blocks would overlap and jitter exactly then — and swap sides on a
+ * cross-up. Left is always the player, right always the opponent.
  *
  * This is scaffolding. It reads `Entity.debug` and nothing else, so deleting
  * this file and that getter removes it completely.
@@ -21,45 +21,44 @@ export interface DebugFrame {
   opponent: EntityDebug | null;
 }
 
-const TOP = 52;
-const INSET = 20;
+export class Readouts {
+  private readonly left = make("readout");
+  private readonly right = make("readout");
+  /** The player's inputs, in a strip under the game: one line that grows sideways. */
+  private readonly inputs = make();
 
-export class DebugPanel {
-  private readonly left: Text;
-  private readonly right: Text;
-
-  constructor(private readonly app: Application) {
-    [this.left, this.right] = [make(), make()];
-    this.left.x = INSET;
-    this.right.anchor.set(1, 0);
-    for (const t of [this.left, this.right]) {
-      t.y = TOP;
-      app.stage.addChild(t);
-    }
+  constructor(page: Page) {
+    page.p1.append(this.left);
+    page.p2.append(this.right);
+    page.inputs.append(this.inputs);
   }
 
   draw(frame: DebugFrame | null): void {
-    const on = frame !== null;
-    for (const t of [this.left, this.right]) t.visible = on;
-    if (!frame) return;
-
-    this.right.x = this.app.screen.width - INSET;
-    // The player's inputs close their own block. Only theirs: the opponent is
-    // the dummy, and a timeline it was handed is not an input anybody made.
-    this.left.text = `${block("P1", frame.player)}\n${frame.player.inputs}`;
-    this.right.text = frame.opponent ? block("P2", frame.opponent) : "";
+    // Only the player's inputs: the opponent is the dummy, and a timeline it
+    // was handed is not an input anybody made.
+    show(this.left, frame ? block("P1", frame.player) : "");
+    show(this.right, frame?.opponent ? block("P2", frame.opponent) : "");
+    show(this.inputs, frame?.player.inputs ?? "");
   }
 
   destroy(): void {
-    for (const t of [this.left, this.right]) t.destroy();
+    for (const element of [this.left, this.right, this.inputs]) element.remove();
   }
 }
 
-const make = (): Text =>
-  new Text({ text: "", style: { fill: "#7f9fbf", fontFamily: "monospace", fontSize: 12 } });
+function make(className = ""): HTMLPreElement {
+  const element = document.createElement("pre");
+  element.className = className;
+  return element;
+}
+
+/** Sixty times a second: the page is only touched when the words change. */
+function show(element: HTMLElement, text: string): void {
+  if (element.textContent !== text) element.textContent = text;
+}
 
 /**
- * One fighter, five short lines. Fewer numbers, each of which answers a question.
+ * One fighter, six short lines. Fewer numbers, each of which answers a question.
  *
  * `framesLeft` is deliberately not among them: it counts down every frame and
  * restarts at every step, so on screen it is a blur. It is still in
@@ -71,7 +70,8 @@ function block(who: string, d: EntityDebug): string {
   return [
     `${who}  ${d.state}`,
     `step ${d.step + 1}/${d.steps} · rank ${d.rank}`,
-    `${d.hitConfirmed ? "hit ✓" : "hit —"} · freeze ${d.freeze} · stun ${d.stun} · hp ${d.hp}`,
+    `${d.hitConfirmed ? "hit ✓" : "hit —"} · freeze ${d.freeze} · stun ${d.stun}`,
+    `hp ${d.hp} · ki ${d.ki}`,
     `vx ${d.vx.toFixed(1)} · buf ${buffer}`,
     `combo ${d.combo.hits} hits · ${d.combo.damage} dmg · next ×${damageScale(d.combo.hits).toFixed(1)}` +
       ` · lift ${d.combo.lifts}/${RELAUNCH_LIMIT}`,

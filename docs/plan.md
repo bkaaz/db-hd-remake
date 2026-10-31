@@ -156,7 +156,8 @@ takes an investigation instead of a procedure. In this order:
 
 The camera, its shake and arena 0 are the original's (`rom.md`, The
 camera); every size one value to change, not a hunt (owner, 2026-10-30) —
-the game's screen and its scale are `src/view.ts` (ADR 0029), the camera
+the game's screen is `src/view.ts` (ADR 0029) and its scale the page's
+(`src/ui/scale.ts`, ADR 0041), the camera
 and its shake `src/camera/` (ADR 0030), arenas `src/arena/` (ADR 0031). *Open:* whether its 64-px push
 band grows with a wider screen — decided when the screen is widened.
 
@@ -167,11 +168,7 @@ band grows with a wider screen — decided when the screen is widened.
 2. **A shove into the screen's edge passes to the attacker**, reversed, for
    the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
    corner, decides whether it replaces what we have.
-3. **Our tools around the game's screen** (owner, 2026-10-30) — the
-   panel (`src/ui/panel.ts`, ADR 0040) picks the scene and its parameters
-   and flips the debug switches. Next: the status line and notices laid
-   out in the space around the screen.
-4. **Where the original starts a round** — the fighters' x and the
+3. **Where the original starts a round** — the fighters' x and the
    camera's (`$0D:D7A0`, `$01:8B84`), read from the code. Ours start at
    35% / 65% of the world under a centred camera, which puts both in the
    push band, so the first step scrolls.

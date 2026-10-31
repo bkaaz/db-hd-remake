@@ -1,5 +1,5 @@
 import type { WorldInput } from "../entity/entity";
-import type { Toggles } from "../debug/toggles";
+import type { Toggle, Toggles } from "../debug/toggles";
 
 /**
  * The keyboard, turned into one game frame of input.
@@ -119,10 +119,7 @@ export class Keyboard {
     }
     if (key === " ") this.kiAsked = !e.repeat;
     else if (key === "m") this.modeAsked = !e.repeat;
-    else if (key === "t") this.toggles.flip("dummy");
-    else if (key === "b") this.toggles.flip("boxes");
-    else if (key === "i") this.toggles.flip("readout");
-    else if (key === "l") this.toggles.flip("recording");
+    else if (TOGGLE_KEYS[key]) this.toggles.flip(TOGGLE_KEYS[key]);
   }
 
   private release(e: KeyboardEvent): void {
@@ -156,3 +153,29 @@ const BUTTON_KEYS: Record<string, keyof Buttons | undefined> = {
   d: "strike",
   c: "dash",
 };
+
+const TOGGLE_KEYS: Record<string, Toggle | undefined> = {
+  b: "boxes",
+  i: "readout",
+  t: "dummy",
+  l: "recording",
+};
+
+/** The key that flips a switch, as the page's switch shows it. */
+export function keyFor(toggle: Toggle): string {
+  return (Object.keys(TOGGLE_KEYS).find((k) => TOGGLE_KEYS[k] === toggle) ?? "?").toUpperCase();
+}
+
+/** Every key that is not a switch, and what it does — the page's key sheet. */
+export function keySheet(): [key: string, does: string][] {
+  const button = (b: keyof Buttons) => (Object.keys(BUTTON_KEYS).find((k) => BUTTON_KEYS[k] === b) ?? "?").toUpperCase();
+  return [
+    ["← →", "walk"],
+    ["↑", "jump"],
+    ["↓", "crouch"],
+    ...BUTTONS.map((b): [string, string] => [button(b), b]),
+    [`${button("attack")}+${button("guard")}`, "charge ki"],
+    ["M", "next debug mode"],
+    ["Space", "refill health and ki"],
+  ];
+}

@@ -1,4 +1,4 @@
-import { Application, type Text } from "pixi.js";
+import { Application } from "pixi.js";
 import { loadSoundBank } from "./audio/bank";
 import { Toggles } from "./debug/toggles";
 import { Keyboard } from "./input/keyboard";
@@ -7,8 +7,10 @@ import { queryFor, type Scene, type SceneContext, type SceneRequest } from "./sc
 import { firstRequest, REMEMBERED } from "./sceneSource";
 import { DebugScene } from "./scenes/debug";
 import { SelectScene } from "./scenes/select";
-import { Panel } from "./ui/panel";
-import { showMessage } from "./ui/status";
+import { showMessage, type Notice } from "./ui/notices";
+import { Page } from "./ui/page";
+import { SetupBar } from "./ui/setup";
+import { SwitchBar } from "./ui/switches";
 
 /**
  * Game entry point: put a renderer on the page, load what every scene needs,
@@ -25,11 +27,10 @@ const MAX_CATCH_UP = 600;
 
 async function boot(): Promise<void> {
   const app = new Application();
-  await app.init({ background: "#101018", resizeTo: window, antialias: false });
-
-  const mount = document.getElementById("app");
-  if (!mount) throw new Error("Missing #app mount element");
-  mount.appendChild(app.canvas);
+  await app.init({ background: "#101018", antialias: false });
+  // The canvas is the game's screen and nothing else; the page sizes it (ADR 0041).
+  const page = new Page(localStorage);
+  page.mount(app.canvas, (width, height) => app.renderer.resize(width, height));
 
   const toggles = new Toggles(localStorage);
   // the recording is a file being written, not only a flag
@@ -37,20 +38,20 @@ async function boot(): Promise<void> {
     if (toggle === "recording") (on ? startRecording : stopRecording)();
   });
   const keyboard = new Keyboard(toggles);
-  const ctx: SceneContext = { app, bank: await loadSoundBank(), keyboard };
+  const ctx: SceneContext = { app, page, bank: await loadSoundBank(), keyboard };
 
   /** Null while a scene is being loaded: the crank turns, nothing happens. */
   let scene: Scene | null = null;
   let loading = false;
   /** Why the last scene could not be built — taken down by the next pick. */
-  let failure: Text | null = null;
+  let failure: Notice | null = null;
   let builds = 0;
 
   function go(request: SceneRequest): void {
     // Remembered rather than written into the address: a reload lands where
     // you were, and the address stays short (ADR 0040).
     localStorage.setItem(REMEMBERED, queryFor(request));
-    panel.show(request);
+    setup.show(request);
     scene?.destroy();
     scene = null;
     failure?.destroy();
@@ -64,21 +65,22 @@ async function boot(): Promise<void> {
         return;
       }
       loading = false;
-      if (typeof result === "string") failure = showMessage(app, result);
+      if (typeof result === "string") failure = showMessage(page.notices, result);
       else scene = result;
     });
   }
 
   const first = firstRequest(new URL(location.href), localStorage.getItem(REMEMBERED));
   if (typeof first.request === "string") {
-    showMessage(app, first.request);
+    showMessage(page.notices, first.request);
     return;
   }
   // What the address asked for is remembered now, so it can go: an old link
   // left in the bar would undo every pick made since on the next reload.
   history.replaceState(null, "", location.pathname);
-  const panel = new Panel(first.request, go, toggles);
-  if (first.notice) panel.say(first.notice);
+  const setup = new SetupBar(first.request, go, page);
+  new SwitchBar(page, toggles);
+  if (first.notice) setup.say(first.notice);
   go(first.request);
 
   // The clock. Real time arrives in whatever lumps the monitor delivers and is
