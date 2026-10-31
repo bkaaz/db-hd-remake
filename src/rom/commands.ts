@@ -78,7 +78,7 @@ export function arrow(direction: number): string {
  * What a command's first word asks for. Its bits in `C1C0` — B, Y, A, X and
  * → — must all be down ($0D:F10A). Bit `0x0008` asks for its directions and
  * shoulder buttons exactly (Double Kick, → + B); bit `0x1000` for any one of
- * them, beyond those already required (side slash, R + B; the throw's
+ * them, beyond those already required (Side Slash, R + B; the throw's
  * ↓ ← → is met by its → already) — $0D:F15F.
  */
 export function buttonName(word: number): string {

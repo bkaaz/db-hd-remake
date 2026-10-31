@@ -138,8 +138,9 @@ takes an investigation instead of a procedure. In this order:
    data, with the original's window: each direction within 12 frames of the
    next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
    for the whole motion, which a half circle barely fits.
-3. **The original's reactions** — light, heavy and the knockdown are
-   built; in the air (`1a`), crouching (`17`/`18`), dizzy (`1d`), and the
+3. **The original's reactions** — light, heavy, the long reel, in the
+   air (`1a`) and the knockdown are built; crouching (`17`/`18`), dizzy
+   (`1d`), and the
    choice between them as `$0D:D29C` makes it. The reactions brought from
    goku_old (`hurt_air`, `launched`, `blown` …) still land straight into
    `downed`.
@@ -207,9 +208,9 @@ still differs from the original:
 
 ### Then: the rest of Goku
 
-1. **The rest of the buttons** — crouching Y / B (`m94`, `m95`) and the
-   jump attacks (`m96`–`m99`) are not states of `goku` yet
-   (`src/rom/buttons.ts`); their hit data is in the table already.
+1. **The rest of the buttons** — crouching Y / B (`m94`, `m95`) are not
+   states of `goku` yet (`src/rom/buttons.ts`); their hit data is in the
+   table already.
 2. **The rest of the specials** — every move of Goku's command table
    (`rom.md`, The buttons); Quadruple Kick is built.
 3. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut

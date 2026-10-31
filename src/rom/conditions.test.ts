@@ -47,7 +47,7 @@ describe.skipIf(!existsSync(ROM_PATH))("commands whole, on the cartridge", () =>
     expect(thrown.cost).toBe(0);
   });
 
-  it("reads what the Kamehameha costs and what Meteor Smash needs", () => {
+  it("reads what the Kamehameha costs and what Saiyan Meteor needs", () => {
     expect(command(0xab).cost).toBe(10);
     expect(command(0xab).opponentMove).toBeNull();
     expect(describeConditions(command(0xad).conditions, context)).toContain("health 80 or less");

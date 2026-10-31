@@ -6,5 +6,6 @@
   "slam": { "code": "sl", "onHit": "slam", "hitstun": 20, "hitstop": 6, "relaunch": true },
   "light": { "code": "li", "onHit": "reel_light", "hitstun": 14, "hitstop": 8, "relaunch": false },
   "heavy": { "code": "he", "onHit": "reel_heavy", "hitstun": 26, "hitstop": 8, "relaunch": false },
-  "down": { "code": "dn", "onHit": "reel_down", "hitstun": 20, "hitstop": 8, "relaunch": true }
+  "down": { "code": "dn", "onHit": "reel_down", "hitstun": 20, "hitstop": 8, "relaunch": true },
+  "long": { "code": "lo", "onHit": "reel_long", "hitstun": 24, "hitstop": 8, "relaunch": false }
 }

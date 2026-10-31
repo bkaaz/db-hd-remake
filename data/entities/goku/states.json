@@ -356,6 +356,24 @@
       "turn": false,
       "transitions": [
         {
+          "when": [
+            "frames:2",
+            "pressed:attack"
+          ],
+          "to": "jump_y"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:smash"
+          ],
+          "to": "jump_b"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall"
+        },
+        {
           "when": "landed",
           "to": "land"
         }
@@ -370,6 +388,20 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "pressed:attack"
+          ],
+          "to": "jump_fwd_y"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:smash"
+          ],
+          "to": "jump_fwd_b"
+        },
         {
           "when": "landed",
           "to": "land"
@@ -386,8 +418,128 @@
       "turn": false,
       "transitions": [
         {
+          "when": [
+            "frames:2",
+            "pressed:attack"
+          ],
+          "to": "jump_fwd_y"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:smash"
+          ],
+          "to": "jump_fwd_b"
+        },
+        {
           "when": "landed",
           "to": "land"
+        }
+      ]
+    },
+    "jump_fall": {
+      "anim": "m05_2",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "pressed:attack",
+          "to": "jump_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "jump_b"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_fall_attacked": {
+      "anim": "m05_2",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_y": {
+      "anim": "m96",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 25,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "jump_b": {
+      "anim": "m97",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 27,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "jump_fwd_y": {
+      "anim": "m98",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 25,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "jump_fwd_b": {
+      "anim": "m99",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
         }
       ]
     },
@@ -1319,7 +1471,7 @@
       "shove": -2,
       "turn": false,
       "sound": "voice_hurt",
-      "ifAirborne": "juggle",
+      "ifAirborne": "reel_air",
       "ifCrouching": "reel_light_crouch",
       "transitions": [
         {
@@ -1348,7 +1500,7 @@
       "shove": -3,
       "turn": false,
       "sound": "voice_hurt",
-      "ifAirborne": "hurt_heavy_air",
+      "ifAirborne": "reel_air",
       "ifCrouching": "reel_heavy_crouch",
       "transitions": [
         {
@@ -1368,6 +1520,52 @@
         {
           "when": "stunEnd",
           "to": "crouch"
+        }
+      ]
+    },
+    "reel_long": {
+      "anim": "m42",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "ifCrouching": "reel_long_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_long_crouch": {
+      "anim": "m43",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_air": {
+      "anim": "m1a",
+      "rank": 1,
+      "launch": [
+        -2,
+        -6
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
         }
       ]
     },

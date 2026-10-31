@@ -553,6 +553,20 @@ bytes per fighter at `$3D:9EDB` — Goku 44 for Y, 48 for B. A recording
 agreed: close Y at 41 px, far from 53. The CPU keeps lines of its own for
 deciding what to do (`$0D:F7F6`, `$0D:F95B`, `$0D:F96F`).
 
+**In the air** a jump's handler (`$0F:9EB1`, from move `05`'s `$0F:9F60`
+and its kin) asks the command table, then the buttons, unless field
+`0x25` bit 3 is set. Y or B there picks `96` / `97` when vx's high byte is
+0 and `98` / `99` otherwise (`$0D:FF77`), keeping vx and vy, but only
+while field `0x31` is clear: the jump attack's handler (`$20:BABA`, the
+same for the whole roster) sets it as its script runs out (`$0F:B16D`),
+and landing clears it (`$0D:CB47`) — one attack per jump, and the air
+specials ask for it clear too. As the script runs out the fighter goes
+back to move `05` at a step and frame of his own (`$0F:B190`, by
+character: Goku step 4 at 34, Vegeta step 2 at 28 — both past the step's
+end, so the script's last pose, the fall, is what shows). Landing, in the
+attack or after it, is move `3b` and sound `0c` (`$0F:9FB8`; not for
+character 6).
+
 **Special moves come first** (`$0D:F085`): a command table of 0x150 bytes
 per fighter at `$3D:9EEF` (offsets `$0D:F5CF`) — 0x88 on the ground, 0x40
 in the air, the rest for mode `$0552` — the fight above the arena `?`
@@ -560,16 +574,14 @@ in the air, the rest for mode `$0552` — the fight above the arena `?`
 `$0D:CB96`) — in 8-byte rows, scanned last row
 first: bytes 0–2 its **conditions** — masks over flags the game rebuilds
 every frame into fighter fields `0x4C`–`0x4E` (`$0D:F650`), each bit read
-in `src/rom/conditions.ts` and named by `port` (Meteor Smash's `41`: on the
+in `src/rom/conditions.ts` and named by `port` (Saiyan Meteor's `41`: on the
 ground, health 80 or less) — byte 3 the move's **cost**,
 byte 4 a sequence, byte 5 the move. The cost comes off the health as the
 move starts, never below 1 (`$0D:EED7`) — none in training (`$1A02 = 3`)
 or while `$1B15` is set. Goku's: the large ki blast `a9` 5, the
-Kamehameha `aa` / `ab` 10, the same in the air (`d2` 5, `d3` / `d4` 10),
-everything else 0. The move behind health 80 or less is each fighter's
-ultimate, open while his bar is red (owner). Vegeta's, named by the owner:
-`ac` Final Flash, a charged beam as the Kamehameha; `ad` the Big Bang,
-shot upward. A sequence (`$0D:F2E6` + 2 ×
+Kamehameha `aa` / `ab` 10, the same above the arena (`d2` 5, `d3` / `d4`
+10), everything else 0. The move behind health 80 or less is each fighter's
+ultimate, open while his bar is red (owner). A sequence (`$0D:F2E6` + 2 ×
 number, words in bank `$0D`) is a button word, then directions **newest
 first**, ended by `0000`, as the pad's bits facing right: B `8000`, Y `4000`,
 A `0080`, X `0040`, R `0010`; → `0100`, ← `0200`, ↓ `0400`, ↑ `0800`. Goku's
@@ -584,22 +596,29 @@ Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
 70 — `goku`'s `quad_kick` states copy it as `velAt`.
 
-| move | input | name |
+**Each fighter's moves by id**: inputs as the command table has them
+(`npm run rom -- port <id> --fighter <name>`), names from the owner's move
+lists. The rows `c8` and on are the same moves above the arena (`mode`).
+
+| move | Goku | Vegeta |
 |---|---|---|
-| `a5` | ← ↙ ↓ ↘ → B | Quadruple Kick |
-| `a4` | → ↓ ↘ B | Jumping Knee Slash |
-| `a6` | ↓ ↙ ← B | spinning kick |
-| `a7` | ↓ ↘ → Y | Double Punch |
-| `a2` | → B | Double Kick |
-| `9c` / `9e` | ← ↓ ↙ Y / B | teleport towards / away |
-| `a9` | → ← → A | large ki blast |
-| `ab` | ← ↙ ↓ ↘ → A | Kamehameha |
-| `aa` | ↓ ↙ → A | Super Kamehameha |
-| `ad` | ← ↙ ↓ ↘ → ↗ Y | Meteor Smash |
-| `a8` | R + B | side slash |
-| `9d` | → + X, in grab range | the throw (The throw, above) |
-| `a0`, `a1`, `9f` | → ← → / ↓ ↙ ← / ↓ ↘ → + X | not in the move lists `?` |
-| `ac` | in the air | Slash Down Kick |
+| `9c` | Teleport Towards — ← ↓ ↙ Y | Jumping Knee Slash — → ↓ ↘ B |
+| `9d` | the throw — → + X, in grab range (The throw, above) | the throw — the same |
+| `9e` | Teleport Away — ← ↓ ↙ B | Jumping Bomb — ↙ ↗ Y |
+| `9f`, `a0`, `a1` | ↓ ↘ → / → ← → / ↓ ↙ ← + X — not in the move lists `?` | the same |
+| `a2` | Double Kick — → + B | Driving Elbow (3D) — R + Y |
+| `a4` | Jumping Knee Slash — → ↓ ↘ B | Sliding Kick — ↓ ↘ → B |
+| `a5` | Quadruple Kick — ← ↙ ↓ ↘ → B | Rushing Knee — ↓ ↘ → B, only from `a4` |
+| `a6` | Abiseh Geri, a spinning kick — ↓ ↙ ← B | Cross Punch + Jump Kick — ↓ ↘ → B, only from `a5` |
+| `a7` | Double Punch — ↓ ↘ → Y | Energy Dash — ← ↙ ↓ ↘ → Y |
+| `a8` | Side Slash (3D) — R + B | — |
+| `a9` | Large Ki Blast — → ← → A | Bakuhatsu-Ha — ↓ ↑ Y |
+| `aa` | Chou Kamehame-Ha, charged — ↓ ↙ → A | Renzoku Energy Dan — ↓ ↘ → A |
+| `ab` | Kamehame-Ha, upward — ← ↙ ↓ ↘ → A | Energy Field, in the air — ↓ ↙ ← Y |
+| `ac` | Slash Down Kick, in the air — → ↓ B | Final Flash, charged — ↓ ↙ → A |
+| `ad` | Saiyan Meteor, the ultimate — ← ↙ ↓ ↘ → ↗ Y | Big Bang Attack — ← ↙ ↓ ↘ → A |
+| `ae` | — | Galactic Gunfire, the ultimate — ↑ ↓ Y, within 64 px of a grounded opponent |
+| `b1` | — | Vertical Ki Blasts, in the air — ↓ ↙ ← A |
 
 ## Hit data
 
@@ -638,8 +657,12 @@ identified yet.
 bits of bytes 0–1 as one word: `0x0004` `$D622`, `0x0008` light,
 `0x0010` heavy, `0x0020` → move `19`, `0x0040` knockdown (move `1b`),
 `0x0080` → move `42`/`43`, `0x0400` → move `1e`, `0x0800` `$D670`,
-`0x1000` `$D540`. Airborne, bits of byte 1: `01` → move `1a`, `02`
-knockdown, `04` → move `1e`, `08` `$D670`. Then byte 2 bits 0–2 for both
+`0x1000` `$D540`; `0x0001`, `0x0002`, `0x0100` and `0x0200` are not read
+there. `0x0080` (`$D558`, the jump attacks') is a long light reel: `42`
+standing, 24 frames of the light reel's drawing, `43` crouching
+(`$0D:D7BA`), knockback index 6. Airborne, bits of byte 1: `01` → move `1a` (`$D616`, knockback
+index 16: a tumble that ends in the jump's fall pose, then landing as a
+jump does, `3b` and `0c`, turned to face — `$0F:A1E0`), `02` knockdown, `04` → move `1e`, `08` `$D670`. Then byte 2 bits 0–2 for both
 (`$D3F3`, `$D46E`, `$D4D4`). Light is move `15` (`13` when field `0x97`
 bit 0 is set), heavy `16` (`14`); `$0D:D7BA` turns them into `17`/`18`
 `?`. Hitstun is that move's script — light 14 frames, heavy 26 — not a
@@ -649,7 +672,8 @@ number in the record.
 index sets field `0x8c`, the push speed `0x88` (8.8 fixed point, turned by
 the attacker's facing) and vy from a table of 6-byte entries at `$0D:D68A`.
 Light (index 2) pushes 2.0 px/frame, heavy (3) 3.0, knockdown (4) 2.0 and
-−4.0 up. The push **slows by 0.25 every frame** until it stops
+−4.0 up, the long light reel (6) 2.0 for 10 frames, in the air (16) 2.0
+and −6.0 up. The push **slows by 0.25 every frame** until it stops
 (`$0D:EC5F`, which slows vx the same way) — 9 px in all for light, 19.5
 for heavy. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in
 the air, 64 down or dizzy — the frames a push of that speed lasts, and

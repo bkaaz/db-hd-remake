@@ -15,6 +15,7 @@ import { drawFrame, flipLayout, readLayout, readPalette, type Drawing } from "./
 import { PLAIN, parseFrameId, type Look } from "./look";
 import { objectFrame } from "./object";
 import { objectVram, resourceStream } from "./resource";
+import { fallAfterJumpAttack, fallStep, JUMP } from "./fall";
 import { handlerAt, handlerFacts } from "./handler";
 import { heldAnims } from "./held";
 import { readScript, type ScriptOp } from "./script";
@@ -40,9 +41,13 @@ export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, 
   return drawFrame(decompress(rom, at).data, pieces, readPalette(rom, palette));
 }
 
-/** Where the move's handler cuts its script (`jumpCuts`); none when it cannot be read. */
+/**
+ * Where the move's handler cuts its script (`jumpCuts`); none when it cannot
+ * be read. The jump is cut by another move's handler too: his jump attack
+ * falls back into it at a step of its own (`fall.ts`).
+ */
 function handlerCuts(rom: Uint8Array, t: FighterTables, move: number, ops: ScriptOp[]): number[] {
-  const byHand = HAND_CUTS[move] ?? [];
+  const byHand = [...(HAND_CUTS[move] ?? []), ...(move === JUMP ? [fallStep(ops, fallAfterJumpAttack(rom, t.character))] : [])];
   try {
     return [...new Set([...jumpCuts(ops, handlerFacts(rom, handlerAt(rom, t.character, move), stepStarts(ops).length)), ...byHand])];
   } catch {

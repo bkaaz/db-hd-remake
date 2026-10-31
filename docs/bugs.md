@@ -20,6 +20,18 @@ because a number would only need translating back.
 
 ---
 
+## Fighters pass through each other in the air
+
+`goku` / `vegeta`, a jump into a jumping opponent · noticed 2026-10-31 (owner, recording) · breaks play
+
+`Entity.solid` (`src/entity/entity.ts`) is false for an airborne body until
+it is near the ground, and `Fighters.pushApart` separates only two solid
+ones — written for `goku_old`, so a jump carries over the opponent. Two
+bodies in the air, or one in the air and one standing, overlap freely. How
+the original keeps them apart is not read yet; the fix comes from its code.
+
+To see it: debug mode 5 (P2 jumps), jump forward into him.
+
 ## Vegeta's knockdown has no lying part
 
 `npm run rom -- export --fighter vegeta`, move `1b` · noticed 2026-10-31 · annoying

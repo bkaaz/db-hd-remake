@@ -27,7 +27,11 @@ describe.skipIf(!existsSync(ROM_PATH))("todo, on the cartridge", () => {
     expect(left.toRead.flatMap((r) => r.moves)).not.toContain(0x92);
   });
 
-  it("puts first what the whole roster runs: the jumping normals", () => {
-    expect(left.toRead[0]).toMatchObject({ handler: 0x20baba, fighters: 10, moves: [0x96, 0x97, 0x98, 0x99] });
+  it("counts the jumping normals read once, for every move their shared handler runs", () => {
+    expect(left.read.filter((r) => r.move >= 0x96 && r.move <= 0x99)).toHaveLength(4);
+  });
+
+  it("puts first what most of the roster runs: ↓ ↙ ← X", () => {
+    expect(left.toRead[0]).toMatchObject({ handler: 0x0faa78, fighters: 8, moves: [0xa1, 0xca] });
   });
 });
