@@ -12,6 +12,7 @@
  */
 
 import type { BallDef } from "../combat/ball";
+import { airProblem, leavesGround, type AirTimeline } from "./air";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
 import type { HealDef } from "../combat/heal";
@@ -101,6 +102,13 @@ export interface StateDef {
    * `$20:8663`). Before the first, `vel` holds. Ground only.
    */
   velAt?: [number, number][];
+  /**
+   * What the move's handler does to the body in the air, by frame of the
+   * state (`air.ts`): leaving the ground part-way, speeds changing in
+   * flight, gravity off or only slowing the rise. Before its first `vy` the
+   * state is on the ground and `vel` / `velAt` move it.
+   */
+  air?: AirTimeline;
   /**
    * A shove on entering, in px per frame and facing-relative like `vel` — the
    * cartridge's knockback, which loses 0.25 a frame until it stops
@@ -485,6 +493,7 @@ export interface InputSnapshot {
   qcb: boolean;
   hcf: boolean;
   dbf: boolean;
+  dp: boolean;
   /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
@@ -577,6 +586,7 @@ export const TRIGGERS = [
   "motion:qcb",
   "motion:hcf",
   "motion:dbf",
+  "motion:dp",
   "animEnd",
   "stunEnd",
   "spawnEnd",
@@ -669,6 +679,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "motion:dbf":
       value = input.dbf;
+      break;
+    case "motion:dp":
+      value = input.dp;
       break;
     case "animEnd":
       value = signals.animEnded;
@@ -1124,7 +1137,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     // down is the engine's job, but noticing it is the data's, and a state that
     // never asks stays airborne at ground level: no landing pose, no thud, no
     // way out. This is the one mistake a new launcher will make.
-    if (def.airborne && !exits.some((t) => t.when === "landed" || t.when === "nearGround")) {
+    if ((def.airborne || leavesGround(def.air)) && !exits.some((t) => t.when === "landed" || t.when === "nearGround")) {
       warnings.push(
         `${where}: airborne with no "landed" or "nearGround" transition — ` +
           `nothing happens when it reaches the floor`,
@@ -1154,6 +1167,8 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     ) {
       errors.push(`${where}: "velAt" must be [frame, px per frame] pairs with the frames rising, e.g. [[14, 2.375]]`);
     }
+    const air = airProblem(def.air);
+    if (air) errors.push(`${where}: ${air}`);
     if (
       def.ball !== undefined &&
       (!Array.isArray(def.ball.at) || def.ball.at.length !== 2 || typeof def.ball.grow !== "number")

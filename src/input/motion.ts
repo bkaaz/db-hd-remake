@@ -52,6 +52,8 @@ export const MOTIONS = {
   hcf: ["back", "down", "fwd"],
   /** ↓ ↙ →, back through the bottom and out forward (the charged Kamehameha, Final Flash). */
   dbf: ["down", "back", "fwd"],
+  /** → ↓ ↘, forward, down and out forward again (Jumping Knee Slash). */
+  dp: ["fwd", "down", "fwd"],
 } as const satisfies Record<string, readonly (keyof Directions)[]>;
 
 export type MotionName = keyof typeof MOTIONS;

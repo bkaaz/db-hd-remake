@@ -229,6 +229,28 @@ export function jumpFrameCuts(ops: ScriptOp[], jumps: { step?: number; to?: numb
   return [...cuts].sort((a, b) => a - b);
 }
 
+/**
+ * The frames a handler re-arms the blow on (`$0D:D8A2`) while a hit box is
+ * out: each begins a part, so the state that plays it brings a fresh swing —
+ * Jumping Knee Slash hits up to three times, at 4, 10 and 16. A re-arm with
+ * nothing out cuts nothing; the next blow's own start does.
+ */
+export function rearmCuts(ops: ScriptOp[], rearms: number[], boxesOf: (drawing: number) => Box[]): number[] {
+  const striking = (frame: number) => {
+    let at = 0;
+    let drawing: number | null = null;
+    for (const op of ops) {
+      if (op.op !== "show" && op.op !== "hold") continue;
+      if (op.drawing !== null) drawing = op.drawing;
+      const end = at + (op.op === "hold" ? 1 : op.frames);
+      if (frame >= at && frame < end) return drawing !== null && boxesOf(drawing).some((b) => b.type === "hit");
+      at = end;
+    }
+    return false;
+  };
+  return rearms.filter((f) => f > 0 && striking(f)).sort((a, b) => a - b);
+}
+
 /** A shown step cut where a frame cut falls inside it: one piece per stretch. */
 function piecesOf(op: Extract<ScriptOp, { op: "show" }>, start: number, frameCuts: number[]): ScriptOp[] {
   const inside = frameCuts.filter((f) => f > start && f < start + op.frames).sort((a, b) => a - b);

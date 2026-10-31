@@ -149,7 +149,7 @@ a jump retuned by a pixel moves every number in it.
 ## Deliberately absent
 
 Throw boxes · per-box damage, hitstun or knockback · per-frame velocity
-(a state's `velAt` changes it at given frames) · `onEnter` effects · a scripting escape hatch · blockstun
+(a state's `velAt` changes it at given frames on the ground, its `air` in the air) · `onEnter` effects · a scripting escape hatch · blockstun
 (`guard_hit` still ends with its animation) · a top-level `"version"`, added when
 the schema first breaks. Most attach naturally to a `step` or a `box` when the
 mechanics that need them exist.

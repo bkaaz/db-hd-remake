@@ -19,6 +19,14 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     expect(handlerAt(rom, GOKU.character, 0x92)).toBe(0x0faa54);
   });
 
+  it("reads a jump's vy, as a word or its high byte, and the gravity turned off and on", () => {
+    const knee = handlerFacts(rom, handlerAt(rom, GOKU.character, 0xa4));
+    const air = (facts: typeof knee) =>
+      facts.filter((f) => f.vy !== undefined || f.what.startsWith("turns gravity")).map((f) => [f.frame, f.vy ?? f.what]);
+    expect(air(knee)).toEqual([[16, "turns gravity off"], [16, -7], [42, "turns gravity on"]]);
+    expect(air(handlerFacts(rom, handlerAt(rom, GOKU.character, 0xa6)))).toEqual([[8, -7]]);
+  });
+
   it("reads the speeds it walks forward with, frame by frame", () => {
     const speeds = quad.filter((f) => f.vx !== undefined).map((f) => [f.frame, f.vx]);
     expect(speeds).toEqual([

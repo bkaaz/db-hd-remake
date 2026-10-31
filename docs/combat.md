@@ -183,6 +183,14 @@ by **dashing**: a slow dash that is free and a fast one that costs ki. Neither
 is built. The dash will decide how the corner and spacing play, and a double
 tap is new logic in `input/buffer.ts`, not just an animation.
 
+## Where the fight happens
+
+**One arena floor, no fight above it** (owner, 2026-10-31). The original's
+blows that send the opponent to another part of the arena (Goku's `9f`,
+`a0`, `a1`) are wanted, with the flight between the two — but not the ones
+that send him up, into a fight in the air: there is no fight in the air,
+and none is planned yet.
+
 ## Open
 
 - What punishes a string thrown at nothing.

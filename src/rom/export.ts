@@ -7,19 +7,16 @@
 
 import type { Anim, FrameDef } from "../entity/entityFile";
 import type { Rgba } from "../sprites/png";
-import { animName, jumpCuts, jumpFrameCuts, moveAnims, stepStarts } from "./animation";
+import { animName } from "./animation";
 import { layoutAt, pointer, scriptAt, tileResourceOf, type FighterTables, type SpawnDef } from "./cartridge";
-import { readBoxes } from "./collision";
 import { decompress } from "./decompress";
 import { drawFrame, flipLayout, readLayout, readPalette, type Drawing } from "./frame";
 import { PLAIN, parseFrameId, type Look } from "./look";
 import { objectFrame } from "./object";
 import { objectVram, resourceStream } from "./resource";
-import { CROUCH, crouchAfterAttack } from "./crouch";
-import { fallAfterJumpAttack, fallStep, JUMP } from "./fall";
-import { handlerAt, handlerFacts } from "./handler";
 import { heldAnims } from "./held";
-import { readScript, type ScriptOp } from "./script";
+import { moveParts } from "./parts";
+import { readScript } from "./script";
 import { packSheet, type Placed } from "./sheet";
 
 export interface Exported {
@@ -42,42 +39,6 @@ export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, 
   return drawFrame(decompress(rom, at).data, pieces, readPalette(rom, palette));
 }
 
-/**
- * Where the move's handler cuts its script (`jumpCuts`); none when it cannot
- * be read. The jump is cut by another move's handler too: his jump attack
- * falls back into it at a step of its own (`fall.ts`).
- */
-function handlerCuts(rom: Uint8Array, t: FighterTables, move: number, ops: ScriptOp[]): number[] {
-  const byHand = [...(HAND_CUTS[move] ?? []), ...(move === JUMP ? [fallStep(ops, fallAfterJumpAttack(rom, t.character))] : [])];
-  try {
-    return [...new Set([...jumpCuts(ops, handlerFacts(rom, handlerAt(rom, t.character, move), stepStarts(ops).length)), ...byHand])];
-  } catch {
-    return byHand;
-  }
-}
-
-/**
- * Cuts read by hand from handlers `handler.ts` does not follow yet. Charging
- * (`0c`, Goku's `$20:81C2`): entering step 4 while Y and B are held sends
- * the script back to frame 6, step 1 — a loop a state can repeat, cut at
- * both its ends.
- */
-const HAND_CUTS: Record<number, number[]> = { 0x0c: [1, 4] };
-
-/**
- * Where a part must begin inside a step: the move's handler jumping into the
- * middle of one, or another move's handler starting this one part-way — a
- * crouching attack's return (`crouch.ts`).
- */
-function frameCuts(rom: Uint8Array, t: FighterTables, move: number, ops: ScriptOp[]): number[] {
-  const byOthers = move === CROUCH ? [crouchAfterAttack(rom, t.character)] : [];
-  try {
-    return [...jumpFrameCuts(ops, handlerFacts(rom, handlerAt(rom, t.character, move), stepStarts(ops).length)), ...byOthers];
-  } catch {
-    return byOthers;
-  }
-}
-
 const BLANK: Drawing = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
 
 export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
@@ -87,9 +48,7 @@ export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
   const animations: Record<string, Anim> = {};
   for (let move = 0; move < 0x100; move++) {
     try {
-      const ops = readScript(rom, scriptAt(rom, t, move));
-      const boxesOf = (d: number) => readBoxes(rom, t.boxes, d);
-      Object.assign(animations, moveAnims(move, ops, boxesOf, handlerCuts(rom, t, move, ops), frameCuts(rom, t, move, ops)));
+      Object.assign(animations, moveParts(rom, t, move).anims);
     } catch (e) {
       notes.push(`${animName(move)} left out: ${(e as Error).message}`);
     }

@@ -88,6 +88,16 @@ held crouch (`src/rom/crouch.ts`). Vegeta's knockdown handler jumps to frame
 100, inside his lying step. The export cuts a part where either begins
 (`moveAnims`' `frameCuts`).
 
+**A move's handler flies the body itself.** It sets vx and vy on frames of
+its own and can turn gravity off (field `0x28` bit 3, `$0D:CB06`) —
+Jumping Knee Slash (`a4`, `$20:85E2`) leaves at frame 16 at vy −7 with
+gravity off, and from 24 to 41 adds 0.5 to vy only while rising
+(`$20:85EE`), so it hangs at the top until 42 gives gravity back; Abiseh
+Geri (`a6`) leaves at 8 at its own gravity. `port` prints the vy set and
+the gravity turned off and on; the rising-only slowing it cannot, being a
+test of vy itself. A re-arm (`$0D:D8A2`) while a hit box is out cuts a part
+too, so each re-armed blow takes its own record (`src/rom/parts.ts`).
+
 **How a step is drawn is in the script too**: `d0` moves the drawing away from
 the fighter's position and `e0` flips it whole, both lasting until set again —
 the sprite routine at `$00:8180` adds the one and XORs the other with the
@@ -373,8 +383,12 @@ On frame 2 it loads palette field `0x17` + 8 — a glow while charging
 (`$0F:A072`, Goku's `0x48` by day) — and the own palette again at the
 end; not built.
 
-`90` stops the script; `c0 v` sets fighter field `0x96` to `v`, whose
-reader is not found `?`; `80` is the opponent's track (The throw, below).
+`90` stops the script; `c0 v` sets fighter field `0x96` to `v`: bit 6
+and blows pass the fighter by (`$2A:81C7`, `$2A:8291` skip him) — the
+knockdown `1b` sets `70` from its first frame, `1e` from 64, getting up
+`1f` too, and Jumping Knee Slash `40` for its first 16 frames; bits 4–5
+(Quadruple Kick's `20`) are not read `?`. A new move leaves the field as
+it was (`$01:8518`). `port` prints where it changes; `80` is the opponent's track (The throw, below).
 `src/rom/script.ts` reads every command a Goku script uses.
 
 ## The camera
@@ -575,6 +589,10 @@ end, so the script's last pose, the fall, is what shows). Landing, in the
 attack or after it, is move `3b` and sound `0c` (`$0F:9FB8`; not for
 character 6).
 
+**The crouch and the stand-up ask for commands too**: their handlers
+(`03`, `$0F:9F35`; `04`, `$0F:9F4E`) call `$0F:9EB1` as idle does, so a
+special rolled through ↓ comes out of a crouch.
+
 **Special moves come first** (`$0D:F085`): a command table of 0x150 bytes
 per fighter at `$3D:9EEF` (offsets `$0D:F5CF`) — 0x88 on the ground, 0x40
 in the air, the rest for mode `$0552` — the fight above the arena `?`
@@ -671,7 +689,16 @@ standing, 24 frames of the light reel's drawing, `43` crouching
 (`$0D:D7BA`), knockback index 6. Airborne, bits of byte 1: `01` → move `1a` (`$D616`, knockback
 index 16: a tumble that ends in the jump's fall pose, then landing as a
 jump does, `3b` and `0c`, turned to face — `$0F:A1E0`), `02` knockdown, `04` → move `1e`, `08` `$D670`. Then byte 2 bits 0–2 for both
-(`$D3F3`, `$D46E`, `$D4D4`). Light is move `15` (`13` when field `0x97`
+(`$D3F3`, `$D46E`, `$D4D4`): the blows that send the defender to another
+part of the arena — Goku's `9f`, `a0`, `a1` set bits 0, 1, 2. Each: a
+blow that empties the health is a KO (`$D687`); otherwise `$0D:E158`, by
+the arena's part (`$DD`) and the direction (0, 1, 2), says whether the way
+is open. Open: the game's state `$37` becomes `4C` (bit 1: `45`, the
+defender turned), `$0502` / `$0500` are set, and the defender takes move
+`21`, `23` or `25`. Closed — or in the modes `$1A02` / `$30B0` say
+(`$30B0` bit `40`; `48` when `$1B15` is clear and `$1A02` is neither 0 nor 2) — a knockdown, `1b`,
+with knockback `12`, `05` or `04`; above the arena (`$0552`) `$D5C0`
+instead. Light is move `15` (`13` when field `0x97`
 bit 0 is set), heavy `16` (`14`); `$0D:D7BA` turns them into `17`/`18`
 `?`. Hitstun is that move's script — light 14 frames, heavy 26 — not a
 number in the record.

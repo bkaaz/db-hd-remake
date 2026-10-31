@@ -45,6 +45,8 @@ export interface HandlerFact {
   what: string;
   /** A speed set, px per frame, facing right. */
   vx?: number;
+  /** A vertical speed set, px per frame, − up. */
+  vy?: number;
   /** A sound played, as the cartridge's id. */
   sound?: number;
   /** The script step the code runs on, for a handler that jumps by step. */
@@ -74,6 +76,10 @@ export interface HandlerFact {
 const SPAWN_COUNTER = 0x6e;
 const STEP = 0x46;
 const VX = 0x7c;
+const VY = 0x7e;
+/** A fighter's flags: bit 3 set, gravity leaves vy alone (`$0D:CB06`). */
+const FLAGS = 0x28;
+const NO_GRAVITY = 0x08;
 const FACING = 0x12;
 /** `$E3`, the stage's shake (`$0D:C558`): bit 15 on, bits 8–11 the pattern, the low byte frames. */
 const SHAKE = 0xe3;
@@ -104,7 +110,13 @@ const FIGHTER: Omit<Body, "dispatch"> = {
       if (ins.operand === VX && ((a << 16) >> 16) >= 0) add({ what: "sets vx", vx: a / 256 });
       if (ins.operand === SPAWN_COUNTER) add({ what: "sets the spawn counter", counter: a & 0xff });
       if (ins.operand === FRAMES) add({ what: "jumps to frame", to: a & 0xff });
+      // a word, or its high byte alone (`$20:8703`); a low byte alone is a fraction
+      if (ins.operand === VY && a > 0xff) add({ what: "sets vy", vy: ((a << 16) >> 16) / 256 });
+      if (ins.operand === VY + 1 && a <= 0xff) add({ what: "sets vy", vy: (a << 24) >> 24 });
     }
+    const flags = target === "mover" && ins.operand === FLAGS && cpu.source && "field" in cpu.source && cpu.source.field === FLAGS;
+    if (flags && (cpu.ora ?? 0) & NO_GRAVITY) add({ what: "turns gravity off" });
+    if (flags && cpu.mask !== undefined && !(cpu.mask & NO_GRAVITY)) add({ what: "turns gravity on" });
     const shake = ins.mnemonic === "STA" && ins.mode === "d" && ins.operand === SHAKE && a !== null ? shakeOf(a) : null;
     if (shake) add({ what: "shakes the stage", shake });
     if (ins.operand === FACING && value) add({ what: "sets the facing", facing: value, ...(target === "opponent" && { who: target }) });

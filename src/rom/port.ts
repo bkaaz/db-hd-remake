@@ -1,15 +1,14 @@
-import { blowStarts, jumpCuts, moveAnims, stepStarts } from "./animation";
+import { stepStarts } from "./animation";
 import { NORMALS } from "./buttons";
-import { scriptAt, type FighterTables } from "./cartridge";
-import { readBoxes } from "./collision";
+import type { FighterTables } from "./cartridge";
 import { arrow, buttonName, readCommands } from "./commands";
 import { commandContext, describeConditions } from "./conditions";
 import { describeFact, factParts } from "./describe";
-import { handlerAt, handlerFacts, type HandlerFact } from "./handler";
+import { handlerAt, type HandlerFact } from "./handler";
 import { holdOffsets } from "./hold";
 import { ROSTER } from "./roster";
 import { groundReaction, hitRecords, objectRecord, recordAt, type HitRecord } from "./hits";
-import { readScript } from "./script";
+import { moveParts } from "./parts";
 
 /**
  * Everything the cartridge says about one move, laid out per part of its
@@ -52,6 +51,8 @@ export interface PartReport {
   vel: number;
   velAt: [number, number][];
   rearms: number[];
+  /** Where blows start and stop passing him by (field 0x96 bit 6), frames from the part. */
+  unhittable: { frame: number; on: boolean }[];
   /** Anything else the handler does on one frame of this part. */
   onFrames: { frame: number; what: string }[];
   /**
@@ -63,12 +64,9 @@ export interface PartReport {
 }
 
 export function portReport(rom: Uint8Array, t: FighterTables, move: number): PortReport {
-  const ops = readScript(rom, scriptAt(rom, t, move));
-  const boxesOf = (d: number) => readBoxes(rom, t.boxes, d);
   const records = hitRecords(rom, t.character, move);
   const handler = handlerAt(rom, t.character, move);
-  const facts = handlerFacts(rom, handler, stepStarts(ops).length, t.character);
-  const anims = moveAnims(move, ops, boxesOf, jumpCuts(ops, facts));
+  const { ops, facts, parts: cut } = moveParts(rom, t, move);
 
   // the move's frame each step and each command falls on
   const stepFrame: number[] = [];
@@ -81,16 +79,14 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
       frame += op.op === "hold" ? 1 : op.frames;
     }
   }
-  const blows = blowStarts(ops, boxesOf).map((step) => ({ step, frame: stepFrame[step] }));
   const stepped = facts.filter((f): f is HandlerFact & { step: number } => f.step !== undefined);
 
   const parts: PartReport[] = [];
-  let from = 0;
-  for (const [anim, { steps }] of Object.entries(anims)) {
-    const frames = steps.reduce((n, s) => n + (s.dur ?? 0), 0);
+  for (const { anim, from, frames, blowStep } of cut) {
     const inside = (f: number) => f >= from && f < from + frames;
-    const blow = blows.find((b) => inside(b.frame));
-    const record = blow && recordAt(records, blow.step);
+    const record = blowStep === null ? undefined : recordAt(records, blowStep);
+    // a part cut where the blow is re-armed begins with it already out
+    const blow = blowStep === null ? undefined : { frame: Math.max(stepFrame[blowStep], from) };
     const speeds = facts.filter((f) => f.vx !== undefined && f.frame !== null) as { frame: number; vx: number }[];
     parts.push({
       anim,
@@ -118,12 +114,14 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
       vel: speeds.filter((s) => s.frame < from).at(-1)?.vx ?? 0,
       velAt: speeds.filter((s) => inside(s.frame)).map((s) => [s.frame - from, s.vx]),
       rearms: facts.filter((f) => f.what === "re-arms the blow" && f.frame !== null && inside(f.frame)).map((f) => f.frame! - from),
+      unhittable: events.flatMap((e) =>
+        e.op.op === "field96" && inside(e.frame) ? [{ frame: e.frame - from, on: (e.op.value & UNHITTABLE) !== 0 }] : [],
+      ),
       onFrames: facts
         .filter((f) => f.frame && f.step === undefined && inside(f.frame) && !SHOWN.has(f.what))
         .map((f) => ({ frame: f.frame! - from, what: describeFact(f) })),
       onSteps: stepped.filter((f) => inside(stepFrame[f.step])).map((f) => ({ step: f.step, ...factParts(f) })),
     });
-    from += frames;
   }
 
   const commands = readCommands(rom, t.character).filter((c) => c.move === move);
@@ -145,6 +143,9 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     parts,
   };
 }
+
+/** Field 0x96's bit that blows pass by (`script.ts`). */
+const UNHITTABLE = 0x40;
 
 /** What a part already lists on its own line. */
 const SHOWN = new Set(["plays sound", "sets vx", "re-arms the blow"]);

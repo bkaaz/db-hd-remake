@@ -205,13 +205,25 @@ still differs from the original:
 ### Then: the rest of Goku
 
 1. **The rest of the specials** — every move of Goku's command table
-   (`rom.md`, The buttons); Quadruple Kick is built.
+   (`rom.md`, The buttons); what is left is what
+   `npm run rom -- todo --fighter goku` lists.
 2. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
    off today by the held-step rule in `src/rom/animation.ts`.
 3. **The rest of the objects** — `goku_hair` is exported but nothing plays
    it: there is no pre-fight screen, and `fires` only takes a projectile.
    Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`).
-4. **Player two's colours in a mirror match** — the same fighter on both
+4. **The blows that change the arena — last of Goku's moves** (owner,
+   2026-10-31). `9f`, `a0`, `a1` (X specials) send the opponent to another
+   part of the arena, a flight shown between the two (`rom.md`, Which
+   reaction: byte 2). Needs the other arenas, their parts and the flight;
+   never the way up into the fight above the arena (`combat.md`, Where the
+   fight happens).
+5. **The original's melee hit sparks** (owner, 2026-10-31) — every blow
+   of `goku` shows our generated spark (`npm run fx`); the cartridge's own
+   is to be found (not at the hit sound, `$0D:D1BC`; perhaps the overlap's
+   explosion, `$2A:8D63`), exported as a spawn and used by `goku`'s
+   states. Ours stay, for `goku_old`.
+6. **Player two's colours in a mirror match** — the same fighter on both
    sides takes the next palette (`rom.md`, A stage id); today both Gokus
    look alike.
 

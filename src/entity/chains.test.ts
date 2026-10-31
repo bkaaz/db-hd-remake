@@ -69,6 +69,7 @@ const NOTHING: InputSnapshot = {
   qcb: false,
   hcf: false,
   dbf: false,
+  dp: false,
   holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const QUIET: Signals = {

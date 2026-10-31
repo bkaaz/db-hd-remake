@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { animName, blowStarts, jumpCuts, jumpFrameCuts, moveAnim, moveAnims, toAnim } from "./animation";
+import { animName, blowStarts, jumpCuts, jumpFrameCuts, moveAnim, moveAnims, rearmCuts, toAnim } from "./animation";
 import type { ScriptOp } from "./script";
 
 const show = (frames: number, drawing: number | null): ScriptOp => ({ op: "show", frames, drawing });
@@ -171,6 +171,20 @@ describe("jumpFrameCuts", () => {
 
   it("leaves a step start to jumpCuts, and a pose held inside its own step alone", () => {
     expect(jumpFrameCuts(knockdown, [{ step: 1, to: 64 }, { step: 3, to: 90 }, { to: 100 }])).toEqual([]);
+  });
+});
+
+describe("rearmCuts", () => {
+  // the knee slash: wind-up, two striking poses, the knee out in the air, a pose that does not hit
+  const knee = [show(4, 1), show(6, 2), show(6, 3), show(14, 4), show(4, 5)];
+  const boxesOf = (d: number) => (d >= 2 && d <= 4 ? [{ type: "hit" as const, x: 0, y: 0, w: 1, h: 1 }] : []);
+
+  it("cuts where the blow is re-armed while a hit box is out", () => {
+    expect(rearmCuts(knee, [16, 10], boxesOf)).toEqual([10, 16]);
+  });
+
+  it("leaves a re-arm with nothing out, and frame 0, alone", () => {
+    expect(rearmCuts(knee, [0, 2, 31], boxesOf)).toEqual([]);
   });
 });
 

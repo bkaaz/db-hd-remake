@@ -49,6 +49,11 @@ describe("Motions.has", () => {
     expect(play(at("back"), at("down"), at("fwd")).has("dbf")).toBe(false);
   });
 
+  it("reads → ↓ ↘ as dp, and a quarter circle alone as not", () => {
+    expect(play(at("fwd"), at("down"), at("down", "fwd")).has("dp")).toBe(true);
+    expect(play(at("down"), at("down", "fwd"), at("fwd")).has("dp")).toBe(false);
+  });
+
   it("does not match the directions in the wrong order", () => {
     expect(play(at("fwd"), at("down")).has("qcf")).toBe(false);
   });

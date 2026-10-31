@@ -19,6 +19,7 @@ export function factParts(f: HandlerFact): { under: string; what: string } {
     : f.sound !== undefined ? `plays sound ${hex(f.sound)}`
     : f.move !== undefined ? `sets move ${hex(f.move)}`
     : f.vx !== undefined ? `sets vx ${f.vx}`
+    : f.vy !== undefined ? `sets vy ${f.vy}`
     : f.counter !== undefined ? `sets the spawn counter to ${hex(f.counter)}`
     : f.shake !== undefined ? `shakes the stage: pattern ${f.shake.pattern}, ${f.shake.frames} frames`
     : f.facing !== undefined ? `faces ${say(f.facing)}`

@@ -44,6 +44,8 @@ export interface Cpu {
   mask?: number;
   /** `EOR #bits` applied to it — a facing turned. */
   eor?: number;
+  /** `ORA #bits` applied to it — a flag set. */
+  ora?: number;
   test: Test | null;
   /** Whose block X points at, and Y when it points at one. */
   x: Who | null;
@@ -101,19 +103,20 @@ export function step(ins: Instruction, cpu: Cpu): Cpu {
   const field = mode === "dx" ? cpu.x : mode === "ay" ? (cpu.yWho ?? undefined) : undefined;
   if (mnemonic === "LDA" && (field !== undefined || mode === "d" || mode === "a")) {
     const source: Source = mode === "d" || mode === "a" ? { global: operand } : { field: operand, who: field ?? null };
-    return { ...next, regs: { ...next.regs, a: null }, source, mask: undefined, eor: undefined, test: { op: "zero" } };
+    return { ...next, regs: { ...next.regs, a: null }, source, mask: undefined, eor: undefined, ora: undefined, test: { op: "zero" } };
   }
   if (cpu.source && mnemonic === "AND" && mode === "im")
     // AND #$FF leaves a byte field as it was
     return { ...next, mask: operand === 0xff || operand === 0x00ff ? cpu.mask : (cpu.mask ?? 0xffff) & operand, test: { op: "zero" } };
   if (cpu.source && mnemonic === "EOR" && mode === "im") return { ...next, eor: (cpu.eor ?? 0) ^ operand, test: null };
+  if (cpu.source && mnemonic === "ORA" && mode === "im") return { ...next, ora: (cpu.ora ?? 0) | operand, test: null };
   if (cpu.source && "field" in cpu.source && mnemonic === "ORA" && mode === "dx" && operand === cpu.source.field + 1)
     // LDA $44,X : ORA $45,X asks whether the whole word is 0
     return { ...next, test: { op: "zero" } };
   if (writesA(ins)) {
     // TYA carries Y's constant over: a move set from a choice of LDY #s ($20:9AE8)
     next.regs.a = mnemonic === "LDA" && mode === "im" ? operand : mnemonic === "TYA" ? cpu.regs.y : null;
-    return { ...next, source: null, mask: undefined, eor: undefined, test: mnemonic === "LDA" ? { op: "zero" } : null };
+    return { ...next, source: null, mask: undefined, eor: undefined, ora: undefined, test: mnemonic === "LDA" ? { op: "zero" } : null };
   }
   return next;
 }

@@ -180,6 +180,7 @@ export const FIGHTER_FIELDS: Record<number, string> = {
   0x25: "busy (0x80 while a move runs)",
   0x26: "bit 7: burning ($2A:99CC)",
   0x27: "bit 0: the camera does not follow vertically (cleared on landing)",
+  0x28: "flags (bit 3: no gravity, $0D:CB06)",
   0x33: "vy at the last landing",
   0x40: "move",
   0x41: "script set (which fighter's scripts)",
@@ -204,6 +205,7 @@ export const FIGHTER_FIELDS: Record<number, string> = {
   0x90: "tile set",
   0x92: "move of the blow that hit",
   0x93: "step of the blow that hit",
+  0x96: "bit 6: blows pass him by ($2A:81C7; script c0)",
   0xec: "buttons held, the pad's bits",
 };
 

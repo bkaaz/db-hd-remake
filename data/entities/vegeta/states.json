@@ -1125,7 +1125,8 @@
           "when": "landed",
           "to": "down_bounce"
         }
-      ]
+      ],
+      "invulnerable": true
     },
     "down_fall": {
       "anim": "m1b_2",
@@ -1137,7 +1138,8 @@
           "when": "landed",
           "to": "down_bounce"
         }
-      ]
+      ],
+      "invulnerable": true
     },
     "down_bounce": {
       "anim": "m1b_3",
@@ -1159,7 +1161,8 @@
           "when": "landed",
           "to": "down_lie"
         }
-      ]
+      ],
+      "invulnerable": true
     },
     "down_lie": {
       "anim": "m1b_4",

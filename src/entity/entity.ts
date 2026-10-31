@@ -1,4 +1,5 @@
 import { Container, Graphics, Sprite } from "pixi.js";
+import { applyAir, fall, ON_GROUND, type AirSetting } from "./air";
 import type { ShakeDef } from "../camera/shake";
 import { healFrame } from "../combat/heal";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
@@ -166,6 +167,8 @@ export class Entity {
   private vy = 0;
   /** Horizontal velocity while airborne, facing-relative (momentum). */
   private vx = 0;
+  /** Off the ground and at what gravity, as the state's `air` timeline left it (`air.ts`). */
+  private air: AirSetting = ON_GROUND;
   /** What is left of the shove the current state entered with — see `shove`. */
   private shove = 0;
   /** Frames the current state has moved for — what `velAt` is keyed by. */
@@ -314,7 +317,7 @@ export class Entity {
 
   /** Off the ground — a jump arcs over the opponent instead of being blocked. */
   get airborne(): boolean {
-    return !!this.sm?.def.airborne;
+    return !!this.sm?.def.airborne || this.air.aloft;
   }
 
   /** Which buttons would pick their close version with the opponent at `opponentX`. */
@@ -821,6 +824,7 @@ export class Entity {
     this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.stateFrames = 0;
+    this.air = ON_GROUND;
     // the shot takes the ball: the original's beam effect replaces it outright
     if (this.sm.def.fires) this.ballRadius = 0;
     const launch = this.sm.def.launch;
@@ -950,6 +954,7 @@ export class Entity {
         qcb: this.motions.has("qcb"),
         hcf: this.motions.has("hcf"),
         dbf: this.motions.has("dbf"),
+        dp: this.motions.has("dp"),
         holding: input.holding,
       },
       {
@@ -980,10 +985,13 @@ export class Entity {
     // Velocities are authored in sprite pixels, like box coordinates, and X is
     // facing-relative (+ = forward); scaling to screen px happens here so the
     // data stays independent of SCALE.
-    if (this.sm.def.airborne) {
+    // the move's handler first, then the body moves — the original's order
+    const { vx, vy, ...air } = applyAir({ ...this.air, vx: this.vx, vy: this.vy }, this.sm.def.air, this.stateFrames);
+    [this.vx, this.vy, this.air] = [vx, vy, air];
+    if (this.airborne) {
       this.x += this.facing * this.vx * this.scale;
       this.y += this.vy * this.scale;
-      this.vy += this.gravity;
+      this.vy = fall({ ...air, vx, vy: this.vy }, this.gravity);
       if (this.y >= this.groundY) {
         this.y = this.groundY;
         // Only the fall stops. Touching the ground does not delete horizontal

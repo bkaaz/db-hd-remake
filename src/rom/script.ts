@@ -54,7 +54,11 @@ export type ScriptOp =
    * own counter (field 0x6f) as a spawn is.
    */
   | { op: "effect"; counter: number; kind: number; dx: number; dy: number; size: number; param: number }
-  /** Sets fighter field 0x96 to `value` ($01:8732) — what the field does is not read `?`. */
+  /**
+   * Sets fighter field 0x96 to `value` ($01:8732). Bit 6: blows pass him by
+   * (`$2A:81C7`, `$2A:8291`); bits 4 and 5 are not read `?`. Kept across a
+   * change of move ($01:8518 leaves it).
+   */
   | { op: "field96"; value: number }
   /** The script stops here until the move's code moves it on ($01:8689 → RTL). */
   | { op: "stop" }

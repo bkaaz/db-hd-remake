@@ -46,6 +46,27 @@
         },
         {
           "when": [
+            "motion:dp",
+            "pressed:smash"
+          ],
+          "to": "knee_slash"
+        },
+        {
+          "when": [
+            "motion:qcb",
+            "pressed:smash"
+          ],
+          "to": "spin_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:smash"
+          ],
+          "to": "double_kick"
+        },
+        {
+          "when": [
             "pressed:smash",
             "close:smash"
           ],
@@ -149,6 +170,27 @@
         },
         {
           "when": [
+            "motion:dp",
+            "pressed:smash"
+          ],
+          "to": "knee_slash"
+        },
+        {
+          "when": [
+            "motion:qcb",
+            "pressed:smash"
+          ],
+          "to": "spin_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:smash"
+          ],
+          "to": "double_kick"
+        },
+        {
+          "when": [
             "pressed:smash",
             "close:smash"
           ],
@@ -248,6 +290,27 @@
         },
         {
           "when": [
+            "motion:dp",
+            "pressed:smash"
+          ],
+          "to": "knee_slash"
+        },
+        {
+          "when": [
+            "motion:qcb",
+            "pressed:smash"
+          ],
+          "to": "spin_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:smash"
+          ],
+          "to": "double_kick"
+        },
+        {
+          "when": [
             "pressed:smash",
             "close:smash"
           ],
@@ -315,6 +378,34 @@
       "guard": "guard_crouch",
       "transitions": [
         {
+          "when": [
+            "motion:hcf",
+            "pressed:smash"
+          ],
+          "to": "quad_kick"
+        },
+        {
+          "when": [
+            "motion:dp",
+            "pressed:smash"
+          ],
+          "to": "knee_slash"
+        },
+        {
+          "when": [
+            "motion:qcb",
+            "pressed:smash"
+          ],
+          "to": "spin_kick"
+        },
+        {
+          "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "held:guard",
           "to": "guard_low"
         },
@@ -351,6 +442,34 @@
       "guard": "guard_crouch",
       "transitions": [
         {
+          "when": [
+            "motion:hcf",
+            "pressed:smash"
+          ],
+          "to": "quad_kick"
+        },
+        {
+          "when": [
+            "motion:dp",
+            "pressed:smash"
+          ],
+          "to": "knee_slash"
+        },
+        {
+          "when": [
+            "motion:qcb",
+            "pressed:smash"
+          ],
+          "to": "spin_kick"
+        },
+        {
+          "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "held:guard",
           "to": "guard_low"
         },
@@ -380,6 +499,34 @@
       ],
       "turn": true,
       "transitions": [
+        {
+          "when": [
+            "motion:hcf",
+            "pressed:smash"
+          ],
+          "to": "quad_kick"
+        },
+        {
+          "when": [
+            "motion:dp",
+            "pressed:smash"
+          ],
+          "to": "knee_slash"
+        },
+        {
+          "when": [
+            "motion:qcb",
+            "pressed:smash"
+          ],
+          "to": "spin_kick"
+        },
+        {
+          "when": [
+            "motion:dbf",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
         {
           "when": "held:down",
           "to": "crouch_down"
@@ -1023,13 +1170,31 @@
         1.25,
         0
       ],
+      "turn": false,
+      "type": "down",
+      "damage": 27,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "quad_kick_5"
+        }
+      ]
+    },
+    "quad_kick_5": {
+      "anim": "ma5_5",
+      "vel": [
+        1.25,
+        0
+      ],
       "velAt": [
         [
-          4,
+          0,
           2.375
         ],
         [
-          10,
+          6,
           1.25
         ]
       ],
@@ -1042,6 +1207,202 @@
         {
           "when": "animEnd",
           "to": "idle"
+        }
+      ]
+    },
+    "double_kick": {
+      "anim": "ma2",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          22,
+          2
+        ],
+        [
+          26,
+          0
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "heavy",
+      "damage": 29,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "double_kick_2"
+        }
+      ]
+    },
+    "double_kick_2": {
+      "anim": "ma2_2",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          0,
+          1
+        ],
+        [
+          18,
+          0
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "down",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "knee_slash": {
+      "anim": "ma4",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "light",
+      "damage": 42,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "knee_slash_2"
+        }
+      ],
+      "invulnerable": true
+    },
+    "knee_slash_2": {
+      "anim": "ma4_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "heavy",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "knee_slash_3"
+        }
+      ],
+      "invulnerable": true
+    },
+    "knee_slash_3": {
+      "anim": "ma4_3",
+      "vel": [
+        0,
+        0
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 1,
+            "vy": -7,
+            "gravity": 0
+          }
+        ],
+        [
+          8,
+          {
+            "gravity": 0.5,
+            "toApex": true
+          }
+        ],
+        [
+          26,
+          {
+            "vx": 0,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "down",
+      "damage": 19,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "spin_kick": {
+      "anim": "ma6",
+      "vel": [
+        0,
+        0
+      ],
+      "air": [
+        [
+          8,
+          {
+            "vx": 2,
+            "vy": -7
+          }
+        ],
+        [
+          16,
+          {
+            "vx": 4
+          }
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "light",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "spin_kick_2"
+        }
+      ]
+    },
+    "spin_kick_2": {
+      "anim": "ma6_2",
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 2
+          }
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "heavy",
+      "damage": 26,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
         }
       ]
     },
@@ -1670,7 +2031,8 @@
           "when": "landed",
           "to": "down_bounce"
         }
-      ]
+      ],
+      "invulnerable": true
     },
     "down_fall": {
       "anim": "m1b_2",
@@ -1682,7 +2044,8 @@
           "when": "landed",
           "to": "down_bounce"
         }
-      ]
+      ],
+      "invulnerable": true
     },
     "down_bounce": {
       "anim": "m1b_3",
@@ -1704,7 +2067,8 @@
           "when": "landed",
           "to": "down_lie"
         }
-      ]
+      ],
+      "invulnerable": true
     },
     "down_lie": {
       "anim": "m1b_4",

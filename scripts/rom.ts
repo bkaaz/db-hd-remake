@@ -163,6 +163,7 @@ if (command === "tiles") {
     for (const s of p.spawns)
       console.log(`  spawns at ${s.frame} (counter ${hex(s.counter)}): object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
     if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
+    for (const u of p.unhittable) console.log(`  ${u.frame}: ${u.on ? "blows pass him by" : "can be hit again"} (field 0x96)`);
     for (const f of p.onFrames) console.log(`  handler at ${f.frame}: ${f.what}`);
     for (const step of new Set(p.onSteps.map((f) => f.step)))
       console.log(`  handler on step ${step}: ${grouped(p.onSteps.filter((f) => f.step === step))}`);
