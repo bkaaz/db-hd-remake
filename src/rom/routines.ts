@@ -75,6 +75,11 @@ export const ROUTINES: Record<number, Routine> = {
   0x018518: { fact: ({ regs: r }) => (r.a === null ? null : { what: "sets move", move: r.a & 0xff }) },
   // the palette in Y, for this player's sprites
   0x018316: { fact: (c) => ({ what: palette(c) }) },
+  // resource A into OBJ VRAM at word Y, for this player ($00:B265 reads the record)
+  0x0184b3: {
+    fact: ({ regs: r }) =>
+      r.a === null ? null : { what: `loads resource ${r.a.toString(16)}${r.y === null ? "" : ` at $${r.y.toString(16)}`}`, load: { resource: r.a, vram: r.y } },
+  },
   // Y = X ^ 0300: the other fighter's block
   0x0dd7db: { fact: () => null, yWho: "opponent", keeps: true },
   // an opponent in move 30 put at the mover's x/y plus the table at [$00]

@@ -267,6 +267,9 @@ npm run rom -- export --fighter vegeta
 npm run rom -- states --fighter vegeta
                   # his states from goku's: the shared moves on his
                   # animations with his blows, goku's specials dropped
+npm run rom -- objects [logs/objects-rec.txt]
+                  # a recording of the object slots read back: each
+                  # object's frames and timing, speed, what it becomes
 npm run rom -- code a 3
                   # an object's code read: how long it lives, how it
                   # steps, what it waits on (type, animation)

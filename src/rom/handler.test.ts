@@ -84,6 +84,14 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     expect(thrown.find((f) => f.hold)?.hold).toBe(0x2082a5);
   });
 
+  it("reads the resources a move loads into OBJ VRAM, each player's place: the Kamehameha's 0x32", () => {
+    const kame = handlerFacts(rom, handlerAt(rom, GOKU.character, 0xaa), 0, GOKU.character);
+    expect(kame.filter((f) => f.load).map((f) => [f.frame, f.load])).toEqual([
+      [2, { resource: 0x32, vram: 0x7c00 }],
+      [2, { resource: 0x32, vram: 0x6c00 }],
+    ]);
+  });
+
   it("reads charging: its sound every 8th frame while B + Y are held, the loop back, the glow", () => {
     const charge = handlerFacts(rom, handlerAt(rom, GOKU.character, 0x0c), 0, GOKU.character);
     expect(charge.find((f) => f.sound === 0x19)?.when).toEqual(["when field f0 is 0", "while B + Y held", "every 8th frame of the game"]);

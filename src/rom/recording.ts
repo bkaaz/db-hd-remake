@@ -109,3 +109,31 @@ function start(slot: number, frame: number, b: number[]): Life {
     x: word(6), y: word(9), vx: signed(word(0x0c)), vy: signed(word(0x0e)), hit: false,
   };
 }
+
+/** One snapshot of `objects-rec.bin`: the first time an object frame was on screen. */
+export interface Snapshot {
+  frame: number;
+  slot: number;
+  /** The slot's 16 bytes. */
+  bytes: Uint8Array;
+  vram: Uint8Array;
+  cgram: Uint8Array;
+  oam: Uint8Array;
+}
+
+const VRAM = 0x10000;
+const CGRAM = 0x200;
+const OAM = 0x220;
+
+export function readSnapshots(bin: Uint8Array): Snapshot[] {
+  const size = 4 + 1 + 16 + VRAM + CGRAM + OAM;
+  const out: Snapshot[] = [];
+  for (let at = 0; at + size <= bin.length; at += size) {
+    const frame = bin[at] | (bin[at + 1] << 8) | (bin[at + 2] << 16) | (bin[at + 3] << 24);
+    let p = at + 5;
+    const take = (n: number) => bin.subarray(p, (p += n));
+    out.push({ frame, slot: bin[at + 4], bytes: take(16), vram: take(VRAM), cgram: take(CGRAM), oam: take(OAM) });
+  }
+  return out;
+}
+

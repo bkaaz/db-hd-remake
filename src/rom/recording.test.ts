@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readLives } from "./recording";
+import { readLives, readSnapshots } from "./recording";
 
 // a shot (type a, animation 3) at x 100, y 200, vx 3.0 showing frames 0 then 1,
 // which turns into an explosion (a/01) as a hitstop begins, frozen through it
@@ -15,6 +15,18 @@ f17 p1=00 p2=00 hit=00
 f19 p1=00 p2=00 hit=00
   slot 0: 0a 01 01 00 00 00 70 00 00 c8 00 00 00 00 00 00
 `;
+
+describe("readSnapshots", () => {
+  it("reads a snapshot's frame, slot, slot bytes, VRAM, CGRAM and OAM in order", () => {
+    const bin = new Uint8Array(4 + 1 + 16 + 0x10000 + 0x200 + 0x220);
+    bin.set([0x10, 0x01, 0, 0, 3]);
+    bin[5] = 0x8a;
+    bin[21 + 0xc000] = 7;
+    bin[21 + 0x10000] = 9;
+    const [s] = readSnapshots(bin);
+    expect([s.frame, s.slot, s.bytes[0], s.vram[0xc000], s.cgram[0], s.oam.length]).toEqual([0x110, 3, 0x8a, 7, 9, 0x220]);
+  });
+});
 
 describe("readLives", () => {
   const [shot, burst] = readLives(RECORDING);

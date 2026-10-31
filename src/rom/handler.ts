@@ -63,6 +63,8 @@ export interface HandlerFact {
   facing?: Value;
   /** Where `$0D:DE9A` holds the opponent from: its table of offsets. */
   hold?: number;
+  /** A resource loaded into OBJ VRAM (`$01:84B3`), at a word address when the code says which. */
+  load?: { resource: number; vram: number | null };
   /** `$0F:B321`'s throw: what it costs the opponent and how it leaves. */
   launch?: { damage: number; stun: number; move: number; vx: number; vy: number; facing: Value };
 }

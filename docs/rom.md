@@ -108,6 +108,12 @@ Matched tile by tile against a VRAM snapshot (`tools/re/dump-vram.lua`,
 | ki blast | `0x31` | `$7500` | raw, 48 |
 | transformation hair | `0x51` | `$6C00` | its tiles 0–7 are the overlay's `0x40`–`0x47` |
 
+**A move loads its objects' tiles** (`$01:84B3`: resource A into OBJ VRAM
+at word Y, Y `$6C00` for player one and `$7C00` for player two, through
+`$00:B265`), drawn in that resource's own palette (its record) — Goku's
+Kamehameha `0x32`, Vegeta's `ac` `0x4d` and his `ad` `a9` `ab` `b1` `0x4f`
+(`npm run rom -- port`).
+
 **An object's behaviour is its type's code** (read: `npm run rom -- code a 3`): `$0F:B44B` runs the ten slots
 and jumps through a word table by type at `$0F:B467` (type `0` `$0F:B789`,
 `a` the ki blast `$0F:E0D7`); a type may jump again by animation (type `0`:

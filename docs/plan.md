@@ -76,7 +76,11 @@ engine does not have. In order:
    attacks once (`tools/re/record-objects.lua`, the list from
    `npm run rom -- spawns`); `npm run rom -- objects` turns the recording
    into spawns: frames and how long each is held, loop, life, speed, what it
-   becomes on a hit, its tiles and palette. The code reader
+   becomes on a hit. Its tiles and palette come from code: a move's
+   handler loads its resource (`$01:84B3`, in `port` as "loads resource 4f
+   at $6c00"), drawn in that resource's own palette; a snapshot only for a
+   shared object's colours (`vramMatch.ts`), taken a frame late — OAM shows
+   an object the frame after its slot does. The code reader
    (`npm run rom -- code`) checks it. *Done when:* Vegeta's ki blast and
    one special fire from his recording, and Goku's spawns come out of his
    with no hand-written `objects` in `cartridge.ts`.

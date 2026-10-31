@@ -7,7 +7,9 @@
 --                         player's move or the hitstop ($30B2) changes: the
 --                         ten 16-byte slots at SA-1 I-RAM $3300 that changed
 --   logs/objects-rec.bin  a snapshot the first time each object (type,
---                         animation, frame shown) is on screen: u32 frame,
+--                         animation, frame shown) is on screen — two frames
+--                         after its slot shows it, as OAM draws it a frame
+--                         late (2026-10-31): u32 frame,
 --                         u8 slot, then the slot's 16 bytes, VRAM (64 KiB),
 --                         CGRAM (512 B), OAM (544 B) — its tiles and palette
 --
@@ -30,6 +32,9 @@ log:write("# 00 type (bit 7: alive), 01 animation, 02 frame shown, 03 tile base,
 log:write("# 05-07 x, 08-0a y (8.16), 0b timer, 0c-0d vx, 0e-0f vy (8.8)\n")
 
 local frame, last, seen, taken, head = 0, {}, {}, 0, ""
+-- snapshots waiting for OAM to catch up: slot, key and the frame to take it on
+local due = {}
+local LATE = 2
 
 local function dump(memType, size)
   local bytes, chunks = {}, {}
@@ -68,13 +73,25 @@ ref = emu.addEventCallback(function()
       last[i] = now
     end
     -- alive, and not drawn before as this type (byte 0's low nibble, $0D:EBE0),
-    -- animation and frame
+    -- animation and frame: taken LATE frames on, if the slot still shows it
     local key = string.format("%02x/%02x/%02x", bytes[1] & 0x0f, bytes[2], bytes[3])
     if bytes[1] & 0x80 ~= 0 and not seen[key] then
       seen[key] = true
-      bin:write(string.pack("<I4B", frame, i), string.char(table.unpack(bytes)))
-      for _, r in ipairs(REGIONS) do bin:write(dump(r[1], r[2])) end
-      taken = taken + 1
+      due[#due + 1] = { slot = i, key = key, at = frame + LATE }
+    end
+  end
+  for n = #due, 1, -1 do
+    local d = due[n]
+    if frame >= d.at then
+      table.remove(due, n)
+      local bytes = slotBytes(d.slot)
+      if string.format("%02x/%02x/%02x", bytes[1] & 0x0f, bytes[2], bytes[3]) == d.key then
+        bin:write(string.pack("<I4B", frame, d.slot), string.char(table.unpack(bytes)))
+        for _, r in ipairs(REGIONS) do bin:write(dump(r[1], r[2])) end
+        taken = taken + 1
+      else
+        seen[d.key] = nil -- gone or changed before it was drawn: try again next time
+      end
     end
   end
   local now = string.format("p1=%02x p2=%02x hit=%02x", emu.read(0x140, IRAM), emu.read(0x240, IRAM), emu.read(0x0b2, IRAM))

@@ -49,6 +49,22 @@ states (`data/spawns/<name>/states.json`) take that type and damage, as
 `ki_blast` does. If the animation parts are missing, `npm run rom -- export`
 first.
 
+## An object (a shot, a beam, an explosion): where each part comes from
+
+- **What puts it out, when, what it costs** — the code: `port` (the `b0`
+  spawns, their counters, the handler's choice of counter).
+- **Its tiles and palette** — the code too: the move's handler loads them
+  (`$01:84B3`, in `port` as "loads resource 4f at $6c00" — P1 `$6C00`, P2
+  `$7C00`), drawn in that resource's own palette (its record).
+- **Its frames, how long each, loop, speed, what it becomes on a hit** — a
+  recording: ask the owner for one long session per fighter
+  (`tools/re/record-objects.lua`, the list from `npm run rom -- spawns`),
+  read back with `npm run rom -- objects`. `npm run rom -- code <type>
+  <anim>` reads the usual patterns from code to check it.
+- **A shared object** (type `a`: ki blast, explosions, dust, Kamehameha) is
+  one spawn for everyone, named by what it is (ADR 0037); only its colours
+  may be the fighter's.
+
 ## Before writing anything: the whole move, as the original plays it
 
 Investigate first, implement after (owner, 2026-10-30) — the Kamehameha
