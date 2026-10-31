@@ -519,8 +519,9 @@ export class Entity {
     };
   }
 
-  /** Fill the ki meter — the debug key, and nothing in a fight does this. */
-  fillKi(): void {
+  /** Fill health and ki — the debug key, and nothing in a fight does this. */
+  refill(): void {
+    this.hp = this.maxHealth;
     this.ki = this.maxKi;
   }
 

@@ -176,6 +176,21 @@ export function entityEditorServer(): Plugin {
         }
       });
 
+      // Every arena and its lightings, for the debug scene's panel to offer.
+      server.middlewares.use("/api/arenas", async (_req, res) => {
+        const arenas: { name: string; times: string[] }[] = [];
+        try {
+          for (const e of await fs.readdir(path.join(root, ARENA_DATA), { withFileTypes: true })) {
+            if (!e.isDirectory()) continue;
+            const file = JSON.parse(await fs.readFile(path.join(root, ARENA_DATA, e.name, "arena.json"), "utf8")) as { times?: string[] };
+            arenas.push({ name: e.name, times: file.times ?? [] });
+          }
+        } catch {
+          // no arenas directory: the grid is the only backdrop
+        }
+        sendJson(res, 200, { arenas: arenas.sort((a, b) => a.name.localeCompare(b.name)) });
+      });
+
       // The original's HUD (used by the game): hud.json, or with `image` its
       // picture — both written by `npm run rom -- export`.
       server.middlewares.use("/api/hud", async (req, res) => {

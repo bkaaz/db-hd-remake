@@ -20,6 +20,14 @@ because a number would only need translating back.
 
 ---
 
+## The status line names the readout's key as D
+
+`src/ui/status.ts` · noticed 2026-10-31 · cosmetic
+
+The line reads `[B] boxes · [D] debug …`, but D is Strike and the readout
+is toggled with I (`src/input/keyboard.ts`). The panel's switches name the
+right keys.
+
 ## Vegeta's knockdown has no lying part
 
 `npm run rom -- export --fighter vegeta`, move `1b` · noticed 2026-10-31 · annoying

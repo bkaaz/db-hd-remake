@@ -233,9 +233,9 @@ export class Fighters {
     return Math.abs(this.opponent.x - this.player.x) / this.player.placement.scale;
   }
 
-  /** Both meters full: the debug key, so a move that costs ki can be tried. */
-  fillKi(): void {
-    for (const fighter of this.both()) fighter.fillKi();
+  /** Both fighters' health and ki full: the debug key, so a move that costs either can be tried again. */
+  refill(): void {
+    for (const fighter of this.both()) fighter.refill();
   }
 
   /** Note what changed this frame, for the recording. */

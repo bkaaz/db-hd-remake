@@ -82,7 +82,8 @@ export class DebugScene implements Scene {
       `debug mode ${req.mode}: ${JSON.stringify(mode)}`,
       `p1=${req.p1} p2=${req.p2}` +
         (req.arena ? ` arena=${req.arena}${req.time ? ` time=${req.time}` : ""}` : "") +
-        (req.hp !== undefined ? ` hp=${req.hp}` : ""),
+        (req.hp1 !== undefined ? ` hp1=${req.hp1}` : "") +
+        (req.hp2 !== undefined ? ` hp2=${req.hp2}` : ""),
     ]);
 
     const dummy = Dummy.from(mode.p2);
@@ -129,16 +130,14 @@ export class DebugScene implements Scene {
       projectiles,
     });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
-    if (req.hp !== undefined) fighters.player.setHealth(req.hp);
+    if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
+    if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
     if (arena && arena.time !== arena.times[0] && !fighters.light(arena.time)) {
       notices.push(showMessage(ctx.app, `${def.name}: no sheet for "${arena.time}" — in its own colours`, true));
     }
     // Over the two of them, so a mode set in a corner shows the corner.
     const camera = new Camera({ screen: VIEW.width, world: stage.width, floor: stage.groundY });
     camera.centreOn(fighters.player.x, fighters.opponent?.x ?? fighters.player.x);
-    // The mode sets what the overlays *start* as; B and D still toggle them.
-    if (mode.boxes !== undefined) ctx.keyboard.showBoxes = mode.boxes;
-    if (mode.debug !== undefined) ctx.keyboard.showDebug = mode.debug;
     // The dummy waits for `T`, even with a timeline written in the mode
     // (owner, 2026-10-30).
 
@@ -175,7 +174,7 @@ export class DebugScene implements Scene {
     this.fighters.update(
       keyboard.frame(),
       this.dummy.input({
-        on: keyboard.dummyAttacks,
+        on: keyboard.toggles.get("dummy"),
         facing: this.fighters.opponent?.facing ?? -1,
         // Read before the bodies move, which is the freeze this frame will use.
         frozen: this.fighters.frozen,
@@ -187,7 +186,7 @@ export class DebugScene implements Scene {
     // the walk and not the push would scroll every other frame.
     this.fighters.pushApart(this.camera.world);
     this.fighters.keepInView(this.camera);
-    if (keyboard.takeKiRefill()) this.fighters.fillKi();
+    if (keyboard.takeRefill()) this.fighters.refill();
     this.fighters.exchangeBlows();
     this.stage.flash(this.fighters.takeFlash());
     const { health, dial } = this.fighters.status();
@@ -220,13 +219,13 @@ export class DebugScene implements Scene {
     this.hud?.draw();
     this.status.draw({
       ...this.fighters.status(),
-      dummyAttacks: keyboard.dummyAttacks,
-      recording: keyboard.recording,
+      dummyAttacks: keyboard.toggles.get("dummy"),
+      recording: keyboard.toggles.get("recording"),
     });
-    this.panel.draw(keyboard.showDebug ? this.fighters.debug() : null);
+    this.panel.draw(keyboard.toggles.get("readout") ? this.fighters.debug() : null);
     this.view.scroll(this.camera.x, this.camera.y);
     this.stage.scroll(this.camera.x, this.camera.y, this.shake.offset);
-    this.fighters.render(keyboard.showBoxes);
+    this.fighters.render(keyboard.toggles.get("boxes"));
     this.effects.render();
   }
 

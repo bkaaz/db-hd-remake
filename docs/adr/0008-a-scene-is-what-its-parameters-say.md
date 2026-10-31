@@ -1,7 +1,8 @@
 # 0008 — A scene is what its parameters say, and the URL says them
 
 **Status:** accepted 2026-08-14 · its last line — presets in `package.json` —
-overruled 2026-08-16 by `data/debug.json`
+overruled 2026-08-16 by `data/debug.json` · the URL as the only source
+superseded 2026-10-31 by [0040](./0040-the-last-scene-is-remembered-and-an-address-overrides-it.md)
 
 **Every scene must be constructible from a small, serialisable set of
 parameters** — `{ scene: "fight", p1: "goku", p2: "goku" }` — and never from

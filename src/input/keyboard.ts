@@ -1,5 +1,5 @@
 import type { WorldInput } from "../entity/entity";
-import { startRecording, stopRecording } from "../log";
+import type { Toggles } from "../debug/toggles";
 
 /**
  * The keyboard, turned into one game frame of input.
@@ -25,10 +25,6 @@ import { startRecording, stopRecording } from "../log";
  * Remapping comes later; nothing outside this file knows which key is which.
  */
 export class Keyboard {
-  /** Draw hit/hurt/push boxes over the fighters. Toggled with B. */
-  showBoxes = true;
-  /** Let the debug dummy play its timeline. Toggled with T. */
-  dummyAttacks = false;
   /**
    * Step to the next debug mode, pressed with M.
    *
@@ -38,17 +34,13 @@ export class Keyboard {
    */
   private modeAsked = false;
   /**
-   * Fill the ki meter, pressed with Space — a debug key, and the reason it is
-   * an edge like M: it is asked for, not held.
+   * Fill both fighters' health and ki, pressed with Space — a debug key, and
+   * the reason it is an edge like M: it is asked for, not held.
    *
    * Trying a move that costs ki otherwise means holding A+Z for twenty seconds
    * first, and what is being looked at is never the charging.
    */
   private kiAsked = false;
-  /** Print what the engine thinks for both fighters. Toggled with I (D is Strike). */
-  showDebug = true;
-  /** Whether a gameplay recording is running. Started and stopped with L. */
-  recording = false;
 
   private readonly held: Directions = { left: false, right: false, up: false, down: false };
   private readonly armed: Buttons = {
@@ -68,7 +60,14 @@ export class Keyboard {
     dash: false,
   };
 
-  constructor(target: Window = window) {
+  /**
+   * @param toggles the debug switches B, I, T and L flip — the panel's too
+   *   (`src/debug/toggles.ts`)
+   */
+  constructor(
+    readonly toggles: Toggles,
+    target: Window = window,
+  ) {
     target.addEventListener("keydown", (e) => this.press(e));
     target.addEventListener("keyup", (e) => this.release(e));
   }
@@ -98,7 +97,7 @@ export class Keyboard {
   }
 
   /** True once per press of Space. Taking it spends it, like an attack button. */
-  takeKiRefill(): boolean {
+  takeRefill(): boolean {
     const asked = this.kiAsked;
     this.kiAsked = false;
     return asked;
@@ -120,16 +119,10 @@ export class Keyboard {
     }
     if (key === " ") this.kiAsked = !e.repeat;
     else if (key === "m") this.modeAsked = !e.repeat;
-    else if (key === "t") this.dummyAttacks = !this.dummyAttacks;
-    else if (key === "b") this.showBoxes = !this.showBoxes;
-    else if (key === "i") this.showDebug = !this.showDebug;
-    else if (key === "l") this.toggleRecording();
-  }
-
-  private toggleRecording(): void {
-    this.recording = !this.recording;
-    if (this.recording) startRecording();
-    else stopRecording();
+    else if (key === "t") this.toggles.flip("dummy");
+    else if (key === "b") this.toggles.flip("boxes");
+    else if (key === "i") this.toggles.flip("readout");
+    else if (key === "l") this.toggles.flip("recording");
   }
 
   private release(e: KeyboardEvent): void {

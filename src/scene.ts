@@ -47,7 +47,9 @@ export interface DebugRequest {
    * Player one's health to start from, out of the full amount — which stays
    * what charging refills to, as the original's starting health does.
    */
-  hp?: number;
+  hp1?: number;
+  /** Player two's, the same way. */
+  hp2?: number;
 }
 
 /**
@@ -87,7 +89,8 @@ export function queryFor(request: SceneRequest): string {
     q.set("mode", String(request.mode));
     if (request.arena) q.set("arena", request.arena);
     if (request.time) q.set("time", request.time);
-    if (request.hp !== undefined) q.set("hp", String(request.hp));
+    if (request.hp1 !== undefined) q.set("hp1", String(request.hp1));
+    if (request.hp2 !== undefined) q.set("hp2", String(request.hp2));
   }
   return `?${q.toString()}`;
 }
@@ -105,8 +108,13 @@ export function requestFromUrl(url: URL): SceneRequest | string {
     const arena = q.get("arena");
     const time = q.get("time");
     if (time !== null && arena === null) return `time "${time}" needs an arena`;
-    const hp = q.get("hp");
-    if (hp !== null && !(Number.isInteger(Number(hp)) && Number(hp) >= 1)) return `hp "${hp}" is not a whole number of health, 1 or more`;
+    const health: Partial<Record<"hp1" | "hp2", number>> = {};
+    for (const key of ["hp1", "hp2"] as const) {
+      const hp = q.get(key);
+      if (hp === null) continue;
+      if (!(Number.isInteger(Number(hp)) && Number(hp) >= 1)) return `${key} "${hp}" is not a whole number of health, 1 or more`;
+      health[key] = Number(hp);
+    }
     return {
       scene: "debug",
       p1,
@@ -114,7 +122,7 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       mode,
       ...(arena !== null && { arena }),
       ...(time !== null && { time }),
-      ...(hp !== null && { hp: Number(hp) }),
+      ...health,
     };
   }
   return `unknown scene "${scene}" — try select or debug`;

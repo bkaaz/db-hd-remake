@@ -1,15 +1,13 @@
-import { Application } from "pixi.js";
+import { Application, type Text } from "pixi.js";
 import { loadSoundBank } from "./audio/bank";
+import { Toggles } from "./debug/toggles";
 import { Keyboard } from "./input/keyboard";
-import {
-  queryFor,
-  requestFromUrl,
-  type Scene,
-  type SceneContext,
-  type SceneRequest,
-} from "./scene";
+import { startRecording, stopRecording } from "./log";
+import { queryFor, type Scene, type SceneContext, type SceneRequest } from "./scene";
+import { firstRequest, REMEMBERED } from "./sceneSource";
 import { DebugScene } from "./scenes/debug";
 import { SelectScene } from "./scenes/select";
+import { Panel } from "./ui/panel";
 import { showMessage } from "./ui/status";
 
 /**
@@ -33,34 +31,55 @@ async function boot(): Promise<void> {
   if (!mount) throw new Error("Missing #app mount element");
   mount.appendChild(app.canvas);
 
-  const keyboard = new Keyboard();
+  const toggles = new Toggles(localStorage);
+  // the recording is a file being written, not only a flag
+  toggles.onChange((toggle, on) => {
+    if (toggle === "recording") (on ? startRecording : stopRecording)();
+  });
+  const keyboard = new Keyboard(toggles);
   const ctx: SceneContext = { app, bank: await loadSoundBank(), keyboard };
 
   /** Null while a scene is being loaded: the crank turns, nothing happens. */
   let scene: Scene | null = null;
   let loading = false;
+  /** Why the last scene could not be built — taken down by the next pick. */
+  let failure: Text | null = null;
+  let builds = 0;
 
   function go(request: SceneRequest): void {
-    // `replaceState`, not `pushState`: going back would have to rebuild a scene
-    // from a request, which is possible but is a feature nobody asked for. This
-    // only has to survive a reload.
-    history.replaceState(null, "", queryFor(request));
+    // Remembered rather than written into the address: a reload lands where
+    // you were, and the address stays short (ADR 0040).
+    localStorage.setItem(REMEMBERED, queryFor(request));
+    panel.show(request);
     scene?.destroy();
     scene = null;
+    failure?.destroy();
+    failure = null;
     loading = true;
+    // Two picks in quick succession build two scenes; only the last may run.
+    const ticket = ++builds;
     void build(ctx, request).then((result) => {
+      if (ticket !== builds) {
+        if (typeof result !== "string") result.destroy();
+        return;
+      }
       loading = false;
-      if (typeof result === "string") showMessage(app, result);
+      if (typeof result === "string") failure = showMessage(app, result);
       else scene = result;
     });
   }
 
-  const request = requestFromUrl(new URL(location.href));
-  if (typeof request === "string") {
-    showMessage(app, request);
+  const first = firstRequest(new URL(location.href), localStorage.getItem(REMEMBERED));
+  if (typeof first.request === "string") {
+    showMessage(app, first.request);
     return;
   }
-  go(request);
+  // What the address asked for is remembered now, so it can go: an old link
+  // left in the bar would undo every pick made since on the next reload.
+  history.replaceState(null, "", location.pathname);
+  const panel = new Panel(first.request, go, toggles);
+  if (first.notice) panel.say(first.notice);
+  go(first.request);
 
   // The clock. Real time arrives in whatever lumps the monitor delivers and is
   // spent in whole 1/60 steps: everything the game knows — animation timings,

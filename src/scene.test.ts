@@ -13,9 +13,9 @@ describe("scene requests", () => {
   });
 
   it("starts player one at the health asked for, and refuses one that is not a whole number", () => {
-    expect(read("?scene=debug&hp=100")).toMatchObject({ hp: 100 });
-    expect(read("?scene=debug&hp=lots")).toBe('hp "lots" is not a whole number of health, 1 or more');
-    expect(read("?scene=debug&hp=0")).toMatch(/not a whole number/);
+    expect(read("?scene=debug&hp1=100&hp2=50")).toMatchObject({ hp1: 100, hp2: 50 });
+    expect(read("?scene=debug&hp2=lots")).toBe('hp2 "lots" is not a whole number of health, 1 or more');
+    expect(read("?scene=debug&hp1=0")).toMatch(/not a whole number/);
   });
 
   it("refuses a lighting without an arena to have it", () => {
@@ -23,7 +23,7 @@ describe("scene requests", () => {
   });
 
   it("writes a request back to the same address", () => {
-    for (const query of ["?scene=debug&p1=goku&p2=goku&mode=2", "?scene=debug&p1=goku&p2=goku&mode=0&arena=tournament&time=evening", "?scene=debug&p1=goku&p2=goku&mode=0&hp=100"]) {
+    for (const query of ["?scene=debug&p1=goku&p2=goku&mode=2", "?scene=debug&p1=goku&p2=goku&mode=0&arena=tournament&time=evening", "?scene=debug&p1=goku&p2=goku&mode=0&hp1=100&hp2=50"]) {
       const request = read(query);
       if (typeof request === "string") throw new Error(request);
       expect(queryFor(request)).toBe(query);

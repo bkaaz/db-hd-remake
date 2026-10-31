@@ -168,10 +168,9 @@ band grows with a wider screen — decided when the screen is widened.
    the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
    corner, decides whether it replaces what we have.
 3. **Our tools around the game's screen** (owner, 2026-10-30) — the
-   debug scene's panel, status line and notices laid out in the space
-   around the scaled screen, and a picker there for the arena and the
-   fighters: a choice rewrites the query string, which rebuilds the scene
-   from its parameters (ADR 0008).
+   panel (`src/ui/panel.ts`, ADR 0040) picks the scene and its parameters
+   and flips the debug switches. Next: the status line and notices laid
+   out in the space around the screen.
 4. **Where the original starts a round** — the fighters' x and the
    camera's (`$0D:D7A0`, `$01:8B84`), read from the code. Ours start at
    35% / 65% of the world under a centred camera, which puts both in the

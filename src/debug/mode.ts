@@ -28,10 +28,6 @@ export interface DebugMode {
   p1?: Placement;
   /** The dummy: where it stands, and the timeline it plays — see ./dummy.ts. */
   p2?: Placement & Script;
-  /** Initial value only — `B` still toggles the boxes afterwards. */
-  boxes?: boolean;
-  /** Initial value only — `I` still toggles the state readout. */
-  debug?: boolean;
 }
 
 /** What `data/debug.json` holds. */

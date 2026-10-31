@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest";
 import { countOf, modeAt, NO_MODE } from "./mode";
 
 const file = {
-  modes: [{}, { p1: { at: 0.8 }, p2: { at: 0.97 }, boxes: true }],
+  modes: [{}, { p1: { at: 0.8 }, p2: { at: 0.97 } }],
 };
 
 describe("modeAt", () => {
   it("hands back the mode that was asked for", () => {
-    expect(modeAt(file, 1)).toEqual({ p1: { at: 0.8 }, p2: { at: 0.97 }, boxes: true });
+    expect(modeAt(file, 1)).toEqual({ p1: { at: 0.8 }, p2: { at: 0.97 } });
   });
 
   it("lets a mode say nothing at all", () => {
