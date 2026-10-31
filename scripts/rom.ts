@@ -27,7 +27,7 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { FIRE, GOKU, ROM_PATH, scriptAt, tileResourceOf } from "../src/rom/cartridge.ts";
+import { FIRE, GOKU, ROM_PATH, scriptAt, tileResourceOf, type FighterTables } from "../src/rom/cartridge.ts";
 import { fighterNamed, fighterTables, ROSTER, type FighterName } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
@@ -43,6 +43,11 @@ import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
 import { fullestLife, readLives } from "../src/rom/recording.ts";
 import { OWN_OBJECTS, ownObjects } from "../src/rom/ownObjects.ts";
+import { decodeLine, LINE_RATE, lineName, spokenLines } from "../src/rom/lines.ts";
+import { VOICE_RATE, voiceFiles, voiceSamples, voiceSounds } from "../src/rom/voice.ts";
+import { encodeWav } from "../src/audio/wav.ts";
+import { normalise } from "../src/audio/split.ts";
+import type { Sounds } from "../src/audio/sounds.ts";
 import { moveOf, todo } from "../src/rom/todo.ts";
 import { handlerAt } from "../src/rom/handler.ts";
 import { commandContext } from "../src/rom/conditions.ts";
@@ -341,6 +346,7 @@ if (command === "tiles") {
       console.log(`${spawn}: ${Object.keys(e.frames).length} frames, shown as ${recording} shows them`);
     }
   }
+  writeVoice(T, name);
 } else if (command === "export") {
   // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
   const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU) } });
@@ -350,6 +356,7 @@ if (command === "tiles") {
     writeFileSync(`assets/sheets/goku@${variant}.png`, encodePng(sheet));
   }
   console.log(`goku: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
+  writeVoice(GOKU, "goku");
   for (const [name, spawn] of Object.entries(exportSpawns(rom, GOKU))) {
     write(`assets/sheets/spawns/${name}.png`, `data/spawns/${name}`, spawn);
     console.log(`${name}: ${Object.keys(spawn.frames).length} frames`);
@@ -374,6 +381,22 @@ if (command === "tiles") {
 }
 
 /** Writes the sheet and the two sections the export owns; states stay hand-written. */
+/** A fighter's voice from the cartridge, beside the capture's clips; his other sounds kept. */
+function writeVoice(t: FighterTables, fighter: string): void {
+  const wav = (stem: string, samples: Float32Array, sampleRate: number) =>
+    writeFileSync(`assets/audio/sfx/${stem}.wav`, encodeWav({ sampleRate, samples: normalise(samples) }));
+  const ids = spokenLines(rom, t);
+  for (const id of ids) wav(lineName(id), decodeLine(rom, id), LINE_RATE);
+  const samples = voiceSamples(rom, t.character);
+  const files = voiceFiles(fighter);
+  wav(files.hurt, samples.hurt, VOICE_RATE);
+  wav(files.shout, samples.shout, VOICE_RATE);
+  const path = `data/entities/${fighter}/sounds.json`;
+  const sounds = existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as Sounds) : {};
+  writeFileSync(path, JSON.stringify(voiceSounds(sounds, fighter, ids), null, 2) + "\n");
+  console.log(`${fighter}: voice ${files.hurt} ${files.shout}, lines ${ids.map(lineName).join(" ")} into assets/audio/sfx; ${path}`);
+}
+
 function write(sheetPath: string, dir: string, e: Exported): void {
   mkdirSync(dir, { recursive: true });
   writeFileSync(sheetPath, encodePng(e.sheet));

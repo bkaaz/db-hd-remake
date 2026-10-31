@@ -250,9 +250,12 @@ characters' reactions and specials among them (`find 22 6c de 0d`).
 sample from `$00:DB98` (3 bytes each) streamed to the sound chip
 (`$00:DB61`); when one is already playing the fighter shouts `32` instead.
 The Kamehameha says line 0 (`$13:D7D0`) on its first frame, Final Flash
-line `0d` (`$13:ECE0`) as it fires. A line is a word — its length in 9-byte
-BRR blocks `?` (line 0's `07FB`, about a second at 32 kHz) — then the
-blocks, the first all zero.
+line `0d` (`$13:ECE0`) as it fires. A line is chunks, each a byte count
+and that many bytes of BRR sent to the chip at `$3700` (`$00:DA6F`), until
+a count of 0; a chunk's last block ends it. 75 bytes go a frame (`$067A`),
+so it plays at 8000 samples a second — line 0 lasts 0.85 s, as its clip
+`080` does. `src/rom/lines.ts` decodes them; a fighter's are the ids his
+scripts' `a1` name.
 
 **The Kamehameha's hit lights the defender up** (`dump-vram.lua`,
 `log-palettes.lua`): the burning above, and BG palettes 2–7 turn white for
@@ -326,9 +329,18 @@ code that plays them, since a clip's number says nothing:
 | `17` | a blocked melee blow (`$0D:CF55`) | `block_1` |
 | `19` | charging ki, every 8 frames (`$0F:A044`) | `charge_1` |
 | `25` | charging the Kamehameha (`aa`'s script) | `charge_2` |
-| `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | goku's `voice_hurt` |
+| `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | the fighter's `voice_hurt` |
 | `31` | the voice at KO (`$0D:D10C`) | — |
-| `32` | an attack's shout (the ki blast, specials) | goku's `voice_shout` |
+| `32` | an attack's shout (the ki blast, specials) | the fighter's `voice_shout` |
+
+**A fighter's voice is two samples** the chip is given as a fight loads
+(`$00:98EC`): by character × 9 at `$00:DD48`, a pointer to player one's
+sample directory (8 bytes for `$1A78`), player two's (`$1A88`), and the
+samples (for `$4000`, player two's `$5600`) — each a byte count and an
+address, then the bytes. The first is the cry of a blow taken (`30`), the
+second the shout (`32`), both at pitch `03F6`. Goku's are `$15:8000`, the
+same bytes as `spc.bin`'s; player two in that dump was Vegetto (character
+4). `src/rom/voice.ts` reads them; `31`, the KO, is not read.
 
 **Charging ki refills health** (`$0F:A020`): every 2 frames of the game's
 count `$74` the dial (field `0x66`) steps 1; at 12 it goes back to 0 and

@@ -1,0 +1,45 @@
+{
+  "_comment": "Vegeta's own voice, and nothing else, all read out of the cartridge by npm run rom -- export --fighter vegeta (src/rom/voice.ts, lines.ts): the two samples the sound chip is given for him — 30, the cry of a blow taken, and 32, an attack's shout (shifted for player two) — and the spoken lines his scripts' a1 name. Entries with a `rom` or a `line` are the export's and are written again; anything else here is kept. 31, the KO, is not read.",
+  "voice_hurt": {
+    "gain": 0.6,
+    "vary": 0.05,
+    "file": "vegeta_hurt.wav",
+    "rom": 48
+  },
+  "voice_shout": {
+    "gain": 0.55,
+    "vary": 0.04,
+    "file": "vegeta_shout.wav",
+    "rom": 50
+  },
+  "line_0d": {
+    "gain": 0.6,
+    "vary": 0.03,
+    "file": "line_0d.wav",
+    "line": 13
+  },
+  "line_0e": {
+    "gain": 0.6,
+    "vary": 0.03,
+    "file": "line_0e.wav",
+    "line": 14
+  },
+  "line_0f": {
+    "gain": 0.6,
+    "vary": 0.03,
+    "file": "line_0f.wav",
+    "line": 15
+  },
+  "line_10": {
+    "gain": 0.6,
+    "vary": 0.03,
+    "file": "line_10.wav",
+    "line": 16
+  },
+  "line_2c": {
+    "gain": 0.6,
+    "vary": 0.03,
+    "file": "line_2c.wav",
+    "line": 44
+  }
+}

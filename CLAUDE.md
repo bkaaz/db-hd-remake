@@ -355,7 +355,8 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   │                             #   file; spawns/ holds what npm run fx writes
 │   ├── arenas/<name>/            #   each layer of an arena, once per lighting
 │   ├── hud/hud.png               #   the HUD's band and its parts' tiles
-│   └── audio/sfx/                #   the clips cut from the capture
+│   └── audio/sfx/                #   the clips cut from the capture, and
+│                                 #   each fighter's voice read from the cartridge
 ├── raw/                          # BYOA, gitignored — what those were made from
 │                                 #   and cannot be regenerated (the capture,
 │                                 #   untouched rips, the ROM). npm run pack -- --raw

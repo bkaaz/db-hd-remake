@@ -43,6 +43,9 @@ preview/                                                     what a person looks
   rom -- export`), and so is `sheets/goku.png`.
 - **`raw/` is exactly what cannot be regenerated.** The uncut capture that
   `npm run split-audio` cuts into `assets/audio/sfx/`, and untouched rips.
+  The `line_*.wav` and `<fighter>_hurt` / `_shout.wav` beside those clips
+  are not cut: `npm run rom -- export` decodes each fighter's voice from
+  the cartridge.
   Nothing reads it at runtime.
 - **`preview/` is disposable** — contact sheets and effect previews, rebuilt by
   `npm run sheet` and `npm run fx`, never read back by code.

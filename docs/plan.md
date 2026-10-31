@@ -89,16 +89,15 @@ engine does not have. In order:
    animation, which `fires` cannot put out), an object gone off the screen
    (`rom.md`, `$0F:B47D` — ours only at the screen's sides, never above it), the palette run
    an object's code steps through, every 4 frames (`$01:84EF`, `rom.md`); for
-   Final Flash, the head gone when Vegeta leaves the move (`$0F:BE66`) and
-   his shout (spoken line `0d`: lines are BRR streams the export can read,
-   `$00:DB98` — item 3); and Goku's from a recording of his own. *Done when:* Vegeta's ki blast and
+   Final Flash, the head gone when Vegeta leaves the move (`$0F:BE66`); and
+   Goku's from a recording of his own. *Done when:* Vegeta's ki blast and
    one special fire from his recording, and Goku's spawns come out of his
    with no hand-written `objects` in `cartridge.ts`.
 2. **Attributes and knockback** — the export writes `attributes.json`'s
    numbers and the reactions' knockback; Vegeta's are Goku's until then.
    *Done when:* Goku's equal today's.
-3. **Vegeta's voice and HUD name** — his clips matched by id as Goku's
-   were (`npm run samples`), his name in `exportHud`.
+3. **Vegeta's HUD name** — in `exportHud`. Every fighter's voice is read
+   from the cartridge (`src/rom/voice.ts`, `lines.ts`) but the KO's (`31`).
 
 ## Now: Goku from the cartridge
 
