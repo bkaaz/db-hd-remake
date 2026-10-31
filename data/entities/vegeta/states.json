@@ -1,0 +1,981 @@
+{
+  "initial": "idle",
+  "onGotHit": "hurt",
+  "onGuard": "guard_hit",
+  "states": {
+    "idle": {
+      "anim": "m00",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "crouch"
+        },
+        {
+          "when": "held:guard",
+          "to": "guard"
+        },
+        {
+          "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:dash"
+          ],
+          "to": "dash_fwd"
+        },
+        {
+          "when": [
+            "held:back",
+            "pressed:dash"
+          ],
+          "to": "dash_back"
+        },
+        {
+          "when": "held:fwd",
+          "to": "walk_fwd"
+        },
+        {
+          "when": "held:back",
+          "to": "walk_back"
+        },
+        {
+          "when": "held:up",
+          "to": "jump_up"
+        }
+      ]
+    },
+    "walk_fwd": {
+      "anim": "m01",
+      "vel": [
+        1.5,
+        0
+      ],
+      "turn": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "crouch"
+        },
+        {
+          "when": "held:guard",
+          "to": "guard"
+        },
+        {
+          "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:dash"
+          ],
+          "to": "dash_fwd"
+        },
+        {
+          "when": [
+            "held:back",
+            "pressed:dash"
+          ],
+          "to": "dash_back"
+        },
+        {
+          "when": "held:up",
+          "to": "jump_fwd"
+        },
+        {
+          "when": "!held:fwd",
+          "to": "idle"
+        }
+      ]
+    },
+    "walk_back": {
+      "anim": "m02",
+      "vel": [
+        -1.25,
+        0
+      ],
+      "turn": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "crouch"
+        },
+        {
+          "when": "held:guard",
+          "to": "guard"
+        },
+        {
+          "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:dash"
+          ],
+          "to": "dash_fwd"
+        },
+        {
+          "when": [
+            "held:back",
+            "pressed:dash"
+          ],
+          "to": "dash_back"
+        },
+        {
+          "when": "held:up",
+          "to": "jump_back"
+        },
+        {
+          "when": "!held:back",
+          "to": "idle"
+        }
+      ]
+    },
+    "crouch": {
+      "anim": "m03",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "transitions": [
+        {
+          "when": "held:guard",
+          "to": "guard_low"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "!held:down",
+          "to": "stand_up"
+        }
+      ]
+    },
+    "stand_up": {
+      "anim": "m04",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "crouch"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "jump_up": {
+      "anim": "m05",
+      "launch": [
+        0,
+        -9.86
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_fwd": {
+      "anim": "m06",
+      "launch": [
+        2.02,
+        -9.86
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_back": {
+      "anim": "m07",
+      "launch": [
+        -2.02,
+        -9.86
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "land": {
+      "anim": "m3b",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "sound": "land_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "dash_fwd": {
+      "anim": "m0a",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "idle"
+        },
+        {
+          "when": "!held:fwd",
+          "to": "idle"
+        }
+      ]
+    },
+    "dash_back": {
+      "anim": "m0b",
+      "vel": [
+        -3,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "idle"
+        },
+        {
+          "when": "!held:back",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_y_close": {
+      "anim": "m90",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "heavy",
+      "damage": 26,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_y": {
+      "anim": "m92",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "heavy",
+      "damage": 28,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_b_close": {
+      "anim": "m91",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "light",
+      "damage": 28,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_b": {
+      "anim": "m93",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "heavy",
+      "damage": 30,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_x": {
+      "anim": "m9a",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "light",
+      "damage": 18,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "ki": {
+      "anim": "m9b",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "ki_fire"
+        }
+      ]
+    },
+    "charge_start": {
+      "anim": "m0c",
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "charge"
+        }
+      ]
+    },
+    "charge": {
+      "anim": "m0c_2",
+      "vel": [
+        0,
+        0
+      ],
+      "heal": {
+        "every": 2,
+        "turn": 13,
+        "gain": 5
+      },
+      "loopSound": "charge_1",
+      "loopEvery": 8,
+      "transitions": [
+        {
+          "when": [
+            "animEnd",
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "charge_end"
+        }
+      ]
+    },
+    "charge_end": {
+      "anim": "m0c_3",
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "ki_fire": {
+      "anim": "m9b_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "guard": {
+      "anim": "m0e",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "guarding": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "guard_low"
+        },
+        {
+          "when": "!held:guard",
+          "to": "idle"
+        }
+      ]
+    },
+    "guard_low": {
+      "anim": "m10",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "guarding": true,
+      "transitions": [
+        {
+          "when": "!held:down",
+          "to": "guard"
+        },
+        {
+          "when": "!held:guard",
+          "to": "crouch"
+        }
+      ]
+    },
+    "guard_hit": {
+      "anim": "m0d",
+      "vel": [
+        0,
+        0
+      ],
+      "shove": -2,
+      "turn": false,
+      "guarding": true,
+      "transitions": [
+        {
+          "when": [
+            "animEnd",
+            "held:guard"
+          ],
+          "to": "guard"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "guard_crouch": {
+      "anim": "m0f",
+      "vel": [
+        0,
+        0
+      ],
+      "shove": -2,
+      "turn": false,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "guarding": true,
+      "transitions": [
+        {
+          "when": [
+            "animEnd",
+            "held:guard"
+          ],
+          "to": "guard_low"
+        },
+        {
+          "when": "animEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "hurt": {
+      "anim": "m15",
+      "rank": 1,
+      "vel": [
+        -1,
+        0
+      ],
+      "turn": false,
+      "ifAirborne": "hurt_air",
+      "ifCrouching": "hurt_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt_chain": {
+      "anim": "m15",
+      "rank": 1,
+      "vel": [
+        -0.67,
+        0
+      ],
+      "turn": false,
+      "ifAirborne": "juggle",
+      "ifCrouching": "hurt_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt_crouch": {
+      "anim": "m17",
+      "rank": 1,
+      "crouching": true,
+      "vel": [
+        -1,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "hurt_heavy": {
+      "anim": "m16",
+      "rank": 2,
+      "vel": [
+        -3.1,
+        0
+      ],
+      "turn": false,
+      "ifAirborne": "hurt_heavy_air",
+      "ifCrouching": "hurt_heavy_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt_heavy_crouch": {
+      "anim": "m18",
+      "rank": 2,
+      "crouching": true,
+      "vel": [
+        -3.1,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_light": {
+      "anim": "m15",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "juggle",
+      "ifCrouching": "reel_light_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_light_crouch": {
+      "anim": "m17",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_heavy": {
+      "anim": "m16",
+      "rank": 2,
+      "shove": -3,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "hurt_heavy_air",
+      "ifCrouching": "reel_heavy_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_heavy_crouch": {
+      "anim": "m18",
+      "rank": 2,
+      "shove": -3,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_down": {
+      "anim": "m1b",
+      "rank": 3,
+      "launch": [
+        -2,
+        -4
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "down_fall"
+        },
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ]
+    },
+    "down_fall": {
+      "anim": "m1b_2",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ]
+    },
+    "down_bounce": {
+      "anim": "m1b_3",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_2",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "get_up"
+        }
+      ]
+    },
+    "get_up": {
+      "anim": "m1f",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt_air": {
+      "anim": "m24",
+      "rank": 1,
+      "launch": [
+        -1.2,
+        -1
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "hurt_heavy_air": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -3.5,
+        -2.5
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "juggle": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -0.67,
+        -2
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "launched": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -0.67,
+        -4
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "blown": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -6,
+        -3
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "slam": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -2.5,
+        -1.8
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ],
+      "ifAirborne": "slam_air"
+    },
+    "slam_air": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -1,
+        6.2
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "downed": {
+      "anim": "m1f",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "sound": "land_3",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    }
+  }
+}

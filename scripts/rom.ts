@@ -34,6 +34,10 @@ import { decompress } from "../src/rom/decompress.ts";
 import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/rom/export.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
 import { describeFact } from "../src/rom/describe.ts";
+import { blowOfAnim } from "../src/rom/animBlow.ts";
+import { readCommands } from "../src/rom/commands.ts";
+import { statesFrom } from "../src/rom/template.ts";
+import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
 import { long } from "../src/rom/disasm.ts";
 import { objectFrame } from "../src/rom/object.ts";
@@ -48,10 +52,11 @@ if (!existsSync(ROM_PATH)) {
   process.exit(1);
 }
 const rom = new Uint8Array(readFileSync(ROM_PATH));
-// `--fighter <name>` reads another fighter of the roster; the export stays Goku's
+// `--fighter <name>` reads another fighter of the roster, and exports only him
 const argv = process.argv.slice(2);
 const named = argv.indexOf("--fighter");
-const T = named >= 0 ? fighterNamed(rom, argv[named + 1]) : GOKU;
+const name = named >= 0 ? argv[named + 1] : "goku";
+const T = named >= 0 ? fighterNamed(rom, name) : GOKU;
 if (named >= 0) argv.splice(named, 2);
 const [command, ...args] = argv;
 
@@ -201,6 +206,38 @@ if (command === "tiles") {
     const page = tileResourceOf(rom, t, 0) ?? 0;
     console.log(`${c} ${name.padEnd(8)} ${t.drawings} drawings, resources ${hex(page >> 8)}xx, palette 0x${t.palette.toString(16)}, boxes 0x${t.boxes.toString(16)}`);
   });
+} else if (command === "states" && T !== GOKU) {
+  // goku's states as the template: what every fighter shares, on his animations with his blows
+  const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, unknown>;
+  const template = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
+  // goku's specials: the moves his command table picks
+  const specials = new Set(readCommands(rom, GOKU.character).map((c) => c.move));
+  const made = statesFrom(template, {
+    has: (a) => a in animations,
+    special: (a) => specials.has(parseInt(a.slice(1, 3), 16)),
+    foreign: (v) => v.startsWith("goku_"),
+    blowOf: (a) => blowOfAnim(rom, T, a),
+  });
+  writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(made.file, null, 2) + "\n");
+  for (const [state, why] of Object.entries(made.dropped)) console.log(`dropped ${state}: ${why}`);
+  for (const [state, what] of Object.entries(made.lost)) console.log(`${state} lost ${what.join(", ")}`);
+  for (const [state, [was, is]] of Object.entries(made.reblown)) console.log(`${state}: ${was} -> ${is}`);
+  // goku's numbers until the attributes are read (plan.md), his own lightings, no fire yet
+  const attributes = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8"));
+  writeFileSync(
+    `data/entities/${name}/attributes.json`,
+    JSON.stringify({ ...attributes, palettes: Object.keys(lightingPalettes(rom, T)), burn: [] }, null, 2) + "\n",
+  );
+  console.log(`${name}: ${Object.keys(made.file.states).length} states; attributes are goku's but the palettes`);
+} else if (command === "export" && T !== GOKU) {
+  // his lighting variants only: the fire, the spawns, the arenas and the HUD stay Goku's export
+  const fighter = exportFighter(rom, { ...T, variants: lightingPalettes(rom, T) });
+  for (const note of fighter.notes) console.log(`  ${note}`);
+  write(`assets/sheets/${name}.png`, `data/entities/${name}`, fighter);
+  for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
+    writeFileSync(`assets/sheets/${name}@${variant}.png`, encodePng(sheet));
+  }
+  console.log(`${name}: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
 } else if (command === "export") {
   // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
   const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU) } });

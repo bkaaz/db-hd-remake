@@ -262,6 +262,11 @@ npm run rom -- object a 15 32@6c00 80
 npm run rom -- roster
                   # every fighter of the cartridge; any reading command
                   # takes --fighter <name> (port, move, frame…)
+npm run rom -- export --fighter vegeta
+                  # another fighter's sheet, frames and animations only
+npm run rom -- states --fighter vegeta
+                  # his states from goku's: the shared moves on his
+                  # animations with his blows, goku's specials dropped
 npm run rom -- hud
                   # the original's HUD as its loader leaves it, into preview/
 npm run rom -- stage 0

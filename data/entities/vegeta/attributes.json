@@ -1,0 +1,17 @@
+{
+  "gravity": 0.469,
+  "pushWidth": 28,
+  "hitstop": 8,
+  "health": 400,
+  "defence": 8,
+  "closeRange": {
+    "attack": 44,
+    "smash": 48
+  },
+  "comboLimits": false,
+  "palettes": [
+    "evening",
+    "night"
+  ],
+  "burn": []
+}

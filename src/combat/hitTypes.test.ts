@@ -92,7 +92,7 @@ describe("the shipped types", () => {
     // Checked per fighter, as in a mirror match: the original's `light` and
     // `heavy` react with states only `goku` has until the two sets of types
     // are reconciled (plan.md).
-    for (const entity of ["goku", "goku_old"]) {
+    for (const entity of ["goku", "goku_old", "vegeta"]) {
       const { states } = statesOf(entity);
       for (const def of Object.values(states)) {
         const type = def.type === undefined ? undefined : HIT_TYPES[def.type];

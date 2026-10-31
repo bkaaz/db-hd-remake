@@ -450,7 +450,7 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
-  it.each(["goku_old", "goku"])("keeps the entity we ship, %s, valid", (entity) => {
+  it.each(["goku_old", "goku", "vegeta"])("keeps the entity we ship, %s, valid", (entity) => {
     // The point of the validator: catch a typo in hand-authored data. Checking
     // the committed states against the committed animations is what makes that
     // guarantee real — warnings are allowed (data is still being authored),

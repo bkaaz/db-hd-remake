@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { blowStarts } from "./animation";
+import { blowOfAnim } from "./animBlow";
+import { fighterNamed, ROSTER } from "./roster";
 import { GOKU as GOKU_TABLES, ROM_PATH, scriptAt } from "./cartridge";
 import { readBoxes } from "./collision";
 import { readScript } from "./script";
@@ -43,24 +45,22 @@ describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
     expect([states.fly.type, states.fly.damage]).toEqual(["heavy", 18]);
   });
 
-  it("agrees with every blow goku's states copied from it", () => {
-    // The states are written by hand (ADR 0013); this is what keeps the copy
-    // honest. A state playing move mNN takes that move's damage and the type
-    // named after its reaction.
-    const states = (JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile).states;
-    const blows = Object.entries(states).filter(([, def]) => def.type !== undefined);
-    expect(blows.length).toBeGreaterThan(0);
-    for (const [name, def] of blows) {
-      // mNN is the move's first blow, mNN_k its k-th (src/rom/animation.ts)
-      const [, id, part] = /^m([0-9a-f]{2})(?:_(\d+))?$/.exec(def.anim ?? "") ?? [];
-      const move = parseInt(id, 16);
-      const starts = blowStarts(readScript(rom, scriptAt(rom, GOKU_TABLES, move)), (d) =>
-        readBoxes(rom, GOKU_TABLES.boxes, d),
-      );
-      const record = recordAt(hitRecords(rom, GOKU, move), starts[(part ? Number(part) : 1) - 1]);
-      expect(record, `${name} plays ${def.anim}`).toBeDefined();
-      expect(def.damage, name).toBe(record?.damage);
-      expect(def.type, name).toBe(record && groundReaction(record));
+  it("agrees with every blow a fighter's states copied from it", () => {
+    // The states are written by hand (ADR 0013) or from a template
+    // (template.ts); this is what keeps the copy honest. A state playing move
+    // mNN takes that move's damage and the type named after its reaction.
+    const fighters = ROSTER.filter((name) => existsSync(`data/entities/${name}/states.json`));
+    expect(fighters).toContain("goku");
+    for (const fighter of fighters) {
+      const t = fighter === "goku" ? GOKU_TABLES : fighterNamed(rom, fighter);
+      const states = (JSON.parse(readFileSync(`data/entities/${fighter}/states.json`, "utf8")) as StatesFile).states;
+      const blows = Object.entries(states).filter(([, def]) => def.type !== undefined);
+      expect(blows.length).toBeGreaterThan(0);
+      for (const [name, def] of blows) {
+        const blow = blowOfAnim(rom, t, def.anim ?? "");
+        expect(blow, `${fighter} ${name} plays ${def.anim}`).not.toBeNull();
+        expect([def.type, def.damage], `${fighter} ${name}`).toEqual([blow?.type, blow?.damage]);
+      }
     }
   });
 });

@@ -59,16 +59,30 @@ built from the report alone.
 | the sound driver, HDMA, the camera, the shake, burning's palettes | recordings or one-off — stays prose |
 
 The roster is read (`src/rom/roster.ts`, `npm run rom -- roster`; any
-reading command takes `--fighter <name>`). The readers left, in order —
-each a slice, each shown in `port`:
+reading command takes `--fighter <name>`).
 
-1. **Object types** — timing, life, speed, on-hit, copies, read from the
-   type's code by its usual patterns. *Done when:* the export writes the
-   Kamehameha's and the ki blast's spawns without the hand-written
+**Readers paused, measured first** (owner, 2026-10-31): the report reads a
+move; it does not translate one — a special's own logic still goes into
+states and the engine by hand. Whether the readers pay off is measured on a
+second fighter before any more are built — Vegeta, done 2026-10-31
+(`export` / `states --fighter`): the shared moves come over by script,
+specials and objects do not. In order:
+
+1. **The throw from the report alone** — the exam: `port 9d` has all of it.
+2. **Object types** — Vegeta's specials, ki blast and dust wait on it. Four steps: the object's code read as a handler is
+   (`+0B` timer, `+02` frame, `+0C`/`+0E` speed — life, steps, the frame
+   from `$74`, the hitstop pause, gone with its owner's move), shown in
+   `port`; the export's steps / frames / animations / loop taken from it;
+   what an object becomes on a hit (`$2A:8E31`) and its `hits` from its
+   blow; the resources and palettes from the code that loads them
+   (`$01:84B3`) instead of VRAM snapshots. *Done when:* the export writes
+   the Kamehameha's and the ki blast's spawns without the hand-written
    `objects` in `cartridge.ts`.
-2. **Attributes and knockback** — the export writes `attributes.json`'s
-   numbers and the reactions' knockback. *Done when:* Goku's equal today's.
-3. **The throw from the report alone** — the exam.
+3. **Attributes and knockback** — the export writes `attributes.json`'s
+   numbers and the reactions' knockback; Vegeta's are Goku's until then.
+   *Done when:* Goku's equal today's.
+4. **Vegeta's voice and HUD name** — his clips matched by id as Goku's
+   were (`npm run samples`), his name in `exportHud`.
 
 ## Now: Goku from the cartridge
 
