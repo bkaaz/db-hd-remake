@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { Cpu, Test } from "./cpu";
+import { START, type Cpu, type Test } from "./cpu";
 import { CHARACTER, FRAMES, ways, type Known } from "./flow";
 
 const k: Known = { frame: null };
-const cpu = (source: Cpu["source"], test: Test): Cpu => ({ regs: { a: null, y: null }, source, test });
-const onFrames = (value: number) => cpu({ field: FRAMES }, { op: "cmp", value });
+const cpu = (source: Cpu["source"], test: Test): Cpu => ({ ...START, source, test });
+const onFrames = (value: number) => cpu({ field: FRAMES, who: "mover" }, { op: "cmp", value });
 const onA = (value: number) => cpu(null, { op: "cmp", value });
 
 describe("ways", () => {
@@ -40,19 +40,19 @@ describe("ways", () => {
   });
 
   it("follows only the way a known character goes", () => {
-    const buu = cpu({ field: CHARACTER }, { op: "cmp", value: 9 });
+    const buu = cpu({ field: CHARACTER, who: "mover" }, { op: "cmp", value: 9 });
     expect(ways("BEQ", k, buu, null, 9)).toEqual([k, null]);
     expect(ways("BEQ", k, buu, null, 0)).toEqual([null, k]);
   });
 
   it("lets a test the path has already answered settle the branch", () => {
-    const f0 = cpu({ field: 0xf0 }, { op: "zero" });
+    const f0 = cpu({ field: 0xf0, who: "mover" }, { op: "zero" });
     expect(ways("BEQ", { frame: null, when: ["when field f0 is not 0"] }, f0, null)).toEqual([null, { frame: null, when: ["when field f0 is not 0"] }]);
     expect(ways("BEQ", { frame: null, when: ["when field f0 is 0"] }, f0, null)).toEqual([{ frame: null, when: ["when field f0 is 0"] }, null]);
   });
 
   it("names a test on any other field in each way's conditions", () => {
-    expect(ways("BEQ", k, cpu({ field: 0xf0 }, { op: "zero" }), null)).toEqual([
+    expect(ways("BEQ", k, cpu({ field: 0xf0, who: "mover" }, { op: "zero" }), null)).toEqual([
       { frame: null, when: ["when field f0 is 0"] },
       { frame: null, when: ["when field f0 is not 0"] },
     ]);

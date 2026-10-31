@@ -4,7 +4,10 @@ import { scriptAt, type FighterTables } from "./cartridge";
 import { readBoxes } from "./collision";
 import { arrow, buttonName, readCommands } from "./commands";
 import { commandContext, describeConditions } from "./conditions";
+import { describeFact, factParts } from "./describe";
 import { handlerAt, handlerFacts, type HandlerFact } from "./handler";
+import { holdOffsets } from "./hold";
+import { ROSTER } from "./roster";
 import { groundReaction, hitRecords, objectRecord, recordAt, type HitRecord } from "./hits";
 import { readScript } from "./script";
 
@@ -24,6 +27,8 @@ export interface PortReport {
    * every frame, or once the script has run out (frame 0).
    */
   anyFrame: HandlerFact[];
+  /** Where the handler holds an opponent (`$0D:DE9A`), by the opponent's character: (dx, dy) per step of the move's script. */
+  holds: { against: string; at: [number, number][] }[];
   /** For each command that picks it: what it needs, what it costs, what it does to the opponent. */
   commands: { needs: string[]; cost: number; opponentMove: number | null }[];
   handler: number;
@@ -37,8 +42,8 @@ export interface PartReport {
   frames: number;
   /** The blow whose hit box rises in this part, if one does. */
   blow?: { frame: number; type: string; damage: number; stun: number };
-  /** What the script plays, and what the handler plays (`handler: true`). */
-  sounds: { frame: number; id: number; handler?: true }[];
+  /** What the script plays, and what the handler plays (`handler: true`) — the opponent's voice, `opponent: true`. */
+  sounds: { frame: number; id: number; handler?: true; opponent?: true }[];
   /** Objects started, with what their blow does (`$3D:9624`). */
   spawns: { frame: number; counter: number; type: number; anim: number; blow: { type: string; damage: number; stun: number } }[];
   /** What the handler does here: the speed carried in, and the frames it changes. */
@@ -52,7 +57,7 @@ export interface PartReport {
    * the conditions `handler.ts` reads (a landing); one it cannot read (vy
    * turning) leaves the fact bare — the address is in the report.
    */
-  onSteps: { step: number; what: string }[];
+  onSteps: { step: number; under: string; what: string }[];
 }
 
 export function portReport(rom: Uint8Array, t: FighterTables, move: number): PortReport {
@@ -99,7 +104,7 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
         ...events.flatMap((e) => (e.op.op === "sound" && inside(e.frame) ? [{ frame: e.frame - from, id: e.op.id }] : [])),
         ...facts.flatMap((f) =>
           f.sound !== undefined && f.frame !== null && inside(f.frame)
-            ? [{ frame: f.frame - from, id: f.sound, handler: true as const }]
+            ? [{ frame: f.frame - from, id: f.sound, handler: true as const, ...(f.who === "opponent" && { opponent: true as const }) }]
             : [],
         ),
       ],
@@ -114,7 +119,7 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
       onFrames: facts
         .filter((f) => f.frame && f.step === undefined && inside(f.frame) && !SHOWN.has(f.what))
         .map((f) => ({ frame: f.frame! - from, what: describeFact(f) })),
-      onSteps: stepped.filter((f) => inside(stepFrame[f.step])).map((f) => ({ step: f.step, what: describeFact(f) })),
+      onSteps: stepped.filter((f) => inside(stepFrame[f.step])).map((f) => ({ step: f.step, ...factParts(f) })),
     });
     from += frames;
   }
@@ -130,6 +135,9 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     inputs,
     commands: commands.map((c) => ({ needs: describeConditions(c.conditions, context), cost: c.cost, opponentMove: c.opponentMove })),
     anyFrame: facts.filter((f) => !f.frame && f.step === undefined),
+    holds: [...new Set(facts.flatMap((f) => (f.hold === undefined ? [] : [f.hold])))].flatMap((table) =>
+      ROSTER.map((against, c) => ({ against, at: holdOffsets(rom, table, c, stepStarts(ops).length) })),
+    ),
     handler,
     parts,
   };
@@ -137,25 +145,6 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
 
 /** What a part already lists on its own line. */
 const SHOWN = new Set(["plays sound", "sets vx", "re-arms the blow"]);
-
-/** A fact in words, with what it waits on: "from frame 52, when its object 0a/15 is gone: jumps to move frame 124". */
-export function describeFact(f: HandlerFact): string {
-  const hex = (n: number) => n.toString(16).padStart(2, "0");
-  const what =
-    f.to !== undefined ? `jumps to move frame ${f.to}`
-    : f.sound !== undefined ? `plays sound ${hex(f.sound)}`
-    : f.move !== undefined ? `sets move ${hex(f.move)}`
-    : f.vx !== undefined ? `sets vx ${f.vx}`
-    : f.counter !== undefined ? `sets the spawn counter to ${hex(f.counter)}`
-    : f.shake !== undefined ? `shakes the stage: pattern ${f.shake.pattern}, ${f.shake.frames} frames`
-    : f.what;
-  const under = [
-    ...(f.frame === 0 ? ["once the script has run out"] : []),
-    ...(f.from !== undefined ? [`from frame ${f.from}`] : []),
-    ...(f.when ?? []),
-  ];
-  return under.length ? `${under.join(", ")}: ${what}` : what;
-}
 
 function blowOf(r: HitRecord): { type: string; damage: number; stun: number } {
   return { type: groundReaction(r), damage: r.damage, stun: r.stun };

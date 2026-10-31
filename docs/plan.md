@@ -48,11 +48,10 @@ built from the report alone.
 | scripts' steps, sounds, lines, spawns and their counters, offsets, flips, effects (`b1`), `c0`, `90`, the opponent's track (`80`) | `script.ts`, the export |
 | boxes, drawings, tiles, palettes, resources | `collision.ts`, `frame.ts`, `resource.ts` |
 | a blow's record, an object's record | `hits.ts` |
-| a handler's frames (pinned or bounded), speeds, re-arms, sounds, moves set, by-step jumps, the spawn counter; a routine's arguments in A and Y and its answer in the carry; shared code by character | `handler.ts`, `flow.ts`, `routines.ts` |
+| a handler's frames (pinned or bounded), speeds, re-arms, sounds, moves set, by-step jumps, the spawn counter; a routine's arguments in A, Y and the scratch bytes and its answer in the carry; shared code by character; tests on fields in words; what is done to the opponent; the throw's launch and hold | `handler.ts`, `cpu.ts`, `flow.ts`, `tests.ts`, `routines.ts`, `hold.ts` |
 | a command's directions and button; the close lines | `commands.ts`, `buttons.ts` |
 | stages, arenas, the HUD, lightings, sound samples | `stage.ts`, `arena.ts`, `hud.ts`, `brr.ts` |
 | a command's conditions, cost and the opponent's move (bytes 0–3, 6) | `conditions.ts`, `commands.ts` |
-| what the throw's launch and holding the opponent do | **by hand** |
 | an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
 | a fighter's attributes (defence, walk, jump, gravity) | **by hand** (`attributes.json`) |
 | knockback by reaction (`$0D:D68A`), which reaction (`$0D:D29C`) | **partly** (`hits.ts` names the reaction) |
@@ -63,18 +62,13 @@ The roster is read (`src/rom/roster.ts`, `npm run rom -- roster`; any
 reading command takes `--fighter <name>`). The readers left, in order —
 each a slice, each shown in `port`:
 
-1. **Handler calls with their arguments** — `ROUTINES` (`routines.ts`)
-   grows an argument reader per routine; `port aa`, `1b` and `0c` read
-   already. *Done when:* `port 9d` gives the launch (`$0F:B321`: damage,
-   stun, vx, vy) and the hold (`$0D:DE9A` with `$20:82A5`) — what `rom.md`
-   says of each.
-2. **Object types** — timing, life, speed, on-hit, copies, read from the
+1. **Object types** — timing, life, speed, on-hit, copies, read from the
    type's code by its usual patterns. *Done when:* the export writes the
    Kamehameha's and the ki blast's spawns without the hand-written
    `objects` in `cartridge.ts`.
-3. **Attributes and knockback** — the export writes `attributes.json`'s
+2. **Attributes and knockback** — the export writes `attributes.json`'s
    numbers and the reactions' knockback. *Done when:* Goku's equal today's.
-4. **The throw from the report alone** — the exam.
+3. **The throw from the report alone** — the exam.
 
 ## Now: Goku from the cartridge
 

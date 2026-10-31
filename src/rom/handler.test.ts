@@ -70,6 +70,20 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     expect(charge(8)).toEqual([0x46]);
   });
 
+  it("reads the throw: the opponent's voice, its turns, the launch with its arguments, the hold", () => {
+    const thrown = handlerFacts(rom, handlerAt(rom, GOKU.character, 0x9d), 3, GOKU.character);
+    expect(thrown.find((f) => f.launch)).toMatchObject({
+      frame: 20,
+      launch: { damage: 40, stun: 3, move: 0x1b, vx: 2.5, vy: -8, facing: { field: 0x12, who: "mover", eor: 0x40 } },
+    });
+    expect(thrown.find((f) => f.sound === 0x30)).toMatchObject({ frame: 20, who: "opponent" });
+    expect(thrown.filter((f) => f.facing).map((f) => [f.frame, f.who, f.facing])).toEqual([
+      [1, "opponent", { field: 0x12, who: "mover", eor: 0x40 }],
+      [21, "opponent", { field: 0x12, who: "mover" }],
+    ]);
+    expect(thrown.find((f) => f.hold)?.hold).toBe(0x2082a5);
+  });
+
   it("reads charging: its sound every 8th frame while B + Y are held, the loop back, the glow", () => {
     const charge = handlerFacts(rom, handlerAt(rom, GOKU.character, 0x0c), 0, GOKU.character);
     expect(charge.find((f) => f.sound === 0x19)?.when).toEqual(["when field f0 is 0", "while B + Y held", "every 8th frame of the game"]);

@@ -178,6 +178,7 @@ export const FIGHTER_FIELDS: Record<number, string> = {
   0x22: "y, fraction",
   0x23: "y, whole px (200 on the ground)",
   0x25: "busy (0x80 while a move runs)",
+  0x26: "bit 7: burning ($2A:99CC)",
   0x27: "bit 0: the camera does not follow vertically (cleared on landing)",
   0x33: "vy at the last landing",
   0x40: "move",

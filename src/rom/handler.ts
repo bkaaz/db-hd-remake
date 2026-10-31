@@ -1,6 +1,6 @@
 import { toFile } from "./cartridge";
-import { decode, ends, target, type Widths } from "./disasm";
-import { called, START, step as stepCpu, writesA, type Cpu } from "./cpu";
+import { decode, ends, target as jumpTarget, type Widths } from "./disasm";
+import { called, START, step as stepCpu, storedTo, valueOf, writesA, type Cpu, type Value, type Who } from "./cpu";
 import { FRAMES, next, ways, type Asked, type Known } from "./flow";
 import { tidy } from "./facts";
 import { ROUTINES } from "./routines";
@@ -58,6 +58,14 @@ export interface HandlerFact {
   counter?: number;
   /** The stage's shake it starts (`$E3`): which of `$0D:C593`'s patterns, for how many frames. */
   shake?: { pattern: number; frames: number };
+  /** Whom it is done to, when not the mover itself: X or the store pointed at the opponent. */
+  who?: Who;
+  /** A facing set (field 0x12): to whose, and turned by what. */
+  facing?: Value;
+  /** Where `$0D:DE9A` holds the opponent from: its table of offsets. */
+  hold?: number;
+  /** `$0F:B321`'s throw: what it costs the opponent and how it leaves. */
+  launch?: { damage: number; stun: number; move: number; vx: number; vy: number; facing: Value };
 }
 
 /** Banks holding move handlers and their helpers, not the engine. */
@@ -67,6 +75,7 @@ const OWN_BANKS = new Set([0x0f, 0x10, 0x20]);
 const SPAWN_COUNTER = 0x6e;
 const STEP = 0x46;
 const VX = 0x7c;
+const FACING = 0x12;
 /** `$E3`, the stage's shake (`$0D:C558`): bit 15 on, bits 8–11 the pattern, the low byte frames. */
 const SHAKE = 0xe3;
 /** Where a handler that jumps by step puts the entry before `JMP ($0064)`. */
@@ -124,10 +133,12 @@ export function handlerFacts(rom: Uint8Array, entry: number, steps = 0, characte
       const answer = asked;
       asked = null;
       const a = cpu.regs.a;
+      const target = storedTo(ins, cpu);
+      const value = target ? valueOf(cpu) : null;
 
       if (ins.mnemonic === "LDA" && ins.mode === "dx" && ins.operand === STEP) readsStep = true;
       if (ins.mnemonic === "LDA" && ins.mode === "lx" && readsStep) table = ins.operand;
-      if (ins.mnemonic === "STA" && ins.mode === "dx" && a !== null) {
+      if (target === "mover" && a !== null) {
         // the facing-left copy is the same speed negated
         if (ins.operand === VX && ((a << 16) >> 16) >= 0) add({ what: "sets vx", vx: a / 256 });
         if (ins.operand === SPAWN_COUNTER) add({ what: "sets the spawn counter", counter: a & 0xff });
@@ -135,11 +146,12 @@ export function handlerFacts(rom: Uint8Array, entry: number, steps = 0, characte
       }
       const shake = ins.mnemonic === "STA" && ins.mode === "d" && ins.operand === SHAKE && a !== null ? shakeOf(a) : null;
       if (shake) add({ what: "shakes the stage", shake });
+      if (ins.operand === FACING && value) add({ what: "sets the facing", facing: value, ...(target === "opponent" && { who: target }) });
       const routine = ins.mnemonic === "JSL" ? ROUTINES[ins.operand] : undefined;
       if (routine) {
-        const fact = routine.fact(cpu.regs);
-        if (fact) add(fact);
-        asked = routine.carry?.(cpu.regs) ?? null;
+        const fact = routine.fact(cpu);
+        if (fact) add({ ...fact, ...(cpu.x === "opponent" && { who: cpu.x }) });
+        asked = routine.carry?.(cpu) ?? null;
       }
       // a jump through the by-step table: each entry is the code for its step
       if (ins.mnemonic === "JMP" && ins.mode === "ai" && ins.operand === DISPATCH && table !== null) {
@@ -149,7 +161,7 @@ export function handlerFacts(rom: Uint8Array, entry: number, steps = 0, characte
         }
       }
 
-      const to = target(ins);
+      const to = jumpTarget(ins);
       const call = ins.mnemonic === "JSL" || ins.mnemonic === "JSR";
       if (to !== null && !call) {
         const [taken, through] = ways(ins.mnemonic, k, cpu, answer, character);
@@ -170,7 +182,7 @@ export function handlerFacts(rom: Uint8Array, entry: number, steps = 0, characte
         queue.push({ at: to, w: ins.after, ...k, step, site: site ?? at, cpu });
       }
       if (ends(ins)) break;
-      cpu = call ? called(cpu) : stepCpu(ins, cpu);
+      cpu = call ? called(cpu, routine?.yWho, routine?.keeps) : stepCpu(ins, cpu);
       if (call || writesA(ins)) k = { ...k, range: cpu.regs.a === null ? undefined : [cpu.regs.a, cpu.regs.a] };
       w = ins.after;
       at = next(ins);

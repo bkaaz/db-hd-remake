@@ -30,7 +30,10 @@ frame comes first, as `handler:` lines, under what it waits on — "from
 frame 52", "when its object 0a/15 is gone", "while B + Y held", "every 8th
 frame of the game". A test on a field nobody has named is said plainly
 ("when field f0 is 0"): find what writes the field, and name it in
-`FIGHTER_FIELDS` once it is known. Frames count from the part's start, as a state's do. The
+`FIGHTER_FIELDS` once it is known. What the handler does to the other
+fighter reads "the opponent …" — its voice, its turns, the throw's launch
+with its numbers — and a hold (`$0D:DE9A`) prints where the opponent is
+held, for every character it can be. Frames count from the part's start, as a state's do. The
 input is the command table's.
 
 A spawn's line carries its object's own blow (`$3D:9624`): the projectile's
