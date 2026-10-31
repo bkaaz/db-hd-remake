@@ -66,10 +66,11 @@ move; it does not translate one — a special's own logic still goes into
 states and the engine by hand. Whether the readers pay off is measured on a
 second fighter before any more are built — Vegeta, done 2026-10-31
 (`export` / `states --fighter`): the shared moves come over by script,
-specials and objects do not. In order:
+specials and objects do not. The throw (`9d`) followed from the report
+(`npm run rom -- grab 9d`, ADR 0035) — but for the stun gauge, which this
+engine does not have. In order:
 
-1. **The throw from the report alone** — the exam: `port 9d` has all of it.
-2. **Object types** — Vegeta's specials, ki blast and dust wait on it. Four steps: the object's code read as a handler is
+1. **Object types** — Vegeta's specials, ki blast and dust wait on it. Four steps: the object's code read as a handler is
    (`+0B` timer, `+02` frame, `+0C`/`+0E` speed — life, steps, the frame
    from `$74`, the hitstop pause, gone with its owner's move), shown in
    `port`; the export's steps / frames / animations / loop taken from it;
@@ -78,10 +79,10 @@ specials and objects do not. In order:
    (`$01:84B3`) instead of VRAM snapshots. *Done when:* the export writes
    the Kamehameha's and the ki blast's spawns without the hand-written
    `objects` in `cartridge.ts`.
-3. **Attributes and knockback** — the export writes `attributes.json`'s
+2. **Attributes and knockback** — the export writes `attributes.json`'s
    numbers and the reactions' knockback; Vegeta's are Goku's until then.
    *Done when:* Goku's equal today's.
-4. **Vegeta's voice and HUD name** — his clips matched by id as Goku's
+3. **Vegeta's voice and HUD name** — his clips matched by id as Goku's
    were (`npm run samples`), his name in `exportHud`.
 
 ## Now: Goku from the cartridge

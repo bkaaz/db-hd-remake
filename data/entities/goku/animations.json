@@ -28502,5 +28502,680 @@
         ]
       }
     ]
+  },
+  "m30_goku_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "23",
+        "dur": 10
+      },
+      {
+        "frame": "24",
+        "dur": 10
+      },
+      {
+        "frame": "32",
+        "dur": 32
+      }
+    ]
+  },
+  "m30_vegeta_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "23",
+        "dur": 16
+      },
+      {
+        "frame": "23",
+        "dur": 16
+      },
+      {
+        "frame": "25",
+        "dur": 8
+      },
+      {
+        "frame": "23",
+        "dur": 16
+      },
+      {
+        "frame": "25",
+        "dur": 8
+      },
+      {
+        "frame": "23",
+        "dur": 32
+      },
+      {
+        "frame": "25",
+        "dur": 6
+      },
+      {
+        "frame": "23",
+        "dur": 16
+      }
+    ]
+  },
+  "m30_vegeta_ae": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 10
+      },
+      {
+        "frame": "36",
+        "dur": 8
+      },
+      {
+        "frame": "36",
+        "dur": 16
+      },
+      {
+        "frame": "36",
+        "dur": 16
+      },
+      {
+        "frame": "36",
+        "dur": 6
+      }
+    ]
+  },
+  "m30_gohan_d1": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 3
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      },
+      {
+        "frame": "26",
+        "dur": 3
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 3
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      },
+      {
+        "frame": "26",
+        "dur": 3
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 3
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      },
+      {
+        "frame": "26",
+        "dur": 3
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 3
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      },
+      {
+        "frame": "26",
+        "dur": 3
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 3
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      },
+      {
+        "frame": "59",
+        "dur": 2
+      }
+    ]
+  },
+  "m30_gotenks_a7": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 16
+      },
+      {
+        "frame": "33",
+        "dur": 10
+      },
+      {
+        "frame": "33",
+        "dur": 5
+      },
+      {
+        "frame": "33",
+        "dur": 5
+      },
+      {
+        "frame": "32",
+        "dur": 32
+      }
+    ]
+  },
+  "m30_vegetto_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "26",
+        "dur": 6
+      },
+      {
+        "frame": "26",
+        "dur": 16
+      },
+      {
+        "frame": "26",
+        "dur": 6
+      },
+      {
+        "frame": "26",
+        "dur": 16
+      },
+      {
+        "frame": "26",
+        "dur": 10
+      },
+      {
+        "frame": "26",
+        "dur": 6
+      },
+      {
+        "frame": "59",
+        "dur": 16
+      }
+    ]
+  },
+  "m30_vegetto_a6": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 12
+      },
+      {
+        "frame": "27",
+        "dur": 8
+      },
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "24",
+        "dur": 6
+      },
+      {
+        "frame": "25",
+        "dur": 10
+      },
+      {
+        "frame": "27",
+        "dur": 4
+      },
+      {
+        "frame": "27",
+        "dur": 4
+      },
+      {
+        "frame": "25",
+        "dur": 2
+      }
+    ]
+  },
+  "m30_vegetto_ce": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "26",
+        "dur": 12
+      },
+      {
+        "frame": "28",
+        "dur": 8
+      },
+      {
+        "frame": "59",
+        "dur": 6
+      },
+      {
+        "frame": "60",
+        "dur": 4
+      },
+      {
+        "frame": "26",
+        "dur": 10
+      },
+      {
+        "frame": "28",
+        "dur": 4
+      },
+      {
+        "frame": "28",
+        "dur": 4
+      },
+      {
+        "frame": "26",
+        "dur": 2
+      }
+    ]
+  },
+  "m30_piccolo_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "26",
+        "dur": 16
+      },
+      {
+        "frame": "26",
+        "dur": 12
+      },
+      {
+        "frame": "26",
+        "dur": 6
+      },
+      {
+        "frame": "26",
+        "dur": 24
+      }
+    ]
+  },
+  "m30_piccolo_ab": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 6
+      }
+    ]
+  },
+  "m30_piccolo_ac": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 6
+      }
+    ]
+  },
+  "m30_piccolo_ad": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 6
+      }
+    ]
+  },
+  "m30_piccolo_b4": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 6
+      }
+    ]
+  },
+  "m30_piccolo_b5": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 6
+      }
+    ]
+  },
+  "m30_piccolo_b6": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 6
+      }
+    ]
+  },
+  "m30_piccolo_d9": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "26",
+        "dur": 4
+      },
+      {
+        "frame": "59",
+        "dur": 4
+      },
+      {
+        "frame": "26",
+        "dur": 4
+      },
+      {
+        "frame": "59",
+        "dur": 4
+      },
+      {
+        "frame": "26",
+        "dur": 4
+      },
+      {
+        "frame": "59",
+        "dur": 4
+      },
+      {
+        "frame": "26",
+        "dur": 4
+      },
+      {
+        "frame": "59",
+        "dur": 4
+      },
+      {
+        "frame": "26",
+        "dur": 4
+      },
+      {
+        "frame": "59",
+        "dur": 4
+      },
+      {
+        "frame": "26",
+        "dur": 4
+      },
+      {
+        "frame": "59",
+        "dur": 4
+      }
+    ]
+  },
+  "m30_freeza_9e": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "59",
+        "dur": 16
+      },
+      {
+        "frame": "59",
+        "dur": 8
+      },
+      {
+        "frame": "59",
+        "dur": 16
+      },
+      {
+        "frame": "59",
+        "dur": 8
+      },
+      {
+        "frame": "59",
+        "dur": 16
+      },
+      {
+        "frame": "59",
+        "dur": 8
+      },
+      {
+        "frame": "59",
+        "dur": 16
+      },
+      {
+        "frame": "59",
+        "dur": 8
+      },
+      {
+        "frame": "59",
+        "dur": 8
+      }
+    ]
+  },
+  "m30_freeza_aa": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "26",
+        "dur": 6
+      },
+      {
+        "frame": "26",
+        "dur": 6
+      },
+      {
+        "frame": "26",
+        "dur": 6
+      },
+      {
+        "frame": "26",
+        "dur": 8
+      },
+      {
+        "frame": "26",
+        "dur": 32
+      }
+    ]
+  },
+  "m30_cell_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "26",
+        "dur": 4
+      },
+      {
+        "frame": "26",
+        "dur": 19
+      },
+      {
+        "frame": "26",
+        "dur": 10
+      }
+    ]
+  },
+  "m30_cell_a6": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "59",
+        "dur": 6
+      },
+      {
+        "frame": "59",
+        "dur": 16
+      },
+      {
+        "frame": "59",
+        "dur": 12
+      },
+      {
+        "frame": "26",
+        "dur": 16
+      },
+      {
+        "frame": "59",
+        "dur": 12
+      },
+      {
+        "frame": "26",
+        "dur": 16
+      },
+      {
+        "frame": "59",
+        "dur": 6
+      },
+      {
+        "frame": "59",
+        "dur": 6
+      },
+      {
+        "frame": "59",
+        "dur": 16
+      }
+    ]
+  },
+  "m30_mr_buu_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "23",
+        "dur": 8
+      },
+      {
+        "frame": "33",
+        "dur": 17
+      },
+      {
+        "frame": "33",
+        "dur": 8
+      },
+      {
+        "frame": "28",
+        "dur": 8
+      }
+    ]
+  },
+  "m30_buu_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 6
+      },
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "25",
+        "dur": 6
+      },
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "25",
+        "dur": 6
+      },
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "25",
+        "dur": 6
+      }
+    ]
+  },
+  "m30_buu_9e": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 6
+      },
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "25",
+        "dur": 6
+      },
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "25",
+        "dur": 6
+      },
+      {
+        "frame": "23",
+        "dur": 6
+      },
+      {
+        "frame": "25",
+        "dur": 6
+      }
+    ]
   }
 }

@@ -37,6 +37,8 @@ import { describeFact } from "../src/rom/describe.ts";
 import { blowOfAnim } from "../src/rom/animBlow.ts";
 import { readCommands } from "../src/rom/commands.ts";
 import { statesFrom } from "../src/rom/template.ts";
+import { grabOf } from "../src/rom/grab.ts";
+import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
 import { long } from "../src/rom/disasm.ts";
@@ -153,6 +155,13 @@ if (command === "tiles") {
     for (const step of new Set(p.onSteps.map((f) => f.step)))
       console.log(`  handler on step ${step}: ${grouped(p.onSteps.filter((f) => f.step === step))}`);
   }
+} else if (command === "grab" && args.length >= 1) {
+  // a throw's `grab`, ready for its state: the reaction is the state that plays the move he is put in
+  const r = portReport(rom, T, parseInt(args[0], 16));
+  const states = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
+  const move = r.launch ? `m${r.launch.move.toString(16).padStart(2, "0")}` : "";
+  const reaction = Object.entries(states.states).find(([, def]) => def.anim === move)?.[0] ?? move;
+  console.log(JSON.stringify(grabOf(r, reaction)));
 } else if (command === "object" && args.length >= 3) {
   const [type, anim] = [parseInt(args[0], 16), parseInt(args[1], 16)];
   const loads = args.slice(2).filter((a) => a.includes("@")).map((a) => {
@@ -226,9 +235,9 @@ if (command === "tiles") {
   const attributes = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8"));
   writeFileSync(
     `data/entities/${name}/attributes.json`,
-    JSON.stringify({ ...attributes, palettes: Object.keys(lightingPalettes(rom, T)), burn: [] }, null, 2) + "\n",
+    JSON.stringify({ ...attributes, grabRange: commandContext(rom, T.character).grab, palettes: Object.keys(lightingPalettes(rom, T)), burn: [] }, null, 2) + "\n",
   );
-  console.log(`${name}: ${Object.keys(made.file.states).length} states; attributes are goku's but the palettes`);
+  console.log(`${name}: ${Object.keys(made.file.states).length} states; attributes are goku's but the palettes and the grab range`);
 } else if (command === "export" && T !== GOKU) {
   // his lighting variants only: the fire, the spawns, the arenas and the HUD stay Goku's export
   const fighter = exportFighter(rom, { ...T, variants: lightingPalettes(rom, T) });

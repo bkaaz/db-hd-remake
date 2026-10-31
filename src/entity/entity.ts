@@ -23,6 +23,7 @@ import {
   reactionFor,
   StateMachine,
   type CloseButton,
+  type GrabDef,
   type StateDef,
 } from "./states";
 
@@ -57,6 +58,12 @@ export interface WorldInput {
    * land on one frame, and whichever arrived alone would spend itself on a blow.
    */
 holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean; strike: boolean; dash: boolean };
+}
+
+/** What a fighter needs to know of the other one: where he stands, and whether he could be thrown. */
+export interface Opponent {
+  x: number;
+  throwable: boolean;
 }
 
 export const NO_INPUT: WorldInput = {
@@ -216,6 +223,9 @@ export class Entity {
   private readonly gravity: number;
   private readonly landCue: number;
   private readonly closeRange: Partial<Record<CloseButton, number>>;
+  private readonly grabRange: number;
+  /** Held by a thrower (`match/throw.ts`): an animation and nothing else, where he is put. */
+  private held = false;
   private readonly pushWidth: number;
   private readonly hitstop: number;
   private readonly maxHealth: number;
@@ -276,6 +286,7 @@ export class Entity {
     this.gravity = def.attributes.gravity;
     this.landCue = def.attributes.landCue;
     this.closeRange = def.attributes.closeRange;
+    this.grabRange = def.attributes.grabRange;
     this.pushWidth = def.attributes.pushWidth;
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
@@ -292,7 +303,9 @@ export class Entity {
     else this.setAnim(Object.keys(def.animations)[0] ?? "");
   }
 
+  /** The state by name — "held" while a throw holds him, which his own machine knows nothing of. */
   get state(): string {
+    if (this.held) return "held";
     return this.sm?.current ?? this.animName;
   }
 
@@ -328,7 +341,7 @@ export class Entity {
    * on the far side, and the push that returns on touchdown arrives as a snap.
    */
   get solid(): boolean {
-    return !this.airborne || this.nearGround;
+    return !this.held && (!this.airborne || this.nearGround);
   }
 
   /** Half the body's width in world px, for push collision. */
@@ -385,7 +398,62 @@ export class Entity {
    * is what stops it costing health while the victim can neither block nor move.
    */
   get invulnerable(): boolean {
-    return !!this.sm?.def.invulnerable;
+    return this.held || !!this.sm?.def.invulnerable;
+  }
+
+  /**
+   * Whether a throw may take hold of this entity: standing on the ground,
+   * in no reaction and no throw — the original's grab conditions ($0D:F650),
+   * as far as this engine has the same things.
+   */
+  get throwable(): boolean {
+    return !this.held && !this.airborne && !this.invulnerable && !this.sm?.def.rank && !this.sm?.def.grab;
+  }
+
+  /** The throw the state just entered makes, if it is one. */
+  get grab(): GrabDef | undefined {
+    return this.sm?.def.grab;
+  }
+
+  /** Frames since the current state began. */
+  get stateFrame(): number {
+    return this.stateFrames;
+  }
+
+  /** The entity's name: whose `m30_<name>_<move>` a held opponent plays. */
+  get name(): string {
+    return this.def.name;
+  }
+
+  /** The animation playing, by name. */
+  get animation(): string {
+    return this.animName;
+  }
+
+  /**
+   * Be held: play `anim` if this entity has it, else keep the pose, and do
+   * nothing else until let go — no input, no physics, no blows, no push.
+   */
+  hold(anim: string): void {
+    this.held = true;
+    this.previewing = true;
+    if (this.def.animations[anim]) this.setAnim(anim, true);
+  }
+
+  /**
+   * Be let go into a state — his first one when none is named, as a throw
+   * cut short leaves him — at a speed set after it is entered: x
+   * facing-relative, as a state's `launch`.
+   */
+  release(state = this.def.states?.initial ?? "", vel?: [number, number]): void {
+    this.held = false;
+    this.previewing = false;
+    this.forceState(state);
+    if (vel) [this.vx, this.vy] = vel;
+  }
+
+  get isHeld(): boolean {
+    return this.held;
   }
 
   /** The effect a state just entered puts on the floor under this entity, in world px — taken once. */
@@ -777,7 +845,8 @@ export class Entity {
   }
 
   /** Advance one game frame (60 FPS): facing, state, movement, animation. */
-  update(input: WorldInput, opponentX: number | null, bounds: { min: number; max: number }): void {
+  update(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
+    const opponentX = opponent?.x ?? null;
     if (this.previewing) {
       this.advanceAnim();
       return;
@@ -880,6 +949,7 @@ export class Entity {
         nearGround,
         landed: this.landed,
         close: this.closeTo(opponentX),
+        grab: !!opponent?.throwable && Math.abs(opponent.x - this.x) / this.scale < this.grabRange,
         // `spent` means this attack has connected — set on a hit and on a block,
         // never on a whiff, which is exactly what a chain is allowed to continue
         // from. It was already recorded for a different reason: an attack may

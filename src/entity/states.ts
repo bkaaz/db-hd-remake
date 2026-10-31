@@ -32,6 +32,25 @@ export interface Transition {
   to: string;
 }
 
+/**
+ * What a throw does to the one it holds, as the cartridge's handler does it
+ * (`npm run rom -- port 9d`). While held he plays `m30_<thrower>_<move>`.
+ */
+export interface GrabDef {
+  /**
+   * Where he is held, by his entity's name: (dx, dy) in sprite px from the
+   * thrower, dx toward the thrower's facing, one per step of the thrower's
+   * animation ($0D:DE9A). A name not here is held where he stands.
+   */
+  at: Record<string, [number, number][]>;
+  /**
+   * The throw ($0F:B321): on this frame of the state he is let go into
+   * `reaction`, costs `damage` less his defence, and leaves at `vel` —
+   * facing the thrower's way, x backwards.
+   */
+  launch: { frame: number; damage: number; reaction: string; vel: [number, number] };
+}
+
 export interface StateDef {
   /** Animation played while in this state. */
   anim: string;
@@ -294,6 +313,8 @@ export interface StateDef {
    * "frames": 8 }`.
    */
   shake?: ShakeDef;
+  /** A throw: the opponent held from this state's start and let go with a launch (`match/throw.ts`, ADR 0035). */
+  grab?: GrabDef;
 
   /**
    * The band of light from the hands to the head of the beam this state threw
@@ -498,6 +519,8 @@ export interface Signals {
    * A button with no range is never close.
    */
   close: Readonly<Partial<Record<CloseButton, boolean>>>;
+  /** The opponent can be thrown and is within `grabRange` — the original's grab condition ($0D:F650). */
+  grab: boolean;
   /** Filled in by the state machine: frames this state has run (`frames:N`). */
   framesIn?: number;
   /** Filled in by the state machine: buttons let go since this state began (`released:`). */
@@ -562,6 +585,7 @@ export const TRIGGERS = [
   "nearGround",
   "landed",
   ...CLOSE_BUTTONS.map((b) => `close:${b}` as const),
+  "grab",
   "cancelable",
 ] as const;
 
@@ -672,6 +696,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "close:blast":
     case "close:strike":
       value = signals.close[key.slice("close:".length) as CloseButton] === true;
+      break;
+    case "grab":
+      value = signals.grab;
       break;
     case "cancelable":
       // Connected or missed, *and* inside the window for it — the state machine

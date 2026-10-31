@@ -35,6 +35,11 @@ for as many frames, once its last hit box is gone. Trigger: `cancelable`.
 from entering the state and ignoring frozen frames. Absent means "until the
 animation ends". → `states.ts`
 
+**Grab / held** — a throw: a state with `grab` takes hold of an opponent within
+`grabRange` who is `throwable` (trigger `grab`); he plays
+`m30_<thrower>_<move>` where the thrower's step puts him, until the launch
+lets him go. → `match/throw.ts`, ADR 0035
+
 **Charging** — holding A + S with the cartridge's `goku`: a dial on the HUD
 turns, and each turn gives back 5 health (`heal` on the state; health, not ki,
 for now). → `combat/heal.ts`, `combat.md` (The buttons)

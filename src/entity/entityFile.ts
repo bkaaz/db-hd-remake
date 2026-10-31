@@ -110,6 +110,8 @@ export interface Attributes {
    * is never close.
    */
   closeRange: Partial<Record<CloseButton, number>>;
+  /** How near, in sprite px, the opponent must be to be thrown — the fighter's grab range ($0D:F96F); 0 never. */
+  grabRange: number;
   /**
    * The palette variants this fighter has sheets for — `<sheet>@<name>.png`,
    * written by `npm run rom -- export` — for the entity to draw from in place
@@ -152,6 +154,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   defence: 0,
   comboLimits: true,
   closeRange: {},
+  grabRange: 0,
   palettes: [],
   burn: [],
   mirrors: true,

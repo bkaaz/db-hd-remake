@@ -440,7 +440,11 @@ turns to face the thrower; frame 20 the opponent says `30` and is
 thrown (`$0F:B321`): 40 damage (less defence, `$0D:D12E`), 3 off the
 stun gauge (dizzy, `1d`, if it runs out; KO, `1c`, at 0 health), else
 move `1b` — the knockdown — at vx 2.5 away and vy −8.0; frame 21 it faces
-the thrower's way. Frame 0 — the script has run out — ends the move
+the thrower's way. Recorded, Goku throwing Vegetto (`tools/re/log-throw.lua`):
+held at x −34 then −32 from the thrower's (mirrored), y unchanged; let go on
+the move's frame 20 at −16 behind, vy −8.00, +0.46 a frame, vx 2.5 — a peak
+74 px up; the camera rises 10. Goku against Goku starts 32 px up, so flies
+higher. Frame 0 — the script has run out — ends the move
 (`$0F:9FA3`, as `handler.ts` already knows) and sets field `0x27` bit 1
 `?`.
 

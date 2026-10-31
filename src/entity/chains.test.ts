@@ -80,6 +80,7 @@ const QUIET: Signals = {
   nearGround: false,
   landed: false,
   close: {},
+  grab: false,
   hitConfirmed: false,
   /** Full, so a test about triggers is never quietly about affording a move. */
   ki: 100,

@@ -29,6 +29,8 @@ export interface PortReport {
   anyFrame: HandlerFact[];
   /** Where the handler holds an opponent (`$0D:DE9A`), by the opponent's character: (dx, dy) per step of the move's script. */
   holds: { against: string; at: [number, number][] }[];
+  /** The opponent thrown (`$0F:B321`), on the move's frame the handler does it. */
+  launch?: NonNullable<HandlerFact["launch"]> & { frame: number };
   /** For each command that picks it: what it needs, what it costs, what it does to the opponent. */
   commands: { needs: string[]; cost: number; opponentMove: number | null }[];
   handler: number;
@@ -135,6 +137,7 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     inputs,
     commands: commands.map((c) => ({ needs: describeConditions(c.conditions, context), cost: c.cost, opponentMove: c.opponentMove })),
     anyFrame: facts.filter((f) => !f.frame && f.step === undefined),
+    ...launchOf(facts),
     holds: [...new Set(facts.flatMap((f) => (f.hold === undefined ? [] : [f.hold])))].flatMap((table) =>
       ROSTER.map((against, c) => ({ against, at: holdOffsets(rom, table, c, stepStarts(ops).length) })),
     ),
@@ -145,6 +148,11 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
 
 /** What a part already lists on its own line. */
 const SHOWN = new Set(["plays sound", "sets vx", "re-arms the blow"]);
+
+function launchOf(facts: HandlerFact[]): { launch?: PortReport["launch"] } {
+  const f = facts.find((g) => g.launch && g.frame !== null);
+  return f ? { launch: { ...f.launch!, frame: f.frame! } } : {};
+}
 
 function blowOf(r: HitRecord): { type: string; damage: number; stun: number } {
   return { type: groundReaction(r), damage: r.damage, stun: r.stun };

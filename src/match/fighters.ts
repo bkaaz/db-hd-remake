@@ -10,6 +10,7 @@ import type { Stage } from "../stage";
 import { landBlow, type BlowContext } from "./blow";
 import type { Projectiles } from "./projectiles";
 import { Recorder } from "./record";
+import { Throws } from "./throw";
 import type { DebugFrame } from "../ui/debug";
 
 /** Where things may go this frame: bodies within the world, bolts within the screen. */
@@ -66,6 +67,7 @@ export class Fighters {
   private readonly impact: BlowContext;
   /** Turns what happens between the two into lines — see ./record.ts. */
   private readonly recorder = new Recorder();
+  private readonly throws = new Throws();
   private readonly projectiles: Projectiles;
   /** Where each body stood before this frame moved it — what the camera reads its push from. */
   private from: [number, number] = [0, 0];
@@ -119,8 +121,12 @@ export class Fighters {
    */
   update(playerInput: WorldInput, opponentInput: WorldInput, field: Field): void {
     this.from = [this.player.x, this.opponent?.x ?? 0];
-    this.player.update(playerInput, this.opponent?.x ?? null, field.bodies);
-    this.opponent?.update(opponentInput, this.player.x, field.bodies);
+    this.player.update(playerInput, this.opponent ?? null, field.bodies);
+    this.opponent?.update(opponentInput, this.player, field.bodies);
+    if (this.opponent) {
+      this.throws.update(this.player, this.opponent);
+      this.throws.update(this.opponent, this.player);
+    }
 
     for (const hit of this.projectiles.update(this.frozen, field.shots, this.impact)) {
       this.flash = Math.max(this.flash, hit.result.flash);

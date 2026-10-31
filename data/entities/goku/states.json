@@ -56,6 +56,14 @@
           "to": "attack_b"
         },
         {
+          "when": [
+            "held:fwd",
+            "pressed:strike",
+            "grab"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "pressed:strike",
           "to": "attack_x"
         },
@@ -151,6 +159,14 @@
           "to": "attack_b"
         },
         {
+          "when": [
+            "held:fwd",
+            "pressed:strike",
+            "grab"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "pressed:strike",
           "to": "attack_x"
         },
@@ -240,6 +256,14 @@
         {
           "when": "pressed:smash",
           "to": "attack_b"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:strike",
+            "grab"
+          ],
+          "to": "throw"
         },
         {
           "when": "pressed:strike",
@@ -501,6 +525,173 @@
       "damage": 18,
       "hitSound": "hit_09",
       "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "throw": {
+      "anim": "m9d",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              24,
+              0
+            ],
+            [
+              22,
+              0
+            ],
+            [
+              -32,
+              -32
+            ]
+          ],
+          "vegeta": [
+            [
+              38,
+              0
+            ],
+            [
+              36,
+              0
+            ],
+            [
+              8,
+              -16
+            ]
+          ],
+          "gohan": [
+            [
+              34,
+              0
+            ],
+            [
+              30,
+              0
+            ],
+            [
+              -8,
+              -16
+            ]
+          ],
+          "gotenks": [
+            [
+              24,
+              0
+            ],
+            [
+              22,
+              0
+            ],
+            [
+              -32,
+              -32
+            ]
+          ],
+          "vegetto": [
+            [
+              34,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              -16,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              30,
+              0
+            ],
+            [
+              28,
+              0
+            ],
+            [
+              -16,
+              -16
+            ]
+          ],
+          "freeza": [
+            [
+              28,
+              0
+            ],
+            [
+              24,
+              0
+            ],
+            [
+              -16,
+              -16
+            ]
+          ],
+          "cell": [
+            [
+              46,
+              0
+            ],
+            [
+              44,
+              0
+            ],
+            [
+              -16,
+              -16
+            ]
+          ],
+          "mr_buu": [
+            [
+              48,
+              0
+            ],
+            [
+              44,
+              0
+            ],
+            [
+              -16,
+              -16
+            ]
+          ],
+          "buu": [
+            [
+              24,
+              0
+            ],
+            [
+              22,
+              0
+            ],
+            [
+              -16,
+              -16
+            ]
+          ]
+        },
+        "launch": {
+          "frame": 20,
+          "damage": 40,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -8
+          ]
+        }
+      },
       "transitions": [
         {
           "when": "animEnd",

@@ -8,6 +8,7 @@
     "attack": 44,
     "smash": 48
   },
+  "grabRange": 40,
   "comboLimits": false,
   "palettes": [
     "evening",

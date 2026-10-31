@@ -16,6 +16,7 @@ import { PLAIN, parseFrameId, type Look } from "./look";
 import { objectFrame } from "./object";
 import { objectVram, resourceStream } from "./resource";
 import { handlerAt, handlerFacts } from "./handler";
+import { heldAnims } from "./held";
 import { readScript, type ScriptOp } from "./script";
 import { packSheet, type Placed } from "./sheet";
 
@@ -72,6 +73,9 @@ export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
       notes.push(`${animName(move)} left out: ${(e as Error).message}`);
     }
   }
+
+  // and every way he can be held, from the throwers' tracks (ADR 0035)
+  Object.assign(animations, heldAnims(rom, t.character));
 
   // every drawing as drawn, plus each way a move shows one (src/rom/look.ts)
   const ids = new Set<string>();
