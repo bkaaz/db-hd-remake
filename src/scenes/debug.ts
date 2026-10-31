@@ -1,4 +1,3 @@
-import { Audio } from "../audio/playback";
 import { soundIdCollisions, validateSounds } from "../audio/sounds";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
@@ -103,7 +102,6 @@ export class DebugScene implements Scene {
 
     const backdrop = arena ? new ArenaBackdrop(view.backdrop, arena) : new GridBackdrop(view.backdrop);
     const stage = new Stage(view.backdrop, backdrop);
-    const audio = new Audio(ctx.bank);
     // Projectiles first: a bolt is an entity with states of its own, so the
     // burst it leaves is named there and not in the fighter's data.
     const projectiles = await Projectiles.load(view.world, [...new Set(defs.flatMap((d) => spawnsNamed(d.states)))], SPRITE_SCALE);
@@ -112,7 +110,7 @@ export class DebugScene implements Scene {
       [...new Set([...defs.flatMap((d) => effectsNamed(d.states)), ...projectiles.effectsNeeded()])],
       SPRITE_SCALE,
     );
-    const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio, effects, projectiles });
+    const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);

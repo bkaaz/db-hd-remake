@@ -1,4 +1,5 @@
 import type { Application } from "pixi.js";
+import type { Audio } from "./audio/playback";
 import type { Sounds } from "./audio/sounds";
 import type { Keyboard } from "./input/keyboard";
 import type { Page } from "./ui/page";
@@ -55,7 +56,8 @@ export interface DebugRequest {
 
 /**
  * What every scene is handed: the renderer, the page around it, the game-wide
- * sound bank, and the keyboard — which is here rather than only in `step` because a scene may want
+ * sound bank and the player that plays it — one for the page, so its samples
+ * are loaded once (`audio/playback.ts`) — and the keyboard — which is here rather than only in `step` because a scene may want
  * to *set* a toggle while it is being built, not just read one every frame.
  */
 export interface SceneContext {
@@ -63,6 +65,7 @@ export interface SceneContext {
   /** Where our tools go around the game's screen: readouts, notices. */
   page: Page;
   bank: Sounds;
+  audio: Audio;
   keyboard: Keyboard;
 }
 

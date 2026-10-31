@@ -1,5 +1,6 @@
 import { Application } from "pixi.js";
 import { loadSoundBank } from "./audio/bank";
+import { Audio } from "./audio/playback";
 import { Toggles } from "./debug/toggles";
 import { Keyboard } from "./input/keyboard";
 import { startRecording, stopRecording } from "./log";
@@ -38,7 +39,10 @@ async function boot(): Promise<void> {
     if (toggle === "recording") (on ? startRecording : stopRecording)();
   });
   const keyboard = new Keyboard(toggles);
-  const ctx: SceneContext = { app, page, bank: await loadSoundBank(), keyboard };
+  const bank = await loadSoundBank();
+  const audio = new Audio(bank);
+  audio.start();
+  const ctx: SceneContext = { app, page, bank, audio, keyboard };
 
   /** Null while a scene is being loaded: the crank turns, nothing happens. */
   let scene: Scene | null = null;

@@ -5,10 +5,10 @@
  * noise now, several at once, with a little pitch wobble", and that is a few
  * dozen lines. The same reasoning as writing our own PNG encoder.
  *
- * Browsers refuse to start audio until the user has interacted with the page,
- * so the context is created lazily on the first sound and simply produces
- * nothing before then — a missing first punch is better than a console full of
- * autoplay warnings.
+ * Browsers refuse to start audio until the user has interacted with the page.
+ * The game calls `start`: the context is made at once, suspended, so every
+ * sample is decoded before the first press, which wakes it. Without `start`
+ * (the editor) the context is made on the first sound, which then waits.
  */
 
 import { withVoices } from "./bank";
@@ -32,15 +32,29 @@ export class Audio implements SoundPlayer {
   private noise: AudioBuffer | null = null;
   /** Decoded samples by file name, empty until the context exists. */
   private readonly samples = new Map<string, AudioBuffer>();
-  private loading = false;
+  /** Every file a map played from names, and those already asked for. */
+  private readonly wanted = new Set<string>();
+  private readonly requested = new Set<string>();
   /** The copy of each sound still playing, by side and id, for the next to stop. */
   private readonly playing = new Map<string, AudioScheduledSourceNode>();
 
-  /** Every map a side plays from, so their samples load with the bank's. */
-  private readonly maps: Sounds[];
-
   constructor(private readonly sounds: Sounds) {
-    this.maps = [sounds];
+    this.want(sounds);
+  }
+
+  /**
+   * Make the context now and load every sample into it; the first key or
+   * click on `page` wakes it. One `Audio` for the page's life: made per scene,
+   * each would load everything again and its first voice would be silent.
+   */
+  start(page: Window = window): void {
+    const ctx = this.context();
+    if (!ctx) return;
+    const wake = () => {
+      if (ctx.state === "suspended") void ctx.resume();
+    };
+    page.addEventListener("keydown", wake);
+    page.addEventListener("pointerdown", wake);
   }
 
   /**
@@ -50,7 +64,7 @@ export class Audio implements SoundPlayer {
    */
   side(name: string, voices?: Sounds): SoundPlayer {
     const sounds = withVoices(this.sounds, voices);
-    this.maps.push(sounds);
+    this.want(sounds);
     return {
       play: (id) => this.play(id, name, sounds),
       playRom: (id) => this.play(soundForRom(sounds, id), name, sounds),
@@ -157,24 +171,20 @@ export class Audio implements SoundPlayer {
     return this.ctx;
   }
 
-  /**
-   * Fetch and decode every sample once, as soon as there is a context to decode
-   * with — which is the first sound of the session, because a browser will not
-   * give us one before the player has touched the page.
-   */
-  private async loadSamples(ctx: AudioContext): Promise<void> {
-    if (this.loading) return;
-    this.loading = true;
+  /** Note the files `sounds` plays, and load the new ones if there is a context. */
+  private want(sounds: Sounds): void {
+    for (const spec of Object.values(sounds)) if (spec.file) this.wanted.add(spec.file);
+    if (this.ctx) void this.loadSamples(this.ctx);
+  }
 
-    const files = new Set(
-      this.maps
-        .flatMap((sounds) => Object.values(sounds))
-        .map((s) => s.file)
-        .filter((f): f is string => f !== undefined),
-    );
+  /** Fetch and decode every wanted sample not yet asked for, each once. */
+  private async loadSamples(ctx: AudioContext): Promise<void> {
+    const files = [...this.wanted].filter((f) => !this.requested.has(f));
+    if (files.length === 0) return;
+    for (const f of files) this.requested.add(f);
 
     await Promise.all(
-      [...files].map(async (file) => {
+      files.map(async (file) => {
         try {
           const res = await fetch(`/api/sfx?file=${encodeURIComponent(file)}`);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -187,10 +197,10 @@ export class Audio implements SoundPlayer {
       }),
     );
 
-    // One line a session, because "I cannot hear it" needs to be answerable
+    // One line a load, because "I cannot hear it" needs to be answerable
     // without a debugger: a sound with no synth spec behind it is silent when
     // its sample is missing, and that is indistinguishable from never firing.
-    console.info(`[sounds] ${this.samples.size}/${files.size} sample(s) loaded`);
+    console.info(`[sounds] ${this.samples.size}/${this.requested.size} sample(s) loaded`);
   }
 
   /** One second of white noise, made once and reused by every impact. */
