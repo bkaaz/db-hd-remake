@@ -313,14 +313,6 @@ preview was deleted rather than converted: the editor previews animations, and
 the scene's only remaining job was proving the interface with a second
 implementation — which the select now does for real.
 
-**Next: the character select, and two different fighters.** They are one job,
-not two: `DebugScene` still builds both bodies from a single `EntityDef`, and a
-real pairing needs two defs and two `Audio`s, because a voice belongs to a
-fighter. `p2` is accepted and warned about today. The select screen is the first
-thing that can ask for a pairing, so it is what forces the fix — and it is also
-the first **real transition**, which is the part of the `Scene` interface that
-has never been exercised.
-
 The roster gets its own file, `data/roster.json`, laid out as the grid rather
 than a list: the arrangement is authored, not alphabetical. It names the whole
 intended roster; **what exists in `data/entities/` decides what is selectable**,

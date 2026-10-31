@@ -11,6 +11,7 @@
  * autoplay warnings.
  */
 
+import { withVoices } from "./bank";
 import { pitchFor, rateFor, soundForLine, soundForRom, type Sounds } from "./sounds";
 
 /** What a fighter, or anything it throws, plays its sounds through. */
@@ -35,14 +36,25 @@ export class Audio implements SoundPlayer {
   /** The copy of each sound still playing, by side and id, for the next to stop. */
   private readonly playing = new Map<string, AudioScheduledSourceNode>();
 
-  constructor(private readonly sounds: Sounds) {}
+  /** Every map a side plays from, so their samples load with the bank's. */
+  private readonly maps: Sounds[];
 
-  /** The same sounds, restarting only their own copies: one side of the fight. */
-  side(name: string): SoundPlayer {
+  constructor(private readonly sounds: Sounds) {
+    this.maps = [sounds];
+  }
+
+  /**
+   * One side of the fight: these sounds plus that fighter's own voice, and
+   * restarting only its own copies. A voice is a fighter's — two fighters'
+   * lines share the cartridge's ids — so each side looks them up in its own map.
+   */
+  side(name: string, voices?: Sounds): SoundPlayer {
+    const sounds = withVoices(this.sounds, voices);
+    this.maps.push(sounds);
     return {
-      play: (id) => this.play(id, name),
-      playRom: (id) => this.play(soundForRom(this.sounds, id), name),
-      playLine: (id) => this.play(soundForLine(this.sounds, id), name),
+      play: (id) => this.play(id, name, sounds),
+      playRom: (id) => this.play(soundForRom(sounds, id), name, sounds),
+      playLine: (id) => this.play(soundForLine(sounds, id), name, sounds),
     };
   }
 
@@ -57,9 +69,9 @@ export class Audio implements SoundPlayer {
   }
 
   /** Play a sound by id, for `side`. Unknown ids are silent, deliberately — see below. */
-  play(id: string | undefined, side = ""): void {
+  play(id: string | undefined, side = "", sounds = this.sounds): void {
     if (!id) return;
-    const spec = this.sounds[id];
+    const spec = sounds[id];
     // A missing sound is not worth a crash or a warning per frame: sound is the
     // last thing added to a move and the first thing forgotten.
     if (!spec) return;
@@ -155,7 +167,8 @@ export class Audio implements SoundPlayer {
     this.loading = true;
 
     const files = new Set(
-      Object.values(this.sounds)
+      this.maps
+        .flatMap((sounds) => Object.values(sounds))
         .map((s) => s.file)
         .filter((f): f is string => f !== undefined),
     );

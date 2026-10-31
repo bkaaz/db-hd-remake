@@ -22,12 +22,13 @@ export interface Field {
 export interface FightersSetup {
   /** The layer the bodies stand in — the game's world, in game px. */
   world: Container;
-  def: EntityDef;
+  p1: EntityDef;
+  /** Null shows one body and no fight: there is no opponent to make. */
+  p2: EntityDef | null;
   scale: number;
+  /** The game's sounds; each side adds its fighter's voice (`Audio.side`). */
   audio: Audio;
   effects: Effects;
-  /** Preview mode shows one body and no fight, so there is no opponent to make. */
-  solo: boolean;
   /** The bolts in the air. They belong here: a bolt is one fighter hitting the other. */
   projectiles: Projectiles;
 }
@@ -70,22 +71,24 @@ export class Fighters {
   /** Where each body stood before this frame moved it — what the camera reads its push from. */
   private from: [number, number] = [0, 0];
 
-  constructor({ world, def, scale, audio, effects, solo, projectiles }: FightersSetup) {
+  constructor({ world, p1, p2, scale, audio, effects, projectiles }: FightersSetup) {
     this.impact = { effects };
     this.projectiles = projectiles;
     // a side each, so that one's sound never cuts the other's (src/audio/playback.ts)
-    this.player = new Entity(def, scale, audio.side("p1"));
-    this.opponent = solo ? null : new Entity(def, scale, audio.side("p2"));
+    this.player = new Entity(p1, scale, audio.side("p1", p1.sounds));
+    this.opponent = p2 ? new Entity(p2, scale, audio.side("p2", p2.sounds)) : null;
     world.addChild(this.player.view);
     if (this.opponent) world.addChild(this.opponent.view);
   }
 
   /**
-   * Both fighters in an arena's lighting. False when one has no sheet for it
-   * and keeps its own colours, for the caller to say so.
+   * Both fighters in an arena's lighting. Returns the names of those with no
+   * sheet for it, who keep their own colours, for the caller to say so.
    */
-  light(time: string): boolean {
-    return this.both().map((f) => f.light(time)).every(Boolean);
+  light(time: string): string[] {
+    return this.both()
+      .filter((f) => !f.light(time))
+      .map((f) => f.name);
   }
 
   /** True while a hit pause holds either body — everything else must hold too. */

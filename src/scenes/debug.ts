@@ -1,4 +1,3 @@
-import { withVoices } from "../audio/bank";
 import { Audio } from "../audio/playback";
 import { soundIdCollisions, validateSounds } from "../audio/sounds";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
@@ -87,17 +86,12 @@ export class DebugScene implements Scene {
     const dummy = Dummy.from(mode.p2);
     if (typeof dummy === "string") return `mode ${req.mode}: ${dummy}`;
 
-    const def = await loadEntityDef(req.p1).catch(() => null);
-    if (!def) return `Could not load "${req.p1}". Save it from the entity editor first.`;
-    if (Object.keys(def.animations).length === 0) return `${def.name}: no animations`;
-
-    // Both bodies are still made from one definition. Two different fighters
-    // need two defs and two `Audio`s, because a voice belongs to a fighter —
-    // that lands with the character select, which is the first thing that can
-    // ask for a pairing. Until then, say so rather than quietly ignoring p2.
-    if (req.p2 !== req.p1) {
-      console.warn(`[debug] p2="${req.p2}" ignored — both sides are ${req.p1} for now`);
-    }
+    const p1 = await loadFighter(req.p1);
+    if (typeof p1 === "string") return p1;
+    const p2 = req.p2 === req.p1 ? p1 : await loadFighter(req.p2);
+    if (typeof p2 === "string") return p2;
+    // Each definition once, though two Gokus play from one.
+    const defs = p1 === p2 ? [p1] : [p1, p2];
 
     // Before anything is put on screen, so a missing arena leaves nothing behind.
     const arena = req.arena ? await loadArena(req.arena, req.time ?? null) : null;
@@ -105,33 +99,27 @@ export class DebugScene implements Scene {
 
     // First on screen, so the notices below are drawn over the game's screen.
     const view = new GameView(ctx.app);
-    const notices = reportProblems(ctx, def);
+    const notices = defs.flatMap((def) => reportProblems(ctx, def));
 
     const backdrop = arena ? new ArenaBackdrop(view.backdrop, arena) : new GridBackdrop(view.backdrop);
     const stage = new Stage(view.backdrop, backdrop);
-    const audio = new Audio(withVoices(ctx.bank, def.sounds));
+    const audio = new Audio(ctx.bank);
     // Projectiles first: a bolt is an entity with states of its own, so the
     // burst it leaves is named there and not in the fighter's data.
-    const projectiles = await Projectiles.load(view.world, spawnsNamed(def.states), SPRITE_SCALE);
+    const projectiles = await Projectiles.load(view.world, [...new Set(defs.flatMap((d) => spawnsNamed(d.states)))], SPRITE_SCALE);
     const effects = await Effects.load(
       view.world,
-      [...effectsNamed(def.states), ...projectiles.effectsNeeded()],
+      [...new Set([...defs.flatMap((d) => effectsNamed(d.states)), ...projectiles.effectsNeeded()])],
       SPRITE_SCALE,
     );
-    const fighters = new Fighters({
-      world: view.world,
-      def,
-      scale: SPRITE_SCALE,
-      audio,
-      effects,
-      solo: false,
-      projectiles,
-    });
+    const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio, effects, projectiles });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
-    if (arena && arena.time !== arena.times[0] && !fighters.light(arena.time)) {
-      notices.push(showMessage(ctx.page.notices, `${def.name}: no sheet for "${arena.time}" — in its own colours`, true));
+    if (arena && arena.time !== arena.times[0]) {
+      for (const name of new Set(fighters.light(arena.time))) {
+        notices.push(showMessage(ctx.page.notices, `${name}: no sheet for "${arena.time}" — in its own colours`, true));
+      }
     }
     // Over the two of them, so a mode set in a corner shows the corner.
     const camera = new Camera({ screen: VIEW.width, world: stage.width, floor: stage.groundY });
@@ -139,11 +127,11 @@ export class DebugScene implements Scene {
     // The dummy waits for `T`, even with a timeline written in the mode
     // (owner, 2026-10-30).
 
-    if (!def.states) notices.push(showMessage(ctx.page.notices, `${def.name}: no states.json`, true));
+    for (const def of defs) if (!def.states) notices.push(showMessage(ctx.page.notices, `${def.name}: no states.json`, true));
     const health = fighters.status().health;
     const hud = await Hud.load(view.hud, [
-      { name: def.name, health: health[0] },
-      health[1] === null ? null : { name: def.name, health: health[1] },
+      { name: p1.name, health: health[0] },
+      health[1] === null ? null : { name: p2.name, health: health[1] },
     ]);
     if (typeof hud === "string") notices.push(showMessage(ctx.page.notices, hud, true));
 
@@ -252,4 +240,12 @@ function reportProblems(ctx: SceneContext, def: EntityDef): Notice[] {
   for (const p of validateSounds(def.sounds)) console.error(`[sounds] ${def.name}: ${p}`);
   for (const p of soundIdCollisions(ctx.bank, def.sounds)) console.error(`[sounds] ${p}`);
   return notices;
+}
+
+/** A fighter's definition, or why it cannot fight. */
+async function loadFighter(name: string): Promise<EntityDef | string> {
+  const def = await loadEntityDef(name).catch(() => null);
+  if (!def) return `Could not load "${name}". Save it from the entity editor first.`;
+  if (Object.keys(def.animations).length === 0) return `${def.name}: no animations`;
+  return def;
 }
