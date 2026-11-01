@@ -58,6 +58,8 @@ export const MOTIONS = {
   fd: ["fwd", "down"],
   /** ← ↓ ↙, back, down and out back again (the teleports) — a dp the other way. */
   rdp: ["back", "down", "back"],
+  /** ← ↙ ↓ ↘ → ↗, the half circle carried on up (Saiyan Meteor). */
+  hcfu: ["back", "down", "fwd", "up"],
 } as const satisfies Record<string, readonly (keyof Directions)[]>;
 
 export type MotionName = keyof typeof MOTIONS;

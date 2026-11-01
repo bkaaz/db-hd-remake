@@ -24,6 +24,12 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
     expect(portReport(rom, GOKU, 0x9d).holds[0].at).toEqual([[24, 0], [22, 0], [-32, -32]]);
   });
 
+  it("cuts a move where a handler pinned to a step by CMP jumps", () => {
+    // Saiyan Meteor's rush: CMP #$0C on field 0x46, then frame 128 once he is close
+    const meteor = portReport(rom, GOKU, 0xad);
+    expect(meteor.parts.map((p) => [p.anim, p.from])).toEqual([["mad", 0], ["mad_2", 128]]);
+  });
+
   it("picks the Kamehameha's head by the spawn counter the handler sets", () => {
     const kame = portReport(rom, GOKU, 0xaa);
     const heads = kame.parts.flatMap((p) => p.spawns).filter((s) => s.blow.damage > 0);

@@ -64,6 +64,12 @@ describe("Motions.has", () => {
     expect(play(at("down"), at("down", "back"), at("back")).has("rdp")).toBe(false);
   });
 
+  it("reads the half circle carried on up as hcfu, and the half circle alone as not", () => {
+    const half = [at("back"), at("down", "back"), at("down"), at("down", "fwd"), at("fwd")];
+    expect(play(...half, at("up", "fwd")).has("hcfu")).toBe(true);
+    expect(play(...half).has("hcfu")).toBe(false);
+  });
+
   it("does not match the directions in the wrong order", () => {
     expect(play(at("fwd"), at("down")).has("qcf")).toBe(false);
   });

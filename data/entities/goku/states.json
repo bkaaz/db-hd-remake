@@ -30,6 +30,14 @@
         },
         {
           "when": [
+            "health:80",
+            "motion:hcfu",
+            "pressed:attack"
+          ],
+          "to": "meteor"
+        },
+        {
+          "when": [
             "motion:rdp",
             "pressed:attack"
           ],
@@ -182,6 +190,14 @@
         },
         {
           "when": [
+            "health:80",
+            "motion:hcfu",
+            "pressed:attack"
+          ],
+          "to": "meteor"
+        },
+        {
+          "when": [
             "motion:rdp",
             "pressed:attack"
           ],
@@ -330,6 +346,14 @@
         },
         {
           "when": [
+            "health:80",
+            "motion:hcfu",
+            "pressed:attack"
+          ],
+          "to": "meteor"
+        },
+        {
+          "when": [
             "motion:rdp",
             "pressed:attack"
           ],
@@ -465,6 +489,14 @@
       "transitions": [
         {
           "when": [
+            "health:80",
+            "motion:hcfu",
+            "pressed:attack"
+          ],
+          "to": "meteor"
+        },
+        {
+          "when": [
             "motion:rdp",
             "pressed:attack"
           ],
@@ -550,6 +582,14 @@
       "transitions": [
         {
           "when": [
+            "health:80",
+            "motion:hcfu",
+            "pressed:attack"
+          ],
+          "to": "meteor"
+        },
+        {
+          "when": [
             "motion:rdp",
             "pressed:attack"
           ],
@@ -627,6 +667,14 @@
       ],
       "turn": true,
       "transitions": [
+        {
+          "when": [
+            "health:80",
+            "motion:hcfu",
+            "pressed:attack"
+          ],
+          "to": "meteor"
+        },
         {
           "when": [
             "motion:rdp",
@@ -1792,6 +1840,50 @@
         }
       ]
     },
+    "meteor": {
+      "anim": "mad",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "loopSound": "charge_1",
+      "loopEvery": 8,
+      "loopUntil": 36,
+      "rush": {
+        "from": 48,
+        "speed": 16,
+        "stop": 40
+      },
+      "transitions": [
+        {
+          "when": "arrived",
+          "to": "meteor_2"
+        },
+        {
+          "when": "animEnd",
+          "to": "meteor_2"
+        }
+      ]
+    },
+    "meteor_2": {
+      "anim": "mad_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "halt",
+      "damage": 0,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
     "ki": {
       "anim": "m9b",
       "vel": [
@@ -2342,6 +2434,33 @@
       "anim": "m18",
       "rank": 2,
       "shove": -3,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_halt": {
+      "anim": "m16",
+      "rank": 2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "ifCrouching": "reel_halt_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_halt_crouch": {
+      "anim": "m18",
+      "rank": 2,
       "turn": false,
       "sound": "voice_hurt",
       "crouching": true,

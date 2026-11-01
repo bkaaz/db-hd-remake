@@ -12,7 +12,7 @@
  */
 
 import type { Trail } from "./trail";
-import type { Approach } from "./approach";
+import type { Approach, Rush } from "./approach";
 import type { BallDef } from "../combat/ball";
 import { airProblem, leavesGround, type AirTimeline } from "./air";
 import type { BandDef } from "../combat/band";
@@ -321,6 +321,8 @@ export interface StateDef {
   trail?: Trail;
   /** Closing on the opponent by a share of the distance (`entity/approach.ts`). */
   approach?: Approach;
+  /** Rushing at the opponent until a set distance, then `arrived` (`entity/approach.ts`). */
+  rush?: Rush;
   /**
    * Entering it puts the entity behind the opponent, where a blow armed puts
    * it in front — Side Slash, the 3D move ($0D:D8D5). It lasts until either
@@ -405,6 +407,8 @@ export interface StateDef {
 
   /** Frames between copies of `loopSound`. Shorter than the clip is the point. */
   loopEvery?: number;
+  /** The state's frame `loopSound` stops being fired on — Saiyan Meteor's charge, 36 ($20:89C7). */
+  loopUntil?: number;
   /**
    * Effect entity spawned where this state's attack connects. Same idea as
    * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
@@ -519,6 +523,7 @@ export interface InputSnapshot {
   dp: boolean;
   fd: boolean;
   rdp: boolean;
+  hcfu: boolean;
   /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
@@ -571,6 +576,10 @@ export interface Signals {
    * the moment its blow is spent (Slash Down Kick, $20:87AA).
    */
   connected?: boolean;
+  /** A `rush` has set the entity down by the opponent this state. */
+  arrived?: boolean;
+  /** Health left — what `health:N` (N or less) asks: an ultimate opens below a red bar. */
+  health?: number;
   /** Ki in the meter right now — what a state's `cost` is measured against. */
   ki: number;
   /**
@@ -593,7 +602,7 @@ export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
 export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
-const COUNTED = /^(frames:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+const COUNTED = /^(frames:\d+|health:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
 
 /** Every trigger the runner understands, for validation and editor UI. */
 export const TRIGGERS = [
@@ -620,6 +629,7 @@ export const TRIGGERS = [
   "motion:dp",
   "motion:fd",
   "motion:rdp",
+  "motion:hcfu",
   "animEnd",
   "stunEnd",
   "spawnEnd",
@@ -631,19 +641,22 @@ export const TRIGGERS = [
   "grab",
   "cancelable",
   "connected",
+  "arrived",
 ] as const;
 
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
 
 const warned = new Set<string>();
 
-/** `frames:N` and `released:<button>`, or undefined for any other trigger. */
+/** `frames:N`, `released:<button>` and `health:N` (N or less), or undefined for any other trigger. */
 function counted(key: string, signals: Signals): boolean | undefined {
   const [kind, arg] = key.split(":");
   // how long a charge has run decides what it becomes (the Kamehameha)
   if (kind === "frames") return (signals.framesIn ?? 0) >= Number(arg);
   // latched: a charge let go stays let go, however the button moves after
   if (kind === "released") return signals.released?.has(arg) === true;
+  // the cartridge's ultimates: health 80 or less ($0D:F650's condition bit)
+  if (kind === "health") return signals.health !== undefined && signals.health <= Number(arg);
   return undefined;
 }
 
@@ -723,6 +736,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "motion:rdp":
       value = input.rdp;
       break;
+    case "motion:hcfu":
+      value = input.hcfu;
+      break;
     case "animEnd":
       value = signals.animEnded;
       break;
@@ -760,6 +776,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "connected":
       value = signals.connected === true;
+      break;
+    case "arrived":
+      value = signals.arrived === true;
       break;
     default:
       if (!warned.has(key)) {

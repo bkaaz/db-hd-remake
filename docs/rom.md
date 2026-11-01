@@ -699,6 +699,8 @@ Saiyan Meteor (`ad`, `$20:8988`, health 80 or less) charges to frame 36
 (sound `19` every 8th frame of the game), vanishes at 48 (drawing `48`)
 and closes at 16 px a frame each frame of step `0c` until within 40 px,
 then jumps to frame 128 and stops; its blow at 146 does nothing itself.
+Ours: `meteor`'s `rush` and `arrived` (`src/entity/approach.ts`), opened
+by `health:80`.
 Connecting on step `11` puts the opponent in `30`, stopped and behind,
 and the mover in **`ae`** (`$20:8A29`, picking its frame by `LDY $44 /
 CPY`, the frame a word): frame 1 untouchable (`0x96` = `f0`), holds the
@@ -782,7 +784,8 @@ recorded ones match: walk 1.5 forward and 1.25 back (words 0–1), jump
 identified yet.
 
 **Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
-bits of bytes 0–1 as one word: `0x0004` `$D622`, `0x0008` light,
+bits of bytes 0–1 as one word: `0x0004` `$D622` (stopped dead, then the
+heavy reel — `16`, crouching `14`; ours `halt`), `0x0008` light,
 `0x0010` heavy, `0x0020` → move `19` (ours `trip`; `$D60A`: knockback `0f`, 2.0 back
 and −4.0 up; blows pass it by from frame 0; it lands with dust and `0d`,
 no bounce, and gets up after 12 frames — `$10:AEB6`), `0x0040` knockdown (move `1b`),

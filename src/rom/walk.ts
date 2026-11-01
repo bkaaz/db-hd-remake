@@ -64,7 +64,8 @@ export function walk(rom: Uint8Array, entry: number, body: Body, character?: num
     const path = queue.shift()!;
     let { at, w, cpu } = path;
     const { step, site } = path;
-    let k: Known = { frame: path.frame, from: path.from, when: path.when, range: path.range };
+    // a step pinned by a comparison (`flow.ts`) rides in `step` as a table's does
+    let k: Known = { frame: path.frame, from: path.from, when: path.when, range: path.range, ...(step !== undefined && { step }) };
     let readsDispatch = false;
     let table: number | null = null;
     let asked: Asked = null;

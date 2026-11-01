@@ -1062,6 +1062,33 @@
         }
       ]
     },
+    "reel_halt": {
+      "anim": "m16",
+      "rank": 2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "ifCrouching": "reel_halt_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_halt_crouch": {
+      "anim": "m18",
+      "rank": 2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
     "reel_long": {
       "anim": "m42",
       "rank": 1,

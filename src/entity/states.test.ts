@@ -70,6 +70,7 @@ const NONE = {
   dp: false,
   fd: false,
   rdp: false,
+  hcfu: false,
   holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const FWD = { ...NONE, fwd: true };
@@ -815,6 +816,18 @@ describe("a `when` of several triggers needs all of them", () => {
     expect(sm.current).toBe("idle");
     sm.update(ATTACK, QUIET);
     expect(sm.current).toBe("punch");
+  });
+});
+
+describe("health:N", () => {
+  it("fires at N health or less, never above — an ultimate's red bar", () => {
+    const at = (health: number) => {
+      const sm = new StateMachine(withAttack(["health:80", "pressed:attack"]));
+      sm.update(ATTACK, { ...QUIET, health });
+      return sm.current;
+    };
+    expect(at(80)).toBe("punch");
+    expect(at(81)).toBe("idle");
   });
 });
 

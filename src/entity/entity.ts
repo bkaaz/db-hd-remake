@@ -14,7 +14,7 @@ import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { slowed } from "../combat/knockback";
 import { trailAt } from "./trail";
-import { approachSpeed } from "./approach";
+import { approachSpeed, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
@@ -183,6 +183,8 @@ export class Entity {
   private behind = false;
   /** The speed an `approach` set this state, sprite px a frame forward; null before it. */
   private approaching: number | null = null;
+  /** A `rush` has set this entity down by the opponent this state. */
+  private arrived = false;
   /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
   private landedAt = 0;
   /**
@@ -832,6 +834,7 @@ export class Entity {
     if (this.sm.def.type !== undefined) this.armed = true;
     this.behind = this.sm.def.behind ?? false;
     this.approaching = null;
+    this.arrived = false;
     this.landed = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
     // does so straight after forcing the reaction.
@@ -927,7 +930,8 @@ export class Entity {
     // fighters equally and must not decide when the next hit of a multi-hit
     // move arrives.
     this.swing.tick();
-    if (this.hum.id) {
+    const until = this.sm.def.loopUntil;
+    if (this.hum.id && (until === undefined || this.stateFrames < until)) {
       if (this.hum.left <= 0) {
         this.audio?.play(this.hum.id);
         this.hum.left = this.sm.def.loopEvery ?? HUM_EVERY;
@@ -990,6 +994,7 @@ export class Entity {
         dp: this.motions.has("dp"),
         fd: this.motions.has("fd"),
         rdp: this.motions.has("rdp"),
+        hcfu: this.motions.has("hcfu"),
         holding: input.holding,
       },
       {
@@ -1005,6 +1010,8 @@ export class Entity {
         // from. It was already recorded for a different reason: an attack may
         // only land once per entry into its state.
         hitConfirmed: this.swing.spent,
+        arrived: this.arrived,
+        health: this.hp,
         ki: this.ki,
         spawnEnded: this.thrown === 0,
         charged: this.charge >= 1,
@@ -1048,6 +1055,12 @@ export class Entity {
       }
       const speed = this.approaching ?? groundSpeed(this.sm.def, this.stateFrames);
       this.x += this.facing * (speed + this.shove) * this.scale;
+      const rush = this.sm.def.rush;
+      if (rush && !this.arrived && this.stateFrames >= rush.from && opponentX !== null) {
+        const { dx, arrived } = rushStep(rush, (opponentX - this.x) / this.scale);
+        this.x += dx * this.scale;
+        this.arrived = arrived;
+      }
       this.shove = slowed(this.shove);
     }
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));

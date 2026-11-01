@@ -12,6 +12,8 @@ import { sayTest } from "./tests";
 
 export const CHARACTER = 0x00;
 export const FRAMES = 0x44;
+/** Field 0x46, the script's step — pinned by a `CMP #n` as the frame is (Saiyan Meteor's `$20:8992`). */
+export const STEP = 0x46;
 
 /** What a path knows of the frame and the state of play. */
 export interface Known {
@@ -23,6 +25,8 @@ export interface Known {
   when?: string[];
   /** What A can hold, when a constant or a comparison narrowed it. */
   range?: [number, number];
+  /** The script's step, when a comparison pinned it. */
+  step?: number;
 }
 
 /** A routine just called answers in the carry: what each answer means. */
@@ -56,6 +60,7 @@ export function ways(
   const value = test.op === "cmp" ? test.value : 0;
   const field = fieldOf(cpu);
   if (field === frames) return onFrame(mnemonic, value, k);
+  if (field === STEP && frames === FRAMES && test.op === "cmp") return onStep(mnemonic, value, k);
   if (field === CHARACTER && character !== undefined) return onValue(mnemonic, character, value, k);
   if (!source && test.op === "cmp") return onRange(mnemonic, value, k);
   const said = source ? sayTest(mnemonic, source, cpu.mask, test, names) : null;
@@ -97,6 +102,15 @@ function onFrame(mnemonic: string, compared: number, k: Known): [Known | null, K
   if (mnemonic === "BNE") return [equal === true ? null : k, equal === false ? null : exactly];
   if (mnemonic === "BCS") return [atLeast === false ? null : bounded, atLeast === true ? null : k];
   if (mnemonic === "BCC") return [atLeast === true ? null : k, atLeast === false ? null : bounded];
+  return [k, k];
+}
+
+/** The step compared: pinned on the way `BEQ` takes or `BNE` falls through; a step already pinned settles it. */
+function onStep(mnemonic: string, compared: number, k: Known): [Known | null, Known | null] {
+  const equal = k.step === undefined ? null : k.step === compared;
+  const exactly = { ...k, step: compared };
+  if (mnemonic === "BEQ") return [equal === false ? null : exactly, equal === true ? null : k];
+  if (mnemonic === "BNE") return [equal === true ? null : k, equal === false ? null : exactly];
   return [k, k];
 }
 

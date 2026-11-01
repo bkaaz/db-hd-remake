@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { approachSpeed } from "./approach";
+import { approachSpeed, rushStep } from "./approach";
 
 // Side Slash's: a 32nd of the way to 8 px short of the opponent
 const SIDE_SLASH = { at: 28, short: 8, over: 32 };
@@ -22,5 +22,25 @@ describe("approachSpeed", () => {
 
   it("backs off, rounded toward zero, when already inside the point", () => {
     expect(approachSpeed({ at: 0, short: 40, over: 4 }, 30)).toBe(-2);
+  });
+});
+
+describe("rushStep", () => {
+  const METEOR = { from: 48, speed: 16, stop: 40 };
+
+  it("moves at its speed toward the opponent while he is farther than the stop", () => {
+    expect(rushStep(METEOR, 100)).toEqual({ dx: 16, arrived: false });
+    expect(rushStep(METEOR, -100)).toEqual({ dx: -16, arrived: false });
+  });
+
+  it("sets down exactly the stop short of him, from either side", () => {
+    // 34 to the right: back off to 40 short
+    expect(rushStep(METEOR, 34)).toEqual({ dx: -6, arrived: true });
+    expect(rushStep(METEOR, -34)).toEqual({ dx: 6, arrived: true });
+  });
+
+  it("stops at 40 from the left but only under 40 from the right, as the original does", () => {
+    expect(rushStep(METEOR, 40).arrived).toBe(true);
+    expect(rushStep(METEOR, -40).arrived).toBe(false);
   });
 });

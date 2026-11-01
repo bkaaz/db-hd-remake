@@ -41,6 +41,7 @@ import { statesFrom } from "../src/rom/template.ts";
 import { withSpecials, type SpecialsFile } from "../src/rom/specials.ts";
 import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
+import { ownMoves } from "../src/rom/ownMoves.ts";
 import { fullestLife, readLives } from "../src/rom/recording.ts";
 import { OWN_OBJECTS, ownObjects } from "../src/rom/ownObjects.ts";
 import { decodeLine, LINE_RATE, lineName, spokenLines } from "../src/rom/lines.ts";
@@ -289,8 +290,8 @@ if (command === "tiles") {
   // goku's states as the template: what every fighter shares, on his animations with his blows
   const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, unknown>;
   const template = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
-  // goku's specials: the moves his command table picks
-  const specials = new Set(readCommands(rom, GOKU.character).map((c) => c.move));
+  // goku's own moves: what his command table picks, and what those go on to
+  const specials = ownMoves(rom, GOKU);
   const made = statesFrom(template, {
     has: (a) => a in animations,
     special: (a) => specials.has(parseInt(a.slice(1, 3), 16)),
