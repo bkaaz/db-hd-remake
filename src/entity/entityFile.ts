@@ -138,6 +138,12 @@ export interface Attributes {
    */
   copies: { count: number; step: number; spread: [number, number] };
   /**
+   * For an effect: whether it rides on whoever put it out — his position and
+   * facing, its frame his drawing's (`fx/follow.ts`) — rather than playing
+   * its own animation where it was put. Normal Goku's hair ($0F:B8F2).
+   */
+  follows: boolean;
+  /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —
    * so switching the length from the pose to the number changed nothing, which
@@ -165,6 +171,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   burn: [],
   mirrors: true,
   copies: { count: 0, step: 0, spread: [0, 0] },
+  follows: false,
   hitstun: 12,
   ki: 100,
 };

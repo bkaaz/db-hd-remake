@@ -3,6 +3,7 @@ import type { Bounds } from "../combat/push";
 import { Entity, NO_INPUT } from "../entity/entity";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { copyOffset } from "./burst";
+import { followedFrame } from "./follow";
 
 /**
  * The sparks a blow leaves behind: entities with no state machine — one
@@ -18,6 +19,8 @@ interface Live {
   name: string;
   copiesLeft: number;
   copied: boolean;
+  /** For one that `follows`: whom, from where, in which of his animations — it goes when he leaves it. */
+  owner?: { entity: Entity; at: [number, number]; anim: string };
 }
 
 export class Effects {
@@ -51,7 +54,7 @@ export class Effects {
    * printed over and over. The mirror doubles that for free and, unlike a
    * rotation, is exact — it moves whole pixels, so nothing is resampled.
    */
-  spawn(name: string, x: number, y: number, copiesLeft?: number, facing?: 1 | -1): void {
+  spawn(name: string, x: number, y: number, copiesLeft?: number, facing?: 1 | -1, owner?: { entity: Entity; at: [number, number] }): void {
     const def = this.defs.get(name);
     if (!def) return;
     const variants = Object.keys(def.animations);
@@ -64,7 +67,8 @@ export class Effects {
     fx.x = x;
     fx.y = y;
     this.world.addChild(fx.view);
-    this.live.push({ fx, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false });
+    const rides = def.attributes.follows && owner ? { ...owner, anim: owner.entity.animation } : undefined;
+    this.live.push({ fx, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false, owner: rides });
   }
 
   /**
@@ -80,17 +84,37 @@ export class Effects {
       const live = this.live[i];
       const { fx } = live;
       if (!paused) fx.update(NO_INPUT, null, bounds);
+      if (live.owner && !this.ride(live)) {
+        fx.view.destroy({ children: true });
+        this.live.splice(i, 1);
+        continue;
+      }
       const copies = this.defs.get(live.name)?.attributes.copies;
       if (copies && !live.copied && live.copiesLeft > 0 && fx.animStep >= copies.step) {
         live.copied = true;
         const [dx, dy] = [copyOffset(Math.random(), copies.spread), copyOffset(Math.random(), copies.spread)];
         this.spawn(live.name, fx.x + dx * this.scale, fx.y + dy * this.scale, live.copiesLeft - 1);
       }
-      if (fx.finished) {
+      // a follower ends with its owner's drawing, not its own animation
+      if (fx.finished && !live.owner) {
         fx.view.destroy({ children: true });
         this.live.splice(i, 1);
       }
     }
+  }
+
+  /** Put a follower on its owner for this frame; false once it is gone ($0F:B8F2). */
+  private ride(live: Live): boolean {
+    const { fx, owner } = live;
+    if (!owner || owner.entity.animation !== owner.anim) return false;
+    const frame = followedFrame(owner.entity.frameId);
+    if (frame === null) return false;
+    const { entity, at } = owner;
+    fx.facing = entity.facing;
+    fx.x = entity.x + entity.facing * at[0] * this.scale;
+    fx.y = entity.y + at[1] * this.scale;
+    fx.showFrame(frame);
+    return true;
   }
 
   /** Sweep away whatever is still in the air when the scene ends. */

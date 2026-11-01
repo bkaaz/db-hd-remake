@@ -173,7 +173,7 @@ export class Fighters {
       this.shake = fighter.takeShake() ?? this.shake;
       const fx = fighter.takeGroundFx();
       if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);
-      for (const s of fighter.takeStepSpawns()) this.impact.effects.spawn(s.name, s.x, s.y, undefined, s.facing);
+      for (const s of fighter.takeStepSpawns()) this.impact.effects.spawn(s.name, s.x, s.y, undefined, s.facing, { entity: fighter, at: s.at });
     }
   }
 

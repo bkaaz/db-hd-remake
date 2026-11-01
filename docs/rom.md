@@ -721,7 +721,12 @@ both are gone after 80 frames (`$0F:B80F`, `B7CA`) and become `a/02` where
 they hit. Their speeds (3, 0 and 3, −3), `0/04`'s tiles — resource `47` at
 `$6800`, which `a9` does not load — and both palettes (OBJ palette 0 =
 `0x27B161`, the ki blast's) are from the recording (`logs/objects-goku.*`);
-so is `ae`'s `0/08`, normal Goku's hair (owner): frames 0, 1, 2 for 80, 8 and 36, in OBJ palette 6 = `0x27B161`.
+so is `ae`'s `0/08`, normal Goku's hair (owner), in OBJ palette 6 =
+`0x27B161`. Its code (`$0F:B8F2`) puts it on him every frame and shows
+the frame his drawing names — `a0`, `a1`, `a2` give 0, 1, 2 (the
+recording's 80, 8 and 36 frames are how long he showed them) — and frees
+it when his drawing's low bits reach 3 or he leaves `ae`; ours: the
+spawn's `follows` (`src/fx/follow.ts`).
 A recording is kept per fighter as `logs/objects-<name>.txt` / `.bin`.
 
 Saiyan Meteor (`ad`, `$20:8988`, health 80 or less) charges to frame 36
