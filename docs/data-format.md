@@ -129,9 +129,13 @@ fighters would each want a copy of it. A grunt *is* his.
   its own ids, written by `npm run rom -- export` from the script (ADR 0024).
   A bank entry says which id it is with `rom`; an id nobody has matched plays
   nothing. A state's `sound` is for what no script plays.
-- **A step's `spawns` are what its script puts out as it begins** — written by
-  the export only for a move that holds the opponent (ADR 0045); everywhere
-  else a state's `fires` does it.
+- **A step's `spawns` are what its script puts out as it begins**, once per
+  start of the animation, not per loop — written by the export for a move
+  that holds the opponent (ADR 0045) and for an object listed with `onStep`
+  (ADR 0048); everywhere else a state's `fires` does it. A spawn whose
+  `attributes.json` says `follows` rides on its owner until he leaves that
+  start of the animation: `"pose"` showing the frame his drawing names,
+  `"body"` playing its own (`src/fx/follow.ts`).
 - **`sound` plays once on entering the state; `loopSound` is retriggered every
   `loopEvery` frames until you leave it, or until `loopUntil`.** Not a seamless loop: that repeats at
   exactly the clip's own length and can never overlap itself, and the original's

@@ -139,7 +139,10 @@ export function moveAnims(
   cuts: number[] = [],
   frameCuts: number[] = [],
   uncut?: SpawnName,
+  onStep?: SpawnName,
 ): Record<string, Anim> {
+  // `onStep`: the objects that go on their steps in any move, and cut nothing
+  const named: SpawnName | undefined = uncut ?? onStep;
   // `uncut`: a move whose blows cannot land and whose spawns no state fires —
   // one animation, its spawns named on their steps
   const cutAt = [...(boxesOf && !uncut ? blowStarts(ops, boxesOf).slice(1) : []), ...cuts];
@@ -164,7 +167,7 @@ export function moveAnims(
   };
   for (const op of ops) {
     if (op.op !== "show" && op.op !== "hold") {
-      if (op.op === "spawn" && shown && !uncut) cut();
+      if (op.op === "spawn" && shown && !uncut && !onStep?.(op.type, op.anim)) cut();
       parts[parts.length - 1].push(op);
       continue;
     }
@@ -180,12 +183,12 @@ export function moveAnims(
     frame += op.op === "hold" ? 1 : op.frames;
   }
   if (parts.length === 1) {
-    const one = moveAnim(move, ops, boxesOf, uncut);
+    const one = moveAnim(move, ops, boxesOf, named);
     return one ? { [animName(move)]: one } : {};
   }
   const out: Record<string, Anim> = {};
   parts.forEach((part, i) => {
-    const anim = toAnim(part, boxesOf, uncut);
+    const anim = toAnim(part, boxesOf, named);
     if (anim) out[i === 0 ? animName(move) : `${animName(move)}_${i + 1}`] = anim;
   });
   return out;

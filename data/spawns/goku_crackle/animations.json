@@ -1,0 +1,67 @@
+{
+  "play": {
+    "loop": true,
+    "steps": [
+      {
+        "frame": "14",
+        "dur": 52
+      },
+      {
+        "frame": "0",
+        "dur": 4
+      },
+      {
+        "frame": "1",
+        "dur": 4
+      },
+      {
+        "frame": "2",
+        "dur": 4
+      },
+      {
+        "frame": "3",
+        "dur": 4
+      },
+      {
+        "frame": "4",
+        "dur": 4
+      },
+      {
+        "frame": "5",
+        "dur": 4
+      },
+      {
+        "frame": "6",
+        "dur": 4
+      },
+      {
+        "frame": "7",
+        "dur": 4
+      },
+      {
+        "frame": "8",
+        "dur": 4
+      },
+      {
+        "frame": "9",
+        "dur": 4
+      },
+      {
+        "frame": "10",
+        "dur": 4
+      },
+      {
+        "frame": "11",
+        "dur": 4
+      },
+      {
+        "frame": "12",
+        "dur": 4
+      },
+      {
+        "frame": "13",
+        "dur": 4
+      }
+    ]
+  }
+}

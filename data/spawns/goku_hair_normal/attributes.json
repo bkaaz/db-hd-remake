@@ -1,5 +1,5 @@
 {
   "_comment": "Normal Goku's hair over Saiyan Meteor's ae: its code ($0F:B8F2) keeps it on him and shows the frame his drawing names (a0-a2 give 0-2), gone from a3 or once he leaves the move — written by hand, as the export writes no attributes.",
-  "follows": true,
+  "follows": "pose",
   "mirrors": false
 }

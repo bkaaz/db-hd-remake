@@ -1,0 +1,5 @@
+{
+  "_comment": "Idle's lightning: its code ($0F:B862) keeps it on him and kills it once he leaves idle; its own frames, looped — written by hand, as the export writes no attributes.",
+  "follows": "body",
+  "mirrors": false
+}

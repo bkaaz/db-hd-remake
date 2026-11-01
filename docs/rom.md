@@ -171,6 +171,17 @@ $01:84EF`) — it shimmers by swapping colours. Type `1` jumps by animation thro
 `ad` Big Bang (`1`/`4`, `$0F:BAB6`) runs `+0B` 0–9 and shows the frame
 `$0F:BAE5` names for it (0 for five, 1 for five), with no end of its own.
 
+**Idle's lightning** is type `0` animation `6` (`$0F:B862`), put out by
+idle's own script (`00`, once per entry, timer 0) and by `60` — the pose
+`$0F:AF29` sets both fighters to at once `?`. While the fight runs (`$32`
+& `7F` = 1) it stands on its owner's x / y every frame and lives only
+while his move is `00` or `60`, else it is gone. Every 4th frame of `$74`
+it steps `+0B` through 0–26 and back to 0, showing the frame `$0F:B8B2`
+names: frame `0E` (nothing) for 13 steps, then frames 0–13 — 52 frames
+dark, 56 of bolts, again. Tiles: resource `0x47` at `$6800`, which a b0's
+`+80` reaches; drawn in OBJ palette 0, which it never loads — `0x27B161`
+in `logs/objects-goku.bin`.
+
 **An object off the screen is gone** (`$0F:B47D`, after every slot): more
 than `0xA0` px from the screen's middle — the camera's x + `0x80`
 (`$0571`) or y + `0x70` (`$0574`) — on either axis, it is killed

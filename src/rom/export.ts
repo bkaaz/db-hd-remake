@@ -113,6 +113,9 @@ export function exportSpawns(rom: Uint8Array, t: FighterTables): Record<string, 
   return out;
 }
 
+/** A frame that draws nothing: one transparent pixel, since a frame needs a picture. */
+const NOTHING: Drawing = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
+
 /**
  * One object as a spawn entity: its frames from the tiles the fighter has in
  * VRAM, held as long as the recording says, in a single animation `play`.
@@ -135,6 +138,8 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
   const drawn = [...new Set(parts.flatMap((p) => p.shows.map((s) => s.frame)))];
   const items: Placed[] = drawn.map((frame) => {
     const pieces = readLayout(rom, objectFrame(rom, def.type, def.anim, frame)).map((p) => ({ ...p, tile: p.tile + tiles }));
+    // an empty layout is how an object shows nothing for a while (idle's lightning)
+    if (pieces.length === 0) return { id: String(frame), ...NOTHING };
     return { id: String(frame), ...drawFrame(vram, pieces, readPalette(rom, colours)) };
   });
   const { sheet, frames } = packSheet(items);

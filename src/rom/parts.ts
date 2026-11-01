@@ -47,8 +47,10 @@ export function moveParts(rom: Uint8Array, t: FighterTables, move: number): Move
   // field 0x96 to 70): a blow cannot land and cuts nothing, and the spawns go
   // on their steps — Saiyan Meteor's ae
   const holds = facts.some((f) => f.who === "opponent" && f.move === HOLD);
-  const uncut = holds ? (type: number, anim: number) => t.objects.spawns.find((s) => s.type === type && s.anim === anim)?.name : undefined;
-  const anims = moveAnims(move, ops, boxesOf, steps, frames, uncut);
+  const named = (type: number, anim: number) => t.objects.spawns.find((s) => s.type === type && s.anim === anim);
+  const uncut = holds ? (type: number, anim: number) => named(type, anim)?.name : undefined;
+  const onStep = (type: number, anim: number) => (named(type, anim)?.onStep?.includes(move) ? named(type, anim)?.name : undefined);
+  const anims = moveAnims(move, ops, boxesOf, steps, frames, uncut, onStep);
 
   const striking = strikingSteps(ops, boxesOf);
   const starts = stepStarts(ops);

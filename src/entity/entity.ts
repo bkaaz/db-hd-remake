@@ -195,6 +195,14 @@ export class Entity {
   private screenCues: ScreenCue[] = [];
   /** Effects the animation's steps put out, until the fighters take them. */
   private readonly stepSpawns: { name: string; x: number; y: number; facing: 1 | -1; at: [number, number] }[] = [];
+  /**
+   * The steps that have put out their spawns since the animation started —
+   * once per start, not per loop: a b0 fires on a counter the move's start
+   * resets and a script's loop does not (field 0x6e). Idle's lightning.
+   */
+  private readonly spawnedSteps = new Set<number>();
+  /** Counts animation starts, so a follower can tell this one from the next (`fx/follow.ts`). */
+  private plays = 0;
   /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
   private landedAt = 0;
   /**
@@ -546,6 +554,11 @@ export class Entity {
   /** The animation playing, by name. */
   get animation(): string {
     return this.animName;
+  }
+
+  /** Which start of an animation this is — a new one, or the same one again, counts up. */
+  get animationPlay(): number {
+    return this.plays;
   }
 
   /**
@@ -1240,6 +1253,8 @@ export class Entity {
     this.stepIndex = 0;
     this.animEnded = false;
     this.remaining = Math.max(1, anim.steps[0]?.dur ?? 1);
+    this.plays++;
+    this.spawnedSteps.clear();
     this.stepBegins();
   }
 
@@ -1280,6 +1295,8 @@ export class Entity {
     for (const id of step?.sfx ?? []) this.audio?.playRom(id);
     if (step?.voice !== undefined) this.audio?.playLine(step.voice);
     // placed now, while the facing is the step's; the fighters spawn them
+    if (this.spawnedSteps.has(this.stepIndex)) return;
+    this.spawnedSteps.add(this.stepIndex);
     for (const { name, at: [dx, dy] } of step?.spawns ?? [])
       this.stepSpawns.push({ name, x: this.x + this.facing * dx * this.scale, y: this.y + dy * this.scale, facing: this.facing, at: [dx, dy] });
   }

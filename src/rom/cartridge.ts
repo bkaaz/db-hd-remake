@@ -68,6 +68,13 @@ export interface SpawnDef {
   palette?: number;
   /** What the move loads into VRAM for this object, in place of the fighter's `loads`. */
   loads?: { resource: number; vram: number }[];
+  /**
+   * The moves that put it out by the step its b0 begins, never a cut — an
+   * effect that rides its owner rather than a projectile a state `fires`
+   * (ADR 0018). Its code kills it in any other move, so elsewhere it is left
+   * off. Idle's lightning: 00 and 60 ($0F:B87C).
+   */
+  onStep?: number[];
 }
 
 /** Resource 0x32's palette ($95:DE1C, its record) and where the charged Kamehameha loads its tiles. */
@@ -144,6 +151,11 @@ export const GOKU: FighterTables = {
       // drawn in OBJ palette 6 as its b0 says, which holds 0x27B161, the hair
       // palette — its dark colours 13–15 are the hair (logs/objects-goku.bin)
       { name: "goku_hair_normal", type: 0x0, anim: 0x08, steps: [80, 8, 36], loop: false, hits: false, palette: 0x27b161 },
+      // idle's lightning ($0F:B862): a step every 4 frames through $0F:B8B2 —
+      // 13 of frame 14, an empty layout, then 0–13; tiles resource 0x47 at
+      // $6800 (b0 +80), OBJ palette 0 holding 0x27B161 (logs/objects-goku.bin)
+      { name: "goku_crackle", type: 0x0, anim: 0x06, steps: [52, ...Array<number>(14).fill(4)], frames: [14, ...Array.from({ length: 14 }, (_, i) => i)],
+        loop: true, hits: false, palette: 0x27b161, loads: [{ resource: 0x47, vram: 0x6800 }], onStep: [0x00, 0x60] },
       // what a melee blow leaves where the boxes overlap, landed ($2A:8D45) or
       // blocked ($2A:8DE2): written into the slot as a projectile's explosion
       // is, so its tiles and palette `?`; frozen through the hitstop, then 4

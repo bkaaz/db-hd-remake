@@ -21,6 +21,15 @@ describe.skipIf(!existsSync(ROM_PATH))("objects, on the cartridge", () => {
     expect(ki.animations.play.steps.every((s) => s.boxes?.[0].type === "hit")).toBe(true);
   });
 
+  it("exports idle's lightning with its dark stretch as an empty frame, then fourteen bolts, looped", () => {
+    const crackle = exportSpawns(rom, GOKU).goku_crackle;
+    const steps = crackle.animations.play.steps;
+    expect(crackle.animations.play.loop).toBe(true);
+    expect(steps.map((s) => s.dur)).toEqual([52, ...Array<number>(14).fill(4)]);
+    expect([crackle.frames["14"].w, crackle.frames["14"].h]).toEqual([1, 1]);
+    expect(crackle.frames["0"].w).toBeGreaterThan(1);
+  });
+
   it("exports the charged Kamehameha's three beam heads growing with the charge, and a base that comes in, loops and goes out without hitting", () => {
     const spawns = exportSpawns(rom, GOKU);
     const area = (name: string) => spawns[name].frames["0"].w * spawns[name].frames["0"].h;

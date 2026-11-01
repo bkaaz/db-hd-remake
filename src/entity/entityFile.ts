@@ -138,11 +138,13 @@ export interface Attributes {
    */
   copies: { count: number; step: number; spread: [number, number] };
   /**
-   * For an effect: whether it rides on whoever put it out — his position and
-   * facing, its frame his drawing's (`fx/follow.ts`) — rather than playing
-   * its own animation where it was put. Normal Goku's hair ($0F:B8F2).
+   * For an effect: whether it rides on whoever put it out, on his position
+   * and facing, until he leaves the animation that put it out (`fx/follow.ts`).
+   * `"pose"` shows the frame his drawing names — normal Goku's hair
+   * ($0F:B8F2); `"body"` plays its own animation — idle's lightning
+   * ($0F:B862). False: it plays where it was put.
    */
-  follows: boolean;
+  follows: false | "pose" | "body";
   /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —

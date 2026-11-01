@@ -3,7 +3,7 @@ import type { Bounds } from "../combat/push";
 import { Entity, NO_INPUT } from "../entity/entity";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { copyOffset } from "./burst";
-import { followedFrame } from "./follow";
+import { riding, type FollowBy } from "./follow";
 
 /**
  * The sparks a blow leaves behind: entities with no state machine — one
@@ -19,8 +19,8 @@ interface Live {
   name: string;
   copiesLeft: number;
   copied: boolean;
-  /** For one that `follows`: whom, from where, in which of his animations — it goes when he leaves it. */
-  owner?: { entity: Entity; at: [number, number]; anim: string };
+  /** For one that `follows`: whom, from where, how, and in which start of his animation — it goes when he leaves it. */
+  owner?: { entity: Entity; at: [number, number]; by: FollowBy; play: number };
 }
 
 export class Effects {
@@ -67,7 +67,8 @@ export class Effects {
     fx.x = x;
     fx.y = y;
     this.world.addChild(fx.view);
-    const rides = def.attributes.follows && owner ? { ...owner, anim: owner.entity.animation } : undefined;
+    const by = def.attributes.follows;
+    const rides = by && owner ? { ...owner, by, play: owner.entity.animationPlay } : undefined;
     this.live.push({ fx, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false, owner: rides });
   }
 
@@ -95,8 +96,8 @@ export class Effects {
         const [dx, dy] = [copyOffset(Math.random(), copies.spread), copyOffset(Math.random(), copies.spread)];
         this.spawn(live.name, fx.x + dx * this.scale, fx.y + dy * this.scale, live.copiesLeft - 1);
       }
-      // a follower ends with its owner's drawing, not its own animation
-      if (fx.finished && !live.owner) {
+      // one riding by pose ends with its owner's drawing, not its own animation
+      if (fx.finished && live.owner?.by !== "pose") {
         fx.view.destroy({ children: true });
         this.live.splice(i, 1);
       }
@@ -106,14 +107,14 @@ export class Effects {
   /** Put a follower on its owner for this frame; false once it is gone ($0F:B8F2). */
   private ride(live: Live): boolean {
     const { fx, owner } = live;
-    if (!owner || owner.entity.animation !== owner.anim) return false;
-    const frame = followedFrame(owner.entity.frameId);
-    if (frame === null) return false;
+    if (!owner) return false;
     const { entity, at } = owner;
+    const frame = riding(owner.by, owner.play, { play: entity.animationPlay, drawing: entity.frameId });
+    if (frame === null) return false;
     fx.facing = entity.facing;
     fx.x = entity.x + entity.facing * at[0] * this.scale;
     fx.y = entity.y + at[1] * this.scale;
-    fx.showFrame(frame);
+    if (frame !== "own") fx.showFrame(frame);
     return true;
   }
 
