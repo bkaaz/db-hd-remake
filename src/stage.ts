@@ -1,4 +1,5 @@
 import { Graphics, type Container } from "pixi.js";
+import { cue, LIT, tick, type Screen, type ScreenCue } from "./screen";
 import { VIEW } from "./view";
 
 /** The original's arena, in game px: 512 wide, the floor at 200 (`rom.md`, The camera). */
@@ -30,13 +31,17 @@ export class Stage {
   /** Over the backdrop and under the fighters, the whole screen: the flash. */
   private readonly white = new Graphics().rect(0, 0, VIEW.width, VIEW.height).fill(0xffffff);
   private flashLeft = 0;
+  /** Under the flash: the art faded down, as the original fades BG palettes 2–7 (`screen.ts`). */
+  private readonly dark = new Graphics().rect(0, 0, VIEW.width, VIEW.height).fill(0x000000);
+  private screen: Screen = LIT;
 
   constructor(
     layer: Container,
     private readonly backdrop: Backdrop,
   ) {
     this.white.visible = false;
-    layer.addChild(this.white);
+    this.dark.alpha = 0;
+    layer.addChild(this.dark, this.white);
   }
 
   /** The screen's place in the world, and how far a shake pushes the backdrop's scroll. */
@@ -54,14 +59,22 @@ export class Stage {
     if (this.backdrop.whitens) this.flashLeft = Math.max(this.flashLeft, frames);
   }
 
-  /** One game frame of the flash, if one is running. */
+  /** A move's ask of the art — faded down or up, held white or let go (`screen.ts`). An arena only, as the flash. */
+  cue(c: ScreenCue): void {
+    if (this.backdrop.whitens) this.screen = cue(this.screen, c);
+  }
+
+  /** One game frame of the flash and the fade. */
   tick(): void {
-    this.white.visible = this.flashLeft > 0;
+    this.screen = tick(this.screen);
+    this.white.visible = this.flashLeft > 0 || this.screen.white;
+    this.dark.alpha = 1 - this.screen.level / 16;
     if (this.flashLeft > 0) this.flashLeft--;
   }
 
   destroy(): void {
     this.backdrop.destroy();
     this.white.destroy();
+    this.dark.destroy();
   }
 }

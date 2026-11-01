@@ -14,6 +14,7 @@ import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { slowed } from "../combat/knockback";
 import { trailAt } from "./trail";
+import type { ScreenCue } from "../screen";
 import { approachSpeed, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
@@ -186,6 +187,8 @@ export class Entity {
   private approaching: number | null = null;
   /** A `rush` has set this entity down by the opponent this state. */
   private arrived = false;
+  /** What its state asked of the screen this frame (`StateDef.screen`), until the fighters take it. */
+  private screenCues: ScreenCue[] = [];
   /** Effects the animation's steps put out, until the fighters take them. */
   private readonly stepSpawns: { name: string; x: number; y: number; facing: 1 | -1 }[] = [];
   /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
@@ -1098,6 +1101,7 @@ export class Entity {
     if (ball) this.ballAt = ball.at;
     this.ballRadius = nextRadius(this.ballRadius, ball, this.stateFrames);
     this.bandFrames = this.sm.def.band && this.beamHead !== null ? this.bandFrames + 1 : 0;
+    for (const [at, c] of this.sm.def.screen ?? []) if (at === this.stateFrames) this.screenCues.push(c);
     // taken by the fighters with the entry's groundFx; a beat on the first frame replaces it
     if (trailAt(this.sm.def.trail, this.stateFrames)) this.groundFx = this.sm.def.trail!.fx;
     if (this.fading) {
@@ -1212,6 +1216,11 @@ export class Entity {
     // placed now, while the facing is the step's; the fighters spawn them
     for (const { name, at: [dx, dy] } of step?.spawns ?? [])
       this.stepSpawns.push({ name, x: this.x + this.facing * dx * this.scale, y: this.y + dy * this.scale, facing: this.facing });
+  }
+
+  /** What its state asked of the screen since the last ask — taken once. */
+  takeScreen(): ScreenCue[] {
+    return this.screenCues.splice(0);
   }
 
   /** The effects the animation's steps put out since the last ask (`Step.spawns`), in world px — taken once. */

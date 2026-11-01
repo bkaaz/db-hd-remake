@@ -2034,6 +2034,24 @@
         }
       },
       "damage": 0,
+      "screen": [
+        [
+          200,
+          "dim"
+        ],
+        [
+          274,
+          "bright"
+        ],
+        [
+          411,
+          "white"
+        ],
+        [
+          530,
+          "restore"
+        ]
+      ],
       "transitions": [
         {
           "when": "landed",

@@ -1383,6 +1383,16 @@ describe("hitFxOf", () => {
   });
 });
 
+describe("screen", () => {
+  it("refuses a cue the stage does not know", () => {
+    const f = machine();
+    f.states.idle.screen = [[200, "dark" as never]];
+    expect(validateStates(f, ANIMS).errors).toContain('state "idle": "screen" takes [frame, "dim" | "bright" | "white" | "restore"], not [200, dark]');
+    f.states.idle.screen = [[200, "dim"]];
+    expect(validateStates(f, ANIMS).errors).toEqual([]);
+  });
+});
+
 describe("lasts", () => {
   it("refuses a bolt's life that is not a whole number of frames", () => {
     const f = machine();

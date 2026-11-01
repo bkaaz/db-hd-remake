@@ -2,6 +2,7 @@ import type { Container } from "pixi.js";
 import type { Audio } from "../audio/playback";
 import type { Camera } from "../camera/camera";
 import type { ShakeDef } from "../camera/shake";
+import type { ScreenCue } from "../screen";
 import { bodyOverlap, pushApart, separate, type Bounds } from "../combat/push";
 import { Entity, type WorldInput } from "../entity/entity";
 import type { EntityDef } from "../entity/entityDef";
@@ -235,6 +236,11 @@ export class Fighters {
     const shake = this.shake;
     this.shake = null;
     return shake;
+  }
+
+  /** What the fighters' states asked of the screen this frame, in order — taken once. */
+  takeScreen(): ScreenCue[] {
+    return this.both().flatMap((f) => f.takeScreen());
   }
 
   takeFlash(): number {

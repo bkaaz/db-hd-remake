@@ -170,6 +170,7 @@ export class DebugScene implements Scene {
     if (keyboard.takeRefill()) this.fighters.refill();
     this.fighters.exchangeBlows();
     this.stage.flash(this.fighters.takeFlash());
+    for (const c of this.fighters.takeScreen()) this.stage.cue(c);
     const { health, dial } = this.fighters.status();
     this.hud?.tick(health, dial);
     const shake = this.fighters.takeShake();

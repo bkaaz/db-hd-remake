@@ -12,6 +12,7 @@
  */
 
 import type { Trail } from "./trail";
+import type { ScreenCue } from "../screen";
 import type { Approach, Rush } from "./approach";
 import type { BallDef } from "../combat/ball";
 import { airProblem, leavesGround, type AirTimeline } from "./air";
@@ -342,6 +343,8 @@ export interface StateDef {
   rush?: Rush;
   /** A scene played on the opponent — Saiyan Meteor's (`match/seize.ts`). */
   seize?: SeizeDef;
+  /** What it does to the arena's art, on which of its frames (`src/screen.ts`) — Saiyan Meteor's `$37`. */
+  screen?: [number, ScreenCue][];
   /**
    * For a bolt: the frames it lives before it is simply gone, as an object's
    * own code ends it — Large Ki Blast's 80 ($0F:B80F). Absent: until it hits
@@ -1217,6 +1220,11 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
 
     if (def.cancelBy !== undefined && (typeof def.cancelBy !== "number" || def.cancelBy < 0)) {
       errors.push(`${where}: "cancelBy" must be a frame of this state, 0 or more`);
+    }
+    for (const [at, c] of def.screen ?? []) {
+      if (!Number.isInteger(at) || at < 0 || !["dim", "bright", "white", "restore"].includes(c)) {
+        errors.push(`${where}: "screen" takes [frame, "dim" | "bright" | "white" | "restore"], not [${at}, ${c}]`);
+      }
     }
     if (def.lasts !== undefined && !(Number.isInteger(def.lasts) && def.lasts >= 1)) {
       errors.push(`${where}: "lasts" must be a whole number of frames, 1 or more`);
