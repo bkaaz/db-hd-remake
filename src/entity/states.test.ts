@@ -68,6 +68,7 @@ const NONE = {
   hcf: false,
   dbf: false,
   dp: false,
+  fd: false,
   holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const FWD = { ...NONE, fwd: true };
@@ -813,6 +814,31 @@ describe("a `when` of several triggers needs all of them", () => {
     expect(sm.current).toBe("idle");
     sm.update(ATTACK, QUIET);
     expect(sm.current).toBe("punch");
+  });
+});
+
+describe("connected", () => {
+  it("fires on a spent blow even past the cancel window, where cancelable does not", () => {
+    // a window already closed: the swing connects on its second frame
+    const closed = (when: string): StatesFile => {
+      const f = withAttack(when);
+      f.states.idle.cancelBy = 0;
+      return f;
+    };
+    const connected = new StateMachine(closed("connected"));
+    const cancelable = new StateMachine(closed("cancelable"));
+    for (const sm of [connected, cancelable]) {
+      sm.update(NONE, QUIET);
+      sm.update(NONE, { ...QUIET, hitConfirmed: true });
+    }
+    expect(connected.current).toBe("punch");
+    expect(cancelable.current).toBe("idle");
+  });
+
+  it("does not fire on a swing that has not landed", () => {
+    const sm = new StateMachine(withAttack("connected"));
+    sm.update(NONE, QUIET);
+    expect(sm.current).toBe("idle");
   });
 });
 

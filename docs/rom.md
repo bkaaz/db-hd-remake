@@ -635,6 +635,12 @@ character 6).
 (`03`, `$0F:9F35`; `04`, `$0F:9F4E`) call `$0F:9EB1` as idle does, so a
 special rolled through ↓ comes out of a crouch.
 
+**A special started** from the command table (`$0D:F11E`) sets the move,
+stops the fighter (`$0D:D7A0`: vx, vy and the shove to 0) and arms the
+blow (`$0D:D8A2`). Height moves in one place for both (`$0D:CA55` →
+`$0D:CAD4`), which skips both the move and gravity while vy is 0 — so a
+special begun in the air hangs until its handler sets vy.
+
 **Special moves come first** (`$0D:F085`): a command table of 0x150 bytes
 per fighter at `$3D:9EEF` (offsets `$0D:F5CF`) — 0x88 on the ground, 0x40
 in the air, the rest for mode `$0552` — the fight above the arena `?`
@@ -673,6 +679,15 @@ the way to 8 px short of his x, in whole px (`$20:8400`) — kept to the
 end, frame 68, so it carries him ¼ past that point (ours: a state's
 `approach`, `src/entity/approach.ts`). Its blow, at 44, is
 `0x0020`: move `19`.
+Slash Down Kick (`ac`, in the air, `$20:8771`) hangs where it was begun
+for 16 frames (A special started, below), then turns gravity off and dives
+at vx 5.5, vy 5.5 to the floor; landing is `3b`
+and `0c` (`$0F:9FB8`), and only from frame 16 is it looked for. Once its
+blow has connected, hit or blocked — field `0x25` bit 7, which arming sets
+(`$0D:D8A2`) and contact clears (`$2A:8190`, `$2A:83CB`) — it sets `b1`
+(`$20:87BC`): stopped (`$0D:D7B1`), then on frame 1 gravity back, vx 2.0
+backward, vy −7.0; vx 0 at 24, landing looked for from there. Its blow is a
+knockdown either way (`0x0240`).
 Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
 70 — `goku`'s `quad_kick` states copy it as `velAt`.

@@ -54,6 +54,11 @@ describe("Motions.has", () => {
     expect(play(at("down"), at("down", "fwd"), at("fwd")).has("dp")).toBe(false);
   });
 
+  it("reads → ↓ as fd, and ↓ → as not", () => {
+    expect(play(at("fwd"), at("down")).has("fd")).toBe(true);
+    expect(play(at("down"), at("fwd")).has("fd")).toBe(false);
+  });
+
   it("does not match the directions in the wrong order", () => {
     expect(play(at("fwd"), at("down")).has("qcf")).toBe(false);
   });

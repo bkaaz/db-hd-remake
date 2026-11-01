@@ -988,6 +988,7 @@ export class Entity {
         hcf: this.motions.has("hcf"),
         dbf: this.motions.has("dbf"),
         dp: this.motions.has("dp"),
+        fd: this.motions.has("fd"),
         holding: input.holding,
       },
       {

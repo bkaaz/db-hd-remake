@@ -614,6 +614,14 @@
         {
           "when": [
             "frames:2",
+            "motion:fd",
+            "pressed:smash"
+          ],
+          "to": "slash_down"
+        },
+        {
+          "when": [
+            "frames:2",
             "pressed:attack"
           ],
           "to": "jump_y"
@@ -647,6 +655,14 @@
         {
           "when": [
             "frames:2",
+            "motion:fd",
+            "pressed:smash"
+          ],
+          "to": "slash_down"
+        },
+        {
+          "when": [
+            "frames:2",
             "pressed:attack"
           ],
           "to": "jump_fwd_y"
@@ -676,6 +692,14 @@
         {
           "when": [
             "frames:2",
+            "motion:fd",
+            "pressed:smash"
+          ],
+          "to": "slash_down"
+        },
+        {
+          "when": [
+            "frames:2",
             "pressed:attack"
           ],
           "to": "jump_fwd_y"
@@ -698,6 +722,13 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        {
+          "when": [
+            "motion:fd",
+            "pressed:smash"
+          ],
+          "to": "slash_down"
+        },
         {
           "when": "pressed:attack",
           "to": "jump_y"
@@ -1551,6 +1582,81 @@
         {
           "when": "animEnd",
           "to": "idle"
+        }
+      ]
+    },
+    "slash_down": {
+      "anim": "mac",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          16,
+          {
+            "vx": 5.5,
+            "vy": 5.5
+          }
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "down",
+      "damage": 32,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "connected",
+          "to": "slash_down_back"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "slash_down_back": {
+      "anim": "mb1",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          1,
+          {
+            "vx": -2,
+            "vy": -7,
+            "gravity": "own"
+          }
+        ],
+        [
+          24,
+          {
+            "vx": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
         }
       ]
     },

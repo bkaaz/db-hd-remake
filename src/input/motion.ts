@@ -54,6 +54,8 @@ export const MOTIONS = {
   dbf: ["down", "back", "fwd"],
   /** → ↓ ↘, forward, down and out forward again (Jumping Knee Slash). */
   dp: ["fwd", "down", "fwd"],
+  /** → ↓, forward then down (Slash Down Kick, in the air). */
+  fd: ["fwd", "down"],
 } as const satisfies Record<string, readonly (keyof Directions)[]>;
 
 export type MotionName = keyof typeof MOTIONS;

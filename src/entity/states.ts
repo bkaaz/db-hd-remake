@@ -517,6 +517,7 @@ export interface InputSnapshot {
   hcf: boolean;
   dbf: boolean;
   dp: boolean;
+  fd: boolean;
   /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
@@ -563,6 +564,12 @@ export interface Signals {
    * it has missed; the state machine works that out from its animation.
    */
   hitConfirmed: boolean;
+  /**
+   * Filled in by the state machine: `hitConfirmed` before `cancelable` narrows
+   * it to a window — the `connected` trigger, for a move that changes course
+   * the moment its blow is spent (Slash Down Kick, $20:87AA).
+   */
+  connected?: boolean;
   /** Ki in the meter right now — what a state's `cost` is measured against. */
   ki: number;
   /**
@@ -610,6 +617,7 @@ export const TRIGGERS = [
   "motion:hcf",
   "motion:dbf",
   "motion:dp",
+  "motion:fd",
   "animEnd",
   "stunEnd",
   "spawnEnd",
@@ -620,6 +628,7 @@ export const TRIGGERS = [
   ...CLOSE_BUTTONS.map((b) => `close:${b}` as const),
   "grab",
   "cancelable",
+  "connected",
 ] as const;
 
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
@@ -706,6 +715,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "motion:dp":
       value = input.dp;
       break;
+    case "motion:fd":
+      value = input.fd;
+      break;
     case "animEnd":
       value = signals.animEnded;
       break;
@@ -740,6 +752,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       // Connected or missed, *and* inside the window for it — the state machine
       // narrows the signal before it gets here, see StateMachine.update.
       value = signals.hitConfirmed;
+      break;
+    case "connected":
+      value = signals.connected === true;
       break;
     default:
       if (!warned.has(key)) {
@@ -900,6 +915,7 @@ export class StateMachine {
     const now: Signals = {
       ...signals,
       hitConfirmed: this.cancelable(signals.hitConfirmed),
+      connected: signals.hitConfirmed,
       framesIn: this.elapsed,
       released: this.released,
     };
