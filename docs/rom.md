@@ -704,13 +704,22 @@ and the mover in **`ae`** (`$20:8A29`, picking its frame by `LDY $44 /
 CPY`, the frame a word): frame 1 untouchable (`0x96` = `f0`), holds the
 opponent once at (+40, 0) (`$20:8AE3`), turned to face him, in `30`;
 frame 2 the opponent in `47`, resource `51` loaded at `$6C00` / `$7C00`.
-Nine blows follow, each with a hit spark from the script (`a/00`, spawn
-counters 0–8) and sounds `07` `09`, all of damage 0 in the hit table —
-where the damage comes from is not read `?`. Frame 274: up at vy −7,
-gravity off, the opponent says `30` and is sent up (vy high byte `f8`),
-burning, hitstop `0x8a`; frame 306 spawns object `00/08`; 590 back to a
-jump's fall (move `05`, frame 21, vx 2.0 back). Every frame also runs
-`$20:8CCE`, `8D93`, `8F22`, `8F5E`, `8F8D` — not read.
+Nine blows follow, each with a hit spark the script puts out itself
+(`a/00`, spawn counters 0–8) and sounds `07` `09` — none lands: `30` set
+the opponent's field `0x96` to `70` and a new move leaves it. Frame 274:
+up at vy −7, gravity off, the opponent says `30` and is sent up (vy high
+byte `f8`), burning, hitstop `0x8a`; 200 and 306 draw a ball (`b1` kind
+2), 306 spawns object `00/08`, 394 speaks line `01` and aims the ball at
+the opponent (`$0D:D98A`, `$0D:DB49`: fields `f2`/`f4`, ×4 next frame);
+590 back to a jump's fall (move `05`, frame 21, vx 2.0 back). Every frame
+runs `$20:8CCE` — the opponent's falls: dust, `0d`, bounces at vy −3 and
+−1.5, the stage shaken — and `$20:8D93`, the ball by field `f1`: it flies,
+holding the move's frame (`DEC $44`), until y 200; the stage shakes and
+the effect grows by 2 a frame to `0x70` (`$30C4`); then `$0F:F1BC`,
+`$0F:F1F3` until it answers, `$37` = `24` and 60 frames of `$0F:F241`;
+then `$37` = `21`, `22` and the damage — the throw's own `$0F:B321`:
+118 (`0x76`, less defence), move `1b`, vy −4.0. `$37`'s values, and
+`$20:8F22`, `8F5E`, `8F8D`, are not read.
 Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
 70 — `goku`'s `quad_kick` states copy it as `velAt`.
