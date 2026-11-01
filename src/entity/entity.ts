@@ -124,6 +124,8 @@ export interface EntityDebug {
   inputs: string;
   /** Motions complete right now, so a recording can say when one landed. */
   motions: MotionName[];
+  /** The next part a `queued` transition has kept, or null. */
+  queued: string | null;
   combo: { hits: number; damage: number; lifts: number };
 }
 
@@ -421,6 +423,7 @@ export class Entity {
       ki: this.ki,
       inputs: this.history.line,
       motions: MOTION_NAMES.filter((m) => this.motions.has(m)),
+      queued: this.sm?.queuedTo ?? null,
       combo: { hits: this.combo.hits, damage: this.combo.damage, lifts: this.combo.lifts },
     };
   }

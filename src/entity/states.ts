@@ -956,6 +956,11 @@ export class StateMachine {
     this.current = file.states[file.initial] ? file.initial : Object.keys(file.states)[0] ?? "";
   }
 
+  /** Where a kept `queued` transition will go when the animation ends, or null. */
+  get queuedTo(): string | null {
+    return this.queued?.to ?? null;
+  }
+
   /** Definition of the current state (a harmless empty state if unknown). */
   get def(): StateDef {
     return this.file.states[this.current] ?? FALLBACK_STATE;

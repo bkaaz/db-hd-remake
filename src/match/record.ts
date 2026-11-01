@@ -37,6 +37,7 @@ export class Recorder {
       if (was.state !== now.state) this.say(fighters, `${who} ${was.state} → ${now.state}`);
       for (const line of pressChanges(who, was, now)) this.say(fighters, line);
       for (const line of motionChanges(who, was, now)) this.say(fighters, line);
+      for (const line of queueChanges(who, was, now)) this.say(fighters, line);
       if (was.combo.hits > 0 && now.combo.hits === 0) {
         this.say(
           fighters,
@@ -115,4 +116,12 @@ export function pressChanges(who: string, was: EntityDebug, now: EntityDebug): s
 export function motionChanges(who: string, was: EntityDebug, now: EntityDebug): string[] {
   const before = new Set(was.motions);
   return now.motions.filter((m) => !before.has(m)).map((m) => `${who} motion ${motionArrows(m)}`);
+}
+
+/**
+ * The frame a `queued` transition keeps the next part — the press is often
+ * spent the frame it arrives, and then no press line ever shows it.
+ */
+export function queueChanges(who: string, was: EntityDebug, now: EntityDebug): string[] {
+  return now.queued && now.queued !== was.queued ? [`${who} keeps ${now.queued}`] : [];
 }

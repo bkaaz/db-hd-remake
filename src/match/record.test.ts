@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { EntityDebug } from "../entity/entity";
-import { motionChanges, pressChanges } from "./record";
+import { motionChanges, pressChanges, queueChanges } from "./record";
 
 /**
  * Only the inference is tested, not the formatting. Whether a press was *spent*
@@ -23,6 +23,7 @@ const snapshot = (buffer: [string, number][]): EntityDebug => ({
   ki: 0,
   inputs: "",
   motions: [],
+  queued: null,
   combo: { hits: 0, damage: 0, lifts: 0 },
 });
 
@@ -79,5 +80,18 @@ describe("motionChanges", () => {
 
   it("says nothing when it falls out of the window", () => {
     expect(motionChanges("P1", withMotions(["qcf"]), withMotions([]))).toEqual([]);
+  });
+});
+
+describe("queueChanges", () => {
+  const keeping = (queued: string | null) => ({ ...snapshot([]), queued });
+
+  it("says so the frame the next part is kept", () => {
+    expect(queueChanges("P1", keeping(null), keeping("rushing_knee"))).toEqual(["P1 keeps rushing_knee"]);
+  });
+
+  it("says nothing while it stays kept, or when it is taken", () => {
+    expect(queueChanges("P1", keeping("rushing_knee"), keeping("rushing_knee"))).toEqual([]);
+    expect(queueChanges("P1", keeping("rushing_knee"), keeping(null))).toEqual([]);
   });
 });
