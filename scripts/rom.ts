@@ -341,7 +341,10 @@ if (command === "tiles") {
   // his own objects: tiles and palette from code, timing from his recording (ADR 0036)
   const own = OWN_OBJECTS[name as FighterName];
   if (own) {
-    const recording = "logs/objects-rec.txt";
+    // his own: the script writes objects-rec.txt, kept as objects-<name>.txt
+    // once it is his, so recording the next fighter leaves this one's alone
+    const recording = `logs/objects-${name}.txt`;
+    if (!existsSync(recording)) throw new Error(`${recording} is missing: record his objects (tools/re/record-objects.lua) and keep logs/objects-rec.txt as it`);
     const spawns = ownObjects(rom, T, own, readLives(readFileSync(recording, "utf8")));
     for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }))) {
       write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);

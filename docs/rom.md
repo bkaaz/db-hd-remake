@@ -695,6 +695,18 @@ a frame forward / back on frames 19–25 and stop at 26 — 112 px. The rest
 is the drawings': `48` is empty, so he is unseen for those 7 frames, and
 from 8 to 36 the drawings carry no hurt box, and no push box while he is
 gone, so blows and the opponent's body pass him by.
+Large Ki Blast (`a9`, `$20:810A`, 5 health) shows the ki blast's pose and
+spawns object `0/04` at 12, 40 px ahead and 56 up; the upward Kamehameha
+(`ab`, `$20:8116`, 10) loads resource `51` on frame 2 and spawns `0/02` at
+18, 24 ahead and 72 up. `0/04` flips its frame every 4th frame of the game
+(`$0F:B81D`), `0/02` steps palette records `0x130` + n every 4 (`$0F:B7D8`);
+both are gone after 80 frames (`$0F:B80F`, `B7CA`) and become `a/02` where
+they hit. Their speeds (3, 0 and 3, −3), `0/04`'s tiles — resource `47` at
+`$6800`, which `a9` does not load — and both palettes (OBJ palette 0 =
+`0x27B161`, the ki blast's) are from the recording (`logs/objects-goku.*`);
+so is `ae`'s `0/08`, normal Goku's hair (owner): frames 0, 1, 2 for 80, 8 and 36, in OBJ palette 6 = `0x27B161`.
+A recording is kept per fighter as `logs/objects-<name>.txt` / `.bin`.
+
 Saiyan Meteor (`ad`, `$20:8988`, health 80 or less) charges to frame 36
 (sound `19` every 8th frame of the game), vanishes at 48 (drawing `48`)
 and closes at 16 px a frame each frame of step `0c` until within 40 px,

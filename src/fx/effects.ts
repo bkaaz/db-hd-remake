@@ -51,14 +51,16 @@ export class Effects {
    * printed over and over. The mirror doubles that for free and, unlike a
    * rotation, is exact — it moves whole pixels, so nothing is resampled.
    */
-  spawn(name: string, x: number, y: number, copiesLeft?: number): void {
+  spawn(name: string, x: number, y: number, copiesLeft?: number, facing?: 1 | -1): void {
     const def = this.defs.get(name);
     if (!def) return;
     const variants = Object.keys(def.animations);
     if (variants.length === 0) return;
     const fx = new Entity(def, this.scale);
     fx.preview(variants[Math.floor(Math.random() * variants.length)]);
-    fx.facing = def.attributes.mirrors && Math.random() < 0.5 ? -1 : 1;
+    // what its spawner's script put out faces the spawner's way, as the
+    // original mirrors a b0's object with the fighter's facing ($01:873F)
+    fx.facing = facing ?? (def.attributes.mirrors && Math.random() < 0.5 ? -1 : 1);
     fx.x = x;
     fx.y = y;
     this.world.addChild(fx.view);

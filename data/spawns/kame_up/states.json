@@ -1,0 +1,18 @@
+{
+  "_comment": "The upward Kamehameha's shot (object 0/02, docs/rom.md). Frames and animation by npm run rom -- export; this file by hand: 3 / -3 px a frame as the recording shows it (logs/objects-goku.txt), airborne with no gravity (attributes.json), entered through fires.state so its launch applies, as vegeta_big_bang is; gone after 80 frames ($0F:B7CA). Type and damage are the objects' hit table's ($3D:9624); where it hits it becomes a/02 (the recording).",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "airborne": true,
+      "launch": [3, -3],
+      "turn": false,
+      "type": "down",
+      "damage": 50,
+      "lasts": 80,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1"
+    }
+  }
+}

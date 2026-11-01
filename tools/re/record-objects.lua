@@ -13,7 +13,10 @@
 --                         u8 slot, then the slot's 16 bytes, VRAM (64 KiB),
 --                         CGRAM (512 B), OAM (544 B) — its tiles and palette
 --
--- Both gitignored. Light enough to run at full speed.
+-- Both gitignored. Light enough to run at full speed. Keep them as
+-- logs/objects-<fighter>.txt / .bin once recorded: that is what `npm run
+-- rom -- export --fighter <name>` reads, and the next recording overwrites
+-- these two.
 
 local DIR = "/Users/bkaaz/workspace/db-hd-remake/logs/"
 local FRAMES = 10800 -- three minutes

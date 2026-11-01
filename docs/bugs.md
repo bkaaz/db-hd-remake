@@ -20,6 +20,16 @@ because a number would only need translating back.
 
 ---
 
+## Vegeta's object recording is gone
+
+`npm run rom -- export --fighter vegeta` · noticed 2026-11-01 · annoying
+
+Goku's object recording (2026-11-01) overwrote `logs/objects-rec.txt`,
+the only copy of Vegeta's. What it gave is exported and committed
+(`data/spawns/vegeta_*`), but exporting his objects again now stops: the
+export reads `logs/objects-vegeta.txt`, which needs a new recording of
+his Big Bang and Final Flash (`npm run rom -- spawns --fighter vegeta`).
+
 ## The export rewrites `goku/sounds.json` with nothing changed
 
 `npm run rom -- export` · noticed 2026-10-31 · cosmetic

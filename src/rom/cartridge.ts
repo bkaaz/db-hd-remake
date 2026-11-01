@@ -129,6 +129,21 @@ export const GOKU: FighterTables = {
       ...([["burst", 0x01], ["burst_s", 0x02], ["burst_m", 0x17], ["burst_l", 0x18]] as const).map(
         ([name, anim]) => ({ name, type: 0xa, anim, steps: BURST_STEPS, loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS }),
       ),
+      // Large Ki Blast's shot (a9): its frame flips every 4th frame of the game
+      // ($0F:B81D), gone after 80 ($0F:B80F); OBJ palette 0 holds the ki
+      // blast's while it is up, and its tiles (+80) are resource 0x47 at $6800,
+      // which nothing a9 runs loads — both from logs/objects-goku.bin (2026-11-01)
+      { name: "large_ki_blast", type: 0x0, anim: 0x04, steps: [4, 4], loop: true, hits: true, palette: 0x27b161,
+        loads: [{ resource: 0x47, vram: 0x6800 }] },
+      // the upward Kamehameha's (ab): one frame; its code steps palette
+      // records 0x130 + n every 4 frames ($0F:B7D8) — the recording's first
+      // frame shows the ki blast's, taken here `?`
+      { name: "kame_up", type: 0x0, anim: 0x02, steps: [4], loop: true, hits: true, palette: 0x27b161 },
+      // Saiyan Meteor's object at frame 306 of ae, at the mover — normal
+      // Goku's hair (owner, 2026-11-01): frames as the recording shows them;
+      // drawn in OBJ palette 6 as its b0 says, which holds 0x27B161, the hair
+      // palette — its dark colours 13–15 are the hair (logs/objects-goku.bin)
+      { name: "goku_hair_normal", type: 0x0, anim: 0x08, steps: [80, 8, 36], loop: false, hits: false, palette: 0x27b161 },
       // what a melee blow leaves where the boxes overlap, landed ($2A:8D45) or
       // blocked ($2A:8DE2): written into the slot as a projectile's explosion
       // is, so its tiles and palette `?`; frozen through the hitstop, then 4

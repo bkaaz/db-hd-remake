@@ -187,7 +187,7 @@ export class Entity {
   /** A `rush` has set this entity down by the opponent this state. */
   private arrived = false;
   /** Effects the animation's steps put out, until the fighters take them. */
-  private readonly stepSpawns: { name: string; x: number; y: number }[] = [];
+  private readonly stepSpawns: { name: string; x: number; y: number; facing: 1 | -1 }[] = [];
   /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
   private landedAt = 0;
   /**
@@ -443,6 +443,12 @@ export class Entity {
   /** The throw the state just entered makes, if it is one. */
   get grab(): GrabDef | undefined {
     return this.sm?.def.grab;
+  }
+
+  /** A bolt whose state's `lasts` has run out. */
+  get expired(): boolean {
+    const lasts = this.sm?.def.lasts;
+    return lasts !== undefined && this.stateFrames >= lasts;
   }
 
   /** The scene the current state plays on the opponent, if it is one. */
@@ -1018,6 +1024,7 @@ export class Entity {
         fd: this.motions.has("fd"),
         rdp: this.motions.has("rdp"),
         hcfu: this.motions.has("hcfu"),
+        fbf: this.motions.has("fbf"),
         holding: input.holding,
       },
       {
@@ -1204,11 +1211,11 @@ export class Entity {
     if (step?.voice !== undefined) this.audio?.playLine(step.voice);
     // placed now, while the facing is the step's; the fighters spawn them
     for (const { name, at: [dx, dy] } of step?.spawns ?? [])
-      this.stepSpawns.push({ name, x: this.x + this.facing * dx * this.scale, y: this.y + dy * this.scale });
+      this.stepSpawns.push({ name, x: this.x + this.facing * dx * this.scale, y: this.y + dy * this.scale, facing: this.facing });
   }
 
   /** The effects the animation's steps put out since the last ask (`Step.spawns`), in world px — taken once. */
-  takeStepSpawns(): { name: string; x: number; y: number }[] {
+  takeStepSpawns(): { name: string; x: number; y: number; facing: 1 | -1 }[] {
     return this.stepSpawns.splice(0);
   }
 }

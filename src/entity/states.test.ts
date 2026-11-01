@@ -71,6 +71,7 @@ const NONE = {
   fd: false,
   rdp: false,
   hcfu: false,
+  fbf: false,
   holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const FWD = { ...NONE, fwd: true };
@@ -1379,6 +1380,16 @@ describe("hitFxOf", () => {
     expect(hitFxOf({ anim: "punch" }, guarded)).toBe("hit_spark");
     // no guard spark named: blocked looks as landed, which keeps goku_old as he was
     expect(hitFxOf({ anim: "punch", hitFx: "spark_2" }, file("hit_spark"), true)).toBe("spark_2");
+  });
+});
+
+describe("lasts", () => {
+  it("refuses a bolt's life that is not a whole number of frames", () => {
+    const f = machine();
+    f.states.idle.lasts = 0;
+    expect(validateStates(f, ANIMS).errors).toContain('state "idle": "lasts" must be a whole number of frames, 1 or more');
+    f.states.idle.lasts = 80;
+    expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 });
 

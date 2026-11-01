@@ -161,7 +161,7 @@ export class Fighters {
       this.shake = fighter.takeShake() ?? this.shake;
       const fx = fighter.takeGroundFx();
       if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);
-      for (const spawn of fighter.takeStepSpawns()) this.impact.effects.spawn(spawn.name, spawn.x, spawn.y);
+      for (const s of fighter.takeStepSpawns()) this.impact.effects.spawn(s.name, s.x, s.y, undefined, s.facing);
     }
   }
 

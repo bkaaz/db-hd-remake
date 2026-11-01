@@ -1,0 +1,17 @@
+{
+  "_comment": "Large Ki Blast's shot (object 0/04, docs/rom.md). Frames and animation by npm run rom -- export; this file by hand: 3 px a frame as the recording shows it (logs/objects-goku.txt), gone after 80 frames ($0F:B80F); type and damage the objects' hit table's ($3D:9624); where it hits it becomes a/02 (the recording).",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "vel": [3, 0],
+      "turn": false,
+      "type": "heavy",
+      "damage": 32,
+      "lasts": 80,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1"
+    }
+  }
+}

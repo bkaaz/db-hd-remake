@@ -153,7 +153,7 @@ export class Projectiles {
       // Off the end of the stage, where `Entity` has clamped it: nothing here
       // is allowed to hang in a corner waiting for someone to walk into it.
       const stranded = bolt.x <= bounds.min || bolt.x >= bounds.max;
-      if (result || stranded) {
+      if (result || stranded || bolt.expired) {
         bolt.view.destroy({ children: true });
         for (const c of companions) this.release(c);
         this.live.splice(i, 1);

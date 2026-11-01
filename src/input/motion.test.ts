@@ -70,6 +70,11 @@ describe("Motions.has", () => {
     expect(play(...half).has("hcfu")).toBe(false);
   });
 
+  it("reads → ← → as fbf, and ← → alone as not", () => {
+    expect(play(at("fwd"), at("back"), at("fwd")).has("fbf")).toBe(true);
+    expect(play(at("back"), at("fwd")).has("fbf")).toBe(false);
+  });
+
   it("does not match the directions in the wrong order", () => {
     expect(play(at("fwd"), at("down")).has("qcf")).toBe(false);
   });

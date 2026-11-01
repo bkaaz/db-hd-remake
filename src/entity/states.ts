@@ -343,6 +343,12 @@ export interface StateDef {
   /** A scene played on the opponent — Saiyan Meteor's (`match/seize.ts`). */
   seize?: SeizeDef;
   /**
+   * For a bolt: the frames it lives before it is simply gone, as an object's
+   * own code ends it — Large Ki Blast's 80 ($0F:B80F). Absent: until it hits
+   * or leaves the stage.
+   */
+  lasts?: number;
+  /**
    * Entering it puts the entity behind the opponent, where a blow armed puts
    * it in front — Side Slash, the 3D move ($0D:D8D5). It lasts until either
    * arms another.
@@ -543,6 +549,7 @@ export interface InputSnapshot {
   fd: boolean;
   rdp: boolean;
   hcfu: boolean;
+  fbf: boolean;
   /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
@@ -649,6 +656,7 @@ export const TRIGGERS = [
   "motion:fd",
   "motion:rdp",
   "motion:hcfu",
+  "motion:fbf",
   "animEnd",
   "stunEnd",
   "spawnEnd",
@@ -757,6 +765,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "motion:hcfu":
       value = input.hcfu;
+      break;
+    case "motion:fbf":
+      value = input.fbf;
       break;
     case "animEnd":
       value = signals.animEnded;
@@ -1206,6 +1217,9 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
 
     if (def.cancelBy !== undefined && (typeof def.cancelBy !== "number" || def.cancelBy < 0)) {
       errors.push(`${where}: "cancelBy" must be a frame of this state, 0 or more`);
+    }
+    if (def.lasts !== undefined && !(Number.isInteger(def.lasts) && def.lasts >= 1)) {
+      errors.push(`${where}: "lasts" must be a whole number of frames, 1 or more`);
     }
     if (def.loopEvery !== undefined && (typeof def.loopEvery !== "number" || def.loopEvery < 1)) {
       errors.push(`${where}: "loopEvery" must be a number of game frames, 1 or more`);
