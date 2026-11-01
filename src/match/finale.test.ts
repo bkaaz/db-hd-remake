@@ -9,6 +9,7 @@ const METEOR: FinaleDef = {
   resume: 454,
   grow: 2,
   max: 112,
+  band: 2,
   white: 60,
   every: 4,
   fx: "burst_s",
@@ -54,10 +55,15 @@ describe("the finale", () => {
     expect(exploded - landed).toBe(20);
   });
 
+  it("opens the band for its frames before the white, so the two shakes do not land together", () => {
+    const { events } = play(ball);
+    expect(events.findIndex((e) => e.white) - events.findIndex((e) => e.exploded)).toBe(2);
+  });
+
   it("holds the white for its frames with a burst every 4th, then is done", () => {
     const { events } = play(ball);
-    const exploded = events.findIndex((e) => e.exploded);
-    expect(events.length - 1 - exploded).toBe(60);
+    const white = events.findIndex((e) => e.white);
+    expect(events.length - 1 - white).toBe(60);
     expect(events.filter((e) => e.burst)).toHaveLength(14);
   });
 });

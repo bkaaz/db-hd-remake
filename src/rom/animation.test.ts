@@ -68,6 +68,13 @@ describe("moveAnim", () => {
     expect(moveAnim(0x92, ops)?.loop).toBe(false);
   });
 
+  it("ends the held opponent's 47 on its script's hold, lying there until he is let go", () => {
+    const ops: ScriptOp[] = [show(8, 0x21), { op: "hold", drawing: 0x22 }, show(4, 0x21), show(4, 0x22)];
+    expect(moveAnim(0x47, ops)?.steps.map((s) => s.frame)).toEqual(["33", "34"]);
+    // any other move plays past its hold, as code lets it go
+    expect(moveAnim(0x0d, ops)?.steps).toHaveLength(4);
+  });
+
   it("ends the dash on the step the original holds, so it stays there", () => {
     const anim = moveAnim(0x0a, [show(8, 0x0d), show(8, 0x0e), show(8, 0x0d)]);
     expect(anim).toEqual({ loop: false, steps: [{ frame: "13", dur: 8 }, { frame: "14", dur: 8 }] });

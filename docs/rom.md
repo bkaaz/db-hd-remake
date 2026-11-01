@@ -361,7 +361,15 @@ over). The explosion object (`$0F:E1A9`) asks for no sound.
 | `06` | `17` @ `06B3` | `004` 0.99 | 0.53 |
 | `29` | `18` @ `1C38` for 7 frames, then @ `0EF3`, ~0.95 s | `021` 0.41 | 0.11 |
 | `2c` | `15` @ `01F4`, ~1.9 s | `023` 0.53 | 0.38 |
-| `2d` / `16` | `18` on two voices, its pitch sliding down and up again (`049F` → `0258` …), looped | none: 0.20 at best | — |
+| `2d`, `2f` | `18` re-keyed on two voices in turn, its pitch sliding (`049F` → `0258` …) | none: 0.20 at best; `024`, `025` by ear (owner) — a render from the chip is not like them either (0.06) `?` | — |
+| `38` | `19` @ `0998` with `15` on two voices, sliding down | none — rendered | — |
+
+A sound no clip holds is **rendered from the chip**: its sample, from the
+RAM dump, played along what each voice did frame by frame — pitch,
+envelope, a fresh note after a silence (`npm run samples -- --render`,
+`src/audio/render.ts`). The effects take voices 5–7 and samples from `10`;
+the music the rest `?`. In Saiyan Meteor's recording `16` is player two's
+`0d` (`0d` + 9), the bounces, not the ball.
 | `07` | `17` @ `0504` | `005` 0.99 | 0.25 |
 | `0c` | `16` @ `02EF` | `010` 0.86 | 0.49 |
 | `0d` | `16` @ `029D` | `011` 0.80 | 0.56 |
@@ -397,8 +405,9 @@ code that plays them, since a clip's number says nothing:
 | `19` | charging ki, every 8 frames (`$0F:A044`) | `charge_1` |
 | `25` | charging the Kamehameha (`aa`'s script) | `charge_2` |
 | `29` | a teleport's script, as he vanishes | `teleport_29` |
-| `2c` | Saiyan Meteor's explosion, every 64th frame while white (`$0F:F2A0`) | `explosion_2c` |
-| `2d` | Saiyan Meteor's ball at the fist (`ae`'s script, 200); `16` as the big one grows | — |
+| `2c` | Saiyan Meteor's explosion, every 64th frame while white (`$0F:F2A0`) | `explosion_2c` (`023`), ours as the ball hits the ground, the ki shot's `blast_1` as it is thrown (owner, by ear) |
+| `2d` / `2f` | Saiyan Meteor's ball at the fist (`ae`'s script, 200) / over the head (306) | `ball_2d` / `ball_2f`: clips `024` / `025` (owner) |
+| `38` | Saiyan Meteor at 386, before the throw | `meteor_38`, rendered |
 | `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | the fighter's `voice_hurt` |
 | `31` | the voice at KO (`$0D:D10C`) | — |
 | `32` | an attack's shout (the ki blast, specials) | the fighter's `voice_shout` |
@@ -727,6 +736,10 @@ and the mover in **`ae`** (`$20:8A29`, picking its frame by `LDY $44 /
 CPY`, the frame a word): frame 1 untouchable (`0x96` = `f0`), holds the
 opponent once at (+40, 0) (`$20:8AE3`), turned to face him, in `30`;
 frame 2 the opponent in `47`, resource `51` loaded at `$6C00` / `$7C00`.
+`47` is a script of flinches whose frame 331 holds drawing `22`, lying,
+until it is let go — the blow at the end; what follows it in the script
+(`21` and `22` in turn every 4) does not play in the scene. Ours ends the
+animation there (`HELD_TO_THE_END`, `src/rom/animation.ts`).
 Nine blows follow, each with a hit spark the script puts out itself
 (`a/00`, spawn counters 0–8) and sounds `07` `09` — none lands: `30` set
 the opponent's field `0x96` to `70` and a new move leaves it. Frame 274:
@@ -739,7 +752,8 @@ runs `$20:8CCE` — the opponent's falls: dust, `0d`, bounces at vy −3 and
 −1.5, the stage shaken — and `$20:8D93`, the ball by field `f1`: it flies,
 holding the move's frame (`DEC $44`), until y 200; the stage shakes and
 the effect grows by 2 a frame to `0x70` (`$30C4`); then `$0F:F1BC`,
-`$0F:F1F3` until it answers, `$37` = `24` and 60 frames of `$0F:F241`;
+`$0F:F1F3` until it answers — two frames, a shake of pattern 1 in them
+before pattern 3's — `$37` = `24` and 60 frames of `$0F:F241`;
 then `$37` = `21`, `22` and the damage — the throw's own `$0F:B321`:
 118 (`0x76`, less defence), move `1b`, vy −4.0. The ball is `b1` kind 2
 (the charging ball's circle): from 200 at 24, −36, its radius by the

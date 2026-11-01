@@ -121,17 +121,18 @@ export class Seizures {
         const from = { x: seizer.x + seizer.facing * dx * seizer.scaleOf, y: seizer.y + dy * seizer.scaleOf };
         s.finale = throwBall(fin, from.x, from.y, held.x, held.floor, seizer.scaleOf);
         seizer.holdClock(true);
+        if (fin.sounds?.thrown) seizer.sound(fin.sounds.thrown);
       } else if (s.finale) {
         const [next, e] = finaleStep(s.finale, fin, held.floor);
         s.finale = next;
         if (e.landed) {
+          if (fin.sounds?.landed) seizer.sound(fin.sounds.landed);
           world.shake(fin.shakes[0]);
           seizer.holdClock(false);
           seizer.jumpTo(fin.resume);
         }
-        if (e.exploded) {
-          if (fin.sound) seizer.sound(fin.sound);
-          world.shake(fin.shakes[1]);
+        if (e.exploded) world.shake(fin.shakes[1]);
+        if (e.white) {
           world.screen("white");
           world.shake(fin.shakes[2]);
         }

@@ -3,6 +3,15 @@
  *
  *   npm run samples                 logs/spc.bin (tools/re/dump-spc.lua) and the
  *                                   pitches in logs/dsp.txt (tools/re/log-dsp.lua)
+ *   npm run samples -- --render 38 614 120 meteor_38 [15]
+ *                                   the sound asked for on frame 614 of
+ *                                   logs/dsp.txt made again from the chip's own
+ *                                   sample, its voices' pitch and envelope
+ *                                   frame by frame, 120 frames at most, into
+ *                                   assets/audio/sfx/meteor_38.wav — for a sound
+ *                                   no clip of the capture holds; a last
+ *                                   sample number keeps to its voices, when
+ *                                   another sound starts beside it
  *   npm run samples -- --sweep 14 5 186
  *                                   sample 14 as voice 5 played it from frame 186
  *                                   of logs/dsp.txt, its pitch frame by frame —
@@ -19,6 +28,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { decodeBrr, NATIVE_RATE, playAt, sampleEntry } from "../src/audio/brr.ts";
 import { likeness, resample } from "../src/audio/compare.ts";
+import { loopIndex, renderVoices, voicesFrom } from "../src/audio/render.ts";
 import { decodeWav, encodeWav } from "../src/audio/wav.ts";
 
 const SPC = "logs/spc.bin";
@@ -68,6 +78,33 @@ function bestOf(sound: Float32Array): string {
     .slice(0, 3)
     .map((b) => `${b.name} ${b.score.toFixed(2)}`)
     .join(", ");
+}
+
+const render = process.argv.indexOf("--render");
+if (render >= 0) {
+  const [id, from, frames, name, only] = process.argv.slice(render + 1);
+  const heard = voicesFrom(readFileSync(DSP_LOG, "utf8"), Number(from), Number(frames), 10).filter(
+    (h) => only === undefined || h.src === parseInt(only, 16),
+  );
+  if (heard.length === 0) {
+    console.error(`no effect voice starts within 10 frames of frame ${from}`);
+    process.exit(1);
+  }
+  const voices = heard.map((h) => {
+    const { start, loop } = sampleEntry(ram, dir, h.src);
+    const sample = decodeBrr(ram, start);
+    return { sample, loopAt: loopIndex(ram, start, loop, sample.length), frames: h.frames };
+  });
+  const out = `${CLIPS}/${name}.wav`;
+  const sound = renderVoices(voices, NATIVE_RATE);
+  // the voices' own volumes are not in the log: brought to the capture's 0.9
+  // peak, and the bank's gain says how loud
+  const peak = sound.reduce((m, s) => Math.max(m, Math.abs(s)), 0) || 1;
+  for (let i = 0; i < sound.length; i++) sound[i] *= 0.9 / peak;
+  writeFileSync(out, encodeWav({ sampleRate: NATIVE_RATE, samples: sound }));
+  const said = heard.map((h) => `v${h.voice} sample ${hex(h.src)} ×${h.frames.length}`).join(", ");
+  console.log(`sound ${id} from frame ${from}: ${said} → ${out} (${(sound.length / NATIVE_RATE).toFixed(2)} s)`);
+  process.exit(0);
 }
 
 const sweep = process.argv.indexOf("--sweep");

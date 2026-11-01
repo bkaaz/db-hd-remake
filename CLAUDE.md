@@ -290,6 +290,9 @@ npm run rom -- stage 0
                   # no id every stage and rom-stages.png, all on one sheet
 npm run samples   # the sound chip's samples (logs/spc.bin) against our
                   # clips, best three each — docs/rom.md, The sounds
+npm run samples -- --render 38 614 120 meteor_38
+                  # a sound no clip holds, made again from the chip's
+                  # sample along a DSP recording, into assets/audio/sfx/
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md

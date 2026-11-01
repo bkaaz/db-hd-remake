@@ -20,6 +20,18 @@ because a number would only need translating back.
 
 ---
 
+## A render from the chip is not like the ball's sound
+
+`npm run samples -- --render` · noticed 2026-11-01 · annoying
+
+Saiyan Meteor's ball (2d, 2f) rendered from logs/dsp-meteor.txt — sample
+18 on voices 6 and 7, their pitch frame by frame — is like no clip
+(0.06 against 024 / 025, which the owner hears as it). A swing, 07,
+rendered the same way, is like its clip (0.79). Pitch changing faster
+than a frame, or a voice the log does not show, would explain it `?`.
+The ball plays the owner's clips; meteor_38 is a render and may be off
+the same way.
+
 ## Vegeta's object recording is gone
 
 `npm run rom -- export --fighter vegeta` · noticed 2026-11-01 · annoying

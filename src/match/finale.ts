@@ -24,18 +24,28 @@ export interface FinaleDef {
   /** The explosion's growth a frame and its full radius ($20:8E6C: 2, 0x70). */
   grow: number;
   max: number;
+  /**
+   * Frames between the explosion and the white: the band along the floor
+   * opening to the screen's edges ($0F:F1BC, then $0F:F1F3 until it answers
+   * — 2). Not drawn yet.
+   */
+  band: number;
   /** Frames the arena is held white before the blow ($20:8EB5: 60). */
   white: number;
   /** A burst somewhere on the screen every `every` frames of the white ($0F:F241). */
   every: number;
   fx: string;
-  /** Played as the white begins — the original asks for it every 64th frame of the game while white ($0F:F2A0). */
-  sound?: string;
+  /**
+   * Played as the ball is thrown and as it hits the floor (owner, by ear:
+   * the ki shot's, then clip 023). The original asks for 2c every 64th frame
+   * while white ($0F:F2A0); what it plays as the ball leaves, is not read.
+   */
+  sounds?: { thrown?: string; landed?: string };
   /** The stage's shakes: as it lands, as the explosion is done, as the white begins. */
   shakes: [ShakeDef, ShakeDef, ShakeDef];
 }
 
-export type FinalePhase = "flying" | "exploding" | "white" | "done";
+export type FinalePhase = "flying" | "exploding" | "band" | "white" | "done";
 
 export interface Finale {
   phase: FinalePhase;
@@ -44,7 +54,7 @@ export interface Finale {
   vx: number;
   vy: number;
   radius: number;
-  /** Frames of white left. */
+  /** Frames left of the band, then of the white. */
   left: number;
 }
 
@@ -54,13 +64,15 @@ export function throwBall(def: FinaleDef, x: number, y: number, tx: number, ty: 
   const dy = ty - y;
   const d = Math.hypot(dx, dy) || 1;
   const speed = def.speed * scale;
-  return { phase: "flying", x, y, vx: (dx / d) * speed, vy: (dy / d) * speed, radius: def.radius * scale, left: def.white };
+  return { phase: "flying", x, y, vx: (dx / d) * speed, vy: (dy / d) * speed, radius: def.radius * scale, left: def.band };
 }
 
 /** What a frame of the finale did, beside where it now is. */
 export interface FinaleEvents {
   landed?: boolean;
   exploded?: boolean;
+  /** The white begins. */
+  white?: boolean;
   burst?: boolean;
   done?: boolean;
 }
@@ -75,7 +87,11 @@ export function finaleStep(f: Finale, def: FinaleDef, floor: number): [Finale, F
   if (f.phase === "exploding") {
     const radius = Math.min(f.radius + def.grow, def.max);
     if (radius < def.max) return [{ ...f, radius }, {}];
-    return [{ ...f, radius: 0, phase: "white" }, { exploded: true }];
+    return [{ ...f, radius: 0, phase: "band" }, { exploded: true }];
+  }
+  if (f.phase === "band") {
+    if (f.left > 1) return [{ ...f, left: f.left - 1 }, {}];
+    return [{ ...f, phase: "white", left: def.white }, { white: true }];
   }
   if (f.phase === "white") {
     const left = f.left - 1;

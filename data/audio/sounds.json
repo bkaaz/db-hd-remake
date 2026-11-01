@@ -29,11 +29,32 @@
     "rom": 41
   },
   "explosion_2c": {
-    "label": "Saiyan Meteor's explosion — sound 2c, sample 15 at 01F4 for about 1.9 s, clip 023 by comparison (0.53, along the recording 0.50; the next 0.38)",
+    "label": "Saiyan Meteor's explosion as the ball hits the ground — sound 2c, sample 15 at 01F4 for about 1.9 s, clip 023 by comparison (0.53, along the recording 0.50; the next 0.38) and by ear (owner)",
     "gain": 0.4,
     "vary": 0,
     "file": "023.wav",
     "rom": 44
+  },
+  "ball_2d": {
+    "label": "Saiyan Meteor's ball charging at the fist — sound 2d: clip 024 (owner, by ear; the comparison found no clip like it)",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "024.wav",
+    "rom": 45
+  },
+  "ball_2f": {
+    "label": "Saiyan Meteor's big ball over the head — sound 2f: clip 025 (owner, by ear)",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "025.wav",
+    "rom": 47
+  },
+  "meteor_38": {
+    "label": "Saiyan Meteor before the ball is thrown — sound 38: sample 19 and sample 15 on two voices, sliding down; rendered from the chip (--render 38 614 120 meteor_38)",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "meteor_38.wav",
+    "rom": 56
   },
   "hit_09": {
     "label": "a melee blow landing — sound 09, sample 14 sliding from 0785 to 0613, clip 007 by comparison along the slide (0.41, the next 0.17)",

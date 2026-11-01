@@ -23,6 +23,8 @@ import type { ScriptOp } from "./script";
  */
 const REPEATS = new Set([0x00, 0x01, 0x02, 0x0e, 0x10, 0x12, ...range(0x26, 0x3a)]);
 const HOLDS_STEP: Record<number, number> = { 0x0a: 1, 0x0b: 1 };
+/** Moves that stay on their script's `hold` until they are ended — the held opponent's `47`. */
+const HELD_TO_THE_END = new Set([0x47]);
 
 export function loops(move: number): boolean {
   return REPEATS.has(move);
@@ -90,10 +92,26 @@ export function toAnim(ops: ScriptOp[], boxesOf: (drawing: number) => Box[] = ()
   return { loop: false, steps };
 }
 
+/** The step of the first `hold` in a script, counted as `toAnim` counts its steps; null with none. */
+function heldStep(ops: ScriptOp[]): number | null {
+  let step = 0;
+  for (const op of ops) {
+    if (op.op === "hold") return step;
+    if (op.op === "show" && op.frames > 0) step++;
+  }
+  return null;
+}
+
 /** The animation for a move id: its script's steps, repeating or held as the original does. */
 export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: number) => Box[], spawnName?: SpawnName): Anim | null {
   const anim = toAnim(ops, boxesOf, spawnName);
   if (!anim) return null;
+  // a step the script holds until something outside it lets go: for the
+  // moves listed, nothing does before they end — m47's 22, the held
+  // opponent lying until Saiyan Meteor's blow ($20:8F07). The others with a
+  // hold (a block's reel, m0d) are let go by code in play, and keep it all
+  const held = HELD_TO_THE_END.has(move) ? heldStep(ops) : null;
+  if (held !== null) return { loop: false, steps: anim.steps.slice(0, held + 1) };
   const hold = HOLDS_STEP[move];
   if (hold !== undefined) return { loop: false, steps: anim.steps.slice(0, hold + 1) };
   return { ...anim, loop: loops(move) };
