@@ -218,13 +218,7 @@ still differs from the original:
    reaction: byte 2). Needs the other arenas, their parts and the flight;
    never the way up into the fight above the arena (`combat.md`, Where the
    fight happens).
-5. **The original's melee hit sparks, the rest** (owner, 2026-10-31) —
-   `goku` leaves `hit_spark` / `guard_spark` (`rom.md`, What a melee blow
-   leaves; where they stand is ours, ADR 0044); left: objects are drawn in
-   front of the fighters (`rom.md`, Which fighter is drawn over the other),
-   ours behind; their tiles and palette are an assumption until a snapshot
-   of a hit.
-6. **Player two's colours in a mirror match** — the same fighter on both
+5. **Player two's colours in a mirror match** — the same fighter on both
    sides takes the next palette (`rom.md`, A stage id); today both Gokus
    look alike.
 
@@ -517,6 +511,9 @@ queue.
   held crouch — the original's own (`rom.md`, a handler starting a move
   part-way), seen in the emulator too. Ours could return straight to the held
   crouch.
+- **The sparks' tiles and palette** — `hit_spark` and `guard_spark` are
+  drawn with the explosions' (`rom.md`, What a melee blow leaves), an
+  assumption a VRAM / OAM snapshot taken at a hit would settle.
 
 - **What follows the hit types** (`combat.md`, *Open*): a `stun` type, a hit
   type for ki blasts — the projectile and how it is taken — and whatever
