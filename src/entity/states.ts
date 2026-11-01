@@ -305,7 +305,7 @@ export interface StateDef {
   hitFlash?: number;
   /**
    * What this state's blow turns into where it lands — an effect put at the
-   * middle of the boxes' overlap ($2A:8D63) in place of its `hitFx`: the
+   * middle of the boxes' overlap in place of its `hitFx` (ADR 0044): the
    * original's projectiles, each rewritten into its explosion ($2A:8E31).
    */
   burstsInto?: string;

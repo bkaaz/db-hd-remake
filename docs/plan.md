@@ -220,10 +220,10 @@ still differs from the original:
    fight happens).
 5. **The original's melee hit sparks, the rest** (owner, 2026-10-31) —
    `goku` leaves `hit_spark` / `guard_spark` (`rom.md`, What a melee blow
-   leaves); left: they stand at the middle of the boxes' overlap, not at
-   `impactPoint` (`src/match/blow.ts`); objects are drawn in front of the
-   fighters (`rom.md`, Which fighter is drawn over the other), ours behind;
-   their tiles and palette are an assumption until a snapshot of a hit.
+   leaves; where they stand is ours, ADR 0044); left: objects are drawn in
+   front of the fighters (`rom.md`, Which fighter is drawn over the other),
+   ours behind; their tiles and palette are an assumption until a snapshot
+   of a hit.
 6. **Player two's colours in a mirror match** — the same fighter on both
    sides takes the next palette (`rom.md`, A stage id); today both Gokus
    look alike.

@@ -49,8 +49,9 @@ field at the same offset. Code reaches a field as `$46,X` with X = `$3100`. The
 fields known so far, with what is still a guess marked: `FIGHTER_FIELDS` in
 `src/rom/cartridge.ts` (`npm run dis` names them in its output).
 
-Outside the block: `0x80–0x87` and `0x90–0x97` of I-RAM are rectangles (x1,
-x2, y1, y2, 16-bit) that follow the drawing `?`; `0x0b2` counts hitstop down.
+Outside the block: `0x80`–`0x9f` of I-RAM are four rectangles (x1, x2, y1,
+y2, 16-bit), two per fighter, that a blow is tested with (Where a blow's
+object is put, below); `0x0b2` counts hitstop down.
 
 ## ROM
 
@@ -227,8 +228,8 @@ is out — the emulator drops frames (f2730 of the Big Bang's) — so its
 durations are longer than the code's.
 `npm run rom -- object a 15 32@6c00 80` draws an object's frames to look at.
 
-**What a melee blow leaves** — a spark at the middle of the boxes' overlap
-(`$2A:8D63`), in a free object slot (`$0D:D905`, carry set when none):
+**What a melee blow leaves** — a spark where the boxes met (`$2A:8D63`,
+below), in a free object slot (`$0D:D905`, carry set when none):
 landed, `a/00` (`$2A:8150` → `$2A:8D45`), which when no slot is free takes
 one from the dust and the like (`$0D:D932`); blocked, `a/06` (`$2A:83BA`,
 mirrored at `$2A:8465` → `$2A:8DE2`), when `$2A:84B4` says it was blocked:
@@ -241,10 +242,19 @@ palette are taken to be the explosions' `?`. Each stands on frame 0 while
 from `$2A:868A`, after setting both fighters' field `0x96` to `f8` (a clash
 `?`), and `$2A:9A32` (not read). Exported as `hit_spark` and `guard_spark`.
 
+**Where a blow's object is put** (`$2A:8D63`): the mean of the four x and
+the four y edges of the two rectangles that touched, `/ 4` rounded down —
+halfway between their centres, not inside the overlap. Each fighter has two
+rectangles (`$2A:87DE` fills player one's `$80` / `$90`, `$2A:886A` player
+two's `$88` / `$98`, from the block's `0xa0`… at an offset chosen by the
+caller, `0x80` there meaning none), and `$2A:89D0` tries the pairs `80/88`,
+`90/98`, `80/98`, `90/88`, leaving the first that touches in `$DC`. Ours
+are put elsewhere (ADR 0044).
+
 **What a projectile becomes when it hits** (`$2A:8E31`): by the hitting
 object's type (`$92 & 0F` of the defender, table `$2A:8E4B`), then its
 animation (`$93`, type `a`'s table `$2A:98EB`), the slot is killed and
-rewritten as an explosion at the middle of the boxes' overlap (`$2A:8D63`):
+rewritten as an explosion where the boxes met (`$2A:8D63`, above):
 the ki blast `a/03` → `a/01`; the Kamehameha's heads `a/13` / `14` / `15` →
 `a/02` / `17` / `18`, and those set the defender burning (`$2A:99CC`: field
 `0x26` bit 7, when `0x25` has bit 3). `a/18` and `a/17` copy themselves on

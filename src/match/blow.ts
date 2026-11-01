@@ -90,9 +90,9 @@ export function landBlow(
     });
     dealt = defender.hurtBy(attacker.attackDamage);
   }
-  // A projectile that bursts does so at the middle of the overlap, as the
-  // original's are rewritten in place; a spark belongs at the deepest point of
-  // the blow — see impactPoint.
+  // A projectile that bursts does so at the middle of the overlap, a spark at
+  // the deepest point of the blow — see impactPoint. Neither is where the
+  // cartridge puts them (ADR 0044).
   const burst = attacker.attackBurst;
   if (burst) effects.spawn(burst, where.x + where.w / 2, where.y + where.h / 2);
   else {
