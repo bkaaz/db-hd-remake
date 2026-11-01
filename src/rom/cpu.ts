@@ -28,7 +28,9 @@ export type Test =
   /** `BIT #mask`: Z when none of its bits are set. */
   | { op: "bit"; mask: number }
   /** `CMP $field,X`. */
-  | { op: "field"; field: number };
+  | { op: "field"; field: number }
+  /** `CPY #value`: about Y, not A — the frame when Y was loaded from it (`$20:8A2D`). */
+  | { op: "cmpY"; value: number };
 
 export interface Registers {
   a: number | null;
@@ -98,6 +100,7 @@ export function step(ins: Instruction, cpu: Cpu): Cpu {
   }
 
   if (mnemonic === "CMP" && mode === "im") return { ...next, test: { op: "cmp", value: operand } };
+  if (mnemonic === "CPY" && mode === "ix") return { ...next, test: { op: "cmpY", value: operand } };
   if (mnemonic === "CMP" && mode === "dx") return { ...next, test: { op: "field", field: operand } };
   if (mnemonic === "BIT" && mode === "im") return { ...next, test: { op: "bit", mask: operand } };
   const field = mode === "dx" ? cpu.x : mode === "ay" ? (cpu.yWho ?? undefined) : undefined;

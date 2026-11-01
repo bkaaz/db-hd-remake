@@ -26,8 +26,8 @@ export interface PortReport {
    * every frame, or once the script has run out (frame 0).
    */
   anyFrame: HandlerFact[];
-  /** Where the handler holds an opponent (`$0D:DE9A`), by the opponent's character: (dx, dy) per step of the move's script. */
-  holds: { against: string; at: [number, number][] }[];
+  /** Where the handler holds an opponent (`$0D:DE9A`), by the opponent's character: (dx, dy) on each step it holds on. */
+  holds: { against: string; steps: number[]; at: [number, number][] }[];
   /** The opponent thrown (`$0F:B321`), on the move's frame the handler does it. */
   launch?: NonNullable<HandlerFact["launch"]> & { frame: number };
   /** For each command that picks it: what it needs, what it costs, what it does to the opponent. */
@@ -136,9 +136,10 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     commands: commands.map((c) => ({ needs: describeConditions(c.conditions, context), cost: c.cost, opponentMove: c.opponentMove })),
     anyFrame: facts.filter((f) => !f.frame && f.step === undefined),
     ...launchOf(facts),
-    holds: [...new Set(facts.flatMap((f) => (f.hold === undefined ? [] : [f.hold])))].flatMap((table) =>
-      ROSTER.map((against, c) => ({ against, at: holdOffsets(rom, table, c, stepStarts(ops).length) })),
-    ),
+    holds: [...new Set(facts.flatMap((f) => (f.hold === undefined ? [] : [f.hold])))].flatMap((table) => {
+      const steps = holdSteps(facts.filter((f) => f.hold === table), stepStarts(ops));
+      return ROSTER.map((against, c) => ({ against, steps, at: holdOffsets(rom, table, c, steps) }));
+    }),
     handler,
     parts,
   };
@@ -157,4 +158,16 @@ function launchOf(facts: HandlerFact[]): { launch?: PortReport["launch"] } {
 
 function blowOf(r: HitRecord): { type: string; damage: number; stun: number } {
   return { type: groundReaction(r), damage: r.damage, stun: r.stun };
+}
+
+/**
+ * The steps of the script a hold is done on: the step holding a frame the
+ * handler pins it to, every step from a bound on, or all of them.
+ */
+function holdSteps(facts: readonly HandlerFact[], starts: readonly number[]): number[] {
+  const stepOf = (frame: number) => starts.filter((start) => start <= frame).length - 1;
+  const all = starts.map((_, s) => s);
+  if (facts.some((f) => f.frame === null && f.from === undefined)) return all;
+  const steps = new Set(facts.flatMap((f) => (f.frame !== null ? [stepOf(f.frame)] : all.filter((s) => s >= stepOf(f.from!)))));
+  return [...steps].sort((a, b) => a - b);
 }

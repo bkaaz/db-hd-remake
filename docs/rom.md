@@ -695,6 +695,22 @@ a frame forward / back on frames 19–25 and stop at 26 — 112 px. The rest
 is the drawings': `48` is empty, so he is unseen for those 7 frames, and
 from 8 to 36 the drawings carry no hurt box, and no push box while he is
 gone, so blows and the opponent's body pass him by.
+Saiyan Meteor (`ad`, `$20:8988`, health 80 or less) charges to frame 36
+(sound `19` every 8th frame of the game), vanishes at 48 (drawing `48`)
+and closes at 16 px a frame each frame of step `0c` until within 40 px,
+then jumps to frame 128 and stops; its blow at 146 does nothing itself.
+Connecting on step `11` puts the opponent in `30`, stopped and behind,
+and the mover in **`ae`** (`$20:8A29`, picking its frame by `LDY $44 /
+CPY`, the frame a word): frame 1 untouchable (`0x96` = `f0`), holds the
+opponent once at (+40, 0) (`$20:8AE3`), turned to face him, in `30`;
+frame 2 the opponent in `47`, resource `51` loaded at `$6C00` / `$7C00`.
+Nine blows follow, each with a hit spark from the script (`a/00`, spawn
+counters 0–8) and sounds `07` `09`, all of damage 0 in the hit table —
+where the damage comes from is not read `?`. Frame 274: up at vy −7,
+gravity off, the opponent says `30` and is sent up (vy high byte `f8`),
+burning, hitstop `0x8a`; frame 306 spawns object `00/08`; 590 back to a
+jump's fall (move `05`, frame 21, vx 2.0 back). Every frame also runs
+`$20:8CCE`, `8D93`, `8F22`, `8F5E`, `8F8D` — not read.
 Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
 70 — `goku`'s `quad_kick` states copy it as `velAt`.

@@ -15,6 +15,15 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
     expect(thrown.commands[0].needs.at(-1)).toMatch(/within 42 px/);
   });
 
+  it("reads a handler that picks its frame with CPY, and holds only on the steps it holds on", () => {
+    // Saiyan Meteor's follow-up: LDY $44,X / CPY #1 — the hold is frame 1's, once
+    const meteor = portReport(rom, GOKU, 0xae);
+    expect(meteor.anyFrame.some((f) => f.hold !== undefined)).toBe(false);
+    expect(meteor.holds[0]).toMatchObject({ against: "goku", steps: [0], at: [[40, 0]] });
+    // the throw holds every frame: all three steps, as before
+    expect(portReport(rom, GOKU, 0x9d).holds[0].at).toEqual([[24, 0], [22, 0], [-32, -32]]);
+  });
+
   it("picks the Kamehameha's head by the spawn counter the handler sets", () => {
     const kame = portReport(rom, GOKU, 0xaa);
     const heads = kame.parts.flatMap((p) => p.spawns).filter((s) => s.blow.damage > 0);

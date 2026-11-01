@@ -45,6 +45,10 @@ export function ways(
   if (asked && mnemonic === "BCS") return split(k, asked.set, asked.clear);
   if (asked && mnemonic === "BCC") return split(k, asked.clear, asked.set);
   const { test, source } = cpu;
+  if (test?.op === "cmpY") {
+    const y = cpu.regs.yFrom;
+    return y && y.plus === 0 && y.field === frames ? onFrame(mnemonic, test.value, k) : [k, k];
+  }
   if (!test || test.op === "field" || test.op === "bit") {
     const said = source && test ? sayTest(mnemonic, source, cpu.mask, test, names) : null;
     return said ? split(k, ...said) : [k, k];

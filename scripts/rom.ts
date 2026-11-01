@@ -150,7 +150,7 @@ if (command === "tiles") {
     if (c.opponentMove !== null) console.log(`puts the opponent in move ${hex(c.opponentMove)}`);
   }
   for (const f of r.anyFrame) console.log(`handler: ${describeFact(f)}`);
-  for (const h of r.holds) console.log(`  held against ${h.against}: ${h.at.map(([dx, dy]) => `(${dx}, ${dy})`).join(" ")} by step`);
+  for (const h of r.holds) console.log(`  held against ${h.against}: ${h.at.map(([dx, dy], i) => `${h.steps[i]}: (${dx}, ${dy})`).join(", ")} (step: offset)`);
   console.log("frames count from each part's start; sounds are the cartridge's ids, not clips");
   for (const p of r.parts) {
     const blow = p.blow ? `blow at ${p.blow.frame}: ${p.blow.type}, damage ${p.blow.damage}, stun ${p.blow.stun}` : "no blow";
