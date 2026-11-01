@@ -30,6 +30,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackRelaunch: false,
     attackHitstun: 12,
     attackFx: "spark_1",
+    attackGuardFx: "guard_spark",
     attackFlash: 0,
     attackBurst: undefined,
     attackBurns: false,
@@ -99,6 +100,15 @@ describe("landBlow", () => {
     // both boxes cover 0..10 x -10..0 at the origin: the middle is (5, -5)
     expect(ctx.effects.spawn).toHaveBeenCalledWith("burst_l", 5, -5);
     expect(ctx.effects.spawn).toHaveBeenCalledTimes(1);
+  });
+
+  it("leaves the guard spark for a blocked blow and the hit spark for a landed one", () => {
+    const landed = context();
+    landBlow(body("hit"), body("hurt"), landed);
+    expect(landed.effects.spawn).toHaveBeenCalledWith("spark_1", expect.any(Number), expect.any(Number));
+    const blocked = context();
+    landBlow(body("hit"), body("hurt", { guarding: true }), blocked);
+    expect(blocked.effects.spawn).toHaveBeenCalledWith("guard_spark", expect.any(Number), expect.any(Number));
   });
 
   it("connects when a hit box reaches a hurt box", () => {

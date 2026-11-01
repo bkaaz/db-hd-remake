@@ -218,11 +218,12 @@ still differs from the original:
    reaction: byte 2). Needs the other arenas, their parts and the flight;
    never the way up into the fight above the arena (`combat.md`, Where the
    fight happens).
-5. **The original's melee hit sparks** (owner, 2026-10-31) — every blow
-   of `goku` shows our generated spark (`npm run fx`); the cartridge's own
-   is to be found (not at the hit sound, `$0D:D1BC`; perhaps the overlap's
-   explosion, `$2A:8D63`), exported as a spawn and used by `goku`'s
-   states. Ours stay, for `goku_old`.
+5. **The original's melee hit sparks, the rest** (owner, 2026-10-31) —
+   `goku` leaves `hit_spark` / `guard_spark` (`rom.md`, What a melee blow
+   leaves); left: they stand at the middle of the boxes' overlap, not at
+   `impactPoint` (`src/match/blow.ts`); objects are drawn in front of the
+   fighters (`rom.md`, Which fighter is drawn over the other), ours behind;
+   their tiles and palette are an assumption until a snapshot of a hit.
 6. **Player two's colours in a mirror match** — the same fighter on both
    sides takes the next palette (`rom.md`, A stage id); today both Gokus
    look alike.

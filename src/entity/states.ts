@@ -462,6 +462,17 @@ export interface StatesFile {
    * of contact. Absent means this fighter cannot block at all.
    */
   onGuard?: string;
+  /**
+   * The spark this entity's blows leave when their state names none — the
+   * cartridge's fighters all leave the original's, `goku_old` ours. Absent:
+   * `DEFAULT_HIT_FX`.
+   */
+  hitFx?: string;
+  /**
+   * The spark any of its blows leaves when blocked — the original has one of
+   * each. Absent: a blocked blow leaves the spark it would have landed with.
+   */
+  guardFx?: string;
   states: Record<string, StateDef>;
 }
 
@@ -941,18 +952,26 @@ export interface AnimInfo {
   steps?: readonly { boxes?: readonly { type: string }[] }[];
 }
 
-/** The spark a blow leaves when its state does not name one. */
+/** The spark a blow leaves when neither its state nor its file names one. */
 export const DEFAULT_HIT_FX = "spark_1";
+
+/**
+ * The spark a blow of this state leaves: its own, else the file's, else
+ * `DEFAULT_HIT_FX` — and blocked, the file's `guardFx` before any of them.
+ */
+export function hitFxOf(def: StateDef | undefined, file: StatesFile | null | undefined, blocked = false): string {
+  return (blocked ? file?.guardFx : undefined) ?? def?.hitFx ?? file?.hitFx ?? DEFAULT_HIT_FX;
+}
 
 /**
  * Every spawn an entity's states can ask for, so the game loads exactly those.
  *
- * `DEFAULT_HIT_FX` is always included: a state that names no `hitFx` still
- * leaves a spark, and an attack that forgot to say which one is the normal case
- * rather than the exception.
+ * The file's default sparks, landed and blocked, are always included: a state
+ * that names no `hitFx` still leaves one, and an attack that forgot to say which one is the normal
+ * case rather than the exception.
  */
 export function effectsNamed(states: StatesFile | null | undefined): string[] {
-  const names = new Set<string>([DEFAULT_HIT_FX]);
+  const names = new Set<string>([hitFxOf(undefined, states), hitFxOf(undefined, states, true)]);
   for (const def of Object.values(states?.states ?? {})) {
     if (def.hitFx) names.add(def.hitFx);
     if (def.burstsInto) names.add(def.burstsInto);

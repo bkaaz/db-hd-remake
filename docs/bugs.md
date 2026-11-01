@@ -20,6 +20,14 @@ because a number would only need translating back.
 
 ---
 
+## The export rewrites `goku/sounds.json` with nothing changed
+
+`npm run rom -- export` · noticed 2026-10-31 · cosmetic
+
+The committed `_comment` spells its dashes `—`; the export writes them
+as `—`, so every export leaves the file modified. Whichever spelling is
+kept, the two have to agree.
+
 ## A charge does not take over a punch begun a frame before
 
 `goku`, A then S a frame apart · noticed 2026-10-30 · annoying

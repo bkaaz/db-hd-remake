@@ -7,6 +7,7 @@ import { withHitTypes } from "../combat/hitTypes";
 import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
+  hitFxOf,
   spawnsNamed,
   groundSpeed,
   guardStateFor,
@@ -1304,6 +1305,35 @@ describe("effectsNamed", () => {
 
   it("survives an entity with no states at all", () => {
     expect(effectsNamed(null)).toEqual(["spark_1"]);
+  });
+
+  it("takes the file's own default in place of the engine's", () => {
+    const states = { ...file({ idle: { anim: "idle" } }), hitFx: "hit_spark" };
+    expect(effectsNamed(states)).toEqual(["hit_spark"]);
+  });
+
+  it("loads the file's guard spark too", () => {
+    const states = { ...file({ idle: { anim: "idle" } }), hitFx: "hit_spark", guardFx: "guard_spark" };
+    expect(effectsNamed(states).sort()).toEqual(["guard_spark", "hit_spark"]);
+  });
+});
+
+describe("hitFxOf", () => {
+  const file = (hitFx?: string): StatesFile => ({ initial: "idle", hitFx, states: { idle: { anim: "idle" } } });
+
+  it("prefers the state's spark, then the file's, then the engine's", () => {
+    expect(hitFxOf({ anim: "punch", hitFx: "spark_2" }, file("hit_spark"))).toBe("spark_2");
+    expect(hitFxOf({ anim: "punch" }, file("hit_spark"))).toBe("hit_spark");
+    expect(hitFxOf({ anim: "punch" }, file())).toBe("spark_1");
+    expect(hitFxOf(undefined, null)).toBe("spark_1");
+  });
+
+  it("takes the file's guard spark for a blocked blow, over the state's own", () => {
+    const guarded = { ...file("hit_spark"), guardFx: "guard_spark" };
+    expect(hitFxOf({ anim: "punch", hitFx: "spark_2" }, guarded, true)).toBe("guard_spark");
+    expect(hitFxOf({ anim: "punch" }, guarded)).toBe("hit_spark");
+    // no guard spark named: blocked looks as landed, which keeps goku_old as he was
+    expect(hitFxOf({ anim: "punch", hitFx: "spark_2" }, file("hit_spark"), true)).toBe("spark_2");
   });
 });
 

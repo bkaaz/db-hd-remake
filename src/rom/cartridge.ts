@@ -129,6 +129,12 @@ export const GOKU: FighterTables = {
       ...([["burst", 0x01], ["burst_s", 0x02], ["burst_m", 0x17], ["burst_l", 0x18]] as const).map(
         ([name, anim]) => ({ name, type: 0xa, anim, steps: BURST_STEPS, loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS }),
       ),
+      // what a melee blow leaves where the boxes overlap, landed ($2A:8D45) or
+      // blocked ($2A:8DE2): written into the slot as a projectile's explosion
+      // is, so its tiles and palette `?`; frozen through the hitstop, then 4
+      // frames a step ($0F:E13B) / 3 ($0F:E520)
+      { name: "hit_spark", type: 0xa, anim: 0x00, steps: [4, 4, 4, 4], loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS },
+      { name: "guard_spark", type: 0xa, anim: 0x06, steps: [3, 3, 3, 3, 3], loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS },
       // the dust a body raises hitting the floor ($0D:DE6C, from the knockdown
       // handler): 6 frames a step ($0F:E559), in the explosions' slot and tiles
       { name: "dust", type: 0xa, anim: 0x0d, steps: [6, 6, 6, 6], loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS },

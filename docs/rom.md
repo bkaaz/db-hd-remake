@@ -227,6 +227,20 @@ is out — the emulator drops frames (f2730 of the Big Bang's) — so its
 durations are longer than the code's.
 `npm run rom -- object a 15 32@6c00 80` draws an object's frames to look at.
 
+**What a melee blow leaves** — a spark at the middle of the boxes' overlap
+(`$2A:8D63`), in a free object slot (`$0D:D905`, carry set when none):
+landed, `a/00` (`$2A:8150` → `$2A:8D45`), which when no slot is free takes
+one from the dust and the like (`$0D:D932`); blocked, `a/06` (`$2A:83BA`,
+mirrored at `$2A:8465` → `$2A:8DE2`), when `$2A:84B4` says it was blocked:
+by the defender's move (below `0f`, `0f`–`10`, above) and a bit of the
+data at `$0D:D7E5`'s pointer `?`. Both are
+written into the slot as a projectile's explosion is, so their tiles and
+palette are taken to be the explosions' `?`. Each stands on frame 0 while
+`$30B2` (the hitstop) runs, then steps: `a/00` frames 0–3, 4 frames each
+(`$0F:E13B`); `a/06` frames 0–4, 3 each (`$0F:E520`). `a/06` also comes
+from `$2A:868A`, after setting both fighters' field `0x96` to `f8` (a clash
+`?`), and `$2A:9A32` (not read). Exported as `hit_spark` and `guard_spark`.
+
 **What a projectile becomes when it hits** (`$2A:8E31`): by the hitting
 object's type (`$92 & 0F` of the defender, table `$2A:8E4B`), then its
 animation (`$93`, type `a`'s table `$2A:98EB`), the slot is killed and

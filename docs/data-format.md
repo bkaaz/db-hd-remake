@@ -89,7 +89,11 @@ one table shared by every fighter, and may not set any of them itself. Its
 prints every blow of an entity side by side. `states.json` keeps the short form, because the editor saves it
 back; the engine, the validator and `npm run chains` read it spelled out
 (`withHitTypes` in `src/combat/hitTypes.ts`). What two blows of one type may
-differ in — `cancelBy`, the sounds, the spark — stays on the state.
+differ in — `cancelBy`, the sounds, the spark — stays on the state. A state
+that names no spark leaves the file's `hitFx`, and the engine's `spark_1`
+when the file names none either; a blocked blow leaves the file's `guardFx`
+when it names one. `goku` leaves the cartridge's `hit_spark` and
+`guard_spark`, `goku_old` ours.
 
 Blocking is decided at the moment of contact rather than by standing in a guard
 state, so the stance is the last thing that still knows the defender was low:

@@ -18,9 +18,9 @@ import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions } from "../input/motion";
 import {
-  DEFAULT_HIT_FX,
   groundSpeed,
   guardStateFor,
+  hitFxOf,
   reactionFor,
   StateMachine,
   type CloseButton,
@@ -655,7 +655,12 @@ export class Entity {
 
   /** Effect entity this entity's current attack leaves at the point of contact. */
   get attackFx(): string {
-    return this.sm?.def.hitFx ?? DEFAULT_HIT_FX;
+    return hitFxOf(this.sm?.def, this.def.states);
+  }
+
+  /** The same, for the attack blocked. */
+  get attackGuardFx(): string {
+    return hitFxOf(this.sm?.def, this.def.states, true);
   }
 
   /** The effect this entity's blow becomes where it lands, if it is a projectile's (`burstsInto`). */
