@@ -5,7 +5,7 @@ import { healFrame } from "../combat/heal";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement, type WorldRect } from "../combat/hit";
 import type { SoundPlayer } from "../audio/playback";
-import { BALL_COLOUR, nextRadius } from "../combat/ball";
+import { activeBall, BALL_COLOUR, nextRadius } from "../combat/ball";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
 import { burnVariant } from "../combat/palettes";
@@ -1098,7 +1098,8 @@ export class Entity {
     }
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
     const ball = this.sm.def.ball;
-    if (ball) this.ballAt = ball.at;
+    const up = activeBall(ball, this.stateFrames);
+    if (up) this.ballAt = up.at;
     this.ballRadius = nextRadius(this.ballRadius, ball, this.stateFrames);
     this.bandFrames = this.sm.def.band && this.beamHead !== null ? this.bandFrames + 1 : 0;
     for (const [at, c] of this.sm.def.screen ?? []) if (at === this.stateFrames) this.screenCues.push(c);

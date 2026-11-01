@@ -33,6 +33,7 @@ export function flightStep(f: Flight, gravity: number, floor: number): Flight & 
 /** What a frame of a scene asks of the world around the pair. */
 export interface SeizeWorld {
   dust(x: number, y: number): void;
+  effect(name: string, x: number, y: number): void;
   shake(s: ShakeDef): void;
 }
 
@@ -99,6 +100,10 @@ export class Seizures {
         s.landings++;
       }
       if (next.still) s.phase = "lying";
+    }
+    const b = def.bursts;
+    if (b && s.phase !== "done" && frame >= b.from && frame <= b.to && (frame - b.from) % b.every === 0) {
+      world.effect(b.fx, held.x + held.facing * b.at[0] * scale, held.y + b.at[1] * scale);
     }
     if (s.phase !== "done" && frame >= def.release.frame) {
       // the throw's own blow ($0F:B321): he faces the seizer's way, thrown backwards

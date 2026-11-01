@@ -70,6 +70,8 @@ export interface SeizeDef {
   launch: { frame: number; vel: [number, number] };
   bounces: number[];
   release: { frame: number; damage: number; reaction: string; vel: [number, number] };
+  /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
+  bursts?: { fx: string; from: number; to: number; every: number; at: [number, number] };
 }
 
 export interface StateDef {
@@ -314,7 +316,7 @@ export interface StateDef {
    * a sprite (`combat/ball.ts`). A state without one lets it shrink away; a
    * state that `fires` takes it at once.
    */
-  ball?: BallDef;
+  ball?: BallDef | BallDef[];
   /**
    * Whether this state's blow sets whoever it hits burning, until they land —
    * the Kamehameha's ($2A:99CC, `combat/palettes.ts`); shown on a defender with
@@ -1067,6 +1069,7 @@ export function effectsNamed(
     if (def.burstsInto) names.add(def.burstsInto);
     if (def.groundFx) names.add(def.groundFx);
     if (def.trail) names.add(def.trail.fx);
+    if (def.seize?.bursts) names.add(def.seize.bursts.fx);
   }
   return [...names];
 }
@@ -1287,10 +1290,8 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     }
     const air = airProblem(def.air);
     if (air) errors.push(`${where}: ${air}`);
-    if (
-      def.ball !== undefined &&
-      (!Array.isArray(def.ball.at) || def.ball.at.length !== 2 || typeof def.ball.grow !== "number")
-    ) {
+    const balls = def.ball === undefined ? [] : Array.isArray(def.ball) ? def.ball : [def.ball];
+    if (balls.some((b) => !Array.isArray(b.at) || b.at.length !== 2 || typeof b.grow !== "number")) {
       errors.push(`${where}: "ball" needs "at" as two numbers and "grow", e.g. { "at": [-10, -38], "grow": 2 }`);
     }
     if (

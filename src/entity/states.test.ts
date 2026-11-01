@@ -1358,6 +1358,13 @@ describe("effectsNamed", () => {
     expect(effectsNamed(file({ idle: { anim: "idle" } }), anims).sort()).toEqual(["hit_spark", "spark_1"]);
   });
 
+  it("loads what a scene puts out on the opponent", () => {
+    const seize = { at: 1, place: [40, 0] as [number, number], anim: "m47", launch: { frame: 274, vel: [3, -8] as [number, number] }, bounces: [],
+      release: { frame: 530, damage: 118, reaction: "reel_down", vel: [0, -4] as [number, number] },
+      bursts: { fx: "burst_s", from: 276, to: 304, every: 4, at: [0, -28] as [number, number] } };
+    expect(effectsNamed(file({ idle: { anim: "idle", seize } })).sort()).toEqual(["burst_s", "spark_1"]);
+  });
+
   it("loads the file's guard spark too", () => {
     const states = { ...file({ idle: { anim: "idle" } }), hitFx: "hit_spark", guardFx: "guard_spark" };
     expect(effectsNamed(states).sort()).toEqual(["guard_spark", "hit_spark"]);

@@ -733,8 +733,17 @@ holding the move's frame (`DEC $44`), until y 200; the stage shakes and
 the effect grows by 2 a frame to `0x70` (`$30C4`); then `$0F:F1BC`,
 `$0F:F1F3` until it answers, `$37` = `24` and 60 frames of `$0F:F241`;
 then `$37` = `21`, `22` and the damage — the throw's own `$0F:B321`:
-118 (`0x76`, less defence), move `1b`, vy −4.0. `$20:8F22`, `8F5E` and
-`8F8D` are not read.
+118 (`0x76`, less defence), move `1b`, vy −4.0. The ball is `b1` kind 2
+(the charging ball's circle): from 200 at 24, −36, its radius by the
+move's frame from the table at `$20:8F7D` (7 down to 1, 15 down to 8 —
+a flicker) while field `fc` is set (`$20:8F5E`), cleared at 274 with the
+effect; from 306 at 0, −112, growing 1 a frame to 63 while he shows
+drawing `a0` (`$20:8F22`). Kind 5, the explosion, is drawn the same way
+(`$2A:A3A3`), growing 2 a frame from the ball's radius to `0x70`. From
+274, every 4th frame of field `fd` to 32, `$20:8F8D` puts an `a/02` on
+the opponent, 28 px up — frames 276 to 304. Ours: the state's `ball`
+list and `seize.bursts`; the ball's flight, the explosion and the band
+are not built.
 
 **The game's `$37`** asks for a screen effect, run once through the table
 at `$0E:8387` (`$0E:836B`), most of them back to `04` when done: `1c`

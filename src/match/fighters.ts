@@ -139,6 +139,7 @@ export class Fighters {
       this.throws.update(this.opponent, this.player);
       const world = {
         dust: (x: number, y: number) => this.impact.effects.spawn("dust", x, y),
+        effect: (name: string, x: number, y: number) => this.impact.effects.spawn(name, x, y),
         shake: (s: ShakeDef) => (this.shake = s),
       };
       this.seizures.update(this.player, this.opponent, world);
