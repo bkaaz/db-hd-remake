@@ -40,6 +40,9 @@ animation ends". → `states.ts`
 `m30_<thrower>_<move>` where the thrower's step puts him, until the launch
 lets him go. → `match/throw.ts`, ADR 0035
 
+**Seize** — a scene on the opponent: set down once, playing his own
+animation, flown and let go hurt (Saiyan Meteor). → `match/seize.ts`, ADR 0046
+
 **Charging** — holding A + S with the cartridge's `goku`: a dial on the HUD
 turns, and each turn gives back 5 health (`heal` on the state; health, not ki,
 for now). → `combat/heal.ts`, `combat.md` (The buttons)

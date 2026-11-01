@@ -129,8 +129,11 @@ fighters would each want a copy of it. A grunt *is* his.
   its own ids, written by `npm run rom -- export` from the script (ADR 0024).
   A bank entry says which id it is with `rom`; an id nobody has matched plays
   nothing. A state's `sound` is for what no script plays.
+- **A step's `spawns` are what its script puts out as it begins** — written by
+  the export only for a move that holds the opponent (ADR 0045); everywhere
+  else a state's `fires` does it.
 - **`sound` plays once on entering the state; `loopSound` is retriggered every
-  `loopEvery` frames until you leave it.** Not a seamless loop: that repeats at
+  `loopEvery` frames until you leave it, or until `loopUntil`.** Not a seamless loop: that repeats at
   exactly the clip's own length and can never overlap itself, and the original's
   charge is one short clip fired again before the last copy has finished. The
   copies stacking is what turns a repeat into a sustain, so `loopEvery` shorter

@@ -26,6 +26,7 @@ import {
   reactionFor,
   StateMachine,
   type CloseButton,
+  type SeizeDef,
   type GrabDef,
   type StateDef,
 } from "./states";
@@ -185,6 +186,8 @@ export class Entity {
   private approaching: number | null = null;
   /** A `rush` has set this entity down by the opponent this state. */
   private arrived = false;
+  /** Effects the animation's steps put out, until the fighters take them. */
+  private readonly stepSpawns: { name: string; x: number; y: number }[] = [];
   /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
   private landedAt = 0;
   /**
@@ -440,6 +443,26 @@ export class Entity {
   /** The throw the state just entered makes, if it is one. */
   get grab(): GrabDef | undefined {
     return this.sm?.def.grab;
+  }
+
+  /** The scene the current state plays on the opponent, if it is one. */
+  get seize(): SeizeDef | undefined {
+    return this.sm?.def.seize;
+  }
+
+  /** Screen px per sprite px. */
+  get scaleOf(): number {
+    return this.scale;
+  }
+
+  /** The y of the floor under it. */
+  get floor(): number {
+    return this.groundY;
+  }
+
+  /** What its own falls add to vy each frame, sprite px. */
+  get ownGravity(): number {
+    return this.gravity;
   }
 
   /** Frames since the current state began. */
@@ -1179,5 +1202,13 @@ export class Entity {
     const step = this.currentStep();
     for (const id of step?.sfx ?? []) this.audio?.playRom(id);
     if (step?.voice !== undefined) this.audio?.playLine(step.voice);
+    // placed now, while the facing is the step's; the fighters spawn them
+    for (const { name, at: [dx, dy] } of step?.spawns ?? [])
+      this.stepSpawns.push({ name, x: this.x + this.facing * dx * this.scale, y: this.y + dy * this.scale });
+  }
+
+  /** The effects the animation's steps put out since the last ask (`Step.spawns`), in world px — taken once. */
+  takeStepSpawns(): { name: string; x: number; y: number }[] {
+    return this.stepSpawns.splice(0);
   }
 }

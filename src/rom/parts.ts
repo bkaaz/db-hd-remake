@@ -43,7 +43,12 @@ export function moveParts(rom: Uint8Array, t: FighterTables, move: number): Move
     // another move's handler starts this one part-way
     ...(move === CROUCH ? [crouchAfterAttack(rom, t.character)] : []),
   ];
-  const anims = moveAnims(move, ops, boxesOf, steps, frames);
+  // the opponent put in the hold, move 30, is untouchable (its script sets
+  // field 0x96 to 70): a blow cannot land and cuts nothing, and the spawns go
+  // on their steps — Saiyan Meteor's ae
+  const holds = facts.some((f) => f.who === "opponent" && f.move === HOLD);
+  const uncut = holds ? (type: number, anim: number) => t.objects.spawns.find((s) => s.type === type && s.anim === anim)?.name : undefined;
+  const anims = moveAnims(move, ops, boxesOf, steps, frames, uncut);
 
   const striking = strikingSteps(ops, boxesOf);
   const starts = stepStarts(ops);
@@ -89,3 +94,5 @@ function strikingSteps(ops: ScriptOp[], boxesOf: (drawing: number) => { type: st
  * both its ends.
  */
 const HAND_CUTS: Record<number, number[]> = { 0x0c: [1, 4] };
+/** Move 30: the original's hold, where a throw keeps the opponent. */
+const HOLD = 0x30;

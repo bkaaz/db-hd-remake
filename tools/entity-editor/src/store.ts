@@ -39,6 +39,8 @@ export interface StepDef {
   sfx?: number[];
   /** The cartridge's spoken line for this step, kept as the export wrote it. */
   voice?: number;
+  /** The effects its script puts out on this step, kept as the export wrote them. */
+  spawns?: { name: string; at: [number, number] }[];
 }
 
 export interface AnimDef {
@@ -293,6 +295,7 @@ export function loadEntity(json: EntityFileIn): void {
       boxes: (s.boxes ?? []).map((b) => ({ ...b })),
       ...(s.sfx ? { sfx: [...s.sfx] } : {}),
       ...(s.voice !== undefined ? { voice: s.voice } : {}),
+      ...(s.spawns ? { spawns: s.spawns.map((p) => ({ name: p.name, at: [p.at[0], p.at[1]] as [number, number] })) } : {}),
     })),
   }));
   sortFrames();

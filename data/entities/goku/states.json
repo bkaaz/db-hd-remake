@@ -1879,8 +1879,106 @@
       "damage": 0,
       "transitions": [
         {
+          "when": "connected",
+          "to": "meteor_scene"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
+        }
+      ]
+    },
+    "meteor_scene": {
+      "anim": "mae",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          274,
+          {
+            "vx": 1,
+            "vy": -7,
+            "gravity": 0
+          }
+        ],
+        [
+          280,
+          {
+            "gravity": 0.5,
+            "toApex": true
+          }
+        ],
+        [
+          300,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "seize": {
+        "at": 1,
+        "place": [
+          40,
+          0
+        ],
+        "anim": "m47",
+        "launch": {
+          "frame": 274,
+          "vel": [
+            3,
+            -8
+          ]
+        },
+        "bounces": [
+          -3,
+          -1.5
+        ],
+        "release": {
+          "frame": 530,
+          "damage": 118,
+          "reaction": "reel_down",
+          "vel": [
+            -0.125,
+            -4
+          ]
+        }
+      },
+      "damage": 0,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "frames:590",
+          "to": "meteor_fall"
+        }
+      ]
+    },
+    "meteor_fall": {
+      "anim": "m05_2",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": -2,
+            "vy": 0,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
         }
       ]
     },

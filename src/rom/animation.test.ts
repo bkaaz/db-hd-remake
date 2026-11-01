@@ -84,6 +84,17 @@ describe("moveAnims", () => {
     expect(anims.m9b_2.steps).toEqual([{ frame: "101", dur: 44 }]);
   });
 
+  it("keeps a held move whole, its spawns named on the steps they begin", () => {
+    // Saiyan Meteor's ae: the opponent cannot be hit, so nothing fires a spawn from a state
+    const named = (type: number, anim: number) => (type === 0xa && anim === 3 ? "ki_blast" : undefined);
+    const other: ScriptOp = { ...spawn, type: 0, anim: 8 };
+    const anims = moveAnims(0xae, [show(12, 0x63), spawn, other, show(44, 0x65)], undefined, [], [], named);
+    expect(Object.keys(anims)).toEqual(["mae"]);
+    expect(anims.mae.steps[0].spawns).toBeUndefined();
+    // one we do not export is left out, not guessed
+    expect(anims.mae.steps[1].spawns).toEqual([{ name: "ki_blast", at: [40, -56] }]);
+  });
+
   it("makes one cut of several spawns with no step between them", () => {
     const anims = moveAnims(0xaa, [show(44, 0x81), spawn, spawn, spawn, show(96, 0x89)]);
     expect(Object.keys(anims)).toEqual(["maa", "maa_2"]);

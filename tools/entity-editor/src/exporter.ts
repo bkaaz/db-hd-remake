@@ -35,6 +35,7 @@ export function buildAnimations(): Record<string, Anim> {
         if (s.boxes.length) out.boxes = s.boxes.map((b) => ({ ...b }));
         if (s.sfx?.length) out.sfx = [...s.sfx];
         if (s.voice !== undefined) out.voice = s.voice;
+        if (s.spawns?.length) out.spawns = s.spawns.map((p) => ({ name: p.name, at: [p.at[0], p.at[1]] }));
         return out;
       }),
     };

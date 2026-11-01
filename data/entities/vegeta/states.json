@@ -744,6 +744,27 @@
         }
       ]
     },
+    "meteor_fall": {
+      "anim": "m05_2",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": -2,
+            "vy": 0,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
     "ki": {
       "anim": "m9b",
       "vel": [

@@ -10,6 +10,7 @@ import type { Stage } from "../stage";
 import { landBlow, type BlowContext } from "./blow";
 import type { Projectiles } from "./projectiles";
 import { Recorder } from "./record";
+import { Seizures } from "./seize";
 import { Throws } from "./throw";
 import type { DebugFrame } from "../ui/debug";
 
@@ -67,6 +68,7 @@ export class Fighters {
   /** Turns what happens between the two into lines — see ./record.ts. */
   private readonly recorder = new Recorder();
   private readonly throws = new Throws();
+  private readonly seizures = new Seizures();
   private readonly projectiles: Projectiles;
   /** Where each body stood before this frame moved it — what the camera reads its push from. */
   private from: [number, number] = [0, 0];
@@ -134,6 +136,12 @@ export class Fighters {
     if (this.opponent) {
       this.throws.update(this.player, this.opponent);
       this.throws.update(this.opponent, this.player);
+      const world = {
+        dust: (x: number, y: number) => this.impact.effects.spawn("dust", x, y),
+        shake: (s: ShakeDef) => (this.shake = s),
+      };
+      this.seizures.update(this.player, this.opponent, world);
+      this.seizures.update(this.opponent, this.player, world);
     }
 
     for (const hit of this.projectiles.update(this.frozen, field.shots, this.impact)) {
@@ -153,6 +161,7 @@ export class Fighters {
       this.shake = fighter.takeShake() ?? this.shake;
       const fx = fighter.takeGroundFx();
       if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);
+      for (const spawn of fighter.takeStepSpawns()) this.impact.effects.spawn(spawn.name, spawn.x, spawn.y);
     }
   }
 

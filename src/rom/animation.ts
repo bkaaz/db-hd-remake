@@ -50,7 +50,10 @@ export function animName(move: number): string {
  * A step shown flipped or offset names a frame of its own (src/rom/look.ts),
  * and its boxes move with the drawing.
  */
-export function toAnim(ops: ScriptOp[], boxesOf: (drawing: number) => Box[] = () => []): Anim | null {
+/** A `b0`'s object as the spawn entity we export it as, or undefined for one we do not. */
+export type SpawnName = (type: number, anim: number) => string | undefined;
+
+export function toAnim(ops: ScriptOp[], boxesOf: (drawing: number) => Box[] = () => [], spawnName?: SpawnName): Anim | null {
   const first = ops.find((op) => (op.op === "show" || op.op === "hold") && op.drawing !== null);
   if (!first || (first.op !== "show" && first.op !== "hold") || first.drawing === null) return null;
 
@@ -60,7 +63,10 @@ export function toAnim(ops: ScriptOp[], boxesOf: (drawing: number) => Box[] = ()
   // an a0 plays as the engine walks past it, which is as the next step begins
   let sfx: number[] = [];
   let voice: number | undefined;
+  let spawns: NonNullable<Step["spawns"]> = [];
   for (const op of ops) {
+    const spawned = op.op === "spawn" ? spawnName?.(op.type, op.anim) : undefined;
+    if (op.op === "spawn" && spawned) spawns.push({ name: spawned, at: [op.dx, op.dy] });
     if (op.op === "flip") look = { ...look, h: op.h, v: op.v };
     if (op.op === "offset") look = { ...look, dx: op.dx, dy: op.dy };
     if (op.op === "sound") sfx.push(op.id);
@@ -75,16 +81,18 @@ export function toAnim(ops: ScriptOp[], boxesOf: (drawing: number) => Box[] = ()
     if (boxes.length) step.boxes = boxes;
     if (sfx.length) step.sfx = sfx;
     if (voice !== undefined) step.voice = voice;
+    if (spawns.length) step.spawns = spawns;
     sfx = [];
     voice = undefined;
+    spawns = [];
     steps.push(step);
   }
   return { loop: false, steps };
 }
 
 /** The animation for a move id: its script's steps, repeating or held as the original does. */
-export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: number) => Box[]): Anim | null {
-  const anim = toAnim(ops, boxesOf);
+export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: number) => Box[], spawnName?: SpawnName): Anim | null {
+  const anim = toAnim(ops, boxesOf, spawnName);
   if (!anim) return null;
   const hold = HOLDS_STEP[move];
   if (hold !== undefined) return { loop: false, steps: anim.steps.slice(0, hold + 1) };
@@ -112,8 +120,11 @@ export function moveAnims(
   boxesOf?: (drawing: number) => Box[],
   cuts: number[] = [],
   frameCuts: number[] = [],
+  uncut?: SpawnName,
 ): Record<string, Anim> {
-  const cutAt = [...(boxesOf ? blowStarts(ops, boxesOf).slice(1) : []), ...cuts];
+  // `uncut`: a move whose blows cannot land and whose spawns no state fires —
+  // one animation, its spawns named on their steps
+  const cutAt = [...(boxesOf && !uncut ? blowStarts(ops, boxesOf).slice(1) : []), ...cuts];
   const parts: ScriptOp[][] = [[]];
   // a step shown since the last cut: several spawns at once are one cut
   let shown = false;
@@ -135,7 +146,7 @@ export function moveAnims(
   };
   for (const op of ops) {
     if (op.op !== "show" && op.op !== "hold") {
-      if (op.op === "spawn" && shown) cut();
+      if (op.op === "spawn" && shown && !uncut) cut();
       parts[parts.length - 1].push(op);
       continue;
     }
@@ -151,12 +162,12 @@ export function moveAnims(
     frame += op.op === "hold" ? 1 : op.frames;
   }
   if (parts.length === 1) {
-    const one = moveAnim(move, ops, boxesOf);
+    const one = moveAnim(move, ops, boxesOf, uncut);
     return one ? { [animName(move)]: one } : {};
   }
   const out: Record<string, Anim> = {};
   parts.forEach((part, i) => {
-    const anim = toAnim(part, boxesOf);
+    const anim = toAnim(part, boxesOf, uncut);
     if (anim) out[i === 0 ? animName(move) : `${animName(move)}_${i + 1}`] = anim;
   });
   return out;

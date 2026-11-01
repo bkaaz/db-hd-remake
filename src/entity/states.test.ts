@@ -1352,6 +1352,11 @@ describe("effectsNamed", () => {
     expect(effectsNamed(states)).toEqual(["hit_spark"]);
   });
 
+  it("loads what an animation's steps put out themselves", () => {
+    const anims = { mae: { steps: [{}, { spawns: [{ name: "hit_spark" }] }] } };
+    expect(effectsNamed(file({ idle: { anim: "idle" } }), anims).sort()).toEqual(["hit_spark", "spark_1"]);
+  });
+
   it("loads the file's guard spark too", () => {
     const states = { ...file({ idle: { anim: "idle" } }), hitFx: "hit_spark", guardFx: "guard_spark" };
     expect(effectsNamed(states).sort()).toEqual(["guard_spark", "hit_spark"]);

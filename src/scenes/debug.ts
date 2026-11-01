@@ -107,7 +107,7 @@ export class DebugScene implements Scene {
     const projectiles = await Projectiles.load(view.world, [...new Set(defs.flatMap((d) => spawnsNamed(d.states)))], SPRITE_SCALE);
     const effects = await Effects.load(
       view.world,
-      [...new Set([...defs.flatMap((d) => effectsNamed(d.states)), ...projectiles.effectsNeeded()])],
+      [...new Set([...defs.flatMap((d) => effectsNamed(d.states, d.animations)), ...projectiles.effectsNeeded()])],
       SPRITE_SCALE,
     );
     const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles });

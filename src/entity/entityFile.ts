@@ -55,6 +55,12 @@ export interface Step {
   sfx?: number[];
   /** The spoken line its script starts as this step begins (`a1`), played through the fighter's `line` match. */
   voice?: number;
+  /**
+   * Effects its script puts out as this step begins (`b0`), at `at` sprite px
+   * from the entity, x toward its facing — written by the export only for a
+   * move no part of which a state fires from (Saiyan Meteor's `ae`, ADR 0018).
+   */
+  spawns?: { name: string; at: [number, number] }[];
 }
 
 export interface Anim {

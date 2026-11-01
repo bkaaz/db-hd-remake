@@ -54,6 +54,23 @@ export interface GrabDef {
   launch: { frame: number; damage: number; reaction: string; vel: [number, number] };
 }
 
+/**
+ * A scene played on the opponent (`match/seize.ts`): taken on frame `at`,
+ * set down at `place` (sprite px, dx toward the seizer's facing), playing
+ * his own `anim`; thrown up and away at `launch` (vel x away from the
+ * seizer), leaving the floor at each of `bounces` in turn, then lying; let
+ * go into `reaction` on `release.frame`, costing `damage` less his defence,
+ * at `vel` — x backwards, as a throw's.
+ */
+export interface SeizeDef {
+  at: number;
+  place: [number, number];
+  anim: string;
+  launch: { frame: number; vel: [number, number] };
+  bounces: number[];
+  release: { frame: number; damage: number; reaction: string; vel: [number, number] };
+}
+
 export interface StateDef {
   /** Animation played while in this state. */
   anim: string;
@@ -323,6 +340,8 @@ export interface StateDef {
   approach?: Approach;
   /** Rushing at the opponent until a set distance, then `arrived` (`entity/approach.ts`). */
   rush?: Rush;
+  /** A scene played on the opponent — Saiyan Meteor's (`match/seize.ts`). */
+  seize?: SeizeDef;
   /**
    * Entering it puts the entity behind the opponent, where a blow armed puts
    * it in front — Side Slash, the 3D move ($0D:D8D5). It lasts until either
@@ -1022,8 +1041,13 @@ export function hitFxOf(def: StateDef | undefined, file: StatesFile | null | und
  * that names no `hitFx` still leaves one, and an attack that forgot to say which one is the normal
  * case rather than the exception.
  */
-export function effectsNamed(states: StatesFile | null | undefined): string[] {
+export function effectsNamed(
+  states: StatesFile | null | undefined,
+  anims: Readonly<Record<string, { steps?: readonly { spawns?: readonly { name: string }[] }[] }>> = {},
+): string[] {
   const names = new Set<string>([hitFxOf(undefined, states), hitFxOf(undefined, states, true)]);
+  // and what an animation's steps put out themselves (`Step.spawns`)
+  for (const anim of Object.values(anims)) for (const step of anim.steps ?? []) for (const s of step.spawns ?? []) names.add(s.name);
   for (const def of Object.values(states?.states ?? {})) {
     if (def.hitFx) names.add(def.hitFx);
     if (def.burstsInto) names.add(def.burstsInto);

@@ -700,7 +700,8 @@ Saiyan Meteor (`ad`, `$20:8988`, health 80 or less) charges to frame 36
 and closes at 16 px a frame each frame of step `0c` until within 40 px,
 then jumps to frame 128 and stops; its blow at 146 does nothing itself.
 Ours: `meteor`'s `rush` and `arrived` (`src/entity/approach.ts`), opened
-by `health:80`.
+by `health:80`; `meteor_scene` plays `ae` whole with its sparks on the
+steps (ADR 0045) and a `seize` (ADR 0046).
 Connecting on step `11` puts the opponent in `30`, stopped and behind,
 and the mover in **`ae`** (`$20:8A29`, picking its frame by `LDY $44 /
 CPY`, the frame a word): frame 1 untouchable (`0x96` = `f0`), holds the
