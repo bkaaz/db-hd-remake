@@ -20,6 +20,25 @@ because a number would only need translating back.
 
 ---
 
+## Vegeta's Big Bang and Final Flash do not come out of a crouch
+
+`vegeta`, ← ↙ ↓ ↘ → A or ↓ ↙ → A · noticed 2026-11-01 · annoying
+
+Their entries in `specials.json` are from idle and walking only. The
+crouch and the stand-up ask for commands as idle does (`$0F:9EB1`), so in
+the original a motion rolled through ↓ fires from them — Goku's and
+Vegeta's Sliding Kick do.
+
+## Saiyan Meteor turns the opponent round after the explosion
+
+`goku`, Saiyan Meteor (`ad`) landed · noticed by the owner 2026-11-01 ·
+annoying
+
+After the ball explodes the opponent ends up facing the wrong way, for
+no reason seen yet. Where the turn happens — the `seize` release, the
+reaction it lets him go into, or the landing after — is not known `?`;
+a recording (`L`) of the move landing would say.
+
 ## A render from the chip is not like the ball's sound
 
 `npm run samples -- --render` · noticed 2026-11-01 · annoying

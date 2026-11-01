@@ -1125,9 +1125,9 @@ export class Entity {
         charged: this.charge >= 1,
       },
     );
-    // A press that started a move is spent, so it cannot start a second one
-    // when the move ends and the buffer has not expired yet.
-    if (changed && this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
+    // A press that started a move, or was kept for the next one, is spent, so
+    // it cannot start a second one before the buffer has expired.
+    if (this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
     // Back into the same state is its animation played again (a loop's pass).
     if (changed) this.enterState(changed === before);
     this.buffer.tick();

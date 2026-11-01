@@ -665,6 +665,15 @@ character 6).
 (`03`, `$0F:9F35`; `04`, `$0F:9F4E`) call `$0F:9EB1` as idle does, so a
 special rolled through ↓ comes out of a crouch.
 
+**A move that reads the next one while it plays** (Vegeta's `a4`,
+`$20:97c7`, from frame 8; `a5`, `$20:9885`, from frame 1): each frame the
+handler saves the move's state (move, step, frame, flags, vx, vy into
+`f4`–`fe`), runs the command reader `$0D:EDF8` and puts the state back, so
+nothing the reader finds starts. Only its own move + 1 counts, in `f0`, and
+then it stops reading. As the script runs out, `f0` set starts move + 1
+(`$01:8518`), else the move ends (`$0F:9FA3`). No hit is needed. Ours: a
+transition's `queued` (ADR 0049).
+
 **A special started** from the command table (`$0D:F11E`) sets the move,
 stops the fighter (`$0D:D7A0`: vx, vy and the shove to 0) and arms the
 blow (`$0D:D8A2`). Height moves in one place for both (`$0D:CA55` →
@@ -692,7 +701,13 @@ A `0080`, X `0040`, R `0010`; → `0100`, ← `0200`, ↓ `0400`, ↑ `0800`. Go
 Quadruple Kick, `a5`: `8002 0100 0500 0400 0600 0200` — ← ↙ ↓ ↘ → + B. The
 button word's low bits (`02`, `08`) and the windows the matcher reads from
 `$6002` / `$6006` / `$600A` are not read yet. The pad's history is a ring
-in BW-RAM at `$63D0` (+`$1E0` for player two).
+in BW-RAM at `$63D0` (+`$1E0` for player two), 240 frames, `$600C` /
+`$600E` the next slot: each game frame, hitstop too (`$0E:829C`, before
+the hitstop test), the buttons **newly pressed** that frame (`$70`, pad
+and not last frame's, `$00:96BB`; fighter field `0xEA`, turned to his
+facing) — the held ones (`0xEE`) go to a twin ring at `$6010`. The
+command's button (its word `& C0C0`: B, Y, A, X) must be among the
+**newest 5** entries (`$0D:EE7C`), so a press counts for 5 frames.
 
 A blow of a multi-hit move takes the record covering its first active
 step; the records change a step before each kick's hit box ends (ADR 0023).

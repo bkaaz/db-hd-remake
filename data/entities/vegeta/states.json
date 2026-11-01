@@ -41,6 +41,13 @@
         },
         {
           "when": [
+            "motion:qcf",
+            "pressed:smash"
+          ],
+          "to": "sliding_kick"
+        },
+        {
+          "when": [
             "pressed:smash",
             "close:smash"
           ],
@@ -136,6 +143,13 @@
         },
         {
           "when": [
+            "motion:qcf",
+            "pressed:smash"
+          ],
+          "to": "sliding_kick"
+        },
+        {
+          "when": [
             "pressed:smash",
             "close:smash"
           ],
@@ -227,6 +241,13 @@
         },
         {
           "when": [
+            "motion:qcf",
+            "pressed:smash"
+          ],
+          "to": "sliding_kick"
+        },
+        {
+          "when": [
             "pressed:smash",
             "close:smash"
           ],
@@ -305,6 +326,13 @@
           "to": "crouch_y"
         },
         {
+          "when": [
+            "motion:qcf",
+            "pressed:smash"
+          ],
+          "to": "sliding_kick"
+        },
+        {
           "when": "pressed:smash",
           "to": "crouch_b"
         },
@@ -341,6 +369,13 @@
           "to": "crouch_y"
         },
         {
+          "when": [
+            "motion:qcf",
+            "pressed:smash"
+          ],
+          "to": "sliding_kick"
+        },
+        {
           "when": "pressed:smash",
           "to": "crouch_b"
         },
@@ -358,6 +393,13 @@
       ],
       "turn": true,
       "transitions": [
+        {
+          "when": [
+            "motion:qcf",
+            "pressed:smash"
+          ],
+          "to": "sliding_kick"
+        },
         {
           "when": "held:down",
           "to": "crouch_down"
@@ -1882,6 +1924,128 @@
           "when": "frames:24",
           "to": "idle"
         },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sliding_kick": {
+      "anim": "ma4",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          4,
+          2
+        ],
+        [
+          20,
+          3
+        ]
+      ],
+      "turn": false,
+      "type": "halt",
+      "damage": 25,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": [
+            "motion:qcf",
+            "pressed:smash"
+          ],
+          "to": "rushing_knee",
+          "queued": {
+            "from": 8
+          }
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "rushing_knee": {
+      "anim": "ma5",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          1,
+          2
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          12,
+          2
+        ]
+      ],
+      "turn": false,
+      "type": "halt",
+      "damage": 26,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": [
+            "motion:qcf",
+            "pressed:smash"
+          ],
+          "to": "cross_punch",
+          "queued": {
+            "from": 1
+          }
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "cross_punch": {
+      "anim": "ma6",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          1,
+          2
+        ]
+      ],
+      "turn": false,
+      "type": "halt",
+      "damage": 27,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "cross_punch_2"
+        }
+      ]
+    },
+    "cross_punch_2": {
+      "anim": "ma6_2",
+      "vel": [
+        2,
+        0
+      ],
+      "turn": false,
+      "type": "halt",
+      "damage": 27,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "transitions": [
         {
           "when": "animEnd",
           "to": "idle"

@@ -136,6 +136,9 @@ trigger is `motion:<name>`; **which ones exist is `MOTIONS` in
 damage and hitstun, down to a floor of 20% and 50%. The counter lives on the
 defender and resets when they get control back. → `combat.md` §3
 
+**Queued** (a transition's `queued`) — the next part of a move, typed during
+this one and kept until its animation ends; not a cancel. → ADR 0049
+
 **Push band** — the screen's outer 64 px: a fighter in it, moving toward that
 edge, scrolls the camera; nobody else does. → `src/camera/push.ts`, ADR 0030
 

@@ -35,6 +35,14 @@ export interface Transition {
   when: string | string[];
   /** State to enter when the trigger fires. */
   to: string;
+  /**
+   * Remembered, not taken: from frame `from` of the state, the first time
+   * `when` holds it is kept (its press spent) and taken when the animation
+   * ends, ahead of every other way out. The next part of a move typed during
+   * the one before — Vegeta's `a4` → `a5` → `a6` (ADR 0049). The buffer alone
+   * would forget the press long before the move is over.
+   */
+  queued?: { from: number };
 }
 
 /**
@@ -916,7 +924,8 @@ export class StateMachine {
   /** Name of the state the entity is in. */
   current: string;
   /**
-   * The attack button the last state change consumed, or null — the name alone
+   * The attack button this frame's update consumed — by a state change or a
+   * `queued` transition kept — or null; the name alone
    * (`"smash"`), not the trigger it was spelled with. A press that started a
    * move must not start a second one when the move ends and the buffer has not
    * expired yet, so whoever owns the buffer has to be told what was used. Once
@@ -933,6 +942,8 @@ export class StateMachine {
   private elapsed = 0;
   /** Buttons let go since this state began — `released:`. */
   private released = new Set<string>();
+  /** A `queued` transition whose `when` has held in this state, waiting for animEnd. */
+  private queued: Transition | null = null;
 
   /**
    * `anims` is only read for when a swing misses; without them a miss is
@@ -957,10 +968,15 @@ export class StateMachine {
    */
   force(name: string): boolean {
     if (!this.file.states[name]) return false;
+    this.enter(name);
+    return true;
+  }
+
+  private enter(name: string): void {
     this.current = name;
     this.elapsed = 0;
     this.released = new Set();
-    return true;
+    this.queued = null;
   }
 
   /**
@@ -989,7 +1005,10 @@ export class StateMachine {
       framesIn: this.elapsed,
       released: this.released,
     };
+    this.pressSpent = null;
+    if (this.queued && now.animEnded) return this.take(this.queued, null);
     for (const t of this.def.transitions ?? []) {
+      if (t.queued && (this.queued || this.elapsed < t.queued.from)) continue;
       if (!fires(t.when, input, now)) continue;
       if (!this.file.states[t.to]) {
         if (!warned.has(t.to)) {
@@ -1005,14 +1024,21 @@ export class StateMachine {
       // Back into itself only when its animation ended, which plays it again —
       // a loop that runs while something holds and finishes its pass after:
       // the original's charge. Without `animEnd` it would restart every frame.
+      if (t.queued) {
+        this.queued = t;
+        this.pressSpent = pressIn(t.when);
+        continue;
+      }
       if (t.to === this.current && !triggersOf(t.when).includes("animEnd")) return null;
-      this.current = t.to;
-      this.pressSpent = pressIn(t.when);
-      this.elapsed = 0;
-      this.released = new Set();
-      return this.current;
+      return this.take(t, pressIn(t.when));
     }
     return null;
+  }
+
+  private take(t: Transition, press: string | null): string {
+    this.enter(t.to);
+    this.pressSpent = press;
+    return this.current;
   }
 
   /**
@@ -1402,6 +1428,12 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
         } else if (!(TRIGGERS as readonly string[]).includes(key) && !COUNTED.test(key)) {
           errors.push(`${at}: unknown trigger "${key}" (known: ${TRIGGERS.join(", ")})`);
         }
+      }
+      if (t.queued && !(Number.isInteger(t.queued.from) && t.queued.from >= 0)) {
+        errors.push(`${at}: "queued.from" must be a frame, 0 or more`);
+      }
+      if (t.queued && triggers.includes("animEnd")) {
+        errors.push(`${at}: "queued" with animEnd — it is taken at animEnd already`);
       }
       if (!t.to) {
         errors.push(`${at}: no "to" state`);

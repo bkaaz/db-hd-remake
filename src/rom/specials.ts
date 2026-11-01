@@ -10,7 +10,10 @@ import type { StateDef, StatesFile, Transition } from "../entity/states";
 /** Section file `specials.json`: his special states, and where each is asked for. */
 export interface SpecialsFile {
   _comment?: string;
-  /** A transition added to every state in `from`, ahead of the plain press of its button. */
+  /**
+   * A transition added to every state in `from`, ahead of the plain press of
+   * its button — or first, in a state with no such press (`stand_up`).
+   */
   entries: { from: string[]; when: Transition["when"]; to: string }[];
   states: Record<string, StateDef>;
 }
@@ -33,8 +36,7 @@ export function withSpecials(file: StatesFile, specials: SpecialsFile): StatesFi
       if (!state) throw new Error(`the entry to "${to}" is from "${name}", which is no state`);
       const transitions = state.transitions ?? [];
       // a command before the plain press of its button, or the press would take it first
-      const at = transitions.findIndex((t) => list(t.when).includes(press));
-      if (at < 0) throw new Error(`"${name}" has no ${press} to put the entry to "${to}" ahead of`);
+      const at = Math.max(0, transitions.findIndex((t) => list(t.when).includes(press)));
       states[name] = { ...state, transitions: [...transitions.slice(0, at), { when, to }, ...transitions.slice(at)] };
     }
   }

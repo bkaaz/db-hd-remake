@@ -137,7 +137,11 @@ takes an investigation instead of a procedure. In this order:
 2. **Motions from the command table** — every sequence `rom.md` lists, as
    data, with the original's window: each direction within 12 frames of the
    next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
-   for the whole motion, which a half circle barely fits.
+   for the whole motion, which a half circle barely fits. The command's
+   button counts for 5 frames, not our buffer's 12 (`rom.md`, the pad's
+   history) — Vegeta's Cross Punch came out of a B pressed 7 frames
+   before Rushing Knee looked. The low bits of the button word and
+   `$0D:F15F` / `$0D:F05C` are still to read.
 3. **The original's reactions** — light, heavy, the long reel, in the
    air (`1a`) and the knockdown are built; crouching (`17`/`18`), dizzy
    (`1d`), and the

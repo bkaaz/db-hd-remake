@@ -37,9 +37,13 @@ describe("withSpecials", () => {
     expect(TEMPLATE.states.ball).toBeUndefined();
   });
 
-  it("refuses a special named as a template state, an entry to nothing, and a state with no such press", () => {
+  it("puts the entry first in a state with no press of its button", () => {
+    const out = withSpecials(TEMPLATE, { ...BALL, entries: [{ ...BALL.entries[0], from: ["crouch"] }] });
+    expect(out.states.crouch.transitions![0].to).toBe("ball");
+  });
+
+  it("refuses a special named as a template state, and an entry to nothing", () => {
     expect(() => withSpecials(TEMPLATE, { ...BALL, states: { ki: { anim: "mad" } } })).toThrow(/template makes already/);
     expect(() => withSpecials(TEMPLATE, { ...BALL, states: {} })).toThrow(/does not define/);
-    expect(() => withSpecials(TEMPLATE, { ...BALL, entries: [{ ...BALL.entries[0], from: ["crouch"] }] })).toThrow(/no pressed:blast/);
   });
 });

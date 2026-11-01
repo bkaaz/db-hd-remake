@@ -1700,3 +1700,70 @@ describe("a state that goes back into itself", () => {
     expect(sm.update(HOLD, QUIET)).toBeNull();
   });
 });
+
+describe("a queued transition: the next part, typed during this one", () => {
+  // Vegeta's a4: from frame 8 a command for a5 is kept, and a5 starts only
+  // when a4's animation has ended ($20:97c7, field f0).
+  const STRIKE = { ...NONE, strike: true };
+  function slide() {
+    const f = machine();
+    f.states.slide = {
+      anim: "punch",
+      transitions: [
+        { when: "animEnd", to: "idle" },
+        { when: "pressed:strike", to: "knee", queued: { from: 8 } },
+      ],
+    };
+    f.states.knee = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
+    const sm = new StateMachine(f);
+    sm.force("slide");
+    return sm;
+  }
+  const ENDED = { ...QUIET, animEnded: true };
+  const frames = (sm: StateMachine, n: number) => {
+    for (let i = 0; i < n; i++) sm.update(NONE, QUIET);
+  };
+
+  it("is kept, not taken, and taken ahead of the other way out when the animation ends", () => {
+    const sm = slide();
+    frames(sm, 9);
+    expect(sm.update(STRIKE, QUIET)).toBeNull();
+    expect(sm.pressSpent).toBe("strike");
+    frames(sm, 20);
+    expect(sm.current).toBe("slide");
+    expect(sm.update(NONE, ENDED)).toBe("knee");
+  });
+
+  it("is not looked for before its frame", () => {
+    const sm = slide();
+    frames(sm, 6);
+    expect(sm.update(STRIKE, QUIET)).toBeNull();
+    expect(sm.pressSpent).toBeNull();
+    frames(sm, 5);
+    expect(sm.update(NONE, ENDED)).toBe("idle");
+  });
+
+  it("is forgotten when something forces the state", () => {
+    const sm = slide();
+    frames(sm, 9);
+    sm.update(STRIKE, QUIET);
+    sm.force("slide");
+    expect(sm.update(NONE, ENDED)).toBe("idle");
+  });
+
+  it("is refused without a frame, or with animEnd in its when", () => {
+    const f = machine();
+    f.states.idle.transitions?.push({ when: "pressed:strike", to: "slide" });
+    f.states.slide = {
+      anim: "punch",
+      transitions: [
+        { when: "animEnd", to: "idle" },
+        { when: "animEnd", to: "idle", queued: { from: 1 } },
+        { when: "pressed:strike", to: "idle", queued: { from: -1 } },
+      ],
+    };
+    const errors = validateStates(f, ANIMS).errors;
+    expect(errors.some((e) => e.includes("transition 1") && e.includes('"queued"'))).toBe(true);
+    expect(errors.some((e) => e.includes("transition 2") && e.includes('"queued.from"'))).toBe(true);
+  });
+});
