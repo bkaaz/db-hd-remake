@@ -65,10 +65,10 @@ describe("pressChanges", () => {
 });
 
 describe("motionChanges", () => {
-  const withMotions = (motions: string[]) => ({ ...snapshot([]), motions });
+  const withMotions = (motions: EntityDebug["motions"]) => ({ ...snapshot([]), motions });
 
   it("says so the frame a motion completes", () => {
-    expect(motionChanges("P1", withMotions([]), withMotions(["qcf"]))).toEqual(["P1 motion qcf"]);
+    expect(motionChanges("P1", withMotions([]), withMotions(["qcf"]))).toEqual(["P1 motion ↓→"]);
   });
 
   it("says nothing while it stays complete", () => {

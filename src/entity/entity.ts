@@ -19,7 +19,7 @@ import { approachSpeed, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
-import { Motions } from "../input/motion";
+import { Motions, type MotionName } from "../input/motion";
 import {
   groundSpeed,
   guardStateFor,
@@ -123,7 +123,7 @@ export interface EntityDebug {
   /** The last few inputs as the engine saw them — see input/history.ts. */
   inputs: string;
   /** Motions complete right now, so a recording can say when one landed. */
-  motions: string[];
+  motions: MotionName[];
   combo: { hits: number; damage: number; lifts: number };
 }
 

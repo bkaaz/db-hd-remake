@@ -1,4 +1,5 @@
 import type { Entity, EntityDebug } from "../entity/entity";
+import { motionArrows } from "../input/motion";
 import { logEvent } from "../log";
 import type { BlowResult } from "./blow";
 
@@ -113,5 +114,5 @@ export function pressChanges(who: string, was: EntityDebug, now: EntityDebug): s
  */
 export function motionChanges(who: string, was: EntityDebug, now: EntityDebug): string[] {
   const before = new Set(was.motions);
-  return now.motions.filter((m) => !before.has(m)).map((m) => `${who} motion ${m}`);
+  return now.motions.filter((m) => !before.has(m)).map((m) => `${who} motion ${motionArrows(m)}`);
 }

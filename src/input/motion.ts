@@ -66,6 +66,17 @@ export const MOTIONS = {
 
 export type MotionName = keyof typeof MOTIONS;
 
+const ARROW: Record<keyof Directions, string> = { fwd: "→", back: "←", up: "↑", down: "↓" };
+
+/**
+ * A motion as the arrows it checks — `qcf` is `↓→` — for a person to read
+ * in a log. The move list's diagonals (`↓↘→`) are left out: they are not
+ * what has to be pressed.
+ */
+export function motionArrows(name: MotionName): string {
+  return MOTIONS[name].map((d) => ARROW[d]).join("");
+}
+
 const NEUTRAL: Directions = { fwd: false, back: false, up: false, down: false };
 
 export class Motions {

@@ -1,4 +1,4 @@
-import { MOTIONS, type Directions, type MotionName } from "./motion";
+import { MOTIONS, motionArrows, type Directions, type MotionName } from "./motion";
 
 /**
  * The last few inputs, as one line, for the debug readout.
@@ -26,7 +26,7 @@ export const HISTORY_ENTRIES = 12;
 interface Entry {
   dir: string;
   buttons: string[];
-  motions: string[];
+  motions: MotionName[];
 }
 
 export class InputHistory {
@@ -60,7 +60,7 @@ export class InputHistory {
 export const MOTION_NAMES = Object.keys(MOTIONS) as MotionName[];
 
 const format = (e: Entry): string =>
-  e.dir + e.buttons.join("") + e.motions.map((m) => `·${m}`).join("");
+  e.dir + e.buttons.join("") + e.motions.map((m) => `·${motionArrows(m)}`).join("");
 
 /**
  * The eight directions and neutral, as one character.

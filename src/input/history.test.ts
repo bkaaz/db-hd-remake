@@ -43,7 +43,7 @@ describe("InputHistory", () => {
     const h = new InputHistory();
     h.record(at("down"), [], []);
     h.record(at("fwd"), ["M"], ["qcf"]);
-    expect(h.line).toBe("↓ →M·qcf");
+    expect(h.line).toBe("↓ →M·↓→");
   });
 
   it("drops the oldest entry once the line is full", () => {
