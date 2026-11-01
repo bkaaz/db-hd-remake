@@ -11,6 +11,7 @@
  * scripting escape hatch come in later slices.
  */
 
+import type { Trail } from "./trail";
 import type { BallDef } from "../combat/ball";
 import { airProblem, leavesGround, type AirTimeline } from "./air";
 import type { BandDef } from "../combat/band";
@@ -315,6 +316,8 @@ export interface StateDef {
    * body's x on the floor line ($0D:DE6C), whatever the drawing shows.
    */
   groundFx?: string;
+  /** An effect put on the floor at a beat while the state plays (`entity/trail.ts`). */
+  trail?: Trail;
   /**
    * Shake the backdrop as this state begins, as the original's `$E3` does
    * (`camera/shake.ts`) — the knockdown's bounce sets `{ "pattern": 1,
@@ -976,6 +979,7 @@ export function effectsNamed(states: StatesFile | null | undefined): string[] {
     if (def.hitFx) names.add(def.hitFx);
     if (def.burstsInto) names.add(def.burstsInto);
     if (def.groundFx) names.add(def.groundFx);
+    if (def.trail) names.add(def.trail.fx);
   }
   return [...names];
 }

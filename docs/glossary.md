@@ -196,7 +196,8 @@ may not carry `relaunch`. → `combat.md` (The buttons)
 blast. Not a kind of object — it is an ordinary `Entity`, authored in
 `data/spawns/<name>/`, and *effect*, *attachment* and *projectile* are words for
 how one behaves rather than three types. A state names one with `hitFx` (on
-contact; the file's `hitFx` when it names none, its `guardFx` when blocked) or `fires` (on entering).
+contact; the file's `hitFx` when it names none, its `guardFx` when blocked),
+`groundFx` / `trail` (on the floor, once on entering / at a beat) or `fires` (on entering).
 → [ADR 0007](./adr/0007-everything-a-state-spawns-is-an-entity.md),
 [ADR 0014](./adr/0014-a-bolt-is-handed-its-target.md)
 

@@ -13,6 +13,7 @@ import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { slowed } from "../combat/knockback";
+import { trailAt } from "./trail";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
@@ -248,7 +249,7 @@ export class Entity {
   private healClock = 0;
   /** Set on entering a state that `fires`; taken by whoever owns projectiles. */
   private fired: StateDef["fires"] | null = null;
-  /** The `groundFx` of the state just entered, until the fighters take it. */
+  /** The `groundFx` of the state just entered, or its `trail`'s beat, until the fighters take it. */
   private groundFx: string | null = null;
   /** The `shake` of the state just entered, until the fighters take it. */
   private shake: ShakeDef | null = null;
@@ -475,7 +476,7 @@ export class Entity {
     return this.held;
   }
 
-  /** The effect a state just entered puts on the floor under this entity, in world px — taken once. */
+  /** The effect put on the floor under this entity this frame, in world px — taken once. */
   takeGroundFx(): { name: string; x: number; y: number } | null {
     const name = this.groundFx;
     this.groundFx = null;
@@ -1032,6 +1033,8 @@ export class Entity {
     if (ball) this.ballAt = ball.at;
     this.ballRadius = nextRadius(this.ballRadius, ball, this.stateFrames);
     this.bandFrames = this.sm.def.band && this.beamHead !== null ? this.bandFrames + 1 : 0;
+    // taken by the fighters with the entry's groundFx; a beat on the first frame replaces it
+    if (trailAt(this.sm.def.trail, this.stateFrames)) this.groundFx = this.sm.def.trail!.fx;
     if (this.fading) {
       this.fading.gone++;
       const { band, frames, gone } = this.fading;

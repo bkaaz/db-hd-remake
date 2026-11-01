@@ -30,6 +30,13 @@
         },
         {
           "when": [
+            "motion:qcf",
+            "pressed:attack"
+          ],
+          "to": "double_punch"
+        },
+        {
+          "when": [
             "pressed:attack",
             "close:attack"
           ],
@@ -154,6 +161,13 @@
         },
         {
           "when": [
+            "motion:qcf",
+            "pressed:attack"
+          ],
+          "to": "double_punch"
+        },
+        {
+          "when": [
             "pressed:attack",
             "close:attack"
           ],
@@ -271,6 +285,13 @@
             "held:smash"
           ],
           "to": "charge_start"
+        },
+        {
+          "when": [
+            "motion:qcf",
+            "pressed:attack"
+          ],
+          "to": "double_punch"
         },
         {
           "when": [
@@ -402,6 +423,13 @@
         },
         {
           "when": [
+            "motion:qcf",
+            "pressed:attack"
+          ],
+          "to": "double_punch"
+        },
+        {
+          "when": [
             "motion:dbf",
             "pressed:blast"
           ],
@@ -466,6 +494,13 @@
         },
         {
           "when": [
+            "motion:qcf",
+            "pressed:attack"
+          ],
+          "to": "double_punch"
+        },
+        {
+          "when": [
             "motion:dbf",
             "pressed:blast"
           ],
@@ -521,6 +556,13 @@
             "pressed:smash"
           ],
           "to": "spin_kick"
+        },
+        {
+          "when": [
+            "motion:qcf",
+            "pressed:attack"
+          ],
+          "to": "double_punch"
         },
         {
           "when": [
@@ -1408,6 +1450,65 @@
         }
       ]
     },
+    "double_punch": {
+      "anim": "ma7",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          6,
+          2
+        ]
+      ],
+      "turn": false,
+      "trail": {
+        "fx": "dust",
+        "every": 4,
+        "from": 1
+      },
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "heavy",
+      "damage": 26,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "double_punch_2"
+        }
+      ]
+    },
+    "double_punch_2": {
+      "anim": "ma7_2",
+      "vel": [
+        2,
+        0
+      ],
+      "velAt": [
+        [
+          12,
+          0
+        ]
+      ],
+      "turn": false,
+      "trail": {
+        "fx": "dust",
+        "every": 4,
+        "from": 1,
+        "to": 11
+      },
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "high",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
     "ki": {
       "anim": "m9b",
       "vel": [
@@ -2074,6 +2175,80 @@
     },
     "down_lie": {
       "anim": "m1b_4",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "get_up"
+        }
+      ]
+    },
+    "reel_high": {
+      "anim": "m1e",
+      "rank": 1,
+      "launch": [
+        -0.75,
+        -7.5
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "high_fall"
+        },
+        {
+          "when": "landed",
+          "to": "high_bounce"
+        }
+      ]
+    },
+    "high_fall": {
+      "anim": "m1e_2",
+      "rank": 1,
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "high_bounce"
+        }
+      ]
+    },
+    "high_bounce": {
+      "anim": "m1e_3",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_2",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "high_lie"
+        }
+      ],
+      "invulnerable": true
+    },
+    "high_lie": {
+      "anim": "m1e_4",
       "rank": 4,
       "invulnerable": true,
       "vel": [

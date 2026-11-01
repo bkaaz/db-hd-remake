@@ -80,6 +80,7 @@ a blow that needs another reaction is another type.
 | heavy | `he` | the original's heavy one: 26 frames, pushed further |
 | down | `dn` | the original's knockdown: thrown up and back, then the get-up |
 | long | `lo` | the original's jump attacks: the light reaction's pose held 24 frames |
+| high | `hi` | the original's high knockdown (move `1e`): thrown steeply up, hittable until it lands |
 
 In conversation a blow is written as its code plus **any frame of the move** —
 `fl30 fl39 la187` — and `npm run which` says what that points at.

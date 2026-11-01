@@ -511,6 +511,10 @@ queue.
   held crouch — the original's own (`rom.md`, a handler starting a move
   part-way), seen in the emulator too. Ours could return straight to the held
   crouch.
+- **Five objects a fighter** (owner, 2026-11-01: not yet) — the original
+  gives each player five object slots and puts out nothing past them
+  (`rom.md`, Object slots): Double Punch's dust thins, a ki blast spam
+  stops. Ours have no limit, so the dust is up to one puff denser.
 - **The sparks' tiles and palette** — `hit_spark` and `guard_spark` are
   drawn with the explosions' (`rom.md`, What a melee blow leaves), an
   assumption a VRAM / OAM snapshot taken at a hit would settle.

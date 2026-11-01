@@ -317,7 +317,12 @@ every 4 frames (palette records `0x130`–`0x133` through `$01:84EF`, above).
 The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 Object slots: ten of 16 bytes at I-RAM `$3300`; each type's behaviour is its
-own code in bank `$0F`.
+own code in bank `$0F`. **Five are each player's** — player one's at `$3300`
++ `0x20` × n, player two's at `$3310` + `0x20` × n — and `$0D:D905` finds a
+free one among the owner's only, so a fighter has at most five objects out:
+past that, dust (`$0D:DE6C`) is simply not raised, while a landed blow's
+spark (in the defender's slots) takes one from his dust (`$0D:D932`). Ours
+have no such limit.
 
 **`a0` plays a sound**, not a blow: `$0D:D82E` queues the id at `$cb`
 (`$00:DE31`) and `$00:D879` hands it to the APU at `$2141`. For player two
@@ -652,6 +657,12 @@ in BW-RAM at `$63D0` (+`$1E0` for player two).
 
 A blow of a multi-hit move takes the record covering its first active
 step; the records change a step before each kick's hit box ends (ADR 0023).
+Double Punch (`a7`, `$20:8727`) stands until frame 6, slides at vx 2.0
+until 44 (`$0D:D7A0` stops it), re-arms at 32, and raises dust
+(`$0D:DE6C`) on every 4th frame of the game (`$74 & 3`) from frame 1 to 43;
+its second blow is a `1e`. `1e` plays as `1b` does (`$0F:A217`) but leaves
+field `0x96` alone until frame 64, the bounce — hittable in flight, where a
+blow's airborne bits apply (a light or heavy one: `1a`).
 Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
 70 — `goku`'s `quad_kick` states copy it as `velAt`.
@@ -695,7 +706,7 @@ step by step. The 5 bytes after it:
 | byte | what |
 |---|---|
 | 0–2 | which reaction, as bits — the bit read depends on the defender's situation (below) |
-| 2 | also: `0x20` chip on guard = damage / 8, `0x40` = damage / 16; `0x80` read for the attacker's own move `?` (`$0D:DC8B`) |
+| 2 | also: chip on guard (`$0D:CFD1`), `0x40` = byte 3 / 16, else `0x20` = byte 3 / 8 — byte 3 as it stands, no attack or defence, straight off health, and a KO when it empties it; none while `$1B15` is set or `$1A02 & 0F` is 3 `?`. Goku's specials carry it, his normals do not; the Kamehameha's heads `/ 8`, the ki blast none. `0x80` read for the attacker's own move `?` (`$0D:DC8B`) |
 | 3 | damage, + attacker field `0x6a` − defender field `0x6b`, never below 0; taken off health (field `0x60`) |
 | 4 | stun: taken off field `0x68`, which refills by 1 about every 16 frames up to 20; at 0 the defender is dizzy (move `1d`, 200 frames) and it refills to 20 |
 
@@ -716,7 +727,7 @@ identified yet.
 **Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
 bits of bytes 0–1 as one word: `0x0004` `$D622`, `0x0008` light,
 `0x0010` heavy, `0x0020` → move `19`, `0x0040` knockdown (move `1b`),
-`0x0080` → move `42`/`43`, `0x0400` → move `1e`, `0x0800` `$D670`,
+`0x0080` → move `42`/`43`, `0x0400` → move `1e` (`$D3BB`, ours `high`), `0x0800` `$D670`,
 `0x1000` `$D540`; `0x0001`, `0x0002`, `0x0100` and `0x0200` are not read
 there. `0x0080` (`$D558`, the jump attacks') is a long light reel: `42`
 standing, 24 frames of the light reel's drawing, `43` crouching
@@ -741,7 +752,8 @@ number in the record.
 index sets field `0x8c`, the push speed `0x88` (8.8 fixed point, turned by
 the attacker's facing) and vy from a table of 6-byte entries at `$0D:D68A`.
 Light (index 2) pushes 2.0 px/frame, heavy (3) 3.0, knockdown (4) 2.0 and
-−4.0 up, the long light reel (6) 2.0 for 10 frames, in the air (16) 2.0
+−4.0 up, the high knockdown `1e` (`0c`) 0.75 and −7.5 — `14` (0.75, −6.0)
+for `9c`'s step 1 and `a4`'s step 4, `13` (0.5, −8.0) for `a3` — the long light reel (6) 2.0 for 10 frames, in the air (16) 2.0
 and −6.0 up. The push **slows by 0.25 every frame** until it stops
 (`$0D:EC5F`, which slows vx the same way) — 9 px in all for light, 19.5
 for heavy. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in
