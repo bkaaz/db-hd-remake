@@ -14,6 +14,13 @@
     "file": "005.wav",
     "rom": 7
   },
+  "swing_05": {
+    "label": "Side Slash's step into the depth — sound 05, sample 17 at 0A0D, clip 003 by comparison (0.99, the next 0.32)",
+    "gain": 0.16,
+    "vary": 0.12,
+    "file": "003.wav",
+    "rom": 5
+  },
   "hit_09": {
     "label": "a melee blow landing — sound 09, sample 14 sliding from 0785 to 0613, clip 007 by comparison along the slide (0.41, the next 0.17)",
     "gain": 0.42,

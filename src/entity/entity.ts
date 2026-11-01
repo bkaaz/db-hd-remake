@@ -14,6 +14,7 @@ import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { slowed } from "../combat/knockback";
 import { trailAt } from "./trail";
+import { approachSpeed } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { InputHistory, MOTION_NAMES } from "../input/history";
@@ -178,6 +179,10 @@ export class Entity {
   private landed = false;
   /** A blow armed on entering a state, for `takeArmed`. */
   private armed = false;
+  /** A state entered that sends this entity behind the opponent, for `takeBehind`. */
+  private behind = false;
+  /** The speed an `approach` set this state, sprite px a frame forward; null before it. */
+  private approaching: number | null = null;
   /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
   private landedAt = 0;
   /**
@@ -491,6 +496,13 @@ export class Entity {
     const armed = this.armed;
     this.armed = false;
     return armed;
+  }
+
+  /** Whether a state just entered sends this entity behind the opponent (`behind`). Taken once. */
+  takeBehind(): boolean {
+    const behind = this.behind;
+    this.behind = false;
+    return behind;
   }
 
   /** The backdrop's shake a state just entered asked for — taken once. */
@@ -818,6 +830,8 @@ export class Entity {
     this.setAnim(this.sm.def.anim, restart);
     this.swing.reset();
     if (this.sm.def.type !== undefined) this.armed = true;
+    this.behind = this.sm.def.behind ?? false;
+    this.approaching = null;
     this.landed = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
     // does so straight after forcing the reaction.
@@ -1025,7 +1039,13 @@ export class Entity {
       }
     } else {
       this.y = this.groundY;
-      this.x += this.facing * (groundSpeed(this.sm.def, this.stateFrames) + this.shove) * this.scale;
+      const approach = this.sm.def.approach;
+      if (approach && this.stateFrames === approach.at && opponentX !== null) {
+        this.turnToward(opponentX);
+        this.approaching = approachSpeed(approach, (opponentX - this.x) / this.scale);
+      }
+      const speed = this.approaching ?? groundSpeed(this.sm.def, this.stateFrames);
+      this.x += this.facing * (speed + this.shove) * this.scale;
       this.shove = slowed(this.shove);
     }
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));

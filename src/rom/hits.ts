@@ -78,7 +78,7 @@ export function recordAt(records: readonly HitRecord[], step: number): HitRecord
 const GROUND_ORDER = [0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x400, 0x800, 0x1000];
 
 /** The hit types named after the original's reactions, by the bit that picks each. */
-const REACTION_TYPES: Record<number, string> = { 0x08: "light", 0x10: "heavy", 0x40: "down", 0x80: "long", 0x400: "high" };
+const REACTION_TYPES: Record<number, string> = { 0x08: "light", 0x10: "heavy", 0x20: "trip", 0x40: "down", 0x80: "long", 0x400: "high" };
 
 /**
  * How a standing defender takes the blow, as the hit type named after it: the

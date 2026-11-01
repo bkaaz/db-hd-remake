@@ -12,6 +12,7 @@
  */
 
 import type { Trail } from "./trail";
+import type { Approach } from "./approach";
 import type { BallDef } from "../combat/ball";
 import { airProblem, leavesGround, type AirTimeline } from "./air";
 import type { BandDef } from "../combat/band";
@@ -318,6 +319,14 @@ export interface StateDef {
   groundFx?: string;
   /** An effect put on the floor at a beat while the state plays (`entity/trail.ts`). */
   trail?: Trail;
+  /** Closing on the opponent by a share of the distance (`entity/approach.ts`). */
+  approach?: Approach;
+  /**
+   * Entering it puts the entity behind the opponent, where a blow armed puts
+   * it in front — Side Slash, the 3D move ($0D:D8D5). It lasts until either
+   * arms another.
+   */
+  behind?: boolean;
   /**
    * Shake the backdrop as this state begins, as the original's `$E3` does
    * (`camera/shake.ts`) — the knockdown's bounce sets `{ "pattern": 1,

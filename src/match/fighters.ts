@@ -147,6 +147,9 @@ export class Fighters {
     }
     for (const fighter of this.both()) {
       if (fighter.takeArmed()) this.inFront = fighter;
+      // after the arming: Side Slash arms its blow and goes behind on the same entry
+      const other = fighter === this.player ? this.opponent : this.player;
+      if (fighter.takeBehind() && other) this.inFront = other;
       this.shake = fighter.takeShake() ?? this.shake;
       const fx = fighter.takeGroundFx();
       if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);

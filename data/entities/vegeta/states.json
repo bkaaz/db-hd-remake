@@ -1258,6 +1258,60 @@
         }
       ]
     },
+    "reel_trip": {
+      "anim": "m19",
+      "rank": 3,
+      "launch": [
+        -2,
+        -4
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "invulnerable": true,
+      "ifAirborne": "reel_air",
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "trip_fall"
+        },
+        {
+          "when": "landed",
+          "to": "trip_land"
+        }
+      ]
+    },
+    "trip_fall": {
+      "anim": "m19_2",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "trip_land"
+        }
+      ]
+    },
+    "trip_land": {
+      "anim": "m19_3",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_2",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "get_up"
+        }
+      ]
+    },
     "get_up": {
       "anim": "m1f",
       "rank": 4,

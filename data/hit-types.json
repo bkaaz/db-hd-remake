@@ -8,5 +8,6 @@
   "heavy": { "code": "he", "onHit": "reel_heavy", "hitstun": 26, "hitstop": 8, "relaunch": false },
   "down": { "code": "dn", "onHit": "reel_down", "hitstun": 20, "hitstop": 8, "relaunch": true },
   "long": { "code": "lo", "onHit": "reel_long", "hitstun": 24, "hitstop": 8, "relaunch": false },
-  "high": { "code": "hi", "onHit": "reel_high", "hitstun": 20, "hitstop": 8, "relaunch": true }
+  "high": { "code": "hi", "onHit": "reel_high", "hitstun": 20, "hitstop": 8, "relaunch": true },
+  "trip": { "code": "tr", "onHit": "reel_trip", "hitstun": 20, "hitstop": 8, "relaunch": true }
 }

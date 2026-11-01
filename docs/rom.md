@@ -113,7 +113,8 @@ front; `$0D:D8D5` puts him behind — Side Slash's handler (`a8`, the 3D
 move, `$20:83DF`) and `$0D:EBB8` call it, the latter from `$0F:A358` (a
 reaction, from its frame 168 `?`) and `$0F:A9E3`. Every object slot
 (`$3300`–`$3390`) goes into OAM before both (`$00:80E8`), so in front of
-them. Ours: `Fighters.inFront` (`src/match/fighters.ts`); effects and
+them. Ours: `Fighters.inFront` (`src/match/fighters.ts`), and a state's
+`behind` for `$0D:D8D5`; effects and
 bolts are added to the stage after the fighters, so in front as well.
 
 **`b0` spawns an object** (handler `$01:873F`): a type and an animation, a
@@ -352,6 +353,7 @@ over). The explosion object (`$0F:E1A9`) asks for no sound.
 
 | id | sample @ pitch | clip, likeness | the next |
 |---|---|---|---|
+| `05` | `17` @ `0A0D` | `003` 0.99 | 0.32 |
 | `06` | `17` @ `06B3` | `004` 0.99 | 0.53 |
 | `07` | `17` @ `0504` | `005` 0.99 | 0.25 |
 | `0c` | `16` @ `02EF` | `010` 0.86 | 0.49 |
@@ -377,6 +379,7 @@ code that plays them, since a clip's number says nothing:
 
 | id | played by | ours |
 |---|---|---|
+| `05` | Side Slash's script, as he steps into the depth | `swing_05` |
 | `06` / `07` | a punch's / a kick's script (`06` for Goku's near B too) | `swing_06` / `swing_07` |
 | `09` | a melee hit (`$0D:D1BC`) | `hit_09` |
 | `0a` | a projectile's hit, a blocked projectile (`$0D:CF6D`, `D1E9`); the Kamehameha's shot (`aa`'s script) | `burst_1` |
@@ -663,6 +666,13 @@ until 44 (`$0D:D7A0` stops it), re-arms at 32, and raises dust
 its second blow is a `1e`. `1e` plays as `1b` does (`$0F:A217`) but leaves
 field `0x96` alone until frame 64, the bounce — hittable in flight, where a
 blow's airborne bits apply (a light or heavy one: `1a`).
+Side Slash (`a8`, `$20:83BB`, by step through `$20:83D1`) sends the
+mover behind the opponent (`$0D:D8D5`) through step 0, stands through step
+2, and on frame 28 turns to face him (`$0D:C455`) and sets vx to a 32nd of
+the way to 8 px short of his x, in whole px (`$20:8400`) — kept to the
+end, frame 68, so it carries him ¼ past that point (ours: a state's
+`approach`, `src/entity/approach.ts`). Its blow, at 44, is
+`0x0020`: move `19`.
 Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
 70 — `goku`'s `quad_kick` states copy it as `velAt`.
@@ -726,7 +736,9 @@ identified yet.
 
 **Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
 bits of bytes 0–1 as one word: `0x0004` `$D622`, `0x0008` light,
-`0x0010` heavy, `0x0020` → move `19`, `0x0040` knockdown (move `1b`),
+`0x0010` heavy, `0x0020` → move `19` (ours `trip`; `$D60A`: knockback `0f`, 2.0 back
+and −4.0 up; blows pass it by from frame 0; it lands with dust and `0d`,
+no bounce, and gets up after 12 frames — `$10:AEB6`), `0x0040` knockdown (move `1b`),
 `0x0080` → move `42`/`43`, `0x0400` → move `1e` (`$D3BB`, ours `high`), `0x0800` `$D670`,
 `0x1000` `$D540`; `0x0001`, `0x0002`, `0x0100` and `0x0200` are not read
 there. `0x0080` (`$D558`, the jump attacks') is a long light reel: `42`
