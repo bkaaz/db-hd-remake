@@ -51,6 +51,9 @@ for now). → `combat/heal.ts`, `combat.md` (The buttons)
 anywhere: it is a path through `states.json`, derived by `src/combat/chains.ts`
 and printed by `npm run chains`. → `plan.md`
 
+**Command** — a special's input as the cartridge's table has it, matched over
+the pad's history with the original's windows. → `src/input/command.ts`, ADR 0050
+
 **Combo** — a chain whose links actually hold: the defender never gets control
 back between the blows. The player's word for it, and the editor tab's name; the
 docs and the code say *chain*, *link* and *cancel* when the distinction matters.

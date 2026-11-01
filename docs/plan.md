@@ -134,14 +134,15 @@ takes an investigation instead of a procedure. In this order:
    code (`rom.md`); the Kamehameha's were read from it by hand and written
    into `objects.spawns` with the addresses. What is left: a reader like
    `handler.ts` for the usual animator, so the port report says it.
-2. **Motions from the command table** — every sequence `rom.md` lists, as
-   data, with the original's window: each direction within 12 frames of the
-   next (`$6002`). `input/motion.ts` has the shapes in code and 14 frames
-   for the whole motion, which a half circle barely fits. The command's
-   button counts for 5 frames, not our buffer's 12 (`rom.md`, the pad's
-   history) — Vegeta's Cross Punch came out of a B pressed 7 frames
-   before Rushing Knee looked. The low bits of the button word and
-   `$0D:F15F` / `$0D:F05C` are still to read.
+2. **Commands from the command table, in the game** — the sequences are
+   data (`commands.json`) and matched as the original does
+   (`src/input/command.ts`, ADR 0050); what is left is wiring them in: the
+   pad's history recorded each frame (our buttons as the pad's: attack Y,
+   smash B, blast A, strike X, dash R), a `command:<move>` trigger, and
+   `goku`'s and `vegeta`'s `motion:` + `pressed:` entries rewritten to it
+   (the template and `specials.json` too). Not ported: the refusal while
+   guarding or after a blow has gone (`$0D:F1B4`) — the states say where
+   from.
 3. **The original's reactions** — light, heavy, the long reel, in the
    air (`1a`) and the knockdown are built; crouching (`17`/`18`), dizzy
    (`1d`), and the

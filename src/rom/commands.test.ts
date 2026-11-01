@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
-import { arrow, buttonName, readCommands } from "./commands";
+import { arrow, buttonName, commandsFile, readCommands } from "./commands";
 
 describe("buttonName", () => {
   it("names the button, and a direction only when the command wants it held", () => {
@@ -38,5 +38,16 @@ describe.skipIf(!existsSync(ROM_PATH))("readCommands, on the cartridge", () => {
 
   it("finds Slash Down Kick in the air and nowhere else", () => {
     expect(goku.filter((c) => c.move === 0xac).map((c) => c.where)).toEqual(["air"]);
+  });
+
+  it("keeps the words as they are, newest direction first", () => {
+    expect(goku.find((c) => c.move === 0xa5)?.words).toEqual([0x8002, 0x0100, 0x0500, 0x0400, 0x0600, 0x0200]);
+  });
+
+  it("is what each fighter's commands.json holds — the file is written, never edited", () => {
+    for (const [name, character] of [["goku", GOKU.character], ["vegeta", 1]] as const) {
+      const file = JSON.parse(readFileSync(`data/entities/${name}/commands.json`, "utf8"));
+      expect(file).toEqual(commandsFile(rom, character));
+    }
   });
 });

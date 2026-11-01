@@ -262,6 +262,9 @@ npm run rom -- object a 15 32@6c00 80
 npm run rom -- roster
                   # every fighter of the cartridge; any reading command
                   # takes --fighter <name> (port, move, frame…)
+npm run rom -- commands --fighter vegeta
+                  # his command table into commands.json, as the
+                  # engine matches it (src/input/command.ts)
 npm run rom -- export --fighter vegeta
                   # another fighter's sheet, frames and animations only
 npm run rom -- states --fighter vegeta

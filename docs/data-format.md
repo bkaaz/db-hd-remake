@@ -10,6 +10,7 @@ reads or writes an entity imports it:
 | the file and every field in it | [`src/entity/entityFile.ts`](../src/entity/entityFile.ts) |
 | `states.json`, its fields and its triggers | [`src/entity/states.ts`](../src/entity/states.ts) |
 | `sounds.json` | [`src/audio/sounds.ts`](../src/audio/sounds.ts) |
+| `commands.json` | [`src/input/command.ts`](../src/input/command.ts) |
 
 Those carry the reasoning for a field beside the field. This file carries only
 what a type cannot say: where the sections live, who may write them, and which
@@ -24,6 +25,8 @@ data/entities/goku/
   states.json        the state machine
   sounds.json        this fighter's own voices
   attributes.json    constants that belong to the fighter
+  commands.json      the cartridge's command table — written by
+                     npm run rom -- commands, never by hand
 ```
 
 The dev-server plugin assembles them into one object for `GET /api/entity`, and

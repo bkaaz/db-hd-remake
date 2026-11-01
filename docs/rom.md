@@ -709,6 +709,30 @@ facing) — the held ones (`0xEE`) go to a twin ring at `$6010`. The
 command's button (its word `& C0C0`: B, Y, A, X) must be among the
 **newest 5** entries (`$0D:EE7C`), so a press counts for 5 frames.
 
+**The rest of the sequence** (`$0D:F15F`) is read back in time from that
+entry; each word must be found within a window of the one after it, the
+search going on from where the last one matched. The windows are set as a
+fight starts (`$0E:8093`): `$6002` 12, `$6006` 24, `$600A` 48 (`$6000` /
+`$6004` / `$6008` the same, not read here `?`). A direction word, by its
+low bits:
+
+- none — the held ring's whole word **equals** it within 12: exactly that
+  direction, and no button held then;
+- `0002` — the same within 24;
+- `2000` — any of its directions held within 12;
+- `0001` — a charge: any held within 12, then held 48 frames on end
+  (skipped while field `0x26` bit 4 is set `?`);
+- `0004` — a button word mid-sequence: newly pressed within 12 (`0002`:
+  24).
+
+The button word's own low bits: `0008` — the direction held at the press
+must equal its `0F00` bits, or with none its `0030` (R / L — Driving
+Elbow, Side Slash); `1000` — any of its `0F30` held. Either refuses the
+command while guarding (moves `0e` `10` `12` `73`) or in a move from `90`
+whose field `0x26` bit 5 is set and whose blow has gone (`$0D:F1B4`).
+`$0D:F05C` is character 6's alone: his move `0e` waits 480 frames
+(field `0x35`).
+
 A blow of a multi-hit move takes the record covering its first active
 step; the records change a step before each kick's hit box ends (ADR 0023).
 Double Punch (`a7`, `$20:8727`) stands until frame 6, slides at vx 2.0

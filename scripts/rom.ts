@@ -15,6 +15,7 @@
  *   npm run rom -- stage [id …]      a stage's two background layers, flat, into
  *                                    preview/ — every stage when no id is given
  *   npm run rom -- roster            every fighter: drawings, resources, palette, boxes
+ *   npm run rom -- commands          his command table into data/entities/<name>/commands.json
  *   … --fighter vegetto              any reading command above, for another fighter
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
  *                                    data/entities/goku/frames.json (frame n = drawing n),
@@ -35,7 +36,7 @@ import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
 import { describeFact } from "../src/rom/describe.ts";
 import { blowOfAnim } from "../src/rom/animBlow.ts";
-import { arrow, buttonName, readCommands } from "../src/rom/commands.ts";
+import { arrow, buttonName, commandsFile, readCommands } from "../src/rom/commands.ts";
 import { NORMALS } from "../src/rom/buttons.ts";
 import { statesFrom } from "../src/rom/template.ts";
 import { withSpecials, type SpecialsFile } from "../src/rom/specials.ts";
@@ -280,6 +281,11 @@ if (command === "tiles") {
   mkdirSync("preview", { recursive: true });
   writeFileSync("preview/rom-hud.png", encodePng(scaled(drawHud(rom), 3)));
   console.log("wrote preview/rom-hud.png");
+} else if (command === "commands") {
+  // the sequences as the engine matches them (src/input/command.ts, ADR 0050)
+  const file = commandsFile(rom, T.character);
+  writeFileSync(`data/entities/${name}/commands.json`, JSON.stringify(file, null, 2) + "\n");
+  console.log(`${name}: ${file.commands.length} commands into data/entities/${name}/commands.json`);
 } else if (command === "roster") {
   ROSTER.forEach((name, c) => {
     const t = fighterTables(rom, c);
