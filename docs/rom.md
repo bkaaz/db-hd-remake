@@ -355,6 +355,7 @@ over). The explosion object (`$0F:E1A9`) asks for no sound.
 |---|---|---|---|
 | `05` | `17` @ `0A0D` | `003` 0.99 | 0.32 |
 | `06` | `17` @ `06B3` | `004` 0.99 | 0.53 |
+| `29` | `18` @ `1C38` for 7 frames, then @ `0EF3`, ~0.95 s | `021` 0.41 | 0.11 |
 | `07` | `17` @ `0504` | `005` 0.99 | 0.25 |
 | `0c` | `16` @ `02EF` | `010` 0.86 | 0.49 |
 | `0d` | `16` @ `029D` | `011` 0.80 | 0.56 |
@@ -389,6 +390,7 @@ code that plays them, since a clip's number says nothing:
 | `17` | a blocked melee blow (`$0D:CF55`) | `block_1` |
 | `19` | charging ki, every 8 frames (`$0F:A044`) | `charge_1` |
 | `25` | charging the Kamehameha (`aa`'s script) | `charge_2` |
+| `29` | a teleport's script, as he vanishes | `teleport_29` |
 | `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | the fighter's `voice_hurt` |
 | `31` | the voice at KO (`$0D:D10C`) | — |
 | `32` | an attack's shout (the ki blast, specials) | the fighter's `voice_shout` |
@@ -688,6 +690,11 @@ blow has connected, hit or blocked — field `0x25` bit 7, which arming sets
 (`$20:87BC`): stopped (`$0D:D7B1`), then on frame 1 gravity back, vx 2.0
 backward, vy −7.0; vx 0 at 24, landing looked for from there. Its blow is a
 knockdown either way (`0x0240`).
+The teleports (`9c` toward, `9e` away; `$20:8530`, `$20:8560`) move 16 px
+a frame forward / back on frames 19–25 and stop at 26 — 112 px. The rest
+is the drawings': `48` is empty, so he is unseen for those 7 frames, and
+from 8 to 36 the drawings carry no hurt box, and no push box while he is
+gone, so blows and the opponent's body pass him by.
 Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
 70 — `goku`'s `quad_kick` states copy it as `velAt`.

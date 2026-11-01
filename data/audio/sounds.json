@@ -21,6 +21,13 @@
     "file": "003.wav",
     "rom": 5
   },
+  "teleport_29": {
+    "label": "a teleport, as he vanishes — sound 29, sample 18 at 1C38 then 0EF3 for about 0.95 s, clip 021 by comparison (0.41 / 0.29, the next 0.11); as loud as charge_1, the same sample",
+    "gain": 0.22,
+    "vary": 0,
+    "file": "021.wav",
+    "rom": 41
+  },
   "hit_09": {
     "label": "a melee blow landing — sound 09, sample 14 sliding from 0785 to 0613, clip 007 by comparison along the slide (0.41, the next 0.17)",
     "gain": 0.42,

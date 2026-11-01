@@ -518,6 +518,7 @@ export interface InputSnapshot {
   dbf: boolean;
   dp: boolean;
   fd: boolean;
+  rdp: boolean;
   /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
@@ -618,6 +619,7 @@ export const TRIGGERS = [
   "motion:dbf",
   "motion:dp",
   "motion:fd",
+  "motion:rdp",
   "animEnd",
   "stunEnd",
   "spawnEnd",
@@ -717,6 +719,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "motion:fd":
       value = input.fd;
+      break;
+    case "motion:rdp":
+      value = input.rdp;
       break;
     case "animEnd":
       value = signals.animEnded;

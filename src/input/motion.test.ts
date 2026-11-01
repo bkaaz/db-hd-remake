@@ -59,6 +59,11 @@ describe("Motions.has", () => {
     expect(play(at("down"), at("fwd")).has("fd")).toBe(false);
   });
 
+  it("reads ← ↓ ↙ as rdp, and ↓ ↙ ← (Abiseh Geri's) as not", () => {
+    expect(play(at("back"), at("down"), at("down", "back")).has("rdp")).toBe(true);
+    expect(play(at("down"), at("down", "back"), at("back")).has("rdp")).toBe(false);
+  });
+
   it("does not match the directions in the wrong order", () => {
     expect(play(at("fwd"), at("down")).has("qcf")).toBe(false);
   });
