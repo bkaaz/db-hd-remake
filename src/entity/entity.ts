@@ -215,6 +215,8 @@ export class Entity {
   private readonly boxG = new Graphics();
   /** The charging ball, added light over the fighter — see combat/ball.ts. */
   private readonly ballG = new Graphics();
+  /** The beam's band: added light too, but drawn under the objects at either end of it (owner, 2026-11-01). */
+  private readonly bandG = new Graphics();
   private ballRadius = 0;
   /** Where the ball was last held, so it shrinks in place once let go. */
   private ballAt: [number, number] = [0, 0];
@@ -323,7 +325,8 @@ export class Entity {
     this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
     this.ballG.blendMode = "add";
-    this.view.addChild(this.sprite, this.ballG, this.boxG);
+    this.bandG.blendMode = "add";
+    this.view.addChild(this.sprite, this.bandG, this.ballG, this.boxG);
     this.sm = def.states ? new StateMachine(withHitTypes(def.states), def.animations) : null;
     if (this.sm) this.setAnim(this.sm.def.anim);
     else this.setAnim(Object.keys(def.animations)[0] ?? "");
@@ -457,9 +460,15 @@ export class Entity {
     this.thrownBall = ball;
   }
 
-  /** The radius of the ball in its hands now, sprite px. */
-  get ballSize(): number {
-    return this.ballRadius;
+  /**
+   * Its balls — charging, thrown, exploding — as added light in world
+   * coordinates, for whoever owns the world to keep over everything else:
+   * the original adds it to sprites and stage alike ($2A:A29A), so the hair
+   * beside Saiyan Meteor's ball does not cover it. A beam's band stays under
+   * the base and head it runs between (owner, 2026-11-01).
+   */
+  get addedLight(): Graphics {
+    return this.ballG;
   }
 
   /** Hold its state's clock and animation still, or let them run (`match/seize.ts`). */
@@ -1162,6 +1171,7 @@ export class Entity {
     this.sprite.scale.set(this.facing * this.scale * this.size, this.scale * this.size);
 
     this.ballG.clear();
+    this.bandG.clear();
     const thrown = this.thrownBall;
     if (thrown && thrown.radius > 0) this.ballG.circle(thrown.x, thrown.y, thrown.radius * this.scale).fill(BALL_COLOUR);
     if (this.ballRadius > 0) {
@@ -1191,7 +1201,7 @@ export class Entity {
     const y = this.y + band.from[1] * k;
     const h = bandHeights(band, frames, gone);
     const [b, t] = [(h.base * k) / 2, (h.head * k) / 2];
-    this.ballG.poly([base, y - b, head, y - t, head, y + t, base, y + b]).fill(BALL_COLOUR);
+    this.bandG.poly([base, y - b, head, y - t, head, y + t, base, y + b]).fill(BALL_COLOUR);
   }
 
   // --- animation playback --------------------------------------------------

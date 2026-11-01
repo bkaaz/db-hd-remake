@@ -14,6 +14,11 @@ export interface FinaleDef {
   from: [number, number];
   /** Px a frame along the line to him: 2.0 ×4 ($0D:DB49, $20:8DB7). */
   speed: number;
+  /**
+   * Its radius in flight: `$20:8E63`'s by the move's frame & 3, and that
+   * frame is held while it flies — 394 & 3 is 2, so 0x49.
+   */
+  radius: number;
   /** The mover's frame once it lands ($20:8E4B: 454). */
   resume: number;
   /** The explosion's growth a frame and its full radius ($20:8E6C: 2, 0x70). */
@@ -24,6 +29,8 @@ export interface FinaleDef {
   /** A burst somewhere on the screen every `every` frames of the white ($0F:F241). */
   every: number;
   fx: string;
+  /** Played as the white begins — the original asks for it every 64th frame of the game while white ($0F:F2A0). */
+  sound?: string;
   /** The stage's shakes: as it lands, as the explosion is done, as the white begins. */
   shakes: [ShakeDef, ShakeDef, ShakeDef];
 }
@@ -41,12 +48,13 @@ export interface Finale {
   left: number;
 }
 
-/** The ball leaving the hands at (`x`, `y`) for (`tx`, `ty`), at its radius. */
-export function throwBall(def: FinaleDef, x: number, y: number, tx: number, ty: number, radius: number): Finale {
+/** The ball leaving the hands at (`x`, `y`) for (`tx`, `ty`), `scale` screen px a sprite px. */
+export function throwBall(def: FinaleDef, x: number, y: number, tx: number, ty: number, scale = 1): Finale {
   const dx = tx - x;
   const dy = ty - y;
   const d = Math.hypot(dx, dy) || 1;
-  return { phase: "flying", x, y, vx: (dx / d) * def.speed, vy: (dy / d) * def.speed, radius, left: def.white };
+  const speed = def.speed * scale;
+  return { phase: "flying", x, y, vx: (dx / d) * speed, vy: (dy / d) * speed, radius: def.radius * scale, left: def.white };
 }
 
 /** What a frame of the finale did, beside where it now is. */

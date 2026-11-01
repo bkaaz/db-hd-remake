@@ -115,7 +115,11 @@ reaction, from its frame 168 `?`) and `$0F:A9E3`. Every object slot
 (`$3300`–`$3390`) goes into OAM before both (`$00:80E8`), so in front of
 them. Ours: `Fighters.inFront` (`src/match/fighters.ts`), and a state's
 `behind` for `$0D:D8D5`; effects and
-bolts are added to the stage after the fighters, so in front as well.
+bolts are added to the stage after the fighters, so in front as well. A `b1`
+effect — a ball, a band — is added light over sprites and stage alike
+(`$2A:A29A`), so it is over all of them; ours: a fighter's balls
+(`addedLight`) kept on top of the world, the band left under the base and
+head it runs between (owner).
 
 **`b0` spawns an object** (handler `$01:873F`): a type and an animation, a
 start step, flags and a palette, and a position from the fighter's, x
@@ -356,6 +360,8 @@ over). The explosion object (`$0F:E1A9`) asks for no sound.
 | `05` | `17` @ `0A0D` | `003` 0.99 | 0.32 |
 | `06` | `17` @ `06B3` | `004` 0.99 | 0.53 |
 | `29` | `18` @ `1C38` for 7 frames, then @ `0EF3`, ~0.95 s | `021` 0.41 | 0.11 |
+| `2c` | `15` @ `01F4`, ~1.9 s | `023` 0.53 | 0.38 |
+| `2d` / `16` | `18` on two voices, its pitch sliding down and up again (`049F` → `0258` …), looped | none: 0.20 at best | — |
 | `07` | `17` @ `0504` | `005` 0.99 | 0.25 |
 | `0c` | `16` @ `02EF` | `010` 0.86 | 0.49 |
 | `0d` | `16` @ `029D` | `011` 0.80 | 0.56 |
@@ -391,6 +397,8 @@ code that plays them, since a clip's number says nothing:
 | `19` | charging ki, every 8 frames (`$0F:A044`) | `charge_1` |
 | `25` | charging the Kamehameha (`aa`'s script) | `charge_2` |
 | `29` | a teleport's script, as he vanishes | `teleport_29` |
+| `2c` | Saiyan Meteor's explosion, every 64th frame while white (`$0F:F2A0`) | `explosion_2c` |
+| `2d` | Saiyan Meteor's ball at the fist (`ae`'s script, 200); `16` as the big one grows | — |
 | `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | the fighter's `voice_hurt` |
 | `31` | the voice at KO (`$0D:D10C`) | — |
 | `32` | an attack's shout (the ki blast, specials) | the fighter's `voice_shout` |
@@ -739,7 +747,9 @@ move's frame from the table at `$20:8F7D` (7 down to 1, 15 down to 8 —
 a flicker) while field `fc` is set (`$20:8F5E`), cleared at 274 with the
 effect; from 306 at 0, −112, growing 1 a frame to 63 while he shows
 drawing `a0` (`$20:8F22`). Kind 5, the explosion, is drawn the same way
-(`$2A:A3A3`), growing 2 a frame from the ball's radius to `0x70`. From
+(`$2A:A3A3`), growing 2 a frame from the ball's radius to `0x70`. In
+flight the radius is `$20:8E63`'s by the move's frame & 3 — a frame held
+while it flies, 394, so `49` (73) throughout. From
 274, every 4th frame of field `fd` to 32, `$20:8F8D` puts an `a/02` on
 the opponent, 28 px up — frames 276 to 304. Ours: the state's `ball`
 list, `seize.bursts` and `seize.finale` (ADR 0047). Not built: the band

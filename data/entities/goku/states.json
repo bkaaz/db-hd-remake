@@ -2049,6 +2049,7 @@
             -112
           ],
           "speed": 8,
+          "radius": 73,
           "resume": 454,
           "grow": 2,
           "max": 112,
@@ -2068,7 +2069,8 @@
               "pattern": 3,
               "frames": 64
             }
-          ]
+          ],
+          "sound": "explosion_2c"
         }
       },
       "damage": 0,
@@ -2116,7 +2118,7 @@
             -112
           ],
           "from": 306,
-          "until": 395,
+          "until": 394,
           "grow": 1,
           "max": 63
         }

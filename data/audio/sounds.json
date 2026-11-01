@@ -28,6 +28,13 @@
     "file": "021.wav",
     "rom": 41
   },
+  "explosion_2c": {
+    "label": "Saiyan Meteor's explosion — sound 2c, sample 15 at 01F4 for about 1.9 s, clip 023 by comparison (0.53, along the recording 0.50; the next 0.38)",
+    "gain": 0.4,
+    "vary": 0,
+    "file": "023.wav",
+    "rom": 44
+  },
   "hit_09": {
     "label": "a melee blow landing — sound 09, sample 14 sliding from 0785 to 0613, clip 007 by comparison along the slide (0.41, the next 0.17)",
     "gain": 0.42,

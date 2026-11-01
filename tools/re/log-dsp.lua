@@ -12,7 +12,7 @@
 -- Output: logs/dsp.txt (gitignored).
 
 local OUT = "/Users/bkaaz/workspace/db-hd-remake/logs/dsp.txt"
-local FRAMES = 600 -- ten seconds
+local FRAMES = 1200 -- twenty seconds: Saiyan Meteor's scene alone is over ten
 
 local log = assert(io.open(OUT, "w"))
 local DSP = emu.memType.spcDspRegisters

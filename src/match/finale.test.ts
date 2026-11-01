@@ -5,6 +5,7 @@ const METEOR: FinaleDef = {
   frame: 394,
   from: [0, -112],
   speed: 8,
+  radius: 73,
   resume: 454,
   grow: 2,
   max: 112,
@@ -33,20 +34,24 @@ function play(f: Finale): { frames: number; events: FinaleEvents[] } {
 
 describe("the finale", () => {
   // from 112 px over a hanging mover's head, at someone lying 96 px along
-  const ball = throwBall(METEOR, 100, 0, 196, 200, 63);
+  const ball = throwBall(METEOR, 100, 0, 196, 200);
 
   it("flies at its speed straight at where he lies", () => {
     expect(Math.hypot(ball.vx, ball.vy)).toBeCloseTo(8);
     expect(ball.vx / ball.vy).toBeCloseTo(96 / 200);
   });
 
+  it("flies at the radius its held frame gives it", () => {
+    expect(ball.radius).toBe(73);
+  });
+
   it("lands on the floor, then swells from its radius to the full one at 2 a frame", () => {
     const { events } = play(ball);
     const landed = events.findIndex((e) => e.landed);
     const exploded = events.findIndex((e) => e.exploded);
-    // 222 px at 8 a frame: on the 28th; 63 → 112 by 2: 25 more
+    // 222 px at 8 a frame: on the 28th; 73 → 112 by 2: 20 more
     expect(landed).toBe(27);
-    expect(exploded - landed).toBe(25);
+    expect(exploded - landed).toBe(20);
   });
 
   it("holds the white for its frames with a burst every 4th, then is done", () => {

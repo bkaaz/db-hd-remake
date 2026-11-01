@@ -119,7 +119,7 @@ export class Seizures {
         // from the hands at where he lies, its clock held while it flies ($20:8DC6)
         const [dx, dy] = fin.from;
         const from = { x: seizer.x + seizer.facing * dx * seizer.scaleOf, y: seizer.y + dy * seizer.scaleOf };
-        s.finale = throwBall(fin, from.x, from.y, held.x, held.floor, seizer.ballSize * seizer.scaleOf);
+        s.finale = throwBall(fin, from.x, from.y, held.x, held.floor, seizer.scaleOf);
         seizer.holdClock(true);
       } else if (s.finale) {
         const [next, e] = finaleStep(s.finale, fin, held.floor);
@@ -130,6 +130,7 @@ export class Seizures {
           seizer.jumpTo(fin.resume);
         }
         if (e.exploded) {
+          if (fin.sound) seizer.sound(fin.sound);
           world.shake(fin.shakes[1]);
           world.screen("white");
           world.shake(fin.shakes[2]);

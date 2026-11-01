@@ -300,11 +300,17 @@ export class Fighters {
     this.player.render(showBoxes);
     this.opponent?.render(showBoxes);
     this.projectiles.render(showBoxes);
+    // added light over all of it, effects put out this frame included —
+    // Saiyan Meteor's ball over the hair beside it (owner, 2026-11-01)
+    if (world) for (const fighter of this.both()) world.addChild(fighter.addedLight);
   }
 
   /** Take both bodies off the stage; a scene that leaves them leaves ghosts. */
   destroy(): void {
-    for (const fighter of this.both()) fighter.view.destroy({ children: true });
+    for (const fighter of this.both()) {
+      fighter.addedLight.destroy();
+      fighter.view.destroy({ children: true });
+    }
     this.projectiles.destroy();
   }
 
