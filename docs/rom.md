@@ -733,8 +733,16 @@ holding the move's frame (`DEC $44`), until y 200; the stage shakes and
 the effect grows by 2 a frame to `0x70` (`$30C4`); then `$0F:F1BC`,
 `$0F:F1F3` until it answers, `$37` = `24` and 60 frames of `$0F:F241`;
 then `$37` = `21`, `22` and the damage — the throw's own `$0F:B321`:
-118 (`0x76`, less defence), move `1b`, vy −4.0. `$37`'s values, and
-`$20:8F22`, `8F5E`, `8F8D`, are not read.
+118 (`0x76`, less defence), move `1b`, vy −4.0. `$20:8F22`, `8F5E` and
+`8F8D` are not read.
+
+**The game's `$37`** asks for a screen effect, run once through the table
+at `$0E:8387` (`$0E:836B`), most of them back to `04` when done: `1c`
+fades BG palettes 2–7 down over 15 steps (`$0D:DF40`, then `$0D:DF64`),
+`24` keeps them at `$7E:0300` and turns them white, `21` does the same for
+16 frames (`$38`) — the Kamehameha's white screen — and `22` puts them
+back; `1c`, `24` set `$30B0` bit 7 and `21`, `22` clear it `?`. `1f`
+(`$0E:85C4`) and `16` are not read.
 Quadruple Kick walks forward: vx 2.375 at frames 14, 26, 48, 70 and 1.25 at
 18, 32, 54, 76, kept until changed (nothing slows it), re-armed at 26, 48,
 70 — `goku`'s `quad_kick` states copy it as `velAt`.
