@@ -832,6 +832,26 @@ describe("health:N", () => {
   });
 });
 
+describe("setFrame", () => {
+  it("moves a state's clock on, as a handler sets its move's frame, and frames:N follows it", () => {
+    const sm = new StateMachine(withAttack("frames:454"));
+    sm.update(NONE, QUIET);
+    expect(sm.current).toBe("idle");
+    sm.setFrame(454);
+    sm.update(NONE, QUIET);
+    expect(sm.current).toBe("punch");
+  });
+
+  it("holds it still when set to the frame it is on, update after update", () => {
+    const sm = new StateMachine(withAttack("frames:3"));
+    for (let i = 0; i < 10; i++) {
+      sm.setFrame(1);
+      sm.update(NONE, QUIET);
+    }
+    expect(sm.current).toBe("idle");
+  });
+});
+
 describe("connected", () => {
   it("fires on a spent blow even past the cancel window, where cancelable does not", () => {
     // a window already closed: the swing connects on its second frame

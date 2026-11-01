@@ -1,5 +1,7 @@
 import type { ShakeDef } from "../camera/shake";
 import type { Entity } from "../entity/entity";
+import type { ScreenCue } from "../screen";
+import { finaleStep, throwBall, type Finale } from "./finale";
 
 /**
  * A state that takes the opponent out of the fight for a scene and gives him
@@ -34,6 +36,9 @@ export function flightStep(f: Flight, gravity: number, floor: number): Flight & 
 export interface SeizeWorld {
   dust(x: number, y: number): void;
   effect(name: string, x: number, y: number): void;
+  /** An effect somewhere on the screen, as the original picks a random spot ($0F:F284). */
+  anywhere(name: string): void;
+  screen(c: ScreenCue): void;
   shake(s: ShakeDef): void;
 }
 
@@ -47,6 +52,8 @@ interface Seizure {
   flight: Flight;
   /** Landings so far: which shake the next one starts. */
   landings: number;
+  /** The ball thrown at him, once it is (`finale.ts`). */
+  finale?: Finale;
 }
 
 /** The landings' shakes, in order: patterns 2, 1, 0 for 8 frames ($20:8D24, `8D54`, `8D85`). */
@@ -64,6 +71,7 @@ export class Seizures {
     if (s && (!def || seizer.state !== s.state)) {
       // cut short: let go where he is, as a throw cut short does
       if (s.phase !== "done") s.held.release();
+      seizer.showThrownBall(null);
       this.seizing.delete(seizer);
       return;
     }
@@ -105,13 +113,47 @@ export class Seizures {
     if (b && s.phase !== "done" && frame >= b.from && frame <= b.to && (frame - b.from) % b.every === 0) {
       world.effect(b.fx, held.x + held.facing * b.at[0] * scale, held.y + b.at[1] * scale);
     }
-    if (s.phase !== "done" && frame >= def.release.frame) {
-      // the throw's own blow ($0F:B321): he faces the seizer's way, thrown backwards
-      const { damage, reaction, vel } = def.release;
-      held.facing = seizer.facing;
-      held.hurtBy(damage);
-      held.release(reaction, vel);
-      s.phase = "done";
+    const fin = def.finale;
+    if (fin && s.phase !== "done") {
+      if (!s.finale && frame >= fin.frame) {
+        // from the hands at where he lies, its clock held while it flies ($20:8DC6)
+        const [dx, dy] = fin.from;
+        const from = { x: seizer.x + seizer.facing * dx * seizer.scaleOf, y: seizer.y + dy * seizer.scaleOf };
+        s.finale = throwBall(fin, from.x, from.y, held.x, held.floor, seizer.ballSize * seizer.scaleOf);
+        seizer.holdClock(true);
+      } else if (s.finale) {
+        const [next, e] = finaleStep(s.finale, fin, held.floor);
+        s.finale = next;
+        if (e.landed) {
+          world.shake(fin.shakes[0]);
+          seizer.holdClock(false);
+          seizer.jumpTo(fin.resume);
+        }
+        if (e.exploded) {
+          world.shake(fin.shakes[1]);
+          world.screen("white");
+          world.shake(fin.shakes[2]);
+        }
+        if (e.burst) world.anywhere(fin.fx);
+        if (e.done) {
+          world.screen("restore");
+          this.letGo(s, seizer, def.release);
+        }
+      }
+      // the ball and the explosion are drawn by its thrower, in the world
+      const f = s.finale;
+      seizer.showThrownBall(f && (f.phase === "flying" || f.phase === "exploding") ? { x: f.x, y: f.y, radius: f.radius / seizer.scaleOf } : null);
+      return;
     }
+    if (s.phase !== "done" && frame >= def.release.frame) this.letGo(s, seizer, def.release);
+  }
+
+  /** The throw's own blow ($0F:B321): he faces the seizer's way, thrown backwards. */
+  private letGo(s: Seizure, seizer: Entity, release: { damage: number; reaction: string; vel: [number, number] }): void {
+    const { held } = s;
+    held.facing = seizer.facing;
+    held.hurtBy(release.damage);
+    held.release(release.reaction, release.vel);
+    s.phase = "done";
   }
 }

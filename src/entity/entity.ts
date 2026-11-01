@@ -187,6 +187,10 @@ export class Entity {
   private approaching: number | null = null;
   /** A `rush` has set this entity down by the opponent this state. */
   private arrived = false;
+  /** Its state's clock and animation stand still — while Saiyan Meteor's ball flies. */
+  private clockHeld = false;
+  /** A ball it has thrown, drawn where it is in the world rather than at its hands (`match/finale.ts`). */
+  private thrownBall: { x: number; y: number; radius: number } | null = null;
   /** What its state asked of the screen this frame (`StateDef.screen`), until the fighters take it. */
   private screenCues: ScreenCue[] = [];
   /** Effects the animation's steps put out, until the fighters take them. */
@@ -446,6 +450,39 @@ export class Entity {
   /** The throw the state just entered makes, if it is one. */
   get grab(): GrabDef | undefined {
     return this.sm?.def.grab;
+  }
+
+  /** Draw a ball it has thrown at (`x`, `y`) in the world, sprite-px `radius`; null for none. */
+  showThrownBall(ball: { x: number; y: number; radius: number } | null): void {
+    this.thrownBall = ball;
+  }
+
+  /** The radius of the ball in its hands now, sprite px. */
+  get ballSize(): number {
+    return this.ballRadius;
+  }
+
+  /** Hold its state's clock and animation still, or let them run (`match/seize.ts`). */
+  holdClock(on: boolean): void {
+    this.clockHeld = on;
+  }
+
+  /**
+   * Move its state's clock and animation on to `frame`, the next one shown —
+   * as a handler sets its move's frame ($20:8E4B: 454 once the ball lands).
+   * What the skipped steps would have played does not play.
+   */
+  jumpTo(frame: number): void {
+    this.stateFrames = frame;
+    this.sm?.setFrame(frame);
+    const steps = this.anim?.steps ?? [];
+    let left = frame;
+    let i = 0;
+    while (i < steps.length - 1 && left >= steps[i].dur) left -= steps[i++].dur;
+    this.stepIndex = i;
+    this.remaining = Math.max(1, (steps[i]?.dur ?? 1) - left);
+    this.animEnded = false;
+    this.applyFrame();
   }
 
   /** A bolt whose state's `lasts` has run out. */
@@ -867,6 +904,7 @@ export class Entity {
     this.behind = this.sm.def.behind ?? false;
     this.approaching = null;
     this.arrived = false;
+    this.clockHeld = false;
     this.landed = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
     // does so straight after forcing the reaction.
@@ -1007,6 +1045,8 @@ export class Entity {
     const nearGround = this.nearGround;
 
     const before = this.sm.current;
+    // a held clock: the state sees the same frame again ($20:8DC6)
+    if (this.clockHeld) this.sm.setFrame(this.stateFrames);
     const changed = this.sm.update(
       {
         fwd,
@@ -1110,9 +1150,9 @@ export class Entity {
       const { band, frames, gone } = this.fading;
       if (bandHeights(band, frames, gone).head === 0) this.fading = null;
     }
-    this.stateFrames++;
+    if (!this.clockHeld) this.stateFrames++;
 
-    this.advanceAnim();
+    if (!this.clockHeld) this.advanceAnim();
   }
 
   /** Push the simulation state into the display objects. */
@@ -1122,6 +1162,8 @@ export class Entity {
     this.sprite.scale.set(this.facing * this.scale * this.size, this.scale * this.size);
 
     this.ballG.clear();
+    const thrown = this.thrownBall;
+    if (thrown && thrown.radius > 0) this.ballG.circle(thrown.x, thrown.y, thrown.radius * this.scale).fill(BALL_COLOUR);
     if (this.ballRadius > 0) {
       const [dx, dy] = this.ballAt;
       const k = this.scale * this.size;

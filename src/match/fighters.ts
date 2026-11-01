@@ -70,6 +70,10 @@ export class Fighters {
   private readonly recorder = new Recorder();
   private readonly throws = new Throws();
   private readonly seizures = new Seizures();
+  /** What a scene asked of the screen this frame, for `takeScreen`. */
+  private readonly screenCues: ScreenCue[] = [];
+  /** The camera as the last frame left it: where a scene's bursts may fall. */
+  private lastCamera: Camera | null = null;
   private readonly projectiles: Projectiles;
   /** Where each body stood before this frame moved it — what the camera reads its push from. */
   private from: [number, number] = [0, 0];
@@ -140,6 +144,12 @@ export class Fighters {
       const world = {
         dust: (x: number, y: number) => this.impact.effects.spawn("dust", x, y),
         effect: (name: string, x: number, y: number) => this.impact.effects.spawn(name, x, y),
+        // the screen's corner plus a random byte each way, as $0F:F284 does — some fall below it
+        anywhere: (name: string) => {
+          if (this.lastCamera)
+            this.impact.effects.spawn(name, this.lastCamera.x + Math.random() * 256, this.lastCamera.y + Math.random() * 256);
+        },
+        screen: (c: ScreenCue) => this.screenCues.push(c),
         shake: (s: ShakeDef) => (this.shake = s),
       };
       this.seizures.update(this.player, this.opponent, world);
@@ -172,6 +182,7 @@ export class Fighters {
    * stop a body at the screen's edge, or put one back that drifted past it.
    */
   keepInView(camera: Camera): void {
+    this.lastCamera = camera;
     const { player, opponent } = this;
     const placed = camera.follow(
       { from: this.from[0], to: player.x },
@@ -239,9 +250,9 @@ export class Fighters {
     return shake;
   }
 
-  /** What the fighters' states asked of the screen this frame, in order — taken once. */
+  /** What the fighters' states and scenes asked of the screen this frame, in order — taken once. */
   takeScreen(): ScreenCue[] {
-    return this.both().flatMap((f) => f.takeScreen());
+    return [...this.both().flatMap((f) => f.takeScreen()), ...this.screenCues.splice(0)];
   }
 
   takeFlash(): number {

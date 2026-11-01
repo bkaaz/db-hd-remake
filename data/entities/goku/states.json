@@ -2041,6 +2041,34 @@
             0,
             -28
           ]
+        },
+        "finale": {
+          "frame": 394,
+          "from": [
+            0,
+            -112
+          ],
+          "speed": 8,
+          "resume": 454,
+          "grow": 2,
+          "max": 112,
+          "white": 60,
+          "every": 4,
+          "fx": "burst_s",
+          "shakes": [
+            {
+              "pattern": 2,
+              "frames": 32
+            },
+            {
+              "pattern": 1,
+              "frames": 32
+            },
+            {
+              "pattern": 3,
+              "frames": 64
+            }
+          ]
         }
       },
       "damage": 0,
@@ -2052,14 +2080,6 @@
         [
           274,
           "bright"
-        ],
-        [
-          411,
-          "white"
-        ],
-        [
-          530,
-          "restore"
         ]
       ],
       "ball": [
@@ -2096,7 +2116,7 @@
             -112
           ],
           "from": 306,
-          "until": 394,
+          "until": 395,
           "grow": 1,
           "max": 63
         }

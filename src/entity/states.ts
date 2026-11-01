@@ -13,6 +13,7 @@
 
 import type { Trail } from "./trail";
 import type { ScreenCue } from "../screen";
+import type { FinaleDef } from "../match/finale";
 import type { Approach, Rush } from "./approach";
 import type { BallDef } from "../combat/ball";
 import { airProblem, leavesGround, type AirTimeline } from "./air";
@@ -72,6 +73,8 @@ export interface SeizeDef {
   release: { frame: number; damage: number; reaction: string; vel: [number, number] };
   /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
   bursts?: { fx: string; from: number; to: number; every: number; at: [number, number] };
+  /** How it ends (`match/finale.ts`): with one, he is let go when it is done, not on `release.frame`. */
+  finale?: FinaleDef;
 }
 
 export interface StateDef {
@@ -966,6 +969,14 @@ export class StateMachine {
    *
    * @returns the new state's name if it changed, else null.
    */
+  /**
+   * Put the state's clock at `frame` as the next update will see it — a
+   * handler setting its move's frame ($44), or holding it (`Entity.holdClock`).
+   */
+  setFrame(frame: number): void {
+    this.elapsed = frame - 1;
+  }
+
   update(input: InputSnapshot, signals: Signals): string | null {
     this.elapsed++;
     for (const [button, down] of Object.entries(input.holding)) if (!down) this.released.add(button);
@@ -1070,6 +1081,7 @@ export function effectsNamed(
     if (def.groundFx) names.add(def.groundFx);
     if (def.trail) names.add(def.trail.fx);
     if (def.seize?.bursts) names.add(def.seize.bursts.fx);
+    if (def.seize?.finale) names.add(def.seize.finale.fx);
   }
   return [...names];
 }

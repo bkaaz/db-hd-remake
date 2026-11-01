@@ -742,8 +742,10 @@ drawing `a0` (`$20:8F22`). Kind 5, the explosion, is drawn the same way
 (`$2A:A3A3`), growing 2 a frame from the ball's radius to `0x70`. From
 274, every 4th frame of field `fd` to 32, `$20:8F8D` puts an `a/02` on
 the opponent, 28 px up — frames 276 to 304. Ours: the state's `ball`
-list and `seize.bursts`; the ball's flight, the explosion and the band
-are not built.
+list, `seize.bursts` and `seize.finale` (ADR 0047). Not built: the band
+of state 4–5 (kind 4 along the floor, `$0F:F1BC` / `F1F3`, a frame or
+two) and sound `2c`, asked every 64th frame of the game while white
+(`$0F:F2A0`), which has no clip.
 
 **The game's `$37`** asks for a screen effect, run once through the table
 at `$0E:8387` (`$0E:836B`), most of them back to `04` when done: `1c`
