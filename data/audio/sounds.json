@@ -157,7 +157,7 @@
   "charge_1": {
     "label": "charging ki — asked for every 8 frames, each copy cutting the last (as every sound does): its first 8 frames, over and over",
     "gain": 0.22,
-    "vary": 0.0,
+    "vary": 0,
     "file": "013.wav",
     "rom": 25
   },
@@ -184,7 +184,7 @@
   "charge_2": {
     "label": "charging a beam — the kamehameha's; played once and cut off by the shot, never looped",
     "gain": 0.25,
-    "vary": 0.0,
+    "vary": 0,
     "file": "019.wav",
     "rom": 37
   },
@@ -196,5 +196,159 @@
     "gain": 0.45,
     "vary": 0.04,
     "file": "008.wav"
+  },
+  "sfx_08": {
+    "label": "sound 08 — sample 14 + sample 19; clip 006 from the sound test's recording, placed by order (0.50); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "006.wav",
+    "rom": 8
+  },
+  "sfx_1b": {
+    "label": "sound 1b — sample 17 + sample 18; clip 014 from the sound test's recording, placed by order (0.16); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "014.wav",
+    "rom": 27
+  },
+  "sfx_1d": {
+    "label": "sound 1d — sample 16; clip 015 from the sound test's recording, placed by order (0.56); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "015.wav",
+    "rom": 29
+  },
+  "sfx_1f": {
+    "label": "sound 1f — sample 19; clip 016 from the sound test's recording, placed by order (0.30); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "016.wav",
+    "rom": 31
+  },
+  "sfx_21": {
+    "label": "sound 21 — of the music's samples; clip 017 from the sound test's recording, the one clip free between its neighbours; what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "017.wav",
+    "rom": 33
+  },
+  "sfx_23": {
+    "label": "sound 23 — sample 18; clip 018 from the sound test's recording, clear (0.70); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "018.wav",
+    "rom": 35
+  },
+  "sfx_28": {
+    "label": "sound 28 — of the music's samples; clip 020 from the sound test's recording, the one clip free between its neighbours; what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "020.wav",
+    "rom": 40
+  },
+  "sfx_2b": {
+    "label": "sound 2b — sample 18 + sample 18; clip 022 from the sound test's recording, placed by order (0.09); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "022.wav",
+    "rom": 43
+  },
+  "sfx_39": {
+    "label": "sound 39 — of the music's samples; clip 027 from the sound test's recording, the one clip free between its neighbours; what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "027.wav",
+    "rom": 57
+  },
+  "sfx_3a": {
+    "label": "sound 3a — sample 14 + sample 14 + sample 14; clip 028 from the sound test's recording, placed by order (0.29); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "028.wav",
+    "rom": 58
+  },
+  "sfx_3f": {
+    "label": "sound 3f — sample 19; clip 030 from the sound test's recording, clear (0.80); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "030.wav",
+    "rom": 63
+  },
+  "sfx_40": {
+    "label": "sound 40 — sample 14 + sample 18; clip 031 from the sound test's recording, clear (0.34); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "031.wav",
+    "rom": 64
+  },
+  "sfx_41": {
+    "label": "sound 41 — sample 19; clip 032 from the sound test's recording, placed by order (0.52); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "032.wav",
+    "rom": 65
+  },
+  "sfx_44": {
+    "label": "sound 44 — sample 14 + sample 18 + sample 18; clip 033 from the sound test's recording, placed by order (0.18); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "033.wav",
+    "rom": 68
+  },
+  "sfx_46": {
+    "label": "sound 46 — sample 18; clip 034 from the sound test's recording, placed by order (0.16); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "034.wav",
+    "rom": 70
+  },
+  "sfx_48": {
+    "label": "sound 48 — sample 18 + sample 18 + sample 18 + sample 18; clip 035 from the sound test's recording, clear (0.82); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "035.wav",
+    "rom": 72
+  },
+  "sfx_49": {
+    "label": "sound 49 — sample 18; clip 036 from the sound test's recording, placed by order (0.17); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "036.wav",
+    "rom": 73
+  },
+  "sfx_4a": {
+    "label": "sound 4a — sample 14; clip 037 from the sound test's recording, clear (0.82); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "037.wav",
+    "rom": 74
+  },
+  "sfx_4b": {
+    "label": "sound 4b — sample 19 + sample 17; clip 038 from the sound test's recording, placed by order (0.45); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "038.wav",
+    "rom": 75
+  },
+  "sfx_4c": {
+    "label": "sound 4c — sample 16; clip 039 from the sound test's recording, clear (0.77); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "039.wav",
+    "rom": 76
+  },
+  "sfx_4d": {
+    "label": "sound 4d — sample 14; clip 040 from the sound test's recording, placed by order (0.21); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "040.wav",
+    "rom": 77
+  },
+  "sfx_4f": {
+    "label": "sound 4f — sample 19 + sample 17; clip 041 from the sound test's recording, placed by order (0.41); what plays it is not named yet, its gain not set by ear",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "041.wav",
+    "rom": 79
   }
 }

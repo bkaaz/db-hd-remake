@@ -397,7 +397,7 @@ names them by id (`swing_06`, `swing_07`, `hit_09`), and `goku_old` keeps
 the old names. The sound test plays its number as the id, unchanged below `0x50`
 (`$00:D213`, number in `$19A6`) — but the clips of our capture are numbered
 by where the silences fell, not by the sound test, so a clip is **not** an
-id: matching them by an offset gave a wrong hit sound. A melee hit plays
+id: matching them by an offset gave a wrong hit sound. **But the capture is the sound test played in order**, and its list holds each sound once: `01`–`0d`, then every other id from `17` (`17`, `19`, … `29`, `2b`–`2d`, `2f`), `38`–`3a`, `3d`, `3f`–`41`, `44`, `46`, `48`–`4d`, `4f` (`tools/re/record-sound-test.lua`, 2026-11-02) — the ids between are player two's, shifted (`$0D:D852`). So the clips follow the list's order: `05` is `003` … `0d` `011`, `17` `012`, `19` `013` … `4f` `041`, and `npm run samples -- --map` pairs them by likeness kept in that order (`alignInOrder`), a sound of the music's samples by the one clip its neighbours leave free. A melee hit plays
 `09` (`$0D:D1B7`) and the defender's own `30`; a projectile's, `0a` and `30`
 (`$0D:D1E6`). The export puts each script's `a0` on the animation step it
 begins (`sfx`); `"rom"` in a `sounds.json` is which ids are matched — by the

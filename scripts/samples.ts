@@ -41,7 +41,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { decodeBrr, NATIVE_RATE, playAt, sampleEntry } from "../src/audio/brr.ts";
 import { likeness, resample } from "../src/audio/compare.ts";
-import { clearMatch, playerOneOf, requests, romIds, unanswered } from "../src/audio/find.ts";
+import { alignInOrder, clearMatch, fillGaps, playerOneOf, requests, romIds, single, unanswered } from "../src/audio/find.ts";
 import { ROM_PATH, toFile } from "../src/rom/cartridge.ts";
 import { loopIndex, renderVoices, voicesFrom, type Heard } from "../src/audio/render.ts";
 import type { Sounds } from "../src/audio/sounds.ts";
@@ -104,8 +104,8 @@ function bestOf(sound: Float32Array): string {
 }
 
 /** What the effect voices played for the sound asked for on `from`, made again from the chip's samples. */
-function rendered(from: number, frames: number, only?: number): { heard: Heard[]; sound: Float32Array } {
-  const heard = voicesFrom(readFileSync(DSP_LOG, "utf8"), from, frames, 10).filter((h) => only === undefined || h.src === only);
+function rendered(from: number, frames: number, only?: number, listen?: number[]): { heard: Heard[]; sound: Float32Array } {
+  const heard = voicesFrom(readFileSync(DSP_LOG, "utf8"), from, frames, 10, listen).filter((h) => only === undefined || h.src === only);
   const voices = heard.map((h) => {
     const { start, loop } = sampleEntry(ram, dir, h.src);
     const sample = decodeBrr(ram, start);
@@ -115,41 +115,59 @@ function rendered(from: number, frames: number, only?: number): { heard: Heard[]
 }
 
 if (MAP) {
-  // every id the sound test played, against the capture's clips alone: one
-  // clear above the rest is written to the bank with --write, the rest are
-  // for an ear (docs/rom.md, The sounds)
+  // every id the sound test played, against the capture's clips alone, paired
+  // in the order both were played (alignInOrder): one clear above the rest,
+  // or placed by order among its best three, is written with --write; the
+  // rest are for an ear (docs/rom.md, The sounds)
   const banks = BANKS.map((f) => JSON.parse(readFileSync(f, "utf8")) as Sounds);
   const known = romIds(...banks);
-  const capture = clips.filter((c) => /^\d{3}\.wav$/.test(c.name));
-  const firsts = new Map<number, number>();
-  for (const { id, frame } of requests(readFileSync(DSP_LOG, "utf8"))) if (id < 0x50 && !firsts.has(id)) firsts.set(id, frame);
+  const capture = clips.filter((c) => /^\d{3}\.wav$/.test(c.name)).sort((a, b) => a.name.localeCompare(b.name));
+  // the sound test's own requests: alone in their frame, before the first
+  // burst — past its list the game uploads music through the same port
+  const asked = requests(readFileSync(DSP_LOG, "utf8"));
+  const burst = asked.find((r) => !single(asked).includes(r))?.frame ?? Infinity;
+  const played: { id: number; frame: number }[] = [];
+  for (const r of single(asked)) if (r.frame < burst && r.id < 0x50 && !played.some((p) => p.id === r.id)) played.push(r);
+  // no music plays in the sound test: every voice is the sound's
+  const rows = played.map(({ id, frame }) => {
+    const { heard, sound } = rendered(frame, 120, undefined, [0, 1, 2, 3, 4, 5, 6, 7]);
+    const scores = heard.length ? capture.map((c) => likeness(resample(sound, NATIVE_RATE, RATE), c.samples)) : capture.map(() => 0);
+    return { id, heard, scores };
+  });
+  const aligned = alignInOrder(rows.map((r) => r.scores));
+  const order = fillGaps(aligned, capture.length);
   const write = process.argv.includes("--write");
   const shared = banks[0];
   const added: string[] = [];
-  for (const [id, frame] of [...firsts].sort((a, b) => a[0] - b[0])) {
-    const { heard, sound } = rendered(frame, 120);
-    if (heard.length === 0) {
-      console.log(`${hex(id)}  no effect voice — a voice, music, or nothing`);
-      continue;
-    }
-    const [best, next, third] = ranked(resample(sound, NATIVE_RATE, RATE), capture);
-    const clear = clearMatch(best.score, next.score);
+  rows.forEach(({ id, heard, scores }, i) => {
+    const top = scores.map((score, j) => ({ name: capture[j].name, score })).sort((a, b) => b.score - a.score).slice(0, 3);
+    const pick = order[i] === null ? null : capture[order[i]!].name;
     const has = known.get(id);
     const file = has ? (banks.find((b) => b[has])?.[has]?.file ?? "") : "";
-    const verdict = has ? (file === best.name ? `= ${has}` : `bank: ${has} (${file}) — differs`) : clear ? "clear" : "for an ear";
-    console.log(`${hex(id)}  ${best.name} ${best.score.toFixed(2)}, ${next.name} ${next.score.toFixed(2)}, ${third.name} ${third.score.toFixed(2)}  ${verdict}`);
-    if (write && !has && clear) {
-      const voices = heard.map((h) => `sample ${hex(h.src)}`).join(" + ");
+    const clear = heard.length > 0 && clearMatch(top[0].score, top[1].score) && pick === top[0].name;
+    // among its best three, or the one clip its neighbours leave free
+    const gap = aligned[i] === null && pick !== null;
+    const byOrder = !clear && pick !== null && (gap || top.some((t) => t.name === pick && t.score > 0));
+    const verdict =
+      has ? (file === pick ? `= ${has}` : `bank: ${has} (${file}) — differs`)
+      : gap ? "by order, the one clip free between its neighbours"
+      : heard.length === 0 ? "no voice from sample 10 up — for an ear"
+      : clear ? "clear" : byOrder ? "by order" : "for an ear";
+    const best = heard.length ? top.map((t) => `${t.name} ${t.score.toFixed(2)}`).join(", ") : "—";
+    console.log(`${hex(id)}  order: ${pick ?? "—"}  best: ${best}  ${verdict}`);
+    if (write && !has && (clear || byOrder) && pick) {
+      const voices = heard.map((h) => `sample ${hex(h.src)}`).join(" + ") || "of the music's samples";
+      const score = scores[order[i]!].toFixed(2);
       shared[`sfx_${hex(id)}`] = {
-        label: `sound ${hex(id)} — ${voices}; clip ${best.name.slice(0, 3)} by the sound test's recording (${best.score.toFixed(2)}, the next ${next.score.toFixed(2)}); what plays it is not named yet, its gain not set by ear`,
+        label: `sound ${hex(id)} — ${voices}; clip ${pick.slice(0, 3)} from the sound test's recording, ${clear ? "clear" : gap ? "the one clip free between its neighbours" : "placed by order"}${gap ? "" : ` (${score})`}; what plays it is not named yet, its gain not set by ear`,
         gain: 0.3,
         vary: 0,
-        file: best.name,
+        file: pick,
         rom: id,
       };
       added.push(hex(id));
     }
-  }
+  });
   if (write) {
     writeFileSync(BANKS[0], JSON.stringify(shared, null, 2) + "\n");
     console.log(`written to ${BANKS[0]}: ${added.length ? added.map((id) => `sfx_${id}`).join(", ") : "nothing new"}`);

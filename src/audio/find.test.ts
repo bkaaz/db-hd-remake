@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clearMatch, playerOneOf, requests, romIds, unanswered } from "./find";
+import { alignInOrder, clearMatch, fillGaps, playerOneOf, requests, romIds, single, unanswered } from "./find";
 
 const LOG = ["# header", "f833 v7 env=127 pitch=07d8 src=15", "f833 sound 3d", "f834 sound 32", "f900 sound 3d", "f901 sound 0c"].join("\n");
 
@@ -34,5 +34,26 @@ describe("finding a sound the bank lacks", () => {
     expect(clearMatch(0.39, 0.16)).toBe(true);
     expect(clearMatch(0.27, 0.1)).toBe(false);
     expect(clearMatch(0.56, 0.32)).toBe(false);
+  });
+
+  it("drops a burst of writes in one frame — music going up to the chip, not sounds", () => {
+    const asked = [{ frame: 60, id: 0x02 }, { frame: 4698, id: 0x45 }, { frame: 4698, id: 0xb4 }, { frame: 4698, id: 0x01 }];
+    expect(single(asked)).toEqual([{ frame: 60, id: 0x02 }]);
+  });
+
+  it("pairs in order, so a weak likeness between two strong ones lands between them", () => {
+    // row 1 alone would take column 0 (0.3), but rows 0 and 2 are sure of 1 and 3
+    const scores = [
+      [0.1, 0.9, 0.1, 0.1],
+      [0.3, 0.1, 0.2, 0.1],
+      [0.1, 0.1, 0.1, 0.8],
+    ];
+    expect(alignInOrder(scores)).toEqual([1, 2, 3]);
+  });
+
+  it("fills a gap with the clips its neighbours leave free, only when they fit", () => {
+    expect(fillGaps([3, null, 5], 8)).toEqual([3, 4, 5]);
+    expect(fillGaps([3, null, null, 6], 8)).toEqual([3, 4, 5, 6]);
+    expect(fillGaps([null, null, 1], 8)).toEqual([null, null, 1]);
   });
 });

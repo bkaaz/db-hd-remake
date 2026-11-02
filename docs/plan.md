@@ -518,14 +518,13 @@ queue.
 - **What follows the hit types** (`combat.md`, *Open*): a `stun` type, a hit
   type for ki blasts — the projectile and how it is taken — and whatever
   punishes a string thrown at nothing.
-- **Name the rest of the sound test.** The capture is cut into clips of which
-  only a handful are identified — `data/audio/sound-test.json` says which — so
-  the swings, the hit, the block, the jump, the landing, the crash to the floor
-  and Goku's own grunt are real samples;
-  `data/audio/sound-test.json` holds a `?` for every clip nobody has listened to
-  yet. One known gap behind that: `hit_heavy` borrows the light
-  hit's sample until a heavier one is named. Nothing here needs code — a clip
-  number in `sounds.json` is the whole change.
+- **The sound test's last gaps.** Every effect id the original's sound test
+  plays is matched to a clip of our capture (`npm run samples -- --map`,
+  2026-11-02) but five menu sounds — `01`–`04` and `27`, the cursor — on
+  clips `000`–`002`, by ear. Also by ear: `38` (Saiyan Meteor) is rendered,
+  while the order puts it on clip `026`; the `sfx_<id>` entries' gains;
+  and a name for each once what plays it is known. `hit_heavy` (goku_old)
+  still borrows the light hit's sample.
 - **The rest of what spends ki.** The ki blast pays for itself as of
   2026-08-24 (`cost` on the state, checked before the transition fires), so the
   machinery is there and used. Vanish and the fast dash are the two that still
