@@ -567,6 +567,11 @@ export interface InputSnapshot {
   hcfu: boolean;
   fbf: boolean;
   /**
+   * The cartridge's commands met this frame (`input/command.ts`): the move
+   * each starts, to the button it was pressed with — `command:<move>`.
+   */
+  commands?: ReadonlyMap<string, string>;
+  /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
    * hold.
@@ -645,6 +650,8 @@ export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
 const COUNTED = /^(frames:\d+|health:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+/** `command:a4` — the move whose command is met, two hex digits (ADR 0050). */
+const COMMAND = /^command:[0-9a-f]{2}$/;
 
 /** Every trigger the runner understands, for validation and editor UI. */
 export const TRIGGERS = [
@@ -708,6 +715,7 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
   const key = negated ? trigger.slice(1) : trigger;
   const count = COUNTED.test(key) ? counted(key, signals) : undefined;
   if (count !== undefined) return negated ? !count : count;
+  if (COMMAND.test(key)) return input.commands?.has(key.slice("command:".length)) === !negated;
   let value: boolean;
   switch (key) {
     case "held:fwd":
@@ -849,9 +857,11 @@ const triggersOf = (when: string | string[]): string[] => (Array.isArray(when) ?
  * whoever owns the buffer has to know which press was used — and only this
  * module knows how a trigger is spelled.
  */
-export const pressIn = (when: string | string[]): string | null => {
+export const pressIn = (when: string | string[], input?: InputSnapshot): string | null => {
   const pressed = triggersOf(when).find((t) => t.startsWith("pressed:"));
-  return pressed ? pressed.slice("pressed:".length) : null;
+  if (pressed) return pressed.slice("pressed:".length);
+  const command = triggersOf(when).find((t) => COMMAND.test(t));
+  return (command && input?.commands?.get(command.slice("command:".length))) ?? null;
 };
 
 /**
@@ -1031,11 +1041,11 @@ export class StateMachine {
       // the original's charge. Without `animEnd` it would restart every frame.
       if (t.queued) {
         this.queued = t;
-        this.pressSpent = pressIn(t.when);
+        this.pressSpent = pressIn(t.when, input);
         continue;
       }
       if (t.to === this.current && !triggersOf(t.when).includes("animEnd")) return null;
-      return this.take(t, pressIn(t.when));
+      return this.take(t, pressIn(t.when, input));
     }
     return null;
   }
@@ -1430,7 +1440,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
         const key = trigger?.startsWith("!") ? trigger.slice(1) : trigger;
         if (!key) {
           errors.push(`${at}: no "when" trigger`);
-        } else if (!(TRIGGERS as readonly string[]).includes(key) && !COUNTED.test(key)) {
+        } else if (!(TRIGGERS as readonly string[]).includes(key) && !COUNTED.test(key) && !COMMAND.test(key)) {
           errors.push(`${at}: unknown trigger "${key}" (known: ${TRIGGERS.join(", ")})`);
         }
       }

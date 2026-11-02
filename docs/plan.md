@@ -134,22 +134,13 @@ takes an investigation instead of a procedure. In this order:
    code (`rom.md`); the Kamehameha's were read from it by hand and written
    into `objects.spawns` with the addresses. What is left: a reader like
    `handler.ts` for the usual animator, so the port report says it.
-2. **Commands from the command table, in the game** — the sequences are
-   data (`commands.json`) and matched as the original does
-   (`src/input/command.ts`, ADR 0050); what is left is wiring them in: the
-   pad's history recorded each frame (our buttons as the pad's: attack Y,
-   smash B, blast A, strike X, dash R), a `command:<move>` trigger, and
-   `goku`'s and `vegeta`'s `motion:` + `pressed:` entries rewritten to it
-   (the template and `specials.json` too). Not ported: the refusal while
-   guarding or after a blow has gone (`$0D:F1B4`) — the states say where
-   from.
-3. **The original's reactions** — light, heavy, the long reel, in the
+2. **The original's reactions** — light, heavy, the long reel, in the
    air (`1a`) and the knockdown are built; crouching (`17`/`18`), dizzy
    (`1d`), and the
    choice between them as `$0D:D29C` makes it. The reactions brought from
    goku_old (`hurt_air`, `launched`, `blown` …) still land straight into
    `downed`.
-4. **Which clip is which id** — now compared, not assumed: the chip's
+3. **Which clip is which id** — now compared, not assumed: the chip's
    samples against our clips (`npm run samples`, `rom.md`, The sounds).
    `06` / `07` were one clip off and `09`'s clip is likely `008`; put the
    bank right, then compare what the first recording did not play — `30`

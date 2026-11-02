@@ -7,10 +7,7 @@
         "walk_fwd",
         "walk_back"
       ],
-      "when": [
-        "motion:hcf",
-        "pressed:blast"
-      ],
+      "when": "command:ad",
       "to": "big_bang"
     },
     {
@@ -19,10 +16,7 @@
         "walk_fwd",
         "walk_back"
       ],
-      "when": [
-        "motion:dbf",
-        "pressed:blast"
-      ],
+      "when": "command:ac",
       "to": "final_flash"
     },
     {
@@ -34,10 +28,7 @@
         "crouch",
         "stand_up"
       ],
-      "when": [
-        "motion:qcf",
-        "pressed:smash"
-      ],
+      "when": "command:a4",
       "to": "sliding_kick"
     }
   ],
@@ -447,10 +438,7 @@
       "blockSound": "block_1",
       "transitions": [
         {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
+          "when": "command:a5",
           "to": "rushing_knee",
           "queued": {
             "from": 8
@@ -489,10 +477,7 @@
       "blockSound": "block_1",
       "transitions": [
         {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
+          "when": "command:a6",
           "to": "cross_punch",
           "queued": {
             "from": 1

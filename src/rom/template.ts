@@ -15,7 +15,7 @@ import type { StatesFile } from "../entity/states";
 /** Keys whose value names a state. */
 const POINTS_AT = ["to", "guard", "ifAirborne", "ifCrouching"];
 /** What a player asks for, as against what happens to the fighter. */
-const INPUT = /^(pressed|held|motion|close):/;
+const INPUT = /^(pressed|held|motion|close|command):/;
 
 export interface Template {
   file: StatesFile;

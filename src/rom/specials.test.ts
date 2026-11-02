@@ -20,15 +20,15 @@ const TEMPLATE: StatesFile = {
 };
 
 const BALL: SpecialsFile = {
-  entries: [{ from: ["idle"], when: ["motion:hcf", "pressed:blast"], to: "ball" }],
+  entries: [{ from: ["idle"], when: "command:ad", to: "ball" }],
   states: { ball: { anim: "mad" } },
 };
 
 describe("withSpecials", () => {
-  it("adds his special and puts its entry just ahead of the plain press of its button", () => {
+  it("adds his special and puts its entry ahead of the first press", () => {
     const out = withSpecials(TEMPLATE, BALL);
     expect(out.states.ball).toEqual({ anim: "mad" });
-    expect(out.states.idle.transitions!.map((t) => t.to)).toEqual(["crouch", "kick", "ball", "ki"]);
+    expect(out.states.idle.transitions!.map((t) => t.to)).toEqual(["crouch", "ball", "kick", "ki"]);
   });
 
   it("leaves the template's file as it was", () => {
@@ -42,8 +42,9 @@ describe("withSpecials", () => {
     expect(out.states.crouch.transitions![0].to).toBe("ball");
   });
 
-  it("refuses a special named as a template state, and an entry to nothing", () => {
+  it("refuses a special named as a template state, an entry to nothing, and one asking for no button", () => {
     expect(() => withSpecials(TEMPLATE, { ...BALL, states: { ki: { anim: "mad" } } })).toThrow(/template makes already/);
     expect(() => withSpecials(TEMPLATE, { ...BALL, states: {} })).toThrow(/does not define/);
+    expect(() => withSpecials(TEMPLATE, { ...BALL, entries: [{ ...BALL.entries[0], when: "held:fwd" }] })).toThrow(/asks for no button/);
   });
 });

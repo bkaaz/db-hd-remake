@@ -18,6 +18,7 @@ import type { ScreenCue } from "../screen";
 import { approachSpeed, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
+import { commandsMet, padFrame, PadHistory } from "../input/command";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions, type MotionName } from "../input/motion";
 import {
@@ -124,6 +125,8 @@ export interface EntityDebug {
   inputs: string;
   /** Motions complete right now, so a recording can say when one landed. */
   motions: MotionName[];
+  /** The cartridge's commands met this frame, by move. */
+  commands: string[];
   /** The next part a `queued` transition has kept, or null. */
   queued: string | null;
   combo: { hits: number; damage: number; lifts: number };
@@ -215,6 +218,10 @@ export class Entity {
   private readonly buffer = new InputBuffer();
   /** What the stick has been doing, for the triggers a single frame cannot answer. */
   private readonly motions = new Motions();
+  /** The pad as the cartridge's command reader sees it, a frame an entry. */
+  private readonly pad = new PadHistory();
+  /** The commands met this frame: move → our button. */
+  private met: ReadonlyMap<string, string> = new Map();
   /** Scaffolding: the same inputs again, kept only so a person can read them. */
   private readonly history = new InputHistory();
   /** The combo being done **to** this fighter — see src/combat/combo.ts. */
@@ -423,6 +430,7 @@ export class Entity {
       ki: this.ki,
       inputs: this.history.line,
       motions: MOTION_NAMES.filter((m) => this.motions.has(m)),
+      commands: [...this.met.keys()],
       queued: this.sm?.queuedTo ?? null,
       combo: { hits: this.combo.hits, damage: this.combo.damage, lifts: this.combo.lifts },
     };
@@ -1022,6 +1030,12 @@ export class Entity {
     if (input.blast) this.buffer.press("blast");
     if (input.strike) this.buffer.press("strike");
     if (input.dash) this.buffer.press("dash");
+    // the cartridge records the pad in a hit pause too ($0E:829C), so a
+    // command's windows count the frames the pause took
+    const ahead = this.facing > 0;
+    this.pad.record(
+      padFrame({ fwd: ahead ? input.right : input.left, back: ahead ? input.left : input.right, up: input.up, down: input.down }, input, input.holding),
+    );
 
     // A hit pause freezes the whole entity, animation included — the pose the
     // blow landed on is exactly what should be held still. The buffer is not
@@ -1106,6 +1120,7 @@ export class Entity {
         rdp: this.motions.has("rdp"),
         hcfu: this.motions.has("hcfu"),
         fbf: this.motions.has("fbf"),
+        commands: (this.met = commandsMet(this.def.commands, this.airborne ? "air" : "ground", this.pad)),
         holding: input.holding,
       },
       {

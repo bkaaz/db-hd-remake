@@ -1767,3 +1767,27 @@ describe("a queued transition: the next part, typed during this one", () => {
     expect(errors.some((e) => e.includes("transition 2") && e.includes('"queued.from"'))).toBe(true);
   });
 });
+
+describe("command:<move>", () => {
+  // the cartridge's command reader decides (input/command.ts); the machine only asks
+  function special() {
+    const f = machine();
+    f.states.idle.transitions = [{ when: "command:a4", to: "slide" }, ...(f.states.idle.transitions ?? [])];
+    f.states.slide = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
+    return f;
+  }
+
+  it("fires when its command is met, and spends the button it was pressed with", () => {
+    const sm = new StateMachine(special());
+    expect(sm.update({ ...NONE, commands: new Map([["a5", "smash"]]) }, QUIET)).toBeNull();
+    expect(sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET)).toBe("slide");
+    expect(sm.pressSpent).toBe("smash");
+  });
+
+  it("is a trigger the validator knows, by its two hex digits", () => {
+    expect(validateStates(special(), ANIMS).errors).toEqual([]);
+    const f = special();
+    f.states.idle.transitions![0].when = "command:a";
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('unknown trigger "command:a"'))).toBe(true);
+  });
+});

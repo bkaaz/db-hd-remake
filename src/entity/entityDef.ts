@@ -1,6 +1,7 @@
 import { Rectangle, Texture } from "pixi.js";
 import type { Sounds } from "../audio/sounds";
 import type { StatesFile } from "./states";
+import type { CommandDef } from "../input/command";
 import {
   DEFAULT_ATTRIBUTES,
   type Anim,
@@ -42,6 +43,8 @@ export interface EntityDef {
   states: StatesFile | null;
   sounds: Sounds;
   attributes: Attributes;
+  /** The cartridge's command table; empty for an entity of ours, which asks by `motion:`. */
+  commands: CommandDef[];
   /** Each palette variant's sheet, cut into the same frames as `frames`. */
   variants: Map<string, Map<string, Texture>>;
 }
@@ -83,6 +86,7 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
     states: data.states ?? null,
     sounds: data.sounds ?? {},
     attributes,
+    commands: data.commands?.commands ?? [],
     variants,
   };
 }

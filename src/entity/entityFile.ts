@@ -19,6 +19,7 @@
  */
 
 import type { Sounds } from "../audio/sounds";
+import type { CommandsFile } from "../input/command";
 import type { CloseButton, StatesFile } from "./states";
 
 /** What a box does when it overlaps: strike, be struck, or keep bodies apart. */
@@ -196,4 +197,6 @@ export interface EntityFile {
   /** Section file `states.json`, absent until authored. */
   states?: StatesFile;
   attributes?: Partial<Attributes>;
+  /** Section file `commands.json`, the cartridge fighters' only (`npm run rom -- commands`). */
+  commands?: CommandsFile;
 }

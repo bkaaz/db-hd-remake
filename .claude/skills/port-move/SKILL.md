@@ -106,10 +106,11 @@ One state per part, chained by `animEnd`, the last back to `idle`:
 - `anim` — the part; `type` and `damage` — the report's blow. A type the
   report names that `data/hit-types.json` lacks is a new type: stop and ask.
 - `vel` / `velAt` — the report's speed, as given.
-- the entry from `idle`, `walk_fwd`, `walk_back` (and wherever else the
-  original allows it): a command is `["motion:…", "pressed:…"]`, placed
-  before the plain press of the same button. A motion `input/motion.ts`
-  lacks gets added there with a test.
+- the entry from `idle`, `walk_fwd`, `walk_back`, `crouch_down`, `crouch`,
+  `stand_up` (`$0F:9EB1`; and wherever else the original allows it): a
+  command is `"command:<move>"` — its input is the cartridge's, from
+  `commands.json` (`npm run rom -- commands`, ADR 0050) — placed ahead of
+  the first press. Never a `motion:`: those are `goku_old`'s.
 - no swing `sound`: the export put the script's sounds on the animation's
   steps (`sfx`), and they play through the bank's `rom` matches. An id the
   report lists that no bank entry matches plays nothing — say which, never

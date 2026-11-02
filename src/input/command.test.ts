@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { commandMet, PAD, PadHistory, type CommandDef } from "./command";
+import { commandMet, commandsMet, PAD, padFrame, PadHistory, type CommandDef } from "./command";
 
 /**
  * Frames oldest first, as a player does them: a direction glyph, then the
@@ -78,5 +78,27 @@ describe("commandMet", () => {
     const held = { ...def("8002"), held: true };
     expect(commandMet(held, pad(...times(10, "·~B")))).toBe(true);
     expect(commandMet(def("8002"), pad(...times(10, "·~B")))).toBe(false);
+  });
+});
+
+describe("padFrame", () => {
+  const OFF = { attack: false, smash: false, strike: false, blast: false, dash: false };
+
+  it("writes our buttons as the pad's, a press held too", () => {
+    const frame = padFrame({ fwd: true, back: false, up: false, down: true }, { ...OFF, smash: true }, { ...OFF, dash: true });
+    expect(frame).toEqual({ pressed: PAD.B, held: PAD.fwd | PAD.down | PAD.B | PAD.R });
+  });
+});
+
+describe("commandsMet", () => {
+  const defs: CommandDef[] = [
+    { move: "a4", where: "ground", words: ["8002", "0100", "0500", "0400"] },
+    { move: "b1", where: "air", words: ["0082", "0200", "0600", "0400"] },
+  ];
+
+  it("names each move met on its own ground, with the button of ours it took", () => {
+    const rolled = pad("↓", "↘", "→", "→+B");
+    expect(commandsMet(defs, "ground", rolled)).toEqual(new Map([["a4", "smash"]]));
+    expect(commandsMet(defs, "air", rolled)).toEqual(new Map());
   });
 });

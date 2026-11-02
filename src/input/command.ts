@@ -6,7 +6,9 @@
  *
  * Separate from `motion.ts`, which stays `goku_old`'s: that one recognises
  * shapes we chose; this one has no shapes of its own, only the original's
- * words and windows (ADR 0050).
+ * words and windows (ADR 0050). Not here: the refusal of a `0008` / `1000`
+ * command while guarding or after a blow has gone (`$0D:F1B4`) — the
+ * states say where a move may come from.
  *
  * Pure: no PixiJS, no DOM.
  */
@@ -32,6 +34,11 @@ export const PAD = {
   B: 0x8000, Y: 0x4000, up: 0x0800, down: 0x0400, back: 0x0200, fwd: 0x0100,
   A: 0x0080, X: 0x0040, L: 0x0020, R: 0x0010,
 } as const;
+
+/** Ours as the pad's: A S D X are its Y B X A, dash its L/R (`combat.md`, The buttons). */
+const OURS = { attack: PAD.Y, smash: PAD.B, strike: PAD.X, blast: PAD.A, dash: PAD.R } as const;
+type Ours = keyof typeof OURS;
+type Stick = { fwd: boolean; back: boolean; up: boolean; down: boolean };
 
 /** One game frame of the pad: what went down this frame, and what is down. */
 export interface PadFrame {
@@ -62,6 +69,29 @@ export class PadHistory {
   at(back: number): PadFrame {
     return this.frames[back] ?? NOTHING;
   }
+}
+
+/** This frame's pad from our input; the stick facing-relative, as the cartridge turns it (`$0D:F610`). */
+export function padFrame(stick: Stick, pressed: Record<Ours, boolean>, holding: Record<Ours, boolean>): PadFrame {
+  let held = (stick.fwd ? PAD.fwd : 0) | (stick.back ? PAD.back : 0) | (stick.up ? PAD.up : 0) | (stick.down ? PAD.down : 0);
+  let down = 0;
+  for (const button of Object.keys(OURS) as Ours[]) {
+    if (pressed[button]) down |= OURS[button];
+    if (holding[button] || pressed[button]) held |= OURS[button];
+  }
+  return { pressed: down, held };
+}
+
+/** Each move whose command for `where` is met, to the button of ours it was pressed with. */
+export function commandsMet(defs: readonly CommandDef[], where: CommandDef["where"], history: PadHistory): Map<string, string> {
+  const met = new Map<string, string>();
+  for (const def of defs) {
+    if (def.where !== where || met.has(def.move) || !commandMet(def, history)) continue;
+    const word = parseInt(def.words[0], 16);
+    const button = (Object.keys(OURS) as Ours[]).find((b) => b !== "dash" && word & OURS[b]);
+    if (button) met.set(def.move, button);
+  }
+  return met;
 }
 
 /** Whether the pad's history meets `def` this frame. */

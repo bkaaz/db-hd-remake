@@ -31,30 +31,20 @@
         {
           "when": [
             "health:80",
-            "motion:hcfu",
-            "pressed:attack"
+            "command:ad"
           ],
           "to": "meteor"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:attack"
-          ],
+          "when": "command:9c",
           "to": "teleport_fwd"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:smash"
-          ],
+          "when": "command:9e",
           "to": "teleport_back"
         },
         {
-          "when": [
-            "motion:qcf",
-            "pressed:attack"
-          ],
+          "when": "command:a7",
           "to": "double_punch"
         },
         {
@@ -69,38 +59,23 @@
           "to": "attack_y"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:smash"
-          ],
+          "when": "command:a5",
           "to": "quad_kick"
         },
         {
-          "when": [
-            "motion:dp",
-            "pressed:smash"
-          ],
+          "when": "command:a4",
           "to": "knee_slash"
         },
         {
-          "when": [
-            "motion:qcb",
-            "pressed:smash"
-          ],
+          "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": [
-            "held:dash",
-            "pressed:smash"
-          ],
+          "when": "command:a8",
           "to": "side_slash"
         },
         {
-          "when": [
-            "held:fwd",
-            "pressed:smash"
-          ],
+          "when": "command:a2",
           "to": "double_kick"
         },
         {
@@ -116,9 +91,8 @@
         },
         {
           "when": [
-            "held:fwd",
-            "pressed:strike",
-            "grab"
+            "grab",
+            "command:9d"
           ],
           "to": "throw"
         },
@@ -127,24 +101,15 @@
           "to": "attack_x"
         },
         {
-          "when": [
-            "motion:fbf",
-            "pressed:blast"
-          ],
+          "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
+          "when": "command:ab",
           "to": "kame_up"
         },
         {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
+          "when": "command:aa",
           "to": "kame_charge"
         },
         {
@@ -205,30 +170,20 @@
         {
           "when": [
             "health:80",
-            "motion:hcfu",
-            "pressed:attack"
+            "command:ad"
           ],
           "to": "meteor"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:attack"
-          ],
+          "when": "command:9c",
           "to": "teleport_fwd"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:smash"
-          ],
+          "when": "command:9e",
           "to": "teleport_back"
         },
         {
-          "when": [
-            "motion:qcf",
-            "pressed:attack"
-          ],
+          "when": "command:a7",
           "to": "double_punch"
         },
         {
@@ -243,38 +198,23 @@
           "to": "attack_y"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:smash"
-          ],
+          "when": "command:a5",
           "to": "quad_kick"
         },
         {
-          "when": [
-            "motion:dp",
-            "pressed:smash"
-          ],
+          "when": "command:a4",
           "to": "knee_slash"
         },
         {
-          "when": [
-            "motion:qcb",
-            "pressed:smash"
-          ],
+          "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": [
-            "held:dash",
-            "pressed:smash"
-          ],
+          "when": "command:a8",
           "to": "side_slash"
         },
         {
-          "when": [
-            "held:fwd",
-            "pressed:smash"
-          ],
+          "when": "command:a2",
           "to": "double_kick"
         },
         {
@@ -290,9 +230,8 @@
         },
         {
           "when": [
-            "held:fwd",
-            "pressed:strike",
-            "grab"
+            "grab",
+            "command:9d"
           ],
           "to": "throw"
         },
@@ -301,24 +240,15 @@
           "to": "attack_x"
         },
         {
-          "when": [
-            "motion:fbf",
-            "pressed:blast"
-          ],
+          "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
+          "when": "command:ab",
           "to": "kame_up"
         },
         {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
+          "when": "command:aa",
           "to": "kame_charge"
         },
         {
@@ -375,30 +305,20 @@
         {
           "when": [
             "health:80",
-            "motion:hcfu",
-            "pressed:attack"
+            "command:ad"
           ],
           "to": "meteor"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:attack"
-          ],
+          "when": "command:9c",
           "to": "teleport_fwd"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:smash"
-          ],
+          "when": "command:9e",
           "to": "teleport_back"
         },
         {
-          "when": [
-            "motion:qcf",
-            "pressed:attack"
-          ],
+          "when": "command:a7",
           "to": "double_punch"
         },
         {
@@ -413,38 +333,23 @@
           "to": "attack_y"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:smash"
-          ],
+          "when": "command:a5",
           "to": "quad_kick"
         },
         {
-          "when": [
-            "motion:dp",
-            "pressed:smash"
-          ],
+          "when": "command:a4",
           "to": "knee_slash"
         },
         {
-          "when": [
-            "motion:qcb",
-            "pressed:smash"
-          ],
+          "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": [
-            "held:dash",
-            "pressed:smash"
-          ],
+          "when": "command:a8",
           "to": "side_slash"
         },
         {
-          "when": [
-            "held:fwd",
-            "pressed:smash"
-          ],
+          "when": "command:a2",
           "to": "double_kick"
         },
         {
@@ -460,9 +365,8 @@
         },
         {
           "when": [
-            "held:fwd",
-            "pressed:strike",
-            "grab"
+            "grab",
+            "command:9d"
           ],
           "to": "throw"
         },
@@ -471,24 +375,15 @@
           "to": "attack_x"
         },
         {
-          "when": [
-            "motion:fbf",
-            "pressed:blast"
-          ],
+          "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
+          "when": "command:ab",
           "to": "kame_up"
         },
         {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
+          "when": "command:aa",
           "to": "kame_charge"
         },
         {
@@ -532,72 +427,44 @@
         {
           "when": [
             "health:80",
-            "motion:hcfu",
-            "pressed:attack"
+            "command:ad"
           ],
           "to": "meteor"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:attack"
-          ],
+          "when": "command:9c",
           "to": "teleport_fwd"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:smash"
-          ],
+          "when": "command:9e",
           "to": "teleport_back"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:smash"
-          ],
+          "when": "command:a5",
           "to": "quad_kick"
         },
         {
-          "when": [
-            "motion:dp",
-            "pressed:smash"
-          ],
+          "when": "command:a4",
           "to": "knee_slash"
         },
         {
-          "when": [
-            "motion:qcb",
-            "pressed:smash"
-          ],
+          "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": [
-            "motion:qcf",
-            "pressed:attack"
-          ],
+          "when": "command:a7",
           "to": "double_punch"
         },
         {
-          "when": [
-            "motion:fbf",
-            "pressed:blast"
-          ],
+          "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
+          "when": "command:ab",
           "to": "kame_up"
         },
         {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
+          "when": "command:aa",
           "to": "kame_charge"
         },
         {
@@ -639,72 +506,44 @@
         {
           "when": [
             "health:80",
-            "motion:hcfu",
-            "pressed:attack"
+            "command:ad"
           ],
           "to": "meteor"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:attack"
-          ],
+          "when": "command:9c",
           "to": "teleport_fwd"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:smash"
-          ],
+          "when": "command:9e",
           "to": "teleport_back"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:smash"
-          ],
+          "when": "command:a5",
           "to": "quad_kick"
         },
         {
-          "when": [
-            "motion:dp",
-            "pressed:smash"
-          ],
+          "when": "command:a4",
           "to": "knee_slash"
         },
         {
-          "when": [
-            "motion:qcb",
-            "pressed:smash"
-          ],
+          "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": [
-            "motion:qcf",
-            "pressed:attack"
-          ],
+          "when": "command:a7",
           "to": "double_punch"
         },
         {
-          "when": [
-            "motion:fbf",
-            "pressed:blast"
-          ],
+          "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
+          "when": "command:ab",
           "to": "kame_up"
         },
         {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
+          "when": "command:aa",
           "to": "kame_charge"
         },
         {
@@ -740,72 +579,44 @@
         {
           "when": [
             "health:80",
-            "motion:hcfu",
-            "pressed:attack"
+            "command:ad"
           ],
           "to": "meteor"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:attack"
-          ],
+          "when": "command:9c",
           "to": "teleport_fwd"
         },
         {
-          "when": [
-            "motion:rdp",
-            "pressed:smash"
-          ],
+          "when": "command:9e",
           "to": "teleport_back"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:smash"
-          ],
+          "when": "command:a5",
           "to": "quad_kick"
         },
         {
-          "when": [
-            "motion:dp",
-            "pressed:smash"
-          ],
+          "when": "command:a4",
           "to": "knee_slash"
         },
         {
-          "when": [
-            "motion:qcb",
-            "pressed:smash"
-          ],
+          "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": [
-            "motion:qcf",
-            "pressed:attack"
-          ],
+          "when": "command:a7",
           "to": "double_punch"
         },
         {
-          "when": [
-            "motion:fbf",
-            "pressed:blast"
-          ],
+          "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
+          "when": "command:ab",
           "to": "kame_up"
         },
         {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
+          "when": "command:aa",
           "to": "kame_charge"
         },
         {
@@ -830,8 +641,7 @@
         {
           "when": [
             "frames:2",
-            "motion:fd",
-            "pressed:smash"
+            "command:ac"
           ],
           "to": "slash_down"
         },
@@ -871,8 +681,7 @@
         {
           "when": [
             "frames:2",
-            "motion:fd",
-            "pressed:smash"
+            "command:ac"
           ],
           "to": "slash_down"
         },
@@ -908,8 +717,7 @@
         {
           "when": [
             "frames:2",
-            "motion:fd",
-            "pressed:smash"
+            "command:ac"
           ],
           "to": "slash_down"
         },
@@ -939,10 +747,7 @@
       "turn": false,
       "transitions": [
         {
-          "when": [
-            "motion:fd",
-            "pressed:smash"
-          ],
+          "when": "command:ac",
           "to": "slash_down"
         },
         {

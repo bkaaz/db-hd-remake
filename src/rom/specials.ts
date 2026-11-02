@@ -11,14 +11,16 @@ import type { StateDef, StatesFile, Transition } from "../entity/states";
 export interface SpecialsFile {
   _comment?: string;
   /**
-   * A transition added to every state in `from`, ahead of the plain press of
-   * its button — or first, in a state with no such press (`stand_up`).
+   * A transition added to every state in `from`, ahead of its first press or
+   * command — or first, in a state with neither (`stand_up`): the cartridge
+   * reads commands before the buttons alone (`$0D:F085`).
    */
   entries: { from: string[]; when: Transition["when"]; to: string }[];
   states: Record<string, StateDef>;
 }
 
-const PRESS = /^pressed:/;
+/** What asks for a button: a press, or a command (ADR 0050). */
+const ASKS = /^(pressed|command):/;
 
 /** `file` with his specials in it; a name taken or a state missing is an error, not a quiet skip. */
 export function withSpecials(file: StatesFile, specials: SpecialsFile): StatesFile {
@@ -29,14 +31,13 @@ export function withSpecials(file: StatesFile, specials: SpecialsFile): StatesFi
   }
   for (const { from, when, to } of specials.entries) {
     if (!(to in specials.states)) throw new Error(`an entry leads to "${to}", which specials.json does not define`);
-    const press = list(when).find((w) => PRESS.test(w));
-    if (!press) throw new Error(`the entry to "${to}" presses no button`);
+    if (!list(when).some((w) => ASKS.test(w))) throw new Error(`the entry to "${to}" asks for no button`);
     for (const name of from) {
       const state = states[name];
       if (!state) throw new Error(`the entry to "${to}" is from "${name}", which is no state`);
       const transitions = state.transitions ?? [];
-      // a command before the plain press of its button, or the press would take it first
-      const at = Math.max(0, transitions.findIndex((t) => list(t.when).includes(press)));
+      // ahead of every press, or a press of its button would take it first
+      const at = Math.max(0, transitions.findIndex((t) => list(t.when).some((w) => ASKS.test(w))));
       states[name] = { ...state, transitions: [...transitions.slice(0, at), { when, to }, ...transitions.slice(at)] };
     }
   }

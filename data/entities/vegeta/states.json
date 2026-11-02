@@ -29,6 +29,18 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
           "when": [
             "pressed:attack",
             "close:attack"
@@ -38,13 +50,6 @@
         {
           "when": "pressed:attack",
           "to": "attack_y"
-        },
-        {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
-          "to": "sliding_kick"
         },
         {
           "when": [
@@ -60,20 +65,6 @@
         {
           "when": "pressed:strike",
           "to": "attack_x"
-        },
-        {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
-          "to": "final_flash"
-        },
-        {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
-          "to": "big_bang"
         },
         {
           "when": "pressed:blast",
@@ -131,6 +122,18 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
           "when": [
             "pressed:attack",
             "close:attack"
@@ -140,13 +143,6 @@
         {
           "when": "pressed:attack",
           "to": "attack_y"
-        },
-        {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
-          "to": "sliding_kick"
         },
         {
           "when": [
@@ -162,20 +158,6 @@
         {
           "when": "pressed:strike",
           "to": "attack_x"
-        },
-        {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
-          "to": "final_flash"
-        },
-        {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
-          "to": "big_bang"
         },
         {
           "when": "pressed:blast",
@@ -229,6 +211,18 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
           "when": [
             "pressed:attack",
             "close:attack"
@@ -238,13 +232,6 @@
         {
           "when": "pressed:attack",
           "to": "attack_y"
-        },
-        {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
-          "to": "sliding_kick"
         },
         {
           "when": [
@@ -260,20 +247,6 @@
         {
           "when": "pressed:strike",
           "to": "attack_x"
-        },
-        {
-          "when": [
-            "motion:dbf",
-            "pressed:blast"
-          ],
-          "to": "final_flash"
-        },
-        {
-          "when": [
-            "motion:hcf",
-            "pressed:blast"
-          ],
-          "to": "big_bang"
         },
         {
           "when": "pressed:blast",
@@ -318,19 +291,16 @@
           "to": "guard_low"
         },
         {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "pressed:strike",
           "to": "attack_x"
         },
         {
           "when": "pressed:attack",
           "to": "crouch_y"
-        },
-        {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
-          "to": "sliding_kick"
         },
         {
           "when": "pressed:smash",
@@ -361,19 +331,16 @@
           "to": "guard_low"
         },
         {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "pressed:strike",
           "to": "attack_x"
         },
         {
           "when": "pressed:attack",
           "to": "crouch_y"
-        },
-        {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
-          "to": "sliding_kick"
         },
         {
           "when": "pressed:smash",
@@ -394,10 +361,7 @@
       "turn": true,
       "transitions": [
         {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
+          "when": "command:a4",
           "to": "sliding_kick"
         },
         {
@@ -1953,10 +1917,7 @@
       "blockSound": "block_1",
       "transitions": [
         {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
+          "when": "command:a5",
           "to": "rushing_knee",
           "queued": {
             "from": 8
@@ -1995,10 +1956,7 @@
       "blockSound": "block_1",
       "transitions": [
         {
-          "when": [
-            "motion:qcf",
-            "pressed:smash"
-          ],
+          "when": "command:a6",
           "to": "cross_punch",
           "queued": {
             "from": 1

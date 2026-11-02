@@ -37,6 +37,7 @@ export class Recorder {
       if (was.state !== now.state) this.say(fighters, `${who} ${was.state} → ${now.state}`);
       for (const line of pressChanges(who, was, now)) this.say(fighters, line);
       for (const line of motionChanges(who, was, now)) this.say(fighters, line);
+      for (const line of commandChanges(who, was, now)) this.say(fighters, line);
       for (const line of queueChanges(who, was, now)) this.say(fighters, line);
       if (was.combo.hits > 0 && now.combo.hits === 0) {
         this.say(
@@ -124,4 +125,10 @@ export function motionChanges(who: string, was: EntityDebug, now: EntityDebug): 
  */
 export function queueChanges(who: string, was: EntityDebug, now: EntityDebug): string[] {
   return now.queued && now.queued !== was.queued ? [`${who} keeps ${now.queued}`] : [];
+}
+
+/** A cartridge command met — the frame it becomes so; it may stay met while its press is within 5 frames. */
+export function commandChanges(who: string, was: EntityDebug, now: EntityDebug): string[] {
+  const before = new Set(was.commands);
+  return now.commands.filter((m) => !before.has(m)).map((m) => `${who} command ${m}`);
 }
