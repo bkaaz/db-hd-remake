@@ -47,4 +47,11 @@ describe("withSpecials", () => {
     expect(() => withSpecials(TEMPLATE, { ...BALL, states: {} })).toThrow(/does not define/);
     expect(() => withSpecials(TEMPLATE, { ...BALL, entries: [{ ...BALL.entries[0], when: "held:fwd" }] })).toThrow(/asks for no button/);
   });
+
+  it("replaces a template state it names, and only one it names", () => {
+    const out = withSpecials(TEMPLATE, { ...BALL, replaces: ["kick"], states: { ...BALL.states, kick: { anim: "m93" } } });
+    expect(out.states.kick).toEqual({ anim: "m93" });
+    expect(() => withSpecials(TEMPLATE, { ...BALL, replaces: ["nothing"], states: { ...BALL.states, nothing: { anim: "m93" } } })).toThrow(/makes no such state/);
+    expect(() => withSpecials(TEMPLATE, { ...BALL, replaces: ["kick"] })).toThrow(/does not define it/);
+  });
 });

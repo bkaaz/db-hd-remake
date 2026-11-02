@@ -32,7 +32,7 @@ export interface Script {
 const ROTATION = [90, "attack", 90, "smash", 90, "blast"];
 
 /** Buttons are edges — they fire on the first frame of their step and no more. */
-const BUTTONS = ["attack", "guard", "smash", "blast"];
+const BUTTONS = ["attack", "guard", "smash", "blast", "strike", "dash"];
 /** Directions are held, and two of them are relative to which way the dummy looks. */
 const DIRECTIONS = ["fwd", "back", "up", "down"];
 

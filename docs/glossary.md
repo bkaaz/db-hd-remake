@@ -186,6 +186,10 @@ apart. → ADR 0021, `combat/knockback.ts`
 **Push box** — a step's body or head that keeps two fighters apart, in the
 air too. → ADR 0039, `combat/push.ts`
 
+**Hit again** (`ifHitAgain`) — a reaction that overrules the next blows taken in
+it: the original's high knockdown relaunched twice, then floored.
+→ [ADR 0052](./adr/0052-a-body-hit-again-in-the-high-knockdown.md), `entity/hitAgain.ts`
+
 **Situation flag** (`airborne`, `crouching`) **and its redirect**
 (`ifAirborne`, `ifCrouching`) — how a defender's circumstances change the
 reaction without any attack knowing about them. The flag marks the state, the

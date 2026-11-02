@@ -29,6 +29,14 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a2",
+          "to": "driving_elbow"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:a4",
           "to": "sliding_kick"
         },
@@ -122,6 +130,14 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a2",
+          "to": "driving_elbow"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:a4",
           "to": "sliding_kick"
         },
@@ -211,6 +227,14 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a2",
+          "to": "driving_elbow"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:a4",
           "to": "sliding_kick"
         },
@@ -291,6 +315,10 @@
           "to": "guard_low"
         },
         {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:a4",
           "to": "sliding_kick"
         },
@@ -331,6 +359,10 @@
           "to": "guard_low"
         },
         {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:a4",
           "to": "sliding_kick"
         },
@@ -360,6 +392,10 @@
       ],
       "turn": true,
       "transitions": [
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
         {
           "when": "command:a4",
           "to": "sliding_kick"
@@ -682,11 +718,21 @@
         0,
         0
       ],
+      "velAt": [
+        [
+          6,
+          3
+        ],
+        [
+          24,
+          0
+        ]
+      ],
       "turn": false,
-      "type": "heavy",
-      "damage": 30,
       "hitSound": "hit_09",
       "blockSound": "block_1",
+      "type": "heavy",
+      "damage": 30,
       "transitions": [
         {
           "when": "animEnd",
@@ -738,15 +784,15 @@
         0
       ],
       "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
       "crouching": true,
       "type": "heavy",
       "damage": 21,
-      "hitSound": "hit_09",
-      "blockSound": "block_1",
       "transitions": [
         {
           "when": "animEnd",
-          "to": "crouch"
+          "to": "crouch_b_2"
         }
       ]
     },
@@ -1248,6 +1294,11 @@
       "airborne": true,
       "turn": false,
       "sound": "voice_hurt",
+      "ifHitAgain": {
+        "to": "reel_high",
+        "times": 2,
+        "then": "reel_down"
+      },
       "transitions": [
         {
           "when": "falling",
@@ -1264,6 +1315,11 @@
       "rank": 1,
       "airborne": true,
       "turn": false,
+      "ifHitAgain": {
+        "to": "reel_high",
+        "times": 2,
+        "then": "reel_down"
+      },
       "transitions": [
         {
           "when": "landed",
@@ -2003,6 +2059,149 @@
       "damage": 27,
       "hitSound": "hit_09",
       "blockSound": "block_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "knee_slash": {
+      "anim": "m9c",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "high",
+      "damage": 34,
+      "air": [
+        [
+          6,
+          {
+            "vx": 1,
+            "vy": -8,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "launches": {
+        "reel_high": [
+          -0.75,
+          -6
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "knee_slash_2"
+        }
+      ]
+    },
+    "knee_slash_2": {
+      "anim": "m9c_2",
+      "airborne": true,
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "down",
+      "damage": 20,
+      "launches": {
+        "reel_high": [
+          -0.75,
+          -6
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "knee_slash_3"
+        }
+      ]
+    },
+    "knee_slash_3": {
+      "anim": "m9c_3",
+      "airborne": true,
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "down",
+      "damage": 20,
+      "air": [
+        [
+          6,
+          {
+            "vx": 0
+          }
+        ]
+      ],
+      "holdStep": 2,
+      "launches": {
+        "reel_high": [
+          -0.75,
+          -6
+        ]
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "knee_slash_land"
+        }
+      ]
+    },
+    "knee_slash_land": {
+      "anim": "m9c_4",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "sound": "land_1",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "crouch_b_2": {
+      "anim": "m95_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "crouching": true,
+      "type": "heavy",
+      "damage": 21,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "driving_elbow": {
+      "anim": "ma2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "behind": true,
+      "approach": {
+        "at": 24,
+        "short": 8,
+        "over": 32
+      },
+      "hitSound": "hit_09",
+      "blockSound": "block_1",
+      "type": "trip",
+      "damage": 24,
       "transitions": [
         {
           "when": "animEnd",

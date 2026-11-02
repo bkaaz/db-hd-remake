@@ -17,6 +17,12 @@ export interface SpecialsFile {
    */
   entries: { from: string[]; when: Transition["when"]; to: string }[];
   states: Record<string, StateDef>;
+  /**
+   * Template states his own handler plays differently (his far B slides,
+   * his crouching B hits twice): named here, his version in `states`
+   * replaces the template's whole — unnamed, a clash is still an error.
+   */
+  replaces?: string[];
 }
 
 /** What asks for a button: a press, or a command (ADR 0050). */
@@ -25,8 +31,13 @@ const ASKS = /^(pressed|command):/;
 /** `file` with his specials in it; a name taken or a state missing is an error, not a quiet skip. */
 export function withSpecials(file: StatesFile, specials: SpecialsFile): StatesFile {
   const states = { ...file.states };
+  const replaces = new Set(specials.replaces ?? []);
+  for (const name of replaces) {
+    if (!(name in states)) throw new Error(`"${name}" is replaced, but the template makes no such state`);
+    if (!(name in specials.states)) throw new Error(`"${name}" is replaced, but specials.json does not define it`);
+  }
   for (const name of Object.keys(specials.states)) {
-    if (name in states) throw new Error(`special "${name}" is a state the template makes already`);
+    if (name in states && !replaces.has(name)) throw new Error(`special "${name}" is a state the template makes already`);
     states[name] = specials.states[name];
   }
   for (const { from, when, to } of specials.entries) {

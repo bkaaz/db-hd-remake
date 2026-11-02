@@ -17,6 +17,7 @@ import type { FinaleDef } from "../match/finale";
 import type { Approach, Rush } from "./approach";
 import type { BallDef } from "../combat/ball";
 import { airProblem, leavesGround, type AirTimeline } from "./air";
+import { hitAgainProblem, type IfHitAgain } from "./hitAgain";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
 import type { HealDef } from "../combat/heal";
@@ -100,6 +101,13 @@ export interface StateDef {
    * launcher and wrong for the next.
    */
   launch?: [number | null, number | null];
+  /**
+   * On an attack: the launch a reaction it sends into takes instead of its
+   * own, by that reaction's name — the original picks the knockback by the
+   * attacker's move for some (`$0D:D3BF`: Vegeta's knee slash lifts −6.0, not
+   * the high knockdown's −7.5).
+   */
+  launches?: Record<string, [number | null, number | null]>;
   /**
    * Up again on entering, at a share of the speed the body last landed with
    * (`combat/rebound.ts`) — the knockdown's bounce. Horizontal speed is kept,
@@ -189,6 +197,8 @@ export interface StateDef {
    * mid-air, and a grounded reaction on a body in the air erases the jump.
    */
   ifCrouching?: string;
+  /** Where a blow sends a body already in this reaction, whatever the blow — see ./hitAgain.ts. */
+  ifHitAgain?: IfHitAgain;
   /**
    * The block reaction to use while in this state, instead of the file's
    * `onGuard`. What it exists for is the crouching guard: the stance is the
@@ -1253,6 +1263,11 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
             `an entity sent there mid-jump snaps to the ground`,
         );
       }
+    }
+
+    if (def.ifHitAgain !== undefined) {
+      const problem = hitAgainProblem(def.ifHitAgain, (name) => !!states[name]);
+      if (problem) errors.push(`${where}: ${problem}`);
     }
 
     // Same shape as `ifAirborne`, and the same failure it exists to prevent:

@@ -87,6 +87,7 @@ export function landBlow(
       relaunch: attacker.attackRelaunch,
       hitstun: attacker.attackHitstun,
       burns: attacker.attackBurns,
+      launches: attacker.attackLaunches,
     });
     dealt = defender.hurtBy(attacker.attackDamage);
   }

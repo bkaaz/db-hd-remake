@@ -909,7 +909,7 @@ no bounce, and gets up after 12 frames — `$10:AEB6`), `0x0040` knockdown (move
 `0x1000` `$D540`; `0x0001`, `0x0002`, `0x0100` and `0x0200` are not read
 there. `0x0080` (`$D558`, the jump attacks') is a long light reel: `42`
 standing, 24 frames of the light reel's drawing, `43` crouching
-(`$0D:D7BA`), knockback index 6. Airborne, bits of byte 1: `01` → move `1a` (`$D616`, knockback
+(`$0D:D7BA`), knockback index 6. **A body in `1e` hit again** goes back into `1e` whatever the blow (`$0D:D25D`): field `0x7b` counts the hits, and from the third (`0x7b` ≥ 3) it is the knockdown `1b` instead; any move but `1e` and `30` clears it (`$01:8529`). A recording of Vegeta's `9c` on Goku: all three blows `1e`. Airborne, bits of byte 1: `01` → move `1a` (`$D616`, knockback
 index 16: a tumble that ends in the jump's fall pose, then landing as a
 jump does, `3b` and `0c`, turned to face — `$0F:A1E0`), `02` knockdown, `04` → move `1e`, `08` `$D670`. Then byte 2 bits 0–2 for both
 (`$D3F3`, `$D46E`, `$D4D4`): the blows that send the defender to another
@@ -931,7 +931,7 @@ index sets field `0x8c`, the push speed `0x88` (8.8 fixed point, turned by
 the attacker's facing) and vy from a table of 6-byte entries at `$0D:D68A`.
 Light (index 2) pushes 2.0 px/frame, heavy (3) 3.0, knockdown (4) 2.0 and
 −4.0 up, the high knockdown `1e` (`0c`) 0.75 and −7.5 — `14` (0.75, −6.0)
-for `9c`'s step 1 and `a4`'s step 4, `13` (0.5, −8.0) for `a3` — the long light reel (6) 2.0 for 10 frames, in the air (16) 2.0
+for Vegeta's `9c` and fighter 4's `a4` (`$0D:D3BF` compares the attacker's move with his script set, field `0x41`: `019c`, `04a4`), `13` (0.5, −8.0) for `a3` — the long light reel (6) 2.0 for 10 frames, in the air (16) 2.0
 and −6.0 up. The push **slows by 0.25 every frame** until it stops
 (`$0D:EC5F`, which slows vx the same way) — 9 px in all for light, 19.5
 for heavy. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in

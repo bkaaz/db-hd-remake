@@ -19,6 +19,24 @@ code of his own and so are still to read. His own specials go into
 `data/entities/<name>/specials.json`, never `states.json`: `states`
 rewrites that whole and merges them in (ADR 0038).
 
+## How a fighter is ported: in batches (owner, 2026-11-02)
+
+The owner's review is the slow part, so a fighter goes over in **batches**,
+not one move per round: port everything the engine can already play, as
+well as the cartridge says, errors and all; the owner tests and says what
+to fix.
+
+- **Stop only at a new mechanism** — a hit type, a reaction, a kind of
+  transition or field the engine lacks — and at an object (its look and
+  timing need a Mesen recording). Defer those; list them at the end.
+- **One line per move** in the hand-back: what the script computed, what
+  was guessed (`?`). It is what makes a large diff reviewable.
+- **The dummy plays the batch.** Debug **mode 5** (`data/debug.json`) is
+  Claude's: overwrite it with a timeline of the batch's inputs; never add
+  modes. The owner opens `?scene=debug&mode=5&p2=<fighter>`, presses `T`
+  and records (`L`); `logs/session.log` is read for all moves at once.
+- One commit per batch, on the owner's word.
+
 ## 1. Find the move
 
 `docs/rom.md`, The buttons, lists every move a button or a command picks.

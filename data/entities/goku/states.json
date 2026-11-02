@@ -2756,6 +2756,11 @@
       "airborne": true,
       "turn": false,
       "sound": "voice_hurt",
+      "ifHitAgain": {
+        "to": "reel_high",
+        "times": 2,
+        "then": "reel_down"
+      },
       "transitions": [
         {
           "when": "falling",
@@ -2772,6 +2777,11 @@
       "rank": 1,
       "airborne": true,
       "turn": false,
+      "ifHitAgain": {
+        "to": "reel_high",
+        "times": 2,
+        "then": "reel_down"
+      },
       "transitions": [
         {
           "when": "landed",

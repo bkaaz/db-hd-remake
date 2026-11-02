@@ -324,6 +324,7 @@ if (command === "tiles") {
   for (const [state, [was, is]] of Object.entries(made.reblown)) console.log(`${state}: ${was} -> ${is}`);
   // a copy is only goku's logic where it runs goku's code: the rest are his own, still to read
   for (const [state, def] of Object.entries(made.file.states)) {
+    if (own?.replaces?.includes(state)) continue;
     const move = moveOf(def.anim);
     if (move !== null && handlerAt(rom, T.character, move) !== handlerAt(rom, GOKU.character, move))
       console.log(`${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, T.character, move))}) — to read`);

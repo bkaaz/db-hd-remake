@@ -1,5 +1,6 @@
 import { Container, Graphics, Sprite } from "pixi.js";
 import { applyAir, fall, ON_GROUND, type AirSetting } from "./air";
+import { hitAgain } from "./hitAgain";
 import type { ShakeDef } from "../camera/shake";
 import { healFrame } from "../combat/heal";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
@@ -103,6 +104,8 @@ export interface Blow {
   hitstun: number;
   /** Whether it sets the defender burning (`burns`). */
   burns?: boolean;
+  /** The attacker's `launches`: a reaction's launch replaced, by its name. */
+  launches?: Record<string, [number | null, number | null]>;
 }
 
 /** One fighter's innards, for the debug readout only — see `Entity.debug`. */
@@ -210,6 +213,8 @@ export class Entity {
   private plays = 0;
   /** The speed the last fall hit the floor with — what a `rebound` goes back up at a share of. */
   private landedAt = 0;
+  /** Blows taken in a row in reactions with `ifHitAgain` (the original's field `0x7b`). */
+  private hitsAgain = 0;
   /**
    * Presses wait here for a few frames. Ticked below the freeze check, so a hit
    * pause cannot age a press out of existence — losing the input a player makes
@@ -710,6 +715,11 @@ export class Entity {
     return this.sm?.def.hitFlash ?? 0;
   }
 
+  /** The launches this entity's current attack gives the reactions it sends into. */
+  get attackLaunches(): Record<string, [number | null, number | null]> | undefined {
+    return this.sm?.def.launches;
+  }
+
   /** Whether this entity's current attack sets whoever it hits burning. */
   get attackBurns(): boolean {
     return !!this.sm?.def.burns;
@@ -873,7 +883,8 @@ export class Entity {
     // before the reaction is chosen: a blow past the limit is refused for the
     // same reason a jab at a floored fighter is, and looks the same from here.
     if (blow.relaunch && !this.combo.canRelaunch) return false;
-    const state = reactionFor(blow.reaction, this.def.states, this.sm?.def);
+    const again = this.sm?.def.ifHitAgain;
+    const state = reactionFor(again ? hitAgain(again, ++this.hitsAgain) : blow.reaction, this.def.states, this.sm?.def);
     if (state === undefined) return false;
     // Read before entering anything: arriving in a state can reset the combo,
     // and the hold this blow earns is decided by the beating up to it.
@@ -881,6 +892,9 @@ export class Entity {
     // Counted only now, because a reaction rank refused changed nothing.
     if (blow.relaunch) this.combo.relaunch();
     if (!this.forceState(state)) return false;
+    const launch = blow.launches?.[state];
+    if (launch?.[0] != null) this.vx = launch[0];
+    if (launch?.[1] != null) this.vy = launch[1];
     // After entering, because arriving in a state clears the clock — and this
     // blow's hold is the one thing about the reaction the blow gets to decide.
     this.stun = stun;
@@ -976,6 +990,7 @@ export class Entity {
     this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.stateFrames = 0;
+    if (!this.sm.def.ifHitAgain) this.hitsAgain = 0;
     this.air = ON_GROUND;
     // the shot takes the ball: the original's beam effect replaces it outright
     if (this.sm.def.fires) this.ballRadius = 0;

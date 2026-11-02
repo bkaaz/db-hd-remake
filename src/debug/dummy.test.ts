@@ -21,6 +21,12 @@ describe("the debug dummy", () => {
     expect(frames.map((f) => f.attack)).toEqual([true, false, false, false, false]);
   });
 
+  it("presses strike and dash too, together when one step names both", () => {
+    // R + Y is Vegeta's Driving Elbow: both on the same frame
+    const [first] = run(built({ does: ["dash attack", "strike"], loop: false }), 1);
+    expect([first.dash, first.attack, first.strike]).toEqual([true, true, false]);
+  });
+
   it("holds a direction for the whole step", () => {
     const frames = run(built({ does: ["back 3"], loop: false }), 4);
     expect(frames.map((f) => f.right)).toEqual([true, true, true, false]);

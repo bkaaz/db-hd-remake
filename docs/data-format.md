@@ -83,7 +83,9 @@ A hit connects when an attacker's `hit` box overlaps a defender's `hurt` box, an
 it lands **once per entry into the state**, however many frames the box stays
 out. The defender is forced into the attack's `onHit`, or their own `onGotHit` if
 it names none — then into that reaction's `ifAirborne` or `ifCrouching` if they
-were off the ground or low.
+were off the ground or low. A body already in a reaction with `ifHitAgain` goes where
+that rule says instead, whatever the blow (ADR 0052); an attack's `launches`
+replaces the launch of the reaction it sends into, by name.
 
 **How a blow is taken comes from its hit type.** A state that says `"type"`
 gets `onHit`, `hitstun`, `hitstop` and `relaunch` from `data/hit-types.json`,
