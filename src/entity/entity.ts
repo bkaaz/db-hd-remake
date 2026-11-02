@@ -536,6 +536,26 @@ export class Entity {
   }
 
   /** A bolt whose state's `lasts` has run out. */
+  /** Whether this body is going anywhere — a bolt standing at the stage's edge is not stranded there. */
+  get moving(): boolean {
+    return this.vx !== 0 || (this.airborne && this.vy !== 0);
+  }
+
+  /** A bolt that stays on whoever put it out (`rides`). */
+  get rides(): boolean {
+    return !!this.sm?.def.rides;
+  }
+
+  /** A bolt gone when whoever put it out leaves the state that did (`endsWithMove`). */
+  get endsWithMove(): boolean {
+    return !!this.sm?.def.endsWithMove;
+  }
+
+  /** A bolt that plays on where it hits (`outlivesHit`). */
+  get outlivesHit(): boolean {
+    return !!this.sm?.def.outlivesHit;
+  }
+
   get expired(): boolean {
     const lasts = this.sm?.def.lasts;
     return lasts !== undefined && this.stateFrames >= lasts;

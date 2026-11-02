@@ -114,6 +114,11 @@ export const GOKU: FighterTables = {
       // "KI Blast effects" palette
       { name: "ki_blast", type: 0xa, anim: 3, steps: [2, 2], loop: true, hits: true, palette: 0x27b161 },
       { name: "goku_hair", type: 0, anim: 5, steps: [32, 8, 8, 6], loop: false, hits: false },
+      // Vegeta's Renzoku Energy Dan shot (aa, three of them): a shared object
+      // in the explosions' tiles and palette (logs/objects-vegeta.bin: palette
+      // 2 holds 0x27AE98, resources 0x30 / 0x31 in place); its frame flips
+      // every 2 to 3 frames from 1, as the recording shows it `?`
+      { name: "rapid_blast", type: 0xa, anim: 0x24, steps: [2, 2], frames: [1, 0], loop: true, hits: true, palette: BURST_PALETTE, loads: BURST_LOADS },
       // the charged Kamehameha's beam head, one per charge (aa, $20:8447): its
       // frame flips every 4 frames of the global counter ($0F:E601), drawn
       // from resource 0x32 the move loads at $6C00, in that resource's palette

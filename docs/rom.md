@@ -169,7 +169,7 @@ stopped during hitstop, and every 4 frames loads palette record `0x130` +
 (frame counter `$74` / 4 mod 4) into its owner's OBJ palette (`JSL
 $01:84EF`) — it shimmers by swapping colours. Type `1` jumps by animation through `$0F:B97E`; Vegeta's
 `ad` Big Bang (`1`/`4`, `$0F:BAB6`) runs `+0B` 0–9 and shows the frame
-`$0F:BAE5` names for it (0 for five, 1 for five), with no end of its own.
+`$0F:BAE5` names for it (0 for five, 1 for five), with no end of its own. Vegeta's Energy Field (`1`/`7`, `$0F:BB4D`) and Ground Flare (`1`/`2`, `$0F:B9BC`) test their thrower's move every frame and are gone when he leaves it (`ab` / `d2`, `a9` / `d3`); the field takes his x and his y − 40 each frame (`$0F:BBB3`) and plays `19` on ticks 1, 4 … 25, gone at 27; the flare shows a frame a tick from `$0F:BA07`, gone at 66, and sets its type's bit 6 — its blow armed again — every 32nd frame of the game (`$0F:B9CD`). `npm run rom -- code` reads all of it.
 
 **Idle's lightning** is type `0` animation `6` (`$0F:B862`), put out by
 idle's own script (`00`, once per entry, timer 0) and by `60` — the pose
@@ -413,12 +413,13 @@ code that plays them, since a clip's number says nothing:
 | `0c` | landing from a jump (`$0F:9FB8`) | `land_1` |
 | `0d` | a body hitting the floor (knockdown handler `$0F:A217`) | `land_2` |
 | `17` | a blocked melee blow (`$0D:CF55`) | `block_1` |
-| `19` | charging ki, every 8 frames (`$0F:A044`) | `charge_1` |
+| `19` | charging ki, every 8 frames (`$0F:A044`); Vegeta's Energy Field's object, ticks 1, 4 … 25 (`$0F:BBAC`) | `charge_1` |
 | `25` | charging the Kamehameha (`aa`'s script) | `charge_2` |
 | `29` | a teleport's script, as he vanishes | `teleport_29` |
 | `2c` | Saiyan Meteor's explosion, every 64th frame while white (`$0F:F2A0`) | `explosion_2c` (`023`), ours as the ball hits the ground, the ki shot's `blast_1` as it is thrown (owner, by ear) |
 | `2d` / `2f` | Saiyan Meteor's ball at the fist (`ae`'s script, 200) / over the head (306) | `ball_2d` / `ball_2f`: clips `024` / `025` (owner) |
 | `38` | Saiyan Meteor at 386, before the throw | `meteor_38`, rendered |
+| `3d` | Vegeta's Ground Flare (`a9`'s script): sample `15`, one voice sliding down from `07D8` | `flare_3d`: clip `029` (owner, by ear) |
 | `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | the fighter's `voice_hurt` |
 | `31` | the voice at KO (`$0D:D10C`) | — |
 | `32` | an attack's shout (the ki blast, specials) | the fighter's `voice_shout` |
@@ -647,7 +648,7 @@ bytes per fighter at `$3D:9EDB` — Goku 44 for Y, 48 for B. A recording
 agreed: close Y at 41 px, far from 53. The CPU keeps lines of its own for
 deciding what to do (`$0D:F7F6`, `$0D:F95B`, `$0D:F96F`).
 
-**In the air** a jump's handler (`$0F:9EB1`, from move `05`'s `$0F:9F60`
+**A jump leaves the floor after its first step**: move `06`'s step 0 (2 frames in its script) holds y 200 and vy 0, then step 1 has vx 2.25, vy −10.25 (`log-hits.lua`, Vegeta, 2026-11-02, where step 0 lasted 5 frames — the recording's frames, not the game's `?`) — a command that ends in ↑ (`a9` ↓ ↑ Y, `9e` ↙ ↗ Y) is read on the ground meanwhile. **In the air** a jump's handler (`$0F:9EB1`, from move `05`'s `$0F:9F60`
 and its kin) asks the command table, then the buttons, unless field
 `0x25` bit 3 is set. Y or B there picks `96` / `97` when vx's high byte is
 0 and `98` / `99` otherwise (`$0D:FF77`), keeping vx and vy, but only

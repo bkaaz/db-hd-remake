@@ -43,7 +43,8 @@ import { withSpecials, type SpecialsFile } from "../src/rom/specials.ts";
 import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
 import { ownMoves } from "../src/rom/ownMoves.ts";
-import { fullestLife, readLives } from "../src/rom/recording.ts";
+import { fullestLife, readLives, readSnapshots } from "../src/rom/recording.ts";
+import { findPalette, matchLoads } from "../src/rom/vramMatch.ts";
 import { inRecording, OWN_OBJECTS, ownObjects } from "../src/rom/ownObjects.ts";
 import { decodeLine, LINE_RATE, lineName, spokenLines } from "../src/rom/lines.ts";
 import { VOICE_RATE, voiceFiles, voiceSamples, voiceSounds } from "../src/rom/voice.ts";
@@ -228,6 +229,23 @@ if (command === "tiles") {
     const becomes = [...new Set(all.flatMap((l) => (l.then ? [`${hex(l.then.type)}/${hex(l.then.anim)}${l.hit ? " on a hit" : ""}`] : [])))];
     console.log(`${kind}  ${all.length}× — longest ${full.to - full.from} frames, vx ${full.vx}, vy ${full.vy}${becomes.length ? `, becomes ${becomes.join(", ")}` : ""}`);
     console.log(`  frames: ${full.steps.map((s) => `${s.frame}×${s.dur}`).join(" ")}`);
+  }
+} else if (command === "vram") {
+  // each object's tiles and colours in a recording's snapshots, named in the
+  // cartridge: which resources lie in OBJ VRAM, and where its palette is
+  const bin = new Uint8Array(readFileSync(args[0] ?? "logs/objects-rec.bin"));
+  const seen = new Set<string>();
+  for (const snap of readSnapshots(bin)) {
+    const kind = `${hex(snap.bytes[0] & 0x7f)}/${hex(snap.bytes[1])}`;
+    if (seen.has(kind)) continue;
+    seen.add(kind);
+    const obj = snap.vram.subarray(0xc000);
+    const loads = matchLoads(rom, obj, [...Array(0x200).keys()]);
+    const palette = (snap.bytes[4] >> 1) & 7;
+    const colours = snap.cgram.subarray(0x100 + 32 * palette, 0x120 + 32 * palette);
+    const at = findPalette(rom, new Uint8Array(colours));
+    console.log(`${kind}  f${snap.frame}  tile base ${hex(snap.bytes[3])}  OBJ palette ${palette}: ${at.map((a) => "0x" + a.toString(16)).join(" ") || "in no ROM record"}`);
+    console.log(`  in VRAM: ${loads.map((l) => `${hex(l.resource)}@${l.vram.toString(16)}`).join(" ")}`);
   }
 } else if (command === "code" && args.length >= 2) {
   // an object's code read: how long it lives, how it steps, what it waits on

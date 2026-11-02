@@ -1,0 +1,22 @@
+{
+  "_comment": "Vegeta's Energy Field, ab (object 1/07). Frames by npm run rom -- export --fighter vegeta, timed by its code's table ($0F:BBD6), gone at 27; this file by hand: it stays on him, 40 px up, every frame, and is gone when he leaves the move ($0F:BB4D); plays on where it hits (owner); type and damage the objects' hit table's ($3D:9624). Its sound 19 every 3 ticks is its code's ($0F:BBAC) — ours is his state's loopSound. Drawn solid: the original's is likely see-through by colour maths `?`.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 50,
+      "lasts": 27,
+      "hitSound": "burst_1",
+      "blockSound": "burst_1",
+      "outlivesHit": true,
+      "rides": true,
+      "endsWithMove": true
+    }
+  }
+}

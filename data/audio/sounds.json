@@ -56,6 +56,13 @@
     "file": "meteor_38.wav",
     "rom": 56
   },
+  "flare_3d": {
+    "label": "Vegeta's Ground Flare (a9) — sound 3d: sample 15 sliding down on one voice; clip 029 by ear (owner, 2026-11-02)",
+    "gain": 0.3,
+    "vary": 0,
+    "file": "029.wav",
+    "rom": 61
+  },
   "hit_09": {
     "label": "a melee blow landing — sound 09, sample 14 sliding from 0785 to 0613, clip 007 by comparison along the slide (0.41, the next 0.17)",
     "gain": 0.42,

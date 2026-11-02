@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ROM_PATH } from "./cartridge";
-import { inRecording, OWN_OBJECTS, ownObjects } from "./ownObjects";
+import { fromTicks, inRecording, OWN_OBJECTS, ownObjects } from "./ownObjects";
 import type { Life } from "./recording";
 import { fighterNamed } from "./roster";
 
@@ -14,6 +14,13 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's own objects", () => {
     steps: [[0, 4], [1, 5], [0, 5], [1, 5], [0, 5], [1, 6], [0, 6]].map(([frame, dur]) => ({ frame, dur })),
   };
   const [def] = ownObjects(rom, vegeta, OWN_OBJECTS.vegeta!.filter((o) => o.anim === 4), [ball]);
+
+  it("times the Ground Flare by its code's table: 66 ticks, rising then flickering 4-5-6", () => {
+    const { steps, frames } = fromTicks(rom, { at: 0x0fba07, length: 0x42 });
+    expect(steps.reduce((a, b) => a + b, 0)).toBe(66);
+    expect(frames.slice(0, 9)).toEqual([0, 1, 2, 3, 4, 5, 4, 5, 6]);
+    expect(frames.slice(-2)).toEqual([7, 8]);
+  });
 
   it("draws from what the spawning move loads for player one: ad's resource 4f at $6C00", () => {
     expect(def.loads).toEqual([{ resource: 0x4f, vram: 0x6c00 }]);

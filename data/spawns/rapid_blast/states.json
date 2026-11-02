@@ -1,0 +1,19 @@
+{
+  "_comment": "A shared shot (object a/24): Vegeta's Renzoku Energy Dan, aa, puts out three. Frames and animation by npm run rom -- export; this file by hand: 4 px a frame as his recording shows it (logs/objects-vegeta.txt); type and damage the objects' hit table's ($3D:9624); where it hits it becomes a/01 (the recording).",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "vel": [
+        4,
+        0
+      ],
+      "turn": false,
+      "type": "heavy",
+      "damage": 18,
+      "burstsInto": "burst",
+      "hitSound": "burst_1",
+      "blockSound": "burst_1"
+    }
+  }
+}

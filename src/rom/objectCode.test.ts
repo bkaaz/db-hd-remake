@@ -26,4 +26,15 @@ describe.skipIf(!existsSync(ROM_PATH))("objectFacts, on the cartridge", () => {
     expect(loop.map((f) => f.when?.at(-1))).toEqual(["when field 02 (frame shown) is 05 or more", "when field 02 (frame shown) is 05 or more"]);
     expect(at(0x0a, 0x16, "shows its next frame").map((f) => f.from)).toEqual([4]);
   });
+
+  it("reads Vegeta's Energy Field riding him 40 px up, playing 19, and testing that he is still in ab", () => {
+    expect(at(0x01, 0x07, "stays on its thrower's x")).not.toHaveLength(0);
+    expect(at(0x01, 0x07, "stays on its thrower's y, -40 px")).not.toHaveLength(0);
+    expect(objectFacts(rom, 0x01, 0x07).some((f) => f.sound === 0x19)).toBe(true);
+    expect(at(0x01, 0x07, "tests its thrower's move for ab")).not.toHaveLength(0);
+  });
+
+  it("reads his Ground Flare re-armed every 32nd frame of the game", () => {
+    expect(at(0x01, 0x02, "re-arms its blow")[0].when).toContain("every 32nd frame of the game");
+  });
 });

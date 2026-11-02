@@ -631,12 +631,16 @@
     },
     "jump_up": {
       "anim": "m05",
-      "launch": [
-        0,
-        -9.86
-      ],
-      "airborne": true,
       "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": 0,
+            "vy": -9.86
+          }
+        ]
+      ],
       "transitions": [
         {
           "when": [
@@ -671,12 +675,16 @@
     },
     "jump_fwd": {
       "anim": "m06",
-      "launch": [
-        2.02,
-        -9.86
-      ],
-      "airborne": true,
       "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": 2.02,
+            "vy": -9.86
+          }
+        ]
+      ],
       "transitions": [
         {
           "when": [
@@ -707,12 +715,16 @@
     },
     "jump_back": {
       "anim": "m07",
-      "launch": [
-        -2.02,
-        -9.86
-      ],
-      "airborne": true,
       "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": -2.02,
+            "vy": -9.86
+          }
+        ]
+      ],
       "transitions": [
         {
           "when": [

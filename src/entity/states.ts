@@ -375,6 +375,20 @@ export interface StateDef {
    */
   lasts?: number;
   /**
+   * For a bolt: it plays on where it hits rather than being gone — the
+   * blow still lands once. Vegeta's Ground Flare and Energy Field (owner,
+   * from the original, 2026-11-02).
+   */
+  outlivesHit?: boolean;
+  /**
+   * For a bolt: it stays on whoever put it out, where it was put, every
+   * frame — Vegeta's Energy Field ($0F:BBB3). The bolt still cannot reach
+   * him (ADR 0014); `Projectiles` moves it.
+   */
+  rides?: boolean;
+  /** For a bolt: gone when whoever put it out leaves the state that did ($0F:BB51, $0F:B9C0). */
+  endsWithMove?: boolean;
+  /**
    * Entering it puts the entity behind the opponent, where a blow armed puts
    * it in front — Side Slash, the 3D move ($0D:D8D5). It lasts until either
    * arms another.

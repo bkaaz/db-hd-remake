@@ -103,7 +103,10 @@ export function landBlow(
   // Both sides pause, not just the one taking it: freezing only the defender
   // lets the attacker walk on through the moment of contact.
   const stop = attacker.attackHitstop;
-  attacker.freeze(stop);
+  // a bolt waits out the pause with every bolt (Projectiles.update), as the
+  // original's objects wait on $30B2; a hold of its own would only start
+  // counting once that pause was over, and hold it twice as long
+  if (!attacker.travels) attacker.freeze(stop);
   defender.freeze(stop);
   return { attack, damage: dealt, blocked, took, flash: blocked ? 0 : attacker.attackFlash };
 }

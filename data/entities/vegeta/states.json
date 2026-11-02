@@ -29,6 +29,10 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
+        {
           "when": "command:a2",
           "to": "driving_elbow"
         },
@@ -47,6 +51,10 @@
         {
           "when": "command:ad",
           "to": "big_bang"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
         },
         {
           "when": [
@@ -130,6 +138,10 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
+        {
           "when": "command:a2",
           "to": "driving_elbow"
         },
@@ -148,6 +160,10 @@
         {
           "when": "command:ad",
           "to": "big_bang"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
         },
         {
           "when": [
@@ -227,6 +243,10 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
+        {
           "when": "command:a2",
           "to": "driving_elbow"
         },
@@ -245,6 +265,10 @@
         {
           "when": "command:ad",
           "to": "big_bang"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
         },
         {
           "when": [
@@ -315,6 +339,10 @@
           "to": "guard_low"
         },
         {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
+        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -329,6 +357,10 @@
         {
           "when": "command:ad",
           "to": "big_bang"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
         },
         {
           "when": "pressed:strike",
@@ -367,6 +399,10 @@
           "to": "guard_low"
         },
         {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
+        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -381,6 +417,10 @@
         {
           "when": "command:ad",
           "to": "big_bang"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
         },
         {
           "when": "pressed:strike",
@@ -409,6 +449,10 @@
       "turn": true,
       "transitions": [
         {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
+        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -425,6 +469,10 @@
           "to": "big_bang"
         },
         {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
           "when": "held:down",
           "to": "crouch_down"
         },
@@ -436,13 +484,28 @@
     },
     "jump_up": {
       "anim": "m05",
-      "launch": [
-        0,
-        -9.86
-      ],
-      "airborne": true,
       "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": 0,
+            "vy": -9.86
+          }
+        ]
+      ],
       "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "command:ab"
+          ],
+          "to": "energy_field"
+        },
+        {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
         {
           "when": [
             "frames:2",
@@ -469,13 +532,28 @@
     },
     "jump_fwd": {
       "anim": "m06",
-      "launch": [
-        2.02,
-        -9.86
-      ],
-      "airborne": true,
       "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": 2.02,
+            "vy": -9.86
+          }
+        ]
+      ],
       "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "command:ab"
+          ],
+          "to": "energy_field"
+        },
+        {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
         {
           "when": [
             "frames:2",
@@ -498,13 +576,28 @@
     },
     "jump_back": {
       "anim": "m07",
-      "launch": [
-        -2.02,
-        -9.86
-      ],
-      "airborne": true,
       "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": -2.02,
+            "vy": -9.86
+          }
+        ]
+      ],
       "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "command:ab"
+          ],
+          "to": "energy_field"
+        },
+        {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
         {
           "when": [
             "frames:2",
@@ -530,6 +623,10 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        {
+          "when": "command:ab",
+          "to": "energy_field"
+        },
         {
           "when": "pressed:attack",
           "to": "jump_y"
@@ -2226,6 +2323,177 @@
       "blockSound": "block_1",
       "type": "trip",
       "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "ground_flare": {
+      "anim": "ma9",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "ground_flare_2"
+        }
+      ]
+    },
+    "ground_flare_2": {
+      "anim": "ma9_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "vegeta_ground_flare",
+        "at": [
+          48,
+          0
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_field": {
+      "anim": "mab",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          1,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "energy_field_2"
+        }
+      ]
+    },
+    "energy_field_2": {
+      "anim": "mab_2",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0
+          }
+        ],
+        [
+          30,
+          {
+            "vy": 2,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "holdStep": 6,
+      "fires": {
+        "spawn": "vegeta_energy_field",
+        "at": [
+          0,
+          -40
+        ]
+      },
+      "loopSound": "charge_1",
+      "loopEvery": 3,
+      "loopUntil": 25,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "renzoku": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "healthCost": 5,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "renzoku_2"
+        }
+      ]
+    },
+    "renzoku_2": {
+      "anim": "maa_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          28,
+          -48
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "renzoku_3"
+        }
+      ]
+    },
+    "renzoku_3": {
+      "anim": "maa_3",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          28,
+          -48
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "renzoku_4"
+        }
+      ]
+    },
+    "renzoku_4": {
+      "anim": "maa_4",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          28,
+          -48
+        ]
+      },
       "transitions": [
         {
           "when": "animEnd",

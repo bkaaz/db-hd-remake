@@ -19,6 +19,10 @@ interface Live {
   companions: Entity[];
   /** Whether the owner draws a band to it — only this bolt may say where its head is. */
   beam: boolean;
+  /** `rides`: where it stays on its owner, forward of him and down from him, in game px. */
+  ride: { ahead: number; down: number } | null;
+  /** `endsWithMove`: the owner's state that put it out; gone when he leaves it. */
+  thrownIn: string | null;
 }
 
 /** A blow a bolt landed, and who took it — enough for the recording. */
@@ -129,7 +133,8 @@ export class Projectiles {
       this.world.addChild(e.view);
       return [e];
     });
-    this.live.push({ bolt, foe, owner, companions, beam: from.beam });
+    const ride = bolt.rides ? { ahead: (bolt.x - owner.x) * from.facing, down: bolt.y - owner.y } : null;
+    this.live.push({ bolt, foe, owner, companions, beam: from.beam, ride, thrownIn: bolt.endsWithMove ? owner.state : null });
   }
 
   /**
@@ -143,8 +148,13 @@ export class Projectiles {
   update(paused: boolean, bounds: Bounds, impact: BlowContext): ProjectileHit[] {
     const hits: ProjectileHit[] = [];
     for (let i = this.live.length - 1; i >= 0; i--) {
-      const { bolt, foe, owner, companions, beam } = this.live[i];
+      const { bolt, foe, owner, companions, beam, ride, thrownIn } = this.live[i];
       if (!paused) bolt.update(NO_INPUT, null, bounds);
+      // the original's object takes its thrower's place every frame (Energy Field, $0F:BBB3)
+      if (ride) {
+        bolt.x = owner.x + ride.ahead * owner.facing;
+        bolt.y = bolt.groundY = owner.y + ride.down;
+      }
       if (!paused) for (const c of companions) c.update(NO_INPUT, null, bounds);
       // the thrower draws the band to it, if its state has one (combat/band.ts)
       if (beam) owner.beamReaches(bolt.x);
@@ -152,8 +162,11 @@ export class Projectiles {
       if (result) hits.push({ result, foe });
       // Off the end of the stage, where `Entity` has clamped it: nothing here
       // is allowed to hang in a corner waiting for someone to walk into it.
-      const stranded = bolt.x <= bounds.min || bolt.x >= bounds.max;
-      if (result || stranded || bolt.expired) {
+      // One put down at the edge and standing there is not stranded (Energy Field).
+      const stranded = bolt.moving && (bolt.x <= bounds.min || bolt.x >= bounds.max);
+      // and is gone the moment he leaves the move that put it out ($0F:BB51)
+      const orphaned = thrownIn !== null && owner.state !== thrownIn;
+      if ((result && !bolt.outlivesHit) || stranded || orphaned || bolt.expired) {
         bolt.view.destroy({ children: true });
         for (const c of companions) this.release(c);
         this.live.splice(i, 1);

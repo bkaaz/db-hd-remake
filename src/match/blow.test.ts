@@ -54,6 +54,14 @@ const context = (): BlowContext =>
   ({ effects: { spawn: vi.fn() } }) as unknown as BlowContext;
 
 describe("landBlow", () => {
+  it("freezes the defender but not a bolt, which waits out the pause with every bolt", () => {
+    const bolt = body("hit", { travels: true, facing: 1 });
+    const defender = body("hurt");
+    landBlow(bolt, defender, context());
+    expect(bolt.freeze).not.toHaveBeenCalled();
+    expect(defender.freeze).toHaveBeenCalled();
+  });
+
   it("turns the defender away from a bolt's heading, not away from the bolt", () => {
     // Fired point-blank, a bolt is past the victim's anchor by the time it
     // connects; turning them toward it would face them away from the shooter,

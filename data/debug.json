@@ -10,10 +10,12 @@
     { "p2": { "does": ["attack 6", "attack 10", "smash", 120] } },
     { "p2": { "does": ["attack 24"] } },
     { "p2": { "does": ["down 60"] } },
-    { "p1": { "at": 0.45 }, "p2": { "at": 0.55, "does": [
+    { "p2": { "does": [
       60,
-      "fwd 2", "down 2", "down fwd 2", "down fwd smash", 100,
-      "back 20", 60
+      "down 2", "down fwd 2", "fwd 2", "fwd blast", 120,
+      "down 8", "up 2", "up attack", 150,
+      "up", 10, "down 2", "down back 2", "back 2", "back attack", 100,
+      "back 2", "down back 2", "down 2", "down fwd 2", "fwd 2", "fwd blast", 160
     ] } }
   ]
 }
