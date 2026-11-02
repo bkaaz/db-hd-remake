@@ -51,6 +51,7 @@ import { VOICE_RATE, voiceFiles, voiceSamples, voiceSounds } from "../src/rom/vo
 import { encodeWav } from "../src/audio/wav.ts";
 import { normalise } from "../src/audio/split.ts";
 import type { Sounds } from "../src/audio/sounds.ts";
+import { romIds } from "../src/audio/find.ts";
 import { moveOf, todo } from "../src/rom/todo.ts";
 import { handlerAt } from "../src/rom/handler.ts";
 import { commandContext } from "../src/rom/conditions.ts";
@@ -145,6 +146,10 @@ if (command === "tiles") {
   }
 } else if (command === "port" && args.length >= 1) {
   const r = portReport(rom, T, parseInt(args[0], 16));
+  // each sound id with what of ours plays it — the shared bank and his own voices
+  const banks = ["data/audio/sounds.json", `data/entities/${name}/sounds.json`].filter((f) => existsSync(f));
+  const ours = romIds(...banks.map((f) => JSON.parse(readFileSync(f, "utf8")) as Sounds));
+  const heard = (id: number) => `${hex(id)} (${ours.get(id) ?? `no bank entry — npm run samples -- --find ${hex(id)}`})`;
   console.log(`move ${hex(r.move)} — handler ${long(r.handler)}`);
   console.log(`input: ${r.inputs.join(" | ") || "none from a button or a command"}`);
   for (const c of r.commands) {
@@ -162,9 +167,13 @@ if (command === "tiles") {
     console.log(`  ${blow}`);
     console.log(`  speed: ${speed}`);
     if (p.sounds.length)
-      console.log(`  sounds: ${p.sounds.map((s) => `${s.frame}: ${hex(s.id)}${s.handler ? (s.opponent ? " (handler, the opponent's)" : " (handler)") : ""}`).join(", ")}`);
-    for (const s of p.spawns)
+      console.log(`  sounds: ${p.sounds.map((s) => `${s.frame}: ${heard(s.id)}${s.handler ? (s.opponent ? ", the handler's, the opponent's" : ", the handler's") : ""}`).join(", ")}`);
+    for (const s of p.spawns) {
       console.log(`  spawns at ${s.frame} (counter ${hex(s.counter)}): object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
+      // what the object's own code plays, which no script shows (Energy Field's 19)
+      const own = [...new Set(objectFacts(rom, s.type, s.anim).flatMap((f) => (f.sound === undefined ? [] : [f.sound])))];
+      if (own.length) console.log(`    its code plays: ${own.map(heard).join(", ")}`);
+    }
     if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
     for (const u of p.unhittable) console.log(`  ${u.frame}: ${u.on ? "blows pass him by" : "can be hit again"} (field 0x96)`);
     for (const f of p.onFrames) console.log(`  handler at ${f.frame}: ${f.what}`);
