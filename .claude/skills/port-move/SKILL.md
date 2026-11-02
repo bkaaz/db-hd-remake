@@ -133,7 +133,15 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   steps (`sfx`), and they play through the bank's `rom` matches. An id the
   report lists that no bank entry matches plays nothing — say which, never
   match one by clip number (`rom.md`). A state's `sound` is only for what
-  no script plays (a jump, a landing).
+  no script plays (a jump, a landing). An object's code may play its own
+  (`npm run rom -- code <type> <anim>`: "plays sound 19").
+- **A sound the bank lacks is found, not guessed**: with a DSP recording of
+  the move (`tools/re/log-dsp.lua`), `npm run samples -- --missing` lists
+  every id it asked for that no entry answers — player two's shifted ids
+  folded back — each with the three clips most like what the chip played,
+  its pitch followed frame by frame (`--find <id>` for one). The owner
+  chooses among those three by ear; render from the chip
+  (`--render`) only when none of them is it.
 
 ## 4. Check
 

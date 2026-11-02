@@ -12,6 +12,13 @@
  *                                   no clip of the capture holds; a last
  *                                   sample number keeps to its voices, when
  *                                   another sound starts beside it
+ *   npm run samples -- --find 3d [2]
+ *                                   the sound asked for on its first (second …)
+ *                                   request in logs/dsp.txt, made again from the
+ *                                   chip and compared with every clip — the
+ *                                   best three, its pitch followed frame by frame
+ *   npm run samples -- --missing    the same for every sound the recording asked
+ *                                   for that no bank entry's `rom` answers
  *   npm run samples -- --sweep 14 5 186
  *                                   sample 14 as voice 5 played it from frame 186
  *                                   of logs/dsp.txt, its pitch frame by frame —
@@ -28,12 +35,17 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { decodeBrr, NATIVE_RATE, playAt, sampleEntry } from "../src/audio/brr.ts";
 import { likeness, resample } from "../src/audio/compare.ts";
-import { loopIndex, renderVoices, voicesFrom } from "../src/audio/render.ts";
+import { playerOneOf, requests, romIds, unanswered } from "../src/audio/find.ts";
+import { ROM_PATH, toFile } from "../src/rom/cartridge.ts";
+import { loopIndex, renderVoices, voicesFrom, type Heard } from "../src/audio/render.ts";
+import type { Sounds } from "../src/audio/sounds.ts";
 import { decodeWav, encodeWav } from "../src/audio/wav.ts";
 
 const SPC = "logs/spc.bin";
 const DSP_LOG = "logs/dsp.txt";
 const CLIPS = "assets/audio/sfx";
+/** Every bank whose entries name a cartridge id: the shared one and each fighter's voices. */
+const BANKS = ["data/audio/sounds.json", ...readdirSync("data/entities").map((e) => `data/entities/${e}/sounds.json`).filter((f) => existsSync(f))];
 /** What both are brought to before they are compared: enough for a hit or a swing. */
 const RATE = 16000;
 /** Pitches tried per sample, the most played first. */
@@ -80,23 +92,52 @@ function bestOf(sound: Float32Array): string {
     .join(", ");
 }
 
-const render = process.argv.indexOf("--render");
-if (render >= 0) {
-  const [id, from, frames, name, only] = process.argv.slice(render + 1);
-  const heard = voicesFrom(readFileSync(DSP_LOG, "utf8"), Number(from), Number(frames), 10).filter(
-    (h) => only === undefined || h.src === parseInt(only, 16),
-  );
-  if (heard.length === 0) {
-    console.error(`no effect voice starts within 10 frames of frame ${from}`);
-    process.exit(1);
-  }
+/** What the effect voices played for the sound asked for on `from`, made again from the chip's samples. */
+function rendered(from: number, frames: number, only?: number): { heard: Heard[]; sound: Float32Array } {
+  const heard = voicesFrom(readFileSync(DSP_LOG, "utf8"), from, frames, 10).filter((h) => only === undefined || h.src === only);
   const voices = heard.map((h) => {
     const { start, loop } = sampleEntry(ram, dir, h.src);
     const sample = decodeBrr(ram, start);
     return { sample, loopAt: loopIndex(ram, start, loop, sample.length), frames: h.frames };
   });
+  return { heard, sound: renderVoices(voices, NATIVE_RATE) };
+}
+
+const find = process.argv.indexOf("--find");
+const missing = process.argv.includes("--missing");
+if (find >= 0 || missing) {
+  // a sound found by comparing what the chip played, pitch frame by frame,
+  // with every clip — the best three, for an ear to choose between
+  const known = romIds(...BANKS.map((f) => JSON.parse(readFileSync(f, "utf8")) as Sounds));
+  // player two's ids, shifted by the cartridge ($0D:D852 + id, below 0x50)
+  const rom = existsSync(ROM_PATH) ? new Uint8Array(readFileSync(ROM_PATH)) : null;
+  const shiftsAt = toFile(0x0dd852);
+  const shifts = rom && shiftsAt !== null ? [...rom.subarray(shiftsAt, shiftsAt + 0x50)] : [];
+  const asked = requests(readFileSync(DSP_LOG, "utf8"));
+  const wanted = missing
+    ? unanswered(asked, known, shifts)
+    : asked.filter((r) => r.id === parseInt(process.argv[find + 1], 16)).slice(Number(process.argv[find + 2] ?? 1) - 1, Number(process.argv[find + 2] ?? 1));
+  if (wanted.length === 0) console.log(missing ? "every sound the recording asked for has a bank entry" : "the recording never asks for it");
+  for (const { id, frame } of wanted) {
+    const { heard, sound } = rendered(frame, 120);
+    const one = playerOneOf(id, shifts);
+    const has = known.get(id) ?? (one !== undefined && known.has(one) ? `${known.get(one)} (player two's ${hex(one)})` : undefined);
+    const said = heard.map((h) => `v${h.voice} sample ${hex(h.src)}`).join(", ") || "no effect voice — a voice or the music?";
+    const best = heard.length ? bestOf(resample(sound, NATIVE_RATE, RATE)) : "";
+    console.log(`sound ${hex(id)} (frame ${frame}${has ? `, bank: ${has}` : ", not in the bank"}): ${said}${best ? ` — ${best}` : ""}`);
+  }
+  process.exit(0);
+}
+
+const render = process.argv.indexOf("--render");
+if (render >= 0) {
+  const [id, from, frames, name, only] = process.argv.slice(render + 1);
+  const { heard, sound } = rendered(Number(from), Number(frames), only === undefined ? undefined : parseInt(only, 16));
+  if (heard.length === 0) {
+    console.error(`no effect voice starts within 10 frames of frame ${from}`);
+    process.exit(1);
+  }
   const out = `${CLIPS}/${name}.wav`;
-  const sound = renderVoices(voices, NATIVE_RATE);
   // the voices' own volumes are not in the log: brought to the capture's 0.9
   // peak, and the bank's gain says how loud
   const peak = sound.reduce((m, s) => Math.max(m, Math.abs(s)), 0) || 1;
