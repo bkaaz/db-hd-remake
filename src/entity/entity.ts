@@ -20,6 +20,7 @@ import { approachSpeed, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { commandsMet, padFrame, PadHistory } from "../input/command";
+import { pressedNames, stickLine } from "../input/padLine";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions, type MotionName } from "../input/motion";
 import {
@@ -130,6 +131,8 @@ export interface EntityDebug {
   motions: MotionName[];
   /** The cartridge's commands met this frame, by move. */
   commands: string[];
+  /** On a frame a button goes down: the stick's last frames and the buttons (`input/padLine.ts`). */
+  padPress: string | null;
   /** The next part a `queued` transition has kept, or null. */
   queued: string | null;
   combo: { hits: number; damage: number; lifts: number };
@@ -436,6 +439,7 @@ export class Entity {
       inputs: this.history.line,
       motions: MOTION_NAMES.filter((m) => this.motions.has(m)),
       commands: [...this.met.keys()],
+      padPress: this.padPress(),
       queued: this.sm?.queuedTo ?? null,
       combo: { hits: this.combo.hits, damage: this.combo.damage, lifts: this.combo.lifts },
     };
@@ -693,6 +697,12 @@ export class Entity {
   /** Record that the current attack connected; it cannot land again. */
   markHit(): void {
     this.swing.hit(this.sm?.def.rehit);
+  }
+
+  /** The last 30 frames of the stick, if a button went down this frame — why a command was missed. */
+  private padPress(): string | null {
+    const pressed = this.pad.at(0).pressed;
+    return pressed ? `${stickLine(this.pad, 30)} + ${pressedNames(pressed).join(" + ")}` : null;
   }
 
   /** The reaction this entity's current attack asks of whoever it hits. */

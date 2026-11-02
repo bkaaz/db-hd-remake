@@ -44,7 +44,7 @@ import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
 import { ownMoves } from "../src/rom/ownMoves.ts";
 import { fullestLife, readLives } from "../src/rom/recording.ts";
-import { OWN_OBJECTS, ownObjects } from "../src/rom/ownObjects.ts";
+import { inRecording, OWN_OBJECTS, ownObjects } from "../src/rom/ownObjects.ts";
 import { decodeLine, LINE_RATE, lineName, spokenLines } from "../src/rom/lines.ts";
 import { VOICE_RATE, voiceFiles, voiceSamples, voiceSounds } from "../src/rom/voice.ts";
 import { encodeWav } from "../src/audio/wav.ts";
@@ -352,7 +352,14 @@ if (command === "tiles") {
     // once it is his, so recording the next fighter leaves this one's alone
     const recording = `logs/objects-${name}.txt`;
     if (!existsSync(recording)) throw new Error(`${recording} is missing: record his objects (tools/re/record-objects.lua) and keep logs/objects-rec.txt as it`);
-    const spawns = ownObjects(rom, T, own, readLives(readFileSync(recording, "utf8")));
+    const lives = readLives(readFileSync(recording, "utf8"));
+    // one exported before is kept: a later recording may show it for less
+    // time, and the frames it misses would be dropped (Final Flash, 2026-11-02)
+    const kept = own.filter((o) => existsSync(`data/spawns/${o.name}`));
+    for (const o of kept) console.log(`${o.name}: kept as exported before — delete data/spawns/${o.name} to export it again`);
+    const { recorded, missed } = inRecording(own.filter((o) => !kept.includes(o)), lives);
+    if (missed.length > 0) throw new Error(`not in ${recording}: ${missed.map((o) => o.name).join(", ")}`);
+    const spawns = ownObjects(rom, T, recorded, lives);
     for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }))) {
       write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);
       console.log(`${spawn}: ${Object.keys(e.frames).length} frames, shown as ${recording} shows them`);

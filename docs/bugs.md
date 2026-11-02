@@ -31,15 +31,6 @@ through to a plain B from idle a few frames later. The stand-up asks for
 commands as idle does (`$0F:9EB1`, `rom.md`), so in the original it
 would be the Double Kick `?`.
 
-## Vegeta's Big Bang and Final Flash do not come out of a crouch
-
-`vegeta`, ← ↙ ↓ ↘ → A or ↓ ↙ → A · noticed 2026-11-01 · annoying
-
-Their entries in `specials.json` are from idle and walking only. The
-crouch and the stand-up ask for commands as idle does (`$0F:9EB1`), so in
-the original a motion rolled through ↓ fires from them — Goku's and
-Vegeta's Sliding Kick do.
-
 ## Saiyan Meteor turns the opponent round after the explosion
 
 `goku`, Saiyan Meteor (`ad`) landed · noticed by the owner 2026-11-01 ·
@@ -61,16 +52,6 @@ rendered the same way, is like its clip (0.79). Pitch changing faster
 than a frame, or a voice the log does not show, would explain it `?`.
 The ball plays the owner's clips; meteor_38 is a render and may be off
 the same way.
-
-## Vegeta's object recording is gone
-
-`npm run rom -- export --fighter vegeta` · noticed 2026-11-01 · annoying
-
-Goku's object recording (2026-11-01) overwrote `logs/objects-rec.txt`,
-the only copy of Vegeta's. What it gave is exported and committed
-(`data/spawns/vegeta_*`), but exporting his objects again now stops: the
-export reads `logs/objects-vegeta.txt`, which needs a new recording of
-his Big Bang and Final Flash (`npm run rom -- spawns --fighter vegeta`).
 
 ## The export rewrites `goku/sounds.json` with nothing changed
 

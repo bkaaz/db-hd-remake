@@ -24,6 +24,7 @@ const snapshot = (buffer: [string, number][]): EntityDebug => ({
   inputs: "",
   motions: [],
   commands: [],
+  padPress: null,
   queued: null,
   combo: { hits: 0, damage: 0, lifts: 0 },
 });

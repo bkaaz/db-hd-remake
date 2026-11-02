@@ -88,6 +88,11 @@ describe("padFrame", () => {
     const frame = padFrame({ fwd: true, back: false, up: false, down: true }, { ...OFF, smash: true }, { ...OFF, dash: true });
     expect(frame).toEqual({ pressed: PAD.B, held: PAD.fwd | PAD.down | PAD.B | PAD.R });
   });
+
+  it("reads back and forward together as neither, as a pad cannot hold both", () => {
+    const frame = padFrame({ fwd: true, back: true, up: false, down: true }, OFF, OFF);
+    expect(frame.held).toBe(PAD.down);
+  });
 });
 
 describe("commandsMet", () => {

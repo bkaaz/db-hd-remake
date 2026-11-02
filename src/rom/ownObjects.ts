@@ -64,6 +64,12 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
   ],
 };
 
+/** `wanted` split by whether `lives` holds each — what a recording can export, and what it missed. */
+export function inRecording(wanted: OwnObject[], lives: Life[]): { recorded: OwnObject[]; missed: OwnObject[] } {
+  const has = (o: OwnObject) => fullestLife(lives, o.type, o.anim) !== undefined;
+  return { recorded: wanted.filter(has), missed: wanted.filter((o) => !has(o)) };
+}
+
 /** Each object as the export draws it: tiles from what its move loads, frames from `lives`. */
 export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[], lives: Life[]): SpawnDef[] {
   return wanted.map((o) => {

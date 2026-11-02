@@ -9,7 +9,10 @@
       "from": [
         "idle",
         "walk_fwd",
-        "walk_back"
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
       ],
       "when": "command:ad",
       "to": "big_bang"
@@ -18,7 +21,10 @@
       "from": [
         "idle",
         "walk_fwd",
-        "walk_back"
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
       ],
       "when": "command:ac",
       "to": "final_flash"

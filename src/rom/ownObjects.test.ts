@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ROM_PATH } from "./cartridge";
-import { OWN_OBJECTS, ownObjects } from "./ownObjects";
+import { inRecording, OWN_OBJECTS, ownObjects } from "./ownObjects";
 import type { Life } from "./recording";
 import { fighterNamed } from "./roster";
 
@@ -51,5 +51,18 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's own objects", () => {
 
   it("refuses an object the recording never showed", () => {
     expect(() => ownObjects(rom, vegeta, OWN_OBJECTS.vegeta!, [ball])).toThrow(/vegeta_flash .* not in the recording/);
+  });
+});
+
+describe("inRecording", () => {
+  it("parts the objects a recording holds from those it missed", () => {
+    const life = { slot: 0, type: 1, anim: 4, from: 0, to: 9, x: 0, y: 0, vx: 0, vy: 0, hit: false, steps: [{ frame: 0, dur: 9 }] };
+    const wanted = [
+      { name: "ball", type: 1, anim: 4, hits: true, palette: 0 },
+      { name: "head", type: 1, anim: 0xb, hits: true, palette: 0 },
+    ];
+    const { recorded, missed } = inRecording(wanted, [life]);
+    expect(recorded.map((o) => o.name)).toEqual(["ball"]);
+    expect(missed.map((o) => o.name)).toEqual(["head"]);
   });
 });

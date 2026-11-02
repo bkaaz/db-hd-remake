@@ -36,7 +36,7 @@ export const PAD = {
 } as const;
 
 /** Ours as the pad's: A S D X are its Y B X A, dash its L/R (`combat.md`, The buttons). */
-const OURS = { attack: PAD.Y, smash: PAD.B, strike: PAD.X, blast: PAD.A, dash: PAD.R } as const;
+export const OURS = { attack: PAD.Y, smash: PAD.B, strike: PAD.X, blast: PAD.A, dash: PAD.R } as const;
 type Ours = keyof typeof OURS;
 type Stick = { fwd: boolean; back: boolean; up: boolean; down: boolean };
 
@@ -71,9 +71,15 @@ export class PadHistory {
   }
 }
 
-/** This frame's pad from our input; the stick facing-relative, as the cartridge turns it (`$0D:F610`). */
+/**
+ * This frame's pad from our input; the stick facing-relative, as the
+ * cartridge turns it (`$0D:F610`). Back and forward together — a keyboard
+ * can, the pad cannot — are neither, so a roll through ↓ that presses →
+ * before letting go of ← still holds ↓ alone (a recording, 2026-11-02).
+ */
 export function padFrame(stick: Stick, pressed: Record<Ours, boolean>, holding: Record<Ours, boolean>): PadFrame {
-  let held = (stick.fwd ? PAD.fwd : 0) | (stick.back ? PAD.back : 0) | (stick.up ? PAD.up : 0) | (stick.down ? PAD.down : 0);
+  const both = stick.fwd && stick.back;
+  let held = (stick.fwd && !both ? PAD.fwd : 0) | (stick.back && !both ? PAD.back : 0) | (stick.up ? PAD.up : 0) | (stick.down ? PAD.down : 0);
   let down = 0;
   for (const button of Object.keys(OURS) as Ours[]) {
     if (pressed[button]) down |= OURS[button];

@@ -38,6 +38,7 @@ export class Recorder {
       for (const line of pressChanges(who, was, now)) this.say(fighters, line);
       for (const line of motionChanges(who, was, now)) this.say(fighters, line);
       for (const line of commandChanges(who, was, now)) this.say(fighters, line);
+      if (now.padPress) this.say(fighters, `${who} pad ${now.padPress}`);
       for (const line of queueChanges(who, was, now)) this.say(fighters, line);
       if (was.combo.hits > 0 && now.combo.hits === 0) {
         this.say(
