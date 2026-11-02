@@ -142,6 +142,9 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   its pitch followed frame by frame (`--find <id>` for one). The owner
   chooses among those three by ear; render from the chip
   (`--render`) only when none of them is it.
+  The whole bank is mapped once from the original's sound test
+  (`tools/re/record-sound-test.lua`, then `npm run samples -- --map
+  --write`), so a missing effect sound is the exception, not the rule.
 
 ## 4. Check
 

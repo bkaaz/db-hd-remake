@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { playerOneOf, requests, romIds, unanswered } from "./find";
+import { clearMatch, playerOneOf, requests, romIds, unanswered } from "./find";
 
 const LOG = ["# header", "f833 v7 env=127 pitch=07d8 src=15", "f833 sound 3d", "f834 sound 32", "f900 sound 3d", "f901 sound 0c"].join("\n");
 
@@ -28,5 +28,11 @@ describe("finding a sound the bank lacks", () => {
     expect(playerOneOf(0x3d, shifts)).toBeUndefined();
     const known = new Map([[0x0c, "land_1"], [0x32, "voice_shout"]]);
     expect(unanswered([{ frame: 1, id: 0x15 }, { frame: 2, id: 0x35 }, { frame: 3, id: 0x3d }], known, shifts)).toEqual([{ frame: 3, id: 0x3d }]);
+  });
+
+  it("calls a match clear only when it stands well above the next", () => {
+    expect(clearMatch(0.39, 0.16)).toBe(true);
+    expect(clearMatch(0.27, 0.1)).toBe(false);
+    expect(clearMatch(0.56, 0.32)).toBe(false);
   });
 });

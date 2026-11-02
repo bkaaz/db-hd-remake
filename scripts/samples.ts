@@ -19,6 +19,12 @@
  *                                   best three, its pitch followed frame by frame
  *   npm run samples -- --missing    the same for every sound the recording asked
  *                                   for that no bank entry's `rom` answers
+ *   npm run samples -- --map [--write]
+ *                                   every id the original's sound test played
+ *                                   (tools/re/record-sound-test.lua) against the
+ *                                   capture's clips: the best three each, and
+ *                                   whether one is clear; --write adds the clear
+ *                                   ones no bank entry has as sfx_<id>
  *   npm run samples -- --sweep 14 5 186
  *                                   sample 14 as voice 5 played it from frame 186
  *                                   of logs/dsp.txt, its pitch frame by frame —
@@ -35,14 +41,16 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { decodeBrr, NATIVE_RATE, playAt, sampleEntry } from "../src/audio/brr.ts";
 import { likeness, resample } from "../src/audio/compare.ts";
-import { playerOneOf, requests, romIds, unanswered } from "../src/audio/find.ts";
+import { clearMatch, playerOneOf, requests, romIds, unanswered } from "../src/audio/find.ts";
 import { ROM_PATH, toFile } from "../src/rom/cartridge.ts";
 import { loopIndex, renderVoices, voicesFrom, type Heard } from "../src/audio/render.ts";
 import type { Sounds } from "../src/audio/sounds.ts";
 import { decodeWav, encodeWav } from "../src/audio/wav.ts";
 
-const SPC = "logs/spc.bin";
-const DSP_LOG = "logs/dsp.txt";
+/** `--map` reads the sound test's recording (tools/re/record-sound-test.lua); everything else a fight's. */
+const MAP = process.argv.includes("--map");
+const SPC = MAP ? "logs/spc-sound-test.bin" : "logs/spc.bin";
+const DSP_LOG = MAP ? "logs/dsp-sound-test.txt" : "logs/dsp.txt";
 const CLIPS = "assets/audio/sfx";
 /** Every bank whose entries name a cartridge id: the shared one and each fighter's voices. */
 const BANKS = ["data/audio/sounds.json", ...readdirSync("data/entities").map((e) => `data/entities/${e}/sounds.json`).filter((f) => existsSync(f))];
@@ -82,11 +90,14 @@ const clips = readdirSync(CLIPS)
 mkdirSync("preview/samples", { recursive: true });
 const hex = (n: number, w = 2) => n.toString(16).padStart(w, "0");
 
+/** Every clip by its likeness to `sound`, the most like first. */
+function ranked(sound: Float32Array, among = clips): { name: string; score: number }[] {
+  return among.map((c) => ({ name: c.name, score: likeness(sound, c.samples) })).sort((a, b) => b.score - a.score);
+}
+
 /** The three clips most like `sound`, as a line. */
 function bestOf(sound: Float32Array): string {
-  return clips
-    .map((c) => ({ name: c.name, score: likeness(sound, c.samples) }))
-    .sort((a, b) => b.score - a.score)
+  return ranked(sound)
     .slice(0, 3)
     .map((b) => `${b.name} ${b.score.toFixed(2)}`)
     .join(", ");
@@ -101,6 +112,49 @@ function rendered(from: number, frames: number, only?: number): { heard: Heard[]
     return { sample, loopAt: loopIndex(ram, start, loop, sample.length), frames: h.frames };
   });
   return { heard, sound: renderVoices(voices, NATIVE_RATE) };
+}
+
+if (MAP) {
+  // every id the sound test played, against the capture's clips alone: one
+  // clear above the rest is written to the bank with --write, the rest are
+  // for an ear (docs/rom.md, The sounds)
+  const banks = BANKS.map((f) => JSON.parse(readFileSync(f, "utf8")) as Sounds);
+  const known = romIds(...banks);
+  const capture = clips.filter((c) => /^\d{3}\.wav$/.test(c.name));
+  const firsts = new Map<number, number>();
+  for (const { id, frame } of requests(readFileSync(DSP_LOG, "utf8"))) if (id < 0x50 && !firsts.has(id)) firsts.set(id, frame);
+  const write = process.argv.includes("--write");
+  const shared = banks[0];
+  const added: string[] = [];
+  for (const [id, frame] of [...firsts].sort((a, b) => a[0] - b[0])) {
+    const { heard, sound } = rendered(frame, 120);
+    if (heard.length === 0) {
+      console.log(`${hex(id)}  no effect voice — a voice, music, or nothing`);
+      continue;
+    }
+    const [best, next, third] = ranked(resample(sound, NATIVE_RATE, RATE), capture);
+    const clear = clearMatch(best.score, next.score);
+    const has = known.get(id);
+    const file = has ? (banks.find((b) => b[has])?.[has]?.file ?? "") : "";
+    const verdict = has ? (file === best.name ? `= ${has}` : `bank: ${has} (${file}) — differs`) : clear ? "clear" : "for an ear";
+    console.log(`${hex(id)}  ${best.name} ${best.score.toFixed(2)}, ${next.name} ${next.score.toFixed(2)}, ${third.name} ${third.score.toFixed(2)}  ${verdict}`);
+    if (write && !has && clear) {
+      const voices = heard.map((h) => `sample ${hex(h.src)}`).join(" + ");
+      shared[`sfx_${hex(id)}`] = {
+        label: `sound ${hex(id)} — ${voices}; clip ${best.name.slice(0, 3)} by the sound test's recording (${best.score.toFixed(2)}, the next ${next.score.toFixed(2)}); what plays it is not named yet, its gain not set by ear`,
+        gain: 0.3,
+        vary: 0,
+        file: best.name,
+        rom: id,
+      };
+      added.push(hex(id));
+    }
+  }
+  if (write) {
+    writeFileSync(BANKS[0], JSON.stringify(shared, null, 2) + "\n");
+    console.log(`written to ${BANKS[0]}: ${added.length ? added.map((id) => `sfx_${id}`).join(", ") : "nothing new"}`);
+  }
+  process.exit(0);
 }
 
 const find = process.argv.indexOf("--find");

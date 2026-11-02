@@ -43,3 +43,12 @@ export function unanswered(asked: { frame: number; id: number }[], known: Map<nu
   const answered = (id: number) => known.has(id) || known.has(playerOneOf(id, shifts) ?? -1);
   return asked.filter(({ id }) => !answered(id) && !seen.has(id) && seen.add(id));
 }
+
+/**
+ * Whether a clip's likeness is clear enough to write down without an ear:
+ * high enough, and well above the next clip's. Below it, the three are for
+ * the owner to choose from (`--find`'s 3d: 0.39 against 0.16 — clear).
+ */
+export function clearMatch(best: number, next: number): boolean {
+  return best >= 0.3 && best >= 2 * next;
+}
