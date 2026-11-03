@@ -1,0 +1,17 @@
+{
+  "_comment": "Galactic Gunfire's shots, af and b2 (objects 1/0e and 1/0f, docs/rom.md): Vertical Ki's drawings and code. Frames by npm run rom -- export --fighter vegeta, timed by $0F:BB49; this file by hand: b0's vy 8 kept the whole fall, entered through fires.state so its launch applies; at y B8, 16 px above the floor line, it becomes a/02 ($0F:BE95). Its blow is \"other\" for 0 ($3D:9624) and it has no hit box — the pinned opponent it falls around takes no blows.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "airborne": true,
+      "launch": [
+        0,
+        8
+      ],
+      "turn": false,
+      "burstsInto": "burst_s",
+      "burstsAbove": 16
+    }
+  }
+}

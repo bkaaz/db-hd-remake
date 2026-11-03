@@ -57,6 +57,14 @@ order the directions were **pressed** (owner, 2026-10-31): a ↙ held through
 the original's exact sequences were the stricter way not taken. A direction plus a
 button is a move of its own, ordered before the plain one in `states.json`.
 
+**A command on the ground is still read just after takeoff** — for the
+cartridge's fighters, whose commands are the original's (ADR 0050): for
+`TAKEOFF_GRACE` frames off the floor (`input/command.ts`) both tables are
+read. The original's jump stands 2 frames on the floor and reads the
+ground's only there, so Galactic Gunfire's ↑ ↓ Y had to follow ↑ within a
+frame; ours leaves time to roll it (owner, 2026-11-03). Only a jump state
+with an entry for the move lets it out.
+
 **Ki is its own meter**, filled by holding Attack + Guard. A state that spends
 it says so with `cost`, and a move nobody can afford does not come out.
 

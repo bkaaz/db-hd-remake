@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { handlerAt, handlerFacts, shakeOf } from "./handler";
+import { fighterNamed } from "./roster";
 
 describe("shakeOf", () => {
   it("reads $E3's pattern and frames, and nothing without bit 15", () => {
@@ -105,5 +106,12 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     expect(charge.find((f) => f.sound === 0x19)?.when).toEqual(["when field f0 is 0", "while B + Y held", "every 8th frame of the game"]);
     expect(charge.find((f) => f.to === 6)?.when).toContain("when field 47 (step, a second count — with 0x46 at $01:86A7, alone at $01:86B2 ?) is 04");
     expect(charge.find((f) => f.frame === 2)?.what).toBe("loads its own palette + 8");
+  });
+
+  it("reads a word stored into the move's frame whole: Galactic Gunfire's b2 jumps to 256 and 272", () => {
+    const vegeta = fighterNamed(rom, "vegeta");
+    const jumps = handlerFacts(rom, handlerAt(rom, vegeta.character, 0xb2), 45, vegeta.character).flatMap((f) => (f.to === undefined ? [] : [f.to]));
+    expect(jumps).toContain(0x100);
+    expect(jumps).toContain(0x110);
   });
 });

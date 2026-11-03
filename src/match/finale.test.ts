@@ -33,6 +33,13 @@ function play(f: Finale): { frames: number; events: FinaleEvents[] } {
   throw new Error("never ended");
 }
 
+describe("a finale dropped straight down", () => {
+  it("falls at its speed to the floor under it, wherever he lies", () => {
+    const ball = throwBall({ ...METEOR, aim: "down", speed: 4 }, 100, 0, 196, 200);
+    expect([ball.vx, ball.vy]).toEqual([0, 4]);
+  });
+});
+
 describe("the finale", () => {
   // from 112 px over a hanging mover's head, at someone lying 96 px along
   const ball = throwBall(METEOR, 100, 0, 196, 200);

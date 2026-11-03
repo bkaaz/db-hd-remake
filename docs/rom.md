@@ -78,7 +78,9 @@ the export turns each into an animation named `m92` (`src/rom/animation.ts`).
 script that reaches `00`; the move's code ends it (an attack, once its frames
 are up) or keeps it going (idle, walking), and some code holds one step while
 a button is down (the dash). Only a hold step in the script — crouching's `f0`
-— says it in the data. What the code does, per move, is listed beside
+— says it in the data: a byte `f0`–`ff` and a drawing, held while the
+fighter's field `0x4b` is below that byte (`$01:86F0`, which keeps it in
+`0x4a`); something else moves `0x4b` past it — Galactic Gunfire, below. What the code does, per move, is listed beside
 `moveAnim` until the handlers are read.
 
 **A handler can start a move part-way, inside a step.** The crouching
@@ -795,6 +797,32 @@ of state 4–5 (kind 4 along the floor, `$0F:F1BC` / `F1F3`, a frame or
 two) and sound `2c`, asked every 64th frame of the game while white
 (`$0F:F2A0`).
 
+**Galactic Gunfire** (Vegeta's `ae` → `af` → `b2`; handlers `$20:9B66`,
+`$20:9D29`, `$20:9DB6`) runs three moves, putting out both fighters'
+burning every frame (`$10:C0CA`, `$10:C0DF`). `ae`: blows pass him by; at
+1 the opponent is seized into `30` and stopped, at 2 resource `4F` loads,
+to 34 he is held by `$0D:DE9A` from `$20:9C4D` (the next step's offset on
+10, 18 and 34), at 18 vy −9, at 35 both are stopped where they are; once
+the script ends the opponent goes into `4a` and he into `af`. `4a`
+(`$0F:A4B7`, every fighter's) falls at vy 2 to the floor — dust, `0d`, a
+shake of pattern 2 for 8 — bounces at vy −4, lands again and lies
+flinching (drawings `2a` / `28`) into `4b` (`$0F:A560`), which holds its
+frame 157 for as long as it is in it; on its frame 40, lying, `4a` sets
+the other's field `0x4b` to his `0x4a` + 1 (`$0F:A545`). `af` stops him at
+1, and its script holds drawing `9a` (`f0`) until that frees it, then puts
+out 18 shots, `1/0e` and `1/0f` by turns, every 8 frames, then `b2` 18
+more, faster; each falls at `b0`'s vy 8 and becomes `a/02` at y `B8`
+(`$0F:BE95`) or where it touches a body (`$2A:8F9E`, `8FC0`) — never the
+pinned one, whose `0x96` bit 6 the objects' loop skips (`$2A:81C7`); its
+blow is "other" for 0. `b2` from 150: a ball (`b1`
+kind 2) at 0, −88 grows 1 a frame for 40 frames while frame 150 is held
+(field `f2`); from 192 it falls 4 px a frame to y 200 (`$30BE`), then at
+225 it is kind 5 growing 2 a frame for 28, gone at 232, `$0F:F1BC` and
+`$0F:F1F3` until it answers, `$37` = `24` and 120 frames of `$0F:F241`,
+then `$37` = `22`. At 264 he falls at vy 4 and throws the opponent where
+he lies (`$0F:B321`): 150 less defence, 6 off the stun gauge, move `1b`,
+vx 2.5, vy −5; lands, frame 272, ends.
+
 **The game's `$37`** asks for a screen effect, run once through the table
 at `$0E:8387` (`$0E:836B`), most of them back to `04` when done: `1c`
 keeps BG palettes 2–7 (`$0D:DF40`) and fades them a sixteenth a frame
@@ -914,7 +942,8 @@ body/body, head/head, then each against the other's (`$2A:89D0`). The
 first pair that touches gives the overlap along x; each fighter moves half
 of it away from the other, within 16 px of the screen's edges
 (`$2A:8AFB`), and field `0x97` bit 7 is set on both. Skipped while either
-has field `0x96` bit 7 set `?` (a script's `96`).
+has field `0x96` bit 7 set (`$2A:80F5`; a script's `96`) — pinned's `4a` /
+`4b` set `f0`, so the body lying under Galactic Gunfire is never pushed.
 
 **Health** starts from the ENERGY option, 400 by default (`$1AC9` /
 `$1ACF`, per side), or 80 or 999 in other modes (`$01:8150`, `$01:826F`).

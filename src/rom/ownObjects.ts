@@ -71,6 +71,10 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     // falls at b0's vy 4 until its y is b8, then becomes a/02 ($0F:BB05)
     { name: "vegeta_vertical_ki", type: 0x1, anim: 0x6, hits: true, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fbb49, length: 4, loop: true } }, // b1
     { name: "vegeta_big_bang", type: 0x1, anim: 0x4, hits: true, palette: 0x11c },
+    // ae → af / b2's shots, 1/0e and 1/0f: Vertical Ki's drawings and code
+    // ($0F:BE95 into $0F:BB31), their blow "other" for 0 — one spawn for both,
+    // no hit box: the pinned opponent they fall around can't be hit anyway
+    { name: "vegeta_gunfire_shot", type: 0x1, anim: 0xe, hits: false, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fbb49, length: 4, loop: true } }, // af, b2
     // 9e's and a8's sprays: where they are put, a frame a tick from $0F:BC3A /
     // $0F:BC95, gone at 17 / 22 or when he leaves the move ($0F:BBF1, BC4C);
     // drawn from his own sprite, which neither move loads anything over
@@ -93,37 +97,47 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
   ],
 };
 
-/** `wanted` split by whether `lives` holds each — what a recording can export, and what it missed. */
+/**
+ * `wanted` split by whether it can be exported: timed by its code (`ticks`,
+ * `animations`), or held by `lives` — what a recording can export, and what it missed.
+ */
 export function inRecording(wanted: OwnObject[], lives: Life[]): { recorded: OwnObject[]; missed: OwnObject[] } {
-  const has = (o: OwnObject) => fullestLife(lives, o.type, o.anim) !== undefined;
+  const has = (o: OwnObject) => !fromRecording(o) || fullestLife(lives, o.type, o.anim) !== undefined;
   return { recorded: wanted.filter(has), missed: wanted.filter((o) => !has(o)) };
 }
 
-/** Each object as the export draws it: tiles from what its move loads, frames from `lives`. */
+/** Whether an object's frames and timing are the recording's, its code having none to give. */
+function fromRecording(o: OwnObject): boolean {
+  return !o.ticks && !o.animations;
+}
+
+/** Each object as the export draws it: tiles from what its move loads, frames from its code or `lives`. */
 export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[], lives: Life[]): SpawnDef[] {
   return wanted.map((o) => {
     const what = `${o.name} (${o.type.toString(16)}/${o.anim.toString(16)})`;
-    const life = fullestLife(lives, o.type, o.anim);
-    if (!life) throw new Error(`${what} is not in the recording`);
     const loads = o.loads ?? spawnerLoads(rom, t, o.type, o.anim);
     if (loads.length === 0) throw new Error(`${what}: the move that spawns it loads no tiles`);
-    const shown = [...new Set(life.steps.map((s) => s.frame))].sort((a, b) => a - b);
-    const timing =
-      o.ticks ? fromTicks(rom, o.ticks)
-      : o.animations ? { steps: [], animations: o.animations, loop: false }
-      : o.cycle ? { steps: shown.map(() => o.cycle!), frames: shown, loop: true }
-      // a life ends, so the recording shows it once through
-      : { steps: life.steps.map((s) => s.dur), frames: life.steps.map((s) => s.frame), loop: false };
     return {
       name: o.name,
       type: o.type,
       anim: o.anim,
-      ...timing,
+      ...timing(rom, o, lives, what),
       hits: o.hits,
       palette: paletteRecord(rom, o.palette).at,
       loads,
     };
   });
+}
+
+function timing(rom: Uint8Array, o: OwnObject, lives: Life[], what: string) {
+  if (o.ticks) return fromTicks(rom, o.ticks);
+  if (o.animations) return { steps: [], animations: o.animations, loop: false };
+  const life = fullestLife(lives, o.type, o.anim);
+  if (!life) throw new Error(`${what} is not in the recording`);
+  const shown = [...new Set(life.steps.map((s) => s.frame))].sort((a, b) => a - b);
+  if (o.cycle) return { steps: shown.map(() => o.cycle!), frames: shown, loop: true };
+  // a life ends, so the recording shows it once through
+  return { steps: life.steps.map((s) => s.dur), frames: life.steps.map((s) => s.frame), loop: false };
 }
 
 /** A table of the frame shown each tick, as steps: one a run of the same frame. */

@@ -127,9 +127,9 @@ export class Seizures {
         s.finale = next;
         if (e.landed) {
           if (fin.sounds?.landed) seizer.sound(fin.sounds.landed);
-          world.shake(fin.shakes[0]);
+          if (fin.shakes[0]) world.shake(fin.shakes[0]);
           seizer.holdClock(false);
-          seizer.jumpTo(fin.resume);
+          if (fin.resume !== undefined) seizer.jumpTo(fin.resume);
         }
         if (e.exploded) world.shake(fin.shakes[1]);
         if (e.white) {

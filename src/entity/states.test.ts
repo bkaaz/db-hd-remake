@@ -909,6 +909,67 @@ describe("a reaction leaves on the blow's clock, not on the pose", () => {
   });
 });
 
+describe("freed", () => {
+  const waiting = {
+    initial: "aim",
+    states: { aim: { anim: "idle", transitions: [{ when: "freed", to: "fire" }] }, fire: { anim: "hurt" } },
+  };
+
+  it("holds until the opponent frees it, then goes on", () => {
+    const sm = new StateMachine(waiting as never);
+    expect(sm.update(NONE, QUIET)).toBeNull();
+    expect(sm.update(NONE, { ...QUIET, freed: true })).toBe("fire");
+  });
+
+  it("takes a frame of the state for frees, 1 or more", () => {
+    const refused = (frees: unknown) =>
+      validateStates({ initial: "idle", states: { idle: { anim: "idle", frees } } } as never, ANIMS).errors.some((e: string) =>
+        e.includes('"frees"'),
+      );
+    expect(refused(9)).toBe(false);
+    expect(refused(0)).toBe(true);
+    expect(refused(1.5)).toBe(true);
+  });
+});
+
+describe("a finale's news", () => {
+  const waiting = {
+    initial: "drop",
+    states: {
+      drop: { anim: "idle", transitions: [{ when: "ballLanded", to: "blast" }] },
+      blast: { anim: "idle", transitions: [{ when: "finaleDone", to: "throw" }] },
+      throw: { anim: "hurt", throwsFoe: { frame: 8, damage: 150, reaction: "hurt", vel: [-2.5, -5] } },
+      hurt: { anim: "hurt" },
+    },
+  };
+
+  it("waits for the ball to land, then for the finale to end", () => {
+    const sm = new StateMachine(waiting as never);
+    expect(sm.update(NONE, { ...QUIET, finaleDone: true })).toBeNull();
+    expect(sm.update(NONE, { ...QUIET, ballLanded: true })).toBe("blast");
+    expect(sm.update(NONE, { ...QUIET, ballLanded: true })).toBeNull();
+    expect(sm.update(NONE, { ...QUIET, finaleDone: true })).toBe("throw");
+  });
+
+  it("refuses a throwsFoe into a reaction the file does not have", () => {
+    const bad = JSON.parse(JSON.stringify(waiting));
+    bad.states.throw.throwsFoe.reaction = "nowhere";
+    expect(validateStates(waiting as never, ANIMS).errors.filter((e: string) => e.includes("throwsFoe"))).toEqual([]);
+    expect(validateStates(bad, ANIMS).errors.some((e: string) => e.includes('"nowhere"'))).toBe(true);
+  });
+});
+
+describe("pushless", () => {
+  const file = (pushless: unknown) => ({ initial: "idle", states: { idle: { anim: "idle", pushless } } });
+
+  it("takes true or false and refuses anything else", () => {
+    const refused = (v: unknown) => validateStates(file(v) as never, ANIMS).errors.some((e: string) => e.includes('"pushless"'));
+    expect(refused(true)).toBe(false);
+    expect(refused(false)).toBe(false);
+    expect(refused("yes")).toBe(true);
+  });
+});
+
 describe("an airborne state has to notice the ground", () => {
   const flying = {
     initial: "idle",

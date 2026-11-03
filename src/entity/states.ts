@@ -505,6 +505,33 @@ export interface StateDef {
    */
   invulnerable?: boolean;
   /**
+   * Bodies are not pushed apart while either is in a state with this — the
+   * original's field 0x96 bit 7, which its bodies routine skips on
+   * ($2A:80F5): pinned lying under Galactic Gunfire, the thrower above him.
+   */
+  pushless?: boolean;
+  /**
+   * On this frame of the state, the opponent's held script goes on — his
+   * `freed` trigger. Pinned does it 8 frames into lying, and only then does
+   * Galactic Gunfire fire, aiming until he is down ($0F:A545 sets the
+   * other's field 0x4b past his `f0` hold, $01:86F0; ADR 0057).
+   */
+  frees?: number;
+  /**
+   * A finale of the state's own, the opponent left where he is (`finales.ts`,
+   * ADR 0058): thrown on its `frame`, it plays on through the states after,
+   * telling the thrower `ballLanded` and `finaleDone` — Galactic Gunfire's
+   * ball. Saiyan Meteor's is its seize's (`seize.finale`).
+   */
+  finale?: FinaleDef;
+  /**
+   * The throw's own blow on the opponent wherever he is, held or not — on
+   * this frame of the state (0 the frame it is entered on), into `reaction`,
+   * costing `damage` less defence, leaving at `vel` facing the thrower's way
+   * ($0F:B321): Galactic Gunfire's on the body it pinned.
+   */
+  throwsFoe?: { frame: number; damage: number; reaction: string; vel: [number, number] };
+  /**
    * Whether this state's attack may lift or floor a body that is already
    * helpless — a **relaunch**. Only `RELAUNCH_LIMIT` of them land in one combo; past
    * that the blow still connects and still hurts, but the victim keeps falling
@@ -655,6 +682,12 @@ export interface Signals {
   connected?: boolean;
   /** A `rush` has set the entity down by the opponent this state. */
   arrived?: boolean;
+  /** The opponent's state `frees` this one, since it entered its state. */
+  freed?: boolean;
+  /** The ball of this entity's `finale` has reached the floor, this state. */
+  ballLanded?: boolean;
+  /** This entity's `finale` is over — the white gone — this state. */
+  finaleDone?: boolean;
   /** Health left — what `health:N` (N or less) asks: an ultimate opens below a red bar. */
   health?: number;
   /** Ki in the meter right now — what a state's `cost` is measured against. */
@@ -722,6 +755,9 @@ export const TRIGGERS = [
   "cancelable",
   "connected",
   "arrived",
+  "freed",
+  "ballLanded",
+  "finaleDone",
 ] as const;
 
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
@@ -863,6 +899,15 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "arrived":
       value = signals.arrived === true;
+      break;
+    case "freed":
+      value = signals.freed === true;
+      break;
+    case "ballLanded":
+      value = signals.ballLanded === true;
+      break;
+    case "finaleDone":
+      value = signals.finaleDone === true;
       break;
     default:
       if (!warned.has(key)) {
@@ -1455,6 +1500,15 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       errors.push(`${where}: a reaction (rank ${def.rank}) cannot be "guarding"`);
     }
 
+    if (def.throwsFoe && !(def.throwsFoe.reaction in file.states)) {
+      errors.push(`${where}: throwsFoe's reaction "${def.throwsFoe.reaction}" does not exist`);
+    }
+    if (def.frees !== undefined && (!Number.isInteger(def.frees) || def.frees < 1)) {
+      errors.push(`${where}: "frees" must be a frame of the state, 1 or more`);
+    }
+    if (def.pushless !== undefined && typeof def.pushless !== "boolean") {
+      errors.push(`${where}: "pushless" must be true or false`);
+    }
     if (def.invulnerable !== undefined && typeof def.invulnerable !== "boolean") {
       errors.push(`${where}: "invulnerable" must be true or false`);
     }

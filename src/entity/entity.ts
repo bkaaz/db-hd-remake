@@ -16,10 +16,11 @@ import { Swing } from "../combat/swing";
 import { slowed } from "../combat/knockback";
 import { trailAt } from "./trail";
 import type { ScreenCue } from "../screen";
+import type { FinaleDef } from "../match/finale";
 import { approachSpeed, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
-import { commandsMet, padFrame, PadHistory } from "../input/command";
+import { commandsMet, padFrame, PadHistory, tablesFor } from "../input/command";
 import { pressedNames, stickLine } from "../input/padLine";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions, type MotionName } from "../input/motion";
@@ -198,6 +199,10 @@ export class Entity {
   private approaching: number | null = null;
   /** A `rush` has set this entity down by the opponent this state. */
   private arrived = false;
+  /** The opponent's state let this one's held script go on (`freed`), this state. */
+  private freed = false;
+  /** What this entity's `finale` has done, this state: its ball landed, it ended. */
+  private finaleSaid = { ballLanded: false, finaleDone: false };
   /** Its state's clock and animation stand still — while Saiyan Meteor's ball flies. */
   private clockHeld = false;
   /** A ball it has thrown, drawn where it is in the world rather than at its hands (`match/finale.ts`). */
@@ -230,6 +235,8 @@ export class Entity {
   private readonly pad = new PadHistory();
   /** The commands met this frame: move → our button. */
   private met: ReadonlyMap<string, string> = new Map();
+  /** Frames since it left the ground, 0 on it: which command tables it reads (`tablesFor`). */
+  private airFrames = 0;
   /** Scaffolding: the same inputs again, kept only so a person can read them. */
   private readonly history = new InputHistory();
   /** The combo being done **to** this fighter — see src/combat/combo.ts. */
@@ -465,6 +472,37 @@ export class Entity {
    * getting up off it. Rank already stops a blow interrupting a knockdown; this
    * is what stops it costing health while the victim can neither block nor move.
    */
+  /** A finale of the state's own (`finales.ts`). */
+  get finale(): FinaleDef | undefined {
+    return this.sm?.def.finale;
+  }
+
+  /** The `throwsFoe` of the state it is in. */
+  get throwsFoe(): StateDef["throwsFoe"] {
+    return this.sm?.def.throwsFoe;
+  }
+
+  /** Its finale's news, for `ballLanded` / `finaleDone`, until its next state. */
+  finaleSays(what: "ballLanded" | "finaleDone"): void {
+    this.finaleSaid[what] = true;
+  }
+
+  /** On the frame its state's `frees` names: the opponent's held script goes on. */
+  get freesNow(): boolean {
+    const frees = this.sm?.def.frees;
+    return frees !== undefined && this.stateFrames === frees;
+  }
+
+  /** The opponent let this one's held script go on: `freed`, until its next state. */
+  free(): void {
+    this.freed = true;
+  }
+
+  /** Bodies pass through each other while this one is in it (`pushless`). */
+  get pushless(): boolean {
+    return !!this.sm?.def.pushless;
+  }
+
   get invulnerable(): boolean {
     return this.held || !!this.sm?.def.invulnerable;
   }
@@ -1004,6 +1042,8 @@ export class Entity {
     this.behind = this.sm.def.behind ?? false;
     this.approaching = null;
     this.arrived = false;
+    this.freed = false;
+    this.finaleSaid = { ballLanded: false, finaleDone: false };
     this.clockHeld = false;
     this.landed = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
@@ -1091,6 +1131,7 @@ export class Entity {
     this.pad.record(
       padFrame({ fwd: ahead ? input.right : input.left, back: ahead ? input.left : input.right, up: input.up, down: input.down }, input, input.holding),
     );
+    this.airFrames = this.airborne ? this.airFrames + 1 : 0;
 
     // A hit pause freezes the whole entity, animation included — the pose the
     // blow landed on is exactly what should be held still. The buffer is not
@@ -1175,7 +1216,7 @@ export class Entity {
         rdp: this.motions.has("rdp"),
         hcfu: this.motions.has("hcfu"),
         fbf: this.motions.has("fbf"),
-        commands: (this.met = commandsMet(this.def.commands, this.airborne ? "air" : "ground", this.pad)),
+        commands: (this.met = commandsMet(this.def.commands, tablesFor(this.airFrames), this.pad)),
         holding: input.holding,
       },
       {
@@ -1192,6 +1233,8 @@ export class Entity {
         // only land once per entry into its state.
         hitConfirmed: this.swing.spent,
         arrived: this.arrived,
+        freed: this.freed,
+        ...this.finaleSaid,
         health: this.hp,
         ki: this.ki,
         spawnEnded: this.thrown === 0,

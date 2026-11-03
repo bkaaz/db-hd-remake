@@ -5,7 +5,9 @@ import type { ShakeDef } from "../camera/shake";
  * from the mover's hands at where the opponent lies, flying at `speed` px a
  * frame until it reaches the floor, swelling there into an explosion, then
  * the arena held white with bursts all over the screen before the blow
- * lands. Pure, so the timeline is tested; `seize.ts` plays it on the pair.
+ * lands. Galactic Gunfire's drops straight down ($20:9E57). Pure, so the
+ * timeline is tested; `seize.ts` plays it on a seized opponent,
+ * `finales.ts` on its own (ADR 0058).
  */
 export interface FinaleDef {
   /** The mover's frame the ball leaves on (394). */
@@ -14,13 +16,15 @@ export interface FinaleDef {
   from: [number, number];
   /** Px a frame along the line to him: 2.0 ×4 ($0D:DB49, $20:8DB7). */
   speed: number;
+  /** Straight down to the floor rather than at him — Galactic Gunfire's 4 px a frame. */
+  aim?: "down";
   /**
    * Its radius in flight: `$20:8E63`'s by the move's frame & 3, and that
    * frame is held while it flies — 394 & 3 is 2, so 0x49.
    */
   radius: number;
-  /** The mover's frame once it lands ($20:8E4B: 454). */
-  resume: number;
+  /** The mover's frame once it lands ($20:8E4B: 454), in a seize. */
+  resume?: number;
   /** The explosion's growth a frame and its full radius ($20:8E6C: 2, 0x70). */
   grow: number;
   max: number;
@@ -41,8 +45,8 @@ export interface FinaleDef {
    * while white ($0F:F2A0); what it plays as the ball leaves, is not read.
    */
   sounds?: { thrown?: string; landed?: string };
-  /** The stage's shakes: as it lands, as the explosion is done, as the white begins. */
-  shakes: [ShakeDef, ShakeDef, ShakeDef];
+  /** The stage's shakes: as it lands (Galactic Gunfire's none), as the explosion is done, as the white begins. */
+  shakes: [ShakeDef | null, ShakeDef, ShakeDef];
 }
 
 export type FinalePhase = "flying" | "exploding" | "band" | "white" | "done";
@@ -60,7 +64,7 @@ export interface Finale {
 
 /** The ball leaving the hands at (`x`, `y`) for (`tx`, `ty`), `scale` screen px a sprite px. */
 export function throwBall(def: FinaleDef, x: number, y: number, tx: number, ty: number, scale = 1): Finale {
-  const dx = tx - x;
+  const dx = def.aim === "down" ? 0 : tx - x;
   const dy = ty - y;
   const d = Math.hypot(dx, dy) || 1;
   const speed = def.speed * scale;

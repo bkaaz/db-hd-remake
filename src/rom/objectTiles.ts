@@ -18,9 +18,11 @@ const SPRITE = 0x6000;
  * What the first move whose script spawns `type`/`anim` loads for player one.
  * The handler loads each resource once per player, P1's at the lower address
  * ($6C00, P2's $7C00), and an object's tiles count from P1's. A move that
- * loads none draws its object from his sprite: the tile set of the drawing
- * up when it is put out, which holds tiles his drawing never shows (Vegeta's
- * Jumping Bomb and Energy Dash sprays, rom.md).
+ * loads none and puts the object at tile base 0 draws it from his sprite:
+ * the tile set of the drawing up when it is put out, which holds tiles his
+ * drawing never shows (Vegeta's Jumping Bomb and Energy Dash sprays,
+ * rom.md). Any other base counts on a load an earlier move made — Galactic
+ * Gunfire's shots on `ae`'s — which only its `loads` can say.
  */
 export function spawnerLoads(rom: Uint8Array, t: FighterTables, type: number, anim: number): Load[] {
   for (let move = 0; move < 0x100; move++) {
@@ -38,6 +40,8 @@ export function spawnerLoads(rom: Uint8Array, t: FighterTables, type: number, an
       lowest.set(load.resource, Math.min(load.vram, lowest.get(load.resource) ?? Infinity));
     }
     if (lowest.size > 0) return [...lowest].map(([resource, vram]) => ({ resource, vram }));
+    const spawn = ops.find((op) => op.op === "spawn" && op.type === type && op.anim === anim);
+    if (spawn?.op !== "spawn" || spawn.tiles !== 0) return [];
     const sprite = drawingAtSpawn(ops, type, anim);
     const resource = sprite === null ? null : tileResourceOf(rom, t, sprite);
     return resource === null ? [] : [{ resource, vram: SPRITE }];

@@ -64,3 +64,16 @@ export class Throws {
     }
   }
 }
+
+/**
+ * The throw's own blow on the opponent wherever he is, held or not, on the
+ * frame its state's `throwsFoe` names ($0F:B321) — Galactic Gunfire's on the
+ * body it pinned. He faces the thrower's way, thrown backwards.
+ */
+export function throwFoe(thrower: Entity, other: Entity): void {
+  const t = thrower.throwsFoe;
+  if (!t || thrower.stateFrame - 1 !== t.frame) return;
+  other.facing = thrower.facing;
+  other.hurtBy(t.damage);
+  other.release(t.reaction, t.vel);
+}

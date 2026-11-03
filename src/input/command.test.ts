@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { commandMet, commandsMet, PAD, padFrame, PadHistory, type CommandDef } from "./command";
+import { commandMet, commandsMet, PAD, padFrame, PadHistory, tablesFor, TAKEOFF_GRACE, type CommandDef } from "./command";
 
 /**
  * Frames oldest first, as a player does them: a direction glyph, then the
@@ -103,7 +103,17 @@ describe("commandsMet", () => {
 
   it("names each move met on its own ground, with the button of ours it took", () => {
     const rolled = pad("↓", "↘", "→", "→+B");
-    expect(commandsMet(defs, "ground", rolled)).toEqual(new Map([["a4", "smash"]]));
-    expect(commandsMet(defs, "air", rolled)).toEqual(new Map());
+    expect(commandsMet(defs, ["ground"], rolled)).toEqual(new Map([["a4", "smash"]]));
+    expect(commandsMet(defs, ["air"], rolled)).toEqual(new Map());
+    expect(commandsMet(defs, ["ground", "air"], rolled)).toEqual(new Map([["a4", "smash"]]));
+  });
+});
+
+describe("tablesFor", () => {
+  it("reads the ground's on the ground, both for the first frames off it, then the air's", () => {
+    expect(tablesFor(0)).toEqual(["ground"]);
+    expect(tablesFor(1)).toEqual(["ground", "air"]);
+    expect(tablesFor(TAKEOFF_GRACE)).toEqual(["ground", "air"]);
+    expect(tablesFor(TAKEOFF_GRACE + 1)).toEqual(["air"]);
   });
 });

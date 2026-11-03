@@ -109,7 +109,8 @@ const FIGHTER: Omit<Body, "dispatch"> = {
       // the facing-left copy is the same speed negated
       if (ins.operand === VX && ((a << 16) >> 16) >= 0) add({ what: "sets vx", vx: a / 256 });
       if (ins.operand === SPAWN_COUNTER) add({ what: "sets the spawn counter", counter: a & 0xff });
-      if (ins.operand === FRAMES) add({ what: "jumps to frame", to: a & 0xff });
+      // a word store reaches past 255: Galactic Gunfire's b2 jumps to 256 and 272 ($20:9F2E, A00E)
+      if (ins.operand === FRAMES) add({ what: "jumps to frame", to: a & (ins.after.m8 ? 0xff : 0xffff) });
       // a word, or its high byte alone (`$20:8703`); a low byte alone is a fraction
       if (ins.operand === VY && a > 0xff) add({ what: "sets vy", vy: ((a << 16) >> 16) / 256 });
       if (ins.operand === VY + 1 && a <= 0xff) add({ what: "sets vy", vy: (a << 24) >> 24 });

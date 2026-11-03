@@ -43,6 +43,18 @@ lets him go. → `match/throw.ts`, ADR 0035
 **Seize** — a scene on the opponent: set down once, playing his own
 animation, flown and let go hurt (Saiyan Meteor). → `match/seize.ts`, ADR 0046
 
+**Pinned** — the original's `4a` / `4b`, every fighter's: let fall, bounced
+once, left lying and flinching until whoever pinned him throws him (Galactic
+Gunfire). → the `pinned` states, `rom.md` (Galactic Gunfire)
+
+**Frees / freed** — one body's state lets the other's held step go on, on a
+frame it names (pinned lets Galactic Gunfire fire). → `frees` on the state,
+trigger `freed`, ADR 0057
+
+**Finale** — a ball thrown at the floor, swelling into an explosion, then the
+arena white (Saiyan Meteor, Galactic Gunfire). → `match/finale.ts`; a seize's
+(`seize.finale`) or a state's own (`finale`, `match/finales.ts`), ADR 0058
+
 **Charging** — holding A + S with the cartridge's `goku`: a dial on the HUD
 turns, and each turn gives back 5 health (`heal` on the state; health, not ki,
 for now). → `combat/heal.ts`, `combat.md` (The buttons)

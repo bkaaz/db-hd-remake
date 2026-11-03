@@ -3041,6 +3041,93 @@
           "to": "idle"
         }
       ]
+    },
+    "pinned": {
+      "anim": "m4a",
+      "rank": 4,
+      "invulnerable": true,
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          1,
+          {
+            "vx": 0,
+            "vy": 0
+          }
+        ],
+        [
+          2,
+          {
+            "vy": 2
+          }
+        ]
+      ],
+      "holdStep": 0,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "pinned_bounce"
+        }
+      ],
+      "pushless": true
+    },
+    "pinned_bounce": {
+      "anim": "m4a_2",
+      "rank": 4,
+      "invulnerable": true,
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0,
+        -4
+      ],
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 2,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "holdStep": 1,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "pinned_lie"
+        }
+      ],
+      "pushless": true
+    },
+    "pinned_lie": {
+      "anim": "m4a_3",
+      "rank": 4,
+      "invulnerable": true,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "pinned_held"
+        }
+      ],
+      "pushless": true,
+      "frees": 9
+    },
+    "pinned_held": {
+      "anim": "m4b",
+      "rank": 4,
+      "invulnerable": true,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "holdStep": 37,
+      "transitions": [],
+      "pushless": true
     }
   }
 }

@@ -93,8 +93,10 @@ function strikingSteps(ops: ScriptOp[], boxesOf: (drawing: number) => { type: st
  * Cuts read by hand from handlers `handler.ts` does not follow yet. Charging
  * (`0c`, Goku's `$20:81C2`): entering step 4 while Y and B are held sends
  * the script back to frame 6, step 1 — a loop a state can repeat, cut at
- * both its ends.
+ * both its ends. Pinned (`4a`, `$0F:A4B7`): it holds frame 3 until it lands,
+ * then goes on from 23 — cut at step 1, a frame later — and holds 28 until it
+ * lands again, then 32: step 3. One part a fall, as the states take them.
  */
-const HAND_CUTS: Record<number, number[]> = { 0x0c: [1, 4] };
+const HAND_CUTS: Record<number, number[]> = { 0x0c: [1, 4], 0x4a: [1, 3] };
 /** Move 30: the original's hold, where a throw keeps the opponent. */
 const HOLD = 0x30;

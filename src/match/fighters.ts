@@ -12,7 +12,8 @@ import { landBlow, type BlowContext } from "./blow";
 import type { Projectiles } from "./projectiles";
 import { Recorder } from "./record";
 import { Seizures } from "./seize";
-import { Throws } from "./throw";
+import { Finales } from "./finales";
+import { throwFoe, Throws } from "./throw";
 import type { DebugFrame } from "../ui/debug";
 
 /** Where things may go this frame: bodies within the world, bolts within the screen. */
@@ -70,6 +71,7 @@ export class Fighters {
   private readonly recorder = new Recorder();
   private readonly throws = new Throws();
   private readonly seizures = new Seizures();
+  private readonly finales = new Finales();
   /** What a scene asked of the screen this frame, for `takeScreen`. */
   private readonly screenCues: ScreenCue[] = [];
   /** The camera as the last frame left it: where a scene's bursts may fall. */
@@ -141,6 +143,9 @@ export class Fighters {
     if (this.opponent) {
       this.throws.update(this.player, this.opponent);
       this.throws.update(this.opponent, this.player);
+      // one body's state lets the other's held script go on ($0F:A545, ADR 0057)
+      if (this.player.freesNow) this.opponent.free();
+      if (this.opponent.freesNow) this.player.free();
       const world = {
         dust: (x: number, y: number) => this.impact.effects.spawn("dust", x, y),
         effect: (name: string, x: number, y: number) => this.impact.effects.spawn(name, x, y),
@@ -154,6 +159,10 @@ export class Fighters {
       };
       this.seizures.update(this.player, this.opponent, world);
       this.seizures.update(this.opponent, this.player, world);
+      this.finales.update(this.player, this.opponent, world);
+      this.finales.update(this.opponent, this.player, world);
+      throwFoe(this.player, this.opponent);
+      throwFoe(this.opponent, this.player);
     }
 
     for (const hit of this.projectiles.update(this.frozen, field.shots, this.impact)) {
@@ -203,12 +212,14 @@ export class Fighters {
    * Bodies cannot overlap. Two with push boxes meet wherever those touch, in
    * the air too ($2A:80ED); otherwise only while both are `solid`, so a
    * hand-built jump carries over the opponent. A hit pause suspends this too,
-   * or "frozen" would mean everything except the push.
+   * or "frozen" would mean everything except the push; so does either being
+   * `pushless` ($2A:80F5).
    */
   pushApart(bounds: Bounds): void {
     const { player, opponent } = this;
     if (!opponent) return;
     if (player.frozen || opponent.frozen) return;
+    if (player.pushless || opponent.pushless) return;
     const [a, b] = [player.pushBodies, opponent.pushBodies];
     if (a && b) {
       const { ax, bx } = pushApart(player.x, opponent.x, bodyOverlap(a, b, player.x <= opponent.x), bounds);

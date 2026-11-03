@@ -20,6 +20,18 @@ because a number would only need translating back.
 
 ---
 
+## A special keeps the speed it was started with
+
+Cartridge fighters, any special whose handler later sets vy but not vx ·
+noticed in a recording 2026-11-03 · *annoying*
+
+The original stops the fighter as a special starts from the command table
+(`$0D:F11E` → `$0D:D7A0`: vx, vy and the shove to 0). Ours keeps `vx`: a
+landing does not clear it, so a special begun just after a forward jump
+drifts once its handler takes it off the ground — Galactic Gunfire rose in
+an arc until its own `air` was given a stop on frame 0. Any other special
+that goes aloft without setting vx does the same.
+
 ## Vegeta's Energy Field starts falling 6 frames early
 
 `vegeta`, ↓ ↙ ← Y in the air · noticed reading the code 2026-11-03 ·

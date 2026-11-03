@@ -31,4 +31,8 @@ describe.skipIf(!existsSync(ROM_PATH))("spawnerLoads, on the cartridge", () => {
     expect(spawnerLoads(rom, vegeta, 1, 8)).toEqual([{ resource: 0x255, vram: 0x6000 }]);
     expect(spawnerLoads(rom, vegeta, 1, 9)).toEqual([{ resource: 0x259, vram: 0x6000 }]);
   });
+
+  it("says nothing for a move that loads nothing but draws past base 0: af's shots count on ae's load", () => {
+    expect(spawnerLoads(rom, vegeta, 1, 0xe)).toEqual([]);
+  });
 });

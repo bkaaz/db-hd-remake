@@ -88,11 +88,25 @@ export function padFrame(stick: Stick, pressed: Record<Ours, boolean>, holding: 
   return { pressed: down, held };
 }
 
-/** Each move whose command for `where` is met, to the button of ours it was pressed with. */
-export function commandsMet(defs: readonly CommandDef[], where: CommandDef["where"], history: PadHistory): Map<string, string> {
+/**
+ * Frames after leaving the ground that its commands are still read — ours,
+ * not the cartridge's: its jump stands 2 frames on the floor and reads them
+ * only there, so ↑ ↓ Y (Galactic Gunfire) had to follow ↑ within a frame
+ * (owner, 2026-11-03; combat.md).
+ */
+export const TAKEOFF_GRACE = 6;
+
+/** The tables read `airFrames` frames off the ground: the ground's, both just after takeoff, then the air's. */
+export function tablesFor(airFrames: number): CommandDef["where"][] {
+  if (airFrames === 0) return ["ground"];
+  return airFrames <= TAKEOFF_GRACE ? ["ground", "air"] : ["air"];
+}
+
+/** Each move whose command in one of the tables `where` is met, to the button of ours it was pressed with. */
+export function commandsMet(defs: readonly CommandDef[], where: readonly CommandDef["where"][], history: PadHistory): Map<string, string> {
   const met = new Map<string, string>();
   for (const def of defs) {
-    if (def.where !== where || met.has(def.move) || !commandMet(def, history)) continue;
+    if (!where.includes(def.where) || met.has(def.move) || !commandMet(def, history)) continue;
     const word = parseInt(def.words[0], 16);
     const button = (Object.keys(OURS) as Ours[]).find((b) => b !== "dash" && word & OURS[b]);
     if (button) met.set(def.move, button);

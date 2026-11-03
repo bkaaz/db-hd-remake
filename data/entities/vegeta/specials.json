@@ -1,10 +1,29 @@
 {
-  "_comment": "Vegeta's own specials, by hand; npm run rom -- states --fighter vegeta merges them into states.json (src/rom/specials.ts). big_bang is move ad, the Big Bang shot upward (owner, 2026-10-31): on the ground, 10 health, its parts mad / mad_2 / mad_3. The flash at the hands (vegeta_flash, mad_2's first frame) is not put out yet. final_flash is move ac (docs/rom.md, Final Flash): 10 health, A held charges — let go before frame 20 the small beam, before 32 the medium, else the large (field f0, $20:9A82); the ball grows 2 a frame from 16 at 24, -46. mac_2 fires head, base and band (size 16 / 12 / 8, never thicker); then move b5 holds the pose, the band still drawn, until the head is gone and 24 / 20 / 16 frames more (jumps to 72 / 76 / 80 of 96). As for Goku's Kamehameha, the charge fires as it decides (the original shows 2 more frames, a jump to frame 42) and the head outlives its thrower's move. sliding_kick is move a4, Sliding Kick, ↓ ↘ → B on the ground; typed again from frame 8 to its end, it is kept and a5 (rushing_knee) follows when a4 is over, and the same from a5 (from frame 1) to a6 (cross_punch, cross_punch_2) — field f0, $20:97c7 / $20:9885. Nothing else is read meanwhile; a miss goes on too. knee_slash is move 9c, Jumping Knee Slash, → ↓ ↘ B on the ground ($20:92DF): at frame 6 vx 1, vy -8 at his own gravity; vx 0 at 24; from 30 it holds frame 31's pose until it lands, then 0c and m9c_4; every blow of it lifts a body into the high knockdown at -6.0, not -7.5 ($0D:D3BF). attack_b and crouch_b are his own handlers ($20:9280, $20:92C9): the far B slides at vx 3 from frame 6 to 24; the crouching B has a second blow, m95_2, re-armed at its start. driving_elbow is move a2, R + Y ($20:9739), as Goku's Side Slash: behind the opponent through step 0, on frame 24 turns and closes on him by a 32nd of the way to 8 px short. ground_flare is a9, ↓ ↑ Y, also from a jump's first 2 frames, still on the floor: its shot stands 48 px ahead. energy_field is ab, ↓ ↙ ← Y in the air: he stops at frame 1 and hangs (gravity off `?`), puts out the field at 0, -40 with sound 19 every 3 ticks for 25 (its object's code, $0F:BBAC — ours this state's loopSound), falls from vy 2 at his own gravity from frame 36 (the owner: slower than the original without it) and holds frame 47's pose until he lands ($20:9A09). renzoku is aa, ↓ ↘ → A, 5 health: three shots, one a part; its entry goes after Big Bang's, whose roll ends in the same ↓ ↘ → A. vertical_ki is move b1, Vertical Ki, ↓ ↙ ← A in the air ($20:A02C): 5 health; it stops him at frame 0 and he hangs; a shot at 8 (8, 8) and at 24 (-8, 8, the pose flipped), each falling at b0's vy 4 and bursting at y B8 (ADR 0056); vy 2 at 48, his pose 15 held from 49 until he lands. The original then plays its frame 56 (pose 13, 6 frames) — ours goes to land (13 for 2, with 0c) `?`; gravity after vy 2 as Energy Field's `?`. jumping_bomb is 9e, Jumping Bomb, ↙ ↗ Y on the ground ($20:95B1, by step): blows pass him by to 16 (ours the whole first part `?`); at 4 vx 3, vy -8; at 21 vx 5, vy 3 (facing left the code gives 3); at 26 he stops and hangs and puts out his spray where he is; at 48 vx -2, vy -5; stops at 55; at 56 vx -1, vy 4; holds pose 15 until he lands, then idle — gravity after each vy as Energy Field's `?`. energy_dash is a7, Energy Dash, ← ↙ ↓ ↘ → Y ($20:9978): vx 4 from 28, and from frame 12 the opponent under 48 px away makes it a8 (energy_dash_2), the spray where he stands; ours is a rush from 28 — not tested 12–27, set down 48 short, no stop at 68 `?`; blows pass him by to 28, not ours `?`.",
+  "_comment": "Vegeta's own specials, by hand; npm run rom -- states --fighter vegeta merges them into states.json (src/rom/specials.ts). big_bang is move ad, the Big Bang shot upward (owner, 2026-10-31): on the ground, 10 health, its parts mad / mad_2 / mad_3. The flash at the hands (vegeta_flash, mad_2's first frame) is not put out yet. final_flash is move ac (docs/rom.md, Final Flash): 10 health, A held charges — let go before frame 20 the small beam, before 32 the medium, else the large (field f0, $20:9A82); the ball grows 2 a frame from 16 at 24, -46. mac_2 fires head, base and band (size 16 / 12 / 8, never thicker); then move b5 holds the pose, the band still drawn, until the head is gone and 24 / 20 / 16 frames more (jumps to 72 / 76 / 80 of 96). As for Goku's Kamehameha, the charge fires as it decides (the original shows 2 more frames, a jump to frame 42) and the head outlives its thrower's move. sliding_kick is move a4, Sliding Kick, ↓ ↘ → B on the ground; typed again from frame 8 to its end, it is kept and a5 (rushing_knee) follows when a4 is over, and the same from a5 (from frame 1) to a6 (cross_punch, cross_punch_2) — field f0, $20:97c7 / $20:9885. Nothing else is read meanwhile; a miss goes on too. knee_slash is move 9c, Jumping Knee Slash, → ↓ ↘ B on the ground ($20:92DF): at frame 6 vx 1, vy -8 at his own gravity; vx 0 at 24; from 30 it holds frame 31's pose until it lands, then 0c and m9c_4; every blow of it lifts a body into the high knockdown at -6.0, not -7.5 ($0D:D3BF). attack_b and crouch_b are his own handlers ($20:9280, $20:92C9): the far B slides at vx 3 from frame 6 to 24; the crouching B has a second blow, m95_2, re-armed at its start. driving_elbow is move a2, R + Y ($20:9739), as Goku's Side Slash: behind the opponent through step 0, on frame 24 turns and closes on him by a 32nd of the way to 8 px short. ground_flare is a9, ↓ ↑ Y, also from a jump's first 2 frames, still on the floor: its shot stands 48 px ahead. energy_field is ab, ↓ ↙ ← Y in the air: he stops at frame 1 and hangs (gravity off `?`), puts out the field at 0, -40 with sound 19 every 3 ticks for 25 (its object's code, $0F:BBAC — ours this state's loopSound), falls from vy 2 at his own gravity from frame 36 (the owner: slower than the original without it) and holds frame 47's pose until he lands ($20:9A09). renzoku is aa, ↓ ↘ → A, 5 health: three shots, one a part; its entry goes after Big Bang's, whose roll ends in the same ↓ ↘ → A. vertical_ki is move b1, Vertical Ki, ↓ ↙ ← A in the air ($20:A02C): 5 health; it stops him at frame 0 and he hangs; a shot at 8 (8, 8) and at 24 (-8, 8, the pose flipped), each falling at b0's vy 4 and bursting at y B8 (ADR 0056); vy 2 at 48, his pose 15 held from 49 until he lands. The original then plays its frame 56 (pose 13, 6 frames) — ours goes to land (13 for 2, with 0c) `?`; gravity after vy 2 as Energy Field's `?`. jumping_bomb is 9e, Jumping Bomb, ↙ ↗ Y on the ground ($20:95B1, by step): blows pass him by to 16 (ours the whole first part `?`); at 4 vx 3, vy -8; at 21 vx 5, vy 3 (facing left the code gives 3); at 26 he stops and hangs and puts out his spray where he is; at 48 vx -2, vy -5; stops at 55; at 56 vx -1, vy 4; holds pose 15 until he lands, then idle — gravity after each vy as Energy Field's `?`. energy_dash is a7, Energy Dash, ← ↙ ↓ ↘ → Y ($20:9978): vx 4 from 28, and from frame 12 the opponent under 48 px away makes it a8 (energy_dash_2), the spray where he stands; ours is a rush from 28 — not tested 12–27, set down 48 short, no stop at 68 `?`; blows pass him by to 28, not ours `?`. galactic_gunfire is ae, Galactic Gunfire, ↑ ↓ Y on the ground, health 80 or less, in grab range (the original: within 64 px of an opponent standing still `?`) ($20:9B66, rom.md): blows pass him by; the opponent held by $20:9C4D's offsets (npm run rom -- port ae), step 4 at step 3's, as the hold stops at 35 and he stays where he is; vy -9 at 18 (his own gravity `?`), both stopped at 35; at the script's end the opponent is let go into pinned (4a). Then af (gunfire_volley, $20:9D29): he hangs where he is, aiming (drawing 9a, the script's f0 hold) until pinned frees him 8 frames into lying ($0F:A545) — ours skips af's 4 frames of 86 after it `?` — and puts out 18 shots, one a part, by turns 8 and -8 px ahead, 14 up — vegeta_gunfire_shot; blows pass him by ($10:C0FD only in ae — af's field 0x96 is the script's 70). Then b2 (gunfire_rain, $20:9DB6): 18 shots more, one a part; from 150 a ball (b1 kind 2) at 0, -88 grows 1 a frame from 1 while frame 150 is held, 40 frames (field f2), then 182 (gunfire_charged: line 0d, sound 38); from 192 (gunfire_drop) the ball falls 4 px a frame to the floor, frame held; there an explosion grows 2 a frame to 96 (40 + 2 x 28), the band (2), 120 frames white with bursts (gunfire_blast, frame held), then 256 (gunfire_throw): at 264 vy 4 and the throw of the pinned body where it lies, 150 less defence, reel_down (1b), 2.5 / -5 backwards ($0F:B321); lands, 272, ends. Finale and throw: ADR 0058. Not here: the band's drawing (kind 4 at 0, 72) and 2c every 64th frame of the white, as for Saiyan Meteor; the stun gauge's 6.",
   "replaces": [
     "attack_b",
     "crouch_b"
   ],
   "entries": [
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up",
+        "jump_up",
+        "jump_fwd",
+        "jump_back"
+      ],
+      "when": [
+        "grab",
+        "command:ae",
+        "health:80"
+      ],
+      "to": "galactic_gunfire"
+    },
     {
       "from": [
         "idle",
@@ -1221,6 +1240,1577 @@
           0
         ]
       },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "galactic_gunfire": {
+      "anim": "mae",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0
+          }
+        ],
+        [
+          18,
+          {
+            "vy": -9,
+            "gravity": "own"
+          }
+        ],
+        [
+          35,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              38,
+              0
+            ],
+            [
+              0,
+              -24
+            ],
+            [
+              0,
+              -50
+            ],
+            [
+              0,
+              -44
+            ],
+            [
+              0,
+              -44
+            ]
+          ],
+          "vegeta": [
+            [
+              40,
+              0
+            ],
+            [
+              0,
+              -46
+            ],
+            [
+              0,
+              -72
+            ],
+            [
+              0,
+              -66
+            ],
+            [
+              0,
+              -66
+            ]
+          ],
+          "gohan": [
+            [
+              40,
+              0
+            ],
+            [
+              0,
+              -44
+            ],
+            [
+              0,
+              -70
+            ],
+            [
+              0,
+              -64
+            ],
+            [
+              0,
+              -64
+            ]
+          ],
+          "gotenks": [
+            [
+              34,
+              0
+            ],
+            [
+              0,
+              -54
+            ],
+            [
+              0,
+              -80
+            ],
+            [
+              0,
+              -74
+            ],
+            [
+              0,
+              -74
+            ]
+          ],
+          "vegetto": [
+            [
+              34,
+              0
+            ],
+            [
+              0,
+              -60
+            ],
+            [
+              0,
+              -86
+            ],
+            [
+              0,
+              -80
+            ],
+            [
+              0,
+              -80
+            ]
+          ],
+          "piccolo": [
+            [
+              40,
+              0
+            ],
+            [
+              0,
+              -46
+            ],
+            [
+              0,
+              -72
+            ],
+            [
+              0,
+              -66
+            ],
+            [
+              0,
+              -66
+            ]
+          ],
+          "freeza": [
+            [
+              32,
+              0
+            ],
+            [
+              0,
+              -44
+            ],
+            [
+              0,
+              -70
+            ],
+            [
+              0,
+              -64
+            ],
+            [
+              0,
+              -64
+            ]
+          ],
+          "cell": [
+            [
+              40,
+              0
+            ],
+            [
+              0,
+              -32
+            ],
+            [
+              0,
+              -58
+            ],
+            [
+              0,
+              -52
+            ],
+            [
+              0,
+              -52
+            ]
+          ],
+          "mr_buu": [
+            [
+              40,
+              0
+            ],
+            [
+              0,
+              -54
+            ],
+            [
+              0,
+              -80
+            ],
+            [
+              0,
+              -74
+            ],
+            [
+              0,
+              -74
+            ]
+          ],
+          "buu": [
+            [
+              24,
+              0
+            ],
+            [
+              0,
+              -50
+            ],
+            [
+              0,
+              -76
+            ],
+            [
+              0,
+              -70
+            ],
+            [
+              0,
+              -70
+            ]
+          ]
+        },
+        "launch": {
+          "frame": 55,
+          "damage": 0,
+          "reaction": "pinned",
+          "vel": [
+            0,
+            0
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley"
+        }
+      ]
+    },
+    "gunfire_volley": {
+      "anim": "maf",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "freed",
+          "to": "gunfire_volley_2"
+        }
+      ],
+      "holdStep": 1
+    },
+    "gunfire_volley_2": {
+      "anim": "maf_2",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_3"
+        }
+      ]
+    },
+    "gunfire_volley_3": {
+      "anim": "maf_3",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_4"
+        }
+      ]
+    },
+    "gunfire_volley_4": {
+      "anim": "maf_4",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_5"
+        }
+      ]
+    },
+    "gunfire_volley_5": {
+      "anim": "maf_5",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_6"
+        }
+      ]
+    },
+    "gunfire_volley_6": {
+      "anim": "maf_6",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_7"
+        }
+      ]
+    },
+    "gunfire_volley_7": {
+      "anim": "maf_7",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_8"
+        }
+      ]
+    },
+    "gunfire_volley_8": {
+      "anim": "maf_8",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_9"
+        }
+      ]
+    },
+    "gunfire_volley_9": {
+      "anim": "maf_9",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_10"
+        }
+      ]
+    },
+    "gunfire_volley_10": {
+      "anim": "maf_10",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_11"
+        }
+      ]
+    },
+    "gunfire_volley_11": {
+      "anim": "maf_11",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_12"
+        }
+      ]
+    },
+    "gunfire_volley_12": {
+      "anim": "maf_12",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_13"
+        }
+      ]
+    },
+    "gunfire_volley_13": {
+      "anim": "maf_13",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_14"
+        }
+      ]
+    },
+    "gunfire_volley_14": {
+      "anim": "maf_14",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_15"
+        }
+      ]
+    },
+    "gunfire_volley_15": {
+      "anim": "maf_15",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_16"
+        }
+      ]
+    },
+    "gunfire_volley_16": {
+      "anim": "maf_16",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_17"
+        }
+      ]
+    },
+    "gunfire_volley_17": {
+      "anim": "maf_17",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_18"
+        }
+      ]
+    },
+    "gunfire_volley_18": {
+      "anim": "maf_18",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_19"
+        }
+      ]
+    },
+    "gunfire_volley_19": {
+      "anim": "maf_19",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain"
+        }
+      ]
+    },
+    "gunfire_rain": {
+      "anim": "mb2",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_2"
+        }
+      ]
+    },
+    "gunfire_rain_2": {
+      "anim": "mb2_2",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_3"
+        }
+      ]
+    },
+    "gunfire_rain_3": {
+      "anim": "mb2_3",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_4"
+        }
+      ]
+    },
+    "gunfire_rain_4": {
+      "anim": "mb2_4",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_5"
+        }
+      ]
+    },
+    "gunfire_rain_5": {
+      "anim": "mb2_5",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_6"
+        }
+      ]
+    },
+    "gunfire_rain_6": {
+      "anim": "mb2_6",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_7"
+        }
+      ]
+    },
+    "gunfire_rain_7": {
+      "anim": "mb2_7",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_8"
+        }
+      ]
+    },
+    "gunfire_rain_8": {
+      "anim": "mb2_8",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_9"
+        }
+      ]
+    },
+    "gunfire_rain_9": {
+      "anim": "mb2_9",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_10"
+        }
+      ]
+    },
+    "gunfire_rain_10": {
+      "anim": "mb2_10",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_11"
+        }
+      ]
+    },
+    "gunfire_rain_11": {
+      "anim": "mb2_11",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_12"
+        }
+      ]
+    },
+    "gunfire_rain_12": {
+      "anim": "mb2_12",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_13"
+        }
+      ]
+    },
+    "gunfire_rain_13": {
+      "anim": "mb2_13",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_14"
+        }
+      ]
+    },
+    "gunfire_rain_14": {
+      "anim": "mb2_14",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_15"
+        }
+      ]
+    },
+    "gunfire_rain_15": {
+      "anim": "mb2_15",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_16"
+        }
+      ]
+    },
+    "gunfire_rain_16": {
+      "anim": "mb2_16",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_17"
+        }
+      ]
+    },
+    "gunfire_rain_17": {
+      "anim": "mb2_17",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_18"
+        }
+      ]
+    },
+    "gunfire_rain_18": {
+      "anim": "mb2_18",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_rain_19"
+        }
+      ]
+    },
+    "gunfire_rain_19": {
+      "anim": "mb2_19",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_gunfire_shot",
+        "at": [
+          -8,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "frames:50",
+          "to": "gunfire_charged"
+        }
+      ],
+      "holdStep": 2,
+      "ball": {
+        "at": [
+          0,
+          -88
+        ],
+        "from": 11,
+        "grow": 1,
+        "max": 40
+      }
+    },
+    "gunfire_charged": {
+      "anim": "mb2_20",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "ball": {
+        "at": [
+          0,
+          -88
+        ],
+        "grow": 0
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_drop"
+        }
+      ]
+    },
+    "gunfire_drop": {
+      "anim": "mb2_21",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "holdStep": 0,
+      "ball": {
+        "at": [
+          0,
+          -88
+        ],
+        "from": 0,
+        "until": 0,
+        "grow": 0
+      },
+      "finale": {
+        "frame": 0,
+        "from": [
+          0,
+          -88
+        ],
+        "aim": "down",
+        "speed": 4,
+        "radius": 40,
+        "grow": 2,
+        "max": 96,
+        "band": 2,
+        "white": 120,
+        "every": 4,
+        "fx": "burst_s",
+        "shakes": [
+          null,
+          {
+            "pattern": 1,
+            "frames": 32
+          },
+          {
+            "pattern": 3,
+            "frames": 64
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "ballLanded",
+          "to": "gunfire_blast"
+        }
+      ]
+    },
+    "gunfire_blast": {
+      "anim": "mb2_22",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "holdStep": 0,
+      "transitions": [
+        {
+          "when": "finaleDone",
+          "to": "gunfire_throw"
+        }
+      ]
+    },
+    "gunfire_throw": {
+      "anim": "mb2_23",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          8,
+          {
+            "vy": 4,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "throwsFoe": {
+        "frame": 8,
+        "damage": 150,
+        "reaction": "reel_down",
+        "vel": [
+          -2.5,
+          -5
+        ]
+      },
+      "holdStep": 1,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "gunfire_land"
+        }
+      ]
+    },
+    "gunfire_land": {
+      "anim": "mb2_24",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
       "transitions": [
         {
           "when": "animEnd",
