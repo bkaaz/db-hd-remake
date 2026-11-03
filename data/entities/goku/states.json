@@ -1024,7 +1024,7 @@
         0,
         0
       ],
-      "turn": false,
+      "turn": true,
       "sound": "land_0c",
       "inputsOf": {
         "state": "idle",
