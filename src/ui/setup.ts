@@ -23,6 +23,8 @@ const FIRST_DEBUG: DebugRequest = { scene: "debug", p1: "goku", p2: "goku", mode
  * back to it (owner). Above a fighter's own full it is full.
  */
 const HEALTHS = [50, 80, 150, 200, 400];
+/** A fighter's colours: the original's rule, his own, or his second set. */
+const COLOURS: Choice[] = [["", "auto"], ["1", "1"], ["2", "2"]];
 
 export class SetupBar {
   private request: SceneRequest;
@@ -85,8 +87,11 @@ export class SetupBar {
       (["p1", "p2"] as const).forEach((who, i) => {
         const key = who === "p1" ? "hp1" : "hp2";
         const now = r[key] === undefined ? "" : String(r[key]);
+        const pal = who === "p1" ? "pal1" : "pal2";
         sides[i].push(
           field("fighter", picker(r[who], fighters, (name) => change({ [who]: name }))),
+          // auto is the original's: player two's second set when both are the same fighter
+          field("colours", segmented(String(r[pal] ?? ""), COLOURS, (v) => this.go(v ? { ...r, [pal]: Number(v) } : without(r, pal)))),
           field("hp", segmented(now, healths, (v) => this.go(v === now ? without(r, key) : { ...r, [key]: Number(v) }))),
         );
       });
@@ -131,7 +136,7 @@ function noticeLine(text: string): HTMLElement {
 }
 
 /** The request without some of its optional parameters. */
-function without(r: DebugRequest, ...keys: ("arena" | "time" | "hp1" | "hp2")[]): DebugRequest {
+function without(r: DebugRequest, ...keys: ("arena" | "time" | "hp1" | "hp2" | "pal1" | "pal2")[]): DebugRequest {
   const copy = { ...r };
   for (const k of keys) delete copy[k];
   return copy;

@@ -52,7 +52,18 @@ export interface DebugRequest {
   hp1?: number;
   /** Player two's, the same way. */
   hp2?: number;
+  /**
+   * Player one's colours: 1 his own palette, 2 his second (the next record).
+   * None is the original's rule: player two's second when both sides are the
+   * same fighter ($01:82F2).
+   */
+  pal1?: Colours;
+  /** Player two's, the same way. */
+  pal2?: Colours;
 }
+
+/** A fighter's own colours, or his second set. */
+export type Colours = 1 | 2;
 
 /**
  * What every scene is handed: the renderer, the page around it, the game-wide
@@ -97,6 +108,8 @@ export function queryFor(request: SceneRequest): string {
     if (request.time) q.set("time", request.time);
     if (request.hp1 !== undefined) q.set("hp1", String(request.hp1));
     if (request.hp2 !== undefined) q.set("hp2", String(request.hp2));
+    if (request.pal1 !== undefined) q.set("pal1", String(request.pal1));
+    if (request.pal2 !== undefined) q.set("pal2", String(request.pal2));
   }
   return `?${q.toString()}`;
 }
@@ -121,6 +134,13 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       if (!(Number.isInteger(Number(hp)) && Number(hp) >= 1)) return `${key} "${hp}" is not a whole number of health, 1 or more`;
       health[key] = Number(hp);
     }
+    const colours: Partial<Record<"pal1" | "pal2", Colours>> = {};
+    for (const key of ["pal1", "pal2"] as const) {
+      const pal = q.get(key);
+      if (pal === null) continue;
+      if (pal !== "1" && pal !== "2") return `${key} "${pal}" is not a set of colours — 1 or 2`;
+      colours[key] = Number(pal) as Colours;
+    }
     return {
       scene: "debug",
       p1,
@@ -129,6 +149,7 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       ...(arena !== null && { arena }),
       ...(time !== null && { time }),
       ...health,
+      ...colours,
     };
   }
   return `unknown scene "${scene}" — try select or debug`;

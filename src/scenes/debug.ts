@@ -79,7 +79,9 @@ export class DebugScene implements Scene {
       `p1=${req.p1} p2=${req.p2}` +
         (req.arena ? ` arena=${req.arena}${req.time ? ` time=${req.time}` : ""}` : "") +
         (req.hp1 !== undefined ? ` hp1=${req.hp1}` : "") +
-        (req.hp2 !== undefined ? ` hp2=${req.hp2}` : ""),
+        (req.hp2 !== undefined ? ` hp2=${req.hp2}` : "") +
+        (req.pal1 !== undefined ? ` pal1=${req.pal1}` : "") +
+        (req.pal2 !== undefined ? ` pal2=${req.pal2}` : ""),
     ]);
 
     const dummy = Dummy.from(mode.p2);
@@ -114,6 +116,9 @@ export class DebugScene implements Scene {
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
+    // colours asked for override the original's rule, which Fighters applied
+    if (req.pal1 !== undefined) fighters.player.alt = req.pal1 === 2;
+    if (req.pal2 !== undefined && fighters.opponent) fighters.opponent.alt = req.pal2 === 2;
     if (arena && arena.time !== arena.times[0]) {
       for (const name of new Set(fighters.light(arena.time))) {
         notices.push(showMessage(ctx.page.notices, `${name}: no sheet for "${arena.time}" — in its own colours`, true));
