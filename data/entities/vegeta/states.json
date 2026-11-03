@@ -808,7 +808,7 @@
         [
           2,
           {
-            "vx": 2.02,
+            "vx": 2.25,
             "vy": -10.75
           }
         ]
@@ -871,7 +871,7 @@
         [
           2,
           {
-            "vx": -2.02,
+            "vx": -1.798828125,
             "vy": -10.75
           }
         ]
@@ -1049,7 +1049,29 @@
       ],
       "turn": false,
       "sound": "land_0c",
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
+        {
+          "when": [
+            "held:up",
+            "held:fwd"
+          ],
+          "to": "jump_fwd"
+        },
+        {
+          "when": [
+            "held:up",
+            "held:back"
+          ],
+          "to": "jump_back"
+        },
+        {
+          "when": "held:up",
+          "to": "jump_up"
+        },
         {
           "when": "animEnd",
           "to": "idle"
@@ -1063,6 +1085,10 @@
         0
       ],
       "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
         {
           "when": "!held:dash",
@@ -1085,6 +1111,10 @@
         0
       ],
       "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
         {
           "when": "!held:dash",
@@ -1397,16 +1427,13 @@
       "shove": -2,
       "turn": false,
       "guarding": true,
+      "inputsOf": {
+        "state": "idle",
+        "from": 4
+      },
       "transitions": [
         {
-          "when": [
-            "animEnd",
-            "held:guard"
-          ],
-          "to": "guard"
-        },
-        {
-          "when": "animEnd",
+          "when": "frames:4",
           "to": "idle"
         }
       ]
@@ -1422,17 +1449,14 @@
       "crouching": true,
       "guard": "guard_crouch",
       "guarding": true,
+      "inputsOf": {
+        "state": "idle",
+        "from": 4
+      },
       "transitions": [
         {
-          "when": [
-            "animEnd",
-            "held:guard"
-          ],
-          "to": "guard_low"
-        },
-        {
-          "when": "animEnd",
-          "to": "crouch"
+          "when": "frames:4",
+          "to": "idle"
         }
       ]
     },
@@ -1873,6 +1897,10 @@
         0
       ],
       "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
         {
           "when": "animEnd",
@@ -2003,6 +2031,10 @@
       ],
       "turn": false,
       "sound": "land_0d",
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
         {
           "when": "animEnd",
@@ -2104,6 +2136,10 @@
         0
       ],
       "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
         {
           "when": "!held:dash",
@@ -2126,6 +2162,10 @@
         0
       ],
       "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
         {
           "when": "animEnd",
@@ -2140,6 +2180,10 @@
         0
       ],
       "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
         {
           "when": "!held:dash",
@@ -2162,6 +2206,10 @@
         0
       ],
       "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
       "transitions": [
         {
           "when": "animEnd",

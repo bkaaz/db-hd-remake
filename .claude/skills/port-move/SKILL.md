@@ -170,7 +170,12 @@ before asking for a new mechanism:
 - hanging (vy 0 skips gravity, `$0D:CAD4`) — `air` with `gravity: 0`;
 - a throw where he lies — `throwsFoe`; a ball thrown at the floor and the
   white — `finale` (ADR 0058), or a seize's (ADR 0046);
-- moving at the opponent until close — `rush` (`until` to stop it).
+- moving at the opponent until close — `rush` (`until` to stop it);
+- a move free again from a frame, as its handler calls `$0F:9EB1` (and
+  `$0D:F9BD`) — `inputsOf` idle, `only: "buttons"` without the directions
+  (ADR 0061; `npm run rom -- entries` counts it);
+- an object gone when he leaves his move — `endsWithMove`, `true` or the
+  move ids its code tests (ADR 0062).
 
 ## 4. Check
 

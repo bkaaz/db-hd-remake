@@ -6,6 +6,7 @@ import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { landBlow, type BlowContext, type BlowResult } from "./blow";
 import { objectGone } from "../camera/camera";
 import { logEvent } from "../log";
+import { leftMove, movesHeld } from "./thrownIn";
 
 /** No edge holds a bolt back: it is gone once it strays too far (`objectGone`). */
 const ANYWHERE: Bounds = { min: -Infinity, max: Infinity };
@@ -28,8 +29,8 @@ interface Live {
   beam: boolean;
   /** `rides`: where it stays on its owner, forward of him and down from him, in game px. */
   ride: { ahead: number; down: number } | null;
-  /** `endsWithMove`: the owner's state that put it out; gone when he leaves it. */
-  thrownIn: string | null;
+  /** `endsWithMove`: the owner's moves it lives through; gone when he leaves them. */
+  thrownIn: readonly string[] | null;
 }
 
 /** A blow a bolt landed, and who took it — enough for the recording. */
@@ -143,7 +144,7 @@ export class Projectiles {
       return [e];
     });
     const ride = bolt.rides ? { ahead: (bolt.x - owner.x) * from.facing, down: bolt.y - owner.y } : null;
-    this.live.push({ name: from.spawn, bolt, foe, owner, companions, beam: from.beam, ride, thrownIn: bolt.endsWithMove ? owner.state : null });
+    this.live.push({ name: from.spawn, bolt, foe, owner, companions, beam: from.beam, ride, thrownIn: bolt.endsWithMove ? movesHeld(bolt.endsWithMove, owner.animation) : null });
     logEvent(`bolt ${from.spawn} out at x ${Math.round(bolt.x)}`);
   }
 
@@ -173,7 +174,7 @@ export class Projectiles {
       // strayed too far from the screen's middle, off a side or the top ($0F:B47D)
       const stranded = objectGone(bolt.x, bolt.y, view);
       // and is gone the moment he leaves the move that put it out ($0F:BB51)
-      const orphaned = thrownIn !== null && owner.state !== thrownIn;
+      const orphaned = thrownIn !== null && leftMove(thrownIn, owner.animation);
       // down on its floor: its burst where it is, as the original rewrites the slot ($0F:BB05)
       const floored = bolt.burstsAbove !== undefined && bolt.hasLanded;
       const burst = bolt.attackBurst;

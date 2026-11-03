@@ -6,8 +6,9 @@ import type { StatesFile } from "../entity/states";
  * word at a time by `$0D:C4C1` (A the byte offset). Only the words a caller
  * names are here — defence (byte 0, `$01:8112`), walking (1, 3:
  * `$10:D577`…), the dash (5, 7), the jump's rise (`0x19`, `$0D:FC99`) and
- * gravity (`0x1D`, `$01:80A4`). The jump's vx is 1.5 × the word at 9 or `0B`
- * (`$0D:FCC2`), which of a jump's two moves takes which is not read `?`.
+ * gravity (`0x1D`, `$01:80A4`), and the jump's vx: 1.5 × the word at 9 for
+ * forward (move 06) or `0B` for back (07), whichever way ↑ → / ↑ ← is
+ * pressed for his facing (`$0D:FC99`, `$0D:FD3F`).
  */
 export interface Attributes {
   defence: number;
@@ -15,6 +16,8 @@ export interface Attributes {
   dash: [forward: number, back: number];
   /** The jump's vy as it leaves the floor, − up. */
   jump: number;
+  /** The jump's vx, forward and back, both positive. */
+  jumpVx: [forward: number, back: number];
   gravity: number;
 }
 
@@ -25,7 +28,7 @@ export function readAttributes(rom: Uint8Array, character: number): Attributes {
   const at = toFile(TABLE + SIZE * character);
   if (at === null) throw new Error("the attributes are not ROM");
   const word = (offset: number) => (((rom[at + offset] | (rom[at + offset + 1] << 8)) << 16) >> 16) / 256;
-  return { defence: rom[at], walk: [word(1), word(3)], dash: [word(5), word(7)], jump: word(0x19), gravity: word(0x1d) };
+  return { defence: rom[at], walk: [word(1), word(3)], dash: [word(5), word(7)], jump: word(0x19), jumpVx: [1.5 * word(9), 1.5 * word(0xb)], gravity: word(0x1d) };
 }
 
 /**
@@ -47,6 +50,9 @@ export function withAttributes(file: StatesFile, a: Attributes): StatesFile {
   }
   for (const name of ["jump_up", "jump_fwd", "jump_back"]) {
     for (const [, step] of states[name]?.air ?? []) if (step.vy !== undefined && step.vy < 0) step.vy = a.jump;
+  }
+  for (const [name, vx] of [["jump_fwd", a.jumpVx[0]], ["jump_back", -a.jumpVx[1]]] as const) {
+    for (const [, step] of states[name]?.air ?? []) if (step.vx) step.vx = vx;
   }
   return { ...file, states };
 }

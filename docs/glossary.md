@@ -155,6 +155,9 @@ defender and resets when they get control back. → `combat.md` §3
 **Queued** (a transition's `queued`) — the next part of a move, typed during
 this one and kept until its animation ends; not a cancel. → ADR 0049
 
+**Inputs of** (a state's `inputsOf`) — from one of its frames, a state starts
+what another state's inputs would: the landing, a block, the dash. → ADR 0061
+
 **Push band** — the screen's outer 64 px: a fighter in it, moving toward that
 edge, scrolls the camera; nobody else does. → `src/camera/push.ts`, ADR 0030
 

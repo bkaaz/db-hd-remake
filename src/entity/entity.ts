@@ -601,9 +601,9 @@ export class Entity {
     return !!this.sm?.def.rides;
   }
 
-  /** A bolt gone when whoever put it out leaves the state that did (`endsWithMove`). */
-  get endsWithMove(): boolean {
-    return !!this.sm?.def.endsWithMove;
+  /** A bolt gone when whoever put it out leaves its move (`endsWithMove`). */
+  get endsWithMove(): true | string[] | undefined {
+    return this.sm?.def.endsWithMove;
   }
 
   /** A bolt whose ground is this far above its thrower's floor, and bursts on it (`burstsAbove`). */

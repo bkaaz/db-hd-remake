@@ -11,6 +11,7 @@
  * scripting escape hatch come in later slices.
  */
 
+import { borrowed, inputsOfErrors, type InputsOf } from "./inputsOf";
 import type { Trail } from "./trail";
 import type { ScreenCue } from "../screen";
 import type { FinaleDef } from "../match/finale";
@@ -403,8 +404,12 @@ export interface StateDef {
    * him (ADR 0014); `Projectiles` moves it.
    */
   rides?: boolean;
-  /** For a bolt: gone when whoever put it out leaves the state that did ($0F:BB51, $0F:B9C0). */
-  endsWithMove?: boolean;
+  /**
+   * For a bolt: gone when whoever put it out leaves its move ($0F:BB51,
+   * $0F:B9C0) — `true`, the move he was playing (every part of it); a list,
+   * those moves by id, Final Flash's head `["ac", "b5"]` ($0F:BE66).
+   */
+  endsWithMove?: true | string[];
   /**
    * Entering it puts the entity behind the opponent, where a blow armed puts
    * it in front — Side Slash, the 3D move ($0D:D8D5). It lasts until either
@@ -458,6 +463,8 @@ export interface StateDef {
    * rather than played out into the recovery behind it.
    */
   holdStep?: number;
+  /** From a frame, the input transitions of another state too, ahead of its own (ADR 0061). */
+  inputsOf?: InputsOf;
 
   /**
    * Frames of holding this state for its charge to reach full. The level is a
@@ -1122,7 +1129,7 @@ export class StateMachine {
     };
     this.pressSpent = null;
     if (this.queued && now.animEnded) return this.take(this.queued, null);
-    for (const t of this.def.transitions ?? []) {
+    for (const t of [...borrowed(this.file, this.def, this.elapsed), ...(this.def.transitions ?? [])]) {
       if (t.queued && (this.queued || this.elapsed < t.queued.from)) continue;
       if (!fires(t.when, input, now)) continue;
       if (!this.file.states[t.to]) {
@@ -1468,6 +1475,11 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       (!Array.isArray(def.band.from) || typeof def.band.size !== "number" || typeof def.band.max !== "number")
     ) {
       errors.push(`${where}: "band" needs "from" as two numbers, "size" and "max"`);
+    }
+    errors.push(...inputsOfErrors(where, def, authored));
+    const moves = def.endsWithMove;
+    if (moves !== undefined && moves !== true && !(Array.isArray(moves) && moves.every((m) => /^[0-9a-f]{2}$/.test(m)))) {
+      errors.push(`${where}: "endsWithMove" is true or a list of move ids, two hex digits each`);
     }
     const steps = anim?.steps?.length;
     if (def.holdStep !== undefined && (!Number.isInteger(def.holdStep) || def.holdStep < 0 || (steps !== undefined && def.holdStep >= steps))) {

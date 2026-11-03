@@ -645,6 +645,11 @@ The stand-up (`04`, `$0F:9F4E`) calls `$0F:9EB1` alone: commands and
 buttons, no turn, charge, guard or dash. Others call it too — the landing
 `3b`, the dash `0a`/`0b`, a block from frame 4 (`0d`, `0f`), lying `1f`
 while `f0` is 0, the air reel `1a` once landed, a jump in the air.
+`$0D:F9BD` with no direction held sets idle (`00`; the crouch's `03` stands
+up, `04`), so a block (`0d`, `0f`, `$0F:A081`) is over at frame 4 unless
+something is held. The landing (`$0F:A451`) reads the directions only
+while ↑ is held — a jump. Lying `1f` with field `f0` set goes into move
+`40` instead, `f0` 300, gravity off (`$0F:A35E`; what sets it `?`).
 `npm run rom -- entries` lists the states playing such a move that lack
 an entry for one of his commands. **The table is read from its end**:
 `$0D:F588` points Y at the last row's byte 4 — ground `8C` (so row `88`,
@@ -908,10 +913,12 @@ the defender's defence — Goku's 8, Vegetto's 12 — but one: Goku's `ca`
 took 6, not 12; its record sets byte 2 bit 2 (`$D4D4`) `?`.
 
 **A fighter's attributes**: 32 bytes at `$3D:9D9B + 32 × character`
-(`$0D:C4C1` reads one). Byte 0 is defence; then 8.8 words, of which the
-recorded ones match: walk 1.5 forward and 1.25 back (words 0–1), jump
-−9.86 (word 12), gravity 0.469 (word 14). The rest are speeds not
-identified yet.
+(`$0D:C4C1` reads the word at byte A). Byte 0 is defence; then 8.8 words
+at bytes 1 / 3 the walk forward / back, 5 / 7 the dash, 9 / `0B` the
+jump's vx forward / back × 1.5 (`$0D:FC99`, `FD3F`: ↑ → or ↑ ← is move
+`06` and word 9 the way he faces, `07` and `0B` the other), `19` the
+jump's vy, `1D` gravity — `src/rom/attributes.ts`. Knockback is one table
+for everyone (`$0D:D68A`).
 
 **Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
 bits of bytes 0–1 as one word: `0x0004` `$D622` (stopped dead, then the

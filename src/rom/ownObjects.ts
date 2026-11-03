@@ -88,16 +88,16 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     { name: "vegeta_energy_dash", type: 0x1, anim: 0x9, hits: true, palette: 0x11c, ticks: { at: 0x0fbc95, length: 0x16 } }, // a8
     // ac, Final Flash: its heads step every 4th frame of the game ($0F:BDF4,
     // BE0C, BE2C), its base every 4 frames — 0–1 in, 2–4 while the head is
-    // up, 5–6 out ($0F:BD2E). The heads step palettes 0x130–0x133 by $74
-    // ($0F:BE3D), which the base and band share; no `shimmer` until all three
-    // step together — the head stepping alone flickered (bugs.md)
-    // the small head shows ($74 & 0C) / 4, the others count to 5 / 6 and wrap: frames 0 to n - 1, 4 each
+    // up, 5–6 out ($0F:BD2E). The heads load palettes 0x130–0x133 by $74
+    // ($0F:BE3D) into the palette the base draws in too: both step the run.
+    // The small head shows ($74 & 0C) / 4, the others count to 5 / 6 and
+    // wrap: frames 0 to n - 1, 4 each
     ...([["s", 0xb, 4], ["m", 0xc, 5], ["l", 0xd, 6]] as const).map(([size, anim, n]) => ({
-      name: `vegeta_final_flash_${size}`, type: 0x1, anim, hits: true, palette: 0x130,
+      name: `vegeta_final_flash_${size}`, type: 0x1, anim, hits: true, palette: 0x130, shimmer: 3,
       animations: { play: { frames: [...Array(n).keys()], dur: 4, loop: true } },
     })),
     {
-      name: "vegeta_final_flash_base", type: 0x1, anim: 0xa, hits: false, palette: 0x130,
+      name: "vegeta_final_flash_base", type: 0x1, anim: 0xa, hits: false, palette: 0x130, shimmer: 3,
       animations: {
         in: { frames: [0, 1], dur: 4, loop: false },
         loop: { frames: [2, 3, 4], dur: 4, loop: true },

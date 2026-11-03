@@ -77,8 +77,10 @@ export function missingEntries(rom: Uint8Array, t: FighterTables, file: StatesFi
     const when = move === null ? null : readsCommands(move);
     if (when === null) continue;
     const where = def.air || def.airborne ? "air" : "ground";
+    // what it borrows counts as its own (ADR 0061)
+    const lender = def.inputsOf ? (file.states[def.inputsOf.state]?.transitions ?? []) : [];
     const entered = new Set(
-      (def.transitions ?? []).flatMap((tr) =>
+      [...lender, ...(def.transitions ?? [])].flatMap((tr) =>
         [tr.when].flat().flatMap((w) => (typeof w === "string" && w.startsWith("command:") ? [parseInt(w.slice(8), 16)] : [])),
       ),
     );

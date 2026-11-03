@@ -1885,3 +1885,77 @@ describe("command:<move>", () => {
     expect(validateStates(f, ANIMS).errors.some((e) => e.includes('unknown trigger "command:a"'))).toBe(true);
   });
 });
+
+describe("inputsOf", () => {
+  // idle's inputs, borrowed: the original's landing and block call what idle calls ($0F:9EB1)
+  function lending(inputsOf: StateDef["inputsOf"]): StatesFile {
+    const f = machine();
+    f.states.idle.transitions = [
+      { when: "command:a4", to: "slide" },
+      { when: "pressed:attack", to: "punch" },
+      { when: ["held:fwd", "pressed:dash"], to: "dash" },
+      ...(f.states.idle.transitions ?? []),
+    ];
+    for (const s of ["slide", "punch", "dash"]) f.states[s] = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.blocked = { anim: "hurt", inputsOf, transitions: [{ when: "animEnd", to: "idle" }] };
+    f.initial = "blocked";
+    return f;
+  }
+  const run = (sm: StateMachine, frames: number) => {
+    for (let i = 0; i < frames; i++) sm.update(NONE, QUIET);
+  };
+
+  it("starts what the lender would, ahead of its own, from its frame on and not before", () => {
+    const sm = new StateMachine(lending({ state: "idle", from: 4 }));
+    run(sm, 2);
+    expect(sm.update(ATTACK, QUIET)).toBeNull();
+    expect(sm.update(ATTACK, QUIET)).toBe("punch");
+  });
+
+  it("with only buttons, takes commands and presses but not the directions nor the dash", () => {
+    const sm = new StateMachine(lending({ state: "idle", only: "buttons" }));
+    expect(sm.update(FWD, QUIET)).toBeNull();
+    expect(sm.update({ ...FWD, dash: true }, QUIET)).toBeNull();
+    expect(sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET)).toBe("slide");
+    expect(sm.startedByCommand).toBe(true);
+  });
+
+  it("borrows only inputs: never the lender's animEnd or clock", () => {
+    const f = lending({ state: "idle" });
+    f.states.idle.transitions!.push({ when: "animEnd", to: "punch" }, { when: ["frames:1", "held:up"], to: "punch" });
+    f.states.blocked.transitions = [];
+    const sm = new StateMachine(f);
+    expect(sm.update({ ...NONE, up: true }, { ...QUIET, animEnded: true })).toBeNull();
+  });
+
+  it("without it, the state keeps to its own transitions", () => {
+    const sm = new StateMachine(lending(undefined));
+    expect(sm.update(ATTACK, QUIET)).toBeNull();
+  });
+
+  it("is refused naming no state, a state that borrows too, or a frame below 0", () => {
+    const anims = { ...ANIMS } as Record<string, AnimInfo>;
+    const errors = (of: StateDef["inputsOf"], lenderBorrows = false) => {
+      const f = lending(of);
+      if (lenderBorrows) f.states.idle.inputsOf = { state: "walk_fwd" };
+      return validateStates(f, anims).errors.filter((e) => e.includes("inputsOf"));
+    };
+    expect(errors({ state: "idle", from: 4 })).toEqual([]);
+    expect(errors({ state: "nowhere" })).toHaveLength(1);
+    expect(errors({ state: "idle" }, true)).toHaveLength(1);
+    expect(errors({ state: "idle", from: -1 })).toHaveLength(1);
+  });
+});
+
+describe("goku's landing", () => {
+  const goku = JSON.parse(readFileSync(fileURLToPath(new URL("../../data/entities/goku/states.json", import.meta.url)), "utf8")) as StatesFile;
+
+  it("jumps again the way the stick is held, as $0D:F9BD does on ↑", () => {
+    const from = (input: typeof NONE) => {
+      const sm = new StateMachine(goku);
+      sm.force("land");
+      return sm.update(input, QUIET);
+    };
+    expect([from({ ...UP, fwd: true }), from({ ...UP, back: true }), from(UP)]).toEqual(["jump_fwd", "jump_back", "jump_up"]);
+  });
+});
