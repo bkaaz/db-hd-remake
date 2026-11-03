@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { approachSpeed, rushStep } from "./approach";
+import { approachSpeed, rushing, rushStep } from "./approach";
 
 // Side Slash's: a 32nd of the way to 8 px short of the opponent
 const SIDE_SLASH = { at: 28, short: 8, over: 32 };
@@ -42,5 +42,13 @@ describe("rushStep", () => {
   it("stops at 40 from the left but only under 40 from the right, as the original does", () => {
     expect(rushStep(METEOR, 40).arrived).toBe(true);
     expect(rushStep(METEOR, -40).arrived).toBe(false);
+  });
+});
+
+describe("rushing", () => {
+  it("runs from its frame, and up to its until when it has one", () => {
+    const dash = { from: 1, speed: 4, stop: 48, until: 41 };
+    expect([0, 1, 40, 41].map((f) => rushing(dash, f))).toEqual([false, true, true, false]);
+    expect(rushing({ from: 1, speed: 4, stop: 48 }, 500)).toBe(true);
   });
 });

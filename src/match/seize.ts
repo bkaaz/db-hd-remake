@@ -72,6 +72,7 @@ export class Seizures {
       // cut short: let go where he is, as a throw cut short does
       if (s.phase !== "done") s.held.release();
       seizer.showThrownBall(null);
+      seizer.showFloorBand(null);
       this.seizing.delete(seizer);
       return;
     }
@@ -137,6 +138,7 @@ export class Seizures {
           world.shake(fin.shakes[2]);
         }
         if (e.burst) world.anywhere(fin.fx);
+        if (e.toll && fin.sounds?.white) seizer.sound(fin.sounds.white);
         if (e.done) {
           world.screen("restore");
           this.letGo(s, seizer, def.release);
@@ -145,6 +147,7 @@ export class Seizures {
       // the ball and the explosion are drawn by its thrower, in the world
       const f = s.finale;
       seizer.showThrownBall(f && (f.phase === "flying" || f.phase === "exploding") ? { x: f.x, y: f.y, radius: f.radius / seizer.scaleOf } : null);
+      seizer.showFloorBand(f && f.band > 0 ? { y: held.floor, size: f.band } : null);
       return;
     }
     if (s.phase !== "done" && frame >= def.release.frame) this.letGo(s, seizer, def.release);

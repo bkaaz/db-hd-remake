@@ -61,7 +61,8 @@ export interface PartReport {
   velAt: [number, number][];
   rearms: number[];
   /** Where blows start and stop passing him by (field 0x96 bit 6), frames from the part. */
-  unhittable: { frame: number; on: boolean }[];
+  /** Where field 0x96 changes: `on`, blows pass him by (bit 6); `pass`, bodies pass through him (bit 7). */
+  unhittable: { frame: number; on: boolean; pass: boolean }[];
   /** Anything else the handler does on one frame of this part. */
   onFrames: { frame: number; what: string }[];
   /**
@@ -134,7 +135,9 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
       velAt: speeds.filter((s) => inside(s.frame)).map((s) => [s.frame - from, s.vx]),
       rearms: facts.filter((f) => f.what === "re-arms the blow" && f.frame !== null && inside(f.frame)).map((f) => f.frame! - from),
       unhittable: events.flatMap((e) =>
-        e.op.op === "field96" && inside(e.frame) ? [{ frame: e.frame - from, on: (e.op.value & UNHITTABLE) !== 0 }] : [],
+        e.op.op === "field96" && inside(e.frame)
+          ? [{ frame: e.frame - from, on: (e.op.value & UNHITTABLE) !== 0, pass: (e.op.value & PUSHLESS) !== 0 }]
+          : [],
       ),
       onFrames: facts
         .filter((f) => f.frame && f.step === undefined && inside(f.frame) && !SHOWN.has(f.what))
@@ -166,6 +169,8 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
 
 /** Field 0x96's bit that blows pass by (`script.ts`). */
 const UNHITTABLE = 0x40;
+/** Field 0x96 bit 7: the bodies routine skips him ($2A:80F5) — a state's `pushless`. */
+const PUSHLESS = 0x80;
 
 /** What a part already lists on its own line. */
 const SHOWN = new Set(["plays sound", "sets vx", "re-arms the blow"]);

@@ -140,9 +140,6 @@ takes an investigation instead of a procedure. In this order:
    choice between them as `$0D:D29C` makes it. The reactions brought from
    goku_old (`hurt_air`, `launched`, `blown` …) still land straight into
    `downed`.
-3. **Bodies that pass** — a script's `96` with bit 7 stops the push
-   (`rom.md`, Bodies); only `pinned` says so (`pushless`). `port` prints
-   bit 6 alone: print bit 7 too, and mark every state whose move sets it.
 
 ### Next: around the arena
 

@@ -17,7 +17,8 @@ import { slowed } from "../combat/knockback";
 import { trailAt } from "./trail";
 import type { ScreenCue } from "../screen";
 import type { FinaleDef } from "../match/finale";
-import { approachSpeed, rushStep } from "./approach";
+import { moveOf, type Shoved } from "../combat/corner";
+import { approachSpeed, rushing, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { commandsMet, padFrame, PadHistory, tablesFor } from "../input/command";
@@ -151,6 +152,8 @@ const ATTACK_LABELS = [
 
 /** Frames between copies of a retriggered sound when the state names no interval. */
 const HUM_EVERY = 8;
+/** Half the width of a finale's band, world px: the screen's 256 and more, whoever stands where. */
+const BAND_REACH = 512;
 
 const BOX_COLORS: Record<string, number> = {
   hit: 0xff3b3b,
@@ -207,6 +210,8 @@ export class Entity {
   private clockHeld = false;
   /** A ball it has thrown, drawn where it is in the world rather than at its hands (`match/finale.ts`). */
   private thrownBall: { x: number; y: number; radius: number } | null = null;
+  /** The finale's band along the floor at world `y`, kind 4 of `size`; null for none. */
+  private floorBand: { y: number; size: number } | null = null;
   /** What its state asked of the screen this frame (`StateDef.screen`), until the fighters take it. */
   private screenCues: ScreenCue[] = [];
   /** Effects the animation's steps put out, until the fighters take them. */
@@ -472,6 +477,16 @@ export class Entity {
    * getting up off it. Rank already stops a blow interrupting a knockdown; this
    * is what stops it costing health while the victim can neither block nor move.
    */
+  /** What the corner rule reads of this body (`combat/corner.ts`). */
+  get shoved(): Shoved {
+    return { x: this.x, facing: this.facing, shove: this.shove, move: moveOf(this.animation), health: this.hp };
+  }
+
+  /** Its shove handed to the other at the screen's edge, or one taken from him ($0D:C8F0). */
+  setShove(shove: number): void {
+    this.shove = shove;
+  }
+
   /** A finale of the state's own (`finales.ts`). */
   get finale(): FinaleDef | undefined {
     return this.sm?.def.finale;
@@ -524,6 +539,11 @@ export class Entity {
   /** Draw a ball it has thrown at (`x`, `y`) in the world, sprite-px `radius`; null for none. */
   showThrownBall(ball: { x: number; y: number; radius: number } | null): void {
     this.thrownBall = ball;
+  }
+
+  /** Draw a finale's band along the floor at world `y` ($0F:F1BC); null for none. */
+  showFloorBand(band: { y: number; size: number } | null): void {
+    this.floorBand = band;
   }
 
   /**
@@ -1028,6 +1048,8 @@ export class Entity {
   /** `restart` plays its animation from the top even when the state names the one already playing. */
   private enterState(restart = false): void {
     if (!this.sm) return;
+    // a special starts stopped, whatever it was started from ($0D:D7A0)
+    if (this.sm.startedByCommand) [this.vx, this.vy, this.shove] = [0, 0, 0];
     const sounds = this.sm.def.sound;
     for (const id of typeof sounds === "string" ? [sounds] : (sounds ?? [])) {
       this.audio?.play(id);
@@ -1227,6 +1249,7 @@ export class Entity {
         landed: this.landed,
         close: this.closeTo(opponentX),
         grab: !!opponent?.throwable && Math.abs(opponent.x - this.x) / this.scale < this.grabRange,
+        grabbable: opponent?.throwable ? Math.abs(opponent.x - this.x) / this.scale : undefined,
         // `spent` means this attack has connected — set on a hit and on a block,
         // never on a whiff, which is exactly what a chain is allowed to continue
         // from. It was already recorded for a different reason: an attack may
@@ -1280,7 +1303,7 @@ export class Entity {
       const speed = this.approaching ?? groundSpeed(this.sm.def, this.stateFrames);
       this.x += this.facing * (speed + this.shove) * this.scale;
       const rush = this.sm.def.rush;
-      if (rush && !this.arrived && this.stateFrames >= rush.from && opponentX !== null) {
+      if (rush && !this.arrived && rushing(rush, this.stateFrames) && opponentX !== null) {
         const { dx, arrived } = rushStep(rush, (opponentX - this.x) / this.scale);
         this.x += dx * this.scale;
         this.arrived = arrived;
@@ -1316,6 +1339,9 @@ export class Entity {
     this.bandG.clear();
     const thrown = this.thrownBall;
     if (thrown && thrown.radius > 0) this.ballG.circle(thrown.x, thrown.y, thrown.radius * this.scale).fill(BALL_COLOUR);
+    // kind 4: 2 × size tall, 2 px over the floor (y 0xC6), across the screen and past its sides
+    const fb = this.floorBand;
+    if (fb) this.ballG.rect(this.x - BAND_REACH, fb.y - (2 + fb.size) * this.scale, 2 * BAND_REACH, 2 * fb.size * this.scale).fill(BALL_COLOUR);
     if (this.ballRadius > 0) {
       const [dx, dy] = this.ballAt;
       const k = this.scale * this.size;

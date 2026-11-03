@@ -66,7 +66,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -191,7 +191,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -312,7 +312,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -420,7 +420,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -496,7 +496,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -562,7 +562,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -615,7 +615,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -682,7 +682,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -745,7 +745,7 @@
         },
         {
           "when": [
-            "grab",
+            "grab:64",
             "command:ae",
             "health:80"
           ],
@@ -2642,7 +2642,7 @@
           }
         ],
         [
-          30,
+          36,
           {
             "vy": 2,
             "gravity": "own"
@@ -2825,7 +2825,7 @@
       "transitions": [
         {
           "when": "landed",
-          "to": "land"
+          "to": "vertical_ki_land"
         }
       ]
     },
@@ -2845,13 +2845,6 @@
             "vy": -8,
             "gravity": "own"
           }
-        ],
-        [
-          21,
-          {
-            "vx": 5,
-            "vy": 3
-          }
         ]
       ],
       "transitions": [
@@ -2867,50 +2860,17 @@
       "turn": false,
       "air": [
         [
-          0,
+          5,
           {
-            "vx": 0,
-            "vy": 0,
-            "gravity": 0
-          }
-        ],
-        [
-          22,
-          {
-            "vx": -2,
-            "vy": -5,
-            "gravity": "own"
-          }
-        ],
-        [
-          29,
-          {
-            "vx": 0,
-            "vy": 0,
-            "gravity": 0
-          }
-        ],
-        [
-          30,
-          {
-            "vx": -1,
-            "vy": 4,
-            "gravity": "own"
+            "vx": 5,
+            "vy": 3
           }
         ]
       ],
-      "holdStep": 2,
-      "fires": {
-        "spawn": "vegeta_jumping_bomb",
-        "at": [
-          0,
-          0
-        ]
-      },
       "transitions": [
         {
-          "when": "landed",
-          "to": "idle"
+          "when": "animEnd",
+          "to": "jumping_bomb_3"
         }
       ]
     },
@@ -2921,11 +2881,7 @@
         0
       ],
       "turn": false,
-      "rush": {
-        "from": 28,
-        "speed": 4,
-        "stop": 48
-      },
+      "invulnerable": true,
       "transitions": [
         {
           "when": "arrived",
@@ -2933,9 +2889,14 @@
         },
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "energy_dash_run"
         }
-      ]
+      ],
+      "rush": {
+        "from": 12,
+        "speed": 0,
+        "stop": 48
+      }
     },
     "energy_dash_2": {
       "anim": "ma8",
@@ -2967,12 +2928,6 @@
       "turn": false,
       "invulnerable": true,
       "air": [
-        [
-          0,
-          {
-            "vx": 0
-          }
-        ],
         [
           18,
           {
@@ -3247,13 +3202,13 @@
       "transitions": [
         {
           "when": "freed",
-          "to": "gunfire_volley_2"
+          "to": "gunfire_volley_aim"
         }
       ],
       "holdStep": 1
     },
     "gunfire_volley_2": {
-      "anim": "maf_2",
+      "anim": "maf_3",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3283,7 +3238,7 @@
       ]
     },
     "gunfire_volley_3": {
-      "anim": "maf_3",
+      "anim": "maf_4",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3313,7 +3268,7 @@
       ]
     },
     "gunfire_volley_4": {
-      "anim": "maf_4",
+      "anim": "maf_5",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3343,7 +3298,7 @@
       ]
     },
     "gunfire_volley_5": {
-      "anim": "maf_5",
+      "anim": "maf_6",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3373,7 +3328,7 @@
       ]
     },
     "gunfire_volley_6": {
-      "anim": "maf_6",
+      "anim": "maf_7",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3403,7 +3358,7 @@
       ]
     },
     "gunfire_volley_7": {
-      "anim": "maf_7",
+      "anim": "maf_8",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3433,7 +3388,7 @@
       ]
     },
     "gunfire_volley_8": {
-      "anim": "maf_8",
+      "anim": "maf_9",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3463,7 +3418,7 @@
       ]
     },
     "gunfire_volley_9": {
-      "anim": "maf_9",
+      "anim": "maf_10",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3493,7 +3448,7 @@
       ]
     },
     "gunfire_volley_10": {
-      "anim": "maf_10",
+      "anim": "maf_11",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3523,7 +3478,7 @@
       ]
     },
     "gunfire_volley_11": {
-      "anim": "maf_11",
+      "anim": "maf_12",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3553,7 +3508,7 @@
       ]
     },
     "gunfire_volley_12": {
-      "anim": "maf_12",
+      "anim": "maf_13",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3583,7 +3538,7 @@
       ]
     },
     "gunfire_volley_13": {
-      "anim": "maf_13",
+      "anim": "maf_14",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3613,7 +3568,7 @@
       ]
     },
     "gunfire_volley_14": {
-      "anim": "maf_14",
+      "anim": "maf_15",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3643,7 +3598,7 @@
       ]
     },
     "gunfire_volley_15": {
-      "anim": "maf_15",
+      "anim": "maf_16",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3673,7 +3628,7 @@
       ]
     },
     "gunfire_volley_16": {
-      "anim": "maf_16",
+      "anim": "maf_17",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3703,7 +3658,7 @@
       ]
     },
     "gunfire_volley_17": {
-      "anim": "maf_17",
+      "anim": "maf_18",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3733,7 +3688,7 @@
       ]
     },
     "gunfire_volley_18": {
-      "anim": "maf_18",
+      "anim": "maf_19",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -3763,7 +3718,7 @@
       ]
     },
     "gunfire_volley_19": {
-      "anim": "maf_19",
+      "anim": "maf_20",
       "airborne": true,
       "turn": false,
       "invulnerable": true,
@@ -4429,7 +4384,6 @@
         "radius": 40,
         "grow": 2,
         "max": 96,
-        "band": 2,
         "white": 120,
         "every": 4,
         "fx": "burst_s",
@@ -4443,7 +4397,10 @@
             "pattern": 3,
             "frames": 64
           }
-        ]
+        ],
+        "sounds": {
+          "white": "explosion_2c"
+        }
       },
       "transitions": [
         {
@@ -4522,6 +4479,119 @@
       ],
       "turn": false,
       "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "jumping_bomb_3": {
+      "anim": "m9e_3",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          22,
+          {
+            "vx": -2,
+            "vy": -5,
+            "gravity": "own"
+          }
+        ],
+        [
+          29,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          30,
+          {
+            "vx": -1,
+            "vy": 4,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "holdStep": 2,
+      "fires": {
+        "spawn": "vegeta_jumping_bomb",
+        "at": [
+          0,
+          0
+        ]
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_dash_run": {
+      "anim": "ma7_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "rush": {
+        "from": 1,
+        "speed": 4,
+        "stop": 48,
+        "until": 41
+      },
+      "transitions": [
+        {
+          "when": "arrived",
+          "to": "energy_dash_2"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "gunfire_volley_aim": {
+      "anim": "maf_2",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "gunfire_volley_2"
+        }
+      ]
+    },
+    "vertical_ki_land": {
+      "anim": "mb1_4",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
       "transitions": [
         {
           "when": "animEnd",

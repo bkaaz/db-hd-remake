@@ -792,10 +792,11 @@ flight the radius is `$20:8E63`'s by the move's frame & 3 — a frame held
 while it flies, 394, so `49` (73) throughout. From
 274, every 4th frame of field `fd` to 32, `$20:8F8D` puts an `a/02` on
 the opponent, 28 px up — frames 276 to 304. Ours: the state's `ball`
-list, `seize.bursts` and `seize.finale` (ADR 0047). Not built: the band
-of state 4–5 (kind 4 along the floor, `$0F:F1BC` / `F1F3`, a frame or
-two) and sound `2c`, asked every 64th frame of the game while white
-(`$0F:F2A0`).
+list, `seize.bursts` and `seize.finale` (ADR 0047). The band (`$0F:F1BC`):
+kind 4 at size 2 from the camera's x to + 0xFF at y `0xC6`; `$0F:F1F3`
+opens it 4 px each side once, then thickens it 16 a frame until its size
+is `0xC0`, and answers — the light filling the screen before the white.
+While white, `$0F:F2A0` asks for `2c` every 64th frame of `$74`.
 
 **Galactic Gunfire** (Vegeta's `ae` → `af` → `b2`; handlers `$20:9B66`,
 `$20:9D29`, `$20:9DB6`) runs three moves, putting out both fighters'

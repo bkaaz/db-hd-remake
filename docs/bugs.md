@@ -20,28 +20,6 @@ because a number would only need translating back.
 
 ---
 
-## A special keeps the speed it was started with
-
-Cartridge fighters, any special whose handler later sets vy but not vx ·
-noticed in a recording 2026-11-03 · *annoying*
-
-The original stops the fighter as a special starts from the command table
-(`$0D:F11E` → `$0D:D7A0`: vx, vy and the shove to 0). Ours keeps `vx`: a
-landing does not clear it, so a special begun just after a forward jump
-drifts once its handler takes it off the ground — Galactic Gunfire rose in
-an arc until its own `air` was given a stop on frame 0. Any other special
-that goes aloft without setting vx does the same.
-
-## Vegeta's Energy Field starts falling 6 frames early
-
-`vegeta`, ↓ ↙ ← Y in the air · noticed reading the code 2026-11-03 ·
-*cosmetic*, likely.
-
-`energy_field_2` sets vy 2 on its frame 30, as the specials' comment's
-"frame 36" counted from the move. The handler does it on move frame 42
-(`$20:9A13`: `CMP #$2A`), which is the state's frame 36 — `port ab` says
-36 in `mab_2`. The owner judged the fall's speed, not its start.
-
 ## Goku's Double Kick does not come out of the stand-up
 
 `goku`, ↓ then → + B as he stands up · noticed in a recording 2026-11-01 ·

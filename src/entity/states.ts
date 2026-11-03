@@ -690,6 +690,11 @@ export interface Signals {
   finaleDone?: boolean;
   /** Health left — what `health:N` (N or less) asks: an ultimate opens below a red bar. */
   health?: number;
+  /**
+   * The opponent's distance in sprite px, while he could be taken hold of
+   * (`throwable`) — what `grab:N` asks; undefined while he could not.
+   */
+  grabbable?: number;
   /** Ki in the meter right now — what a state's `cost` is measured against. */
   ki: number;
   /**
@@ -712,7 +717,7 @@ export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
 export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
-const COUNTED = /^(frames:\d+|health:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+const COUNTED = /^(frames:\d+|health:\d+|grab:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
 /** `command:a4` — the move whose command is met, two hex digits (ADR 0050). */
 const COMMAND = /^command:[0-9a-f]{2}$/;
 
@@ -764,7 +769,7 @@ const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitio
 
 const warned = new Set<string>();
 
-/** `frames:N`, `released:<button>` and `health:N` (N or less), or undefined for any other trigger. */
+/** `frames:N`, `released:<button>`, `health:N` (N or less) and `grab:N` (under N px), or undefined for any other trigger. */
 function counted(key: string, signals: Signals): boolean | undefined {
   const [kind, arg] = key.split(":");
   // how long a charge has run decides what it becomes (the Kamehameha)
@@ -773,6 +778,8 @@ function counted(key: string, signals: Signals): boolean | undefined {
   if (kind === "released") return signals.released?.has(arg) === true;
   // the cartridge's ultimates: health 80 or less ($0D:F650's condition bit)
   if (kind === "health") return signals.health !== undefined && signals.health <= Number(arg);
+  // a command's own range for an opponent standing still, not the throw's (Galactic Gunfire's 64, $0D:F95B)
+  if (kind === "grab") return signals.grabbable !== undefined && signals.grabbable < Number(arg);
   return undefined;
 }
 
@@ -1021,6 +1028,12 @@ export class StateMachine {
   pressSpent: string | null = null;
 
   /**
+   * The state just entered was asked for by a command — a special, which the
+   * original starts stopped ($0D:F11E → $0D:D7A0: vx, vy and the shove 0).
+   */
+  startedByCommand = false;
+
+  /**
    * Frames this state has run. Only used by the cancel windows, and counted
    * here rather than in the entity so the rule can be tested without a renderer.
    */
@@ -1063,6 +1076,7 @@ export class StateMachine {
   }
 
   private enter(name: string): void {
+    this.startedByCommand = false;
     this.current = name;
     this.elapsed = 0;
     this.released = new Set();
@@ -1127,6 +1141,7 @@ export class StateMachine {
 
   private take(t: Transition, press: string | null): string {
     this.enter(t.to);
+    this.startedByCommand = triggersOf(t.when).some((k) => k.startsWith("command:"));
     this.pressSpent = press;
     return this.current;
   }

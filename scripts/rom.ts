@@ -172,7 +172,8 @@ if (command === "tiles") {
       if (own.length) console.log(`    its code plays: ${own.map(heard).join(", ")}`);
     }
     if (p.rearms.length) console.log(`  re-arms the blow at: ${p.rearms.join(", ")}`);
-    for (const u of p.unhittable) console.log(`  ${u.frame}: ${u.on ? "blows pass him by" : "can be hit again"} (field 0x96)`);
+    for (const u of p.unhittable)
+      console.log(`  ${u.frame}: ${u.on ? "blows pass him by" : "can be hit again"}${u.pass ? ", bodies pass (pushless)" : ""} (field 0x96)`);
     for (const f of p.onFrames) console.log(`  handler at ${f.frame}: ${f.what}`);
     for (const step of new Set(p.onSteps.map((f) => f.step)))
       console.log(`  handler on step ${step}: ${grouped(p.onSteps.filter((f) => f.step === step))}`);

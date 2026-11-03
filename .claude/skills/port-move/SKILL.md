@@ -78,11 +78,20 @@ first.
   `$6C00`, P2 `$7C00`); the object's own code loads its palette record
   (`$01:84EF`, a run stepped every 4 frames — `rom.md`). Not the
   resource's record palette: that matched once by chance.
-- **Its frames, how long each, loop, speed, what it becomes on a hit** — a
-  recording: ask the owner for one long session per fighter
+- **Tile base 0 and no load**: the object draws from its thrower's own
+  sprite — the whole tile set of the drawing up as it is put out, which
+  holds tiles his drawing never shows (Vegeta's sprays). `objectTiles.ts`
+  does it; any other base with no load counts on an earlier move's load,
+  which only `OwnObject.loads` can say.
+- **Its speed** — `b0`'s vx / vy (`npm run rom -- move`, `port`).
+- **Its frames, how long each, loop, what it becomes** — read its code
+  first: `npm run rom -- code <type> <anim>` names a frame table
+  (`OwnObject.ticks`, `loop` if it wraps — then no recording is needed),
+  "becomes 0a/02" where its slot is rewritten (a floor test: `burstsAbove`).
+  What it does on a hit is the type's table at `$2A:8EC7` (`rom.md`). Only
+  what the code will not give: a recording, one long session per fighter
   (`tools/re/record-objects.lua`, the list from `npm run rom -- spawns`),
-  read back with `npm run rom -- objects`. `npm run rom -- code <type>
-  <anim>` reads the usual patterns from code to check it.
+  read back with `npm run rom -- objects`.
 - **A shared object** (type `a`: ki blast, explosions, dust, Kamehameha) is
   one spawn for everyone, named by what it is (ADR 0037); only its colours
   may be the fighter's.
@@ -138,6 +147,23 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   that id's bank name. A fighter's voices are `voice_hurt` (`30`),
   `voice_ko` (`31`), `voice_shout` (`32`) and his lines, in his own
   `sounds.json` (`npm run rom -- export`).
+
+**What the engine already has for what handlers do** — reach for these
+before asking for a new mechanism:
+
+- a special starts stopped (`$0D:D7A0`): any `command:` entry does it;
+- blows pass him by (field `0x96` bit 6) — the export cuts a part where it
+  changes, so it is the part's state's `invulnerable`; bodies pass (bit 7,
+  `port` prints "bodies pass") — `pushless`;
+- a handler's frame jump to a step of its own is a part of its own; a
+  script's `f0` hold released by the other body — `holdStep` + `freed`, the
+  other's `frees` (ADR 0057);
+- a command's own range for a grab-like move (byte 2 bit `20`) — `grab:N`;
+  health 80 or less — `health:N`;
+- hanging (vy 0 skips gravity, `$0D:CAD4`) — `air` with `gravity: 0`;
+- a throw where he lies — `throwsFoe`; a ball thrown at the floor and the
+  white — `finale` (ADR 0058), or a seize's (ADR 0046);
+- moving at the opponent until close — `rush` (`until` to stop it).
 
 ## 4. Check
 

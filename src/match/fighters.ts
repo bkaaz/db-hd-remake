@@ -13,10 +13,11 @@ import type { Projectiles } from "./projectiles";
 import { Recorder } from "./record";
 import { Seizures } from "./seize";
 import { Finales } from "./finales";
+import { passedShove } from "../combat/corner";
 import { throwFoe, Throws } from "./throw";
 import type { DebugFrame } from "../ui/debug";
 
-/** Where things may go this frame: bodies within the world, bolts within the screen. */
+/** Where things may go this frame: bodies within the world, bolts within the screen — whose edge a shove meets. */
 export interface Field {
   bodies: Bounds;
   shots: Bounds;
@@ -163,6 +164,7 @@ export class Fighters {
       this.finales.update(this.opponent, this.player, world);
       throwFoe(this.player, this.opponent);
       throwFoe(this.opponent, this.player);
+      this.passShoves(field.shots);
     }
 
     for (const hit of this.projectiles.update(this.frozen, field.shots, this.impact)) {
@@ -200,6 +202,20 @@ export class Fighters {
     player.x = placed.a;
     if (opponent && placed.b !== null) opponent.x = placed.b;
     camera.lift(this.both().map((f) => f.y));
+  }
+
+  /**
+   * A shove into the screen's edge passes to the other, reversed (`corner.ts`):
+   * player one's if he has one, else player two's, as the original asks.
+   */
+  private passShoves(screen: Bounds): void {
+    const { player, opponent } = this;
+    if (!opponent) return;
+    const [a, b] = player.shoved.shove !== 0 ? [player, opponent] : [opponent, player];
+    const passed = passedShove(a.shoved, b, screen);
+    if (passed === null) return;
+    b.setShove(passed);
+    a.setShove(0);
   }
 
   /** A fighter who entered a state that `fires` puts a bolt in the world. */

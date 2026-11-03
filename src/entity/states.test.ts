@@ -909,6 +909,17 @@ describe("a reaction leaves on the blow's clock, not on the pose", () => {
   });
 });
 
+describe("grab:N", () => {
+  const near = { initial: "idle", states: { idle: { anim: "idle", transitions: [{ when: "grab:64", to: "seize" }] }, seize: { anim: "hurt" } } };
+
+  it("fires within its own range of an opponent who could be taken hold of", () => {
+    expect(validateStates(near as never, ANIMS).errors).toEqual([]);
+    expect(new StateMachine(near as never).update(NONE, { ...QUIET, grabbable: 70 })).toBeNull();
+    expect(new StateMachine(near as never).update(NONE, QUIET)).toBeNull();
+    expect(new StateMachine(near as never).update(NONE, { ...QUIET, grabbable: 50 })).toBe("seize");
+  });
+});
+
 describe("freed", () => {
   const waiting = {
     initial: "aim",
@@ -1853,6 +1864,18 @@ describe("command:<move>", () => {
     expect(sm.update({ ...NONE, commands: new Map([["a5", "smash"]]) }, QUIET)).toBeNull();
     expect(sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET)).toBe("slide");
     expect(sm.pressSpent).toBe("smash");
+  });
+
+  it("says a special was started by its command, and nothing else was", () => {
+    const sm = new StateMachine(special());
+    sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET);
+    expect(sm.startedByCommand).toBe(true);
+    sm.update(NONE, { ...QUIET, animEnded: true });
+    expect(sm.current).toBe("idle");
+    expect(sm.startedByCommand).toBe(false);
+    sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET);
+    sm.force("idle");
+    expect(sm.startedByCommand).toBe(false);
   });
 
   it("is a trigger the validator knows, by its two hex digits", () => {

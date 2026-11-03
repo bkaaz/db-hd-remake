@@ -152,6 +152,9 @@ export function moveAnims(
   let step = 0;
   let frame = 0;
   const cut = () => {
+    // two reasons to cut on one frame make one part, not an empty one between
+    // (a part opens on the drawing it carries over, a step of no frames)
+    if (!parts[parts.length - 1].some((o) => o.op === "hold" || (o.op === "show" && o.frames > 0))) return;
     shown = false;
     // sounds after the last step play as the next part begins, so they go
     // with it — the Kamehameha's shot has an effect command between its
@@ -165,9 +168,16 @@ export function moveAnims(
     last.push(...tail.filter((o) => !isSound(o)));
     parts.push([...carried(parts.flat()), ...tail.filter(isSound)]);
   };
+  let unhittable: boolean | null = null;
   for (const op of ops) {
     if (op.op !== "show" && op.op !== "hold") {
       if (op.op === "spawn" && shown && !uncut && !onStep?.(op.type, op.anim)) cut();
+      // where blows start or stop passing him by, a state of its own: `invulnerable` is a state's
+      if (op.op === "field96") {
+        const now = (op.value & 0x40) !== 0;
+        if (unhittable !== null && now !== unhittable) cut();
+        unhittable = now;
+      }
       parts[parts.length - 1].push(op);
       continue;
     }

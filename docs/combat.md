@@ -174,9 +174,11 @@ behind and swaps sides; against a projectile it lands behind the shooter.
 ### 6. The corner
 
 Being backed against the wall is meant to be dangerous, but escapable.
-Knockback dies at the wall today, so pressure there never ends. The rule to
-build: **knockback that cannot be spent on the defender is spent on the
-attacker**, the same principle `push.ts` uses when one body is pinned.
+**Knockback that cannot be spent on the defender is spent on the
+attacker**: a shove into the screen's edge passes to the other fighter,
+reversed (`combat/corner.ts`, the original's `$0D:C8F0`, ADR 0059) — except
+from the standing reels, which the original keeps at the wall too. The same
+principle `push.ts` uses when one body is pinned.
 
 ### 7. Reaction rank
 

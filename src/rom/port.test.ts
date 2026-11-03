@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { portReport } from "./port";
+import { fighterNamed } from "./roster";
 import type { StatesFile } from "../entity/states";
 
 describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
@@ -85,6 +86,23 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
         on = part.unhittable.find((u) => u.frame === 0)?.on ?? on;
         const [name, def] = Object.entries(states).find(([, d]) => d.anim === part.anim) ?? [];
         expect([name, !!def?.invulnerable]).toEqual([name, on]);
+      }
+    }
+  });
+
+  it("says where bodies pass him, and every state that plays such a part is pushless — pinned's", () => {
+    for (const name of ["goku", "vegeta"]) {
+      const t = fighterNamed(rom, name);
+      const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
+      const moves = new Set(Object.values(states).flatMap((d) => (/^m([0-9a-f]{2})(_\d+)?$/.exec(d.anim) ? [parseInt(d.anim.slice(1, 3), 16)] : [])));
+      for (const move of moves) {
+        let pass = false;
+        for (const part of portReport(rom, t, move).parts) {
+          pass = part.unhittable.find((u) => u.frame === 0)?.pass ?? pass;
+          for (const [state, def] of Object.entries(states).filter(([, d]) => d.anim === part.anim)) {
+            expect([name, state, !!def.pushless]).toEqual([name, state, pass]);
+          }
+        }
       }
     }
   });

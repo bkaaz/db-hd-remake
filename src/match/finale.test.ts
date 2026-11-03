@@ -9,7 +9,6 @@ const METEOR: FinaleDef = {
   resume: 454,
   grow: 2,
   max: 112,
-  band: 2,
   white: 60,
   every: 4,
   fx: "burst_s",
@@ -62,9 +61,27 @@ describe("the finale", () => {
     expect(exploded - landed).toBe(20);
   });
 
-  it("opens the band for its frames before the white, so the two shakes do not land together", () => {
+  it("opens the band a frame, thickens it 16 a frame from 2 past 0xC0, then the white", () => {
+    // 2 → 194 in 12 frames, the opening's 1 and the frame that finds it full
     const { events } = play(ball);
-    expect(events.findIndex((e) => e.white) - events.findIndex((e) => e.exploded)).toBe(2);
+    expect(events.findIndex((e) => e.white) - events.findIndex((e) => e.exploded)).toBe(14);
+  });
+
+  it("tolls the white's sound as it begins and every 64th frame of it", () => {
+    const { events } = play(ball);
+    const white = events.findIndex((e) => e.white);
+    expect(events.flatMap((e, i) => (e.toll ? [i - white] : []))).toEqual([0]);
+    const long = { ...METEOR, white: 130 };
+    let at = throwBall(long, 100, 0, 196, 200);
+    const tolls: number[] = [];
+    for (let i = 0, start = -1; i < 400; i++) {
+      const [next, e] = finaleStep(at, long, 200);
+      if (e.white) start = i;
+      if (e.toll) tolls.push(i - start);
+      if (e.done) break;
+      at = next;
+    }
+    expect(tolls).toEqual([0, 64, 128]);
   });
 
   it("holds the white for its frames with a burst every 4th, then is done", () => {

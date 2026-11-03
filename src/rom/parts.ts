@@ -36,7 +36,7 @@ export function moveParts(rom: Uint8Array, t: FighterTables, move: number): Move
   const facts = factsOf(rom, t, move, ops);
   const rearms = facts.filter((f) => f.what === "re-arms the blow" && f.frame !== null).map((f) => f.frame!);
   const byHand = [...(HAND_CUTS[move] ?? []), ...(move === JUMP ? [fallStep(ops, fallAfterJumpAttack(rom, t.character))] : [])];
-  const steps = [...new Set([...jumpCuts(ops, facts), ...byHand])];
+  const steps = [...new Set([...jumpCuts(ops, byStep(ops, facts)), ...byHand])];
   const frames = [
     ...jumpFrameCuts(ops, facts),
     ...rearmCuts(ops, rearms, boxesOf),
@@ -90,13 +90,28 @@ function strikingSteps(ops: ScriptOp[], boxesOf: (drawing: number) => { type: st
 }
 
 /**
+ * A jump a handler makes on a frame, as made from the step that frame is in —
+ * Vertical Ki's landing goes on at frame 56, a step of its own ($20:A05C).
+ */
+function byStep(ops: ScriptOp[], facts: HandlerFact[]): { step?: number; to?: number }[] {
+  const starts = stepStarts(ops);
+  return facts.map((f) =>
+    f.step === undefined && f.frame !== null && f.to !== undefined
+      ? { step: starts.filter((start) => start <= f.frame!).length - 1, to: f.to }
+      : f,
+  );
+}
+
+/**
  * Cuts read by hand from handlers `handler.ts` does not follow yet. Charging
  * (`0c`, Goku's `$20:81C2`): entering step 4 while Y and B are held sends
  * the script back to frame 6, step 1 — a loop a state can repeat, cut at
  * both its ends. Pinned (`4a`, `$0F:A4B7`): it holds frame 3 until it lands,
  * then goes on from 23 — cut at step 1, a frame later — and holds 28 until it
  * lands again, then 32: step 3. One part a fall, as the states take them.
+ * Galactic Gunfire's `af` holds step 1 until pinned frees it (`f0`, ADR
+ * 0057) and goes on into step 2: cut there, so the state freed plays it.
  */
-const HAND_CUTS: Record<number, number[]> = { 0x0c: [1, 4], 0x4a: [1, 3] };
+const HAND_CUTS: Record<number, number[]> = { 0x0c: [1, 4], 0x4a: [1, 3], 0xaf: [2] };
 /** Move 30: the original's hold, where a throw keeps the opponent. */
 const HOLD = 0x30;

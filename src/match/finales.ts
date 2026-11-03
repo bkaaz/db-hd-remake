@@ -41,6 +41,7 @@ export class Finales {
         world.shake(def.shakes[2]);
       }
       if (e.burst) world.anywhere(def.fx);
+      if (e.toll && def.sounds?.white) thrower.sound(def.sounds.white);
       if (e.done) {
         world.screen("restore");
         thrower.finaleSays("finaleDone");
@@ -50,5 +51,6 @@ export class Finales {
     // the ball and the explosion are drawn by its thrower, in the world
     const f = this.running.get(thrower)?.ball;
     thrower.showThrownBall(f && (f.phase === "flying" || f.phase === "exploding") ? { x: f.x, y: f.y, radius: f.radius / thrower.scaleOf } : null);
+    thrower.showFloorBand(f && f.band > 0 ? { y: thrower.floor, size: f.band } : null);
   }
 }

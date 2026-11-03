@@ -33,6 +33,13 @@ export interface Rush {
   from: number;
   speed: number;
   stop: number;
+  /** The state's frame it stops on, arrived or not — Energy Dash's 68 ($20:998C). */
+  until?: number;
+}
+
+/** Whether a rush is still going on `frame` of its state. */
+export function rushing(rush: Rush, frame: number): boolean {
+  return frame >= rush.from && (rush.until === undefined || frame < rush.until);
 }
 
 /**

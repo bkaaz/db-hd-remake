@@ -1870,7 +1870,6 @@
           "resume": 454,
           "grow": 2,
           "max": 112,
-          "band": 2,
           "white": 60,
           "every": 4,
           "fx": "burst_s",
@@ -1890,7 +1889,8 @@
           ],
           "sounds": {
             "thrown": "blast_0b",
-            "landed": "explosion_2c"
+            "landed": "explosion_2c",
+            "white": "explosion_2c"
           }
         }
       },
