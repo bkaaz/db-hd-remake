@@ -21,6 +21,7 @@
 import type { Sounds } from "../audio/sounds";
 import type { CommandsFile } from "../input/command";
 import type { CloseButton, StatesFile } from "./states";
+import type { FollowBy } from "../fx/follow";
 
 /** What a box does when it overlaps: strike, be struck, or keep bodies apart. */
 export type BoxType = "hit" | "hurt" | "push";
@@ -149,9 +150,11 @@ export interface Attributes {
    * and facing, until he leaves the animation that put it out (`fx/follow.ts`).
    * `"pose"` shows the frame his drawing names — normal Goku's hair
    * ($0F:B8F2); `"body"` plays its own animation — idle's lightning
-   * ($0F:B862). False: it plays where it was put.
+   * ($0F:B862); `{ step: n }` shows his move's step less n, while he is in
+   * the move — his hair in his winning pose ($0F:B8CD). False: it plays
+   * where it was put.
    */
-  follows: false | "pose" | "body";
+  follows: false | FollowBy;
   /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —

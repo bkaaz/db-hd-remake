@@ -1,0 +1,5 @@
+{
+  "_comment": "Goku's hair over his winning pose, 3e: its code ($0F:B8CD) keeps it on him, shows his move's step less 3, and kills it once he leaves the move — written by hand, as the export writes no attributes.",
+  "follows": { "step": 3 },
+  "mirrors": false
+}

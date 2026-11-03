@@ -463,11 +463,18 @@ export interface StateDef {
    * rather than played out into the recovery behind it.
    */
   holdStep?: number;
+  /** Arriving here, a KO's half speed is over before he lies done — Goku's last landing ($10:B022), not Vegeta's. */
+  fullSpeed?: boolean;
   /**
    * From this frame of the state, drawn in his glow — the palette 8 records
    * past his own, loaded while he charges ($0F:A072) — if he has one.
    */
   glow?: number;
+  /**
+   * From this frame of the state, drawn in his winning colours — the palette
+   * 0x98 records past his own, Vegeta's in his pose ($20:9257) — if he has them.
+   */
+  win?: number;
   /** From a frame, the input transitions of another state too, ahead of its own (ADR 0061). */
   inputsOf?: InputsOf;
 
@@ -610,7 +617,19 @@ export interface StatesFile {
    * each. Absent: a blocked blow leaves the spark it would have landed with.
    */
   guardFx?: string;
+  /** The states the end of a round forces on him (`match/round.ts`). Absent: he cannot be knocked out. */
+  round?: RoundStates;
   states: Record<string, StateDef>;
+}
+
+/** docs/rom.md, A KO and the round's end — each is entered from outside, never transitioned into. */
+export interface RoundStates {
+  /** Forced on him when his health runs out: the KO's `1c`. */
+  ko: string;
+  /** Lying here, he is done: the round may end, and a KO's half speed is over ($0D:EBB8). */
+  down: string;
+  /** The winner's pose, `3e`. */
+  win: string;
 }
 
 /** What the entity's controller is asking for this frame, facing-relative. */
@@ -1281,6 +1300,10 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     errors.push(`onRelease state "${file.onRelease}" does not exist`);
   }
 
+  for (const [role, name] of Object.entries(file.round ?? {})) {
+    if (!states[name]) errors.push(`round.${role} state "${name}" does not exist`);
+  }
+
   for (const [name, def] of Object.entries(states)) {
     if (def.guard !== undefined && !states[def.guard]) {
       errors.push(`state "${name}": guard state "${def.guard}" does not exist`);
@@ -1483,6 +1506,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     }
     errors.push(...inputsOfErrors(where, def, authored));
     if (def.glow !== undefined && (!Number.isInteger(def.glow) || def.glow < 0)) errors.push(`${where}: "glow" is the state's frame it starts on, 0 or more`);
+    if (def.win !== undefined && (!Number.isInteger(def.win) || def.win < 0)) errors.push(`${where}: "win" is the state's frame it starts on, 0 or more`);
     const moves = def.endsWithMove;
     if (moves !== undefined && moves !== true && !(Array.isArray(moves) && moves.every((m) => /^[0-9a-f]{2}$/.test(m)))) {
       errors.push(`${where}: "endsWithMove" is true or a list of move ids, two hex digits each`);
@@ -1609,6 +1633,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     if (file.onGotHit && states[file.onGotHit]) roots.push(file.onGotHit);
     if (file.onGuard && states[file.onGuard]) roots.push(file.onGuard);
     if (file.onRelease && states[file.onRelease]) roots.push(file.onRelease);
+    for (const name of [file.round?.ko, file.round?.win]) if (name && states[name]) roots.push(name);
     for (const def of Object.values(states)) {
       if (def.onHit && states[def.onHit] && !roots.includes(def.onHit)) roots.push(def.onHit);
       // A stance's own block reaction is forced from outside like any other.

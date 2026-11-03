@@ -427,9 +427,10 @@ contact, pushes the defender back, costs health, leaves a generated spark where
 the boxes met and makes a noise. Damage and hitstun both decay through a combo,
 and a budget of two re-launches closes the uppercut loop.
 
-**There is still no round.** Health floors at zero and nothing happens: no KO, no
-reset, no second screen. That, and a second player, is what the game is missing
-before it is one.
+**There is still no round.** Behind the debug scene's KO switch a fighter whose
+health runs out is knocked out and the other strikes his pose — then the game
+stands still: no reset, no second round, no second screen. That, and a second
+player, is what the game is missing before it is one.
 
 **What is next: `docs/plan.md`** — the queue, and the only one. Why the engine is
 shaped as it is: `docs/adr/`.

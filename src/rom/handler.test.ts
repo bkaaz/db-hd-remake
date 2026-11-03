@@ -54,6 +54,14 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     expect(down.find((f) => f.move !== undefined)).toMatchObject({ step: 4, move: 0x1f });
   });
 
+  it("reads a by-step table shorter than the script: the KO's, which holds at step 7", () => {
+    // 17 steps in 1c's script, 9 entries in its table; the words past it are code
+    const ko = handlerFacts(rom, handlerAt(rom, GOKU.character, 0x1c), 17);
+    const jumps = ko.filter((f) => f.to !== undefined).map((f) => [f.step, f.to]);
+    expect(jumps).toEqual([[0, 0x20], [1, 0x30], [1, 0x40], [2, 0x64], [3, 0x64], [4, 0x88], [5, 0x88]]);
+    expect(Math.max(...ko.map((f) => f.step ?? 0))).toBe(8);
+  });
+
   it("reads where it re-arms the blow, and that frame 0 ends the move", () => {
     expect(quad.filter((f) => f.what === "re-arms the blow").map((f) => f.frame)).toEqual([0x1a, 0x30, 0x46]);
     expect(quad.find((f) => f.what === "ends the move")?.frame).toBe(0);

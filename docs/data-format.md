@@ -105,6 +105,11 @@ Blocking is decided at the moment of contact rather than by standing in a guard
 state, so the stance is the last thing that still knows the defender was low:
 `StateDef.guard` overrides the file's `onGuard` while in it.
 
+The end of a round is the file's `round` — the state a KO forces, the one he
+lies done in, the winner's pose (`RoundStates`) — and `fullSpeed` on a state
+whose arrival ends a KO's half speed before that (`src/match/round.ts`, ADR
+0064).
+
 Validation is `validateStates()` in `src/entity/states.ts`, run by the game (on
 screen at load) and by the editor. **What it checks is in that function** and is
 not listed here — the list used to be, and went stale twice in one day.

@@ -112,8 +112,8 @@ makes each such way of showing a drawing a frame of its own
 bit 0 (`$00:812E`): clear, player one's sprites go into OAM first and so
 in front; set, player two's. Arming a blow (`$0D:D8A2`) puts the mover in
 front; `$0D:D8D5` puts him behind — Side Slash's handler (`a8`, the 3D
-move, `$20:83DF`) and `$0D:EBB8` call it, the latter from `$0F:A358` (a
-reaction, from its frame 168 `?`) and `$0F:A9E3`. Every object slot
+move, `$20:83DF`) and `$0D:EBB8` call it, the latter from `$0F:A358` (the
+KO, `1c`, at its frame 168 — A KO, below) and `$0F:A9E3`. Every object slot
 (`$3300`–`$3390`) goes into OAM before both (`$00:80E8`), so in front of
 them. Ours: `Fighters.inFront` (`src/match/fighters.ts`), and a state's
 `behind` for `$0D:D8D5`; effects and
@@ -977,6 +977,59 @@ has field `0x96` bit 7 set (`$2A:80F5`; a script's `96`) — pinned's `4a` /
 Training is mode `$1A02 = 3`, where damage is zeroed. One bar on screen
 holds health and ki, but firing a ki blast leaves `0x60` alone — ki is
 another field, `0x62` or `0x64` `?`.
+
+## A KO and the round's end
+
+**The blow that empties health** (`$0D:D0D0`, from the blow's routines at
+`$0D:CF9F` / `CFC6` and `$0D:D0AD`): effect `0a`, then `$0D:D10C` — the
+loser's voice `31`, health set to 0, and, if `$30B0` bit 1 is clear, sets it
+and queues `83` to the sound driver (`$00:DF40` → the queue at `$C7`, the
+music `?`). Then knockback by reaction 1 (`$0D:D708`) and move `1c` (`7e` in
+`$0552`'s mode).
+
+**While `$30B0` bit 1 is set the fight runs at half speed**: on every odd
+frame (`$74` bit 0) the frame loop (`$0E:821C`) skips the fighters, the
+objects and the rules, and only draws.
+
+**`1c`** — Goku's handler `$10:AF8E`, Vegeta's `$0F:A297` — keys on the
+script's step (its table shorter than the script, which holds at step 7):
+0 holds frame `0x20` while rising; 1, on landing, dust (`a/0d`,
+`$0D:DE6C`), effect `0d`, a bounce of a quarter of the landing vy, up to
+2.0 (`$0D:EC12`), and frame `0x40`; 2–3, on landing, dust, `0d`, vy −1.5,
+frame `0x64`; 4–5, on landing, dust, `0d`, stopped, frame `0x88` — and in
+Goku's alone `$30B0` bit 1 cleared, full speed again (`$10:B022`); 6 on
+slows vx and the shove by 0.25 a frame (`$0D:EC5F`) and from frame `0xA8`
+(168) calls `$0D:EBB8`: field `0x28` bit 5 — lying done — `$30B0` bit 1
+cleared, and behind the other (`$0D:D8D5`). Vegeta's half speed lasts
+until then.
+
+**The round ends** (`$0D:EA89`, every frame, unless either fighter is in
+`fb`, `3e` or `82`, or the object slots' type bytes, ORed, have bits 7 and
+6 both set — a live object with bit 6 `?`): the loser lying
+done and the other in `00` (`60` in the mode) — or both lying done — puts
+both in **`fb`** (`$0F:B263`, run from player two's slot): frame 1 loads
+resource `34` at `$6B00`, frame 2 puts **the announcement** in slot 0
+(`$0D:EB45`, the table at `$0D:EB88`: `a/1f` at x 128, y 80 on the
+screen, its frame 1 for a KO, 0 for both down). Once slot 0 is empty, the
+one with health left gets `3e` (`82` in the mode) — none: `$30B0` bit 5,
+a draw.
+
+**The announcements** (`$0F:E0D7` by animation; `npm run rom -- object a 1f
+34@6b00 80` draws them): `a/1e` (`$0F:E7C9`) is the round's start: READY
+drops in from the top to y `0x58`, past it to `0x5C` and back (`$0F:E837`,
+a tick each), effect `4d` on tick 1; FIGHT! and effect `3a` on tick 64;
+gone on 96, both fighters into `fa`. `a/1f`
+(`$0F:E857`): frame 0 DOUBLE K.O., frame 1 K., frame 2 K.O.; effect `09` on
+tick 1, from frame 1 the next on tick 24 with `09` again, gone on tick 80.
+
+**`3e`, the winner's pose**, is each fighter's own: Goku's (`$20:80D6`)
+loads resource `51` at `$6C00` and `$7C00`, puts out object `0/07` — his
+hair, which the pose's drawings lack — and loops its last part; `0/07`
+(`$0F:B8CD`) shows frame step − 3 of his move and is gone once he leaves
+`3e`, in OBJ palette 0 (`0x27B161`). Vegeta's (`$20:9257`) loads palette
+own + `0x98` (field `0x17`) on frame 1 — record `0xE8` by day, his hair
+black where the drawings paint it in the aura's colours 12–13. Both count field `0x70` (`$0D:EBCC`) and at
+304 clear `$0580`, which lets `$0D:CEC5` end the round.
 
 ## Another fighter
 

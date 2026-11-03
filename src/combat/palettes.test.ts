@@ -43,6 +43,13 @@ describe("paletteVariant", () => {
     expect(paletteVariant({ lighting: "night", glow: false, alt: false, set: "silver" }, sets)).toBe("night");
   });
 
+  it("puts his winning colours where the glow goes, and drops them where he has none", () => {
+    const wins = (v: string) => ["night_win_alt", "win", "night"].includes(v);
+    expect(paletteVariant({ lighting: "night", glow: false, win: true, alt: true }, wins)).toBe("night_win_alt");
+    expect(paletteVariant({ lighting: null, glow: false, win: true, alt: false }, wins)).toBe("win");
+    expect(paletteVariant({ lighting: "night", glow: false, win: true, alt: false }, goku)).toBe("night");
+  });
+
   it("drops a glow he has no sheet for, and keeps player two's colours", () => {
     expect(paletteVariant({ lighting: "night", glow: true, alt: true }, goku)).toBe("night_alt");
     expect(paletteVariant({ lighting: "night", glow: true, alt: false }, goku)).toBe("night");

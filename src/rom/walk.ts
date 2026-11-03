@@ -38,6 +38,25 @@ export interface Body {
 /** Where a table's entry is put before `JMP ($0064)`. */
 const DISPATCH = 0x64;
 
+/**
+ * A jump table's entries, as many as `wanted` asks and the table holds: it
+ * ends where the code of its nearest entry begins. A script may have more
+ * steps than its handler's table — the KO's `1c` holds at step 7 and its
+ * table stops at 9 (`$10:AFA4`) — and the words past it are that code.
+ */
+function tableEntries(read: (address: number) => number, table: number, wanted: number[]): [number, number][] {
+  const entries: [number, number][] = [];
+  let end = Infinity;
+  for (const s of [...wanted].sort((a, b) => a - b)) {
+    const at = table + 2 * s;
+    if ((at & 0xffff) >= end) break;
+    const word = read(at) | (read(at + 1) << 8);
+    if (word > (table & 0xffff)) end = Math.min(end, word);
+    entries.push([s, word]);
+  }
+  return entries;
+}
+
 /** One way through the code: where, and what is known on arriving there. */
 interface Path extends Known {
   at: number;
@@ -96,8 +115,7 @@ export function walk(rom: Uint8Array, entry: number, body: Body, character?: num
       }
       // a jump through a table by the dispatch field: the entries the body follows
       if (ins.mnemonic === "JMP" && ins.mode === "ai" && ins.operand === DISPATCH && table !== null) {
-        for (const s of body.dispatch.entries) {
-          const word = read(table + 2 * s) | (read(table + 2 * s + 1) << 8);
+        for (const [s, word] of tableEntries(read, table, body.dispatch.entries)) {
           queue.push({ at: (at & 0xff0000) | word, w: ins.after, ...k, ...(body.dispatch.tagged && { step: s }), cpu });
         }
       }

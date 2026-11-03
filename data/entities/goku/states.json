@@ -4,6 +4,11 @@
   "onGuard": "guard_hit",
   "hitFx": "hit_spark",
   "guardFx": "guard_spark",
+  "round": {
+    "ko": "ko_rise",
+    "down": "ko_down",
+    "win": "win"
+  },
   "states": {
     "idle": {
       "anim": "m00",
@@ -3531,6 +3536,142 @@
         {
           "when": "frames:2",
           "to": "kame_fire_l"
+        }
+      ]
+    },
+    "ko_rise": {
+      "anim": "m1c",
+      "rank": 4,
+      "launch": [
+        -3,
+        -9
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_ko",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "ko_fall"
+        },
+        {
+          "when": "landed",
+          "to": "ko_bounce"
+        }
+      ]
+    },
+    "ko_fall": {
+      "anim": "m1c_2",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "ko_bounce"
+        }
+      ]
+    },
+    "ko_bounce": {
+      "anim": "m1c_3",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "ko_bounce2"
+        }
+      ]
+    },
+    "ko_bounce2": {
+      "anim": "m1c_4",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "launch": [
+        null,
+        -1.5
+      ],
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "ko_lie"
+        }
+      ]
+    },
+    "ko_lie": {
+      "anim": "m1c_5",
+      "rank": 4,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "invulnerable": true,
+      "fullSpeed": true,
+      "transitions": [
+        {
+          "when": "frames:32",
+          "to": "ko_down"
+        }
+      ]
+    },
+    "ko_down": {
+      "anim": "m1c_5",
+      "rank": 4,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "invulnerable": true,
+      "transitions": []
+    },
+    "win": {
+      "anim": "m3e",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_2"
+        }
+      ]
+    },
+    "win_2": {
+      "anim": "m3e_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_2"
         }
       ]
     }

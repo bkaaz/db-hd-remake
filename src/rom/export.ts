@@ -110,7 +110,7 @@ export function exportSpawns(rom: Uint8Array, t: FighterTables): Record<string, 
     }
   }
   // the rest come from code, not a script: an explosion a projectile turns into
-  for (const def of t.objects.spawns) if (!out[def.name]) out[def.name] = exportSpawn(rom, t, def, 0, 2);
+  for (const def of t.objects.spawns) if (!out[def.name]) out[def.name] = exportSpawn(rom, t, def, def.tiles ?? 0, 2);
   return out;
 }
 

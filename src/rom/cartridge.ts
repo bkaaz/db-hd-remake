@@ -79,6 +79,8 @@ export interface SpawnDef {
   shimmer?: number[];
   /** What the move loads into VRAM for this object, in place of the fighter's `loads`. */
   loads?: { resource: number; vram: number }[];
+  /** Its tile base, for one the code puts out rather than a `b0` (slot `+3`, × 16). */
+  tiles?: number;
   /**
    * The moves that put it out by the step its b0 begins, never a cut — an
    * effect that rides its owner rather than a projectile a state `fires`
@@ -87,6 +89,9 @@ export interface SpawnDef {
    */
   onStep?: number[];
 }
+
+/** Palette record 0xE3, the announcements' ($01:89FB into OBJ palette 3). */
+const ANNOUNCEMENT_PALETTE = 0x2ac669;
 
 /** Resource 0x32's palette ($95:DE1C, its record) and where the charged Kamehameha loads its tiles. */
 const KAME_PALETTE = 0x2ade1c;
@@ -168,6 +173,12 @@ export const GOKU: FighterTables = {
       // drawn in OBJ palette 6 as its b0 says, which holds 0x27B161, the hair
       // palette — its dark colours 13–15 are the hair (logs/objects-goku.bin)
       { name: "goku_hair_normal", type: 0x0, anim: 0x08, steps: [80, 8, 36], loop: false, hits: false, palette: 0x27b161 },
+      // his hair in his winning pose ($0F:B8CD): the frame his move's step
+      // less 3, gone once he leaves 3e — his drawings there carry none; tiles
+      // resource 0x51, which 3e's handler loads at $6C00, b0 +80; OBJ palette
+      // 0, which holds 0x27B161 (logs/objects-goku.bin). `steps` is never
+      // played: it rides by step (`follows`)
+      { name: "goku_hair_win", type: 0x0, anim: 0x07, steps: [37, 8, 12, 12], loop: false, hits: false, palette: 0x27b161, onStep: [0x3e] },
       // idle's lightning ($0F:B862): a step every 4 frames through $0F:B8B2 —
       // 13 of frame 14, an empty layout, then 0–13; tiles resource 0x47 at
       // $6800 (b0 +80), OBJ palette 0 holding 0x27B161 (logs/objects-goku.bin)
@@ -182,6 +193,14 @@ export const GOKU: FighterTables = {
       // the dust a body raises hitting the floor ($0D:DE6C, from the knockdown
       // handler): 6 frames a step ($0F:E559), in the explosions' slot and tiles
       { name: "dust", type: 0xa, anim: 0x0d, steps: [6, 6, 6, 6], loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS },
+      // the round's end ($0F:E857): K. then K.O. on tick 24, gone on 80 —
+      // DOUBLE K.O. alone; put in slot 0 by $0D:EB45 with tile base 08, in
+      // OBJ palette 3, which $01:89FB loads with record 0xE3 — resource
+      // 0x34's own, at $6B00 as move fb loads it
+      ...([["ko", [24, 56], [1, 2]], ["double_ko", [80], [0]]] as const).map(([name, steps, frames]) => ({
+        name, type: 0xa, anim: 0x1f, steps: [...steps], frames: [...frames], loop: false, hits: false,
+        palette: ANNOUNCEMENT_PALETTE, loads: [{ resource: 0x34, vram: 0x6b00 }], tiles: 0x80,
+      })),
     ],
   },
 };

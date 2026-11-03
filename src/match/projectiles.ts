@@ -81,6 +81,11 @@ export class Projectiles {
     return projectiles;
   }
 
+  /** Nothing in the air: a round does not end over a shot that could still land. */
+  get empty(): boolean {
+    return this.live.length === 0;
+  }
+
   /** The sparks the bolts themselves ask for, so the scene can load those too. */
   effectsNeeded(): string[] {
     return [...this.defs.values()].flatMap((def) => effectsNamed(def.states));

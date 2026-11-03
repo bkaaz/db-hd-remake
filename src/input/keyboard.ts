@@ -158,6 +158,7 @@ const TOGGLE_KEYS: Record<string, Toggle | undefined> = {
   b: "boxes",
   i: "readout",
   t: "dummy",
+  k: "ko",
   l: "recording",
 };
 

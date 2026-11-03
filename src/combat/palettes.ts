@@ -29,23 +29,26 @@ export function shimmerVariant(variants: readonly string[], frame: number): stri
 
 /**
  * The sheet a fighter is drawn in: the arena's lighting, his glow while he
- * charges, player two's own colours when both sides are the same fighter
- * ($01:82F2: the next record), and a colour set of ours (`palettes.json`) —
- * `night_glow_alt_gold`, read in that order. A part he has no sheet for is
- * dropped, the glow first: Goku has no glow (`rom/arena.ts`). Null is his
- * own colours.
+ * charges or his winning colours in his pose, player two's own colours when
+ * both sides are the same fighter ($01:82F2: the next record), and a colour
+ * set of ours (`palettes.json`) — `night_glow_alt_gold`, read in that order.
+ * A part he has no sheet for is dropped, the glow first: Goku has no glow
+ * (`rom/arena.ts`). Null is his own colours.
  */
 export function paletteVariant(
-  want: { lighting: string | null; glow: boolean; alt: boolean; set?: string | null },
+  want: { lighting: string | null; glow: boolean; win?: boolean; alt: boolean; set?: string | null },
   has: (variant: string) => boolean,
 ): string | null {
   const set = want.set ?? null;
+  // the pose's colours take the glow's place: both are records past his own
+  const mood = want.win ? "win" : "glow";
   const name = (glow: boolean, alt: boolean, s: string | null) =>
-    [want.lighting, glow && "glow", alt && "alt", s].filter(Boolean).join("_") || null;
+    [want.lighting, glow && mood, alt && "alt", s].filter(Boolean).join("_") || null;
+  const lit = want.glow || !!want.win;
   const tries = [
-    [want.glow, want.alt, set],
+    [lit, want.alt, set],
     [false, want.alt, set],
-    [want.glow, want.alt, null],
+    [lit, want.alt, null],
     [false, want.alt, null],
     [false, false, null],
   ] as const;

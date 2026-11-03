@@ -20,6 +20,16 @@ because a number would only need translating back.
 
 ---
 
+## The KO's blow says both voices
+
+`goku`, `vegeta`, a blow that empties health with the KO switch on ·
+noticed 2026-11-03 · cosmetic
+
+The blow enters its reaction first — and its `voice_hurt` — and the round
+forces the KO after the blows, with `voice_ko`, in the same frame: both
+voices start together. The original skips the reaction at zero health
+(`$0D:D0D0`) and says only the KO's.
+
 ## Saiyan Meteor turns the opponent round after the explosion
 
 `goku`, Saiyan Meteor (`ad`) landed · noticed by the owner 2026-11-01 ·

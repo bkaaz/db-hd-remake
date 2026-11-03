@@ -4,6 +4,7 @@ import { Entity, NO_INPUT } from "../entity/entity";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { copyOffset } from "./burst";
 import { riding, type FollowBy } from "./follow";
+import { moveOf } from "../combat/corner";
 
 /**
  * The sparks a blow leaves behind: entities with no state machine — one
@@ -19,8 +20,8 @@ interface Live {
   name: string;
   copiesLeft: number;
   copied: boolean;
-  /** For one that `follows`: whom, from where, how, and in which start of his animation — it goes when he leaves it. */
-  owner?: { entity: Entity; at: [number, number]; by: FollowBy; play: number };
+  /** For one that `follows`: whom, from where, how, and what he was playing as it went out — it goes when he leaves it. */
+  owner?: { entity: Entity; at: [number, number]; by: FollowBy; since: { play: number; move: number | null } };
 }
 
 export class Effects {
@@ -68,7 +69,7 @@ export class Effects {
     fx.y = y;
     this.world.addChild(fx.view);
     const by = def.attributes.follows;
-    const rides = by && owner ? { ...owner, by, play: owner.entity.animationPlay } : undefined;
+    const rides = by && owner ? { ...owner, by, since: { play: owner.entity.animationPlay, move: moveOf(owner.entity.animation) } } : undefined;
     this.live.push({ fx, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false, owner: rides });
   }
 
@@ -96,8 +97,8 @@ export class Effects {
         const [dx, dy] = [copyOffset(Math.random(), copies.spread), copyOffset(Math.random(), copies.spread)];
         this.spawn(live.name, fx.x + dx * this.scale, fx.y + dy * this.scale, live.copiesLeft - 1);
       }
-      // one riding by pose ends with its owner's drawing, not its own animation
-      if (fx.finished && live.owner?.by !== "pose") {
+      // one riding by pose or by step ends with its owner, not its own animation
+      if (fx.finished && (!live.owner || live.owner.by === "body")) {
         fx.view.destroy({ children: true });
         this.live.splice(i, 1);
       }
@@ -109,7 +110,12 @@ export class Effects {
     const { fx, owner } = live;
     if (!owner) return false;
     const { entity, at } = owner;
-    const frame = riding(owner.by, owner.play, { play: entity.animationPlay, drawing: entity.frameId });
+    const frame = riding(owner.by, owner.since, {
+      play: entity.animationPlay,
+      drawing: entity.frameId,
+      move: moveOf(entity.animation),
+      step: entity.moveStep,
+    });
     if (frame === null) return false;
     fx.facing = entity.facing;
     fx.x = entity.x + entity.facing * at[0] * this.scale;

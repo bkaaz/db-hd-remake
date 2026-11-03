@@ -128,6 +128,10 @@ beam. Holding the button fills a level
 pose is held until that bolt is gone (`spawnEnd`). The beam itself and the
 charge sphere are not built — see `plan.md`. → `combat.md` (The buttons)
 
+**KO** — health run out, with the debug scene's KO switch on: the fall in half
+speed, the announcement, the winner's pose; no next round. → `src/match/round.ts`,
+`rom.md` (A KO and the round's end), ADR 0064
+
 **Launcher** — a blow that lifts a grounded opponent into a juggle instead of
 flooring them. The reaction is `launched`, the opposite end of the same axis as
 **Slam**; the attack carries `relaunch`, so past the budget it still hits and

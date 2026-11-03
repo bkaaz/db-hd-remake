@@ -4,6 +4,8 @@ import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
 import type { Keyboard } from "../input/keyboard";
 import { Fighters } from "../match/fighters";
+import { Round } from "../match/round";
+import { NO_INPUT } from "../entity/entity";
 import { Projectiles } from "../match/projectiles";
 import { isColourSet, type DebugRequest, type Scene, type SceneContext, type SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
@@ -60,7 +62,12 @@ export class DebugScene implements Scene {
     private readonly readouts: Readouts,
     /** Notices about broken data; they belong to this scene and go with it. */
     private readonly notices: Notice[],
+    /** How the fight ends, when the KO switch lets it (`match/round.ts`). */
+    private readonly round: Round,
   ) {}
+
+  /** Frames since the scene began: half speed skips the odd ones. */
+  private frame = 0;
 
   static async create(
     ctx: SceneContext,
@@ -109,7 +116,7 @@ export class DebugScene implements Scene {
     const projectiles = await Projectiles.load(view.world, [...new Set(defs.flatMap((d) => spawnsNamed(d.states)))], SPRITE_SCALE);
     const effects = await Effects.load(
       view.world,
-      [...new Set([...defs.flatMap((d) => effectsNamed(d.states, d.animations)), ...projectiles.effectsNeeded()])],
+      [...new Set([...defs.flatMap((d) => effectsNamed(d.states, d.animations)), ...projectiles.effectsNeeded(), "ko", "double_ko"])],
       SPRITE_SCALE,
     );
     const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles });
@@ -141,6 +148,13 @@ export class DebugScene implements Scene {
     ]);
     if (typeof hud === "string") notices.push(showMessage(ctx.page.notices, hud, true));
 
+    // the announcement stands where the original puts it on the screen: x 128, y 80 ($0D:EB88)
+    const announcer = ctx.audio.side("round");
+    const round = new Round({
+      announce: (what) => effects.spawn(what, camera.x + 128, camera.y + 80),
+      sound: (id) => announcer.play(id),
+    });
+
     return new DebugScene(
       view,
       stage,
@@ -155,19 +169,30 @@ export class DebugScene implements Scene {
       typeof hud === "string" ? null : hud,
       new Readouts(ctx.page),
       notices,
+      round,
     );
   }
 
   /** One game frame, in the order the parts of it have to happen. */
   step(keyboard: Keyboard): SceneRequest | null {
+    // a KO's half speed: an odd frame only draws ($0E:821C)
+    if (this.round.skips(this.frame++)) return this.nextMode(keyboard);
+    // under the announcement only the announcement moves
+    if (this.round.holds) {
+      this.round.step(this.fighters.bodies, true, true);
+      this.effects.update(false, this.camera.screen);
+      return this.nextMode(keyboard);
+    }
+    const decided = this.round.decided;
+    const dummy = this.dummy.input({
+      on: keyboard.toggles.get("dummy"),
+      facing: this.fighters.opponent?.facing ?? -1,
+      // Read before the bodies move, which is the freeze this frame will use.
+      frozen: this.fighters.frozen,
+    });
     this.fighters.update(
-      keyboard.frame(),
-      this.dummy.input({
-        on: keyboard.toggles.get("dummy"),
-        facing: this.fighters.opponent?.facing ?? -1,
-        // Read before the bodies move, which is the freeze this frame will use.
-        frozen: this.fighters.frozen,
-      }),
+      decided ? NO_INPUT : keyboard.frame(),
+      decided ? NO_INPUT : dummy,
       { bodies: this.camera.world, shots: this.camera.screen, view: { x: this.camera.x, y: this.camera.y } },
     );
     // Pushed apart before the camera reads the moves, as the original evens
@@ -177,6 +202,7 @@ export class DebugScene implements Scene {
     this.fighters.keepInView(this.camera);
     if (keyboard.takeRefill()) this.fighters.refill();
     this.fighters.exchangeBlows();
+    this.round.step(this.fighters.bodies, keyboard.toggles.get("ko"), this.fighters.quiet);
     this.stage.flash(this.fighters.takeFlash());
     for (const c of this.fighters.takeScreen()) this.stage.cue(c);
     const { health, dial } = this.fighters.status();

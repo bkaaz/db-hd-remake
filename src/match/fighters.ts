@@ -307,6 +307,16 @@ export class Fighters {
     return Math.abs(this.opponent.x - this.player.x) / this.player.placement.scale;
   }
 
+  /** Nothing the two have thrown is still in the air. */
+  get quiet(): boolean {
+    return this.projectiles.empty;
+  }
+
+  /** Both bodies, player one first — what a round watches. */
+  get bodies(): Entity[] {
+    return this.both();
+  }
+
   /** Both fighters' health and ki full: the debug key, so a move that costs either can be tried again. */
   refill(): void {
     for (const fighter of this.both()) fighter.refill();

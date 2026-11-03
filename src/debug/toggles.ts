@@ -1,18 +1,18 @@
 /**
- * The debug switches — the boxes, the state readout, the dummy's attacks and
- * the recording — in one place, so that a key and the panel's switch are two
- * ways of flipping the same value and each sees what the other did. Three are
- * remembered across a reload; the recording never is, or every reload would
- * start one unasked (owner, ADR 0040).
+ * The debug switches — the boxes, the state readout, the dummy's attacks, the
+ * KO and the recording — in one place, so that a key and the panel's switch
+ * are two ways of flipping the same value and each sees what the other did.
+ * All but the recording are remembered across a reload; it never is, or every
+ * reload would start one unasked (owner, ADR 0040).
  */
 
-export type Toggle = "boxes" | "readout" | "dummy" | "recording";
+export type Toggle = "boxes" | "readout" | "dummy" | "ko" | "recording";
 
 /** Under this key in localStorage, as JSON. */
 export const REMEMBERED_TOGGLES = "db-hd-remake.toggles";
 
-const REMEMBERED: readonly Toggle[] = ["boxes", "readout", "dummy"];
-const START: Record<Toggle, boolean> = { boxes: true, readout: true, dummy: false, recording: false };
+const REMEMBERED: readonly Toggle[] = ["boxes", "readout", "dummy", "ko"];
+const START: Record<Toggle, boolean> = { boxes: true, readout: true, dummy: false, ko: false, recording: false };
 
 /** What `Toggles` needs of localStorage, so a test can hand it a map. */
 export type Memory = Pick<Storage, "getItem" | "setItem">;

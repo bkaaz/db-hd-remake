@@ -63,6 +63,23 @@ export function glowPalettes(rom: Uint8Array, t: FighterTables): Record<string, 
   return out;
 }
 
+/** How far the winning pose's palette is from the fighter's own (Vegeta's `3e`, $20:9257: field 0x17 + 0x98). */
+const WIN = 0x98;
+
+/**
+ * A fighter's colours in his winning pose, in every lighting, player two's
+ * too: `win`, `night_win`, `win_alt` … — the record 0x98 past the palette
+ * that lighting gives him, as Vegeta's `3e` loads it.
+ */
+export function winPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [time, own] of lightingRecords(rom, t)) {
+    out[named(time, "win")] = paletteRecord(rom, own + WIN).at;
+    out[named(time, "win", "alt")] = paletteRecord(rom, own + 1 + WIN).at;
+  }
+  return out;
+}
+
 /**
  * Player two's colours when both sides are the same fighter — the next
  * record ($01:82F2) — in every lighting, glowing too where he glows:

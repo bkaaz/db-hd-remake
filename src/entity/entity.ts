@@ -15,6 +15,7 @@ import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { slowed } from "../combat/knockback";
 import { trailAt } from "./trail";
+import { moveStep } from "../fx/follow";
 import type { ScreenCue } from "../screen";
 import type { FinaleDef } from "../match/finale";
 import { moveOf, type Shoved } from "../combat/corner";
@@ -34,6 +35,7 @@ import {
   type CloseButton,
   type SeizeDef,
   type GrabDef,
+  type RoundStates,
   type StateDef,
 } from "./states";
 
@@ -666,6 +668,11 @@ export class Entity {
     return this.animName;
   }
 
+  /** His step in the whole script of the move playing, across its parts (`fx/follow.ts`). */
+  get moveStep(): number {
+    return moveStep(this.animName, this.stepIndex, (a) => this.def.animations[a]?.steps.length);
+  }
+
   /** Which start of an animation this is — a new one, or the same one again, counts up. */
   get animationPlay(): number {
     return this.plays;
@@ -888,9 +895,19 @@ export class Entity {
     return this.maxHealth > 0 ? this.hp / this.maxHealth : 0;
   }
 
-  /** True once there is nothing left. Round rules do not exist yet. */
-  get defeated(): boolean {
-    return this.hp <= 0;
+  /** His states for the end of a round (`match/round.ts`); none, and he cannot be knocked out. */
+  get roundStates(): RoundStates | undefined {
+    return this.def.states?.round;
+  }
+
+  /** His state ends a KO's half speed (`fullSpeed`). */
+  get atFullSpeed(): boolean {
+    return this.sm?.def.fullSpeed === true;
+  }
+
+  /** In the state he starts in and comes back to — the original's move `00`, which a round waits for. */
+  get standing(): boolean {
+    return !!this.sm && this.sm.current === this.def.states?.initial;
   }
 
   /** Effect entity this entity's current attack leaves at the point of contact. */
@@ -965,7 +982,7 @@ export class Entity {
    * reports that number rather than the one it asked for: a log or a hit
    * counter showing the unscaled figure would be describing a blow nobody took.
    *
-   * Health floors at zero; nothing happens there yet.
+   * Health floors at zero; what comes of that is the round's (`match/round.ts`).
    */
   hurtBy(amount: number): number {
     const dealt = this.combo.worth(afterDefence(amount, this.defence));
@@ -1044,11 +1061,13 @@ export class Entity {
     const shimmer = this.def.attributes.shimmer;
     const glow = this.sm?.def.glow;
     const glowing = glow !== undefined && this.stateFrames >= glow;
+    const win = this.sm?.def.win;
+    const winning = win !== undefined && this.stateFrames >= win;
     const variant = this.burning
       ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting)
       : shimmer
         ? (shimmerVariant(shimmer, this.shimmerFrame) ?? null)
-        : paletteVariant({ lighting: this.lighting, glow: glowing, alt: this.altColours, set: this.set }, (v) => this.def.variants.has(v));
+        : paletteVariant({ lighting: this.lighting, glow: glowing, win: winning, alt: this.altColours, set: this.set }, (v) => this.def.variants.has(v));
     if (variant === this.shownVariant) return;
     this.shownVariant = variant;
     this.applyFrame();
