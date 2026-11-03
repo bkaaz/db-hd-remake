@@ -1,4 +1,5 @@
 import type { Plugin, ViteDevServer } from "vite";
+import type { PalettesFile } from "../../src/entity/palettesFile";
 import type { EntityFile } from "../../src/entity/entityFile";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { promises as fs } from "node:fs";
@@ -284,7 +285,18 @@ export function entityEditorServer(): Plugin {
             return [];
           }
         };
-        sendJson(res, 200, { fighters: await names(ENTITIES_DIR), spawns: await names(SPAWNS_DIR) });
+        const fighters = await names(ENTITIES_DIR);
+        // each fighter's colour sets of our own, for the side panels to offer (palettes.json)
+        const colourSets: Record<string, string[]> = {};
+        for (const name of fighters) {
+          try {
+            const file = JSON.parse(await fs.readFile(path.join(root, ENTITIES_DIR, name, "palettes.json"), "utf8")) as PalettesFile;
+            colourSets[name] = Object.keys(file.sets);
+          } catch {
+            // no palettes.json: his own colours and the cartridge's second set only
+          }
+        }
+        sendJson(res, 200, { fighters, spawns: await names(SPAWNS_DIR), colourSets });
       });
 
       // Read an entity by assembling every section file in its directory:

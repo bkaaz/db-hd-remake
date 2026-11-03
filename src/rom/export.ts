@@ -5,6 +5,7 @@
  * command in scripts/rom.ts only writes what this returns.
  */
 
+import type { Rgb } from "../entity/palettesFile";
 import type { Anim, FrameDef } from "../entity/entityFile";
 import type { Rgba } from "../sprites/png";
 import { animName } from "./animation";
@@ -30,13 +31,13 @@ export interface Exported {
 }
 
 /** One drawing as the fighter's sprite shows it, before any offset. */
-export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, look: Look = PLAIN, palette = t.palette): Drawing {
+export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, look: Look = PLAIN, palette: number | Rgb[] = t.palette): Drawing {
   const resource = tileResourceOf(rom, t, drawing);
   if (resource === null) throw new Error(`drawing ${drawing} is unused`);
   const at = resourceStream(rom, resource);
   if (at === null) throw new Error(`drawing ${drawing} wants resource ${resource.toString(16)}, an unused slot`);
   const pieces = flipLayout(readLayout(rom, pointer(rom, layoutAt(t, drawing))), look.h, look.v);
-  return drawFrame(decompress(rom, at).data, pieces, readPalette(rom, palette));
+  return drawFrame(decompress(rom, at).data, pieces, typeof palette === "number" ? readPalette(rom, palette) : palette);
 }
 
 const BLANK: Drawing = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };

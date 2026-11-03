@@ -46,6 +46,7 @@ load it.
 | `specials.json` | by hand — another fighter's own specials, merged into his `states.json` by that command; shape in `src/rom/specials.ts` |
 | `sounds.json` | the editor, Sounds tab; a fighter's voice from the cartridge (the entries with a `rom` or a `line`) by `npm run rom -- export`, which keeps the rest |
 | `attributes.json` | by hand |
+| `palettes.json` | by hand — colour sets of our own, as rules over his palette, which `npm run rom -- export` draws in every lighting ([ADR 0063](./adr/0063-a-colour-set-of-ours-is-a-rule-over-his-palette.md)); shape in `src/entity/palettesFile.ts` |
 
 The editor saves **one section per Save**, chosen by the active tab, so a script
 and a tab can work on different sections without overwriting each other. The

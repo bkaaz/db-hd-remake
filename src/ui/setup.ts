@@ -23,7 +23,7 @@ const FIRST_DEBUG: DebugRequest = { scene: "debug", p1: "goku", p2: "goku", mode
  * back to it (owner). Above a fighter's own full it is full.
  */
 const HEALTHS = [50, 80, 150, 200, 400];
-/** A fighter's colours: the original's rule, his own, or his second set. */
+/** A fighter's palette: the original's rule, his own, or his second set; then his sets of ours. */
 const COLOURS: Choice[] = [["", "auto"], ["1", "1"], ["2", "2"]];
 
 export class SetupBar {
@@ -32,6 +32,8 @@ export class SetupBar {
   private debug: DebugRequest = FIRST_DEBUG;
   private notice = "";
   private fighters: string[] = [];
+  /** Each fighter's colour sets of our own (`palettes.json`), offered beside 1 and 2. */
+  private colourSets: Record<string, string[]> = {};
   private arenas: Arena[] = [];
   private modes = 1;
 
@@ -62,6 +64,7 @@ export class SetupBar {
     const json = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
     const [entities, arenas, debug] = await Promise.all([json("/api/entities"), json("/api/arenas"), json("/api/debug")]);
     this.fighters = (entities as { fighters?: string[] }).fighters ?? [];
+    this.colourSets = (entities as { colourSets?: Record<string, string[]> }).colourSets ?? {};
     this.arenas = (arenas as { arenas?: Arena[] }).arenas ?? [];
     this.modes = (debug as { modes?: unknown[] }).modes?.length ?? 1;
     this.render();
@@ -91,7 +94,8 @@ export class SetupBar {
         sides[i].push(
           field("fighter", picker(r[who], fighters, (name) => change({ [who]: name }))),
           // auto is the original's: player two's second set when both are the same fighter
-          field("colours", segmented(String(r[pal] ?? ""), COLOURS, (v) => this.go(v ? { ...r, [pal]: Number(v) } : without(r, pal)))),
+          // a set of ours shows as the next number after the cartridge's two, its name in the address
+          field("palette", segmented(r[pal] ?? "", [...COLOURS, ...(this.colourSets[r[who]] ?? []).map((c, n): Choice => [c, String(n + 3)])], (v) => this.go(v ? { ...r, [pal]: v } : without(r, pal)))),
           field("hp", segmented(now, healths, (v) => this.go(v === now ? without(r, key) : { ...r, [key]: Number(v) }))),
         );
       });

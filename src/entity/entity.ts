@@ -338,6 +338,8 @@ export class Entity {
   private lighting: string | null = null;
   /** Drawn in his second colours ($01:82F2) — player two facing himself, or as asked. */
   private altColours = false;
+  /** A colour set of ours over them (`palettes.json`), or none. */
+  private set: string | null = null;
   /**
    * Game frames left of being held helpless by the last blow. Ticked below the
    * freeze check, like the buffer: a hit pause freezes both fighters equally, so
@@ -1015,6 +1017,12 @@ export class Entity {
     this.showVariant();
   }
 
+  /** Draw him in one of his colour sets (`palettes.json`), or his own with null. */
+  colourSet(name: string | null): void {
+    this.set = name;
+    this.showVariant();
+  }
+
   /**
    * Be drawn in the palette an arena's lighting gives, as the original loads
    * one per stage ($01:82B5). False, and its own colours kept, when it has
@@ -1040,7 +1048,7 @@ export class Entity {
       ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting)
       : shimmer
         ? (shimmerVariant(shimmer, this.shimmerFrame) ?? null)
-        : paletteVariant({ lighting: this.lighting, glow: glowing, alt: this.altColours }, (v) => this.def.variants.has(v));
+        : paletteVariant({ lighting: this.lighting, glow: glowing, alt: this.altColours, set: this.set }, (v) => this.def.variants.has(v));
     if (variant === this.shownVariant) return;
     this.shownVariant = variant;
     this.applyFrame();

@@ -1,0 +1,23 @@
+{
+  "_comment": "Vegeta's colour sets of our own, not the cartridge's (owner, 2026-11-03); the side panel shows them as palette 3 on. gold: his aura gold as a Super Saiyan's, a little lighter than his hair — its inside (12, cyan) his hair's light gold (6) lightened to 248, 232, 112, its rim (13, blue) his hair's 7 lightened to 248, 192, 56, both picked by day and scaled the same way in every other lighting and glow. Colours 12 and 13 are the aura: measured as the colours of the sheet's outline, then looked at. The export draws every set (src/rom/recolour.ts).",
+  "sets": {
+    "gold": {
+      "12": {
+        "from": 6,
+        "own": [
+          248,
+          232,
+          112
+        ]
+      },
+      "13": {
+        "from": 7,
+        "own": [
+          248,
+          192,
+          56
+        ]
+      }
+    }
+  }
+}

@@ -4,6 +4,8 @@
  * through the code. How each was found: docs/rom.md.
  */
 
+import type { Rgb } from "../entity/palettesFile";
+
 /** BYOA: the owner's own dump, never in git (ADR 0016). */
 export const ROM_PATH = "raw/rom/Dragon Ball Z - Hyper Dimension (tr).sfc";
 
@@ -24,8 +26,11 @@ export interface FighterTables {
   boxes: number;
   /** The objects this fighter spawns that we export, and what they draw from. */
   objects: Objects;
-  /** Other palettes the whole sheet is drawn in too, by name — sheet `<name>@<variant>.png`. */
-  variants?: Record<string, number>;
+  /**
+   * Other palettes the whole sheet is drawn in too, by name — sheet
+   * `<name>@<variant>.png`: a ROM address, or colours worked out (`recolour.ts`).
+   */
+  variants?: Record<string, number | Rgb[]>;
 }
 
 /**

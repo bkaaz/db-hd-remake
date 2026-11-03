@@ -56,6 +56,8 @@ import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
 import { inTableOrder, missingEntries } from "../src/rom/entries.ts";
+import { setsOver } from "../src/rom/recolour.ts";
+import type { PalettesFile, Rgb } from "../src/entity/palettesFile.ts";
 import { long } from "../src/rom/disasm.ts";
 import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
@@ -69,6 +71,12 @@ if (!existsSync(ROM_PATH)) {
   process.exit(1);
 }
 const rom = new Uint8Array(readFileSync(ROM_PATH));
+
+/** His colour sets of our own (`palettes.json`), over his own palette and the variants given — none without the file. */
+function colourSets(name: string, palette: number, variants: Record<string, number>): Record<string, Rgb[]> {
+  const path = `data/entities/${name}/palettes.json`;
+  return existsSync(path) ? setsOver(rom, palette, variants, JSON.parse(readFileSync(path, "utf8")) as PalettesFile) : {};
+}
 // `--fighter <name>` reads another fighter of the roster, and exports only him
 const argv = process.argv.slice(2);
 const named = argv.indexOf("--fighter");
@@ -395,7 +403,8 @@ if (command === "tiles") {
         defence: his.defence,
         gravity: his.gravity,
         grabRange: commandContext(rom, T.character).grab,
-        palettes: [...Object.keys(lightingPalettes(rom, T)), ...Object.keys(glowPalettes(rom, T)), ...Object.keys(altPalettes(rom, T)), ...Object.keys(FIRE)],
+        palettes: [...Object.keys(lightingPalettes(rom, T)), ...Object.keys(glowPalettes(rom, T)), ...Object.keys(altPalettes(rom, T)),
+          ...Object.keys(colourSets(name, T.palette, { ...lightingPalettes(rom, T), ...glowPalettes(rom, T), ...altPalettes(rom, T) })), ...Object.keys(FIRE)],
         burn: Object.keys(FIRE),
       },
       null,
@@ -405,7 +414,8 @@ if (command === "tiles") {
   console.log(`${name}: ${Object.keys(file.states).length} states; his defence, gravity, walk, dash and jump; Goku's push width and close ranges`);
 } else if (command === "export" && T !== GOKU) {
   // his lightings and the fire; the shared spawns, the arenas and the HUD stay Goku's export
-  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lightingPalettes(rom, T), ...glowPalettes(rom, T), ...altPalettes(rom, T) } });
+  const lit = { ...lightingPalettes(rom, T), ...glowPalettes(rom, T), ...altPalettes(rom, T) };
+  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lit, ...colourSets(name, T.palette, lit) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write(`assets/sheets/${name}.png`, `data/entities/${name}`, fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
@@ -437,7 +447,8 @@ if (command === "tiles") {
   writeVoice(T, name);
 } else if (command === "export") {
   // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
-  const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU), ...glowPalettes(rom, GOKU), ...altPalettes(rom, GOKU) } });
+  const lit = { ...lightingPalettes(rom, GOKU), ...glowPalettes(rom, GOKU), ...altPalettes(rom, GOKU) };
+  const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lit, ...colourSets("goku", GOKU.palette, lit) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write("assets/sheets/goku.png", "data/entities/goku", fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {

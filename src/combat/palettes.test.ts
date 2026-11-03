@@ -36,6 +36,13 @@ describe("paletteVariant", () => {
     expect(paletteVariant({ lighting: null, glow: false, alt: false }, vegeta)).toBeNull();
   });
 
+  it("adds a colour set of ours last, and drops it where he has no such sheet", () => {
+    const sets = (v: string) => ["night_glow_alt_gold", "gold", "night"].includes(v);
+    expect(paletteVariant({ lighting: "night", glow: true, alt: true, set: "gold" }, sets)).toBe("night_glow_alt_gold");
+    expect(paletteVariant({ lighting: null, glow: false, alt: false, set: "gold" }, sets)).toBe("gold");
+    expect(paletteVariant({ lighting: "night", glow: false, alt: false, set: "silver" }, sets)).toBe("night");
+  });
+
   it("drops a glow he has no sheet for, and keeps player two's colours", () => {
     expect(paletteVariant({ lighting: "night", glow: true, alt: true }, goku)).toBe("night_alt");
     expect(paletteVariant({ lighting: "night", glow: true, alt: false }, goku)).toBe("night");

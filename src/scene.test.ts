@@ -18,9 +18,9 @@ describe("scene requests", () => {
     expect(read("?scene=debug&hp1=0")).toMatch(/not a whole number/);
   });
 
-  it("takes either player's colours, 1 or 2, and refuses any other", () => {
-    expect(read("?scene=debug&pal1=2&pal2=1")).toMatchObject({ pal1: 2, pal2: 1 });
-    expect(read("?scene=debug&pal2=3")).toBe('pal2 "3" is not a set of colours — 1 or 2');
+  it("takes either player's colours, 1, 2 or a set's name, and refuses any other", () => {
+    expect(read("?scene=debug&pal1=2&pal2=gold")).toMatchObject({ pal1: "2", pal2: "gold" });
+    expect(read("?scene=debug&pal2=3")).toBe('pal2 "3" is not a set of colours — 1, 2 or a set\'s name');
   });
 
   it("refuses a lighting without an arena to have it", () => {
@@ -28,7 +28,7 @@ describe("scene requests", () => {
   });
 
   it("writes a request back to the same address", () => {
-    for (const query of ["?scene=debug&p1=goku&p2=goku&mode=2", "?scene=debug&p1=goku&p2=goku&mode=0&arena=tournament&time=evening", "?scene=debug&p1=goku&p2=goku&mode=0&hp1=100&hp2=50", "?scene=debug&p1=goku&p2=goku&mode=0&pal1=2&pal2=1"]) {
+    for (const query of ["?scene=debug&p1=goku&p2=goku&mode=2", "?scene=debug&p1=goku&p2=goku&mode=0&arena=tournament&time=evening", "?scene=debug&p1=goku&p2=goku&mode=0&hp1=100&hp2=50", "?scene=debug&p1=goku&p2=vegeta&mode=0&pal1=2&pal2=gold"]) {
       const request = read(query);
       if (typeof request === "string") throw new Error(request);
       expect(queryFor(request)).toBe(query);

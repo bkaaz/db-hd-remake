@@ -5,7 +5,7 @@ import { Effects } from "../fx/effects";
 import type { Keyboard } from "../input/keyboard";
 import { Fighters } from "../match/fighters";
 import { Projectiles } from "../match/projectiles";
-import type { DebugRequest, Scene, SceneContext, SceneRequest } from "../scene";
+import { isColourSet, type DebugRequest, type Scene, type SceneContext, type SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
 import { Camera } from "../camera/camera";
@@ -117,8 +117,11 @@ export class DebugScene implements Scene {
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
     // colours asked for override the original's rule, which Fighters applied
-    if (req.pal1 !== undefined) fighters.player.alt = req.pal1 === 2;
-    if (req.pal2 !== undefined && fighters.opponent) fighters.opponent.alt = req.pal2 === 2;
+    for (const [fighter, pal] of [[fighters.player, req.pal1], [fighters.opponent, req.pal2]] as const) {
+      if (!fighter || pal === undefined) continue;
+      fighter.alt = pal === "2";
+      fighter.colourSet(isColourSet(pal) ? pal : null);
+    }
     if (arena && arena.time !== arena.times[0]) {
       for (const name of new Set(fighters.light(arena.time))) {
         notices.push(showMessage(ctx.page.notices, `${name}: no sheet for "${arena.time}" — in its own colours`, true));

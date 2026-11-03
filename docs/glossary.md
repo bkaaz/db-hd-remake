@@ -158,6 +158,9 @@ this one and kept until its animation ends; not a cancel. → ADR 0049
 **Alt** (`@alt` sheets) — player two's colours when both sides are the same
 fighter: the next palette record. → `rom.md`, A stage id
 
+**Colour set** (`palettes.json`) — colours of our own for a fighter, a rule
+over his palette, picked in the side panel; Vegeta's `gold`. → ADR 0063
+
 **Glow** (a state's `glow`) — the palette 8 records past a fighter's own,
 drawn while he charges; Goku has none. → `rom.md`, `src/rom/arena.ts`
 
