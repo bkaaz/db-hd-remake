@@ -1,6 +1,6 @@
 /**
- * Minimal WAV read/write — 16-bit PCM only, which is what the browser recorder
- * in `docs/audio-capture.md` produces and all we ever need to write.
+ * Minimal WAV read/write — 16-bit PCM only, which is what Mesen records
+ * (`tools/re/record-sound-test.lua`) and all we ever need to write.
  *
  * No dependency, for the same reason as `src/sprites/png.ts`: the format we handle
  * is one we also generate, so it is a few dozen lines and it refuses anything

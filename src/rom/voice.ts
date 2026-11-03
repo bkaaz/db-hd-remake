@@ -1,9 +1,10 @@
 /**
- * A fighter's voice, read out of the cartridge: the two samples the sound
- * chip is given for him as a fight loads ($00:98EC) — the cry of a blow taken
- * (`30`) and an attack's shout (`32`) — and his spoken lines (`lines.ts`), as
- * the entries of his `sounds.json` the export writes. Every fighter's, so
- * nobody has to listen for which clip of the capture is whose.
+ * A fighter's voice: the entries of his `sounds.json` the export writes — the
+ * cry of a blow taken (`30`), the KO (`31`), an attack's shout (`32`) and his
+ * spoken lines (`lines.ts`) — each on its file of the sound test's recording
+ * (`npm run sound-test`). And the two samples the sound chip is given for him
+ * as a fight loads ($00:98EC), read out of the cartridge, by which that
+ * recording tells whose voices are whose.
  */
 
 import type { Sounds } from "../audio/sounds";
@@ -32,10 +33,8 @@ export function voiceSamples(rom: Uint8Array, character: number): { hurt: Float3
   return { hurt: sample(0), shout: sample(1) };
 }
 
-/** The file stems of a fighter's two voice samples: `vegeta_hurt`, `vegeta_shout`. */
-export function voiceFiles(fighter: string): { hurt: string; shout: string } {
-  return { hurt: `${fighter}_hurt`, shout: `${fighter}_shout` };
-}
+/** The bank's one gain (`data/audio/sounds.json`): the files keep the levels the game plays them at. */
+const GAIN = 0.85;
 
 /**
  * A fighter's sounds with his voice as the export reads it: an entry that
@@ -44,13 +43,13 @@ export function voiceFiles(fighter: string): { hurt: string; shout: string } {
  */
 export function voiceSounds(sounds: Sounds, fighter: string, lines: number[]): Sounds {
   const kept = Object.entries(sounds).filter(([, s]) => s.line === undefined && s.rom === undefined);
-  const files = voiceFiles(fighter);
-  // the gains and spreads Goku's had when the owner set them from the capture
+  // the spreads Goku's had when the owner set them
   const voice: Sounds = {
-    voice_hurt: { gain: 0.6, vary: 0.05, file: `${files.hurt}.wav`, rom: 0x30 },
-    voice_shout: { gain: 0.55, vary: 0.04, file: `${files.shout}.wav`, rom: 0x32 },
+    voice_hurt: { gain: GAIN, vary: 0.05, file: `${fighter}_30.wav`, rom: 0x30 },
+    voice_ko: { gain: GAIN, vary: 0, file: `${fighter}_31.wav`, rom: 0x31 },
+    voice_shout: { gain: GAIN, vary: 0.04, file: `${fighter}_32.wav`, rom: 0x32 },
   };
-  for (const id of lines) voice[lineName(id)] = { gain: 0.6, vary: 0.03, file: `${lineName(id)}.wav`, line: id };
+  for (const id of lines) voice[lineName(id)] = { gain: GAIN, vary: 0.03, file: `${lineName(id)}.wav`, line: id };
   return { ...Object.fromEntries(kept), ...voice };
 }
 

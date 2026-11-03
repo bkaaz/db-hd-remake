@@ -32,7 +32,7 @@ gone; the README says to ask the author for the pack.
 They mirror each other, so where a file goes is never a judgement call:
 
 ```
-raw/       audio/sound-test.wav      sheets/goku-rip.png     what these were made from
+raw/       audio/sound-test-*.wav    sheets/goku-rip.png     what these were made from
            rom/*.sfc  (the cartridge, ADR 0016)
 assets/    audio/sfx/*.wav           sheets/goku.png         what the game reads
 preview/                                                     what a person looks at
@@ -41,12 +41,10 @@ preview/                                                     what a person looks
 - **`assets/` is exactly what the game opens.** Nothing else. `sheets/spawns/`
   `arenas/` and `hud/` are rebuilt by a command (`npm run fx`, `npm run
   rom -- export`), and so is `sheets/goku.png`.
-- **`raw/` is exactly what cannot be regenerated.** The uncut capture that
-  `npm run split-audio` cuts into `assets/audio/sfx/`, and untouched rips.
-  The `line_*.wav` and `<fighter>_hurt` / `_shout.wav` beside those clips
-  are not cut: `npm run rom -- export` decodes each fighter's voice from
-  the cartridge.
-  Nothing reads it at runtime.
+- **`raw/` is exactly what cannot be regenerated.** The recordings of the
+  original's sound test that `npm run sound-test` cuts into
+  `assets/audio/sfx/` (`audio-capture.md`), and untouched rips. Nothing
+  reads it at runtime.
 - **`preview/` is disposable** — contact sheets and effect previews, rebuilt by
   `npm run sheet` and `npm run fx`, never read back by code.
 

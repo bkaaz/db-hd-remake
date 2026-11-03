@@ -1,17 +1,10 @@
 /**
  * Sound definitions: what a noise *is*, without playing it.
  *
- * No usable rip of this game's effects was found — the one archive that has it
- * refuses automated reads, and what is downloadable elsewhere is the music, not
- * the hits. Rather than block the whole feature on an asset hunt, a sound is
- * **described by parameters and synthesised at runtime**, the same answer we
- * reached for the hit spark. A blow already decides how it is taken, how long
- * the game stops, what it looks like and what it costs; now also how it sounds.
- *
- * These are placeholders in the honest sense: they make the game audible today
- * and they are meant to be replaced. `file` is reserved for that — when real
- * samples exist, a sound gains a path and the synth spec stops being used,
- * without a single state changing.
+ * A sound is a file of the original's sound test, by its cartridge id
+ * (`file`, `rom`). The synth spec (`kind`, `freq`, `decay`) is what a sound
+ * with no file can be made of instead — kept so a sound can exist before its
+ * sample does, without a single state changing when the sample arrives.
  *
  * Pure: no Web Audio, no DOM. `src/audio/playback.ts` turns a spec into actual sound.
  */
@@ -39,9 +32,9 @@ export interface SoundSpec {
    */
   vary?: number;
   /**
-   * A real sample, once one exists: the name of a `.wav` in `assets/audio/sfx`,
-   * cut from the sound-test capture (`data/audio/sound-test.json` says which
-   * clip is what). Takes precedence over the synth spec once it has loaded —
+   * A real sample: the name of a `.wav` in `assets/audio/sfx`, the original's
+   * sound test cut one file per id (`npm run sound-test`). Takes precedence
+   * over the synth spec once it has loaded —
    * the spec stays as the fallback, so the game is audible from the first frame
    * and stays audible if a file is missing.
    */
@@ -57,8 +50,7 @@ export interface SoundSpec {
   label?: string;
   /**
    * The cartridge's id for this sound, the one its scripts play (`a0`, and
-   * an animation step's `sfx`), when someone has matched it — by ear or by the
-   * move that plays it, never by clip number (docs/rom.md). One sound per id.
+   * an animation step's `sfx`) — and the name of its file. One sound per id.
    */
   rom?: number;
   /** The spoken line this is, by `a1`'s id ($00:DB98) — a fighter's own voice. */
@@ -70,6 +62,13 @@ export type Sounds = Record<string, SoundSpec>;
 /** The voice matched to a spoken line's id, or undefined while nobody has matched it. */
 export function soundForLine(sounds: Sounds, id: number): string | undefined {
   return Object.keys(sounds).find((name) => !name.startsWith("_") && sounds[name].line === id);
+}
+
+/** The cartridge's ids our banks answer (`rom`), to the entry's name — the shared bank and fighters' own. */
+export function romIds(...banks: Sounds[]): Map<number, string> {
+  const ids = new Map<number, string>();
+  for (const bank of banks) for (const [name, spec] of Object.entries(bank)) if (spec.rom !== undefined && !ids.has(spec.rom)) ids.set(spec.rom, name);
+  return ids;
 }
 
 /** The sound matched to a cartridge id, or undefined while nobody has matched it. */

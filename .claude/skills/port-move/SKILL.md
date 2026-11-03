@@ -130,21 +130,14 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   `commands.json` (`npm run rom -- commands`, ADR 0050) — placed ahead of
   the first press. Never a `motion:`: those are `goku_old`'s.
 - no swing `sound`: the export put the script's sounds on the animation's
-  steps (`sfx`), and they play through the bank's `rom` matches. An id the
-  report lists that no bank entry matches plays nothing — say which, never
-  match one by clip number (`rom.md`). A state's `sound` is only for what
-  no script plays (a jump, a landing). An object's code may play its own
-  (`npm run rom -- code <type> <anim>`: "plays sound 19").
-- **A sound the bank lacks is found, not guessed**: with a DSP recording of
-  the move (`tools/re/log-dsp.lua`), `npm run samples -- --missing` lists
-  every id it asked for that no entry answers — player two's shifted ids
-  folded back — each with the three clips most like what the chip played,
-  its pitch followed frame by frame (`--find <id>` for one). The owner
-  chooses among those three by ear; render from the chip
-  (`--render`) only when none of them is it.
-  The whole bank is mapped once from the original's sound test
-  (`tools/re/record-sound-test.lua`, then `npm run samples -- --map
-  --write`), so a missing effect sound is the exception, not the rule.
+  steps (`sfx`), and they play through the bank entry whose `rom` is that
+  id — every effect of the original has one, on its file of the sound test
+  (`docs/audio-capture.md`). A state's `sound` is only for what no script
+  plays (a landing). An object's code may play its own
+  (`npm run rom -- code <type> <anim>`: "plays sound 19"): give its state
+  that id's bank name. A fighter's voices are `voice_hurt` (`30`),
+  `voice_ko` (`31`), `voice_shout` (`32`) and his lines, in his own
+  `sounds.json` (`npm run rom -- export`).
 
 ## 4. Check
 
@@ -154,7 +147,7 @@ thing to try, and a recording (`L`) for anything about behaviour.
 
 ## What the report cannot tell yet
 
-Which clip most cartridge sound ids are, the
-original's reactions beyond light / heavy / down, a command's conditions.
+The original's reactions beyond light / heavy / down, a command's
+conditions.
 All are in `docs/plan.md`, "First: porting a move without help" — say which
 one a move ran into.

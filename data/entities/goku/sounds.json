@@ -1,43 +1,49 @@
 {
-  "_comment": "Goku's own voice, and nothing else, all read out of the cartridge by npm run rom -- export (src/rom/voice.ts, lines.ts): the two samples the sound chip is given for him \u2014 30, the cry of a blow taken, and 32, an attack's shout (shifted for player two) \u2014 and the spoken lines his scripts' a1 name. Entries with a `rom` or a `line` are the export's and are written again; anything else here is kept. 31, the KO, is not read.",
+  "_comment": "Goku's own voice, and nothing else, written by npm run rom -- export (src/rom/voice.ts): 30, the cry of a blow taken, 31, the KO, and 32, an attack's shout (each shifted for player two), and the spoken lines his scripts' a1 name — each on its file of the original's sound test (npm run sound-test). Entries with a `rom` or a `line` are the export's and are written again; anything else here is kept.",
   "voice_hurt": {
-    "gain": 0.6,
+    "gain": 0.85,
     "vary": 0.05,
-    "file": "goku_hurt.wav",
+    "file": "goku_30.wav",
     "rom": 48
   },
+  "voice_ko": {
+    "gain": 0.85,
+    "vary": 0,
+    "file": "goku_31.wav",
+    "rom": 49
+  },
   "voice_shout": {
-    "gain": 0.55,
+    "gain": 0.85,
     "vary": 0.04,
-    "file": "goku_shout.wav",
+    "file": "goku_32.wav",
     "rom": 50
   },
   "line_00": {
-    "gain": 0.6,
+    "gain": 0.85,
     "vary": 0.03,
     "file": "line_00.wav",
     "line": 0
   },
   "line_01": {
-    "gain": 0.6,
+    "gain": 0.85,
     "vary": 0.03,
     "file": "line_01.wav",
     "line": 1
   },
   "line_02": {
-    "gain": 0.6,
+    "gain": 0.85,
     "vary": 0.03,
     "file": "line_02.wav",
     "line": 2
   },
   "line_03": {
-    "gain": 0.6,
+    "gain": 0.85,
     "vary": 0.03,
     "file": "line_03.wav",
     "line": 3
   },
   "line_2c": {
-    "gain": 0.6,
+    "gain": 0.85,
     "vary": 0.03,
     "file": "line_2c.wav",
     "line": 44

@@ -1,354 +1,311 @@
 {
-  "_comment": "The game's sound bank: every effect any fighter can play. An id names the sound, never who uses it — a state picks a variant, so giving a kick a different swing is one string, not a new definition. Numbers are append-only: swing_7 must always mean what it means today, because states.json points at it. `label` is what it sounds like, for a person reading this and for the editor's picker. Voices are not here — they belong to a fighter, in data/entities/<name>/sounds.json. Files are clips in assets/audio/sfx/; data/audio/sound-test.json says what each of the 127 is.",
-  "swing_06": {
-    "label": "a punch's swing — sound 06, sample 17 at 06B3, clip 004 by comparison (npm run samples, 0.99)",
-    "gain": 0.16,
+  "_comment": "The game's sound bank: every effect of the original, one entry per cartridge id (`rom`) — what its scripts and code ask for — and its file, that id's entry of the original's sound test (`npm run sound-test`, assets/audio/sfx/<id>.wav). A name is what it is and its id, `sfx_<id>` while nobody has said what plays it; `label` is for a person and the editor's picker. Every gain is one number: the files keep the levels the game plays them at. Voices are not here — they belong to a fighter, in data/entities/<name>/sounds.json.",
+  "sfx_01": {
+    "label": "sound 01, what plays it not named yet",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "01.wav",
+    "rom": 1
+  },
+  "sfx_02": {
+    "label": "sound 02, what plays it not named yet",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "02.wav",
+    "rom": 2
+  },
+  "sfx_03": {
+    "label": "sound 03, what plays it not named yet",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "03.wav",
+    "rom": 3
+  },
+  "confirm_04": {
+    "label": "a menu confirming a choice, a character among them (owner) — sound 04",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "04.wav",
+    "rom": 4
+  },
+  "swing_05": {
+    "label": "Side Slash's step into the depth — sound 05",
+    "gain": 0.85,
     "vary": 0.12,
-    "file": "004.wav",
+    "file": "05.wav",
+    "rom": 5
+  },
+  "swing_06": {
+    "label": "a punch's swing — sound 06",
+    "gain": 0.85,
+    "vary": 0.12,
+    "file": "06.wav",
     "rom": 6
   },
   "swing_07": {
-    "label": "a kick's swing — sound 07, sample 17 at 0504, clip 005 by comparison (0.99)",
-    "gain": 0.16,
+    "label": "a kick's swing — sound 07",
+    "gain": 0.85,
     "vary": 0.12,
-    "file": "005.wav",
+    "file": "07.wav",
     "rom": 7
   },
-  "swing_05": {
-    "label": "Side Slash's step into the depth — sound 05, sample 17 at 0A0D, clip 003 by comparison (0.99, the next 0.32)",
-    "gain": 0.16,
-    "vary": 0.12,
-    "file": "003.wav",
-    "rom": 5
-  },
-  "teleport_29": {
-    "label": "a teleport, as he vanishes — sound 29, sample 18 at 1C38 then 0EF3 for about 0.95 s, clip 021 by comparison (0.41 / 0.29, the next 0.11); as loud as charge_1, the same sample",
-    "gain": 0.22,
-    "vary": 0,
-    "file": "021.wav",
-    "rom": 41
-  },
-  "explosion_2c": {
-    "label": "Saiyan Meteor's explosion as the ball hits the ground — sound 2c, sample 15 at 01F4 for about 1.9 s, clip 023 by comparison (0.53, along the recording 0.50; the next 0.38) and by ear (owner)",
-    "gain": 0.4,
-    "vary": 0,
-    "file": "023.wav",
-    "rom": 44
-  },
-  "ball_2d": {
-    "label": "Saiyan Meteor's ball charging at the fist — sound 2d: clip 024 (owner, by ear; the comparison found no clip like it)",
-    "gain": 0.3,
-    "vary": 0,
-    "file": "024.wav",
-    "rom": 45
-  },
-  "ball_2f": {
-    "label": "Saiyan Meteor's big ball over the head — sound 2f: clip 025 (owner, by ear)",
-    "gain": 0.3,
-    "vary": 0,
-    "file": "025.wav",
-    "rom": 47
-  },
-  "meteor_38": {
-    "label": "Saiyan Meteor before the ball is thrown — sound 38: sample 19 and sample 15 on two voices, sliding down; rendered from the chip (--render 38 614 120 meteor_38)",
-    "gain": 0.3,
-    "vary": 0,
-    "file": "meteor_38.wav",
-    "rom": 56
-  },
-  "flare_3d": {
-    "label": "Vegeta's Ground Flare (a9) — sound 3d: sample 15 sliding down on one voice; clip 029 by ear (owner, 2026-11-02)",
-    "gain": 0.3,
-    "vary": 0,
-    "file": "029.wav",
-    "rom": 61
-  },
-  "hit_09": {
-    "label": "a melee blow landing — sound 09, sample 14 sliding from 0785 to 0613, clip 007 by comparison along the slide (0.41, the next 0.17)",
-    "gain": 0.42,
-    "vary": 0.1,
-    "file": "007.wav",
-    "rom": 9
-  },
-  "swing_1": {
-    "label": "swing, hand",
-    "kind": "noise",
-    "freq": 1600,
-    "decay": 0.07,
-    "gain": 0.16,
-    "vary": 0.12,
-    "file": "003.wav"
-  },
-  "swing_2": {
-    "label": "swing, leg",
-    "kind": "noise",
-    "freq": 1600,
-    "decay": 0.07,
-    "gain": 0.16,
-    "vary": 0.12,
-    "file": "004.wav"
-  },
-  "swing_3": {
-    "label": "swing, leg — heavier",
-    "kind": "noise",
-    "freq": 1100,
-    "decay": 0.1,
-    "gain": 0.2,
-    "vary": 0.1,
-    "file": "004.wav"
-  },
-  "hit_1": {
-    "label": "hit landed: damage went in",
-    "kind": "noise",
-    "freq": 420,
-    "decay": 0.11,
-    "gain": 0.42,
-    "vary": 0.1,
-    "file": "007.wav"
-  },
-  "hit_2": {
-    "label": "hit landed — heavier; shares 007 until a heavier clip is named",
-    "kind": "noise",
-    "freq": 240,
-    "decay": 0.2,
-    "gain": 0.55,
-    "vary": 0.08,
-    "file": "007.wav"
-  },
-  "block_1": {
-    "label": "a blocked hit",
-    "kind": "tone",
-    "freq": 900,
-    "decay": 0.09,
-    "gain": 0.3,
-    "vary": 0.06,
-    "file": "012.wav",
-    "rom": 23
-  },
-  "jump_1": {
-    "label": "jumping, all three directions",
-    "gain": 0.12,
-    "vary": 0.08,
-    "file": "005.wav"
-  },
-  "land_1": {
-    "label": "landing after a jump",
-    "kind": "noise",
-    "freq": 180,
-    "decay": 0.09,
-    "gain": 0.22,
-    "vary": 0.1,
-    "file": "010.wav",
-    "rom": 12
-  },
-  "land_2": {
-    "label": "a knocked-down body hitting the floor",
-    "gain": 0.35,
-    "vary": 0.1,
-    "file": "011.wav",
-    "rom": 13
-  },
-  "land_3": {
-    "label": "the same body settling after the bounce; shares 011 with land_2",
-    "gain": 0.28,
-    "vary": 0.1,
-    "file": "011.wav"
-  },
-  "charge_1": {
-    "label": "charging ki — asked for every 8 frames, each copy cutting the last (as every sound does): its first 8 frames, over and over",
-    "gain": 0.22,
-    "vary": 0,
-    "file": "013.wav",
-    "rom": 25
-  },
-  "blast_1": {
-    "label": "a ki bolt being fired",
-    "kind": "noise",
-    "freq": 900,
-    "decay": 0.12,
-    "gain": 0.3,
-    "vary": 0.06,
-    "file": "009.wav",
-    "rom": 11
-  },
-  "burst_1": {
-    "label": "a ki bolt going off",
-    "kind": "noise",
-    "freq": 320,
-    "decay": 0.18,
-    "gain": 0.42,
-    "vary": 0.08,
-    "file": "008.wav",
-    "rom": 10
-  },
-  "charge_2": {
-    "label": "charging a beam — the kamehameha's; played once and cut off by the shot, never looped",
-    "gain": 0.25,
-    "vary": 0,
-    "file": "019.wav",
-    "rom": 37
-  },
-  "blast_2": {
-    "label": "a beam leaving the hands — the kamehameha; shares 008 with burst_1",
-    "kind": "noise",
-    "freq": 320,
-    "decay": 0.2,
-    "gain": 0.45,
-    "vary": 0.04,
-    "file": "008.wav"
-  },
   "sfx_08": {
-    "label": "sound 08 — sample 14 + sample 19; clip 006 from the sound test's recording, placed by order (0.50); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 08, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "006.wav",
+    "file": "08.wav",
     "rom": 8
   },
-  "sfx_1b": {
-    "label": "sound 1b — sample 17 + sample 18; clip 014 from the sound test's recording, placed by order (0.16); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+  "hit_09": {
+    "label": "a melee blow landing — sound 09",
+    "gain": 0.85,
+    "vary": 0.1,
+    "file": "09.wav",
+    "rom": 9
+  },
+  "burst_0a": {
+    "label": "a ki bolt going off — sound 0a",
+    "gain": 0.85,
+    "vary": 0.08,
+    "file": "0a.wav",
+    "rom": 10
+  },
+  "blast_0b": {
+    "label": "a ki bolt being fired — sound 0b",
+    "gain": 0.85,
+    "vary": 0.06,
+    "file": "0b.wav",
+    "rom": 11
+  },
+  "land_0c": {
+    "label": "landing after a jump — sound 0c",
+    "gain": 0.85,
+    "vary": 0.1,
+    "file": "0c.wav",
+    "rom": 12
+  },
+  "land_0d": {
+    "label": "a knocked-down body hitting the floor — sound 0d",
+    "gain": 0.85,
+    "vary": 0.1,
+    "file": "0d.wav",
+    "rom": 13
+  },
+  "block_17": {
+    "label": "a blocked blow — sound 17",
+    "gain": 0.85,
+    "vary": 0.06,
+    "file": "17.wav",
+    "rom": 23
+  },
+  "charge_19": {
+    "label": "charging ki — asked for every 8 frames, each copy cutting the last: its first 8 frames, over and over — sound 19",
+    "gain": 0.85,
     "vary": 0,
-    "file": "014.wav",
+    "file": "19.wav",
+    "rom": 25
+  },
+  "sfx_1b": {
+    "label": "sound 1b, what plays it not named yet",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "1b.wav",
     "rom": 27
   },
   "sfx_1d": {
-    "label": "sound 1d — sample 16; clip 015 from the sound test's recording, placed by order (0.56); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 1d, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "015.wav",
+    "file": "1d.wav",
     "rom": 29
   },
   "sfx_1f": {
-    "label": "sound 1f — sample 19; clip 016 from the sound test's recording, placed by order (0.30); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 1f, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "016.wav",
+    "file": "1f.wav",
     "rom": 31
   },
   "sfx_21": {
-    "label": "sound 21 — of the music's samples; clip 017 from the sound test's recording, the one clip free between its neighbours; what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 21, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "017.wav",
+    "file": "21.wav",
     "rom": 33
   },
   "sfx_23": {
-    "label": "sound 23 — sample 18; clip 018 from the sound test's recording, clear (0.70); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 23, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "018.wav",
+    "file": "23.wav",
     "rom": 35
   },
-  "sfx_28": {
-    "label": "sound 28 — of the music's samples; clip 020 from the sound test's recording, the one clip free between its neighbours; what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+  "charge_25": {
+    "label": "charging a beam — the kamehameha's; played once and cut off by the shot, never looped — sound 25",
+    "gain": 0.85,
     "vary": 0,
-    "file": "020.wav",
+    "file": "25.wav",
+    "rom": 37
+  },
+  "cursor_27": {
+    "label": "the sound test's cursor moving — sound 27",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "27.wav",
+    "rom": 39
+  },
+  "sfx_28": {
+    "label": "sound 28, what plays it not named yet",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "28.wav",
     "rom": 40
   },
-  "sfx_2b": {
-    "label": "sound 2b — sample 18 + sample 18; clip 022 from the sound test's recording, placed by order (0.09); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+  "teleport_29": {
+    "label": "a teleport, as he vanishes — sound 29",
+    "gain": 0.85,
     "vary": 0,
-    "file": "022.wav",
+    "file": "29.wav",
+    "rom": 41
+  },
+  "sfx_2b": {
+    "label": "sound 2b, what plays it not named yet",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "2b.wav",
     "rom": 43
   },
-  "sfx_39": {
-    "label": "sound 39 — of the music's samples; clip 027 from the sound test's recording, the one clip free between its neighbours; what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+  "explosion_2c": {
+    "label": "Saiyan Meteor's explosion as the ball hits the ground — sound 2c",
+    "gain": 0.85,
     "vary": 0,
-    "file": "027.wav",
+    "file": "2c.wav",
+    "rom": 44
+  },
+  "ball_2d": {
+    "label": "Saiyan Meteor's ball charging at the fist — sound 2d",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "2d.wav",
+    "rom": 45
+  },
+  "ball_2f": {
+    "label": "Saiyan Meteor's big ball over the head — sound 2f",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "2f.wav",
+    "rom": 47
+  },
+  "meteor_38": {
+    "label": "Saiyan Meteor before the throw — sound 38",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "38.wav",
+    "rom": 56
+  },
+  "sfx_39": {
+    "label": "sound 39, what plays it not named yet",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "39.wav",
     "rom": 57
   },
   "sfx_3a": {
-    "label": "sound 3a — sample 14 + sample 14 + sample 14; clip 028 from the sound test's recording, placed by order (0.29); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 3a, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "028.wav",
+    "file": "3a.wav",
     "rom": 58
   },
-  "sfx_3f": {
-    "label": "sound 3f — sample 19; clip 030 from the sound test's recording, clear (0.80); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+  "flare_3d": {
+    "label": "Vegeta's Ground Flare (a9) — sound 3d",
+    "gain": 0.85,
     "vary": 0,
-    "file": "030.wav",
+    "file": "3d.wav",
+    "rom": 61
+  },
+  "sfx_3f": {
+    "label": "sound 3f, what plays it not named yet",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "3f.wav",
     "rom": 63
   },
   "sfx_40": {
-    "label": "sound 40 — sample 14 + sample 18; clip 031 from the sound test's recording, clear (0.34); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 40, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "031.wav",
+    "file": "40.wav",
     "rom": 64
   },
   "sfx_41": {
-    "label": "sound 41 — sample 19; clip 032 from the sound test's recording, placed by order (0.52); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 41, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "032.wav",
+    "file": "41.wav",
     "rom": 65
   },
   "sfx_44": {
-    "label": "sound 44 — sample 14 + sample 18 + sample 18; clip 033 from the sound test's recording, placed by order (0.18); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 44, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "033.wav",
+    "file": "44.wav",
     "rom": 68
   },
   "sfx_46": {
-    "label": "sound 46 — sample 18; clip 034 from the sound test's recording, placed by order (0.16); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 46, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "034.wav",
+    "file": "46.wav",
     "rom": 70
   },
   "sfx_48": {
-    "label": "sound 48 — sample 18 + sample 18 + sample 18 + sample 18; clip 035 from the sound test's recording, clear (0.82); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 48, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "035.wav",
+    "file": "48.wav",
     "rom": 72
   },
   "sfx_49": {
-    "label": "sound 49 — sample 18; clip 036 from the sound test's recording, placed by order (0.17); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 49, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "036.wav",
+    "file": "49.wav",
     "rom": 73
   },
   "sfx_4a": {
-    "label": "sound 4a — sample 14; clip 037 from the sound test's recording, clear (0.82); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 4a, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "037.wav",
+    "file": "4a.wav",
     "rom": 74
   },
   "sfx_4b": {
-    "label": "sound 4b — sample 19 + sample 17; clip 038 from the sound test's recording, placed by order (0.45); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 4b, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "038.wav",
+    "file": "4b.wav",
     "rom": 75
   },
   "sfx_4c": {
-    "label": "sound 4c — sample 16; clip 039 from the sound test's recording, clear (0.77); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 4c, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "039.wav",
+    "file": "4c.wav",
     "rom": 76
   },
   "sfx_4d": {
-    "label": "sound 4d — sample 14; clip 040 from the sound test's recording, placed by order (0.21); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 4d, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "040.wav",
+    "file": "4d.wav",
     "rom": 77
   },
   "sfx_4f": {
-    "label": "sound 4f — sample 19 + sample 17; clip 041 from the sound test's recording, placed by order (0.41); what plays it is not named yet, its gain not set by ear",
-    "gain": 0.3,
+    "label": "sound 4f, what plays it not named yet",
+    "gain": 0.85,
     "vary": 0,
-    "file": "041.wav",
+    "file": "4f.wav",
     "rom": 79
   }
 }

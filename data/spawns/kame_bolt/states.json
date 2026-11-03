@@ -11,8 +11,8 @@
       "hitstop": 8,
       "onHit": "hurt_chain",
       "hitFx": "ki_burst_big",
-      "hitSound": "burst_1",
-      "blockSound": "burst_1"
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
     },
     "fly_up": {
       "anim": "fly_up",
@@ -24,8 +24,8 @@
       "hitstop": 8,
       "onHit": "hurt_chain",
       "hitFx": "ki_burst_big",
-      "hitSound": "burst_1",
-      "blockSound": "burst_1"
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
     }
   }
 }

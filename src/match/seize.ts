@@ -103,7 +103,7 @@ export class Seizures {
       held.y = held.floor + next.y * scale;
       if (next.landed) {
         world.dust(held.x, held.floor);
-        held.sound("land_2");
+        held.sound("land_0d");
         world.shake({ pattern: LANDING_SHAKES[Math.min(s.landings, LANDING_SHAKES.length - 1)], frames: 8 });
         s.landings++;
       }

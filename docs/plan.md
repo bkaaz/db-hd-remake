@@ -140,13 +140,6 @@ takes an investigation instead of a procedure. In this order:
    choice between them as `$0D:D29C` makes it. The reactions brought from
    goku_old (`hurt_air`, `launched`, `blown` …) still land straight into
    `downed`.
-3. **Which clip is which id** — now compared, not assumed: the chip's
-   samples against our clips (`npm run samples`, `rom.md`, The sounds).
-   `06` / `07` were one clip off and `09`'s clip is likely `008`; put the
-   bank right, then compare what the first recording did not play — `30`
-   for player one, `31` (KO), `0b`, the specials' own (`25`, `29`, `2d`,
-   `38`…) — by recording them with `log-dsp.lua`. A jump plays nothing
-   found so far.
 
 ### Next: around the arena
 
@@ -379,26 +372,9 @@ but nobody has read it back as a whole, and some of it is very likely redundant.
 Concrete questions already worth asking, so the review does not have to
 rediscover them:
 
-- **The synth spec under a sampled sound.** Five sounds keep `kind`/`freq`/
-  `decay` that nothing will ever play again once the sample loads. Is a fallback
-  that only covers the first few frames of a session worth a second definition
-  of every sound? A voice already proves the format works without one.
-- **Ids that share one file.** `swing_kick` and `swing_heavy` are both `004`,
-  `hit_heavy` borrows `hit`'s `007`, `land_hard` and `land_settle` are both
-  `011`. The reasoning was "separate events, separate ids, so one can change
-  without the other" — sound, but it should be a rule stated once, not four
-  local decisions.
-- **Five files for audio**, now all under `src/audio/` except the CLI:
-  `sounds.ts`, `playback.ts`, `split.ts`, `wav.ts` and `scripts/split-audio.ts`.
-  The pure/browser split is right; whether the cutting tools belong beside the
-  runtime is still open — grouping them by domain did not answer it.
-- **`trimLeading` and `--blip` trimming.** Built because the first capture was
-  hurried; the second needed none of it. Kept deliberately — confirm that is
-  still the call, or delete it and keep only the dropping.
-- **`docs/audio-capture.md`** still documents the browser route in full. It is
-  the fallback nobody used. Shorten or keep?
-- **`data/audio/`** is a new top-level directory beside `data/entities/`. Is a
-  catalogue of 127 mostly-`?` slots the right shape, and does it belong there?
+- **The synth spec.** No sound has `kind`/`freq`/`decay` any more — each is
+  its file of the sound test (ADR 0055). Does the synth half of `sounds.ts`
+  and `playback.ts` go too?
 - **`/api/sfx` lives in the entity-editor plugin**, like `/api/sheet` — correct
   by precedent, but the plugin's name has stopped describing what it serves.
 - **The input buffer** rode along in the same batch and has not been looked at
@@ -518,13 +494,11 @@ queue.
 - **What follows the hit types** (`combat.md`, *Open*): a `stun` type, a hit
   type for ki blasts — the projectile and how it is taken — and whatever
   punishes a string thrown at nothing.
-- **The sound test's last gaps.** Every effect id the original's sound test
-  plays is matched to a clip of our capture (`npm run samples -- --map`,
-  2026-11-02) but five menu sounds — `01`–`04` and `27`, the cursor — on
-  clips `000`–`002`, by ear. Also by ear: `38` (Saiyan Meteor) is rendered,
-  while the order puts it on clip `026`; the `sfx_<id>` entries' gains;
-  and a name for each once what plays it is known. `hit_heavy` (goku_old)
-  still borrows the light hit's sample.
+- **What is left of the sounds.** Every sound is its id's file of the
+  sound test (`audio-capture.md`). Left: a name for each `sfx_<id>` once
+  what plays it is known (`rom.md`, The sounds); the KO (`voice_ko`) for
+  when there is a KO; and Freeza's shout (`freeza_32.wav`), which came out
+  0.05 s long and quiet — by ear against the sound test.
 - **The rest of what spends ki.** The ki blast pays for itself as of
   2026-08-24 (`cost` on the state, checked before the transition fires), so the
   machinery is there and used. Vanish and the fast dash are the two that still

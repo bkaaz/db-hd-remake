@@ -10,8 +10,8 @@
       "type": "down",
       "damage": 50,
       "burstsInto": "burst_s",
-      "hitSound": "burst_1",
-      "blockSound": "burst_1"
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
     }
   }
 }

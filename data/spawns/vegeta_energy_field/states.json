@@ -12,8 +12,8 @@
       "type": "down",
       "damage": 50,
       "lasts": 27,
-      "hitSound": "burst_1",
-      "blockSound": "burst_1",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
       "outlivesHit": true,
       "rides": true,
       "endsWithMove": true

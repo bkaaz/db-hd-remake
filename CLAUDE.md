@@ -291,11 +291,10 @@ npm run rom -- hud
 npm run rom -- stage 0
                   # a stage's background layers, flat, into preview/; with
                   # no id every stage and rom-stages.png, all on one sheet
-npm run samples   # the sound chip's samples (logs/spc.bin) against our
-                  # clips, best three each — docs/rom.md, The sounds
-npm run samples -- --render 38 614 120 meteor_38
-                  # a sound no clip holds, made again from the chip's
-                  # sample along a DSP recording, into assets/audio/sfx/
+npm run sound-test
+                  # the original's sound test, recorded by
+                  # tools/re/record-sound-test.lua, cut into one file per
+                  # entry named by id (05.wav, goku_31.wav, line_0d.wav)
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md
@@ -319,8 +318,9 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── input/                    #   buffer.ts: the input buffer
 │   ├── audio/                    #   playback.ts: Web Audio, the browser half
 │   │                             #   sounds.ts: the shapes, pure
-│   │                             #   split.ts + wav.ts: cutting a capture (build-time)
-│   │                             #   brr.ts + compare.ts: the chip's samples (build-time)
+│   │                             #   soundTest.ts + wav.ts: cutting the sound
+│   │                             #     test's recording (build-time)
+│   │                             #   brr.ts + compare.ts: whose voice is whose (build-time)
 │   ├── sprites/                  #   boxes.ts: derive boxes/timing from sprites
 │   │                             #   png.ts: minimal PNG read/write (no dependency)
 │   ├── fx/                       #   generate.ts: draws the effect pixel art
@@ -343,8 +343,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
 │   ├── fx.ts                     #   write the generated effects out
 │   ├── pack.ts                   #   zip the assets for backup / handover
-│   ├── split-audio.ts            #   cut a capture into numbered clips
-│   └── samples.ts                #   the cartridge's sound samples against our clips
+│   └── sound-test.ts             #   the sound test's recording, one file per id
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/re/                     # Mesen 2 Lua scripts that record the original
 │                                 #   into logs/ (docs/rom.md)
@@ -355,16 +354,16 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │                                 #   animations.json, states.json, …
 ├── data/arenas/<name>/           # arena.json: how an arena's layers scroll
 ├── data/hud/hud.json             # where the original's HUD puts what
-├── data/audio/sound-test.json    # which clip of the sound-test capture is what
+├── data/audio/sounds.json        # the game's sound bank, one entry per id
 ├── assets/                       # BYOA, gitignored — EXACTLY what the game reads
 │   ├── sheets/                   #   one image per entity, transparency in the
 │   │                             #   file; spawns/ holds what npm run fx writes
 │   ├── arenas/<name>/            #   each layer of an arena, once per lighting
 │   ├── hud/hud.png               #   the HUD's band and its parts' tiles
-│   └── audio/sfx/                #   the clips cut from the capture, and
-│                                 #   each fighter's voice read from the cartridge
+│   └── audio/sfx/                #   the original's sound test, one file per
+│                                 #   id: 05.wav, goku_31.wav, line_0d.wav
 ├── raw/                          # BYOA, gitignored — what those were made from
-│                                 #   and cannot be regenerated (the capture,
+│                                 #   and cannot be regenerated (the recordings,
 │                                 #   untouched rips, the ROM). npm run pack -- --raw
 ├── preview/                      # gitignored: images drawn for a person to look
 │                                 #   at (npm run sheet). Nothing reads them back
@@ -381,7 +380,7 @@ Two properties the tree no longer shows, and both still hold:
 - **PixiJS appears in exactly three files** — `main.ts`, `entity/entity.ts` and
   `entity/entityDef.ts`. Everything else is plain TypeScript, which is what lets
   Vitest run it in Node.
-- **Some files never reach the browser**: `audio/split.ts`, `audio/wav.ts`,
+- **Some files never reach the browser**: `audio/soundTest.ts`, `audio/wav.ts`,
   `sprites/png.ts`, `sprites/boxes.ts`, `fx/generate.ts` and `rom/` exist for the CLI in
   `scripts/`. They live in `src/` beside the domain they belong to; nothing the
   game imports reaches them.

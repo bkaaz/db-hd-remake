@@ -1,8 +1,7 @@
 /**
- * The SNES sound chip's samples, read back from its RAM: a directory of
- * where each one starts and loops, and the BRR blocks they are made of.
- * Which sample a sound plays is the DSP's SRCN for its voice
- * (`tools/re/log-dsp.lua`); the RAM is `tools/re/dump-spc.lua`'s.
+ * The SNES sound chip's samples, read from the RAM a load leaves them in: a
+ * directory of where each one starts and loops, and the BRR blocks they are
+ * made of — a fighter's voice, by the cartridge's own copy (`src/rom/voice.ts`).
  *
  * A block is 9 bytes: a header — shift (bits 4–7), filter (2–3), loop (1),
  * end (0) — then 16 four-bit samples, high nibble first. Each is shifted,

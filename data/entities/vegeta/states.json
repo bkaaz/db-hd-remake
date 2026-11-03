@@ -659,7 +659,7 @@
       "type": "long",
       "damage": 26,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "landed",
@@ -678,7 +678,7 @@
       "type": "long",
       "damage": 28,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "landed",
@@ -697,7 +697,7 @@
       "type": "long",
       "damage": 26,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "landed",
@@ -716,7 +716,7 @@
       "type": "long",
       "damage": 28,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "landed",
@@ -735,7 +735,7 @@
         0
       ],
       "turn": false,
-      "sound": "land_1",
+      "sound": "land_0c",
       "transitions": [
         {
           "when": "animEnd",
@@ -789,7 +789,7 @@
       "type": "heavy",
       "damage": 26,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "animEnd",
@@ -807,7 +807,7 @@
       "type": "heavy",
       "damage": 28,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "animEnd",
@@ -825,7 +825,7 @@
       "type": "light",
       "damage": 28,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "animEnd",
@@ -851,7 +851,7 @@
       ],
       "turn": false,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
       "transitions": [
@@ -871,7 +871,7 @@
       "type": "light",
       "damage": 18,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "animEnd",
@@ -890,7 +890,7 @@
       "type": "heavy",
       "damage": 29,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "animEnd",
@@ -906,7 +906,7 @@
       ],
       "turn": false,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "crouching": true,
       "type": "heavy",
       "damage": 21,
@@ -976,7 +976,7 @@
         "turn": 13,
         "gain": 5
       },
-      "loopSound": "charge_1",
+      "loopSound": "charge_19",
       "loopEvery": 8,
       "transitions": [
         {
@@ -1378,7 +1378,7 @@
         "pattern": 1,
         "frames": 8
       },
-      "sound": "land_2",
+      "sound": "land_0d",
       "transitions": [
         {
           "when": "landed",
@@ -1397,7 +1397,7 @@
       ],
       "turn": false,
       "groundFx": "dust",
-      "sound": "land_1",
+      "sound": "land_0c",
       "transitions": [
         {
           "when": "animEnd",
@@ -1462,7 +1462,7 @@
         "pattern": 1,
         "frames": 8
       },
-      "sound": "land_2",
+      "sound": "land_0d",
       "transitions": [
         {
           "when": "landed",
@@ -1481,7 +1481,7 @@
       ],
       "turn": false,
       "groundFx": "dust",
-      "sound": "land_1",
+      "sound": "land_0c",
       "transitions": [
         {
           "when": "animEnd",
@@ -1535,7 +1535,7 @@
       ],
       "turn": false,
       "groundFx": "dust",
-      "sound": "land_2",
+      "sound": "land_0d",
       "transitions": [
         {
           "when": "animEnd",
@@ -1681,7 +1681,7 @@
         0
       ],
       "turn": false,
-      "sound": "land_3",
+      "sound": "land_0d",
       "transitions": [
         {
           "when": "animEnd",
@@ -2091,7 +2091,7 @@
       "type": "halt",
       "damage": 25,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "command:a5",
@@ -2130,7 +2130,7 @@
       "type": "halt",
       "damage": 26,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "command:a6",
@@ -2161,7 +2161,7 @@
       "type": "halt",
       "damage": 27,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "animEnd",
@@ -2179,7 +2179,7 @@
       "type": "halt",
       "damage": 27,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "animEnd",
@@ -2195,7 +2195,7 @@
       ],
       "turn": false,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "type": "high",
       "damage": 34,
       "air": [
@@ -2226,7 +2226,7 @@
       "airborne": true,
       "turn": false,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "type": "down",
       "damage": 20,
       "launches": {
@@ -2247,7 +2247,7 @@
       "airborne": true,
       "turn": false,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "type": "down",
       "damage": 20,
       "air": [
@@ -2279,7 +2279,7 @@
         0
       ],
       "turn": false,
-      "sound": "land_1",
+      "sound": "land_0c",
       "transitions": [
         {
           "when": "animEnd",
@@ -2295,7 +2295,7 @@
       ],
       "turn": false,
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "crouching": true,
       "type": "heavy",
       "damage": 21,
@@ -2320,7 +2320,7 @@
         "over": 32
       },
       "hitSound": "hit_09",
-      "blockSound": "block_1",
+      "blockSound": "block_17",
       "type": "trip",
       "damage": 24,
       "transitions": [
@@ -2413,7 +2413,7 @@
           -40
         ]
       },
-      "loopSound": "charge_1",
+      "loopSound": "charge_19",
       "loopEvery": 3,
       "loopUntil": 25,
       "transitions": [

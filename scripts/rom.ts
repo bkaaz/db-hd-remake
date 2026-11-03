@@ -46,12 +46,9 @@ import { ownMoves } from "../src/rom/ownMoves.ts";
 import { fullestLife, readLives, readSnapshots } from "../src/rom/recording.ts";
 import { findPalette, matchLoads } from "../src/rom/vramMatch.ts";
 import { inRecording, OWN_OBJECTS, ownObjects } from "../src/rom/ownObjects.ts";
-import { decodeLine, LINE_RATE, lineName, spokenLines } from "../src/rom/lines.ts";
-import { VOICE_RATE, voiceFiles, voiceSamples, voiceSounds } from "../src/rom/voice.ts";
-import { encodeWav } from "../src/audio/wav.ts";
-import { normalise } from "../src/audio/split.ts";
-import type { Sounds } from "../src/audio/sounds.ts";
-import { romIds } from "../src/audio/find.ts";
+import { lineName, spokenLines } from "../src/rom/lines.ts";
+import { voiceSounds } from "../src/rom/voice.ts";
+import { romIds, type Sounds } from "../src/audio/sounds.ts";
 import { moveOf, todo } from "../src/rom/todo.ts";
 import { handlerAt } from "../src/rom/handler.ts";
 import { commandContext } from "../src/rom/conditions.ts";
@@ -149,7 +146,7 @@ if (command === "tiles") {
   // each sound id with what of ours plays it — the shared bank and his own voices
   const banks = ["data/audio/sounds.json", `data/entities/${name}/sounds.json`].filter((f) => existsSync(f));
   const ours = romIds(...banks.map((f) => JSON.parse(readFileSync(f, "utf8")) as Sounds));
-  const heard = (id: number) => `${hex(id)} (${ours.get(id) ?? `no bank entry — npm run samples -- --find ${hex(id)}`})`;
+  const heard = (id: number) => `${hex(id)} (${ours.get(id) ?? "no bank entry"})`;
   console.log(`move ${hex(r.move)} — handler ${long(r.handler)}`);
   console.log(`input: ${r.inputs.join(" | ") || "none from a button or a command"}`);
   for (const c of r.commands) {
@@ -427,20 +424,13 @@ if (command === "tiles") {
 }
 
 /** Writes the sheet and the two sections the export owns; states stay hand-written. */
-/** A fighter's voice from the cartridge, beside the capture's clips; his other sounds kept. */
+/** A fighter's voice and lines, on the sound test's files (`npm run sound-test`); his other sounds kept. */
 function writeVoice(t: FighterTables, fighter: string): void {
-  const wav = (stem: string, samples: Float32Array, sampleRate: number) =>
-    writeFileSync(`assets/audio/sfx/${stem}.wav`, encodeWav({ sampleRate, samples: normalise(samples) }));
   const ids = spokenLines(rom, t);
-  for (const id of ids) wav(lineName(id), decodeLine(rom, id), LINE_RATE);
-  const samples = voiceSamples(rom, t.character);
-  const files = voiceFiles(fighter);
-  wav(files.hurt, samples.hurt, VOICE_RATE);
-  wav(files.shout, samples.shout, VOICE_RATE);
   const path = `data/entities/${fighter}/sounds.json`;
   const sounds = existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as Sounds) : {};
   writeFileSync(path, JSON.stringify(voiceSounds(sounds, fighter, ids), null, 2) + "\n");
-  console.log(`${fighter}: voice ${files.hurt} ${files.shout}, lines ${ids.map(lineName).join(" ")} into assets/audio/sfx; ${path}`);
+  console.log(`${fighter}: voice 30 31 32, lines ${ids.map(lineName).join(" ")}; ${path}`);
 }
 
 function write(sheetPath: string, dir: string, e: Exported): void {

@@ -1,8 +1,8 @@
 /**
  * How alike two sounds are: the best normalised cross-correlation of their
- * waveforms at any offset, 0..1 — for telling which clip of our capture a
- * sample from the cartridge is. Both must be at one sample rate first
- * (`resample`). Pure; build-time only.
+ * waveforms at any offset, 0..1 — for telling whose voice a recording of
+ * the sound test holds, by the cartridge's own samples. Both must be at one
+ * sample rate first (`resample`). Pure; build-time only.
  */
 
 /** `samples` at `from` Hz as they would be at `to` Hz, linearly interpolated. */

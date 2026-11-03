@@ -112,28 +112,26 @@ not listed here — the list used to be, and went stale twice in one day.
 
 | file | holds | owned by |
 |---|---|---|
-| `data/audio/sounds.json` | the **bank** — swings, impacts, blocks, landings | the game |
-| `data/entities/<name>/sounds.json` | that fighter's **voices**, nothing else | the fighter |
+| `data/audio/sounds.json` | the **bank** — every effect of the original, one entry per id | the game |
+| `data/entities/<name>/sounds.json` | that fighter's **voices** and lines, nothing else | the fighter |
 
-Nothing in an impact is anyone's: clip 007 is not Goku's, and the next nine
-fighters would each want a copy of it. A grunt *is* his.
+Nothing in an impact is anyone's: the hit, `09`, is not Goku's, and the next
+nine fighters would each want a copy of it. A grunt *is* his.
 
 - **An id defined in both files is an error, not an override.** That is what
   makes two files safe — nobody has to remember which wins, because winning is
   not on offer. `soundIdCollisions()` reports it at load.
-- **Bank ids are numbered per category and append-only** — `swing_1`, `hit_1`.
-  A name that says who plays it is a guess that ages: `swing_kick` was used by
-  kicks *and* by heavy punches. `swing_7` must always mean what it means today,
-  because `states.json` points at it by name.
-- **Two variants may share a `file`.** `hit_2` borrows `hit_1`'s clip until
-  someone names a heavier one; when they do, one field changes.
+- **A bank name is what it is and the cartridge's id** — `hit_09`,
+  `land_0c`; `sfx_<id>` while nobody has said what plays it. Its `file` is
+  that id's file of the sound test (`<id>.wav`, `audio-capture.md`) and its
+  `rom` the id. One entry per id, so two names for one sound cannot happen.
 - **A reaction naming a `sound` is how a fighter gets a voice** — and that id
   resolves in the fighter's own file rather than the bank, the only kind that
   does.
 - **A step's `sfx` is what the cartridge plays as that step begins** —
   its own ids, written by `npm run rom -- export` from the script (ADR 0024).
-  A bank entry says which id it is with `rom`; an id nobody has matched plays
-  nothing. A state's `sound` is for what no script plays.
+  A bank entry says which id it is with `rom`. A state's `sound` is for what
+  no script plays.
 - **A step's `spawns` are what its script puts out as it begins**, once per
   start of the animation, not per loop — written by the export for a move
   that holds the opponent (ADR 0045) and for an object listed with `onStep`

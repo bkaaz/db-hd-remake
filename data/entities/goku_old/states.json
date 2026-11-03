@@ -61,9 +61,9 @@
       "cancelBy": 8,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_1",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_06",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -75,9 +75,9 @@
       "turn": false,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_2",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": ["cancelable", "pressed:attack"], "to": "kick_thrust" },
         { "when": ["cancelable", "pressed:smash"], "to": "knee" },
@@ -91,9 +91,9 @@
       "turn": false,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_2",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": ["cancelable", "pressed:attack"], "to": "kick_high_rush" },
         { "when": ["cancelable", "pressed:smash"], "to": "arm_sweep" },
@@ -106,9 +106,9 @@
       "turn": false,
       "type": "launch",
       "damage": 13,
-      "sound": "swing_3",
-      "hitSound": "hit_2",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "hitFx": "spark_2",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
@@ -121,9 +121,9 @@
       "turn": false,
       "type": "slam",
       "damage": 13,
-      "sound": "swing_3",
-      "hitSound": "hit_2",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "hitFx": "spark_2",
       "transitions": [
         { "when": "landed", "to": "idle" },
@@ -136,9 +136,9 @@
       "turn": false,
       "type": "knockback",
       "damage": 13,
-      "sound": "swing_3",
-      "hitSound": "hit_2",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ],
@@ -150,9 +150,9 @@
       "turn": false,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_3",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": ["cancelable", "pressed:attack"], "to": "kick_low" },
         { "when": ["cancelable", "pressed:smash"], "to": "uppercut" },
@@ -164,8 +164,8 @@
       "anim": "charge_start",
       "vel": [0, 0],
       "turn": true,
-      "sound": "voice_charge",
-      "loopSound": "charge_1",
+      "sound": "voice_shout",
+      "loopSound": "charge_19",
       "loopEvery": 12,
       "transitions": [
         { "when": "animEnd", "to": "charge" }
@@ -176,7 +176,7 @@
       "vel": [0, 0],
       "turn": true,
       "ki": 0.5,
-      "loopSound": "charge_1",
+      "loopSound": "charge_19",
       "loopEvery": 12,
       "transitions": [
         { "when": "!held:attack", "to": "idle" },
@@ -189,7 +189,7 @@
       "turn": false,
       "cost": 25,
       "charge": 45,
-      "sound": ["voice_kame", "charge_2"],
+      "sound": ["line_00", "charge_25"],
       "transitions": [
         { "when": "charged", "to": "kame_fire_up" },
         { "when": "!held:blast", "to": "kame_fire_up" }
@@ -200,7 +200,7 @@
       "vel": [0, 0],
       "turn": false,
       "fires": { "spawn": "kame_bolt", "state": "fly_up", "at": [27, -61], "size": [1, 2] },
-      "sound": "blast_2",
+      "sound": "burst_0a",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -211,7 +211,7 @@
       "turn": false,
       "cost": 25,
       "charge": 45,
-      "sound": ["voice_kame", "charge_2"],
+      "sound": ["line_00", "charge_25"],
       "transitions": [
         { "when": "charged", "to": "kame_fire" },
         { "when": "!held:blast", "to": "kame_fire" }
@@ -222,7 +222,7 @@
       "vel": [0, 0],
       "turn": false,
       "fires": { "spawn": "kame_bolt", "at": [30, -52], "size": [1, 2] },
-      "sound": "blast_2",
+      "sound": "burst_0a",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -241,7 +241,7 @@
       "vel": [0, 0],
       "turn": false,
       "fires": { "spawn": "ki_bolt", "at": [39, -55] },
-      "sound": ["blast_1", "voice_blast"],
+      "sound": ["blast_0b", "voice_shout"],
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -280,9 +280,9 @@
       "cancelBy": 12,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_2",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": ["cancelable", "pressed:smash"], "to": "kick_high" },
         { "when": "animEnd", "to": "idle" }
@@ -295,9 +295,9 @@
       "crouching": true,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_2",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": ["cancelable", "pressed:smash"], "to": "knee_rise" },
         { "when": "animEnd", "to": "crouch" }
@@ -310,9 +310,9 @@
       "turn": false,
       "type": "stagger",
       "damage": 13,
-      "sound": "swing_2",
-      "hitSound": "hit_2",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ],
@@ -325,9 +325,9 @@
       "turn": false,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_2",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "nearGround", "to": "hop_lunge_land" }
       ]
@@ -338,8 +338,8 @@
       "turn": false,
       "type": "flinch",
       "damage": 8,
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "landed", "to": "land" }
       ]
@@ -351,9 +351,9 @@
       "crouching": true,
       "type": "launch",
       "damage": 13,
-      "sound": "swing_2",
-      "hitSound": "hit_2",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "animEnd", "to": "knee_jump" }
       ],
@@ -367,8 +367,8 @@
       "type": "flinch",
       "damage": 8,
       "rehit": 8,
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "nearGround", "to": "land" },
         { "when": "landed", "to": "idle" },
@@ -381,9 +381,9 @@
       "turn": false,
       "type": "stagger",
       "damage": 13,
-      "sound": "swing_2",
-      "hitSound": "hit_2",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ],
@@ -396,9 +396,9 @@
       "cancelBy": 12,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_2",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "animEnd", "to": "idle" }
       ]
@@ -411,9 +411,9 @@
       "cancelBy": 8,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_1",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_06",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": ["cancelable", "pressed:attack"], "to": "kick_crouch" },
         { "when": ["cancelable", "pressed:smash"], "to": "knee_rise" },
@@ -427,9 +427,9 @@
       "turn": false,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_1",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_06",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": ["cancelable", "pressed:smash"], "to": "kick_air" },
         { "when": "landed", "to": "idle" },
@@ -443,9 +443,9 @@
       "turn": false,
       "type": "flinch",
       "damage": 8,
-      "sound": "swing_2",
-      "hitSound": "hit_1",
-      "blockSound": "block_1",
+      "sound": "swing_07",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         { "when": "landed", "to": "idle" },
         { "when": "nearGround", "to": "land" },
@@ -643,7 +643,7 @@
       "launch": [-1.0, -2.4],
       "airborne": true,
       "turn": false,
-      "sound": "land_2",
+      "sound": "land_0d",
       "transitions": [
         { "when": "landed", "to": "downed" }
       ]
@@ -655,7 +655,7 @@
       "launch": [null, -2.4],
       "airborne": true,
       "turn": false,
-      "sound": "land_2",
+      "sound": "land_0d",
       "transitions": [
         { "when": "landed", "to": "downed" }
       ]
@@ -666,7 +666,7 @@
       "invulnerable": true,
       "vel": [0, 0],
       "turn": false,
-      "sound": "land_3",
+      "sound": "land_0d",
       "transitions": [
         { "when": "animEnd", "to": "getup" }
       ]
@@ -692,8 +692,7 @@
         { "when": "nearGround", "to": "land" },
         { "when": "falling", "to": "jump_up_fall" },
         { "when": "landed", "to": "idle" }
-      ],
-      "sound": "jump_1"
+      ]
     },
     "jump_fwd": {
       "anim": "jump_fwd",
@@ -706,8 +705,7 @@
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_fwd_air" },
         { "when": "landed", "to": "idle" }
-      ],
-      "sound": "jump_1"
+      ]
     },
     "jump_fwd_air": {
       "anim": "jump_spin",
@@ -732,8 +730,7 @@
         { "when": "nearGround", "to": "land" },
         { "when": "animEnd", "to": "jump_back_air" },
         { "when": "landed", "to": "idle" }
-      ],
-      "sound": "jump_1"
+      ]
     },
     "jump_back_air": {
       "anim": "jump_spin_back",
@@ -776,7 +773,7 @@
       "transitions": [
         { "when": "landed", "to": "idle" }
       ],
-      "sound": "land_1"
+      "sound": "land_0c"
     },
     "hurt_crouch": {
       "anim": "hurt_crouch",

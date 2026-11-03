@@ -12,8 +12,8 @@
       "type": "heavy",
       "damage": 18,
       "burstsInto": "burst",
-      "hitSound": "burst_1",
-      "blockSound": "burst_1"
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
     }
   }
 }

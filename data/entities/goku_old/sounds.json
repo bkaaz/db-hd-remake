@@ -1,23 +1,18 @@
 {
-  "_comment": "Goku's own voice, and nothing else. Everything a punch or a landing sounds like is game-wide and lives in data/audio/sounds.json; an id defined in both files is an error, not an override.",
+  "_comment": "Goku's own voice, and nothing else — the cartridge's Goku's files (data/entities/goku/sounds.json names the same). Everything a punch or a landing sounds like is game-wide and lives in data/audio/sounds.json; an id defined in both files is an error, not an override.",
   "voice_hurt": {
-    "gain": 0.6,
+    "gain": 0.85,
     "vary": 0.05,
-    "file": "042.wav"
+    "file": "goku_30.wav"
   },
-  "voice_charge": {
-    "gain": 0.55,
+  "voice_shout": {
+    "gain": 0.85,
     "vary": 0.04,
-    "file": "045.wav"
+    "file": "goku_32.wav"
   },
-  "voice_blast": {
-    "gain": 0.55,
-    "vary": 0.04,
-    "file": "045.wav"
-  },
-  "voice_kame": {
-    "gain": 0.6,
+  "line_00": {
+    "gain": 0.85,
     "vary": 0.03,
-    "file": "080.wav"
+    "file": "line_00.wav"
   }
 }

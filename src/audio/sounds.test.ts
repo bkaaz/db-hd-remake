@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   pitchFor,
   rateFor,
+  romIds,
   soundIdCollisions,
   soundForLine,
   soundForRom,
@@ -158,4 +159,11 @@ describe("soundForLine", () => {
     expect(soundForLine(voices, 0x30)).toBeUndefined();
   });
 });
+});
+
+describe("romIds", () => {
+  it("names the ids a bank answers, the first bank winning", () => {
+    const ids = romIds({ land_0c: { file: "0c.wav", gain: 1, rom: 0x0c } }, { voice_shout: { file: "x.wav", gain: 1, rom: 0x32 }, other: { file: "y.wav", gain: 1, rom: 0x0c } });
+    expect([...ids]).toEqual([[0x0c, "land_0c"], [0x32, "voice_shout"]]);
+  });
 });

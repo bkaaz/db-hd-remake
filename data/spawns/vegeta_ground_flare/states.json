@@ -13,8 +13,8 @@
       "damage": 20,
       "lasts": 66,
       "rehit": 32,
-      "hitSound": "burst_1",
-      "blockSound": "burst_1",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
       "outlivesHit": true,
       "endsWithMove": true
     }

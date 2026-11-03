@@ -321,9 +321,9 @@ The Kamehameha says line 0 (`$13:D7D0`) on its first frame, Final Flash
 line `0d` (`$13:ECE0`) as it fires. A line is chunks, each a byte count
 and that many bytes of BRR sent to the chip at `$3700` (`$00:DA6F`), until
 a count of 0; a chunk's last block ends it. 75 bytes go a frame (`$067A`),
-so it plays at 8000 samples a second — line 0 lasts 0.85 s, as its clip
-`080` does. `src/rom/lines.ts` decodes them; a fighter's are the ids his
-scripts' `a1` name.
+so it plays at 8000 samples a second. There are `2e` of them (`00`–`2d`),
+each in the sound test (`line_0d.wav`); a fighter's are the ids his
+scripts' `a1` name (`src/rom/lines.ts`).
 
 **The Kamehameha's hit lights the defender up** (`dump-vram.lua`,
 `log-palettes.lua`): the burning above, and BG palettes 2–7 turn white for
@@ -351,77 +351,44 @@ frames apart re-key the hit's two voices and the hurt voice's; charging's
 swing, the attacker's), `12` (the hit, `09` + 9: the defender's side) and
 `33` (`30` + 3, the defender's voice).
 
-**Which clip is which id, compared** (`npm run samples`, 2026-10-30): the
-sound chip's RAM (`tools/re/dump-spc.lua`; sample directory at `$1A00`,
-effects in samples `10`–`19`, `1e`, `1f`, `22`, `23`) decoded at the
-pitch each request played it (`log-dsp.lua`) and correlated with our
-clips. A sound is a sample at a pitch: `06` and `07` are both sample `17`.
-A sound whose pitch slides is compared along its slide, frame by frame as
-the recording played it (`npm run samples -- --sweep`): at one pitch the
-hit matched the ki shot's clip, which is what the owner heard. The
-Kamehameha's shot is `0a` from its script, and the sound lasts while the
-beam flies: a strike (`16` @ `03EB` with `14` @ `0785`, 10 frames), then a
-rising rush (`15`, `021F` → `05DF`) over a long low tone (`14` @ `03F9`).
-Its hit is a ki blast's — `0a` and `30` on the defender's side, other
-voices, so the shot sounds on (recorded from afar, the spoken line
-over). The explosion object (`$0F:E1A9`) asks for no sound.
+A sound is a sample at a pitch: `06` and `07` are both sample `17`. The
+effects take voices 5–7 and samples from `10`; the music the rest, and a
+few effects (`01`–`04`, `21`, `28`, `39`) play on the music's samples, so
+they sound as whatever music is loaded has them `?`. The Kamehameha's shot
+is `0a` from its script, and the sound lasts while the beam flies: a
+strike (`16` @ `03EB` with `14` @ `0785`, 10 frames), then a rising rush
+(`15`, `021F` → `05DF`) over a long low tone (`14` @ `03F9`). Its hit is a
+ki blast's — `0a` and `30` on the defender's side, other voices, so the
+shot sounds on. The explosion object (`$0F:E1A9`) asks for no sound; the
+original plays nothing when Goku jumps, as far as the code shows.
 
-| id | sample @ pitch | clip, likeness | the next |
-|---|---|---|---|
-| `05` | `17` @ `0A0D` | `003` 0.99 | 0.32 |
-| `06` | `17` @ `06B3` | `004` 0.99 | 0.53 |
-| `29` | `18` @ `1C38` for 7 frames, then @ `0EF3`, ~0.95 s | `021` 0.41 | 0.11 |
-| `2c` | `15` @ `01F4`, ~1.9 s | `023` 0.53 | 0.38 |
-| `2d`, `2f` | `18` re-keyed on two voices in turn, its pitch sliding (`049F` → `0258` …) | none: 0.20 at best; `024`, `025` by ear (owner) — a render from the chip is not like them either (0.06) `?` | — |
-| `38` | `19` @ `0998` with `15` on two voices, sliding down | none — rendered | — |
-
-A sound no clip holds is **rendered from the chip**: its sample, from the
-RAM dump, played along what each voice did frame by frame — pitch,
-envelope, a fresh note after a silence (`npm run samples -- --render`,
-`src/audio/render.ts`). The effects take voices 5–7 and samples from `10`;
-the music the rest `?`. In Saiyan Meteor's recording `16` is player two's
-`0d` (`0d` + 9), the bounces, not the ball.
-| `07` | `17` @ `0504` | `005` 0.99 | 0.25 |
-| `0c` | `16` @ `02EF` | `010` 0.86 | 0.49 |
-| `0d` | `16` @ `029D` | `011` 0.80 | 0.56 |
-| `32` (Goku) | `1f` @ `03F6` | `045` 0.92 | 0.11 |
-| `33` | `22` @ `03F6` | `058` 0.82 | 0.21 |
-| `09` / `12` | `14` sliding `0785` → `0613` over 30 frames | `007` 0.41 | 0.17 |
-| `0a` / `13` | `14` @ `0785` for 16 frames, then @ `03F9` | `008` 0.31 | 0.21 |
-| `19` | `18` @ `0237`…, looped | none `?` | — |
-
-`06` and `07` had been one clip off (`003`/`004` for `004`/`005` — `005`
-is no jump: the original plays nothing when Goku jumps, as far as the
-code shows); the bank now
-names them by id (`swing_06`, `swing_07`, `hit_09`), and `goku_old` keeps
-the old names. The sound test plays its number as the id, unchanged below `0x50`
-(`$00:D213`, number in `$19A6`) — but the clips of our capture are numbered
-by where the silences fell, not by the sound test, so a clip is **not** an
-id: matching them by an offset gave a wrong hit sound. **But the capture is the sound test played in order**, and its list holds each sound once: `01`–`0d`, then every other id from `17` (`17`, `19`, … `29`, `2b`–`2d`, `2f`), `38`–`3a`, `3d`, `3f`–`41`, `44`, `46`, `48`–`4d`, `4f` (`tools/re/record-sound-test.lua`, 2026-11-02) — the ids between are player two's, shifted (`$0D:D852`). So the clips follow the list's order: `05` is `003` … `0d` `011`, `17` `012`, `19` `013` … `4f` `041`, and `npm run samples -- --map` pairs them by likeness kept in that order (`alignInOrder`), a sound of the music's samples by the one clip its neighbours leave free. A melee hit plays
+**The sound test's number is not an id**: its list (`tools/re/record-sound-test.lua`, 2026-11-03) runs every effect once by id — `01`–`0d`, then every other id from `17` (`17`, `19`, … `29`, `2b`–`2d`, `2f`), `38`–`3a`, `3d`, `3f`–`41`, `44`, `46`, `48`–`4d`, `4f`; the ids between are player two's, shifted (`$0D:D852`) — then each fighter's three voices, the blow taken (`30`), the **KO (`31`)** and the shout (`32`), in the order goku, gohan, gotenks, vegeta, vegetto, cell, piccolo, mr_buu, buu, freeza, then every spoken line `00`–`2d`, and wraps to its first entry. `npm run sound-test` cuts a recording of it into one file per entry, named by what the game asked for, into `assets/audio/sfx/` (`audio-capture.md`) — every bank entry is its id's file. A melee hit plays
 `09` (`$0D:D1B7`) and the defender's own `30`; a projectile's, `0a` and `30`
 (`$0D:D1E6`). The export puts each script's `a0` on the animation step it
-begins (`sfx`); `"rom"` in a `sounds.json` is which ids are matched — by the
-code that plays them, since a clip's number says nothing:
+begins (`sfx`); `"rom"` in a `sounds.json` is the id an entry is. What
+plays each, where it is known:
 
 | id | played by | ours |
 |---|---|---|
+| `02` / `03` / `04` | the menus (`$02:A4A6`…); `04` as a character is chosen (owner) | `sfx_02` / `sfx_03` / `confirm_04` |
 | `05` | Side Slash's script, as he steps into the depth | `swing_05` |
 | `06` / `07` | a punch's / a kick's script (`06` for Goku's near B too) | `swing_06` / `swing_07` |
 | `09` | a melee hit (`$0D:D1BC`) | `hit_09` |
-| `0a` | a projectile's hit, a blocked projectile (`$0D:CF6D`, `D1E9`); the Kamehameha's shot (`aa`'s script) | `burst_1` |
-| `0b` | the ki blast fired (script) | `blast_1` |
-| `0c` | landing from a jump (`$0F:9FB8`) | `land_1` |
-| `0d` | a body hitting the floor (knockdown handler `$0F:A217`) | `land_2` |
-| `17` | a blocked melee blow (`$0D:CF55`) | `block_1` |
-| `19` | charging ki, every 8 frames (`$0F:A044`); Vegeta's Energy Field's object, ticks 1, 4 … 25 (`$0F:BBAC`) | `charge_1` |
-| `25` | charging the Kamehameha (`aa`'s script) | `charge_2` |
+| `0a` | a projectile's hit, a blocked projectile (`$0D:CF6D`, `D1E9`); the Kamehameha's shot (`aa`'s script) | `burst_0a` |
+| `0b` | the ki blast fired (script) | `blast_0b` |
+| `0c` | landing from a jump (`$0F:9FB8`) | `land_0c` |
+| `0d` | a body hitting the floor (knockdown handler `$0F:A217`) | `land_0d` |
+| `17` | a blocked melee blow (`$0D:CF55`) | `block_17` |
+| `19` | charging ki, every 8 frames (`$0F:A044`); Vegeta's Energy Field's object, ticks 1, 4 … 25 (`$0F:BBAC`) | `charge_19` |
+| `25` | charging the Kamehameha (`aa`'s script) | `charge_25` |
+| `27` | the sound test's cursor, on every → (`record-sound-test.lua`'s log) | `cursor_27` |
 | `29` | a teleport's script, as he vanishes | `teleport_29` |
-| `2c` | Saiyan Meteor's explosion, every 64th frame while white (`$0F:F2A0`) | `explosion_2c` (`023`), ours as the ball hits the ground, the ki shot's `blast_1` as it is thrown (owner, by ear) |
-| `2d` / `2f` | Saiyan Meteor's ball at the fist (`ae`'s script, 200) / over the head (306) | `ball_2d` / `ball_2f`: clips `024` / `025` (owner) |
-| `38` | Saiyan Meteor at 386, before the throw | `meteor_38`, rendered |
-| `3d` | Vegeta's Ground Flare (`a9`'s script): sample `15`, one voice sliding down from `07D8` | `flare_3d`: clip `029` (owner, by ear) |
+| `2c` | Saiyan Meteor's explosion, every 64th frame while white (`$0F:F2A0`) | `explosion_2c`, ours as the ball hits the ground |
+| `2d` / `2f` | Saiyan Meteor's ball at the fist (`ae`'s script, 200) / over the head (306) | `ball_2d` / `ball_2f` |
+| `38` | Saiyan Meteor at 386, before the throw | `meteor_38` |
+| `3d` | Vegeta's Ground Flare (`a9`'s script): sample `15`, one voice sliding down from `07D8` | `flare_3d` |
 | `30` | the defender's voice, on every blow taken (`$0D:D1C3`) | the fighter's `voice_hurt` |
-| `31` | the voice at KO (`$0D:D10C`) | — |
+| `31` | the voice at KO (`$0D:D10C`) | the fighter's `voice_ko` |
 | `32` | an attack's shout (the ki blast, specials) | the fighter's `voice_shout` |
 
 **A fighter's voice is two samples** the chip is given as a fight loads
@@ -429,9 +396,10 @@ code that plays them, since a clip's number says nothing:
 sample directory (8 bytes for `$1A78`), player two's (`$1A88`), and the
 samples (for `$4000`, player two's `$5600`) — each a byte count and an
 address, then the bytes. The first is the cry of a blow taken (`30`), the
-second the shout (`32`), both at pitch `03F6`. Goku's are `$15:8000`, the
-same bytes as `spc.bin`'s; player two in that dump was Vegetto (character
-4). `src/rom/voice.ts` reads them; `31`, the KO, is not read.
+second the shout (`32`), both at pitch `03F6`. Goku's are `$15:8000`.
+`src/rom/voice.ts` reads them, by which `npm run sound-test` tells whose
+voices its recording holds; the KO (`31`) is not among them, and is
+streamed `?` — the sound test holds it (`goku_31.wav`).
 
 **Charging ki refills health** (`$0F:A020`): every 2 frames of the game's
 count `$74` the dial (field `0x66`) steps 1; at 12 it goes back to 0 and
@@ -825,7 +793,7 @@ the opponent, 28 px up — frames 276 to 304. Ours: the state's `ball`
 list, `seize.bursts` and `seize.finale` (ADR 0047). Not built: the band
 of state 4–5 (kind 4 along the floor, `$0F:F1BC` / `F1F3`, a frame or
 two) and sound `2c`, asked every 64th frame of the game while white
-(`$0F:F2A0`), which has no clip.
+(`$0F:F2A0`).
 
 **The game's `$37`** asks for a screen effect, run once through the table
 at `$0E:8387` (`$0E:836B`), most of them back to `04` when done: `1c`
