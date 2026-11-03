@@ -5,12 +5,15 @@ import { effectsNamed } from "../entity/states";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { landBlow, type BlowContext, type BlowResult } from "./blow";
 import { objectGone } from "../camera/camera";
+import { logEvent } from "../log";
 
 /** No edge holds a bolt back: it is gone once it strays too far (`objectGone`). */
 const ANYWHERE: Bounds = { min: -Infinity, max: Infinity };
 
 /** One bolt in the air, the only body it may hit, and who is owed the news. */
 interface Live {
+  /** Its spawn's name, for the log. */
+  name: string;
   bolt: Entity;
   foe: Entity;
   /**
@@ -140,7 +143,8 @@ export class Projectiles {
       return [e];
     });
     const ride = bolt.rides ? { ahead: (bolt.x - owner.x) * from.facing, down: bolt.y - owner.y } : null;
-    this.live.push({ bolt, foe, owner, companions, beam: from.beam, ride, thrownIn: bolt.endsWithMove ? owner.state : null });
+    this.live.push({ name: from.spawn, bolt, foe, owner, companions, beam: from.beam, ride, thrownIn: bolt.endsWithMove ? owner.state : null });
+    logEvent(`bolt ${from.spawn} out at x ${Math.round(bolt.x)}`);
   }
 
   /**
@@ -154,7 +158,7 @@ export class Projectiles {
   update(paused: boolean, view: { x: number; y: number }, impact: BlowContext): ProjectileHit[] {
     const hits: ProjectileHit[] = [];
     for (let i = this.live.length - 1; i >= 0; i--) {
-      const { bolt, foe, owner, companions, beam, ride, thrownIn } = this.live[i];
+      const { name, bolt, foe, owner, companions, beam, ride, thrownIn } = this.live[i];
       if (!paused) bolt.update(NO_INPUT, null, ANYWHERE);
       // the original's object takes its thrower's place every frame (Energy Field, $0F:BBB3)
       if (ride) {
@@ -175,6 +179,8 @@ export class Projectiles {
       const burst = bolt.attackBurst;
       if (floored && !result && burst) impact.effects.spawn(burst, bolt.x, bolt.y);
       if ((result && !bolt.outlivesHit) || floored || stranded || orphaned || bolt.expired) {
+        const why = result ? "hit" : floored ? "floored" : stranded ? "strayed" : orphaned ? "orphaned" : "expired";
+        logEvent(`bolt ${name} gone (${why}) at x ${Math.round(bolt.x)}, screen x ${Math.round(bolt.x - view.x)}`);
         bolt.view.destroy({ children: true });
         for (const c of companions) this.release(c);
         this.live.splice(i, 1);

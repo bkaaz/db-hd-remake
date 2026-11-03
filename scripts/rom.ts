@@ -429,7 +429,8 @@ if (command === "tiles") {
     const spawns = ownObjects(rom, T, recorded, lives);
     for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }))) {
       writeSpawn(spawn, e);
-      const timed = recorded.find((o) => o.name === spawn)?.ticks ? "timed by its code's table" : `shown as ${recording} shows them`;
+      const def = recorded.find((o) => o.name === spawn);
+      const timed = def?.ticks || def?.animations ? "timed by its code" : `shown as ${recording} shows them`;
       console.log(`${spawn}: ${Object.keys(e.frames).length} frames, ${timed}`);
     }
   }

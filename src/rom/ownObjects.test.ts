@@ -41,18 +41,15 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's own objects", () => {
     expect([def.frames, def.steps, def.loop]).toEqual([[0, 1, 0, 1, 0, 1, 0], [4, 5, 5, 5, 5, 6, 6], false]);
   });
 
-  // Final Flash's small head, recorded as the global counter happened to find it
-  const head: Life = {
-    ...ball, anim: 0xb, vy: 0,
-    steps: [[1, 4], [2, 8], [3, 8], [0, 5], [1, 6]].map(([frame, dur]) => ({ frame, dur })),
-  };
   const base: Life = { ...ball, anim: 0xa, vx: 0, vy: 0, steps: [{ frame: 0, dur: 6 }] };
   const named = (anim: number) => OWN_OBJECTS.vegeta!.filter((o) => o.anim === anim);
 
-  it("cycles through the frames the recording showed, each as long as the code says, not as the slowed game did", () => {
-    const [def] = ownObjects(rom, vegeta, named(0xb), [head]);
-    expect([def.frames, def.steps, def.loop]).toEqual([[0, 1, 2, 3], [4, 4, 4, 4], true]);
-    expect(def.loads).toEqual([{ resource: 0x4d, vram: 0x6c00 }]);
+  it("loops every frame a head's code counts to, with no recording: the one a recording missed is not lost", () => {
+    // $0F:BE2C wraps at 6; a recording had shown five, and the sixth was drawn empty
+    const [small, , large] = ownObjects(rom, vegeta, [...named(0xb), ...named(0xc), ...named(0xd)], []);
+    expect(small.animations?.play).toEqual({ frames: [0, 1, 2, 3], dur: 4, loop: true });
+    expect(large.animations?.play).toEqual({ frames: [0, 1, 2, 3, 4, 5], dur: 4, loop: true });
+    expect(small.loads).toEqual([{ resource: 0x4d, vram: 0x6c00 }]);
   });
 
   it("plays a way in, a loop and a way out where the code does, and nothing of the recording's timing", () => {

@@ -86,7 +86,10 @@ first.
 - **Its speed** — `b0`'s vx / vy (`npm run rom -- move`, `port`).
 - **Its frames, how long each, loop, what it becomes** — read its code
   first: `npm run rom -- code <type> <anim>` names a frame table
-  (`OwnObject.ticks`, `loop` if it wraps — then no recording is needed),
+  (`OwnObject.ticks`, `loop` if it wraps — then no recording is needed);
+  a counter that wraps (`INC $02,X / CMP #n`) is `animations`, frames 0 to
+  n − 1 — never the frames a recording happened to show (Final Flash's
+  head lost one that way);
   "becomes 0a/02" where its slot is rewritten (a floor test: `burstsAbove`).
   What it does on a hit is the type's table at `$2A:8EC7` (`rom.md`). Only
   what the code will not give: a recording, one long session per fighter

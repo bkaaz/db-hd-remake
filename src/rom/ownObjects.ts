@@ -28,8 +28,6 @@ export interface OwnObject {
   palette: number;
   /** How many records after `palette` its code steps through, one every 4 frames ($01:84EF, `$0F:BA7F`). */
   shimmer?: number;
-  /** Its code steps through the frames the recording showed every `cycle` frames, round and round. */
-  cycle?: number;
   /**
    * Its tiles where its move's own load is not all of them: what the
    * recording's VRAM snapshot holds under its tile numbers
@@ -93,9 +91,11 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     // up, 5–6 out ($0F:BD2E). The heads step palettes 0x130–0x133 by $74
     // ($0F:BE3D), which the base and band share; no `shimmer` until all three
     // step together — the head stepping alone flickered (bugs.md)
-    ...([["s", 0xb], ["m", 0xc], ["l", 0xd]] as const).map(([size, anim]) => (
-      { name: `vegeta_final_flash_${size}`, type: 0x1, anim, hits: true, cycle: 4, palette: 0x130 }
-    )),
+    // the small head shows ($74 & 0C) / 4, the others count to 5 / 6 and wrap: frames 0 to n - 1, 4 each
+    ...([["s", 0xb, 4], ["m", 0xc, 5], ["l", 0xd, 6]] as const).map(([size, anim, n]) => ({
+      name: `vegeta_final_flash_${size}`, type: 0x1, anim, hits: true, palette: 0x130,
+      animations: { play: { frames: [...Array(n).keys()], dur: 4, loop: true } },
+    })),
     {
       name: "vegeta_final_flash_base", type: 0x1, anim: 0xa, hits: false, palette: 0x130,
       animations: {
@@ -145,8 +145,6 @@ function timing(rom: Uint8Array, o: OwnObject, lives: Life[], what: string) {
   if (o.animations) return { steps: [], animations: o.animations, loop: false };
   const life = fullestLife(lives, o.type, o.anim);
   if (!life) throw new Error(`${what} is not in the recording`);
-  const shown = [...new Set(life.steps.map((s) => s.frame))].sort((a, b) => a - b);
-  if (o.cycle) return { steps: shown.map(() => o.cycle!), frames: shown, loop: true };
   // a life ends, so the recording shows it once through
   return { steps: life.steps.map((s) => s.dur), frames: life.steps.map((s) => s.frame), loop: false };
 }
