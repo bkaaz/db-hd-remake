@@ -463,6 +463,8 @@ export interface StateDef {
    * rather than played out into the recovery behind it.
    */
   holdStep?: number;
+  /** Drawn bobbing where he stands, as the pose above the arena is (`entity/hover.ts`). */
+  hover?: boolean;
   /** Arriving here, a KO's half speed is over before he lies done — Goku's last landing ($10:B022), not Vegeta's. */
   fullSpeed?: boolean;
   /**
@@ -628,8 +630,11 @@ export interface RoundStates {
   ko: string;
   /** Lying here, he is done: the round may end, and a KO's half speed is over ($0D:EBB8). */
   down: string;
-  /** The winner's pose, `3e`. */
-  win: string;
+  /**
+   * The winner's poses, one at random (owner): `3e`, and `82`, which the
+   * original gives only above the arena — a fight this game will not have.
+   */
+  win: string[];
 }
 
 /** What the entity's controller is asking for this frame, facing-relative. */
@@ -1300,8 +1305,8 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     errors.push(`onRelease state "${file.onRelease}" does not exist`);
   }
 
-  for (const [role, name] of Object.entries(file.round ?? {})) {
-    if (!states[name]) errors.push(`round.${role} state "${name}" does not exist`);
+  for (const [role, names] of Object.entries(file.round ?? {})) {
+    for (const name of [names].flat()) if (!states[name]) errors.push(`round.${role} state "${name}" does not exist`);
   }
 
   for (const [name, def] of Object.entries(states)) {
@@ -1633,7 +1638,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     if (file.onGotHit && states[file.onGotHit]) roots.push(file.onGotHit);
     if (file.onGuard && states[file.onGuard]) roots.push(file.onGuard);
     if (file.onRelease && states[file.onRelease]) roots.push(file.onRelease);
-    for (const name of [file.round?.ko, file.round?.win]) if (name && states[name]) roots.push(name);
+    for (const name of [file.round?.ko, ...(file.round?.win ?? [])]) if (name && states[name]) roots.push(name);
     for (const def of Object.values(states)) {
       if (def.onHit && states[def.onHit] && !roots.includes(def.onHit)) roots.push(def.onHit);
       // A stance's own block reaction is forced from outside like any other.

@@ -20,6 +20,25 @@ because a number would only need translating back.
 
 ---
 
+## The body Vegeta throws in his ultimate is not in front of him
+
+`vegeta`, "meteor" — Galactic Gunfire (`ae`/`af`) `?` · noticed by the
+owner 2026-11-03 · cosmetic `?`
+
+The body he throws should be in front of Vegeta (owner). Whether "in front"
+is drawn over him or placed ahead of him is not yet asked `?`.
+
+## Goku's hair in his winning pose has its daylight colours in every light
+
+`goku`, his winning pose (`3e`) by evening or night · noticed 2026-11-03
+· cosmetic
+
+`goku_hair_win` is drawn in palette `0x27B161` alone. `3e`'s handler loads
+record own + `0x130` into the hair's palette (`$20:80EF`, `$01:84EF`):
+`0x170`/`0x171` are `0x27B161`, but `0x172`/`0x173` are `0x27B1E1`, so in
+the lightings whose own record is `0x42`/`0x43` the hair should be in
+other colours. Saiyan Meteor's `goku_hair_normal` may share it `?`.
+
 ## The KO's blow says both voices
 
 `goku`, `vegeta`, a blow that empties health with the KO switch on ·

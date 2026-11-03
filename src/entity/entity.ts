@@ -16,6 +16,7 @@ import { Swing } from "../combat/swing";
 import { slowed } from "../combat/knockback";
 import { trailAt } from "./trail";
 import { moveStep } from "../fx/follow";
+import { hoverOffset } from "./hover";
 import type { ScreenCue } from "../screen";
 import type { FinaleDef } from "../match/finale";
 import { moveOf, type Shoved } from "../combat/corner";
@@ -1380,7 +1381,7 @@ export class Entity {
   /** Push the simulation state into the display objects. */
   render(showBoxes: boolean): void {
     this.sprite.x = this.x;
-    this.sprite.y = this.y;
+    this.sprite.y = this.y + (this.sm?.def.hover ? hoverOffset(this.stateFrames) * this.scale : 0);
     this.sprite.scale.set(this.facing * this.scale * this.size, this.scale * this.size);
 
     this.ballG.clear();

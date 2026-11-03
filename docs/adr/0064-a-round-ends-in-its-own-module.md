@@ -1,6 +1,6 @@
 # 0064 — A round ends in its own module, behind a debug switch
 
-**Status:** accepted 2026-11-03
+**Status:** accepted 2026-11-03; its single `round.win` superseded by 0066
 
 `Round` (`src/match/round.ts`) watches both fighters once a frame, after
 the blows, and steps in at the end: a fighter at zero health is forced into

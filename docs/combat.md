@@ -202,7 +202,8 @@ tap is new logic in `input/buffer.ts`, not just an animation.
 blows that send the opponent to another part of the arena (Goku's `9f`,
 `a0`, `a1`) are wanted, with the flight between the two — but not the ones
 that send him up, into a fight in the air: there is no fight in the air,
-and none is planned yet.
+and there will be none (owner, 2026-11-03). Its winner's pose, `82`, is
+one of two the winner strikes at random.
 
 ## Open
 

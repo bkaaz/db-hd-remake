@@ -7,7 +7,10 @@
   "round": {
     "ko": "ko_rise",
     "down": "ko_down",
-    "win": "win"
+    "win": [
+      "win",
+      "win_air"
+    ]
   },
   "states": {
     "idle": {
@@ -3674,6 +3677,16 @@
           "to": "win_2"
         }
       ]
+    },
+    "win_air": {
+      "anim": "m82",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hover": true,
+      "transitions": []
     }
   }
 }

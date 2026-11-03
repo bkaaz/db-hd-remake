@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Round, type Announcement, type Contender } from "./round";
 
-const STATES = { ko: "ko_rise", down: "ko_down", win: "win" };
+const STATES = { ko: "ko_rise", down: "ko_down", win: ["win", "win_air"] };
 
 function fighter(health = 400): Contender & { health: number; state: string; heard: string[] } {
   return {
@@ -25,10 +25,10 @@ function fighter(health = 400): Contender & { health: number; state: string; hea
   };
 }
 
-function round() {
+function round(dice = 0) {
   const shown: Announcement[] = [];
   const played: string[] = [];
-  const r = new Round({ announce: (a) => shown.push(a), sound: (s) => played.push(s) });
+  const r = new Round({ announce: (a) => shown.push(a), sound: (s) => played.push(s), random: () => dice });
   return { r, shown, played };
 }
 
@@ -107,6 +107,15 @@ describe("Round", () => {
     expect(b.state).toBe("ko_down");
     expect(r.now).toBe("win");
     expect(r.decided).toBe(true);
+  });
+
+  it("picks the winner's pose at random among his", () => {
+    const { r } = round(0.75);
+    const [a, b] = [fighter(), fighter(0)];
+    run(r, [a, b], 1);
+    b.state = "ko_down";
+    run(r, [a, b], 81);
+    expect(a.state).toBe("win_air");
   });
 
   it("calls both down a draw: DOUBLE K.O., one sound, and nobody's pose", () => {

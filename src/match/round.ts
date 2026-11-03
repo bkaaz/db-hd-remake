@@ -33,6 +33,8 @@ export type Announcement = "ko" | "double_ko";
 export interface RoundWorld {
   announce(what: Announcement): void;
   sound(id: string): void;
+  /** 0 to 1, for which of his poses the winner strikes. */
+  random(): number;
 }
 
 /** `a/1f`'s ticks ($0F:E857): its second picture and sound, and when it is gone. */
@@ -113,8 +115,10 @@ export class Round {
     a.ticks++;
     if (a.what === "ko" && a.ticks === SECOND_PICTURE) this.world.sound(ANNOUNCED);
     if (a.ticks < GONE) return;
-    // the one with health left takes `3e`; nobody, and it is a draw ($0F:B2A3)
-    const pose = a.winner?.roundStates?.win;
+    // the one with health left takes a pose ($0F:B2A3) — one of his, at
+    // random (owner), where the original picks by the arena; nobody, a draw
+    const poses = a.winner?.roundStates?.win ?? [];
+    const pose = poses[Math.floor(this.world.random() * poses.length)];
     if (a.winner && pose) a.winner.forceState(pose);
     this.phase = a.winner ? "win" : "over";
   }

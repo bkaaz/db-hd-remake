@@ -153,6 +153,7 @@ export class DebugScene implements Scene {
     const round = new Round({
       announce: (what) => effects.spawn(what, camera.x + 128, camera.y + 80),
       sound: (id) => announcer.play(id),
+      random: Math.random,
     });
 
     return new DebugScene(

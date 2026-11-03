@@ -7,7 +7,10 @@
   "round": {
     "ko": "ko_rise",
     "down": "ko_down",
-    "win": "win"
+    "win": [
+      "win",
+      "win_air"
+    ]
   },
   "states": {
     "idle": {
@@ -2340,6 +2343,20 @@
       "turn": false,
       "win": 1,
       "transitions": []
+    },
+    "win_air": {
+      "anim": "m82",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_air_2"
+        }
+      ]
     },
     "big_bang": {
       "anim": "mad",
@@ -5601,6 +5618,20 @@
         {
           "when": "frames:2",
           "to": "final_flash_fire_l"
+        }
+      ]
+    },
+    "win_air_2": {
+      "anim": "m82_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_air_2"
         }
       ]
     }

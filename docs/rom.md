@@ -1028,7 +1028,16 @@ hair, which the pose's drawings lack — and loops its last part; `0/07`
 (`$0F:B8CD`) shows frame step − 3 of his move and is gone once he leaves
 `3e`, in OBJ palette 0 (`0x27B161`). Vegeta's (`$20:9257`) loads palette
 own + `0x98` (field `0x17`) on frame 1 — record `0xE8` by day, his hair
-black where the drawings paint it in the aura's colours 12–13. Both count field `0x70` (`$0D:EBCC`) and at
+black where the drawings paint it in the aura's colours 12–13. Goku's
+loads the hair's palette too on frame 2: record own + `0x130` (`$20:80EF`).
+
+**`82`, the winner's pose above the arena** — `fb` gives it in `$0552`'s
+mode instead of `3e`: Goku's (`$20:81D9`) leaps with a fist up, says line
+`03`, holds drawing `40`, and bobs all the while (`$0D:C40A`: field `0x10`,
+the draw offset, 0 to −6 px and back, a pixel every 4 frames of its
+counter `0x16`, 48 round); Vegeta's (`$20:9272`) says line `10` and loops
+from frame 8. `3c` (Goku turning Super Saiyan) and `3f` are set only by
+the sequencer in bank `$02` (`$02:DD8B`) — the story `?`, not a fight. Both count field `0x70` (`$0D:EBCC`) and at
 304 clear `$0580`, which lets `$0D:CEC5` end the round.
 
 ## Another fighter
