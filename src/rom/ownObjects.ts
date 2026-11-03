@@ -36,8 +36,11 @@ export interface OwnObject {
    * (`npm run rom -- vram`), named in the cartridge.
    */
   loads?: Load[];
-  /** Its code shows a frame a tick from a table, `length` bytes at `at` (a CPU address): its timing, whole. */
-  ticks?: { at: number; length: number };
+  /**
+   * Its code shows a frame a tick from a table, `length` bytes at `at` (a CPU
+   * address): its timing, whole — gone at the end, or round again if `loop`.
+   */
+  ticks?: { at: number; length: number; loop?: true };
   /** Its code plays a way in, a loop and a way out (`SpawnDef.animations`). */
   animations?: SpawnDef["animations"];
 }
@@ -66,7 +69,9 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     { name: "vegeta_ground_flare", type: 0x1, anim: 0x2, hits: true, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fba07, length: 0x42 } }, // a9
     // ab's field: a frame a tick from $0F:BBD6, gone at 27 ($0F:BB6A)
     { name: "vegeta_energy_field", type: 0x1, anim: 0x7, hits: true, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fbbd6, length: 0x1b } }, // ab
-    { name: "vegeta_vertical_ki", type: 0x1, anim: 0x6, hits: true, palette: 0x11c, loads: WITH_48 }, // b1
+    // b1's shot: a frame a tick from $0F:BB49, round and round ($0F:BB25);
+    // falls at b0's vy 4 until its y is b8, then becomes a/02 ($0F:BB05)
+    { name: "vegeta_vertical_ki", type: 0x1, anim: 0x6, hits: true, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fbb49, length: 4, loop: true } }, // b1
     { name: "vegeta_big_bang", type: 0x1, anim: 0x4, hits: true, palette: 0x11c },
     // ac, Final Flash: its heads step every 4th frame of the game ($0F:BDF4,
     // BE0C, BE2C), its base every 4 frames — 0–1 in, 2–4 while the head is
@@ -119,7 +124,10 @@ export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[
 }
 
 /** A table of the frame shown each tick, as steps: one a run of the same frame. */
-export function fromTicks(rom: Uint8Array, { at, length }: { at: number; length: number }): { steps: number[]; frames: number[]; loop: false } {
+export function fromTicks(
+  rom: Uint8Array,
+  { at, length, loop }: { at: number; length: number; loop?: true },
+): { steps: number[]; frames: number[]; loop: boolean } {
   const start = toFile(at);
   if (start === null) throw new Error(`${at.toString(16)} is not ROM`);
   const steps: number[] = [];
@@ -128,7 +136,7 @@ export function fromTicks(rom: Uint8Array, { at, length }: { at: number; length:
     if (frames[frames.length - 1] === frame) steps[steps.length - 1]++;
     else (frames.push(frame), steps.push(1));
   }
-  return { steps, frames, loop: false };
+  return { steps, frames, loop: loop ?? false };
 }
 
 /**

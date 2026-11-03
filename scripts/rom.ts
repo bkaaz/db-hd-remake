@@ -166,7 +166,7 @@ if (command === "tiles") {
     if (p.sounds.length)
       console.log(`  sounds: ${p.sounds.map((s) => `${s.frame}: ${heard(s.id)}${s.handler ? (s.opponent ? ", the handler's, the opponent's" : ", the handler's") : ""}`).join(", ")}`);
     for (const s of p.spawns) {
-      console.log(`  spawns at ${s.frame} (counter ${hex(s.counter)}): object ${hex(s.type)}/${hex(s.anim)} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
+      console.log(`  spawns at ${s.frame} (counter ${hex(s.counter)}): object ${hex(s.type)}/${hex(s.anim)}, vx ${s.vx} vy ${s.vy} — its blow ${s.blow.type}, damage ${s.blow.damage}, stun ${s.blow.stun}`);
       // what the object's own code plays, which no script shows (Energy Field's 19)
       const own = [...new Set(objectFacts(rom, s.type, s.anim).flatMap((f) => (f.sound === undefined ? [] : [f.sound])))];
       if (own.length) console.log(`    its code plays: ${own.map(heard).join(", ")}`);
@@ -386,7 +386,8 @@ if (command === "tiles") {
     const spawns = ownObjects(rom, T, recorded, lives);
     for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }))) {
       write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);
-      console.log(`${spawn}: ${Object.keys(e.frames).length} frames, shown as ${recording} shows them`);
+      const timed = recorded.find((o) => o.name === spawn)?.ticks ? "timed by its code's table" : `shown as ${recording} shows them`;
+      console.log(`${spawn}: ${Object.keys(e.frames).length} frames, ${timed}`);
     }
   }
   writeVoice(T, name);
@@ -452,7 +453,7 @@ function describe(op: ScriptOp): string {
     case "sound": return `sound ${hex(op.id)}`;
     case "voice": return `spoken line ${hex(op.id)}`;
     case "offset": return `draw ${op.dx}, ${op.dy} px from the position`;
-    case "spawn": return `spawn object ${hex(op.type)}/${hex(op.anim)} at ${op.dx}, ${op.dy} (tiles +${hex(op.tiles)}, palette ${op.palette}) when the counter is ${hex(op.counter)}`;
+    case "spawn": return `spawn object ${hex(op.type)}/${hex(op.anim)} at ${op.dx}, ${op.dy}, vx ${op.vx} vy ${op.vy}, timer ${op.timer} (tiles +${hex(op.tiles)}, palette ${op.palette}) when the counter is ${hex(op.counter)}`;
     case "effect": return `draw effect kind ${op.kind} at ${op.dx}, ${op.dy}, size ${op.size}, param ${hex(op.param)} when the counter is ${hex(op.counter)}`;
     case "field96": return `field 0x96 = ${hex(op.value)}`;
     case "stop": return "stop here until the move's code moves on";

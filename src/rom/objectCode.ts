@@ -24,6 +24,8 @@ export const OBJECT_FIELDS: Record<number, string> = {
   0x02: "frame shown",
   0x03: "tile base",
   0x04: "attributes",
+  0x06: "x",
+  0x09: "y",
   0x0b: "timer",
   0x0c: "vx",
   0x0e: "vy",
@@ -78,6 +80,11 @@ export function objectFacts(rom: Uint8Array, type: number, anim: number): Handle
         add({ what: `stays on its thrower's y, ${(last.operand << 16) >> 16} px` });
       if (ins.mnemonic === "STA" && ins.operand === 0 && last?.mnemonic === "ORA" && last.operand === ARMED) add({ what: "re-arms its blow" });
       if (ins.mode !== "dx") return;
+      // a word into +0 rewrites type and animation: the slot is another object now ($0F:BB05)
+      const becomes = (i: Instruction | undefined) => i?.mnemonic === "STA" && i.mode === "dx" && i.operand === 0 && !i.after.m8;
+      if (becomes(ins) && cpu.regs.a !== null) add({ what: `becomes ${hex(cpu.regs.a & 0x0f)}/${hex(cpu.regs.a >> 8)}` });
+      // the new object's first frame, written with it — not a step of this one
+      if (becomes(before) && ins.operand === FRAME) return;
       if (ins.mnemonic === "INC" && ins.operand === FRAME) add({ what: "shows its next frame" });
       if (ins.mnemonic === "STZ" && ins.operand === TIMER) add({ what: "restarts its timer" });
       if (ins.mnemonic === "STZ" && ins.operand === FRAME) add({ what: "shows frame 0" });

@@ -46,7 +46,16 @@ export interface PartReport {
   /** What the script plays, and what the handler plays (`handler: true`) — the opponent's voice, `opponent: true`. */
   sounds: { frame: number; id: number; handler?: true; opponent?: true }[];
   /** Objects started, with what their blow does (`$3D:9624`). */
-  spawns: { frame: number; counter: number; type: number; anim: number; blow: { type: string; damage: number; stun: number } }[];
+  spawns: {
+    frame: number;
+    counter: number;
+    type: number;
+    anim: number;
+    /** `b0`'s speed, px a frame — what the object starts with. */
+    vx: number;
+    vy: number;
+    blow: { type: string; damage: number; stun: number };
+  }[];
   /** What the handler does here: the speed carried in, and the frames it changes. */
   vel: number;
   velAt: [number, number][];
@@ -108,7 +117,17 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
       ],
       spawns: events.flatMap((e) =>
         e.op.op === "spawn" && inside(e.frame)
-          ? [{ frame: e.frame - from, counter: e.op.counter, type: e.op.type, anim: e.op.anim, blow: blowOf(objectRecord(rom, e.op.type, e.op.anim)) }]
+          ? [
+              {
+                frame: e.frame - from,
+                counter: e.op.counter,
+                type: e.op.type,
+                anim: e.op.anim,
+                vx: e.op.vx,
+                vy: e.op.vy,
+                blow: blowOf(objectRecord(rom, e.op.type, e.op.anim)),
+              },
+            ]
           : [],
       ),
       vel: speeds.filter((s) => s.frame < from).at(-1)?.vx ?? 0,

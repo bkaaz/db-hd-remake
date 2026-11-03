@@ -498,6 +498,13 @@
         {
           "when": [
             "frames:2",
+            "command:b1"
+          ],
+          "to": "vertical_ki"
+        },
+        {
+          "when": [
+            "frames:2",
             "command:ab"
           ],
           "to": "energy_field"
@@ -546,6 +553,13 @@
         {
           "when": [
             "frames:2",
+            "command:b1"
+          ],
+          "to": "vertical_ki"
+        },
+        {
+          "when": [
+            "frames:2",
             "command:ab"
           ],
           "to": "energy_field"
@@ -590,6 +604,13 @@
         {
           "when": [
             "frames:2",
+            "command:b1"
+          ],
+          "to": "vertical_ki"
+        },
+        {
+          "when": [
+            "frames:2",
             "command:ab"
           ],
           "to": "energy_field"
@@ -623,6 +644,10 @@
       "airborne": true,
       "turn": false,
       "transitions": [
+        {
+          "when": "command:b1",
+          "to": "vertical_ki"
+        },
         {
           "when": "command:ab",
           "to": "energy_field"
@@ -2498,6 +2523,90 @@
         {
           "when": "animEnd",
           "to": "idle"
+        }
+      ]
+    },
+    "vertical_ki": {
+      "anim": "mb1",
+      "airborne": true,
+      "turn": false,
+      "healthCost": 5,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "vertical_ki_2"
+        }
+      ]
+    },
+    "vertical_ki_2": {
+      "anim": "mb1_2",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0
+          }
+        ]
+      ],
+      "fires": {
+        "spawn": "vegeta_vertical_ki",
+        "at": [
+          8,
+          8
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "vertical_ki_3"
+        }
+      ]
+    },
+    "vertical_ki_3": {
+      "anim": "mb1_3",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0
+          }
+        ],
+        [
+          24,
+          {
+            "vy": 2,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "holdStep": 2,
+      "fires": {
+        "spawn": "vegeta_vertical_ki",
+        "at": [
+          -8,
+          8
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
         }
       ]
     }

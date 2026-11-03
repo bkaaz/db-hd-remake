@@ -119,7 +119,9 @@ export class Projectiles {
     // Its blows come from where it is heading, not from where it is: see
     // `Entity.travels`.
     bolt.travels = true;
-    bolt.groundY = from.y;
+    // one that falls has the floor under it, not the height it left from (Vertical Ki)
+    const above = bolt.burstsAbove;
+    bolt.groundY = above === undefined ? from.y : owner.groundY - above * this.scale;
     bolt.x = from.x;
     bolt.y = from.y;
     this.world.addChild(bolt.view);
@@ -166,7 +168,11 @@ export class Projectiles {
       const stranded = bolt.moving && (bolt.x <= bounds.min || bolt.x >= bounds.max);
       // and is gone the moment he leaves the move that put it out ($0F:BB51)
       const orphaned = thrownIn !== null && owner.state !== thrownIn;
-      if ((result && !bolt.outlivesHit) || stranded || orphaned || bolt.expired) {
+      // down on its floor: its burst where it is, as the original rewrites the slot ($0F:BB05)
+      const floored = bolt.burstsAbove !== undefined && bolt.hasLanded;
+      const burst = bolt.attackBurst;
+      if (floored && !result && burst) impact.effects.spawn(burst, bolt.x, bolt.y);
+      if ((result && !bolt.outlivesHit) || floored || stranded || orphaned || bolt.expired) {
         bolt.view.destroy({ children: true });
         for (const c of companions) this.release(c);
         this.live.splice(i, 1);

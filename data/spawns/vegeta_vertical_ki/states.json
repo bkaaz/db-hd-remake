@@ -1,0 +1,21 @@
+{
+  "_comment": "Vegeta's Vertical Ki shot, b1 (object 1/06, docs/rom.md). Frames and animation by npm run rom -- export --fighter vegeta, timed by $0F:BB49; this file by hand: b0's vx 0 / vy 4 kept the whole fall ($0F:BAEF never changes it), entered through fires.state so its launch applies. At y B8, 16 px above the floor line, it is rewritten as a/02 ($0F:BB05, ADR 0056), as where it hits ($2A:8F0B). Type and damage are the objects' hit table's ($3D:9624). Its hit and block sounds are the other projectiles' — not read for it.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "airborne": true,
+      "launch": [
+        0,
+        4
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 18,
+      "burstsInto": "burst_s",
+      "burstsAbove": 16,
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
+    }
+  }
+}

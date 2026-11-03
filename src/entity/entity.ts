@@ -551,6 +551,16 @@ export class Entity {
     return !!this.sm?.def.endsWithMove;
   }
 
+  /** A bolt whose ground is this far above its thrower's floor, and bursts on it (`burstsAbove`). */
+  get burstsAbove(): number | undefined {
+    return this.sm?.def.burstsAbove;
+  }
+
+  /** Whether this body has come down since its state began. */
+  get hasLanded(): boolean {
+    return this.landed;
+  }
+
   /** A bolt that plays on where it hits (`outlivesHit`). */
   get outlivesHit(): boolean {
     return !!this.sm?.def.outlivesHit;

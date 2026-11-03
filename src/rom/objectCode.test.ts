@@ -37,4 +37,10 @@ describe.skipIf(!existsSync(ROM_PATH))("objectFacts, on the cartridge", () => {
   it("reads his Ground Flare re-armed every 32nd frame of the game", () => {
     expect(at(0x01, 0x02, "re-arms its blow")[0].when).toContain("every 32nd frame of the game");
   });
+
+  it("reads Vertical Ki becoming the explosion a/02 once its y is b8 or more", () => {
+    const becomes = at(0x01, 0x06, "becomes 0a/02");
+    expect(becomes.map((f) => f.when?.at(-1))).toEqual(["when field 09 (y) is b8 or more"]);
+    expect(at(0x01, 0x06, "shows frame 0")).toHaveLength(0);
+  });
 });

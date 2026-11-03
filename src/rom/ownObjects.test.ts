@@ -22,6 +22,11 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's own objects", () => {
     expect(frames.slice(-2)).toEqual([7, 8]);
   });
 
+  it("times Vertical Ki's shot by its table, round and round: frame 0 for 2 ticks, frame 1 for 2", () => {
+    const ki = OWN_OBJECTS.vegeta!.find((o) => o.name === "vegeta_vertical_ki")!;
+    expect(fromTicks(rom, ki.ticks!)).toEqual({ steps: [2, 2], frames: [0, 1], loop: true });
+  });
+
   it("draws from what the spawning move loads for player one: ad's resource 4f at $6C00", () => {
     expect(def.loads).toEqual([{ resource: 0x4f, vram: 0x6c00 }]);
   });

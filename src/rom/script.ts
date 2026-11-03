@@ -43,9 +43,23 @@ export type ScriptOp =
    * 0x800 words is 0x80), its palette, and where it appears from the fighter's
    * position, x mirrored facing left. Fires only while the move's spawn
    * counter (field 0x6e) equals `counter`, then counts it up — so a handler
-   * picks among a script's spawns by setting the counter.
+   * picks among a script's spawns by setting the counter. `timer` is its
+   * +0B's start; `vx` / `vy` its speed in px a frame (8.8, x mirrored facing
+   * left, `$01:87CA`), which its own code may keep or change.
    */
-  | { op: "spawn"; counter: number; type: number; anim: number; tiles: number; palette: number; dx: number; dy: number }
+  | {
+      op: "spawn";
+      counter: number;
+      type: number;
+      anim: number;
+      tiles: number;
+      palette: number;
+      dx: number;
+      dy: number;
+      timer: number;
+      vx: number;
+      vy: number;
+    }
   /**
    * Starts an effect that is drawn rather than a sprite ($01:8834): `kind`
    * (2 the charging ball, 1 the Kamehameha's band) at dx / dy from the
@@ -144,6 +158,9 @@ export function readScript(rom: Uint8Array, at: number): ScriptOp[] {
         palette: (rom[p + 6] >> 1) & 7,
         dx: signed16(word(p + 7)),
         dy: signed16(word(p + 9)),
+        timer: rom[p + 11],
+        vx: signed16(word(p + 12)) / 256,
+        vy: signed16(word(p + 14)) / 256,
       });
       p += SPAWN_LENGTH;
     } else if (c === 0xe0 && !(rom[p + 1] & 0x3f)) {

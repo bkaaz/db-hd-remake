@@ -353,6 +353,12 @@ export interface StateDef {
    */
   burstsInto?: string;
   /**
+   * For a falling bolt: its ground is this many game px above its thrower's
+   * floor, and reaching it puts out its `burstsInto` there and ends it —
+   * Vertical Ki's shot, rewritten as a/02 at y B8 ($0F:BB05; ADR 0056).
+   */
+  burstsAbove?: number;
+  /**
    * An effect put on the floor under the entity as this state begins — the
    * dust a body raises hitting the ground, which the original puts at the
    * body's x on the floor line ($0D:DE6C), whatever the drawing shows.
@@ -1340,11 +1346,21 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     // down is the engine's job, but noticing it is the data's, and a state that
     // never asks stays airborne at ground level: no landing pose, no thud, no
     // way out. This is the one mistake a new launcher will make.
-    if ((def.airborne || leavesGround(def.air)) && !exits.some((t) => t.when === "landed" || t.when === "nearGround")) {
+    // a bolt that bursts on the floor is ended there by `Projectiles`, not by a transition
+    const floorEnds = def.burstsAbove !== undefined;
+    if (
+      (def.airborne || leavesGround(def.air)) &&
+      !floorEnds &&
+      !exits.some((t) => t.when === "landed" || t.when === "nearGround")
+    ) {
       warnings.push(
         `${where}: airborne with no "landed" or "nearGround" transition — ` +
           `nothing happens when it reaches the floor`,
       );
+    }
+
+    if (floorEnds && (typeof def.burstsAbove !== "number" || def.burstsAbove < 0 || !def.burstsInto)) {
+      errors.push(`${where}: "burstsAbove" needs a number of game px, 0 or more, and a "burstsInto" to leave there`);
     }
 
     if (def.damage !== undefined && (typeof def.damage !== "number" || def.damage < 0)) {

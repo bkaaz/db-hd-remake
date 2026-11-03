@@ -935,6 +935,16 @@ describe("an airborne state has to notice the ground", () => {
       expect(found).toEqual([]);
     }
   });
+
+  it("is satisfied by a bolt that bursts on the floor, which needs a burst to leave", () => {
+    const bolt = JSON.parse(JSON.stringify(flying));
+    bolt.states.thrown.burstsAbove = 16;
+    expect(validateStates(bolt, ANIMS).errors.some((e: string) => e.includes('"burstsAbove"'))).toBe(true);
+    bolt.states.thrown.burstsInto = "burst_s";
+    const { errors, warnings } = validateStates(bolt, ANIMS);
+    expect(errors.filter((e: string) => e.includes('"burstsAbove"'))).toEqual([]);
+    expect(warnings.filter((w: string) => w.includes("reaches the floor"))).toEqual([]);
+  });
 });
 
 describe("reactionFor", () => {

@@ -28,14 +28,23 @@ describe("readScript", () => {
     expect(at0(0xd0, 0x08, 0x00, 0xd0, 0xff, 0x00)).toEqual([{ op: "offset", dx: 8, dy: -48 }]);
   });
 
-  it("reads b0 as a spawn: type, animation, tile base, palette and position", () => {
+  it("reads b0 as a spawn: type, animation, tile base, palette, position, timer and speed", () => {
     // ki: type a, animation 3, 40 px ahead and 56 up; hair: base 0x8800 words
     const ki = [0xb0, 0x00, 0xca, 0x03, 0x00, 0x00, 0x04, 0x28, 0x00, 0xc8, 0xff, 0, 0, 3, 0, 0];
     const hair = [0xb0, 0x00, 0x80, 0x05, 0x00, 0x88, 0x88, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     expect(at0(...ki, ...hair, 0x00)).toEqual([
-      { op: "spawn", counter: 0, type: 0xa, anim: 3, tiles: 0, palette: 2, dx: 40, dy: -56 },
-      { op: "spawn", counter: 0, type: 0, anim: 5, tiles: 0x80, palette: 4, dx: 0, dy: 0 },
+      { op: "spawn", counter: 0, type: 0xa, anim: 3, tiles: 0, palette: 2, dx: 40, dy: -56, timer: 0, vx: 3, vy: 0 },
+      { op: "spawn", counter: 0, type: 0, anim: 5, tiles: 0x80, palette: 4, dx: 0, dy: 0, timer: 0, vx: 0, vy: 0 },
     ]);
+  });
+
+  it("reads b0's speed as signed 8.8 and its timer from the byte before", () => {
+    // Big Bang's ball: timer 0, vx 4.0, vy -4.0; then a made-up timer 5, vx -1.5
+    const bang = [0xb0, 0x00, 0xc1, 0x04, 0x00, 0x88, 0x80, 0, 0, 0, 0, 0x00, 0x00, 0x04, 0x00, 0xfc];
+    const odd = [0xb0, 0x00, 0xc1, 0x04, 0x00, 0x88, 0x80, 0, 0, 0, 0, 0x05, 0x80, 0xfe, 0x00, 0x00];
+    const [a, b] = at0(...bang, ...odd, 0x00);
+    expect(a).toMatchObject({ timer: 0, vx: 4, vy: -4 });
+    expect(b).toMatchObject({ timer: 5, vx: -1.5, vy: 0 });
   });
 
   it("reads e0 as a flip of the whole drawing, by OAM's bits", () => {
