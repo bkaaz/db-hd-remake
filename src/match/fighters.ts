@@ -21,6 +21,8 @@ import type { DebugFrame } from "../ui/debug";
 export interface Field {
   bodies: Bounds;
   shots: Bounds;
+  /** The screen's top-left in the world: an object strayed too far from its middle is gone. */
+  view: { x: number; y: number };
 }
 
 export interface FightersSetup {
@@ -167,7 +169,7 @@ export class Fighters {
       this.passShoves(field.shots);
     }
 
-    for (const hit of this.projectiles.update(this.frozen, field.shots, this.impact)) {
+    for (const hit of this.projectiles.update(this.frozen, field.view, this.impact)) {
       this.flash = Math.max(this.flash, hit.result.flash);
       const [from, to] = hit.foe === this.player ? ["P2 bolt", "P1"] : ["P1 bolt", "P2"];
       this.recorder.blow(hit.result, from, to, this.gap(), this.named());

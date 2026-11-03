@@ -152,7 +152,7 @@
     "walk_fwd": {
       "anim": "m01",
       "vel": [
-        1.5,
+        1.3984375,
         0
       ],
       "turn": true,
@@ -292,7 +292,7 @@
     "walk_back": {
       "anim": "m02",
       "vel": [
-        -1.25,
+        -1.09765625,
         0
       ],
       "turn": true,
@@ -679,7 +679,7 @@
           2,
           {
             "vx": 0,
-            "vy": -9.86
+            "vy": -10.75
           }
         ]
       ],
@@ -746,7 +746,7 @@
           2,
           {
             "vx": 2.02,
-            "vy": -9.86
+            "vy": -10.75
           }
         ]
       ],
@@ -809,7 +809,7 @@
           2,
           {
             "vx": -2.02,
-            "vy": -9.86
+            "vy": -10.75
           }
         ]
       ],
@@ -996,7 +996,7 @@
     "dash_fwd": {
       "anim": "m0a",
       "vel": [
-        3,
+        3.09765625,
         0
       ],
       "turn": false,
@@ -1018,7 +1018,7 @@
     "dash_back": {
       "anim": "m0b",
       "vel": [
-        -3,
+        -2.8984375,
         0
       ],
       "turn": false,
@@ -2037,7 +2037,7 @@
     "dash_fwd_run": {
       "anim": "m0a_2",
       "vel": [
-        3,
+        3.09765625,
         0
       ],
       "turn": false,
@@ -2073,7 +2073,7 @@
     "dash_back_run": {
       "anim": "m0b_2",
       "vel": [
-        -3,
+        -2.8984375,
         0
       ],
       "turn": false,
@@ -2131,17 +2131,9 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "big_bang_3"
+          "to": "idle"
         }
-      ]
-    },
-    "big_bang_3": {
-      "anim": "mad_3",
-      "vel": [
-        0,
-        0
       ],
-      "turn": false,
       "fires": {
         "spawn": "vegeta_big_bang",
         "at": [
@@ -2149,13 +2141,7 @@
           -104
         ],
         "state": "fly"
-      },
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "idle"
-        }
-      ]
+      }
     },
     "final_flash": {
       "anim": "mac",

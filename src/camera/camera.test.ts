@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Camera } from "./camera";
+import { Camera, objectGone } from "./camera";
 
 /** The original's sizes (`rom.md`, The camera). */
 const ORIGINAL = { screen: 256, world: 512, floor: 200 };
@@ -71,5 +71,17 @@ describe("Camera", () => {
     expect(camera.rise).toBe(12); // 107 rounds down to 104: 96 up
     for (let i = 0; i < 40; i++) camera.lift([-50]);
     expect(camera.rise).toBe(25); // above the top counts as the top
+  });
+});
+
+describe("objectGone", () => {
+  // the screen at x 100, risen 20: its middle is at 228, 92
+  const view = { x: 100, y: -20 };
+  it("keeps an object within 0xA0 of the screen's middle and drops it past, sideways or up", () => {
+    expect(objectGone(228 + 160, 92, view)).toBe(false);
+    expect(objectGone(228 + 161, 92, view)).toBe(true);
+    expect(objectGone(228 - 161, 92, view)).toBe(true);
+    expect(objectGone(228, 92 - 161, view)).toBe(true);
+    expect(objectGone(228, 92 - 160, view)).toBe(false);
   });
 });

@@ -37078,12 +37078,7 @@
             "h": 79
           }
         ]
-      }
-    ]
-  },
-  "mad_2": {
-    "loop": false,
-    "steps": [
+      },
       {
         "frame": "89",
         "dur": 4,
@@ -37120,11 +37115,20 @@
         "sfx": [
           11,
           50
+        ],
+        "spawns": [
+          {
+            "name": "vegeta_flash",
+            "at": [
+              32,
+              -96
+            ]
+          }
         ]
       }
     ]
   },
-  "mad_3": {
+  "mad_2": {
     "loop": false,
     "steps": [
       {

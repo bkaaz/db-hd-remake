@@ -128,3 +128,17 @@ export class Camera {
     return Math.max(0, Math.min(this.size.world - this.size.screen, x));
   }
 }
+
+/** How far an object may stray from the screen's middle on either axis ($0F:B47D). */
+const OBJECT_REACH = 0xa0;
+/** The screen's middle from its top-left corner: the camera's x + 0x80, its y + 0x70. */
+const MIDDLE = { x: 0x80, y: 0x70 };
+
+/**
+ * An object more than 0xA0 px from the screen's middle, either way on either
+ * axis, is gone ($0F:B47D, after every slot) — off the sides or the top,
+ * 32 px past the screen. `view` is the screen's top-left in the world.
+ */
+export function objectGone(x: number, y: number, view: { x: number; y: number }): boolean {
+  return Math.abs(x - (view.x + MIDDLE.x)) > OBJECT_REACH || Math.abs(y - (view.y + MIDDLE.y)) > OBJECT_REACH;
+}

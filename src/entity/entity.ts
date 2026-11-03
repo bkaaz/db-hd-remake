@@ -9,7 +9,7 @@ import type { SoundPlayer } from "../audio/playback";
 import { activeBall, BALL_COLOUR, nextRadius } from "../combat/ball";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
-import { burnVariant } from "../combat/palettes";
+import { burnVariant, shimmerVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -331,6 +331,8 @@ export class Entity {
   /** Burning, and how far into the fire palettes — counted outside hitstop, as the original's is. */
   private burning = false;
   private burnFrame = 0;
+  /** Frames into an object's life, for its palette run (`shimmer`). */
+  private shimmerFrame = 0;
   private shownVariant: string | null = null;
   /** The palette the arena's light gives it, drawn whenever it is not burning; null is its own sheet's. */
   private lighting: string | null = null;
@@ -593,11 +595,6 @@ export class Entity {
     this.applyFrame();
   }
 
-  /** A bolt whose state's `lasts` has run out. */
-  /** Whether this body is going anywhere — a bolt standing at the stage's edge is not stranded there. */
-  get moving(): boolean {
-    return this.vx !== 0 || (this.airborne && this.vy !== 0);
-  }
 
   /** A bolt that stays on whoever put it out (`rides`). */
   get rides(): boolean {
@@ -624,6 +621,7 @@ export class Entity {
     return !!this.sm?.def.outlivesHit;
   }
 
+  /** A bolt whose state's `lasts` has run out. */
   get expired(): boolean {
     const lasts = this.sm?.def.lasts;
     return lasts !== undefined && this.stateFrames >= lasts;
@@ -1024,7 +1022,12 @@ export class Entity {
    * palette for the stage (field `0x17`).
    */
   private showVariant(): void {
-    const variant = this.burning ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting) : this.lighting;
+    const shimmer = this.def.attributes.shimmer;
+    const variant = this.burning
+      ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting)
+      : shimmer
+        ? (shimmerVariant(shimmer, this.shimmerFrame) ?? null)
+        : this.lighting;
     if (variant === this.shownVariant) return;
     this.shownVariant = variant;
     this.applyFrame();
@@ -1163,6 +1166,11 @@ export class Entity {
       return;
     }
     if (this.burning) this.burnFrame++;
+    // an object's palette run, every 4 frames of its life ($01:84EF)
+    if (this.def.attributes.shimmer) {
+      this.shimmerFrame++;
+      this.showVariant();
+    }
     this.showVariant();
 
     if (this.stun > 0) this.stun--;

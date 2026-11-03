@@ -13,3 +13,16 @@ export function burnVariant(variants: readonly string[], frame: number): string 
   if (variants.length === 0) return undefined;
   return variants[Math.floor(frame / FRAMES_EACH) % variants.length];
 }
+
+/** Frames each palette of an object's run shows ($01:84EF is asked every 4th frame). */
+const SHIMMER_EACH = 4;
+
+/**
+ * Which of an object's `shimmer` variants shows `frame` frames into its life
+ * — undefined for its own palette, the run's first.
+ */
+export function shimmerVariant(variants: readonly string[], frame: number): string | undefined {
+  if (variants.length === 0) return undefined;
+  const at = Math.floor(frame / SHIMMER_EACH) % (variants.length + 1);
+  return at === 0 ? undefined : variants[at - 1];
+}

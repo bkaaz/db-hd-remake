@@ -66,6 +66,12 @@ export interface SpawnDef {
    * without it on screen cannot show.
    */
   palette?: number;
+  /**
+   * The ROM palettes its code steps through after `palette`, one every 4
+   * frames, round and round ($01:84EF): each drawn as a variant sheet,
+   * `shimmer1`…, which the bolt shows in turn (`combat/palettes.ts`).
+   */
+  shimmer?: number[];
   /** What the move loads into VRAM for this object, in place of the fighter's `loads`. */
   loads?: { resource: number; vram: number }[];
   /**
@@ -148,9 +154,8 @@ export const GOKU: FighterTables = {
       { name: "large_ki_blast", type: 0x0, anim: 0x04, steps: [4, 4], loop: true, hits: true, palette: 0x27b161,
         loads: [{ resource: 0x47, vram: 0x6800 }] },
       // the upward Kamehameha's (ab): one frame; its code steps palette
-      // records 0x130 + n every 4 frames ($0F:B7D8) — the recording's first
-      // frame shows the ki blast's, taken here `?`
-      { name: "kame_up", type: 0x0, anim: 0x02, steps: [4], loop: true, hits: true, palette: 0x27b161 },
+      // records 0x130–0x133 every 4 frames ($0F:B7D8; 0x2ADE1C on, 32 apart)
+      { name: "kame_up", type: 0x0, anim: 0x02, steps: [4], loop: true, hits: true, palette: 0x2ade1c, shimmer: [0x2ade3c, 0x2ade5c, 0x2ade7c] },
       // Saiyan Meteor's object at frame 306 of ae, at the mover — normal
       // Goku's hair (owner, 2026-11-01): frames as the recording shows them;
       // drawn in OBJ palette 6 as its b0 says, which holds 0x27B161, the hair

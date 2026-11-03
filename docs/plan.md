@@ -84,20 +84,17 @@ engine does not have. In order:
    (`npm run rom -- code`) checks it. A fighter's own objects are named in
    `src/rom/ownObjects.ts` and nothing else is written by hand: `export
    --fighter` draws and times them; Vegeta's `ad` (Big Bang) fires its ball
-   (`specials.json`, ADR 0038), and his `ac` its Final Flash. Still to do, in order: the flash at his
-   hands (`vegeta_flash` — a spawn that never hits and ends with its
-   animation, which `fires` cannot put out), an object gone off the screen
-   (`rom.md`, `$0F:B47D` — ours only at the screen's sides, never above it), the palette run
-   an object's code steps through, every 4 frames (`$01:84EF`, `rom.md`); for
+   (`specials.json`, ADR 0038), and his `ac` its Final Flash. Still to do, in order: Final Flash's
+   small and large heads' palette run (`shimmer`: their frames are kept from
+   an earlier recording, so variants drawn now would not match them); for
    Final Flash, the head gone when Vegeta leaves the move (`$0F:BE66`); and
    Goku's from a recording of his own. *Done when:* Vegeta's ki blast and
    one special fire from his recording, and Goku's spawns come out of his
    with no hand-written `objects` in `cartridge.ts`.
-2. **Attributes and knockback** — the export writes `attributes.json`'s
-   numbers and the reactions' knockback; Vegeta's are Goku's until then.
-   *Done when:* Goku's equal today's.
-3. **Vegeta's HUD name** — in `exportHud`. Every fighter's voice is read
-   from the cartridge (`src/rom/voice.ts`, `lines.ts`) but the KO's (`31`).
+2. **The jump's vx** — 1.5 × the attribute word at 9 or `0B` (`$0D:FCC2`,
+   `src/rom/attributes.ts`); which of a jump's moves takes which is not
+   read, so every fighter jumps at Goku's 2.02. The rest of the attributes
+   are read; knockback is one table for everyone (`$0D:D68A`).
 
 ## Now: Goku from the cartridge
 

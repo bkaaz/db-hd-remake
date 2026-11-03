@@ -160,7 +160,7 @@ export class DebugScene implements Scene {
         // Read before the bodies move, which is the freeze this frame will use.
         frozen: this.fighters.frozen,
       }),
-      { bodies: this.camera.world, shots: this.camera.screen },
+      { bodies: this.camera.world, shots: this.camera.screen, view: { x: this.camera.x, y: this.camera.y } },
     );
     // Pushed apart before the camera reads the moves, as the original evens
     // out two bodies' speeds before its camera ($0D:C8F0): a camera that saw

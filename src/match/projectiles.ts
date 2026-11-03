@@ -4,6 +4,10 @@ import { Entity, NO_INPUT } from "../entity/entity";
 import { effectsNamed } from "../entity/states";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { landBlow, type BlowContext, type BlowResult } from "./blow";
+import { objectGone } from "../camera/camera";
+
+/** No edge holds a bolt back: it is gone once it strays too far (`objectGone`). */
+const ANYWHERE: Bounds = { min: -Infinity, max: Infinity };
 
 /** One bolt in the air, the only body it may hit, and who is owed the news. */
 interface Live {
@@ -42,7 +46,7 @@ export interface ProjectileHit {
  * blow's are, and the editor can open it.
  *
  * What it does *not* share with a fighter: no input, no gravity, no push, no
- * opponent to turn toward. It flies until it connects or runs out of stage.
+ * opponent to turn toward. It flies until it connects or strays off the screen.
  */
 export class Projectiles {
   private readonly defs = new Map<string, EntityDef>();
@@ -147,25 +151,23 @@ export class Projectiles {
    * is gone in the same frame: it left its burst behind through `hitFx`, which
    * is the effect machinery doing what it already did for sparks.
    */
-  update(paused: boolean, bounds: Bounds, impact: BlowContext): ProjectileHit[] {
+  update(paused: boolean, view: { x: number; y: number }, impact: BlowContext): ProjectileHit[] {
     const hits: ProjectileHit[] = [];
     for (let i = this.live.length - 1; i >= 0; i--) {
       const { bolt, foe, owner, companions, beam, ride, thrownIn } = this.live[i];
-      if (!paused) bolt.update(NO_INPUT, null, bounds);
+      if (!paused) bolt.update(NO_INPUT, null, ANYWHERE);
       // the original's object takes its thrower's place every frame (Energy Field, $0F:BBB3)
       if (ride) {
         bolt.x = owner.x + ride.ahead * owner.facing;
         bolt.y = bolt.groundY = owner.y + ride.down;
       }
-      if (!paused) for (const c of companions) c.update(NO_INPUT, null, bounds);
+      if (!paused) for (const c of companions) c.update(NO_INPUT, null, ANYWHERE);
       // the thrower draws the band to it, if its state has one (combat/band.ts)
       if (beam) owner.beamReaches(bolt.x);
       const result = paused ? null : landBlow(bolt, foe, impact);
       if (result) hits.push({ result, foe });
-      // Off the end of the stage, where `Entity` has clamped it: nothing here
-      // is allowed to hang in a corner waiting for someone to walk into it.
-      // One put down at the edge and standing there is not stranded (Energy Field).
-      const stranded = bolt.moving && (bolt.x <= bounds.min || bolt.x >= bounds.max);
+      // strayed too far from the screen's middle, off a side or the top ($0F:B47D)
+      const stranded = objectGone(bolt.x, bolt.y, view);
       // and is gone the moment he leaves the move that put it out ($0F:BB51)
       const orphaned = thrownIn !== null && owner.state !== thrownIn;
       // down on its floor: its burst where it is, as the original rewrites the slot ($0F:BB05)
@@ -182,7 +184,7 @@ export class Projectiles {
     }
     for (let i = this.leaving.length - 1; i >= 0; i--) {
       const c = this.leaving[i];
-      if (!paused) c.update(NO_INPUT, null, bounds);
+      if (!paused) c.update(NO_INPUT, null, ANYWHERE);
       if (c.finished) {
         c.view.destroy({ children: true });
         this.leaving.splice(i, 1);

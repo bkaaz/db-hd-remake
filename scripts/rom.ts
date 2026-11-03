@@ -51,6 +51,7 @@ import { voiceSounds } from "../src/rom/voice.ts";
 import { romIds, type Sounds } from "../src/audio/sounds.ts";
 import { moveOf, todo } from "../src/rom/todo.ts";
 import { handlerAt, sameHandler } from "../src/rom/handler.ts";
+import { readAttributes, withAttributes } from "../src/rom/attributes.ts";
 import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
@@ -73,7 +74,11 @@ const named = argv.indexOf("--fighter");
 const name = named >= 0 ? argv[named + 1] : "goku";
 // another fighter knows the shared objects (type a: sparks, bursts, dust) by name, so a
 // step that puts one out names it — the sparks of Vegeta's throw — but none of Goku's own
-const SHARED = { ...GOKU.objects, spawns: GOKU.objects.spawns.filter((sp) => sp.type === 0xa) };
+// and his own put out on a step by name: they cut no part (Big Bang's flash)
+const stepped = (OWN_OBJECTS[name as FighterName] ?? []).flatMap((o) =>
+  o.onStep ? [{ name: o.name, type: o.type, anim: o.anim, onStep: o.onStep, steps: [], loop: false, hits: false, palette: 0, loads: [] }] : [],
+);
+const SHARED = { ...GOKU.objects, spawns: [...GOKU.objects.spawns.filter((sp) => sp.type === 0xa), ...stepped] };
 const T = named >= 0 ? fighterNamed(rom, name, SHARED) : GOKU;
 if (named >= 0) argv.splice(named, 2);
 const [command, ...args] = argv;
@@ -191,9 +196,12 @@ if (command === "tiles") {
 } else if (command === "todo" && T !== GOKU) {
   // what is left to read for him, given goku is ported: moves on code goku's states already play are read
   const goku = { name: "goku", t: GOKU, states: JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile };
-  const left = todo(rom, T, [goku]);
-  console.log(`read — the same handler as a move goku plays (${left.read.length}):`);
-  for (const r of left.read) console.log(`  ${hex(r.move)}  as goku's ${r.states.join(", ")}`);
+  // and his own states, his specials merged in: a move one of them plays is read too
+  const ownPath = `data/entities/${name}/states.json`;
+  const his = existsSync(ownPath) ? [{ name, t: T, states: JSON.parse(readFileSync(ownPath, "utf8")) as StatesFile }] : [];
+  const left = todo(rom, T, [goku, ...his]);
+  console.log(`read — the same handler as a move goku plays, or one of his own states (${left.read.length}):`);
+  for (const r of left.read) console.log(`  ${hex(r.move)}  as ${r.by}'s ${r.states.join(", ")}`);
   console.log(`\nto read — handlers no ported move runs (${left.toRead.length}), the most shared first:`);
   const objects = new Map<string, string>();
   for (const r of left.toRead) {
@@ -207,7 +215,9 @@ if (command === "tiles") {
     console.log(`  ${r.moves.map(hex).join(" ").padEnd(11)} ${long(r.handler)}${shared}  ${what.filter(Boolean).join(", ")}`);
   }
   console.log(`\n${left.elsewhere} more moves have a script nobody reaches by a button or plays yet`);
-  const exported = new Set(GOKU.objects.spawns.map((sp) => `${hex(sp.type)}/${hex(sp.anim)}`));
+  const exported = new Set(
+    [...GOKU.objects.spawns, ...(OWN_OBJECTS[name as FighterName] ?? [])].map((sp) => `${hex(sp.type)}/${hex(sp.anim)}`),
+  );
   const [have, need] = [[...objects.keys()].filter((o) => exported.has(o)), [...objects.keys()].filter((o) => !exported.has(o))];
   console.log(`objects: already exported ${have.join(" ") || "none"}; to record ${need.join(" ") || "none"}`);
 } else if (command === "spawns") {
@@ -343,7 +353,10 @@ if (command === "tiles") {
   // his own specials, by hand beside it, merged in so a run does not wipe them
   const specialsPath = `data/entities/${name}/specials.json`;
   const own = existsSync(specialsPath) ? (JSON.parse(readFileSync(specialsPath, "utf8")) as SpecialsFile) : null;
-  const file = own ? withSpecials(made.file, own) : made.file;
+  // his own walk, dash and jump on the template's states ($3D:9D9B)
+  const his = readAttributes(rom, T.character);
+  const moved = withAttributes(made.file, his);
+  const file = own ? withSpecials(moved, own) : moved;
   writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(file, null, 2) + "\n");
   if (own) console.log(`his own: ${Object.keys(own.states).join(", ")} (${specialsPath})`);
   for (const [state, why] of Object.entries(made.dropped)) console.log(`dropped ${state}: ${why}`);
@@ -359,13 +372,24 @@ if (command === "tiles") {
     if (move !== null && !read.has(move) && !sameHandler(rom, GOKU, T, move))
       console.log(`${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, T.character, move))}) — to read`);
   }
-  // goku's numbers until the attributes are read (plan.md); his own lightings, and the fire everyone burns in
+  // his defence, gravity and grab range; Goku's for what is not read (push width, close ranges); his lightings, and the fire
   const attributes = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8"));
   writeFileSync(
     `data/entities/${name}/attributes.json`,
-    JSON.stringify({ ...attributes, grabRange: commandContext(rom, T.character).grab, palettes: [...Object.keys(lightingPalettes(rom, T)), ...Object.keys(FIRE)], burn: Object.keys(FIRE) }, null, 2) + "\n",
+    JSON.stringify(
+      {
+        ...attributes,
+        defence: his.defence,
+        gravity: his.gravity,
+        grabRange: commandContext(rom, T.character).grab,
+        palettes: [...Object.keys(lightingPalettes(rom, T)), ...Object.keys(FIRE)],
+        burn: Object.keys(FIRE),
+      },
+      null,
+      2,
+    ) + "\n",
   );
-  console.log(`${name}: ${Object.keys(made.file.states).length} states; attributes are goku's but the palettes and the grab range`);
+  console.log(`${name}: ${Object.keys(file.states).length} states; his defence, gravity, walk, dash and jump; Goku's push width and close ranges`);
 } else if (command === "export" && T !== GOKU) {
   // his lightings and the fire; the shared spawns, the arenas and the HUD stay Goku's export
   const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lightingPalettes(rom, T) } });
@@ -391,7 +415,7 @@ if (command === "tiles") {
     if (missed.length > 0) throw new Error(`not in ${recording}: ${missed.map((o) => o.name).join(", ")}`);
     const spawns = ownObjects(rom, T, recorded, lives);
     for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }))) {
-      write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);
+      writeSpawn(spawn, e);
       const timed = recorded.find((o) => o.name === spawn)?.ticks ? "timed by its code's table" : `shown as ${recording} shows them`;
       console.log(`${spawn}: ${Object.keys(e.frames).length} frames, ${timed}`);
     }
@@ -408,7 +432,7 @@ if (command === "tiles") {
   console.log(`goku: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
   writeVoice(GOKU, "goku");
   for (const [name, spawn] of Object.entries(exportSpawns(rom, GOKU))) {
-    write(`assets/sheets/spawns/${name}.png`, `data/spawns/${name}`, spawn);
+    writeSpawn(name, spawn);
     console.log(`${name}: ${Object.keys(spawn.frames).length} frames`);
   }
   for (const [name, source] of Object.entries(ARENAS)) {
@@ -419,7 +443,8 @@ if (command === "tiles") {
     writeFileSync(`data/arenas/${name}/arena.json`, JSON.stringify(file, null, 2) + "\n");
     console.log(`${name}: ${file.layers.length} layers × ${file.times.length} lightings`);
   }
-  const hud = exportHud(rom, { goku: GOKU.character });
+  // every fighter's name, by his place in the roster ($00:C511)
+  const hud = exportHud(rom, Object.fromEntries(ROSTER.map((fighter, character) => [fighter, character])));
   mkdirSync("assets/hud", { recursive: true });
   mkdirSync("data/hud", { recursive: true });
   writeFileSync("assets/hud/hud.png", encodePng(hud.image));
@@ -445,6 +470,22 @@ function write(sheetPath: string, dir: string, e: Exported): void {
   writeFileSync(sheetPath, encodePng(e.sheet));
   writeFileSync(`${dir}/frames.json`, JSON.stringify(e.frames, null, 2) + "\n");
   writeFileSync(`${dir}/animations.json`, JSON.stringify(e.animations, null, 2) + "\n");
+}
+
+/**
+ * A spawn as `write` leaves it, and the palettes its code steps through: a
+ * sheet each beside its own, named in its `attributes.json` (`shimmer`).
+ */
+function writeSpawn(spawn: string, e: Exported): void {
+  write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);
+  const variants = Object.entries(e.variants ?? {});
+  for (const [variant, sheet] of variants) writeFileSync(`assets/sheets/spawns/${spawn}@${variant}.png`, encodePng(sheet));
+  const names = variants.map(([variant]) => variant);
+  if (!names.length) return;
+  // beside what is there by hand (Big Bang's gravity 0)
+  const at = `data/spawns/${spawn}/attributes.json`;
+  const kept = existsSync(at) ? JSON.parse(readFileSync(at, "utf8")) : {};
+  writeFileSync(at, JSON.stringify({ ...kept, palettes: names, shimmer: names }, null, 2) + "\n");
 }
 
 function describe(op: ScriptOp): string {

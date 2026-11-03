@@ -128,6 +128,12 @@ export interface Attributes {
   /** Of those, the ones burning steps through, in order ($0D:EC98). */
   burn: string[];
   /**
+   * Of those, the ones an object's code steps through after its own, one
+   * every 4 frames, round and round ($01:84EF): Big Bang's ball, Final
+   * Flash's heads (`combat/palettes.ts`).
+   */
+  shimmer?: string[];
+  /**
    * For an effect: whether each one is shown mirrored at random, as the
    * generated sparks are; an effect taken from the cartridge is not.
    */

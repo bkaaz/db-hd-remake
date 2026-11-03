@@ -136,13 +136,16 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
     shows: a.frames.map((frame, i) => ({ frame, dur: a.durs[i] })),
   }));
   const drawn = [...new Set(parts.flatMap((p) => p.shows.map((s) => s.frame)))];
-  const items: Placed[] = drawn.map((frame) => {
-    const pieces = readLayout(rom, objectFrame(rom, def.type, def.anim, frame)).map((p) => ({ ...p, tile: p.tile + tiles }));
-    // an empty layout is how an object shows nothing for a while (idle's lightning)
-    if (pieces.length === 0) return { id: String(frame), ...NOTHING };
-    return { id: String(frame), ...drawFrame(vram, pieces, readPalette(rom, colours)) };
-  });
-  const { sheet, frames } = packSheet(items);
+  const drawIn = (palette: number): Placed[] =>
+    drawn.map((frame) => {
+      const pieces = readLayout(rom, objectFrame(rom, def.type, def.anim, frame)).map((p) => ({ ...p, tile: p.tile + tiles }));
+      // an empty layout is how an object shows nothing for a while (idle's lightning)
+      if (pieces.length === 0) return { id: String(frame), ...NOTHING };
+      return { id: String(frame), ...drawFrame(vram, pieces, readPalette(rom, palette)) };
+    });
+  const { sheet, frames } = packSheet(drawIn(colours));
+  // the same pictures in each palette of its run pack the same way: frame for frame
+  const variants = Object.fromEntries((def.shimmer ?? []).map((palette, i) => [`shimmer${i + 1}`, packSheet(drawIn(palette)).sheet]));
   const animations: Record<string, Anim> = {};
   for (const part of parts) {
     animations[part.name] = {
@@ -155,5 +158,5 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
       }),
     };
   }
-  return { sheet, frames, animations, notes: [] };
+  return { sheet, frames, animations, notes: [], ...(def.shimmer?.length && { variants }) };
 }

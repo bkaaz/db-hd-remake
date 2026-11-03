@@ -26,6 +26,8 @@ export interface OwnObject {
    * first of the run it steps through while it is up (docs/rom.md).
    */
   palette: number;
+  /** How many records after `palette` its code steps through, one every 4 frames ($01:84EF, `$0F:BA7F`). */
+  shimmer?: number;
   /** Its code steps through the frames the recording showed every `cycle` frames, round and round. */
   cycle?: number;
   /**
@@ -41,6 +43,12 @@ export interface OwnObject {
   ticks?: { at: number; length: number; loop?: true };
   /** Its code plays a way in, a loop and a way out (`SpawnDef.animations`). */
   animations?: SpawnDef["animations"];
+  /**
+   * The moves that put it out on their step rather than cut a part for it:
+   * one that never hits and ends with its animation is an effect (Big Bang's
+   * flash, `SpawnDef.onStep`).
+   */
+  onStep?: number[];
 }
 
 /**
@@ -57,7 +65,7 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     // is "other", damage 0), then the ball, which flies up and forward and
     // steps palettes 0x11C–0x120 ($0F:BAAC); the flash loads none and shows
     // what OBJ palette 0 holds — the ball's, taken here `?`
-    { name: "vegeta_flash", type: 0x1, anim: 0x3, hits: false, palette: 0x11c },
+    { name: "vegeta_flash", type: 0x1, anim: 0x3, hits: false, palette: 0x11c, onStep: [0xad] },
     // a9, ab, b1: tiles from +0x80, which reach below $6C00 into resource
     // 0x48 at $6800, there in every snapshot; palette 0x11C (0x27BD24 in
     // CGRAM, logs/objects-vegeta.bin; a9 loads it at $20:99F2)
@@ -69,12 +77,12 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     { name: "vegeta_energy_field", type: 0x1, anim: 0x7, hits: true, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fbbd6, length: 0x1b } }, // ab
     // b1's shot: a frame a tick from $0F:BB49, round and round ($0F:BB25);
     // falls at b0's vy 4 until its y is b8, then becomes a/02 ($0F:BB05)
-    { name: "vegeta_vertical_ki", type: 0x1, anim: 0x6, hits: true, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fbb49, length: 4, loop: true } }, // b1
-    { name: "vegeta_big_bang", type: 0x1, anim: 0x4, hits: true, palette: 0x11c },
+    { name: "vegeta_vertical_ki", type: 0x1, anim: 0x6, hits: true, palette: 0x11c, shimmer: 4, loads: WITH_48, ticks: { at: 0x0fbb49, length: 4, loop: true } }, // b1
+    { name: "vegeta_big_bang", type: 0x1, anim: 0x4, hits: true, palette: 0x11c, shimmer: 4 },
     // ae → af / b2's shots, 1/0e and 1/0f: Vertical Ki's drawings and code
     // ($0F:BE95 into $0F:BB31), their blow "other" for 0 — one spawn for both,
     // no hit box: the pinned opponent they fall around can't be hit anyway
-    { name: "vegeta_gunfire_shot", type: 0x1, anim: 0xe, hits: false, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fbb49, length: 4, loop: true } }, // af, b2
+    { name: "vegeta_gunfire_shot", type: 0x1, anim: 0xe, hits: false, palette: 0x11c, shimmer: 4, loads: WITH_48, ticks: { at: 0x0fbb49, length: 4, loop: true } }, // af, b2
     // 9e's and a8's sprays: where they are put, a frame a tick from $0F:BC3A /
     // $0F:BC95, gone at 17 / 22 or when he leaves the move ($0F:BBF1, BC4C);
     // drawn from his own sprite, which neither move loads anything over
@@ -84,7 +92,7 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     // BE0C, BE2C), its base every 4 frames — 0–1 in, 2–4 while the head is
     // up, 5–6 out ($0F:BD2E); the heads step palettes 0x130–0x133 ($0F:BE3D)
     ...([["s", 0xb], ["m", 0xc], ["l", 0xd]] as const).map(([size, anim]) => (
-      { name: `vegeta_final_flash_${size}`, type: 0x1, anim, hits: true, cycle: 4, palette: 0x130 }
+      { name: `vegeta_final_flash_${size}`, type: 0x1, anim, hits: true, cycle: 4, palette: 0x130, shimmer: 3 }
     )),
     {
       name: "vegeta_final_flash_base", type: 0x1, anim: 0xa, hits: false, palette: 0x130,
@@ -124,6 +132,7 @@ export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[
       ...timing(rom, o, lives, what),
       hits: o.hits,
       palette: paletteRecord(rom, o.palette).at,
+      ...(o.shimmer && { shimmer: Array.from({ length: o.shimmer }, (_, i) => paletteRecord(rom, o.palette + 1 + i).at) }),
       loads,
     };
   });

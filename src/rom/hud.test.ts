@@ -28,4 +28,8 @@ describe.skipIf(!existsSync(ROM_PATH))("the HUD, on the cartridge", () => {
     for (let y = 0; y < 16; y++) for (let x = 0; x < 24; x++) expect(pixel(8 * col + x, 8 * row + y)[3]).toBe(row * 8 + y < 31 ? 255 : 0);
     expect(pixel(8 * col + 3, 8 * row + 3)).toEqual([0, 0, 0, 255]);
   });
+
+  it("takes any fighter's name by his place in the roster: Vegeta's four tiles", () => {
+    expect(exportHud(rom, { vegeta: 1 }).file.names.vegeta).toEqual([85, 86, 87, 88, 0, 0, 0, 0, 0]);
+  });
 });
