@@ -29,6 +29,10 @@
           "to": "charge_start"
         },
         {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
+        {
           "when": "command:a9",
           "to": "ground_flare"
         },
@@ -47,6 +51,10 @@
         {
           "when": "command:ac",
           "to": "final_flash"
+        },
+        {
+          "when": "command:a7",
+          "to": "energy_dash"
         },
         {
           "when": "command:ad",
@@ -138,6 +146,10 @@
           "to": "charge_start"
         },
         {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
+        {
           "when": "command:a9",
           "to": "ground_flare"
         },
@@ -156,6 +168,10 @@
         {
           "when": "command:ac",
           "to": "final_flash"
+        },
+        {
+          "when": "command:a7",
+          "to": "energy_dash"
         },
         {
           "when": "command:ad",
@@ -243,6 +259,10 @@
           "to": "charge_start"
         },
         {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
+        {
           "when": "command:a9",
           "to": "ground_flare"
         },
@@ -261,6 +281,10 @@
         {
           "when": "command:ac",
           "to": "final_flash"
+        },
+        {
+          "when": "command:a7",
+          "to": "energy_dash"
         },
         {
           "when": "command:ad",
@@ -339,6 +363,10 @@
           "to": "guard_low"
         },
         {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
+        {
           "when": "command:a9",
           "to": "ground_flare"
         },
@@ -353,6 +381,10 @@
         {
           "when": "command:ac",
           "to": "final_flash"
+        },
+        {
+          "when": "command:a7",
+          "to": "energy_dash"
         },
         {
           "when": "command:ad",
@@ -399,6 +431,10 @@
           "to": "guard_low"
         },
         {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
+        {
           "when": "command:a9",
           "to": "ground_flare"
         },
@@ -413,6 +449,10 @@
         {
           "when": "command:ac",
           "to": "final_flash"
+        },
+        {
+          "when": "command:a7",
+          "to": "energy_dash"
         },
         {
           "when": "command:ad",
@@ -449,6 +489,10 @@
       "turn": true,
       "transitions": [
         {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
+        {
           "when": "command:a9",
           "to": "ground_flare"
         },
@@ -463,6 +507,10 @@
         {
           "when": "command:ac",
           "to": "final_flash"
+        },
+        {
+          "when": "command:a7",
+          "to": "energy_dash"
         },
         {
           "when": "command:ad",
@@ -495,6 +543,10 @@
         ]
       ],
       "transitions": [
+        {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
         {
           "when": [
             "frames:2",
@@ -551,6 +603,10 @@
       ],
       "transitions": [
         {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
+        {
           "when": [
             "frames:2",
             "command:b1"
@@ -601,6 +657,10 @@
         ]
       ],
       "transitions": [
+        {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
         {
           "when": [
             "frames:2",
@@ -2607,6 +2667,135 @@
         {
           "when": "landed",
           "to": "land"
+        }
+      ]
+    },
+    "jumping_bomb": {
+      "anim": "m9e",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          4,
+          {
+            "vx": 3,
+            "vy": -8,
+            "gravity": "own"
+          }
+        ],
+        [
+          21,
+          {
+            "vx": 5,
+            "vy": 3
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "jumping_bomb_2"
+        }
+      ]
+    },
+    "jumping_bomb_2": {
+      "anim": "m9e_2",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          22,
+          {
+            "vx": -2,
+            "vy": -5,
+            "gravity": "own"
+          }
+        ],
+        [
+          29,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          30,
+          {
+            "vx": -1,
+            "vy": 4,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "holdStep": 2,
+      "fires": {
+        "spawn": "vegeta_jumping_bomb",
+        "at": [
+          0,
+          0
+        ]
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_dash": {
+      "anim": "ma7",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "rush": {
+        "from": 28,
+        "speed": 4,
+        "stop": 48
+      },
+      "transitions": [
+        {
+          "when": "arrived",
+          "to": "energy_dash_2"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_dash_2": {
+      "anim": "ma8",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "vegeta_energy_dash",
+        "at": [
+          0,
+          0
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     }

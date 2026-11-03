@@ -8,13 +8,11 @@
  * (`GOKU.objects`) until his recording exists.
  */
 
-import { stepStarts } from "./animation";
-import { scriptAt, toFile, type FighterTables, type SpawnDef } from "./cartridge";
-import { handlerAt, handlerFacts } from "./handler";
+import { toFile, type FighterTables, type SpawnDef } from "./cartridge";
+import { spawnerLoads } from "./objectTiles";
 import { fullestLife, type Life } from "./recording";
 import { paletteRecord, type Load } from "./resource";
 import type { FighterName } from "./roster";
-import { readScript } from "./script";
 
 /** What a person says about an object: its name, whether it hits, and timing read from its code. */
 export interface OwnObject {
@@ -73,6 +71,11 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     // falls at b0's vy 4 until its y is b8, then becomes a/02 ($0F:BB05)
     { name: "vegeta_vertical_ki", type: 0x1, anim: 0x6, hits: true, palette: 0x11c, loads: WITH_48, ticks: { at: 0x0fbb49, length: 4, loop: true } }, // b1
     { name: "vegeta_big_bang", type: 0x1, anim: 0x4, hits: true, palette: 0x11c },
+    // 9e's and a8's sprays: where they are put, a frame a tick from $0F:BC3A /
+    // $0F:BC95, gone at 17 / 22 or when he leaves the move ($0F:BBF1, BC4C);
+    // drawn from his own sprite, which neither move loads anything over
+    { name: "vegeta_jumping_bomb", type: 0x1, anim: 0x8, hits: true, palette: 0x11c, ticks: { at: 0x0fbc3a, length: 0x11 } }, // 9e
+    { name: "vegeta_energy_dash", type: 0x1, anim: 0x9, hits: true, palette: 0x11c, ticks: { at: 0x0fbc95, length: 0x16 } }, // a8
     // ac, Final Flash: its heads step every 4th frame of the game ($0F:BDF4,
     // BE0C, BE2C), its base every 4 frames — 0–1 in, 2–4 while the head is
     // up, 5–6 out ($0F:BD2E); the heads step palettes 0x130–0x133 ($0F:BE3D)
@@ -139,27 +142,3 @@ export function fromTicks(
   return { steps, frames, loop: loop ?? false };
 }
 
-/**
- * What the first move whose script spawns `type`/`anim` loads for player one.
- * The handler loads each resource once per player, P1's at the lower address
- * ($6C00, P2's $7C00), and an object's tiles count from P1's.
- */
-function spawnerLoads(rom: Uint8Array, t: FighterTables, type: number, anim: number): Load[] {
-  for (let move = 0; move < 0x100; move++) {
-    let ops;
-    try {
-      ops = readScript(rom, scriptAt(rom, t, move));
-    } catch {
-      continue;
-    }
-    if (!ops.some((op) => op.op === "spawn" && op.type === type && op.anim === anim)) continue;
-    const facts = handlerFacts(rom, handlerAt(rom, t.character, move), stepStarts(ops).length, t.character);
-    const lowest = new Map<number, number>();
-    for (const { load } of facts) {
-      if (!load || load.vram === null) continue;
-      lowest.set(load.resource, Math.min(load.vram, lowest.get(load.resource) ?? Infinity));
-    }
-    return [...lowest].map(([resource, vram]) => ({ resource, vram }));
-  }
-  throw new Error(`no move spawns object ${type.toString(16)}/${anim.toString(16)}`);
-}

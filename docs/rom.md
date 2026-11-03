@@ -169,7 +169,7 @@ stopped during hitstop, and every 4 frames loads palette record `0x130` +
 (frame counter `$74` / 4 mod 4) into its owner's OBJ palette (`JSL
 $01:84EF`) — it shimmers by swapping colours. Type `1` jumps by animation through `$0F:B97E`; Vegeta's
 `ad` Big Bang (`1`/`4`, `$0F:BAB6`) runs `+0B` 0–9 and shows the frame
-`$0F:BAE5` names for it (0 for five, 1 for five), with no end of its own. Vegeta's Energy Field (`1`/`7`, `$0F:BB4D`) and Ground Flare (`1`/`2`, `$0F:B9BC`) test their thrower's move every frame and are gone when he leaves it (`ab` / `d2`, `a9` / `d3`); the field takes his x and his y − 40 each frame (`$0F:BBB3`) and plays `19` on ticks 1, 4 … 25, gone at 27; the flare shows a frame a tick from `$0F:BA07`, gone at 66, and sets its type's bit 6 — its blow armed again — every 32nd frame of the game (`$0F:B9CD`). Vegeta's Vertical Ki (`1`/`6`, `$0F:BAEF`, `b1`) falls at `b0`'s vy 4, shows frames 0 0 1 1 a tick from `$0F:BB49` round and round, steps the Big Bang's palettes, and once its y is `B8` or more — 16 px above the floor line, outside `$0552`'s mode — the slot is rewritten as `a/02` (`$0F:BB05`). `npm run rom -- code` reads all of it.
+`$0F:BAE5` names for it (0 for five, 1 for five), with no end of its own. Vegeta's Energy Field (`1`/`7`, `$0F:BB4D`) and Ground Flare (`1`/`2`, `$0F:B9BC`) test their thrower's move every frame and are gone when he leaves it (`ab` / `d2`, `a9` / `d3`); the field takes his x and his y − 40 each frame (`$0F:BBB3`) and plays `19` on ticks 1, 4 … 25, gone at 27; the flare shows a frame a tick from `$0F:BA07`, gone at 66, and sets its type's bit 6 — its blow armed again — every 32nd frame of the game (`$0F:B9CD`). Vegeta's Vertical Ki (`1`/`6`, `$0F:BAEF`, `b1`) falls at `b0`'s vy 4, shows frames 0 0 1 1 a tick from `$0F:BB49` round and round, steps the Big Bang's palettes, and once its y is `B8` or more — 16 px above the floor line, outside `$0552`'s mode — the slot is rewritten as `a/02` (`$0F:BB05`). His Jumping Bomb's (`1`/`8`, `$0F:BBF1`, `9e`) and Energy Dash's (`1`/`9`, `$0F:BC4C`, `a8`) sprays stand where they are put, live while he is in `9e` / `cc` or `a8` / `ce`, load palette `0x11C` on tick 1 (`$0F:B9A9`) and show the frame `$0F:BC3A` / `$0F:BC95` names per tick, gone at 17 / 22. Their tile base is 0: tiles `0x22`–`0x47` / `0x24`–`0x39`, in his own sprite (OBJ `$6000` on, DMA'd from `$00:6C00`), which holds the whole tile set of the drawing he shows — `7d`'s `0x255` and `80`'s `0x259` unpack to more tiles than their record's size, and the sprays are those extra tiles. `npm run rom -- code` reads all of it.
 
 **Idle's lightning** is type `0` animation `6` (`$0F:B862`), put out by
 idle's own script (`00`, once per entry, timer 0) and by `60` — the pose
@@ -279,7 +279,7 @@ their step 1, 4–11 px away at random, while their `+0C` is under 2 / 1 —
 three explosions and two (`$0F:E1A9`); all step through `$0F:E2A9`'s
 6 8 3 4 3 3 3 frames and are gone. Recorded for all three (2026-10-30).
 Type `1` by animation at `$2A:8EC7`: `1/04`–`06` → `a/02` (`$2A:8F0B`),
-`1/0b`–`0d` → `a/02` / `17` / `18` and burning (`$2A:8F2D`–`8F77`).
+`1/0b`–`0d` → `a/02` / `17` / `18` and burning (`$2A:8F2D`–`8F77`). `1/02` and `1/07`–`09` (Ground Flare, Energy Field, the sprays) stay: their blow is disarmed and `$2A:9A0B` leaves a melee blow's spark beside them, `a/00` landed or `a/06` blocked (by the defender's `0x25` bit 3).
 
 **Burning** (`$0D:EC98`): every 2 frames a counter shared by both players
 steps through the 15 fire palettes (`0x180` + 0–14, `JSL $01:8316`) — so

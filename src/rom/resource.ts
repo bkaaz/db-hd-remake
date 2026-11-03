@@ -5,8 +5,10 @@
  * A fighter's tile set n is resource 0x100 + n.
  *
  * Nothing in the record has been seen to say whether the tiles are packed:
- * a stream that unpacks to exactly the record's size is taken as packed
- * (every fighter tile set), anything else as raw (the ki blast's 0x31).
+ * a stream that unpacks to the record's size or more is taken as packed,
+ * anything else as raw (the ki blast's 0x31). A fighter's tile set may hold
+ * more than its size says — the tiles his drawing leaves for an object of
+ * his (Vegeta's 0x255: size 0x8E0, 0x900 unpacked, all of it in VRAM).
  */
 
 import { pointer } from "./cartridge";
@@ -22,7 +24,7 @@ export function readResource(rom: Uint8Array, index: number): Uint8Array {
   const size = (rom[at + 3] | (rom[at + 4] << 8)) & ~0x1f;
   try {
     const packed = decompress(rom, tiles).data;
-    if (packed.length === size) return packed;
+    if (packed.length > 0 && packed.length >= size) return packed;
   } catch {
     // not a stream: raw tiles
   }

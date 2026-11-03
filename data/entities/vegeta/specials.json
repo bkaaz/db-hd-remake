@@ -1,5 +1,5 @@
 {
-  "_comment": "Vegeta's own specials, by hand; npm run rom -- states --fighter vegeta merges them into states.json (src/rom/specials.ts). big_bang is move ad, the Big Bang shot upward (owner, 2026-10-31): on the ground, 10 health, its parts mad / mad_2 / mad_3. The flash at the hands (vegeta_flash, mad_2's first frame) is not put out yet. final_flash is move ac (docs/rom.md, Final Flash): 10 health, A held charges — let go before frame 20 the small beam, before 32 the medium, else the large (field f0, $20:9A82); the ball grows 2 a frame from 16 at 24, -46. mac_2 fires head, base and band (size 16 / 12 / 8, never thicker); then move b5 holds the pose, the band still drawn, until the head is gone and 24 / 20 / 16 frames more (jumps to 72 / 76 / 80 of 96). As for Goku's Kamehameha, the charge fires as it decides (the original shows 2 more frames, a jump to frame 42) and the head outlives its thrower's move. sliding_kick is move a4, Sliding Kick, ↓ ↘ → B on the ground; typed again from frame 8 to its end, it is kept and a5 (rushing_knee) follows when a4 is over, and the same from a5 (from frame 1) to a6 (cross_punch, cross_punch_2) — field f0, $20:97c7 / $20:9885. Nothing else is read meanwhile; a miss goes on too. knee_slash is move 9c, Jumping Knee Slash, → ↓ ↘ B on the ground ($20:92DF): at frame 6 vx 1, vy -8 at his own gravity; vx 0 at 24; from 30 it holds frame 31's pose until it lands, then 0c and m9c_4; every blow of it lifts a body into the high knockdown at -6.0, not -7.5 ($0D:D3BF). attack_b and crouch_b are his own handlers ($20:9280, $20:92C9): the far B slides at vx 3 from frame 6 to 24; the crouching B has a second blow, m95_2, re-armed at its start. driving_elbow is move a2, R + Y ($20:9739), as Goku's Side Slash: behind the opponent through step 0, on frame 24 turns and closes on him by a 32nd of the way to 8 px short. ground_flare is a9, ↓ ↑ Y, also from a jump's first 2 frames, still on the floor: its shot stands 48 px ahead. energy_field is ab, ↓ ↙ ← Y in the air: he stops at frame 1 and hangs (gravity off `?`), puts out the field at 0, -40 with sound 19 every 3 ticks for 25 (its object's code, $0F:BBAC — ours this state's loopSound), falls from vy 2 at his own gravity from frame 36 (the owner: slower than the original without it) and holds frame 47's pose until he lands ($20:9A09). renzoku is aa, ↓ ↘ → A, 5 health: three shots, one a part; its entry goes after Big Bang's, whose roll ends in the same ↓ ↘ → A. vertical_ki is move b1, Vertical Ki, ↓ ↙ ← A in the air ($20:A02C): 5 health; it stops him at frame 0 and he hangs; a shot at 8 (8, 8) and at 24 (-8, 8, the pose flipped), each falling at b0's vy 4 and bursting at y B8 (ADR 0056); vy 2 at 48, his pose 15 held from 49 until he lands. The original then plays its frame 56 (pose 13, 6 frames) — ours goes to land (13 for 2, with 0c) `?`; gravity after vy 2 as Energy Field's `?`.",
+  "_comment": "Vegeta's own specials, by hand; npm run rom -- states --fighter vegeta merges them into states.json (src/rom/specials.ts). big_bang is move ad, the Big Bang shot upward (owner, 2026-10-31): on the ground, 10 health, its parts mad / mad_2 / mad_3. The flash at the hands (vegeta_flash, mad_2's first frame) is not put out yet. final_flash is move ac (docs/rom.md, Final Flash): 10 health, A held charges — let go before frame 20 the small beam, before 32 the medium, else the large (field f0, $20:9A82); the ball grows 2 a frame from 16 at 24, -46. mac_2 fires head, base and band (size 16 / 12 / 8, never thicker); then move b5 holds the pose, the band still drawn, until the head is gone and 24 / 20 / 16 frames more (jumps to 72 / 76 / 80 of 96). As for Goku's Kamehameha, the charge fires as it decides (the original shows 2 more frames, a jump to frame 42) and the head outlives its thrower's move. sliding_kick is move a4, Sliding Kick, ↓ ↘ → B on the ground; typed again from frame 8 to its end, it is kept and a5 (rushing_knee) follows when a4 is over, and the same from a5 (from frame 1) to a6 (cross_punch, cross_punch_2) — field f0, $20:97c7 / $20:9885. Nothing else is read meanwhile; a miss goes on too. knee_slash is move 9c, Jumping Knee Slash, → ↓ ↘ B on the ground ($20:92DF): at frame 6 vx 1, vy -8 at his own gravity; vx 0 at 24; from 30 it holds frame 31's pose until it lands, then 0c and m9c_4; every blow of it lifts a body into the high knockdown at -6.0, not -7.5 ($0D:D3BF). attack_b and crouch_b are his own handlers ($20:9280, $20:92C9): the far B slides at vx 3 from frame 6 to 24; the crouching B has a second blow, m95_2, re-armed at its start. driving_elbow is move a2, R + Y ($20:9739), as Goku's Side Slash: behind the opponent through step 0, on frame 24 turns and closes on him by a 32nd of the way to 8 px short. ground_flare is a9, ↓ ↑ Y, also from a jump's first 2 frames, still on the floor: its shot stands 48 px ahead. energy_field is ab, ↓ ↙ ← Y in the air: he stops at frame 1 and hangs (gravity off `?`), puts out the field at 0, -40 with sound 19 every 3 ticks for 25 (its object's code, $0F:BBAC — ours this state's loopSound), falls from vy 2 at his own gravity from frame 36 (the owner: slower than the original without it) and holds frame 47's pose until he lands ($20:9A09). renzoku is aa, ↓ ↘ → A, 5 health: three shots, one a part; its entry goes after Big Bang's, whose roll ends in the same ↓ ↘ → A. vertical_ki is move b1, Vertical Ki, ↓ ↙ ← A in the air ($20:A02C): 5 health; it stops him at frame 0 and he hangs; a shot at 8 (8, 8) and at 24 (-8, 8, the pose flipped), each falling at b0's vy 4 and bursting at y B8 (ADR 0056); vy 2 at 48, his pose 15 held from 49 until he lands. The original then plays its frame 56 (pose 13, 6 frames) — ours goes to land (13 for 2, with 0c) `?`; gravity after vy 2 as Energy Field's `?`. jumping_bomb is 9e, Jumping Bomb, ↙ ↗ Y on the ground ($20:95B1, by step): blows pass him by to 16 (ours the whole first part `?`); at 4 vx 3, vy -8; at 21 vx 5, vy 3 (facing left the code gives 3); at 26 he stops and hangs and puts out his spray where he is; at 48 vx -2, vy -5; stops at 55; at 56 vx -1, vy 4; holds pose 15 until he lands, then idle — gravity after each vy as Energy Field's `?`. energy_dash is a7, Energy Dash, ← ↙ ↓ ↘ → Y ($20:9978): vx 4 from 28, and from frame 12 the opponent under 48 px away makes it a8 (energy_dash_2), the spray where he stands; ours is a rush from 28 — not tested 12–27, set down 48 short, no stop at 68 `?`; blows pass him by to 28, not ours `?`.",
   "replaces": [
     "attack_b",
     "crouch_b"
@@ -28,6 +28,18 @@
       ],
       "when": "command:ad",
       "to": "big_bang"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a7",
+      "to": "energy_dash"
     },
     {
       "from": [
@@ -126,6 +138,21 @@
       ],
       "when": "command:b1",
       "to": "vertical_ki"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up",
+        "jump_up",
+        "jump_fwd",
+        "jump_back"
+      ],
+      "when": "command:9e",
+      "to": "jumping_bomb"
     }
   ],
   "states": {
@@ -1069,6 +1096,135 @@
         {
           "when": "landed",
           "to": "land"
+        }
+      ]
+    },
+    "jumping_bomb": {
+      "anim": "m9e",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          4,
+          {
+            "vx": 3,
+            "vy": -8,
+            "gravity": "own"
+          }
+        ],
+        [
+          21,
+          {
+            "vx": 5,
+            "vy": 3
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "jumping_bomb_2"
+        }
+      ]
+    },
+    "jumping_bomb_2": {
+      "anim": "m9e_2",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          22,
+          {
+            "vx": -2,
+            "vy": -5,
+            "gravity": "own"
+          }
+        ],
+        [
+          29,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          30,
+          {
+            "vx": -1,
+            "vy": 4,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "holdStep": 2,
+      "fires": {
+        "spawn": "vegeta_jumping_bomb",
+        "at": [
+          0,
+          0
+        ]
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_dash": {
+      "anim": "ma7",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "rush": {
+        "from": 28,
+        "speed": 4,
+        "stop": 48
+      },
+      "transitions": [
+        {
+          "when": "arrived",
+          "to": "energy_dash_2"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_dash_2": {
+      "anim": "ma8",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "vegeta_energy_dash",
+        "at": [
+          0,
+          0
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     }

@@ -14,6 +14,10 @@ describe.skipIf(!existsSync(ROM_PATH))("objects, on the cartridge", () => {
     expect(readResource(rom, 0x31).length).toBe(0x600);
   });
 
+  it("reads a tile set that unpacks past its record's size whole: Vegeta's 0x255, its drawing's sprays", () => {
+    expect(readResource(rom, 0x255).length).toBe(0x900);
+  });
+
   it("exports the ki blast as a spawn of two frames that hit, two frames each", () => {
     const ki = exportSpawns(rom, GOKU).ki_blast;
     expect(Object.keys(ki.frames)).toEqual(["0", "1"]);

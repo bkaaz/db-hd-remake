@@ -1,0 +1,23 @@
+{
+  "_comment": "Vegeta's spray from 9e (object 1/08, docs/rom.md). Frames by npm run rom -- export --fighter vegeta, drawn from his own sprite (the tile set of the drawing up as it is put out) and timed by its code's table, gone at 17; this file by hand: it stands where it is put and is gone when he leaves the move ($0F:BBF1); its blow lands once and it plays on ($2A:8EE9); type and damage the objects' hit table's ($3D:9624). Its hit and block sounds are the other projectiles' `?`. Where its blow lands it leaves the melee blow's spark, landed or blocked ($2A:9A0B).",
+  "initial": "fly",
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 44,
+      "lasts": 17,
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "outlivesHit": true,
+      "endsWithMove": true
+    }
+  }
+}

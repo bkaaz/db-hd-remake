@@ -1,6 +1,8 @@
 {
-  "_comment": "Vegeta's Ground Flare, a9 (object 1/02). Frames by npm run rom -- export --fighter vegeta, timed by its code's table ($0F:BA07); this file by hand: it stands where it is put (b0 at 48, 0) for 66 frames ($0F:B9E7) and plays on where it hits; re-armed every 32nd frame of the game while its thrower is in a9 ($0F:B9CD) — ours 32 frames after a hit `?`; type and damage the objects' hit table's ($3D:9624). Gone when he leaves a9 ($0F:B9C0).",
+  "_comment": "Vegeta's Ground Flare, a9 (object 1/02). Frames by npm run rom -- export --fighter vegeta, timed by its code's table ($0F:BA07); this file by hand: it stands where it is put (b0 at 48, 0) for 66 frames ($0F:B9E7) and plays on where it hits; re-armed every 32nd frame of the game while its thrower is in a9 ($0F:B9CD) — ours 32 frames after a hit `?`; type and damage the objects' hit table's ($3D:9624). Gone when he leaves a9 ($0F:B9C0). Where its blow lands it leaves the melee blow's spark, landed or blocked ($2A:9A0B).",
   "initial": "fly",
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark",
   "states": {
     "fly": {
       "anim": "play",
