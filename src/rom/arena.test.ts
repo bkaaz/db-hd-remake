@@ -1,8 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { Rgba } from "../sprites/png";
-import { ARENAS, exportArena, lightingPalettes } from "./arena";
+import { altPalettes, ARENAS, exportArena, glowPalettes, lightingPalettes } from "./arena";
 import { GOKU, ROM_PATH } from "./cartridge";
+import { fighterNamed } from "./roster";
 import { stageRecord } from "./stage";
 
 /** Whether any pixel in rows [from, to) is drawn. */
@@ -53,6 +54,16 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
 
   it("gives Goku the palettes the original loads by evening and by night, the day's being his sheet's own", () => {
     expect(lightingPalettes(rom, GOKU)).toEqual({ evening: 0xb0040, night: 0xb0080 });
+  });
+
+  it("gives Vegeta a glow 8 records on, and Goku none: his point back at his own colours", () => {
+    expect(glowPalettes(rom, GOKU)).toEqual({});
+    expect(glowPalettes(rom, fighterNamed(rom, "vegeta"))).toEqual({ glow: 0xb0300, evening_glow: 0xb0340, night_glow: 0xb0380 });
+  });
+
+  it("gives player two facing himself the next record, in every lighting ($01:82F2)", () => {
+    expect(altPalettes(rom, GOKU)).toEqual({ alt: 0xb0020, evening_alt: 0xb0060, night_alt: 0xb00a0 });
+    expect(altPalettes(rom, fighterNamed(rom, "vegeta")).glow_alt).toBe(0xb0320);
   });
 
   it("scrolls the sky at half the camera's speed, lined up at x 128", () => {

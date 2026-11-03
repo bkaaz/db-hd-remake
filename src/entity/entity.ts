@@ -9,7 +9,7 @@ import type { SoundPlayer } from "../audio/playback";
 import { activeBall, BALL_COLOUR, nextRadius } from "../combat/ball";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
-import { burnVariant, glowVariant, shimmerVariant } from "../combat/palettes";
+import { burnVariant, paletteVariant, shimmerVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -336,6 +336,8 @@ export class Entity {
   private shownVariant: string | null = null;
   /** The palette the arena's light gives it, drawn whenever it is not burning; null is its own sheet's. */
   private lighting: string | null = null;
+  /** Player two facing himself: drawn in his second colours ($01:82F2), set by `Fighters`. */
+  alt = false;
   /**
    * Game frames left of being held helpless by the last blow. Ticked below the
    * freeze check, like the buffer: a hit pause freezes both fighters equally, so
@@ -1029,9 +1031,7 @@ export class Entity {
       ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting)
       : shimmer
         ? (shimmerVariant(shimmer, this.shimmerFrame) ?? null)
-        : glowing
-          ? (glowVariant(this.lighting, (v) => this.def.variants.has(v)) ?? this.lighting)
-          : this.lighting;
+        : paletteVariant({ lighting: this.lighting, glow: glowing, alt: this.alt }, (v) => this.def.variants.has(v));
     if (variant === this.shownVariant) return;
     this.shownVariant = variant;
     this.applyFrame();

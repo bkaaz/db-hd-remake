@@ -482,7 +482,7 @@ the BG mode and map width, and the arena's number. The lighting also picks
 the fighters' palette (`$01:82B5`: `0x40` + 16 × character +
 `$01:8304`[id], a record at `$09:8000` — Goku's `0x40`… are `0xB0000` +
 32 each), kept in field `0x17`; player two, the same fighter as player
-one, takes the next one (`$01:82F2`). `$01:8316` loads it into both of
+one, takes the next one (`$01:82F2`; ours `altPalettes`, `@alt` sheets). `$01:8316` loads it into both of
 the player's OBJ palettes. The loader (`$00:B683`) and the S-CPU's own packing:
 `src/rom/stage.ts`, `src/rom/lzss.ts`; `npm run rom -- stage` draws them
 flat. What each shows is read off that drawing:

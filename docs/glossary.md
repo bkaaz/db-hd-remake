@@ -155,6 +155,9 @@ defender and resets when they get control back. → `combat.md` §3
 **Queued** (a transition's `queued`) — the next part of a move, typed during
 this one and kept until its animation ends; not a cancel. → ADR 0049
 
+**Alt** (`@alt` sheets) — player two's colours when both sides are the same
+fighter: the next palette record. → `rom.md`, A stage id
+
 **Glow** (a state's `glow`) — the palette 8 records past a fighter's own,
 drawn while he charges; Goku has none. → `rom.md`, `src/rom/arena.ts`
 

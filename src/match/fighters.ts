@@ -98,6 +98,8 @@ export class Fighters {
     // a side each, so that one's sound never cuts the other's (src/audio/playback.ts)
     this.player = new Entity(p1, scale, audio.side("p1", p1.sounds));
     this.opponent = p2 ? new Entity(p2, scale, audio.side("p2", p2.sounds)) : null;
+    // the same fighter on both sides: player two takes the next palette ($01:82F2)
+    if (this.opponent && p2!.name === p1.name) this.opponent.alt = true;
     this.inFront = this.player;
     world.addChild(this.player.view);
     if (this.opponent) world.addChild(this.opponent.view);

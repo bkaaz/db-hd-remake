@@ -35,20 +35,45 @@ export function lightingPalettes(rom: Uint8Array, t: FighterTables): Record<stri
 /** How far the charging glow's palette is from the fighter's own ($0F:A072: field 0x17 + 8). */
 const GLOW = 8;
 
+/** His palette record in each lighting, named by it — null for the one he is exported in. */
+function lightingRecords(rom: Uint8Array, t: FighterTables): [string | null, number][] {
+  return Object.values(ARENAS).flatMap((source) =>
+    Object.entries(source.ids).map(([time, stage]): [string | null, number] => {
+      const own = 0x40 + 16 * t.character + (rom[LIGHTING + stage] & 0x0f);
+      return [paletteRecord(rom, own).at === t.palette ? null : time, own];
+    }),
+  );
+}
+
+/** A variant's name: its lighting's, then what it adds (`night_glow`), or the addition alone. */
+const named = (time: string | null, ...parts: string[]) => [time, ...parts].filter(Boolean).join("_");
+
 /**
- * A fighter's glow while charging, in every lighting: `glow` in the one he
- * is exported in, `<lighting>_glow` in the others — the record 8 past the
- * palette that lighting gives him. None where that record is his own
- * palette again: Goku's 0x48–0x4F point at 0x40–0x47's, so he never glows.
+ * A fighter's glow while charging, in every lighting: `glow`, `evening_glow`
+ * … — the record 8 past the palette that lighting gives him. None where
+ * that record is his own palette again: Goku's 0x48–0x4F point at
+ * 0x40–0x47's, so he never glows.
  */
 export function glowPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
   const out: Record<string, number> = {};
-  for (const source of Object.values(ARENAS)) {
-    for (const [time, stage] of Object.entries(source.ids)) {
-      const own = 0x40 + 16 * t.character + (rom[LIGHTING + stage] & 0x0f);
-      const [plain, glow] = [paletteRecord(rom, own).at, paletteRecord(rom, own + GLOW).at];
-      if (glow !== plain) out[plain === t.palette ? "glow" : `${time}_glow`] = glow;
-    }
+  for (const [time, own] of lightingRecords(rom, t)) {
+    const [plain, glow] = [paletteRecord(rom, own).at, paletteRecord(rom, own + GLOW).at];
+    if (glow !== plain) out[named(time, "glow")] = glow;
+  }
+  return out;
+}
+
+/**
+ * Player two's colours when both sides are the same fighter — the next
+ * record ($01:82F2) — in every lighting, glowing too where he glows:
+ * `alt`, `night_alt`, `glow_alt` …
+ */
+export function altPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [time, own] of lightingRecords(rom, t)) {
+    out[named(time, "alt")] = paletteRecord(rom, own + 1).at;
+    const [plain, glow] = [paletteRecord(rom, own + 1).at, paletteRecord(rom, own + 1 + GLOW).at];
+    if (glow !== plain) out[named(time, "glow", "alt")] = glow;
   }
   return out;
 }

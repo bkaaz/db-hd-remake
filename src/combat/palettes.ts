@@ -28,11 +28,20 @@ export function shimmerVariant(variants: readonly string[], frame: number): stri
 }
 
 /**
- * The glow a charging fighter is drawn in, under the arena's lighting
- * (`glow`, `evening_glow` …), or undefined when he has none — Goku's
- * records point back at his own (`rom/arena.ts`, `glowPalettes`).
+ * The sheet a fighter is drawn in: the arena's lighting, his glow while he
+ * charges, and player two's own colours when both sides are the same
+ * fighter ($01:82F2: the next record) — `night_glow_alt`, read in that
+ * order. A part he has no sheet for is dropped, glow first: Goku has no
+ * glow (`rom/arena.ts`). Null is his own colours.
  */
-export function glowVariant(lighting: string | null, has: (variant: string) => boolean): string | undefined {
-  const name = lighting === null ? "glow" : `${lighting}_glow`;
-  return has(name) ? name : undefined;
+export function paletteVariant(
+  want: { lighting: string | null; glow: boolean; alt: boolean },
+  has: (variant: string) => boolean,
+): string | null {
+  const name = (glow: boolean, alt: boolean) => [want.lighting, glow && "glow", alt && "alt"].filter(Boolean).join("_") || null;
+  for (const [glow, alt] of [[want.glow, want.alt], [false, want.alt], [false, false]] as const) {
+    const n = name(glow, alt);
+    if (n === null || has(n)) return n;
+  }
+  return null;
 }

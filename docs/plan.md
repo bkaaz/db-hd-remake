@@ -180,9 +180,6 @@ still differs from the original:
    (`sender_*`) until then. Needs the other arenas, their parts and the flight;
    never the way up into the fight above the arena (`combat.md`, Where the
    fight happens).
-4. **Player two's colours in a mirror match** — the same fighter on both
-   sides takes the next palette (`rom.md`, A stage id); today both Gokus
-   look alike.
 
 *Open:* idle holds each pose 12 frames in its script but 13–14 in a
 recording; which moves repeat or hold is listed by hand in

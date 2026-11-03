@@ -13,6 +13,9 @@
   "palettes": [
     "evening",
     "night",
+    "alt",
+    "evening_alt",
+    "night_alt",
     "fire0",
     "fire1",
     "fire2",
