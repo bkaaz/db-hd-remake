@@ -635,9 +635,22 @@ end, so the script's last pose, the fall, is what shows). Landing, in the
 attack or after it, is move `3b` and sound `0c` (`$0F:9FB8`; not for
 character 6).
 
-**The crouch and the stand-up ask for commands too**: their handlers
-(`03`, `$0F:9F35`; `04`, `$0F:9F4E`) call `$0F:9EB1` as idle does, so a
-special rolled through ↓ comes out of a crouch.
+**Where a move can start another**: `$0F:9EB1` reads the command table
+(`$0D:EDF8`), then the buttons (`$0D:FEC8`), unless field `0x25` has `08`;
+SEC once one starts. Idle, walking and the crouch (`00`, `01`/`02`, `03`)
+call `$0D:C455` first — with the carry clear, an opponent behind starts
+the turn, `41` — then it, then `$0D:F983` (charging, B + Y held), then
+`$0D:F9BD` (the directions: walk, crouch, jump, the dash at `$0D:FA68`).
+The stand-up (`04`, `$0F:9F4E`) calls `$0F:9EB1` alone: commands and
+buttons, no turn, charge, guard or dash. Others call it too — the landing
+`3b`, the dash `0a`/`0b`, a block from frame 4 (`0d`, `0f`), lying `1f`
+while `f0` is 0, the air reel `1a` once landed, a jump in the air.
+`npm run rom -- entries` lists the states playing such a move that lack
+an entry for one of his commands. **The table is read from its end**:
+`$0D:F588` points Y at the last row's byte 4 — ground `8C` (so row `88`,
+the air's first, is read on the ground too), air `3C` from `+88`, mode
+`7C` from `+C8` — and `$0D:EF31` steps back 8 bytes a row, so of two
+commands met the later row's starts (ADR 0060).
 
 **A move that reads the next one while it plays** (Vegeta's `a4`,
 `$20:97c7`, from frame 8; `a5`, `$20:9885`, from frame 1): each frame the

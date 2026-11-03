@@ -12,12 +12,9 @@
     { "p2": { "does": ["down 60"] } },
     { "p2": { "does": [
       60,
-      "fwd strike", 160,
-      "down 2", "down fwd 2", "fwd 2", "fwd strike", 90,
-      "fwd 2", "back 2", "fwd 2", "fwd strike", 90,
-      "down 2", "down back 2", "back 2", "back strike", 90,
-      "down 30", 60,
-      "fwd 3", "fwd dash 40", 60
+      "down 2", "down fwd 2", "fwd 2", "fwd strike", 160,
+      "fwd 2", "back 2", "fwd 2", "fwd strike", 160,
+      "fwd 20", "fwd strike", 160
     ] } }
   ]
 }

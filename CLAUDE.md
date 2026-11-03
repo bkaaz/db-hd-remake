@@ -280,6 +280,10 @@ npm run rom -- todo --fighter vegeta
                   # what is left to read for him: moves on code goku's
                   # states already play are read; the rest, by handler,
                   # the most shared first
+npm run rom -- entries --fighter vegeta
+                  # the states whose move reads commands ($0F:9EB1)
+                  # but lack an entry for some of his; --order puts
+                  # the entries in the cartridge's order (ADR 0060)
 npm run rom -- spawns --fighter vegeta
                   # every move that puts out an object, and how it is
                   # asked for — what to record (ADR 0036)

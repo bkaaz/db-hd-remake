@@ -85,8 +85,12 @@ engine does not have. In order:
    `src/rom/ownObjects.ts` and nothing else is written by hand: `export
    --fighter` draws and times them; Vegeta's `ad` (Big Bang) fires its ball
    (`specials.json`, ADR 0038), and his `ac` its Final Flash. Still to do, in order: Final Flash's
-   small and large heads' palette run (`shimmer`: their frames are kept from
-   an earlier recording, so variants drawn now would not match them); for
+   palette run — the heads reload `0x130`–`0x133` by the game's `$74`
+   (`$0F:BE3D`) into the palette the base draws in too (and the band `?`),
+   so the whole beam steps at once; the medium head stepping alone flickered and
+   is off (owner, 2026-11-03), and the small and large heads' frames are
+   kept from an earlier recording, so variants drawn now would not match
+   them. Compare with the original before keeping it; for
    Final Flash, the head gone when Vegeta leaves the move (`$0F:BE66`); and
    Goku's from a recording of his own. *Done when:* Vegeta's ki blast and
    one special fire from his recording, and Goku's spawns come out of his
@@ -95,6 +99,12 @@ engine does not have. In order:
    `src/rom/attributes.ts`); which of a jump's moves takes which is not
    read, so every fighter jumps at Goku's 2.02. The rest of the attributes
    are read; knockback is one table for everyone (`$0D:D68A`).
+3. **Commands where the original reads them** — the landing, the dash, a
+   block from frame 4, lying, the air reel once landed all call
+   `$0F:9EB1` (`rom.md`, Where a move can start another); ours start
+   nothing from them. `npm run rom -- entries` lists each state and what
+   it lacks. Open: the shape — the same dozen entries copied into each
+   state, or one list the states that read commands share.
 
 ## Now: Goku from the cartridge
 
@@ -201,7 +211,8 @@ still differs from the original:
 4. **The blows that change the arena — last of Goku's moves** (owner,
    2026-10-31). `9f`, `a0`, `a1` (X specials) send the opponent to another
    part of the arena, a flight shown between the two (`rom.md`, Which
-   reaction: byte 2). Needs the other arenas, their parts and the flight;
+   reaction: byte 2); both fighters play them as the closed way's knockdown
+   (`sender_*`) until then. Needs the other arenas, their parts and the flight;
    never the way up into the fight above the arena (`combat.md`, Where the
    fight happens).
 5. **Player two's colours in a mirror match** — the same fighter on both

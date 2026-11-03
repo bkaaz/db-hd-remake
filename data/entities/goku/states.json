@@ -36,6 +36,22 @@
           "to": "meteor"
         },
         {
+          "when": "command:a5",
+          "to": "quad_kick"
+        },
+        {
+          "when": "command:aa",
+          "to": "kame_charge"
+        },
+        {
+          "when": "command:ab",
+          "to": "kame_up"
+        },
+        {
+          "when": "command:a4",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:9c",
           "to": "teleport_fwd"
         },
@@ -46,6 +62,41 @@
         {
           "when": "command:a7",
           "to": "double_punch"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a6",
+          "to": "spin_kick"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a9",
+          "to": "large_ki"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "double_kick"
+        },
+        {
+          "when": "command:a8",
+          "to": "side_slash"
         },
         {
           "when": [
@@ -59,26 +110,6 @@
           "to": "attack_y"
         },
         {
-          "when": "command:a5",
-          "to": "quad_kick"
-        },
-        {
-          "when": "command:a4",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a6",
-          "to": "spin_kick"
-        },
-        {
-          "when": "command:a8",
-          "to": "side_slash"
-        },
-        {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": [
             "pressed:smash",
             "close:smash"
@@ -90,27 +121,8 @@
           "to": "attack_b"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "pressed:strike",
           "to": "attack_x"
-        },
-        {
-          "when": "command:a9",
-          "to": "large_ki"
-        },
-        {
-          "when": "command:ab",
-          "to": "kame_up"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "pressed:blast",
@@ -175,6 +187,22 @@
           "to": "meteor"
         },
         {
+          "when": "command:a5",
+          "to": "quad_kick"
+        },
+        {
+          "when": "command:aa",
+          "to": "kame_charge"
+        },
+        {
+          "when": "command:ab",
+          "to": "kame_up"
+        },
+        {
+          "when": "command:a4",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:9c",
           "to": "teleport_fwd"
         },
@@ -185,6 +213,41 @@
         {
           "when": "command:a7",
           "to": "double_punch"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a6",
+          "to": "spin_kick"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a9",
+          "to": "large_ki"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "double_kick"
+        },
+        {
+          "when": "command:a8",
+          "to": "side_slash"
         },
         {
           "when": [
@@ -198,26 +261,6 @@
           "to": "attack_y"
         },
         {
-          "when": "command:a5",
-          "to": "quad_kick"
-        },
-        {
-          "when": "command:a4",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a6",
-          "to": "spin_kick"
-        },
-        {
-          "when": "command:a8",
-          "to": "side_slash"
-        },
-        {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": [
             "pressed:smash",
             "close:smash"
@@ -229,27 +272,8 @@
           "to": "attack_b"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "pressed:strike",
           "to": "attack_x"
-        },
-        {
-          "when": "command:a9",
-          "to": "large_ki"
-        },
-        {
-          "when": "command:ab",
-          "to": "kame_up"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "pressed:blast",
@@ -310,6 +334,22 @@
           "to": "meteor"
         },
         {
+          "when": "command:a5",
+          "to": "quad_kick"
+        },
+        {
+          "when": "command:aa",
+          "to": "kame_charge"
+        },
+        {
+          "when": "command:ab",
+          "to": "kame_up"
+        },
+        {
+          "when": "command:a4",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:9c",
           "to": "teleport_fwd"
         },
@@ -320,6 +360,41 @@
         {
           "when": "command:a7",
           "to": "double_punch"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a6",
+          "to": "spin_kick"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a9",
+          "to": "large_ki"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "double_kick"
+        },
+        {
+          "when": "command:a8",
+          "to": "side_slash"
         },
         {
           "when": [
@@ -333,26 +408,6 @@
           "to": "attack_y"
         },
         {
-          "when": "command:a5",
-          "to": "quad_kick"
-        },
-        {
-          "when": "command:a4",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a6",
-          "to": "spin_kick"
-        },
-        {
-          "when": "command:a8",
-          "to": "side_slash"
-        },
-        {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": [
             "pressed:smash",
             "close:smash"
@@ -364,27 +419,8 @@
           "to": "attack_b"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "pressed:strike",
           "to": "attack_x"
-        },
-        {
-          "when": "command:a9",
-          "to": "large_ki"
-        },
-        {
-          "when": "command:ab",
-          "to": "kame_up"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "pressed:blast",
@@ -432,6 +468,22 @@
           "to": "meteor"
         },
         {
+          "when": "command:a5",
+          "to": "quad_kick"
+        },
+        {
+          "when": "command:aa",
+          "to": "kame_charge"
+        },
+        {
+          "when": "command:ab",
+          "to": "kame_up"
+        },
+        {
+          "when": "command:a4",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:9c",
           "to": "teleport_fwd"
         },
@@ -440,32 +492,43 @@
           "to": "teleport_back"
         },
         {
-          "when": "command:a5",
-          "to": "quad_kick"
+          "when": "command:a7",
+          "to": "double_punch"
         },
         {
-          "when": "command:a4",
-          "to": "knee_slash"
+          "when": "command:9f",
+          "to": "sender_9f"
         },
         {
           "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": "command:a7",
-          "to": "double_punch"
+          "when": "command:a1",
+          "to": "sender_a1"
         },
         {
           "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": "command:ab",
-          "to": "kame_up"
+          "when": "command:a0",
+          "to": "sender_a0"
         },
         {
-          "when": "command:aa",
-          "to": "kame_charge"
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "double_kick"
+        },
+        {
+          "when": "command:a8",
+          "to": "side_slash"
         },
         {
           "when": "held:guard",
@@ -511,6 +574,22 @@
           "to": "meteor"
         },
         {
+          "when": "command:a5",
+          "to": "quad_kick"
+        },
+        {
+          "when": "command:aa",
+          "to": "kame_charge"
+        },
+        {
+          "when": "command:ab",
+          "to": "kame_up"
+        },
+        {
+          "when": "command:a4",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:9c",
           "to": "teleport_fwd"
         },
@@ -519,32 +598,43 @@
           "to": "teleport_back"
         },
         {
-          "when": "command:a5",
-          "to": "quad_kick"
+          "when": "command:a7",
+          "to": "double_punch"
         },
         {
-          "when": "command:a4",
-          "to": "knee_slash"
+          "when": "command:9f",
+          "to": "sender_9f"
         },
         {
           "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": "command:a7",
-          "to": "double_punch"
+          "when": "command:a1",
+          "to": "sender_a1"
         },
         {
           "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": "command:ab",
-          "to": "kame_up"
+          "when": "command:a0",
+          "to": "sender_a0"
         },
         {
-          "when": "command:aa",
-          "to": "kame_charge"
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "double_kick"
+        },
+        {
+          "when": "command:a8",
+          "to": "side_slash"
         },
         {
           "when": "held:guard",
@@ -584,6 +674,22 @@
           "to": "meteor"
         },
         {
+          "when": "command:a5",
+          "to": "quad_kick"
+        },
+        {
+          "when": "command:aa",
+          "to": "kame_charge"
+        },
+        {
+          "when": "command:ab",
+          "to": "kame_up"
+        },
+        {
+          "when": "command:a4",
+          "to": "knee_slash"
+        },
+        {
           "when": "command:9c",
           "to": "teleport_fwd"
         },
@@ -592,36 +698,77 @@
           "to": "teleport_back"
         },
         {
-          "when": "command:a5",
-          "to": "quad_kick"
+          "when": "command:a7",
+          "to": "double_punch"
         },
         {
-          "when": "command:a4",
-          "to": "knee_slash"
+          "when": "command:9f",
+          "to": "sender_9f"
         },
         {
           "when": "command:a6",
           "to": "spin_kick"
         },
         {
-          "when": "command:a7",
-          "to": "double_punch"
+          "when": "command:a1",
+          "to": "sender_a1"
         },
         {
           "when": "command:a9",
           "to": "large_ki"
         },
         {
-          "when": "command:ab",
-          "to": "kame_up"
+          "when": "command:a0",
+          "to": "sender_a0"
         },
         {
-          "when": "command:aa",
-          "to": "kame_charge"
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "double_kick"
+        },
+        {
+          "when": "command:a8",
+          "to": "side_slash"
         },
         {
           "when": "held:down",
           "to": "crouch_down"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
         },
         {
           "when": "animEnd",
@@ -3205,6 +3352,92 @@
       "transitions": [
         {
           "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_9f": {
+      "anim": "m9f",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 24,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "holdStep": 3,
+      "air": [
+        [
+          8,
+          {
+            "vx": 2,
+            "vy": -6,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a0": {
+      "anim": "ma0",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          12,
+          0.5
+        ],
+        [
+          30,
+          0
+        ]
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 24,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a1": {
+      "anim": "ma1",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 24,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "holdStep": 3,
+      "air": [
+        [
+          8,
+          {
+            "vx": 2,
+            "vy": -3.5,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
           "to": "idle"
         }
       ]

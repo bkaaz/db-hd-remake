@@ -55,6 +55,7 @@ import { readAttributes, withAttributes } from "../src/rom/attributes.ts";
 import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
+import { inTableOrder, missingEntries } from "../src/rom/entries.ts";
 import { long } from "../src/rom/disasm.ts";
 import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
@@ -324,6 +325,17 @@ if (command === "tiles") {
   const file = commandsFile(rom, T.character);
   writeFileSync(`data/entities/${name}/commands.json`, JSON.stringify(file, null, 2) + "\n");
   console.log(`${name}: ${file.commands.length} commands into data/entities/${name}/commands.json`);
+} else if (command === "entries") {
+  // states whose move's handler reads commands ($0F:9EB1) but lack an entry for some
+  const states = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
+  // --order: put every state's command entries in the cartridge's order (goku's are by hand)
+  if (args.includes("--order")) {
+    writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(inTableOrder(states, readCommands(rom, T.character)), null, 2) + "\n");
+    console.log(`${name}: command entries put in the table's order, its last row first`);
+  }
+  const missing = missingEntries(rom, T, states);
+  for (const m of missing) console.log(`${m.state.padEnd(20)} ${states.states[m.state].anim?.padEnd(7)} ${(m.when || "always").padEnd(24)} ${m.moves.map(hex).join(" ")}`);
+  if (missing.length === 0) console.log(`${name}: every state that reads commands has an entry for each`);
 } else if (command === "roster") {
   ROSTER.forEach((name, c) => {
     const t = fighterTables(rom, c);
@@ -356,7 +368,8 @@ if (command === "tiles") {
   // his own walk, dash and jump on the template's states ($3D:9D9B)
   const his = readAttributes(rom, T.character);
   const moved = withAttributes(made.file, his);
-  const file = own ? withSpecials(moved, own) : moved;
+  // his commands tried as the cartridge tries them, the table's last row first
+  const file = inTableOrder(own ? withSpecials(moved, own) : moved, readCommands(rom, T.character));
   writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(file, null, 2) + "\n");
   if (own) console.log(`his own: ${Object.keys(own.states).join(", ")} (${specialsPath})`);
   for (const [state, why] of Object.entries(made.dropped)) console.log(`dropped ${state}: ${why}`);

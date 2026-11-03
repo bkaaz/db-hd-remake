@@ -90,9 +90,11 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     { name: "vegeta_energy_dash", type: 0x1, anim: 0x9, hits: true, palette: 0x11c, ticks: { at: 0x0fbc95, length: 0x16 } }, // a8
     // ac, Final Flash: its heads step every 4th frame of the game ($0F:BDF4,
     // BE0C, BE2C), its base every 4 frames — 0–1 in, 2–4 while the head is
-    // up, 5–6 out ($0F:BD2E); the heads step palettes 0x130–0x133 ($0F:BE3D)
+    // up, 5–6 out ($0F:BD2E). The heads step palettes 0x130–0x133 by $74
+    // ($0F:BE3D), which the base and band share; no `shimmer` until all three
+    // step together — the head stepping alone flickered (bugs.md)
     ...([["s", 0xb], ["m", 0xc], ["l", 0xd]] as const).map(([size, anim]) => (
-      { name: `vegeta_final_flash_${size}`, type: 0x1, anim, hits: true, cycle: 4, palette: 0x130, shimmer: 3 }
+      { name: `vegeta_final_flash_${size}`, type: 0x1, anim, hits: true, cycle: 4, palette: 0x130 }
     )),
     {
       name: "vegeta_final_flash_base", type: 0x1, anim: 0xa, hits: false, palette: 0x130,

@@ -51,7 +51,27 @@ function launch(c: Cpu): Omit<HandlerFact, "frame"> | null {
   return { what: "throws the opponent", launch: { damage: damage!, stun: stun!, move: move! & 0xff, vx: signed(vx!), vy: signed(vy!), facing } };
 }
 
+/** What `$0F:9EB1` says: the move's handler is where a command or a button can start another. */
+export const READS_COMMANDS = "reads commands and buttons";
+
 export const ROUTINES: Record<number, Routine> = {
+  // $0D:EDF8, the command table, then $0D:FEC8, the buttons, unless field 0x25 has 08; SEC once one starts
+  0x0f9eb1: {
+    fact: () => ({ what: READS_COMMANDS }),
+    carry: () => ({ set: "once a command or a button starts a move", clear: "unless a command or a button starts a move" }),
+  },
+  // with the carry clear, an opponent behind him starts move 41 (83 above the arena); SEC then
+  0x0dc455: {
+    fact: () => ({ what: "turns round when the opponent is behind" }),
+    carry: () => ({ set: "once turning", clear: "unless turning" }),
+  },
+  // move 0c while B + Y are held, on the floor; SEC when it starts
+  0x0df983: {
+    fact: () => ({ what: "charges while B + Y are held" }),
+    carry: () => ({ set: "once charging", clear: "unless charging" }),
+  },
+  // walk, crouch, jump or stand by the directions held
+  0x0df9bd: says("reads the directions"),
   0x0dd8a2: says("re-arms the blow"),
   0x0f9fa3: says("ends the move"),
   0x0dd7a0: says("stops"),

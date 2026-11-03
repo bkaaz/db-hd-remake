@@ -29,6 +29,34 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a7",
+          "to": "energy_dash"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "command:a1",
           "to": "sender_a1"
         },
@@ -37,44 +65,12 @@
           "to": "sender_a0"
         },
         {
-          "when": "command:9f",
-          "to": "sender_9f"
-        },
-        {
           "when": "command:9e",
           "to": "jumping_bomb"
         },
         {
           "when": "command:a9",
           "to": "ground_flare"
-        },
-        {
-          "when": "command:a2",
-          "to": "driving_elbow"
-        },
-        {
-          "when": "command:9c",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a4",
-          "to": "sliding_kick"
-        },
-        {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
-          "when": "command:a7",
-          "to": "energy_dash"
-        },
-        {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
-          "when": "command:aa",
-          "to": "renzoku"
         },
         {
           "when": [
@@ -90,6 +86,10 @@
             "command:9d"
           ],
           "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "driving_elbow"
         },
         {
           "when": [
@@ -173,6 +173,34 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a7",
+          "to": "energy_dash"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "command:a1",
           "to": "sender_a1"
         },
@@ -181,44 +209,12 @@
           "to": "sender_a0"
         },
         {
-          "when": "command:9f",
-          "to": "sender_9f"
-        },
-        {
           "when": "command:9e",
           "to": "jumping_bomb"
         },
         {
           "when": "command:a9",
           "to": "ground_flare"
-        },
-        {
-          "when": "command:a2",
-          "to": "driving_elbow"
-        },
-        {
-          "when": "command:9c",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a4",
-          "to": "sliding_kick"
-        },
-        {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
-          "when": "command:a7",
-          "to": "energy_dash"
-        },
-        {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
-          "when": "command:aa",
-          "to": "renzoku"
         },
         {
           "when": [
@@ -234,6 +230,10 @@
             "command:9d"
           ],
           "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "driving_elbow"
         },
         {
           "when": [
@@ -313,6 +313,34 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a7",
+          "to": "energy_dash"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "command:a1",
           "to": "sender_a1"
         },
@@ -321,44 +349,12 @@
           "to": "sender_a0"
         },
         {
-          "when": "command:9f",
-          "to": "sender_9f"
-        },
-        {
           "when": "command:9e",
           "to": "jumping_bomb"
         },
         {
           "when": "command:a9",
           "to": "ground_flare"
-        },
-        {
-          "when": "command:a2",
-          "to": "driving_elbow"
-        },
-        {
-          "when": "command:9c",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a4",
-          "to": "sliding_kick"
-        },
-        {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
-          "when": "command:a7",
-          "to": "energy_dash"
-        },
-        {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
-          "when": "command:aa",
-          "to": "renzoku"
         },
         {
           "when": [
@@ -374,6 +370,10 @@
             "command:9d"
           ],
           "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "driving_elbow"
         },
         {
           "when": [
@@ -444,16 +444,40 @@
           "to": "guard_low"
         },
         {
+          "when": "command:a7",
+          "to": "energy_dash"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "command:a1",
           "to": "sender_a1"
         },
         {
           "when": "command:a0",
           "to": "sender_a0"
-        },
-        {
-          "when": "command:9f",
-          "to": "sender_9f"
         },
         {
           "when": "command:9e",
@@ -464,36 +488,23 @@
           "to": "ground_flare"
         },
         {
-          "when": "command:9c",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a4",
-          "to": "sliding_kick"
-        },
-        {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
-          "when": "command:a7",
-          "to": "energy_dash"
-        },
-        {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
-          "when": "command:aa",
-          "to": "renzoku"
-        },
-        {
           "when": [
             "grab:64",
             "command:ae",
             "health:80"
           ],
           "to": "galactic_gunfire"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "driving_elbow"
         },
         {
           "when": "pressed:strike",
@@ -532,16 +543,40 @@
           "to": "guard_low"
         },
         {
+          "when": "command:a7",
+          "to": "energy_dash"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "command:a1",
           "to": "sender_a1"
         },
         {
           "when": "command:a0",
           "to": "sender_a0"
-        },
-        {
-          "when": "command:9f",
-          "to": "sender_9f"
         },
         {
           "when": "command:9e",
@@ -552,36 +587,23 @@
           "to": "ground_flare"
         },
         {
-          "when": "command:9c",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a4",
-          "to": "sliding_kick"
-        },
-        {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
-          "when": "command:a7",
-          "to": "energy_dash"
-        },
-        {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
-          "when": "command:aa",
-          "to": "renzoku"
-        },
-        {
           "when": [
             "grab:64",
             "command:ae",
             "health:80"
           ],
           "to": "galactic_gunfire"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "driving_elbow"
         },
         {
           "when": "pressed:strike",
@@ -610,16 +632,44 @@
       "turn": true,
       "transitions": [
         {
+          "when": "held:down",
+          "to": "crouch_down"
+        },
+        {
+          "when": "command:a7",
+          "to": "energy_dash"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "command:a1",
           "to": "sender_a1"
         },
         {
           "when": "command:a0",
           "to": "sender_a0"
-        },
-        {
-          "when": "command:9f",
-          "to": "sender_9f"
         },
         {
           "when": "command:9e",
@@ -630,30 +680,6 @@
           "to": "ground_flare"
         },
         {
-          "when": "command:9c",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a4",
-          "to": "sliding_kick"
-        },
-        {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
-          "when": "command:a7",
-          "to": "energy_dash"
-        },
-        {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
-          "when": "command:aa",
-          "to": "renzoku"
-        },
-        {
           "when": [
             "grab:64",
             "command:ae",
@@ -662,8 +688,45 @@
           "to": "galactic_gunfire"
         },
         {
-          "when": "held:down",
-          "to": "crouch_down"
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "driving_elbow"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
         },
         {
           "when": "animEnd",
@@ -685,8 +748,11 @@
       ],
       "transitions": [
         {
-          "when": "command:9e",
-          "to": "jumping_bomb"
+          "when": [
+            "frames:2",
+            "command:ab"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [
@@ -696,11 +762,8 @@
           "to": "vertical_ki"
         },
         {
-          "when": [
-            "frames:2",
-            "command:ab"
-          ],
-          "to": "energy_field"
+          "when": "command:9e",
+          "to": "jumping_bomb"
         },
         {
           "when": "command:a9",
@@ -752,8 +815,11 @@
       ],
       "transitions": [
         {
-          "when": "command:9e",
-          "to": "jumping_bomb"
+          "when": [
+            "frames:2",
+            "command:ab"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [
@@ -763,11 +829,8 @@
           "to": "vertical_ki"
         },
         {
-          "when": [
-            "frames:2",
-            "command:ab"
-          ],
-          "to": "energy_field"
+          "when": "command:9e",
+          "to": "jumping_bomb"
         },
         {
           "when": "command:a9",
@@ -815,8 +878,11 @@
       ],
       "transitions": [
         {
-          "when": "command:9e",
-          "to": "jumping_bomb"
+          "when": [
+            "frames:2",
+            "command:ab"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [
@@ -826,11 +892,8 @@
           "to": "vertical_ki"
         },
         {
-          "when": [
-            "frames:2",
-            "command:ab"
-          ],
-          "to": "energy_field"
+          "when": "command:9e",
+          "to": "jumping_bomb"
         },
         {
           "when": "command:a9",
@@ -870,12 +933,12 @@
       "turn": false,
       "transitions": [
         {
-          "when": "command:b1",
-          "to": "vertical_ki"
-        },
-        {
           "when": "command:ab",
           "to": "energy_field"
+        },
+        {
+          "when": "command:b1",
+          "to": "vertical_ki"
         },
         {
           "when": "pressed:attack",
@@ -4773,6 +4836,34 @@
           "to": "guard_low"
         },
         {
+          "when": "command:a7",
+          "to": "energy_dash"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
           "when": "command:a1",
           "to": "sender_a1"
         },
@@ -4781,40 +4872,12 @@
           "to": "sender_a0"
         },
         {
-          "when": "command:9f",
-          "to": "sender_9f"
-        },
-        {
           "when": "command:9e",
           "to": "jumping_bomb"
         },
         {
           "when": "command:a9",
           "to": "ground_flare"
-        },
-        {
-          "when": "command:9c",
-          "to": "knee_slash"
-        },
-        {
-          "when": "command:a4",
-          "to": "sliding_kick"
-        },
-        {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
-          "when": "command:a7",
-          "to": "energy_dash"
-        },
-        {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
-          "when": "command:aa",
-          "to": "renzoku"
         },
         {
           "when": [
@@ -4830,6 +4893,10 @@
             "command:9d"
           ],
           "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "driving_elbow"
         },
         {
           "when": "pressed:strike",

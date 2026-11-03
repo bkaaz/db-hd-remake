@@ -20,17 +20,6 @@ because a number would only need translating back.
 
 ---
 
-## Goku's Double Kick does not come out of the stand-up
-
-`goku`, ↓ then → + B as he stands up · noticed in a recording 2026-11-01 ·
-annoying
-
-The command is met (`P1 command a2` in the log) but `stand_up` has no
-entry for `a2` — nor for `a8` or the throw `9d` — so the press falls
-through to a plain B from idle a few frames later. The stand-up asks for
-commands as idle does (`$0F:9EB1`, `rom.md`), so in the original it
-would be the Double Kick `?`.
-
 ## Saiyan Meteor turns the opponent round after the explosion
 
 `goku`, Saiyan Meteor (`ad`) landed · noticed by the owner 2026-11-01 ·

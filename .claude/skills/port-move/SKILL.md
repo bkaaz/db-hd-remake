@@ -136,8 +136,12 @@ One state per part, chained by `animEnd`, the last back to `idle`:
 - the entry from `idle`, `walk_fwd`, `walk_back`, `crouch_down`, `crouch`,
   `stand_up` (`$0F:9EB1`; and wherever else the original allows it): a
   command is `"command:<move>"` — its input is the cartridge's, from
-  `commands.json` (`npm run rom -- commands`, ADR 0050) — placed ahead of
-  the first press. Never a `motion:`: those are `goku_old`'s.
+  `commands.json` (`npm run rom -- commands`, ADR 0050). Never a
+  `motion:`: those are `goku_old`'s. Then `npm run rom -- entries`: no
+  stand, walk or crouch state may be listed (`entries.test.ts` holds it).
+  Where an entry goes is not yours to pick: `entries --order` (and
+  `states --fighter`) puts the command entries in the cartridge's order,
+  the table's last row first (ADR 0060).
 - no swing `sound`: the export put the script's sounds on the animation's
   steps (`sfx`), and they play through the bank entry whose `rom` is that
   id — every effect of the original has one, on its file of the sound test

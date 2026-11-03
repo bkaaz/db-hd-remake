@@ -11,7 +11,10 @@
         "crouch_loop",
         "idle",
         "walk_back",
-        "walk_fwd"
+        "walk_fwd",
+        "crouch_down",
+        "crouch",
+        "stand_up"
       ],
       "when": [
         "grab",
@@ -121,7 +124,11 @@
       "from": [
         "idle",
         "walk_fwd",
-        "walk_back"
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "crouch_loop",
+        "stand_up"
       ],
       "when": "command:a2",
       "to": "driving_elbow"
