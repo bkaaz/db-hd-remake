@@ -560,7 +560,10 @@ turns to face the thrower; frame 20 the opponent says `30` and is
 thrown (`$0F:B321`): 40 damage (less defence, `$0D:D12E`), 3 off the
 stun gauge (dizzy, `1d`, if it runs out; KO, `1c`, at 0 health), else
 move `1b` — the knockdown — at vx 2.5 away and vy −8.0; frame 21 it faces
-the thrower's way. Recorded, Goku throwing Vegetto (`tools/re/log-throw.lua`):
+the thrower's way. `$0F:B321` moves him by its facing argument `$04`: bit 6
+set, vx is −`$06` (`$0F:B3BC`). Goku gives his own turned (`EOR #$40`), so
+the body goes over his back; Vegeta's `9d` gives his own (`$20:93FD`), so
+he flies ahead, still facing Vegeta as frame 1 turned him. Recorded, Goku throwing Vegetto (`tools/re/log-throw.lua`):
 held at x −34 then −32 from the thrower's (mirrored), y unchanged; let go on
 the move's frame 20 at −16 behind, vy −8.00, +0.46 a frame, vx 2.5 — a peak
 74 px up; the camera rises 10. Goku against Goku starts 32 px up, so flies
@@ -849,7 +852,7 @@ lists. The rows `c8` and on are the same moves above the arena (`mode`).
 | `9c` | Teleport Towards — ← ↓ ↙ Y | Jumping Knee Slash — → ↓ ↘ B |
 | `9d` | the throw — → + X, in grab range (The throw, above) | the throw — the same |
 | `9e` | Teleport Away — ← ↓ ↙ B | Jumping Bomb — ↙ ↗ Y |
-| `9f`, `a0`, `a1` | ↓ ↘ → / → ← → / ↓ ↙ ← + X — not in the move lists `?` | the same |
+| `9f`, `a0`, `a1` | ↓ ↘ → / → ← → / ↓ ↙ ← + X — not in the move lists: blows that send him to another part of the arena (Which reaction) | the same |
 | `a2` | Double Kick — → + B | Driving Elbow (3D) — R + Y |
 | `a4` | Jumping Knee Slash — → ↓ ↘ B | Sliding Kick — ↓ ↘ → B |
 | `a5` | Quadruple Kick — ← ↙ ↓ ↘ → B | Rushing Knee — ↓ ↘ → B, only from `a4` |

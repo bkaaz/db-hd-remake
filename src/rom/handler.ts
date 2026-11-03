@@ -1,4 +1,6 @@
-import { FIGHTER_FIELDS, toFile } from "./cartridge";
+import { stepStarts } from "./animation";
+import { FIGHTER_FIELDS, scriptAt, toFile, type FighterTables } from "./cartridge";
+import { readScript } from "./script";
 import { storedTo, valueOf, type Value, type Who } from "./cpu";
 import { FRAMES } from "./flow";
 import { ROUTINES } from "./routines";
@@ -127,4 +129,16 @@ const FIGHTER: Omit<Body, "dispatch"> = {
 /** A word stored to `$E3` as the shake it starts — none without bit 15. */
 export function shakeOf(word: number): { pattern: number; frames: number } | null {
   return word & 0x8000 ? { pattern: (word >> 8) & 0x0f, frames: word & 0xff } : null;
+}
+
+/**
+ * Whether two fighters' handlers for `move` do the same — the same facts, at
+ * whatever addresses: Vegeta's dash is a copy of Goku's ($20:9162, $20:8004),
+ * read once. Their scripts' steps are each his own.
+ */
+export function sameHandler(rom: Uint8Array, a: FighterTables, b: FighterTables, move: number): boolean {
+  if (handlerAt(rom, a.character, move) === handlerAt(rom, b.character, move)) return true;
+  const facts = (t: FighterTables) =>
+    JSON.stringify(handlerFacts(rom, handlerAt(rom, t.character, move), stepStarts(readScript(rom, scriptAt(rom, t, move))).length, t.character));
+  return facts(a) === facts(b);
 }

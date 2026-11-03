@@ -25,9 +25,14 @@ describe("heldIn", () => {
 describe.skipIf(!existsSync(ROM_PATH))("heldAnims, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
 
-  it("holds Goku in 17, 18, 20 when Goku throws him, 10 frames, 10, then 32", () => {
+  it("holds Goku in 17, 18, 20 when Goku throws him, 10 frames, 10, then 32 — crying out (30) as he is thrown", () => {
     const held = heldAnims(rom, 0);
-    expect(held.m30_goku_9d.steps).toEqual([{ frame: "23", dur: 10 }, { frame: "24", dur: 10 }, { frame: "32", dur: 32 }]);
+    expect(held.m30_goku_9d.steps).toEqual([{ frame: "23", dur: 10 }, { frame: "24", dur: 10 }, { frame: "32", dur: 32, sfx: [0x30] }]);
     expect(Object.keys(held)).toContain("m30_piccolo_d9");
+  });
+
+  it("cries out at each of Vegeta's three blows while he holds him (his handler's 30 at 32, 56, 96)", () => {
+    const steps = heldAnims(rom, 0).m30_vegeta_9d.steps;
+    expect(steps.flatMap((st, i) => (st.sfx ? [i] : []))).toEqual([2, 4, 6]);
   });
 });

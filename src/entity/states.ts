@@ -62,7 +62,18 @@ export interface GrabDef {
    * `reaction`, costs `damage` less his defence, and leaves at `vel` —
    * facing the thrower's way, x backwards.
    */
-  launch: { frame: number; damage: number; reaction: string; vel: [number, number] };
+  launch: {
+    frame: number;
+    damage: number;
+    reaction: string;
+    vel: [number, number];
+    /**
+     * Thrown the way the thrower faces, still facing him, rather than over
+     * his back facing his way: `$0F:B321` given the thrower's own facing, not
+     * turned (Vegeta's 9d, `$20:93FD`; Goku's `$20:826D` turns it).
+     */
+    ahead?: boolean;
+  };
 }
 
 /**

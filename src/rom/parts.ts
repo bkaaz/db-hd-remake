@@ -5,6 +5,7 @@ import { readBoxes } from "./collision";
 import { CROUCH, crouchAfterAttack } from "./crouch";
 import { fallAfterJumpAttack, fallStep, JUMP } from "./fall";
 import { handlerAt, handlerFacts, type HandlerFact } from "./handler";
+import { readCommands } from "./commands";
 import { readScript, type ScriptOp } from "./script";
 
 /**
@@ -36,7 +37,7 @@ export function moveParts(rom: Uint8Array, t: FighterTables, move: number): Move
   const facts = factsOf(rom, t, move, ops);
   const rearms = facts.filter((f) => f.what === "re-arms the blow" && f.frame !== null).map((f) => f.frame!);
   const byHand = [...(HAND_CUTS[move] ?? []), ...(move === JUMP ? [fallStep(ops, fallAfterJumpAttack(rom, t.character))] : [])];
-  const steps = [...new Set([...jumpCuts(ops, byStep(ops, facts)), ...byHand])];
+  const steps = [...new Set([...jumpCuts(ops, byStep(ops, facts)), ...stepLoopCuts(ops, facts), ...byHand])];
   const frames = [
     ...jumpFrameCuts(ops, facts),
     ...rearmCuts(ops, rearms, boxesOf),
@@ -46,7 +47,10 @@ export function moveParts(rom: Uint8Array, t: FighterTables, move: number): Move
   // the opponent put in the hold, move 30, is untouchable (its script sets
   // field 0x96 to 70): a blow cannot land and cuts nothing, and the spawns go
   // on their steps — Saiyan Meteor's ae
-  const holds = facts.some((f) => f.who === "opponent" && f.move === HOLD);
+  // or its command does (the row's byte 6): Vegeta's throw, whose handler only holds him there
+  const holds =
+    facts.some((f) => f.who === "opponent" && f.move === HOLD) ||
+    readCommands(rom, t.character).some((c) => c.move === move && c.opponentMove === HOLD);
   const named = (type: number, anim: number) => t.objects.spawns.find((s) => s.type === type && s.anim === anim);
   const uncut = holds ? (type: number, anim: number) => named(type, anim)?.name : undefined;
   const onStep = (type: number, anim: number) => (named(type, anim)?.onStep?.includes(move) ? named(type, anim)?.name : undefined);
@@ -89,29 +93,47 @@ function strikingSteps(ops: ScriptOp[], boxesOf: (drawing: number) => { type: st
   return out;
 }
 
+/** A handler's test of the script's second step count (field 0x47) against a step. */
+const STEP_TEST = /^when field 47 \(.*\) is ([0-9a-f]{2})$/;
+
 /**
- * A jump a handler makes on a frame, as made from the step that frame is in —
- * Vertical Ki's landing goes on at frame 56, a step of its own ($20:A05C).
+ * A loop the handler keeps by step: on entering step N (field 0x47, "is N")
+ * it sends the script back to a frame — charging's, Goku's step 4 to frame 6,
+ * Vegeta's step 5 to 19 (`$20:81C2`, `$20:91B6`). Cut at both ends, so a
+ * state can repeat it.
+ */
+function stepLoopCuts(ops: ScriptOp[], facts: HandlerFact[]): number[] {
+  const starts = stepStarts(ops);
+  return facts.flatMap((f) => {
+    const test = f.when?.map((w) => STEP_TEST.exec(w)).find((m) => m);
+    if (!test || f.to === undefined) return [];
+    return [starts.filter((start) => start <= f.to!).length - 1, parseInt(test[1], 16)];
+  });
+}
+
+/**
+ * A jump a handler makes on a frame, or from one on, as made from the step
+ * that frame is in — Vertical Ki's landing goes on at frame 56, a step of its
+ * own ($20:A05C); Vegeta's crouch loops back to 8 from 43 ($20:9139).
  */
 function byStep(ops: ScriptOp[], facts: HandlerFact[]): { step?: number; to?: number }[] {
   const starts = stepStarts(ops);
   return facts.map((f) =>
-    f.step === undefined && f.frame !== null && f.to !== undefined
-      ? { step: starts.filter((start) => start <= f.frame!).length - 1, to: f.to }
+    f.step === undefined && (f.frame ?? f.from) !== undefined && f.frame !== undefined && f.to !== undefined
+      ? { step: starts.filter((start) => start <= (f.frame ?? f.from)!).length - 1, to: f.to }
       : f,
   );
 }
 
 /**
- * Cuts read by hand from handlers `handler.ts` does not follow yet. Charging
- * (`0c`, Goku's `$20:81C2`): entering step 4 while Y and B are held sends
- * the script back to frame 6, step 1 — a loop a state can repeat, cut at
- * both its ends. Pinned (`4a`, `$0F:A4B7`): it holds frame 3 until it lands,
+ * Cuts read by hand from handlers `handler.ts` does not follow yet. Pinned (`4a`, `$0F:A4B7`): it holds frame 3 until it lands,
  * then goes on from 23 — cut at step 1, a frame later — and holds 28 until it
  * lands again, then 32: step 3. One part a fall, as the states take them.
+ * The dash (`0a` / `0b`, `$20:8004`): its run loops 8–15 from 16 while it
+ * is held, and let go it plays 16 on, its way out — cut there too.
  * Galactic Gunfire's `af` holds step 1 until pinned frees it (`f0`, ADR
  * 0057) and goes on into step 2: cut there, so the state freed plays it.
  */
-const HAND_CUTS: Record<number, number[]> = { 0x0c: [1, 4], 0x4a: [1, 3], 0xaf: [2] };
+const HAND_CUTS: Record<number, number[]> = { 0x0a: [2], 0x0b: [2], 0x4a: [1, 3], 0xaf: [2] };
 /** Move 30: the original's hold, where a throw keeps the opponent. */
 const HOLD = 0x30;

@@ -888,11 +888,15 @@
       "transitions": [
         {
           "when": "!held:dash",
-          "to": "idle"
+          "to": "dash_fwd_end"
         },
         {
           "when": "!held:fwd",
-          "to": "idle"
+          "to": "dash_fwd_end"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_fwd_run"
         }
       ]
     },
@@ -906,11 +910,15 @@
       "transitions": [
         {
           "when": "!held:dash",
-          "to": "idle"
+          "to": "dash_back_end"
         },
         {
           "when": "!held:back",
-          "to": "idle"
+          "to": "dash_back_end"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_back_run"
         }
       ]
     },
@@ -3128,6 +3136,78 @@
       "holdStep": 37,
       "transitions": [],
       "pushless": true
+    },
+    "dash_fwd_run": {
+      "anim": "m0a_2",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "dash_fwd_end"
+        },
+        {
+          "when": "!held:fwd",
+          "to": "dash_fwd_end"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_fwd_run"
+        }
+      ]
+    },
+    "dash_fwd_end": {
+      "anim": "m0a_3",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "dash_back_run": {
+      "anim": "m0b_2",
+      "vel": [
+        -3,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "dash_back_end"
+        },
+        {
+          "when": "!held:back",
+          "to": "dash_back_end"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_back_run"
+        }
+      ]
+    },
+    "dash_back_end": {
+      "anim": "m0b_3",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
     }
   }
 }

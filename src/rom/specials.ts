@@ -23,6 +23,12 @@ export interface SpecialsFile {
    * replaces the template's whole — unnamed, a clash is still an error.
    */
   replaces?: string[];
+  /**
+   * Moves whose own handler is read and plays right through the template's
+   * states on his own parts — his charge loops at other frames, which the
+   * export cuts from his handler. `states` stops calling them "to read".
+   */
+  read?: string[];
 }
 
 /** What asks for a button: a press, or a command (ADR 0050). */

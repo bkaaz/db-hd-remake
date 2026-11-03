@@ -14,4 +14,12 @@ describe("grabOf", () => {
     });
     expect(grabOf({ holds: [] } as unknown as PortReport, "x")).toBeNull();
   });
+
+  it("throws him ahead, still facing the thrower, when the throw is given the thrower's own facing (Vegeta's)", () => {
+    const report = {
+      holds: [],
+      launch: { frame: 102, damage: 40, stun: 4, move: 0x1b, vx: 2.5, vy: -8, facing: { field: 0x12, who: "mover" } },
+    } as unknown as PortReport;
+    expect(grabOf(report, "reel_down")?.launch).toEqual({ frame: 102, damage: 40, reaction: "reel_down", vel: [-2.5, -8], ahead: true });
+  });
 });

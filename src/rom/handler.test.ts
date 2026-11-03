@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
-import { handlerAt, handlerFacts, shakeOf } from "./handler";
+import { handlerAt, handlerFacts, sameHandler, shakeOf } from "./handler";
 import { fighterNamed } from "./roster";
 
 describe("shakeOf", () => {
@@ -113,5 +113,11 @@ describe.skipIf(!existsSync(ROM_PATH))("handlerFacts, on the cartridge", () => {
     const jumps = handlerFacts(rom, handlerAt(rom, vegeta.character, 0xb2), 45, vegeta.character).flatMap((f) => (f.to === undefined ? [] : [f.to]));
     expect(jumps).toContain(0x100);
     expect(jumps).toContain(0x110);
+  });
+
+  it("calls two fighters' handlers the same when they do the same: the dash, not the crouch", () => {
+    const vegeta = fighterNamed(rom, "vegeta");
+    expect(sameHandler(rom, GOKU, vegeta, 0x0a)).toBe(true);
+    expect(sameHandler(rom, GOKU, vegeta, 0x03)).toBe(false);
   });
 });

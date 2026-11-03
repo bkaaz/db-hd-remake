@@ -50,7 +50,7 @@ import { lineName, spokenLines } from "../src/rom/lines.ts";
 import { voiceSounds } from "../src/rom/voice.ts";
 import { romIds, type Sounds } from "../src/audio/sounds.ts";
 import { moveOf, todo } from "../src/rom/todo.ts";
-import { handlerAt } from "../src/rom/handler.ts";
+import { handlerAt, sameHandler } from "../src/rom/handler.ts";
 import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
@@ -71,7 +71,10 @@ const rom = new Uint8Array(readFileSync(ROM_PATH));
 const argv = process.argv.slice(2);
 const named = argv.indexOf("--fighter");
 const name = named >= 0 ? argv[named + 1] : "goku";
-const T = named >= 0 ? fighterNamed(rom, name) : GOKU;
+// another fighter knows the shared objects (type a: sparks, bursts, dust) by name, so a
+// step that puts one out names it — the sparks of Vegeta's throw — but none of Goku's own
+const SHARED = { ...GOKU.objects, spawns: GOKU.objects.spawns.filter((sp) => sp.type === 0xa) };
+const T = named >= 0 ? fighterNamed(rom, name, SHARED) : GOKU;
 if (named >= 0) argv.splice(named, 2);
 const [command, ...args] = argv;
 
@@ -348,10 +351,12 @@ if (command === "tiles") {
   for (const [state, [was, is]] of Object.entries(made.moved)) console.log(`${state} fires from ${is} (goku's ${was})`);
   for (const [state, [was, is]] of Object.entries(made.reblown)) console.log(`${state}: ${was} -> ${is}`);
   // a copy is only goku's logic where it runs goku's code: the rest are his own, still to read
+  // a move he plays a state of his own from is read, whichever of its parts the template's copy plays
+  const read = new Set([...Object.values(own?.states ?? {}).map((d) => moveOf(d.anim)), ...(own?.read ?? []).map((m) => parseInt(m, 16))]);
   for (const [state, def] of Object.entries(made.file.states)) {
     if (own?.replaces?.includes(state)) continue;
     const move = moveOf(def.anim);
-    if (move !== null && handlerAt(rom, T.character, move) !== handlerAt(rom, GOKU.character, move))
+    if (move !== null && !read.has(move) && !sameHandler(rom, GOKU, T, move))
       console.log(`${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, T.character, move))}) — to read`);
   }
   // goku's numbers until the attributes are read (plan.md); his own lightings, and the fire everyone burns in

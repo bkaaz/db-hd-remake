@@ -29,6 +29,18 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
           "when": "command:9e",
           "to": "jumping_bomb"
         },
@@ -71,6 +83,13 @@
             "health:80"
           ],
           "to": "galactic_gunfire"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
         },
         {
           "when": [
@@ -154,6 +173,18 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
           "when": "command:9e",
           "to": "jumping_bomb"
         },
@@ -196,6 +227,13 @@
             "health:80"
           ],
           "to": "galactic_gunfire"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
         },
         {
           "when": [
@@ -275,6 +313,18 @@
           "to": "charge_start"
         },
         {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
           "when": "command:9e",
           "to": "jumping_bomb"
         },
@@ -317,6 +367,13 @@
             "health:80"
           ],
           "to": "galactic_gunfire"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
         },
         {
           "when": [
@@ -385,6 +442,18 @@
         {
           "when": "held:guard",
           "to": "guard_low"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
         },
         {
           "when": "command:9e",
@@ -463,6 +532,18 @@
           "to": "guard_low"
         },
         {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
           "when": "command:9e",
           "to": "jumping_bomb"
         },
@@ -511,12 +592,12 @@
           "to": "crouch_y"
         },
         {
-          "when": "pressed:smash",
-          "to": "crouch_b"
-        },
-        {
           "when": "!held:down",
           "to": "stand_up"
+        },
+        {
+          "when": "animEnd",
+          "to": "crouch_loop"
         }
       ]
     },
@@ -528,6 +609,18 @@
       ],
       "turn": true,
       "transitions": [
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
         {
           "when": "command:9e",
           "to": "jumping_bomb"
@@ -910,11 +1003,15 @@
       "transitions": [
         {
           "when": "!held:dash",
-          "to": "idle"
+          "to": "dash_fwd_end"
         },
         {
           "when": "!held:fwd",
-          "to": "idle"
+          "to": "dash_fwd_end"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_fwd_run"
         }
       ]
     },
@@ -928,11 +1025,15 @@
       "transitions": [
         {
           "when": "!held:dash",
-          "to": "idle"
+          "to": "dash_back_end"
         },
         {
           "when": "!held:back",
-          "to": "idle"
+          "to": "dash_back_end"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_back_run"
         }
       ]
     },
@@ -1932,6 +2033,78 @@
       "holdStep": 37,
       "transitions": [],
       "pushless": true
+    },
+    "dash_fwd_run": {
+      "anim": "m0a_2",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "dash_fwd_end"
+        },
+        {
+          "when": "!held:fwd",
+          "to": "dash_fwd_end"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_fwd_run"
+        }
+      ]
+    },
+    "dash_fwd_end": {
+      "anim": "m0a_3",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "dash_back_run": {
+      "anim": "m0b_2",
+      "vel": [
+        -3,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "dash_back_end"
+        },
+        {
+          "when": "!held:back",
+          "to": "dash_back_end"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_back_run"
+        }
+      ]
+    },
+    "dash_back_end": {
+      "anim": "m0b_3",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
     },
     "big_bang": {
       "anim": "mad",
@@ -4592,6 +4765,571 @@
         0
       ],
       "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "crouch_loop": {
+      "anim": "m03_3",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "transitions": [
+        {
+          "when": "held:guard",
+          "to": "guard_low"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:9e",
+          "to": "jumping_bomb"
+        },
+        {
+          "when": "command:a9",
+          "to": "ground_flare"
+        },
+        {
+          "when": "command:9c",
+          "to": "knee_slash"
+        },
+        {
+          "when": "command:a4",
+          "to": "sliding_kick"
+        },
+        {
+          "when": "command:ac",
+          "to": "final_flash"
+        },
+        {
+          "when": "command:a7",
+          "to": "energy_dash"
+        },
+        {
+          "when": "command:ad",
+          "to": "big_bang"
+        },
+        {
+          "when": "command:aa",
+          "to": "renzoku"
+        },
+        {
+          "when": [
+            "grab:64",
+            "command:ae",
+            "health:80"
+          ],
+          "to": "galactic_gunfire"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "crouch_y"
+        },
+        {
+          "when": "!held:down",
+          "to": "stand_up"
+        },
+        {
+          "when": "animEnd",
+          "to": "crouch_loop"
+        }
+      ]
+    },
+    "throw": {
+      "anim": "m9d",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              26,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              26,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              26,
+              0
+            ],
+            [
+              16,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              12,
+              0
+            ],
+            [
+              12,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              12,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              12,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              16,
+              -8
+            ],
+            [
+              16,
+              -8
+            ],
+            [
+              26,
+              -8
+            ],
+            [
+              16,
+              -8
+            ],
+            [
+              26,
+              -8
+            ],
+            [
+              16,
+              -8
+            ],
+            [
+              26,
+              -8
+            ],
+            [
+              16,
+              -8
+            ]
+          ],
+          "vegetto": [
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              24,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              24,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              24,
+              0
+            ],
+            [
+              16,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              36,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              36,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              36,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              16,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              24,
+              -8
+            ],
+            [
+              24,
+              -8
+            ],
+            [
+              24,
+              -8
+            ],
+            [
+              24,
+              -8
+            ],
+            [
+              24,
+              -8
+            ],
+            [
+              24,
+              -8
+            ],
+            [
+              24,
+              -8
+            ],
+            [
+              24,
+              -8
+            ]
+          ]
+        },
+        "launch": {
+          "frame": 102,
+          "damage": 40,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -8
+          ],
+          "ahead": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "frames:104",
+          "to": "throw_recover"
+        }
+      ],
+      "damage": 0
+    },
+    "throw_recover": {
+      "anim": "mb0",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "sender_9f": {
+      "anim": "m9f",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 24,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "air": [
+        [
+          8,
+          {
+            "vx": 3,
+            "vy": -3,
+            "gravity": "own"
+          }
+        ],
+        [
+          16,
+          {
+            "vx": 0,
+            "vy": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "frames:21",
+          "to": "jump_fall"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "sender_a0": {
+      "anim": "ma0",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 24,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "air": [
+        [
+          8,
+          {
+            "vx": 2,
+            "vy": -3.5,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a1": {
+      "anim": "ma1",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 24,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
         {
           "when": "animEnd",

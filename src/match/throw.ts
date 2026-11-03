@@ -56,8 +56,9 @@ export class Throws {
     // the state's count is 1 on the frame it is entered, the move's ($44) 0:
     // let go 20 frames after the throw began, as recorded (tools/re/log-throw.lua)
     if (thrower.stateFrame - 1 >= grab.launch.frame) {
-      // he leaves facing the thrower's way, thrown backwards ($0F:B321, $20:8285)
-      other.facing = thrower.facing;
+      // thrown backwards, as he faces: over the thrower's back facing his way ($20:8285),
+      // or ahead of him, still facing him (`ahead`, Vegeta's) — $0F:B321's facing
+      other.facing = grab.launch.ahead ? (thrower.facing === 1 ? -1 : 1) : thrower.facing;
       other.hurtBy(grab.launch.damage);
       other.release(grab.launch.reaction, grab.launch.vel);
       hold.launched = true;

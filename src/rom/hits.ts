@@ -75,10 +75,23 @@ export function recordAt(records: readonly HitRecord[], step: number): HitRecord
 }
 
 /** The bits `$0D:D2C0` tests for a standing defender, in its order. */
-const GROUND_ORDER = [0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x400, 0x800, 0x1000];
+const GROUND_ORDER = [0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x400, 0x800, 0x1000, 0x10000, 0x20000, 0x40000];
 
 /** The hit types named after the original's reactions, by the bit that picks each. */
-const REACTION_TYPES: Record<number, string> = { 0x04: "halt", 0x08: "light", 0x10: "heavy", 0x20: "trip", 0x40: "down", 0x80: "long", 0x400: "high" };
+const REACTION_TYPES: Record<number, string> = {
+  0x04: "halt",
+  0x08: "light",
+  0x10: "heavy",
+  0x20: "trip",
+  0x40: "down",
+  0x80: "long",
+  0x400: "high",
+  // to another part of the arena ($D3F3, $D46E, $D4D4): with none to go to, the
+  // closed way's — a knockdown (9f, a0, a1; rom.md, Which reaction)
+  0x10000: "down",
+  0x20000: "down",
+  0x40000: "down",
+};
 
 /**
  * How a standing defender takes the blow, as the hit type named after it: the

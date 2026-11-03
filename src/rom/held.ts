@@ -1,5 +1,7 @@
 import type { Anim } from "../entity/entityFile";
+import { stepStarts } from "./animation";
 import { scriptAt } from "./cartridge";
+import { handlerAt, handlerFacts } from "./handler";
 import { fighterTables, ROSTER } from "./roster";
 import { readScript, type ScriptOp } from "./script";
 
@@ -22,7 +24,12 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
         continue;
       }
       const anim = heldIn(ops, character);
-      if (anim) out[`m30_${thrower}_${move.toString(16).padStart(2, "0")}`] = anim;
+      if (!anim) continue;
+      // what the thrower's handler makes him cry out, on the step it does it on (Vegeta's throw: 30 at each blow)
+      const cries = handlerFacts(rom, handlerAt(rom, c, move), stepStarts(ops).length, c).flatMap((f) =>
+        f.who === "opponent" && f.sound !== undefined && f.frame !== null ? [{ frame: f.frame, id: f.sound }] : [],
+      );
+      out[`m30_${thrower}_${move.toString(16).padStart(2, "0")}`] = withCries(anim, cries);
     }
   });
   return out;
@@ -39,4 +46,16 @@ export function heldIn(ops: readonly ScriptOp[], character: number): Anim | null
     if (last !== null && op.frames > 0) steps.push({ frame: String(last), dur: op.frames });
   }
   return steps.length ? { loop: false, steps } : null;
+}
+
+/** `anim` with each cry on the step that begins on its frame — the steps are the thrower's, frame for frame. */
+export function withCries(anim: Anim, cries: { frame: number; id: number }[]): Anim {
+  if (!cries.length) return anim;
+  let at = 0;
+  const steps = anim.steps.map((step) => {
+    const here = cries.filter((c) => c.frame === at).map((c) => c.id);
+    at += step.dur ?? 0;
+    return here.length ? { ...step, sfx: [...(step.sfx ?? []), ...here] } : step;
+  });
+  return { ...anim, steps };
 }
