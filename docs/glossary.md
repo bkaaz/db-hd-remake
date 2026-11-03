@@ -155,6 +155,9 @@ defender and resets when they get control back. → `combat.md` §3
 **Queued** (a transition's `queued`) — the next part of a move, typed during
 this one and kept until its animation ends; not a cancel. → ADR 0049
 
+**Glow** (a state's `glow`) — the palette 8 records past a fighter's own,
+drawn while he charges; Goku has none. → `rom.md`, `src/rom/arena.ts`
+
 **Inputs of** (a state's `inputsOf`) — from one of its frames, a state starts
 what another state's inputs would: the landing, a block, the dash. → ADR 0061
 

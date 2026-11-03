@@ -423,8 +423,9 @@ what is heard is the sound's first 8 frames, again and again (`cut` in
 Y pressed a frame before B starts the far Y (`92`) for one frame, and the
 charge takes over — the normals' handler checks for Y + B too `?`.
 On frame 2 it loads palette field `0x17` + 8 — a glow while charging
-(`$0F:A072`, Goku's `0x48` by day) — and the own palette again at the
-end; not built.
+(`$0F:A072`) — and the own palette again at the end. Goku's records
+`0x48`–`0x4F` point at `0x40`–`0x47`'s colours, so he does not glow;
+Vegeta's `0x58` on are his own, brighter (`glowPalettes`, a state's `glow`).
 
 `90` stops the script; `c0 v` sets fighter field `0x96` to `v`: bit 6
 and blows pass the fighter by (`$2A:81C7`, `$2A:8291` skip him) — the
@@ -443,7 +444,9 @@ gravity included. Positions are 8.8; a fighter's x is fields `0x1f`–`0x21`.
 
 **The world is 512 px wide**: a fighter's x stays in 16–495 (`$0D:C88F`), the
 camera's x (`$0570`, 8.8, whole px in `$0571`) in 0–255 over a 256-px
-screen, and it starts at 128, y at 0 (`$01:8B84`). Screen x = x − `$0571`
+screen, and it starts at 128, y at 0 (`$01:8B84`). A round puts the two
+at x `C0` and `140` (screen 64 and 192), y 200 (176 above the arena,
+`$0552`), the one on the left keeping the left (`$01:8B2E`). Screen x = x − `$0571`
 (field `0x03`), screen y = y − `$0574` (field `0x07`).
 
 **Horizontally the camera does not centre** — it is pushed. A fighter whose

@@ -16,6 +16,13 @@ describe.skipIf(!existsSync(ROM_PATH))("objectFacts, on the cartridge", () => {
     expect(at(0x0a, 0x03, "changes the frame shown")[0].when).toContain("every 2nd frame of the game");
   });
 
+  it("reads a palette run where the code works the record out, every 4th frame: the beams' base and heads, not the ki blast", () => {
+    const run = (type: number, anim: number) => objectFacts(rom, type, anim).filter((f) => f.what.startsWith("loads a palette run"));
+    expect(run(0x0a, 0x16)[0].when).toContain("every 4th frame of the game");
+    expect(run(0x01, 0x0c)).toHaveLength(1);
+    expect(run(0x0a, 0x03)).toEqual([]);
+  });
+
   it("reads the dust: a step every 6 frames, gone at its 4th", () => {
     expect(at(0x0a, 0x0d, "shows its next frame").map((f) => f.from)).toEqual([6]);
     expect(at(0x0a, 0x0d, "is gone").some((f) => f.when?.includes("when field 02 (frame shown) is 04 or more"))).toBe(true);

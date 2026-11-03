@@ -463,6 +463,11 @@ export interface StateDef {
    * rather than played out into the recovery behind it.
    */
   holdStep?: number;
+  /**
+   * From this frame of the state, drawn in his glow — the palette 8 records
+   * past his own, loaded while he charges ($0F:A072) — if he has one.
+   */
+  glow?: number;
   /** From a frame, the input transitions of another state too, ahead of its own (ADR 0061). */
   inputsOf?: InputsOf;
 
@@ -1477,6 +1482,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       errors.push(`${where}: "band" needs "from" as two numbers, "size" and "max"`);
     }
     errors.push(...inputsOfErrors(where, def, authored));
+    if (def.glow !== undefined && (!Number.isInteger(def.glow) || def.glow < 0)) errors.push(`${where}: "glow" is the state's frame it starts on, 0 or more`);
     const moves = def.endsWithMove;
     if (moves !== undefined && moves !== true && !(Array.isArray(moves) && moves.every((m) => /^[0-9a-f]{2}$/.test(m)))) {
       errors.push(`${where}: "endsWithMove" is true or a list of move ids, two hex digits each`);

@@ -61,7 +61,7 @@ import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
-import { ARENAS, exportArena, lightingPalettes } from "../src/rom/arena.ts";
+import { ARENAS, exportArena, glowPalettes, lightingPalettes } from "../src/rom/arena.ts";
 import { drawHud, exportHud } from "../src/rom/hud.ts";
 
 if (!existsSync(ROM_PATH)) {
@@ -395,7 +395,7 @@ if (command === "tiles") {
         defence: his.defence,
         gravity: his.gravity,
         grabRange: commandContext(rom, T.character).grab,
-        palettes: [...Object.keys(lightingPalettes(rom, T)), ...Object.keys(FIRE)],
+        palettes: [...Object.keys(lightingPalettes(rom, T)), ...Object.keys(glowPalettes(rom, T)), ...Object.keys(FIRE)],
         burn: Object.keys(FIRE),
       },
       null,
@@ -405,7 +405,7 @@ if (command === "tiles") {
   console.log(`${name}: ${Object.keys(file.states).length} states; his defence, gravity, walk, dash and jump; Goku's push width and close ranges`);
 } else if (command === "export" && T !== GOKU) {
   // his lightings and the fire; the shared spawns, the arenas and the HUD stay Goku's export
-  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lightingPalettes(rom, T) } });
+  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lightingPalettes(rom, T), ...glowPalettes(rom, T) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write(`assets/sheets/${name}.png`, `data/entities/${name}`, fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
@@ -437,7 +437,7 @@ if (command === "tiles") {
   writeVoice(T, name);
 } else if (command === "export") {
   // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
-  const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU) } });
+  const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lightingPalettes(rom, GOKU), ...glowPalettes(rom, GOKU) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write("assets/sheets/goku.png", "data/entities/goku", fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {

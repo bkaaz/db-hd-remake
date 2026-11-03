@@ -18,6 +18,9 @@ import { throwFoe, Throws } from "./throw";
 import type { DebugFrame } from "../ui/debug";
 
 /** Where things may go this frame: bodies within the world, bolts within the screen — whose edge a shove meets. */
+/** Where a round puts the two, in world px: 64 either side of the screen's middle under the camera at 128 ($01:8B2E). */
+const ROUND_START = { left: 0xc0, right: 0x140 };
+
 export interface Field {
   bodies: Bounds;
   shots: Bounds;
@@ -124,10 +127,11 @@ export class Fighters {
    */
   start(stage: Stage, at: { p1?: number; p2?: number } = {}): void {
     this.player.groundY = stage.groundY;
-    this.player.x = stage.xAt(at.p1 ?? (this.opponent ? 0.35 : 0.5));
+    const alone = stage.xAt(0.5);
+    this.player.x = at.p1 !== undefined ? stage.xAt(at.p1) : this.opponent ? ROUND_START.left : alone;
     if (this.opponent) {
       this.opponent.groundY = stage.groundY;
-      this.opponent.x = stage.xAt(at.p2 ?? 0.65);
+      this.opponent.x = at.p2 !== undefined ? stage.xAt(at.p2) : ROUND_START.right;
     }
   }
 

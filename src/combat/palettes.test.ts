@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { burnVariant, shimmerVariant } from "./palettes";
+import { burnVariant, glowVariant, shimmerVariant } from "./palettes";
 
 const fire = Array.from({ length: 15 }, (_, i) => `fire${i}`);
 
@@ -23,5 +23,13 @@ describe("shimmerVariant", () => {
     const run = ["shimmer1", "shimmer2"];
     expect([0, 3, 4, 8, 11, 12].map((f) => shimmerVariant(run, f))).toEqual([undefined, undefined, "shimmer1", "shimmer2", "shimmer2", undefined]);
     expect(shimmerVariant([], 40)).toBeUndefined();
+  });
+});
+
+describe("glowVariant", () => {
+  it("takes the glow of the lighting he is in, and none he does not have", () => {
+    const vegeta = (v: string) => ["glow", "evening_glow", "night_glow"].includes(v);
+    expect([glowVariant(null, vegeta), glowVariant("night", vegeta)]).toEqual(["glow", "night_glow"]);
+    expect(glowVariant("evening", () => false)).toBeUndefined();
   });
 });

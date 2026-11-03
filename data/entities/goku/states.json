@@ -2181,6 +2181,7 @@
         0,
         0
       ],
+      "glow": 2,
       "transitions": [
         {
           "when": "animEnd",
@@ -2201,6 +2202,7 @@
       },
       "loopSound": "charge_19",
       "loopEvery": 8,
+      "glow": 0,
       "transitions": [
         {
           "when": [
@@ -2345,7 +2347,7 @@
             "frames:20",
             "released:blast"
           ],
-          "to": "kame_fire_s"
+          "to": "kame_go_s"
         },
         {
           "when": "frames:20",
@@ -2373,32 +2375,11 @@
             "frames:12",
             "released:blast"
           ],
-          "to": "kame_fire_m"
+          "to": "kame_go_m"
         },
         {
-          "when": "frames:16",
-          "to": "kame_charge_3"
-        }
-      ]
-    },
-    "kame_charge_3": {
-      "anim": "maa",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "ball": {
-        "at": [
-          -10,
-          -38
-        ],
-        "grow": 2
-      },
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "kame_fire_l"
+          "when": "frames:12",
+          "to": "kame_go_l"
         }
       ]
     },
@@ -3487,6 +3468,69 @@
         {
           "when": "landed",
           "to": "idle"
+        }
+      ]
+    },
+    "kame_go_s": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -10,
+          -38
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "kame_fire_s"
+        }
+      ]
+    },
+    "kame_go_m": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -10,
+          -38
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "kame_fire_m"
+        }
+      ]
+    },
+    "kame_go_l": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -10,
+          -38
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "kame_fire_l"
         }
       ]
     }

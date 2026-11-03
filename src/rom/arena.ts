@@ -32,6 +32,27 @@ export function lightingPalettes(rom: Uint8Array, t: FighterTables): Record<stri
   return out;
 }
 
+/** How far the charging glow's palette is from the fighter's own ($0F:A072: field 0x17 + 8). */
+const GLOW = 8;
+
+/**
+ * A fighter's glow while charging, in every lighting: `glow` in the one he
+ * is exported in, `<lighting>_glow` in the others — the record 8 past the
+ * palette that lighting gives him. None where that record is his own
+ * palette again: Goku's 0x48–0x4F point at 0x40–0x47's, so he never glows.
+ */
+export function glowPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const source of Object.values(ARENAS)) {
+    for (const [time, stage] of Object.entries(source.ids)) {
+      const own = 0x40 + 16 * t.character + (rom[LIGHTING + stage] & 0x0f);
+      const [plain, glow] = [paletteRecord(rom, own).at, paletteRecord(rom, own + GLOW).at];
+      if (glow !== plain) out[plain === t.palette ? "glow" : `${time}_glow`] = glow;
+    }
+  }
+  return out;
+}
+
 interface ArenaSource {
   /** The stage id of each lighting, in the order `times` lists them. */
   ids: Record<string, number>;

@@ -9,7 +9,7 @@ import type { SoundPlayer } from "../audio/playback";
 import { activeBall, BALL_COLOUR, nextRadius } from "../combat/ball";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
-import { burnVariant, shimmerVariant } from "../combat/palettes";
+import { burnVariant, glowVariant, shimmerVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -1023,11 +1023,15 @@ export class Entity {
    */
   private showVariant(): void {
     const shimmer = this.def.attributes.shimmer;
+    const glow = this.sm?.def.glow;
+    const glowing = glow !== undefined && this.stateFrames >= glow;
     const variant = this.burning
       ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting)
       : shimmer
         ? (shimmerVariant(shimmer, this.shimmerFrame) ?? null)
-        : this.lighting;
+        : glowing
+          ? (glowVariant(this.lighting, (v) => this.def.variants.has(v)) ?? this.lighting)
+          : this.lighting;
     if (variant === this.shownVariant) return;
     this.shownVariant = variant;
     this.applyFrame();

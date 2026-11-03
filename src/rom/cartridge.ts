@@ -85,6 +85,8 @@ export interface SpawnDef {
 
 /** Resource 0x32's palette ($95:DE1C, its record) and where the charged Kamehameha loads its tiles. */
 const KAME_PALETTE = 0x2ade1c;
+/** Records 0x131–0x133, which its base loads after 0x130 by $74 into the palette the heads draw in too ($0F:E61B). */
+const KAME_RUN = [0x2ade3c, 0x2ade5c, 0x2ade7c];
 const KAME_LOADS = [{ resource: 0x32, vram: 0x6c00 }];
 
 /** The fire a beam leaves on whoever it hits, the same for every fighter: 15 palettes of 32 bytes from $95:C78E (docs/rom.md). */
@@ -130,12 +132,12 @@ export const GOKU: FighterTables = {
       // from resource 0x32 the move loads at $6C00, in that resource's palette
       ...[0x13, 0x14, 0x15].map((anim, i) => ({
         name: `kame_${["s", "m", "l"][i]}`, type: 0xa, anim, steps: [4, 4], loop: true, hits: true,
-        palette: KAME_PALETTE, loads: KAME_LOADS,
+        palette: KAME_PALETTE, shimmer: KAME_RUN, loads: KAME_LOADS,
       })),
       // its base at the hands ($0F:E613): a step every 4 frames ($0F:E70F) —
       // 0–1 in, 2–4 looped while the beam is drawn ($0F:E738), 5–7 out, gone at 8
       { name: "kame_base", type: 0xa, anim: 0x16, steps: [], loop: false, hits: false,
-        palette: KAME_PALETTE, loads: KAME_LOADS,
+        palette: KAME_PALETTE, shimmer: KAME_RUN, loads: KAME_LOADS,
         animations: {
           in: { frames: [0, 1], dur: 4, loop: false },
           loop: { frames: [2, 3, 4], dur: 4, loop: true },
@@ -155,7 +157,7 @@ export const GOKU: FighterTables = {
         loads: [{ resource: 0x47, vram: 0x6800 }] },
       // the upward Kamehameha's (ab): one frame; its code steps palette
       // records 0x130–0x133 every 4 frames ($0F:B7D8; 0x2ADE1C on, 32 apart)
-      { name: "kame_up", type: 0x0, anim: 0x02, steps: [4], loop: true, hits: true, palette: 0x2ade1c, shimmer: [0x2ade3c, 0x2ade5c, 0x2ade7c] },
+      { name: "kame_up", type: 0x0, anim: 0x02, steps: [4], loop: true, hits: true, palette: KAME_PALETTE, shimmer: KAME_RUN },
       // Saiyan Meteor's object at frame 306 of ae, at the mover — normal
       // Goku's hair (owner, 2026-11-01): frames as the recording shows them;
       // drawn in OBJ palette 6 as its b0 says, which holds 0x27B161, the hair

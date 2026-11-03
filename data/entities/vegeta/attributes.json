@@ -13,6 +13,9 @@
   "palettes": [
     "evening",
     "night",
+    "glow",
+    "evening_glow",
+    "night_glow",
     "fire0",
     "fire1",
     "fire2",

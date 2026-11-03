@@ -1309,6 +1309,7 @@
         0,
         0
       ],
+      "glow": 2,
       "transitions": [
         {
           "when": "animEnd",
@@ -1329,6 +1330,7 @@
       },
       "loopSound": "charge_19",
       "loopEvery": 8,
+      "glow": 0,
       "transitions": [
         {
           "when": [
@@ -2276,7 +2278,7 @@
             "frames:20",
             "released:blast"
           ],
-          "to": "final_flash_fire_s"
+          "to": "final_flash_go_s"
         },
         {
           "when": "frames:20",
@@ -2304,32 +2306,11 @@
             "frames:12",
             "released:blast"
           ],
-          "to": "final_flash_fire_m"
+          "to": "final_flash_go_m"
         },
         {
-          "when": "frames:16",
-          "to": "final_flash_3"
-        }
-      ]
-    },
-    "final_flash_3": {
-      "anim": "mac",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "ball": {
-        "at": [
-          24,
-          -46
-        ],
-        "grow": 2
-      },
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "final_flash_fire_l"
+          "when": "frames:12",
+          "to": "final_flash_go_l"
         }
       ]
     },
@@ -5435,6 +5416,69 @@
         {
           "when": "animEnd",
           "to": "idle"
+        }
+      ]
+    },
+    "final_flash_go_s": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          24,
+          -46
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "final_flash_fire_s"
+        }
+      ]
+    },
+    "final_flash_go_m": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          24,
+          -46
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "final_flash_fire_m"
+        }
+      ]
+    },
+    "final_flash_go_l": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          24,
+          -46
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "final_flash_fire_l"
         }
       ]
     }

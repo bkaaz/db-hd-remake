@@ -139,17 +139,7 @@ the game's screen is `src/view.ts` (ADR 0029) and its scale the page's
 and its shake `src/camera/` (ADR 0030), arenas `src/arena/` (ADR 0031). *Open:* whether its 64-px push
 band grows with a wider screen — decided when the screen is widened.
 
-1. **The charge's glow** — the original swaps the fighter's palette for
-   its own + 8 while charging (`rom.md`, Charging ki refills health): a
-   variant sheet per lighting, as the lightings are (ADR 0026). The red
-   bars below the HUD's band are not read either.
-2. **A shove into the screen's edge passes to the attacker**, reversed, for
-   the frames it had left (`rom.md`, The camera) — `combat.md` §6, the
-   corner, decides whether it replaces what we have.
-3. **Where the original starts a round** — the fighters' x and the
-   camera's (`$0D:D7A0`, `$01:8B84`), read from the code. Ours start at
-   35% / 65% of the world under a centred camera, which puts both in the
-   push band, so the first step scrolls.
+1. **The red bars below the HUD's band** while charging — not read.
 
 ### Next: the Kamehameha, as the original's
 
@@ -164,8 +154,6 @@ base's way in and out, the band thinning away, the victim's fire (ADR 0027)
 and Goku's line. What
 still differs from the original:
 
-- the charge fires as it decides; the original shows two more frames of
-  the charging pose first (`$44` set to 42);
 - the beam ends with the move in the original ($0F:E5FC), long after it has
   left the screen; with no stage or camera that showed it vanishing in mid
   air, so Goku holds the firing pose (`holdStep`) until the head hits or
@@ -174,9 +162,6 @@ still differs from the original:
 - the white screen whitens an arena as the original does, not the debug
   grid (`Backdrop.whitens`); a player setting for its strength is worth
   considering (owner, 2026-10-29);
-- the beam's palette steps through records `0x130`–`0x133` every 4 frames
-  while it is out (`rom.md`, `$01:84EF`); the victim's fire and the white screen are built
-  (ADR 0027);
 - a big explosion that knocks its victim down sets the game's `$37` to `16`
   (`rom.md`) — what that does is not read.
 
@@ -185,19 +170,17 @@ still differs from the original:
 1. **The rest of the specials** — every move of Goku's command table
    (`rom.md`, The buttons); what is left is what
    `npm run rom -- todo --fighter goku` lists.
-2. **The dash's recovery** — `0d` after the release (`m0a`'s third step), cut
-   off today by the held-step rule in `src/rom/animation.ts`.
-3. **The rest of the objects** — `goku_hair` is exported but nothing plays
+2. **The rest of the objects** — `goku_hair` is exported but nothing plays
    it: there is no pre-fight screen, and `fires` only takes a projectile.
    Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`).
-4. **The blows that change the arena — last of Goku's moves** (owner,
+3. **The blows that change the arena — last of Goku's moves** (owner,
    2026-10-31). `9f`, `a0`, `a1` (X specials) send the opponent to another
    part of the arena, a flight shown between the two (`rom.md`, Which
    reaction: byte 2); both fighters play them as the closed way's knockdown
    (`sender_*`) until then. Needs the other arenas, their parts and the flight;
    never the way up into the fight above the arena (`combat.md`, Where the
    fight happens).
-5. **Player two's colours in a mirror match** — the same fighter on both
+4. **Player two's colours in a mirror match** — the same fighter on both
    sides takes the next palette (`rom.md`, A stage id); today both Gokus
    look alike.
 

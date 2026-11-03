@@ -26,3 +26,13 @@ export function shimmerVariant(variants: readonly string[], frame: number): stri
   const at = Math.floor(frame / SHIMMER_EACH) % (variants.length + 1);
   return at === 0 ? undefined : variants[at - 1];
 }
+
+/**
+ * The glow a charging fighter is drawn in, under the arena's lighting
+ * (`glow`, `evening_glow` …), or undefined when he has none — Goku's
+ * records point back at his own (`rom/arena.ts`, `glowPalettes`).
+ */
+export function glowVariant(lighting: string | null, has: (variant: string) => boolean): string | undefined {
+  const name = lighting === null ? "glow" : `${lighting}_glow`;
+  return has(name) ? name : undefined;
+}

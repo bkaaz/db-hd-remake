@@ -39,6 +39,11 @@ const ROUTINES: Record<number, Routine> = {
   0x0fb4ed: { fact: () => ({ what: "is gone" }) },
   // as its thrower: Y holds his block ($0F:B613)
   0x0dd82e: SHARED[0x0dd82e],
+  // a palette record A into this player's OBJ palette; one worked out each
+  // time is a run (Final Flash's, the Kamehameha's: 0x130 + ($74 & 0C) / 4)
+  0x0184ef: {
+    fact: ({ regs: r }) => ({ what: r.a === null ? "loads a palette run (the record worked out: `shimmer`)" : `loads palette record ${r.a.toString(16)}` }),
+  },
 };
 
 /** Its thrower's fields, read through Y after `$0F:B613`. */
