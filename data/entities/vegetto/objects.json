@@ -1,0 +1,81 @@
+[
+  {
+    "name": "vegetto_4_02",
+    "type": 4,
+    "anim": 2,
+    "hits": false,
+    "palette": 128,
+    "loads": [
+      {
+        "resource": 82,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "vegetto_4_04",
+    "type": 4,
+    "anim": 4,
+    "hits": true,
+    "palette": 128,
+    "loads": [
+      {
+        "resource": 82,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "vegetto_4_03",
+    "type": 4,
+    "anim": 3,
+    "hits": false,
+    "palette": 128,
+    "loads": [
+      {
+        "resource": 75,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  }
+]
