@@ -75,6 +75,8 @@ export const ROUTINES: Record<number, Routine> = {
   0x0dd8a2: says("re-arms the blow"),
   0x0f9fa3: says("ends the move"),
   0x0dd7a0: says("stops"),
+  // the same without clearing the shove
+  0x0dd7b1: says("stops"),
   0x0dde6c: says("raises dust"),
   // vy = −¼ of the landing's, at least 2.0 up; and a shake
   0x0dec12: { ...says("bounces"), follow: true },

@@ -20,6 +20,18 @@ because a number would only need translating back.
 
 ---
 
+## Drafted moves keep a by-step speed and a return to the crouch they lost
+
+*Annoying, drafted fighters.* The draft dropped a speed a handler sets on a step,
+and sent a crouching blow's end to `idle`; both are fixed in `port.ts` and `draft.ts`,
+and Gotenks is drafted again. Not the others: their `specials.json` may hold hand
+work, so a blow stands still and ends standing until each is drafted or corrected
+at his review. Vegetto `shooting_kick`, `crouch_b`, `crouch_y_2`; Freeza `attack_y`,
+`attack_b`, `double_leg_kick`, `sender_a1`, `flaming_headbutt_2`, `crouch_b`; Mr. Buu
+`crouch_b`, `flying_bomber`, `sender_a1`, `rolling_tackle`, `crouch_y_2`; Buu
+`crouch_y_2`. Goku's `meteor` and Vegeta's `energy_dash_run` show the same speed
+missing, but they are written by hand and may move another way `?`.
+
 ## The reels have a second pose we never show
 
 *Cosmetic, every fighter.* A heavy or light blow picks its reel by the defender's

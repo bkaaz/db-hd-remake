@@ -216,6 +216,12 @@
         0,
         0
       ],
+      "velAt": [
+        [
+          0,
+          1
+        ]
+      ],
       "transitions": [
         {
           "when": "animEnd",
@@ -227,8 +233,14 @@
       "anim": "maf_2",
       "turn": false,
       "vel": [
-        0,
+        1,
         0
+      ],
+      "velAt": [
+        [
+          12,
+          0
+        ]
       ],
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -1524,6 +1536,16 @@
         0,
         0
       ],
+      "velAt": [
+        [
+          4,
+          2
+        ],
+        [
+          14,
+          0
+        ]
+      ],
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "heavy",
@@ -1559,6 +1581,16 @@
       "vel": [
         0,
         0
+      ],
+      "velAt": [
+        [
+          4,
+          2
+        ],
+        [
+          18,
+          0
+        ]
       ],
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -1621,7 +1653,7 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
       ]
     },
@@ -1632,6 +1664,16 @@
         0,
         0
       ],
+      "velAt": [
+        [
+          8,
+          2
+        ],
+        [
+          10,
+          0
+        ]
+      ],
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "trip",
@@ -1639,7 +1681,7 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
       ]
     },

@@ -33,6 +33,7 @@ const HIT = { hitSound: "hit_09", blockSound: "block_17" };
 const FIRST_SPECIAL = 0x90;
 const LAND = 0x3b;
 const FALL = 0x05;
+const CROUCH = 0x03;
 /** Bit 7 of field 0x25 clear: its blow has connected ($2A:8190). */
 const CONNECTED = /field 25 .* has none of 80/;
 
@@ -65,6 +66,7 @@ export function draftSpecials(
     const { facts, ops } = moveParts(rom, t, move);
     const after = (m: number) => {
       if (m >= FIRST_SPECIAL && !queue.includes(m)) queue.push(m);
+      if (m === CROUCH) return "crouch";
       return m === LAND ? "land" : m === FALL ? "jump_fall_attacked" : m >= FIRST_SPECIAL ? base(m) : "idle";
     };
     const left: string[] = [];

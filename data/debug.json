@@ -11,8 +11,10 @@
     { "p2": { "does": ["attack 24"] } },
     { "p2": { "guard": "always", "does": [60] } },
     { "p1": { "at": 0.3 }, "p2": { "at": 0.42, "does": [
-      "fwd 90", 10, "fwd attack", 300,
-      "fwd 120", 10, "back 60", "fwd smash", 300
+      30, "fwd 50", 20, "attack", 70,
+      "back 14", 20, "attack", 70, "back 20", 20, "smash", 90,
+      "down 12", "down attack", "down 60", 30,
+      "down 12", "down smash", "down 70", 30
     ] } }
   ]
 }

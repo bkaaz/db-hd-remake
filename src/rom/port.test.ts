@@ -27,6 +27,13 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
     expect(portReport(rom, fighterNamed(rom, "gohan"), 0x9d).holds[0].at).toEqual([[32, 0], [32, 0], [32, 0], [32, 0]]);
   });
 
+  it("puts a by-step speed on its step's first frame, until a step stops it (fight-9: 92 +20 px, 93 +28, 95 +4)", () => {
+    const gotenks = fighterNamed(rom, "gotenks");
+    expect(portReport(rom, gotenks, 0x92).parts[0].velAt).toEqual([[4, 2], [14, 0]]);
+    expect(portReport(rom, gotenks, 0x93).parts[0].velAt).toEqual([[4, 2], [18, 0]]);
+    expect(portReport(rom, gotenks, 0x95).parts[0].velAt).toEqual([[8, 2], [10, 0]]);
+  });
+
   it("cuts a move where a handler pinned to a step by CMP jumps", () => {
     // Saiyan Meteor's rush: CMP #$0C on field 0x46, then frame 128 once he is close
     const meteor = portReport(rom, GOKU, 0xad);

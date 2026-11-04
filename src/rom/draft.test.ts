@@ -13,8 +13,8 @@ describe("objectName", () => {
 
 describe.skipIf(!existsSync(ROM_PATH))("draftSpecials, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
-  const draft = (name: string, names: Record<string, string>) =>
-    draftSpecials(rom, tablesOf(rom, name), names, (type, anim) => objectName(name, { type, anim }), (type) => type !== "other");
+  const draft = (name: string, names: Record<string, string>, normals: Record<string, string> = {}) =>
+    draftSpecials(rom, tablesOf(rom, name), names, (type, anim) => objectName(name, { type, anim }), (type) => type !== "other", normals);
 
   it("follows what a landing sets past the landing itself: Gotenks's a8 into aa", () => {
     const { states } = draft("gotenks", { a8: "wild_boar", aa: "after" }).specials;
@@ -25,6 +25,16 @@ describe.skipIf(!existsSync(ROM_PATH))("draftSpecials, on the cartridge", () => 
   it("goes on into the move the script's end sets: Gotenks's a5 into a6", () => {
     const { states } = draft("gotenks", { a5: "slide", a6: "slide_end" }).specials;
     expect(states.slide.transitions).toContainEqual({ when: "animEnd", to: "slide_end" });
+  });
+
+  it("goes back to the crouch a crouching blow's handler sets: Gotenks's 95", () => {
+    const { states } = draft("gotenks", {}, { "95": "low_kick" }).specials;
+    expect(states.low_kick.transitions).toContainEqual({ when: "animEnd", to: "crouch" });
+  });
+
+  it("steps forward through the step a handler's speed is on: Gotenks's 92", () => {
+    const { states } = draft("gotenks", {}, { "92": "far" }).specials;
+    expect(states.far.velAt).toEqual([[4, 2], [14, 0]]);
   });
 
   it("asks for a move only another leads to from that move's states, once it has connected", () => {
