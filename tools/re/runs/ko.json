@@ -1,0 +1,40 @@
+{
+  "state": "gotenks-select",
+  "frames": 2000,
+  "healthAt": 1200,
+  "hp1": 5,
+  "shots": [
+    1100
+  ],
+  "p1": {
+    "does": [
+      30,
+      "blast 4",
+      60,
+      "blast 4",
+      60,
+      "blast 4",
+      60,
+      "blast 4",
+      600,
+      "blast 4",
+      80,
+      "blast 4"
+    ]
+  },
+  "p2": {
+    "does": [
+      1200,
+      "fwd 60",
+      "attack 3",
+      60,
+      "attack 3",
+      60,
+      "attack 3",
+      60,
+      "attack 3",
+      60,
+      "attack 3"
+    ]
+  }
+}

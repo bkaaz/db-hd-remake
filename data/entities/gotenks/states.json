@@ -9,8 +9,7 @@
     "ko": "ko_rise",
     "down": "ko_down",
     "win": [
-      "win",
-      "win_air"
+      "win"
     ]
   },
   "states": {
@@ -2309,16 +2308,24 @@
       "transitions": []
     },
     "win": {
-      "anim": "m3e",
       "vel": [
         0,
         0
       ],
       "turn": false,
+      "anim": "m3e",
+      "toCentre": {
+        "speed": 3,
+        "within": 16
+      },
       "transitions": [
         {
-          "when": "animEnd",
-          "to": "win_2"
+          "when": "arrived",
+          "to": "win_stop"
+        },
+        {
+          "when": "frames:7",
+          "to": "win_run"
         }
       ]
     },
@@ -2359,7 +2366,7 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "intro_2"
         }
       ]
     },
@@ -4227,6 +4234,137 @@
       ],
       "keepsApproach": true,
       "behind": true
+    },
+    "intro_2": {
+      "anim": "m3f",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "animLoops": true,
+      "paletteAt": [
+        [
+          6,
+          "run0"
+        ],
+        [
+          12,
+          "run1"
+        ],
+        [
+          18,
+          null
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "frames:170",
+          "to": "idle"
+        }
+      ]
+    },
+    "win_run": {
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "anim": "mb6_2",
+      "animLoops": true,
+      "toCentre": {
+        "speed": 3,
+        "within": 16
+      },
+      "transitions": [
+        {
+          "when": "arrived",
+          "to": "win_stop"
+        }
+      ]
+    },
+    "win_stop": {
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "anim": "mb6",
+      "transitions": [
+        {
+          "when": "frames:7",
+          "to": "win_pose"
+        }
+      ]
+    },
+    "win_pose": {
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "anim": "m3e_3",
+      "paletteAt": [
+        [
+          42,
+          "run1"
+        ],
+        [
+          48,
+          "run2"
+        ],
+        [
+          54,
+          "run0"
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_end"
+        }
+      ]
+    },
+    "win_end": {
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "anim": "m3e_4",
+      "holdStep": 2,
+      "paletteAt": [
+        [
+          1,
+          "run3"
+        ],
+        [
+          7,
+          "run4"
+        ],
+        [
+          13,
+          "run5"
+        ]
+      ],
+      "transitions": [],
+      "fires": {
+        "spawn": "gotenks_goten",
+        "at": [
+          -7,
+          0
+        ],
+        "state": "fly",
+        "with": [
+          {
+            "spawn": "gotenks_trunks",
+            "at": [
+              -10,
+              0
+            ]
+          }
+        ]
+      }
     }
   }
 }

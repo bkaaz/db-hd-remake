@@ -155,6 +155,8 @@ export interface Attributes {
    * ($0F:B8CD) and his intro ($0F:B828). False: it plays where it was put.
    */
   follows: false | FollowBy;
+  /** Added to what is behind it, as the original's colour math does OBJ palettes 4-7 in an intro. */
+  adds: boolean;
   /**
    * Game frames a blow holds its victim helpless when its own state does not
    * say. Twelve, which is what every reaction animation happens to last today —
@@ -184,6 +186,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   mirrors: true,
   copies: { count: 0, step: 0, spread: [0, 0] },
   follows: false,
+  adds: false,
   hitstun: 12,
   ki: 100,
 };

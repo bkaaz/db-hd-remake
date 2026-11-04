@@ -5,6 +5,7 @@ import type { ShakeDef } from "../camera/shake";
 import type { ScreenCue } from "../screen";
 import { bodyOverlap, pushApart, separate, type Bounds } from "../combat/push";
 import { Entity, type WorldInput } from "../entity/entity";
+import { VIEW } from "../view";
 import type { EntityDef } from "../entity/entityDef";
 import type { Effects } from "../fx/effects";
 import type { Stage } from "../stage";
@@ -154,6 +155,8 @@ export class Fighters {
     this.from = [this.player.x, this.opponent?.x ?? 0];
     this.player.update(playerInput, this.opponent ?? null, field.bodies);
     this.opponent?.update(opponentInput, this.player, field.bodies);
+    // the screen's middle, as the original's $0571 + $80
+    if (this.lastCamera) for (const fighter of [this.player, this.opponent]) fighter?.centreOn(this.lastCamera.x + VIEW.width / 2);
     if (this.opponent) {
       this.throws.update(this.player, this.opponent);
       this.throws.update(this.opponent, this.player);

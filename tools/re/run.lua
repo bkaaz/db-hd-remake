@@ -64,7 +64,7 @@ do
       emu.removeMemoryCallback(exec, emu.callbackType.exec, START, LAST, SNES)
       exec = nil
     end
-    if not poked then
+    if not poked and count >= RUN.healthAt then
       for side, hp in pairs(RUN.health) do
         emu.write(P[side] + HEALTH, hp & 0xff, IRAM)
         emu.write(P[side] + HEALTH + 1, hp >> 8, IRAM)

@@ -1,0 +1,39 @@
+{
+  "_comment": "3/0D, one of the two that come out of Gotenks in his win (3e). Frames by npm run rom -- export --fighter gotenks; this file by hand. b0's speed for 17 frames, then still, gone at 41 (logs/run-win.txt).",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "velAt": [
+        [
+          17,
+          0
+        ]
+      ],
+      "lasts": 41,
+      "paletteAt": [
+        [
+          0,
+          "shimmer1"
+        ],
+        [
+          2,
+          "shimmer2"
+        ],
+        [
+          8,
+          "shimmer3"
+        ],
+        [
+          14,
+          null
+        ]
+      ]
+    }
+  }
+}

@@ -377,6 +377,7 @@ export class Entity {
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
+    if (def.attributes.adds) this.sprite.blendMode = "add";
     this.ballG.blendMode = "add";
     this.bandG.blendMode = "add";
     this.view.addChild(this.sprite, this.bandG, this.ballG, this.boxG);
@@ -1210,6 +1211,19 @@ export class Entity {
   /** Not drawn while a scene has him: he goes on being where he is. */
   hide(hidden: boolean): void {
     this.view.visible = !hidden;
+  }
+
+  /** A state with `toCentre` goes on toward `x`, the screen's middle, until it arrives. */
+  centreOn(x: number): void {
+    const to = this.sm?.def.toCentre;
+    if (!to || this.arrived) return;
+    const off = x - this.x;
+    if (Math.abs(off) < to.within * this.scale) {
+      this.arrived = true;
+      return;
+    }
+    this.facing = off > 0 ? 1 : -1;
+    this.x += this.facing * to.speed * this.scale;
   }
 
   /** A shot with an `aim` answers a body standing at `y`; anything else ignores it. */

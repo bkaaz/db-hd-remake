@@ -30,6 +30,8 @@ export interface OwnObject {
   alt?: number;
   /** How many records after `palette` its code steps through, one every 4 frames ($01:84EF, `$0F:BA7F`). */
   shimmer?: number;
+  /** Records its palette passes through as it comes out, for its `paletteAt` to name (`shimmer1` …). */
+  fades?: number[];
   /**
    * Its tiles where its move's own load is not all of them: what the
    * recording's VRAM snapshot holds under its tile numbers
@@ -70,6 +72,15 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     // well as the 0x4A its move loads, on top of it (logs/objects-gotenks.bin);
     // up to three by how long A is held; its flight is in its states.json ($0F:C328)
     { name: "gotenks_ghost", type: 0x3, anim: 0x6, hits: true, palette: 0x23, loads: [{ resource: 0x40, vram: 0x6800 }, { resource: 0x4a, vram: 0x6b00 }] },
+    // 3f, his intro after 3c: discharges on him, 36 frames in every 84 ($0F:C129, a frame every 4),
+    // in his own colours: the intro's OBJ palette 4 is 0x70, what a fight puts there is not
+    { name: "gotenks_discharge", type: 0x3, anim: 0xb, hits: false, palette: 0x70, alt: 0x71, loads: VOLLEYBALL, tiles: 0x80, onStep: [0x3f],
+      animations: { play: { frames: [...Array(12).fill(9), 0, 1, 2, 3, 4, 5, 6, 7, 8], dur: 4, loop: true } } },
+    // 3e, his win: Goten and Trunks come out of him while his own drawing is empty, each drawn
+    // from his sprite's tiles, flying apart (script: b0 at -7 and -10). OBJ palette 4 goes 0x139,
+    // 0x158, 0x160 and stays 0x168, by his handler's frames 87, 93, 99 (a run's CGRAM)
+    { name: "gotenks_goten", type: 0x3, anim: 0xc, hits: false, palette: 0x168, alt: 0x169, fades: [0x139, 0x158, 0x160], animations: { play: { frames: [0], dur: 9999, loop: false } } },
+    { name: "gotenks_trunks", type: 0x3, anim: 0xd, hits: false, palette: 0x168, alt: 0x169, fades: [0x139, 0x158, 0x160], animations: { play: { frames: [0], dur: 9999, loop: false } } },
     // ae, Volleyball: the ball and its shadow, shown frame by frame by `match/ball.ts`;
     // the shadow in palette 0x74, OBJ palette 4 (logs/objects-gotenks.bin)
     { name: "gotenks_ball", type: 0x3, anim: 0x4, hits: false, palette: 0x23, loads: VOLLEYBALL, tiles: 0x80, animations: { play: { frames: [0, 1], dur: 9999, loop: false } } },
@@ -165,6 +176,7 @@ export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[
       palette: paletteRecord(rom, o.palette).at,
       ...(o.alt && { alt: paletteRecord(rom, o.alt).at }),
       ...(o.tiles !== undefined && { tiles: o.tiles }),
+      ...(o.fades && { shimmer: o.fades.map((id) => paletteRecord(rom, id).at) }),
       ...(o.shimmer && { shimmer: Array.from({ length: o.shimmer }, (_, i) => paletteRecord(rom, o.palette + 1 + i).at) }),
       loads,
     };

@@ -20,6 +20,23 @@ because a number would only need translating back.
 
 ---
 
+## Gotenks's discharges are blended into what is behind them
+
+*Annoying, Gotenks, his intro (`3f`).* `gotenks_discharge` has `adds`, so it is added to
+the arena and to his body and comes out as a pale smear. The original's is solid and always
+in front of him: each pixel is its own colour plus the fixed colour of its row, never what
+lies under it (OBJ palettes 4-7 take the colour math; `$2131`'s source there is the fixed
+colour, which is also the intro's blue gradient). To see it: intro switch on, `?p2=gotenks`.
+
+## Goten and Trunks keep their daylight colours in every light
+
+*Annoying, Gotenks, his win (`3e`), evening and night.* The handler loads field `0x17` + `0xE8`,
+`0xF0`, `0xF8` (`$20:B903`), so the records follow the lighting: `0x15A`, `0x162`, `0x16A` by
+evening, `0x15C`, `0x164`, `0x16C` by night. `fades` and `palette` in `ownObjects.ts` name the
+day's alone, and `gotenks_goten` has no sheet for another light. His intro's `run0` and `run1`
+are own + `0xC9` and + `0xC5` (`$20:B96C`), fixed the same way; by evening + `0xC9` is `0x13B`,
+which our reader cannot follow `?`. From the code: no evening state of the original was played.
+
 ## Drafted moves keep a by-step speed and a return to the crouch they lost
 
 *Annoying, drafted fighters.* The draft dropped a speed a handler sets on a step,

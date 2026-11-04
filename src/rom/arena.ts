@@ -64,7 +64,7 @@ export function glowPalettes(rom: Uint8Array, t: FighterTables): Record<string, 
 }
 
 /** Palette records a fighter's handler puts him in, as sheets of their own: Gohan's `ae` ($20:B417, $20:B421) and `3c` ($20:A4AA). */
-const RUNS: Record<number, number[]> = { 2: [0x140, 0x141, 0x142, 0x143, 0x144, 0x117] };
+const RUNS: Record<number, number[]> = { 3: [0x139, 0x135, 0x137, 0x158, 0x160, 0x168], 2: [0x140, 0x141, 0x142, 0x143, 0x144, 0x117] };
 
 /** `run0` … by the record's place in `RUNS`, keyed by character. */
 export function runPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {

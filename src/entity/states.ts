@@ -407,6 +407,8 @@ export interface StateDef {
   approach?: Approach;
   /** The speed an `approach` of the state before set goes on here. */
   keepsApproach?: boolean;
+  /** He runs to the middle of the screen at `speed`, `arrived` within `within` px, whatever he was facing ($20:B85C). */
+  toCentre?: { speed: number; within: number };
   /** The state whose `seize` this one goes on playing: a scene over several states. */
   sceneOf?: string;
   /** Its animation goes round, whatever the file says: a run that lasts as long as it must. */
