@@ -1,0 +1,167 @@
+{
+  "_comment": "Written by npm run rom -- commands from the cartridge's command table ($3D:9EEF); never by hand.",
+  "commands": [
+    {
+      "move": "af",
+      "where": "ground",
+      "words": [
+        "5010"
+      ]
+    },
+    {
+      "move": "9d",
+      "where": "ground",
+      "words": [
+        "0148"
+      ]
+    },
+    {
+      "move": "a5",
+      "where": "ground",
+      "words": [
+        "4508"
+      ]
+    },
+    {
+      "move": "a0",
+      "where": "ground",
+      "words": [
+        "0042",
+        "0100",
+        "0200",
+        "0100"
+      ]
+    },
+    {
+      "move": "a1",
+      "where": "ground",
+      "words": [
+        "0042",
+        "0200",
+        "0600",
+        "0400"
+      ]
+    },
+    {
+      "move": "9f",
+      "where": "ground",
+      "words": [
+        "0042",
+        "0100",
+        "0500",
+        "0400"
+      ]
+    },
+    {
+      "move": "ab",
+      "where": "ground",
+      "words": [
+        "0082",
+        "0100",
+        "0500",
+        "0400"
+      ]
+    },
+    {
+      "move": "a8",
+      "where": "ground",
+      "words": [
+        "4002",
+        "0100",
+        "0500",
+        "0400"
+      ]
+    },
+    {
+      "move": "bd",
+      "where": "ground",
+      "words": [
+        "0082",
+        "0100",
+        "0500",
+        "0400",
+        "0100",
+        "0500",
+        "0400"
+      ]
+    },
+    {
+      "move": "ac",
+      "where": "ground",
+      "words": [
+        "0082",
+        "0100",
+        "0500",
+        "0400",
+        "0600",
+        "0200"
+      ]
+    },
+    {
+      "move": "a7",
+      "where": "ground",
+      "words": [
+        "4002",
+        "0200",
+        "0600",
+        "0400",
+        "0500",
+        "0100"
+      ]
+    },
+    {
+      "move": "ad",
+      "where": "ground",
+      "words": [
+        "0082",
+        "0100",
+        "0600",
+        "0400"
+      ]
+    },
+    {
+      "move": "b4",
+      "where": "ground",
+      "words": [
+        "4002",
+        "0100",
+        "0500",
+        "0400",
+        "0600",
+        "0200"
+      ]
+    },
+    {
+      "move": "ae",
+      "where": "ground",
+      "words": [
+        "4002",
+        "0100",
+        "0500",
+        "0400",
+        "0600",
+        "0200",
+        "0100"
+      ]
+    },
+    {
+      "move": "b0",
+      "where": "air",
+      "words": [
+        "4002",
+        "0400",
+        "0100"
+      ]
+    },
+    {
+      "move": "b3",
+      "where": "air",
+      "words": [
+        "0082",
+        "0100",
+        "0200",
+        "0100"
+      ]
+    }
+  ]
+}

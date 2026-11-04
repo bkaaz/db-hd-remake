@@ -1,0 +1,56 @@
+{
+  "voice_hurt": {
+    "gain": 0.85,
+    "vary": 0.05,
+    "file": "gotenks_30.wav",
+    "rom": 48
+  },
+  "voice_ko": {
+    "gain": 0.85,
+    "vary": 0,
+    "file": "gotenks_31.wav",
+    "rom": 49
+  },
+  "voice_shout": {
+    "gain": 0.85,
+    "vary": 0.04,
+    "file": "gotenks_32.wav",
+    "rom": 50
+  },
+  "line_06": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_06.wav",
+    "line": 6
+  },
+  "line_07": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_07.wav",
+    "line": 7
+  },
+  "line_09": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_09.wav",
+    "line": 9
+  },
+  "line_0a": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_0a.wav",
+    "line": 10
+  },
+  "line_0b": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_0b.wav",
+    "line": 11
+  },
+  "line_2c": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_2c.wav",
+    "line": 44
+  }
+}
