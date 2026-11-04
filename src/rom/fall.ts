@@ -1,6 +1,6 @@
 import { toFile } from "./cartridge";
 import { stepStarts } from "./animation";
-import type { ScriptOp } from "./script";
+import { holdStepOf, type ScriptOp } from "./script";
 
 /**
  * Where a fighter falls once his jump attack is over. The attack's handler
@@ -34,11 +34,13 @@ export function fallAfterJumpAttack(rom: Uint8Array, character: number): { step:
 /**
  * The step of the jump's script that shows: the frame may lie past the
  * step's end, and the script steps on until it catches up — both Goku's and
- * Vegeta's land on the script's last pose, the fall.
+ * Vegeta's land on the script's last pose, the fall. No further than its hold:
+ * past it lie other jumps' steps, Gotenks's salto among them.
  */
 export function fallStep(ops: ScriptOp[], at: { step: number; frame: number }): number {
   const starts = stepStarts(ops);
+  const last = holdStepOf(ops) ?? starts.length - 1;
   let step = at.step;
-  while (step + 1 < starts.length && starts[step + 1] <= at.frame) step++;
+  while (step < last && starts[step + 1] <= at.frame) step++;
   return step;
 }

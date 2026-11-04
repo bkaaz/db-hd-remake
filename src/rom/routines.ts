@@ -73,6 +73,7 @@ export const ROUTINES: Record<number, Routine> = {
   // walk, crouch, jump or stand by the directions held
   0x0df9bd: says("reads the directions"),
   0x0dd8a2: says("re-arms the blow"),
+  0x0dd8d5: says("goes behind the opponent"),
   0x0f9fa3: says("ends the move"),
   0x0dd7a0: says("stops"),
   // the same without clearing the shove

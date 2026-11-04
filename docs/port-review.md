@@ -19,8 +19,6 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 
 | move | input | left out |
 |---|---|---|
-| `af` ultra_headbutt | ground: R + Y | — |
-| `9d` throw | ground: → + X | — |
 | `a5` sliding_headbutt | ground: ↘ + Y | — |
 | `a0` sender_a0 | ground: → ← → X | — |
 | `a1` sender_a1 | ground: ↓ ↙ ← X | — |
@@ -29,10 +27,9 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `a8` wild_boar | ground: ↓ ↘ → Y | — |
 | `bd` ultra_renzoku | ground: ↓ ↘ → ↓ ↘ → A | — |
 | `ac` kikoha | ground: ← ↙ ↓ ↘ → A | — |
-| `a7` omaenanka | ground: → ↘ ↓ ↙ ← Y | — |
-| `b4` rolling_thunder | ground: ← ↙ ↓ ↘ → Y | — |
+| `a7` omaenanka | ground: → ↘ ↓ ↙ ← Y, in Sliding Headbutt's hit pause | only by hand: the dummy's clock stands in a pause |
 | `b0` air_dive | air: → ↓ Y | — |
-| `b3` aerial_kantsu | air: → ← → A | mb3_2's blow, a reaction no type copies; mb3_3's blow, a reaction no type copies; mb3_4's blow, a reaction no type copies; mb3_5's blow, a reaction no type copies; mb3_6's blow, a reaction no type copies |
+| `b3` aerial_kantsu | air: → ← → A | — |
 | `90` attack_y_close | his own normal | — |
 | `92` attack_y | his own normal | — |
 | `93` attack_b | his own normal | — |
@@ -41,7 +38,7 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `a6` move_a6 | from another move | — |
 | `aa` move_aa | from another move | — |
 | `b1` move_b1 | from another move | — |
-| `b2` move_b2 | from another move | mb2's blow, a reaction no type copies |
+| `b2` move_b2 | from another move | — |
 
 Objects: `gotenks_ghost` from his recording. `gotenks_3_08` and `gotenks_3_03` take its colours and `3_08` its frames, the rest drafted `?`; `gotenks_ball` and its shadow from the same, shown by `match/ball.ts`. `gotenks_3_0a` (`b3`, in the air) is not in it.
 Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_start`, `dash_back`, `dash_back_end`, `dash_back_run`, `dash_fwd`, `dash_fwd_end`, `dash_fwd_run`, `intro`, `ko_bounce`, `ko_bounce2`, `ko_down`, `ko_fall`, `ko_lie`, `ko_rise`, `reel_trip`, `trip_fall`, `trip_land`, `win`, `win_2`, `win_air`.

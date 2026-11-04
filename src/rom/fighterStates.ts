@@ -78,10 +78,14 @@ export function fighterStates(rom: Uint8Array, name: string, t: FighterTables): 
   const moved = withAttributes(made.file, readAttributes(rom, t.character));
   // his commands tried as the cartridge tries them, the table's last row first
   const file = inTableOrder(own ? withSpecials(moved, own) : moved, readCommands(rom, t.character));
-  const held = blowsSaid(heldOn(heldOn(heldTumble(file.states, rom, t), "crouch", CROUCH, rom, t, animations), "ko_down", KO, rom, t, animations), animations);
+  const jumps = JUMPS_HELD.reduce((states, [state, move]) => heldOn(states, state, move, rom, t, animations), file.states);
+  const held = blowsSaid(heldOn(heldOn(heldTumble(jumps, rom, t), "crouch", CROUCH, rom, t, animations), "ko_down", KO, rom, t, animations), animations);
   const getUp = (animations.m1f as { steps: { dur: number }[] }).steps.map((s) => s.dur);
   return { file: { ...file, states: withKnockdown(held, highGravity(rom, t.character), getUpFrame(rom, t.character, getUp)) }, made, own };
 }
+
+/** A jump stops on its script's hold until it lands: past it lie the other jumps' steps. */
+const JUMPS_HELD: [string, number][] = [["jump_fwd", 0x06], ["jump_back", 0x07], ["jump_fall", 0x05]];
 
 /** The air reel stops where his `1a` holds, on a step of its own in each fighter's script. */
 function heldTumble(states: StatesFile["states"], rom: Uint8Array, t: FighterTables): StatesFile["states"] {

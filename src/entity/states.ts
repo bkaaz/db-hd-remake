@@ -405,6 +405,8 @@ export interface StateDef {
   trail?: Trail;
   /** Closing on the opponent by a share of the distance (`entity/approach.ts`). */
   approach?: Approach;
+  /** The speed an `approach` of the state before set goes on here. */
+  keepsApproach?: boolean;
   /** The state whose `seize` this one goes on playing: a scene over several states. */
   sceneOf?: string;
   /** Its animation goes round, whatever the file says: a run that lasts as long as it must. */

@@ -14,6 +14,8 @@ export interface Scenario {
   hp2?: number;
   p1?: Script;
   p2?: Script;
+  /** The timeline goes on through a hit pause, as a player's hands do: what is entered during one. */
+  free?: boolean;
   /** Frames to keep a picture of the screen from, `logs/run-<name>-f<frame>.png`. */
   shots?: number[];
 }
@@ -54,5 +56,5 @@ export function runTable(s: Scenario, paths: { state: string; out: string; shots
   };
   const health = [s.hp1 !== undefined ? `[1]=${s.hp1}` : "", s.hp2 !== undefined ? `[2]=${s.hp2}` : ""].filter(Boolean).join(",");
   const shots = (s.shots ?? []).map((f) => `[${f}]=true`).join(",");
-  return `RUN = { state = ${JSON.stringify(paths.state)}, out = ${JSON.stringify(paths.out)}, shotsAt = ${JSON.stringify(paths.shots)}, shots = {${shots}}, frames = ${s.frames}, health = {${health}}, pads = { ${pad(s.p1)}, ${pad(s.p2)} } }\n`;
+  return `RUN = { state = ${JSON.stringify(paths.state)}, out = ${JSON.stringify(paths.out)}, shotsAt = ${JSON.stringify(paths.shots)}, shots = {${shots}}, frames = ${s.frames}, free = ${s.free === true}, health = {${health}}, pads = { ${pad(s.p1)}, ${pad(s.p2)} } }\n`;
 }

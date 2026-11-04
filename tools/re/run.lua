@@ -71,7 +71,7 @@ do
       end
       poked = true
     end
-    if byte(0x0b2) == 0 then at = at + 1 end
+    if RUN.free or byte(0x0b2) == 0 then at = at + 1 end
     return true
   end
 end

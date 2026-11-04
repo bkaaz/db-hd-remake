@@ -5,12 +5,14 @@
     "does": [
       "fwd 50",
       "down fwd attack 3",
-      4,
-      "fwd 2",
-      "down fwd 2",
-      "down 2",
-      "down back 2",
-      "back attack 3"
+      "fwd 3",
+      "down fwd 3",
+      "down 3",
+      "down back 3",
+      "back 3",
+      "back attack 3",
+      60
     ]
-  }
+  },
+  "free": true
 }

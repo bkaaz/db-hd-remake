@@ -162,6 +162,7 @@ function statesOf(
       state.vel = [part.vel, 0];
       if (part.velAt.length > 0) state.velAt = [...new Map(part.velAt).entries()];
     }
+    if (i === 0 && facts.some((f) => /goes behind/.test(f.what) && !f.who)) state.behind = true;
     if (part.unhittable[0]?.frame === 0 && part.unhittable[0].on) state.invulnerable = true;
     if (i === 0 && report.commands[0]?.cost) state.healthCost = report.commands[0].cost;
     if (part.blow && knownType(part.blow.type)) Object.assign(state, HIT, { type: part.blow.type, damage: part.blow.damage });

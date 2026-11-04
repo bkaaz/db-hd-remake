@@ -66,7 +66,7 @@ end
 local path = RUN and RUN.out or freeName()
 local log = assert(io.open(path, "w"))
 log:setvbuf("line")
-log:write("# f<frame> hit=<$30B2> cam=<x>,<y> (8.8)\n")
+log:write("# f<frame> hit=<$30B2> front=<who is drawn over, $30B0 bit 0> cam=<x>,<y> (8.8)\n")
 log:write("#   P1|P2 move frame step drawing x y sy vx vy face=<0x12> hp=<0x60> stun=<0x68> f25=<0x25> f96=<0x96>\n")
 log:write("#   sound <ids written to $2141>; voices <src of each sounding voice>; effects <$30BA | $30CA>; slot <n>: <its 16 bytes>\n")
 
@@ -171,7 +171,7 @@ ref = emu.addEventCallback(function()
     end
   end
   if #lines > 0 or byte(P1 + 0x40) ~= 0 or byte(P2 + 0x40) ~= 0 then
-    log:write(string.format("f%d hit=%02x cam=%d,%d\n", frame, byte(0x0b2), word(0x570), signed(word(0x574))))
+    log:write(string.format("f%d hit=%02x front=%d cam=%d,%d\n", frame, byte(0x0b2), 1 + (byte(0x0b0) & 1), word(0x570), signed(word(0x574))))
     log:write(fighter("P1", P1) .. "\n" .. fighter("P2", P2) .. "\n")
     if #lines > 0 then log:write(table.concat(lines, "\n") .. "\n") end
   end

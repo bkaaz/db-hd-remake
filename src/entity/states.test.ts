@@ -920,6 +920,15 @@ describe("a reaction leaves on the blow's clock, not on the pose", () => {
   });
 });
 
+describe("the shipped knockdowns", () => {
+  const { states } = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
+
+  it("rank alike, so a reel never refuses the high one: Rolling Thunder's last blow", () => {
+    expect(states.reel_high.rank).toBe(states.reel_down.rank);
+    expect(states.reel_high.rank).toBeGreaterThanOrEqual(states.reel_halt.rank ?? 0);
+  });
+});
+
 describe("within:N", () => {
   const near = { initial: "idle", states: { idle: { anim: "idle", transitions: [{ when: "within:80", to: "leap" }] }, leap: { anim: "idle" } } };
 

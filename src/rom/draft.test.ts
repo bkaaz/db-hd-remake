@@ -32,6 +32,11 @@ describe.skipIf(!existsSync(ROM_PATH))("draftSpecials, on the cartridge", () => 
     expect(states.low_kick.transitions).toContainEqual({ when: "animEnd", to: "crouch" });
   });
 
+  it("sends him behind the opponent where the handler does: Gotenks's Ultra Headbutt, $0D:D8D5", () => {
+    expect(draft("gotenks", { af: "headbutt" }).specials.states.headbutt.behind).toBe(true);
+    expect(draft("gotenks", { ab: "shots" }).specials.states.shots.behind).toBeUndefined();
+  });
+
   it("steps forward through the step a handler's speed is on: Gotenks's 92", () => {
     const { states } = draft("gotenks", {}, { "92": "far" }).specials;
     expect(states.far.velAt).toEqual([[4, 2], [14, 0]]);

@@ -227,7 +227,8 @@
           "when": "animEnd",
           "to": "ultra_headbutt_2"
         }
-      ]
+      ],
+      "behind": true
     },
     "ultra_headbutt_2": {
       "anim": "maf_2",
@@ -242,16 +243,17 @@
           0
         ]
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "trip",
-      "damage": 26,
       "transitions": [
         {
-          "when": "animEnd",
-          "to": "idle"
+          "when": "frames:36",
+          "to": "ultra_headbutt_3"
         }
-      ]
+      ],
+      "approach": {
+        "at": 20,
+        "short": 8,
+        "over": 32
+      }
     },
     "throw": {
       "anim": "m9d",
@@ -292,6 +294,122 @@
         [
           8,
           3
+        ],
+        [
+          15,
+          2.9375
+        ],
+        [
+          16,
+          2.875
+        ],
+        [
+          17,
+          2.8125
+        ],
+        [
+          18,
+          2.75
+        ],
+        [
+          19,
+          2.6875
+        ],
+        [
+          20,
+          2.625
+        ],
+        [
+          21,
+          2.5625
+        ],
+        [
+          22,
+          2.5
+        ],
+        [
+          23,
+          2.4375
+        ],
+        [
+          24,
+          2.375
+        ],
+        [
+          25,
+          2.3125
+        ],
+        [
+          26,
+          2.25
+        ],
+        [
+          27,
+          2.1875
+        ],
+        [
+          28,
+          2.125
+        ],
+        [
+          29,
+          2.0625
+        ],
+        [
+          30,
+          2.0
+        ],
+        [
+          31,
+          1.9375
+        ],
+        [
+          32,
+          1.875
+        ],
+        [
+          33,
+          1.8125
+        ],
+        [
+          34,
+          1.75
+        ],
+        [
+          35,
+          1.6875
+        ],
+        [
+          36,
+          1.625
+        ],
+        [
+          37,
+          1.5625
+        ],
+        [
+          38,
+          1.5
+        ],
+        [
+          39,
+          1.4375
+        ],
+        [
+          40,
+          1.375
+        ],
+        [
+          41,
+          1.3125
+        ],
+        [
+          42,
+          1.25
+        ],
+        [
+          43,
+          1.1875
         ]
       ],
       "hitSound": "hit_09",
@@ -1093,14 +1211,16 @@
             -2.5,
             -8
           ]
-        }
+        },
+        "caught": true
       },
       "transitions": [
         {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "behind": true
     },
     "ghost_kamikaze": {
       "anim": "mad",
@@ -1334,7 +1454,8 @@
           "when": "animEnd",
           "to": "jump_fall_attacked"
         }
-      ]
+      ],
+      "sameSwing": true
     },
     "volleyball": {
       "anim": "mae",
@@ -1412,12 +1533,9 @@
         {
           "when": "landed",
           "to": "move_b2"
-        },
-        {
-          "when": "animEnd",
-          "to": "jump_fall_attacked"
         }
-      ]
+      ],
+      "holdStep": 1
     },
     "aerial_kantsu": {
       "anim": "mb3",
@@ -1455,7 +1573,7 @@
           {
             "vy": -5,
             "gravity": "own",
-            "vx": 2
+            "vx": -2
           }
         ]
       ],
@@ -1471,69 +1589,9 @@
         {
           "when": "landed",
           "to": "land"
-        },
-        {
-          "when": "animEnd",
-          "to": "aerial_kantsu_3"
         }
-      ]
-    },
-    "aerial_kantsu_3": {
-      "anim": "mb3_3",
-      "turn": false,
-      "airborne": true,
-      "transitions": [
-        {
-          "when": "landed",
-          "to": "land"
-        },
-        {
-          "when": "animEnd",
-          "to": "aerial_kantsu_4"
-        }
-      ]
-    },
-    "aerial_kantsu_4": {
-      "anim": "mb3_4",
-      "turn": false,
-      "airborne": true,
-      "transitions": [
-        {
-          "when": "landed",
-          "to": "land"
-        },
-        {
-          "when": "animEnd",
-          "to": "aerial_kantsu_5"
-        }
-      ]
-    },
-    "aerial_kantsu_5": {
-      "anim": "mb3_5",
-      "turn": false,
-      "airborne": true,
-      "transitions": [
-        {
-          "when": "landed",
-          "to": "land"
-        },
-        {
-          "when": "animEnd",
-          "to": "aerial_kantsu_6"
-        }
-      ]
-    },
-    "aerial_kantsu_6": {
-      "anim": "mb3_6",
-      "turn": false,
-      "airborne": true,
-      "holdStep": 0,
-      "transitions": [
-        {
-          "when": "landed",
-          "to": "land"
-        }
-      ]
+      ],
+      "holdStep": 2
     },
     "attack_y_close": {
       "anim": "m90",
@@ -1820,10 +1878,6 @@
     "move_b1": {
       "anim": "mb1",
       "turn": false,
-      "vel": [
-        0,
-        0
-      ],
       "invulnerable": true,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -1831,9 +1885,24 @@
       "damage": 34,
       "transitions": [
         {
+          "when": "landed",
+          "to": "land"
+        },
+        {
           "when": "animEnd",
-          "to": "idle"
+          "to": "jump_fall_attacked"
         }
+      ],
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": -1,
+            "vy": -7,
+            "gravity": "own"
+          }
+        ]
       ]
     },
     "move_b2": {
@@ -2096,6 +2165,26 @@
       "holdStep": 6,
       "sound": "line_07",
       "transitions": []
+    },
+    "ultra_headbutt_3": {
+      "anim": "maf_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "type": "trip",
+      "damage": 26,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "keepsApproach": true,
+      "behind": true
     }
   }
 }

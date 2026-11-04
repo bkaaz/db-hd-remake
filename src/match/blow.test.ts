@@ -242,6 +242,15 @@ describe("landBlow", () => {
   });
 });
 
+describe("a state with no blow", () => {
+  it("strikes nobody, whatever box its drawing holds", () => {
+    const attacker = body("hit", { attackReaction: undefined, attackDamage: 0 } as Partial<Entity>);
+    const defender = body("hurt");
+    expect(landBlow(attacker, defender, context())).toBeNull();
+    expect(defender.gotHit).not.toHaveBeenCalled();
+  });
+});
+
 describe("a shot that opens a scene", () => {
   it("takes a body whole: no reaction, no damage, no spark, no pause", () => {
     const attacker = body("hit", { opens: "scene" });

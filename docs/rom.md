@@ -1124,6 +1124,9 @@ to start them `?`.
 
 ## How it was found
 
+A blow the script arms does not move him in front: through Ultra Headbutt, its hit
+included, `$30B0` says player two (`front=` in a run's log). Only `$0D:D8A2` does.
+
 Health (field `0x60`) is a word: Gotenks's 400 is `0190`. In practice a blow takes
 none of it, and an ultimate's "health 80 or less" does not hold: Volleyball goes out
 at 400 `?`.

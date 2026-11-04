@@ -38,6 +38,9 @@ export function landBlow(
   { effects }: BlowContext,
 ): BlowResult | null {
   if (!attacker.canHit) return null;
+  // a box in a drawing is not a blow: the original only arms one when a move asks,
+  // and Gotenks's landing (b2) stands beside a body without touching it
+  if (attacker.attackReaction === undefined && attacker.attackDamage === 0) return null;
   // Before anything is spent or spawned: an invulnerable defender is not hit
   // for nothing, they are **not hit**. The swing keeps its active frames and
   // may still land the moment they are touchable again — which is what makes

@@ -1144,7 +1144,7 @@ export class Entity {
     if (!this.sm.def.sameSwing) this.swing.reset();
     if (this.sm.def.type !== undefined) this.armed = true;
     this.behind = this.sm.def.behind ?? false;
-    this.approaching = null;
+    if (!this.sm.def.keepsApproach) this.approaching = null;
     this.arrived = false;
     this.freed = false;
     this.finaleSaid = { ballLanded: false, finaleDone: false };

@@ -46,6 +46,15 @@ handler or code loads, or else his own: Gotenks's came out in `0x70`, his body's
 where the recording shows `0x23`. An object's real colours are in `npm run rom -- vram`
 once it is recorded.
 
+## Moves that go behind the opponent are drawn over him
+
+*Annoying, drafted fighters and two by hand.* A handler's `$0D:D8D5` puts the mover
+behind; the draft did not read it, and states written before it did may lack `behind`:
+Vegetto's Shooting Kick, Piccolo's throw and Sonic Kick, Freeza's Double Leg Kick, Cell's
+Giga Shoulder, Mr. Buu's throw and Flying Bomber, Buu's Matamol, and by hand Goku's
+Saiyan Meteor and Vegeta's Galactic Gunfire. The last may be the entry below on the body
+he throws `?`. `npm run rom -- port <move>` says "goes behind the opponent".
+
 ## Freeza's throw has no held animation on its first move
 
 *Cosmetic `?`, Freeza.* His `9d` hands over to `9e`, and only `m30_freeza_9e`
@@ -79,14 +88,6 @@ ours pauses a block as long as the hit type says.
 `speed: vel 0, 0: 1.5` for `ma9`, but that vx is set after the handler's move
 `1a` (`$20:A994`), so Gohan hangs still through `a9`. `ownJumps`
 (`src/rom/parts.ts`) drops the frame jump of that shape; speeds still count.
-
-## A reaction can strike with a hit box its drawing carries
-
-*Cosmetic, or worse — not tried.* Some drawings the cartridge's reactions and
-poses reuse hold a hit box: Vegetto's `hurt_air`, `juggle`, `slam` and his dash,
-Cell's `win`, the beams' poses. The original only arms a blow when a move asks;
-ours strikes with any box in the animation, here for 0 damage. Read from the
-validator on `states.json`, not seen in a fight.
 
 ---
 

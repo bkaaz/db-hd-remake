@@ -795,7 +795,8 @@
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "holdStep": 6
     },
     "jump_back": {
       "anim": "m07",
@@ -835,7 +836,8 @@
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "holdStep": 6
     },
     "jump_fall": {
       "anim": "m05_2",
@@ -1643,7 +1645,7 @@
     },
     "reel_high": {
       "anim": "m1e",
-      "rank": 1,
+      "rank": 3,
       "launch": [
         -0.75,
         -7.5
@@ -1677,7 +1679,7 @@
     },
     "high_fall": {
       "anim": "m1e_2",
-      "rank": 1,
+      "rank": 3,
       "airborne": true,
       "turn": false,
       "air": [

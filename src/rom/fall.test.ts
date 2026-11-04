@@ -11,6 +11,10 @@ describe("fallStep", () => {
     expect(fallStep([show(2), show(13), show(4)], { step: 1, frame: 10 })).toBe(1);
   });
 
+  it("stops at the script's hold, whatever lies past it: Gotenks's other jumps", () => {
+    expect(fallStep([show(2), show(13), { op: "hold", drawing: 7 }, show(50), show(50)], { step: 1, frame: 90 })).toBe(2);
+  });
+
   it("steps on while the frame lies past the step's end", () => {
     expect(fallStep([show(2), show(13), show(4), { op: "hold", drawing: 7 }], { step: 1, frame: 20 })).toBe(3);
   });
