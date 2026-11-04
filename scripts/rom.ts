@@ -553,7 +553,8 @@ function writeSpawn(spawn: string, e: Exported): void {
   // beside what is there by hand (Big Bang's gravity 0)
   const at = `data/spawns/${spawn}/attributes.json`;
   const kept = existsSync(at) ? JSON.parse(readFileSync(at, "utf8")) : {};
-  writeFileSync(at, JSON.stringify({ ...kept, palettes: names, shimmer: names }, null, 2) + "\n");
+  const shimmer = names.filter((n) => n.startsWith("shimmer"));
+  writeFileSync(at, JSON.stringify({ ...kept, palettes: names, ...(shimmer.length && { shimmer }) }, null, 2) + "\n");
 }
 
 function describe(op: ScriptOp): string {

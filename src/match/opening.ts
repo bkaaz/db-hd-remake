@@ -2,10 +2,10 @@ import type { Contender, Placard, RoundWorld } from "./round";
 
 /**
  * How a round starts, when the debug switch asks for it: both fighters play
- * their intro together — on the arena, where the original plays it on a
- * screen of its own before the fight (`3c`, $02:A242) — and once both stand,
- * READY drops in and turns into FIGHT!, and the fight is on (docs/rom.md,
- * `3c`, the fighter's intro). Until then nobody's buttons count.
+ * their intro together — on the arena, where the original plays them in turn
+ * on a screen of its own before the fight (`3c`, $02:A242; ADR 0073) — and
+ * once both stand, READY drops in and turns into FIGHT!, and the fight is on
+ * (docs/rom.md, `3c`, the fighter's intro). Until then nobody's buttons count.
  *
  * Apart from `Round`, which owns the end: the two share nothing but the
  * screen they write on.

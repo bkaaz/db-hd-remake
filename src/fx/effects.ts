@@ -67,6 +67,8 @@ export class Effects {
     fx.facing = facing ?? (def.attributes.mirrors && Math.random() < 0.5 ? -1 : 1);
     fx.x = x;
     fx.y = y;
+    // drawn in its owner's OBJ palette, so in his colours (Gohan's intro: palette 0 or 1)
+    if (owner) fx.alt = owner.entity.alt;
     this.world.addChild(fx.view);
     const by = def.attributes.follows;
     const rides = by && owner ? { ...owner, by, since: { play: owner.entity.animationPlay, move: moveOf(owner.entity.animation) } } : undefined;

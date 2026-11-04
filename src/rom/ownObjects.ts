@@ -26,6 +26,8 @@ export interface OwnObject {
    * first of the run it steps through while it is up (docs/rom.md).
    */
   palette: number;
+  /** Drawn in its thrower's own palette: the record it takes as player two's alternate colours. */
+  alt?: number;
   /** How many records after `palette` its code steps through, one every 4 frames ($01:84EF, `$0F:BA7F`). */
   shimmer?: number;
   /**
@@ -68,7 +70,7 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     // 3c, his intro: effects put out on its step, nothing they do but show.
     // Drawn from his own sprite, palette 0x117 / his own, the recording's frames
     { name: "gohan_intro_a", type: 0x2, anim: 0x5, hits: false, palette: 0x117, onStep: [0x3c] },
-    { name: "gohan_intro_b", type: 0x2, anim: 0x6, hits: false, palette: 0x60, onStep: [0x3c] },
+    { name: "gohan_intro_b", type: 0x2, anim: 0x6, hits: false, palette: 0x60, alt: 0x61, onStep: [0x3c] },
   ],
   vegeta: [
     // ad, the Big Bang shot upward: a flash at the hands as it fires (its blow
@@ -146,6 +148,7 @@ export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[
       ...timing(rom, o, lives, what),
       hits: o.hits,
       palette: paletteRecord(rom, o.palette).at,
+      ...(o.alt && { alt: paletteRecord(rom, o.alt).at }),
       ...(o.shimmer && { shimmer: Array.from({ length: o.shimmer }, (_, i) => paletteRecord(rom, o.palette + 1 + i).at) }),
       loads,
     };

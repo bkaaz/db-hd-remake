@@ -15,21 +15,9 @@ approved names what to try again.
 
 ## Gohan
 
-Dummy: `?scene=debug&mode=5&p2=gohan&hp2=80`, `T`, player one left alone in his corner (mode 5 is rewritten per batch; the 80 is the Suki Combo's).
-
 | move | state | input | left out or guessed |
 |---|---|---|---|
-| the throw `9d` | `throw` | → + X, in range | — |
-| Triangle Illusion `aa` | `triangle_illusion` | R + B | its 16 px step, the depth's palette `?` |
-| Rushing Uppercut `a2` | `rushing_uppercut` | → + Y | — |
-| Knee Slasher `a4`, `a5` | `knee_slasher` | ← (charge) → B | the dust |
-| Zankuu Kyaku `a6` | `zankuu_kyaku` | ↓ (charge) ↑ B | — |
-| Bakuretsu Punch `a7` | `bakuretsu` | ← (charge) → Y | the dust |
-| Renzoku Energy Dan `ab` | `renzoku` | ↓ ↘ → A | — |
-| Kamehame-Ha `ac` | `kame_charge` | ↓ ↙ → A, held | — |
-| Rushing Suki Combo `ae` | `suki_combo` | → ↘ ↓ ↙ ← → B, health ≤ 80 | the palette run picks by alt colours, not by player |
-| `9f`, `a0`, `a1` | `sender_*` | ↓ ↘ → / → ← → / ↓ ↙ ← + X | — |
-| dash, knockdown, win, intro | | | intro objects named by nothing but the move, `gohan_intro_b` may look wrong `?` |
+| knockdown, win, intro | | | intro objects named by nothing but the move, `gohan_intro_b` may look wrong `?` |
 
 ## Gotenks
 

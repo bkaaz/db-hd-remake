@@ -149,6 +149,7 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
     });
   const { sheet, frames } = packSheet(drawIn(colours));
   // the same pictures in each palette of its run pack the same way: frame for frame
+  const alt: Record<string, Rgba> = def.alt === undefined ? {} : { alt: packSheet(drawIn(def.alt)).sheet };
   const variants = Object.fromEntries((def.shimmer ?? []).map((palette, i) => [`shimmer${i + 1}`, packSheet(drawIn(palette)).sheet]));
   const animations: Record<string, Anim> = {};
   for (const part of parts) {
@@ -162,5 +163,5 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
       }),
     };
   }
-  return { sheet, frames, animations, notes: [], ...(def.shimmer?.length && { variants }) };
+  return { sheet, frames, animations, notes: [], ...((def.shimmer?.length || def.alt !== undefined) && { variants: { ...variants, ...alt } }) };
 }

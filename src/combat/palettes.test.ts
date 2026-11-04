@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { burnVariant, paletteVariant, shimmerVariant, runVariant } from "./palettes";
+import { burnVariant, paletteVariant, shimmerVariant, runVariant, markedVariant } from "./palettes";
 
 const fire = Array.from({ length: 15 }, (_, i) => `fire${i}`);
 
@@ -65,5 +65,18 @@ describe("runVariant", () => {
 
   it("is over after the last", () => {
     expect(runVariant(run, 20)).toBeUndefined();
+  });
+});
+
+describe("markedVariant", () => {
+  const marks: [number, string | null][] = [[1, "glow"], [17, "run5"], [46, null]];
+  const has = (v: string) => v === "glow_alt";
+
+  it("holds each mark to the next, and his own after null", () => {
+    expect([0, 1, 16, 17, 45, 46].map((f) => markedVariant(marks, f, false, has))).toEqual([undefined, "glow", "glow", "run5", "run5", undefined]);
+  });
+
+  it("takes the alternate colours only where a variant has them", () => {
+    expect([markedVariant(marks, 1, true, has), markedVariant(marks, 17, true, has)]).toEqual(["glow_alt", "run5"]);
   });
 });

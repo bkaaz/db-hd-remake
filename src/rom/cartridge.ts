@@ -77,6 +77,8 @@ export interface SpawnDef {
    * `shimmer1`…, which the bolt shows in turn (`combat/palettes.ts`).
    */
   shimmer?: number[];
+  /** The palette of its `alt` sheet, for an object in its thrower's colours. */
+  alt?: number;
   /** What the move loads into VRAM for this object, in place of the fighter's `loads`. */
   loads?: { resource: number; vram: number }[];
   /** Its tile base, for one the code puts out rather than a `b0` (slot `+3`, × 16). */

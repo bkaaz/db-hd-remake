@@ -46,6 +46,8 @@ export function generatedFighters(): FighterName[] {
   return ROSTER.filter((name) => name !== "goku" && existsSync(`data/entities/${name}/states.json`));
 }
 
+/** Move `1c`: the KO. */
+const KO = 0x1c;
 /** Move `1a`: a body knocked about in the air, tumbling to the jump's fall pose. */
 export const AIR_REEL = 0x1a;
 
@@ -75,7 +77,7 @@ export function fighterStates(rom: Uint8Array, name: string, t: FighterTables): 
   const moved = withAttributes(made.file, readAttributes(rom, t.character));
   // his commands tried as the cartridge tries them, the table's last row first
   const file = inTableOrder(own ? withSpecials(moved, own) : moved, readCommands(rom, t.character));
-  return { file: { ...file, states: blowsSaid(heldCrouch(heldTumble(file.states, rom, t), rom, t, animations), animations) }, made, own };
+  return { file: { ...file, states: blowsSaid(heldOn(heldOn(heldTumble(file.states, rom, t), "crouch", CROUCH, rom, t, animations), "ko_down", KO, rom, t, animations), animations) }, made, own };
 }
 
 /** The air reel stops where his `1a` holds, on a step of its own in each fighter's script. */
@@ -85,15 +87,17 @@ function heldTumble(states: StatesFile["states"], rom: Uint8Array, t: FighterTab
 }
 
 /**
- * The crouch stops on the drawing `03` holds. Goku's script ends there; others
- * go on past it to a way back up nobody plays, the stand-up being `04`'s.
+ * A state stops on the step its move's script holds, wherever that falls in his
+ * animation — the export writes it for one frame. The crouch: Goku's script ends
+ * there, others go on past it to a way up nobody plays, the stand-up being `04`'s.
+ * The KO's lying: the script goes on past it, into a second fall.
  */
-function heldCrouch(states: StatesFile["states"], rom: Uint8Array, t: FighterTables, animations: Record<string, unknown>): StatesFile["states"] {
-  const hold = readScript(rom, scriptAt(rom, t, CROUCH)).find((op) => op.op === "hold");
-  const steps = (animations[states.crouch.anim ?? ""] as { steps: { frame: string }[] } | undefined)?.steps ?? [];
+function heldOn(states: StatesFile["states"], state: string, move: number, rom: Uint8Array, t: FighterTables, animations: Record<string, unknown>): StatesFile["states"] {
+  const hold = readScript(rom, scriptAt(rom, t, move)).find((op) => op.op === "hold");
+  const steps = (animations[states[state].anim ?? ""] as { steps: { frame: string; dur: number }[] } | undefined)?.steps ?? [];
   if (hold?.op !== "hold" || hold.drawing === null) return states;
-  const holdStep = steps.findIndex((s) => s.frame === String(hold.drawing));
-  return holdStep < 0 || holdStep === steps.length - 1 ? states : { ...states, crouch: { ...states.crouch, holdStep } };
+  const holdStep = steps.findIndex((s) => s.frame === String(hold.drawing) && s.dur === 1);
+  return holdStep < 0 || holdStep === steps.length - 1 ? states : { ...states, [state]: { ...states[state], holdStep } };
 }
 
 /**

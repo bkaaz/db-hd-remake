@@ -225,6 +225,9 @@ export class DebugScene implements Scene {
       return this.nextMode(keyboard);
     }
     const locked = this.round.locked || !this.opening.over;
+    // taken even while locked: a press keeps until someone takes it, and it
+    // would otherwise be the fight's first move
+    const pressed = keyboard.frame();
     const dummy = this.dummy.input({
       on: keyboard.toggles.get("dummy"),
       facing: this.fighters.opponent?.facing ?? -1,
@@ -232,7 +235,7 @@ export class DebugScene implements Scene {
       frozen: this.fighters.frozen,
     });
     this.fighters.update(
-      locked ? NO_INPUT : keyboard.frame(),
+      locked ? NO_INPUT : pressed,
       locked ? NO_INPUT : dummy,
       { bodies: this.camera.world, shots: this.camera.screen, view: { x: this.camera.x, y: this.camera.y } },
     );

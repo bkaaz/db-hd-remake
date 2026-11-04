@@ -14,6 +14,7 @@ import { Recorder } from "./record";
 import { Seizures } from "./seize";
 import { Finales } from "./finales";
 import { passedShove } from "../combat/corner";
+import { backToFront } from "../fx/slots";
 import { throwFoe, Throws } from "./throw";
 import type { DebugFrame } from "../ui/debug";
 
@@ -196,7 +197,7 @@ export class Fighters {
       this.shake = fighter.takeShake() ?? this.shake;
       const fx = fighter.takeGroundFx();
       if (fx) this.impact.effects.spawn(fx.name, fx.x, fx.y);
-      for (const s of fighter.takeStepSpawns()) this.impact.effects.spawn(s.name, s.x, s.y, undefined, s.facing, { entity: fighter, at: s.at });
+      for (const s of backToFront(fighter.takeStepSpawns())) this.impact.effects.spawn(s.name, s.x, s.y, undefined, s.facing, { entity: fighter, at: s.at });
     }
   }
 

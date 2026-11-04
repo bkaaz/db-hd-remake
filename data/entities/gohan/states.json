@@ -2221,7 +2221,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 1,
+      "holdStep": 2,
       "invulnerable": true,
       "transitions": []
     },
@@ -2260,6 +2260,20 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "paletteAt": [
+        [
+          1,
+          "glow"
+        ],
+        [
+          17,
+          "run5"
+        ],
+        [
+          46,
+          null
+        ]
       ]
     },
     "throw": {

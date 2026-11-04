@@ -144,7 +144,8 @@ nine fighters would each want a copy of it. A grunt *is* his.
   (ADR 0071). The transition to it is `connected`, after `blocked` — `connected`
   fires on a block too. That blow says `catches`: its attacker's pause begins a frame into his next state. A launch with `quiet` skips the reaction's sound. `startsAt` enters a state part-way through its animation.
 - **`hitLight` lights what a state's blow lands on** (`"ball"`, `"pillar"`, ADR 0072), and
-  `paletteRun` runs a state through palettes from its frame 1, `plain` or `alt`.
+  `paletteRun` runs a state through palettes from its frame 1, `plain` or `alt`;
+  `paletteAt` holds a palette from a frame on, `[[1, "glow"], [46, null]]`.
 - **A step's `spawns` are what its script puts out as it begins**, once per
   start of the animation, not per loop — written by the export for a move
   that holds the opponent (ADR 0045) and for an object listed with `onStep`

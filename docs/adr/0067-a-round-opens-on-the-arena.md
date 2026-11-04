@@ -1,6 +1,6 @@
 # 0067 — A round opens on the arena, both intros at once
 
-**Status:** accepted 2026-11-03
+**Status:** accepted 2026-11-03; its reason for both at once corrected by ADR 0073, 2026-11-04
 
 `Opening` (`src/match/opening.ts`), with the debug scene's intro switch
 (`I`) on: both fighters are forced into the file's `round.intro` — the

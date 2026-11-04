@@ -115,7 +115,7 @@ front; `$0D:D8D5` puts him behind — Side Slash's handler (`a8`, the 3D
 move, `$20:83DF`) and `$0D:EBB8` call it, the latter from `$0F:A358` (the
 KO, `1c`, at its frame 168 — A KO, below) and `$0F:A9E3`. Every object slot
 (`$3300`–`$3390`) goes into OAM before both (`$00:80E8`), so in front of
-them. Ours: `Fighters.inFront` (`src/match/fighters.ts`), and a state's
+them, a lower slot in front of a higher one (Gohan's intro: `2/05`, the dust, over `2/06`). Ours: `Fighters.inFront` (`src/match/fighters.ts`), and a state's
 `behind` for `$0D:D8D5`; effects and
 bolts are added to the stage after the fighters, so in front as well. A `b1`
 effect — a ball, a band — is added light over sprites and stage alike
@@ -1045,8 +1045,13 @@ from frame 8. `3f` is set only by the sequencer in bank `$02`
 
 **`3c`, the fighter's intro**, is played on the screen before the fight
 (scene `$32` = 6, run by bank `$02`): both fighters take it on the same
-frame (`$02:A242`, `$02:A254`), at world x `0xC0` and `0x140`; a button
-skips the scene (`$1A73`). Goku's (`$20:8058`) turns Super Saiyan: effect
+frame (`$02:A242`, `$02:A254`), at world x `0xC0` and `0x140`, but the scene
+holds each on frame 0 and runs him in turn (`$01:8382`): recorded, player one
+110 frames in, player two 33 after he stands (`$1A21` to `0x21`), his field
+`0x07` off the screen until then; a button skips the scene (`$1A73`). Gohan's
+(`$20:A478`) on frame 1 glows (his palette + 8), on `11` takes his own back and
+`0x117` into OBJ palette 4 / 5 and shows himself in it (field `0x15`, `8` / `A`),
+`2/06` staying in his own, on `2E` back to palette 0 / 1. Goku's (`$20:8058`) turns Super Saiyan: effect
 `29`, object `0/05` on its step 2 — his black hair, `$0F:B828`: frame step
 − 2, gone from step 6 or out of `3c`, at his place — line `32` at 65, and
 from frame 65 effect `19` every 8th frame of the game; on frame 2 it loads

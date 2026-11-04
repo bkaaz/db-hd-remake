@@ -10,7 +10,7 @@ import { activeBall, BALL_COLOUR, nextRadius } from "../combat/ball";
 import { HitLight, PILLAR_HEIGHT } from "../combat/hitLight";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
-import { burnVariant, paletteVariant, shimmerVariant, runVariant } from "../combat/palettes";
+import { burnVariant, paletteVariant, shimmerVariant, markedVariant, runVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -1093,7 +1093,10 @@ export class Entity {
     const win = this.sm?.def.win;
     const winning = win !== undefined && this.stateFrames >= win;
     const run = this.sm?.def.paletteRun;
-    const running = run && runVariant(this.altColours ? run.alt : run.plain, this.stateFrames);
+    const marks = this.sm?.def.paletteAt;
+    const running =
+      (run && runVariant(this.altColours ? run.alt : run.plain, this.stateFrames)) ??
+      (marks && markedVariant(marks, this.stateFrames, this.altColours, (v) => this.def.variants.has(v)));
     const variant = running
       ? running
       : this.burning

@@ -2177,7 +2177,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 1,
+      "holdStep": 2,
       "invulnerable": true,
       "transitions": []
     },

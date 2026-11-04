@@ -41,6 +41,14 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's generated states.json, on th
     expect(steps[states.crouch.holdStep ?? steps.length - 1].frame).toBe(String(hold.drawing));
   });
 
+  it.each(["goku", ...generatedFighters()])("%s lies knocked out on the step his 1c holds, not on through its second fall", (name) => {
+    const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
+    const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, { steps: { frame: string; dur: number }[] }>;
+    const step = animations[states.ko_down.anim!].steps[states.ko_down.holdStep!];
+    const hold = readScript(rom, scriptAt(rom, tablesOf(rom, name), 0x1c)).find((op) => op.op === "hold");
+    expect([step.frame, step.dur]).toEqual([String(hold?.op === "hold" && hold.drawing), 1]);
+  });
+
   it.each(generatedFighters())("%s passes the validator the game runs on loading him", (name) => {
     const file = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
     const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, AnimInfo>;

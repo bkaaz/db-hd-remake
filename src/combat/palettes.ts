@@ -22,6 +22,16 @@ export function runVariant(variants: readonly string[], frame: number): string |
   return frame < 1 ? undefined : variants[Math.floor(frame / RUN_EACH)];
 }
 
+/** A state's palettes by its frame: from each mark on, that variant, null his own. */
+export type PaletteMarks = [number, string | null][];
+
+/** The variant the marks say on `frame`, in his alternate colours where it has them; undefined for his own. */
+export function markedVariant(marks: PaletteMarks, frame: number, alt: boolean, has: (variant: string) => boolean): string | undefined {
+  const name = marks.filter(([at]) => at <= frame).at(-1)?.[1];
+  if (!name) return undefined;
+  return alt && has(`${name}_alt`) ? `${name}_alt` : name;
+}
+
 /** Frames each palette of an object's run shows ($01:84EF is asked every 4th frame). */
 const SHIMMER_EACH = 4;
 
