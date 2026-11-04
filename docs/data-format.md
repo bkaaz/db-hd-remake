@@ -139,6 +139,10 @@ nine fighters would each want a copy of it. A grunt *is* his.
   its own ids, written by `npm run rom -- export` from the script (ADR 0024).
   A bank entry says which id it is with `rom`. A state's `sound` is for what
   no script plays.
+- **A `grab` with `caught` holds whoever the blow before it caught**, in any state
+  and in the air, where he is; off the floor he plays `m30_<thrower>_<move>_air`
+  (ADR 0071). The transition to it is `connected`, after `blocked` — `connected`
+  fires on a block too. That blow says `catches`: its attacker's pause begins a frame into his next state. A launch with `quiet` skips the reaction's sound. `startsAt` enters a state part-way through its animation.
 - **A step's `spawns` are what its script puts out as it begins**, once per
   start of the animation, not per loop — written by the export for a move
   that holds the opponent (ADR 0045) and for an object listed with `onStep`

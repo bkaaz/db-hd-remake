@@ -24,6 +24,13 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
       } catch {
         continue;
       }
+      const name = `m30_${thrower}_${move.toString(16).padStart(2, "0")}`;
+      const byStep = STEP_HOLDS[thrower]?.[move];
+      if (byStep) {
+        out[name] = heldByStep(rom, byStep.floor, character, ops);
+        out[`${name}_air`] = heldByStep(rom, byStep.air, character, ops);
+        continue;
+      }
       const table = HANDLER_HOLDS[thrower]?.[move];
       const anim = table ? heldByTable(rom, table, character) : heldIn(ops, character);
       if (!anim) continue;
@@ -31,7 +38,7 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
       const cries = handlerFacts(rom, handlerAt(rom, c, move), stepStarts(ops).length, c).flatMap((f) =>
         f.who === "opponent" && f.sound !== undefined && f.frame !== null ? [{ frame: f.frame, id: f.sound }] : [],
       );
-      out[`m30_${thrower}_${move.toString(16).padStart(2, "0")}`] = withCries(anim, cries);
+      out[name] = withCries(anim, cries);
     }
   });
   return out;
@@ -47,15 +54,36 @@ const HANDLER_HOLDS: Partial<Record<string, Record<number, { table: number; fram
   gohan: { 0x9d: { table: 0x20a716, frames: 30 } },
 };
 
+/**
+ * Holds whose table names a drawing per step of the thrower, one table for a
+ * body on the floor (y 0xC8 or more) and one for a body off it, tested every
+ * frame though he cannot move (Gohan's a9: `$20:AA53`).
+ */
+const STEP_HOLDS: Partial<Record<string, Record<number, { floor: number; air: number }>>> = {
+  gohan: { 0xa9: { floor: 0x20aa72, air: 0x20aa86 } },
+};
+
+function wordAt(rom: Uint8Array, address: number): number {
+  const at = toFile(address);
+  if (at === null) throw new Error(`${address.toString(16)} is not ROM`);
+  return rom[at] | (rom[at + 1] << 8);
+}
+
+/** The list of drawings a handler's table keeps for this character: one pointer each, same bank. */
+function listOf(rom: Uint8Array, table: number, character: number): number {
+  return (table & 0xff0000) | wordAt(rom, table + 2 * character);
+}
+
 /** The one drawing a handler's table holds this character in. */
 export function heldByTable(rom: Uint8Array, hold: { table: number; frames: number }, character: number): Anim {
-  const word = (address: number) => {
-    const at = toFile(address);
-    if (at === null) throw new Error(`${address.toString(16)} is not ROM`);
-    return rom[at] | (rom[at + 1] << 8);
-  };
-  const list = (hold.table & 0xff0000) | word(hold.table + 2 * character);
-  return { loop: false, steps: [{ frame: String(word(list)), dur: hold.frames }] };
+  return { loop: false, steps: [{ frame: String(wordAt(rom, listOf(rom, hold.table, character))), dur: hold.frames }] };
+}
+
+/** This character's drawing for each step the thrower shows, as long as he shows it. */
+export function heldByStep(rom: Uint8Array, table: number, character: number, ops: readonly ScriptOp[]): Anim {
+  const list = listOf(rom, table, character);
+  const shown = ops.flatMap((op) => (op.op === "show" && op.frames > 0 ? [op.frames] : []));
+  return { loop: false, steps: shown.map((dur, i) => ({ frame: String(wordAt(rom, list + 2 * i)), dur })) };
 }
 
 /** The track's drawings for one character, step by step; null for a script with no track. */

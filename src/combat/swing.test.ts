@@ -7,6 +7,16 @@ const wait = (s: Swing, n: number): void => {
 };
 
 describe("Swing", () => {
+  it("tells a block from a hit, until the next state", () => {
+    const swing = new Swing();
+    swing.hit(undefined);
+    expect(swing.blocked).toBe(false);
+    swing.block();
+    expect([swing.spent, swing.blocked]).toEqual([true, true]);
+    swing.reset();
+    expect(swing.blocked).toBe(false);
+  });
+
   it("starts able to hit and having hit nothing", () => {
     const s = new Swing();
     expect(s.canHit).toBe(true);

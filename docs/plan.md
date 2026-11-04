@@ -192,14 +192,9 @@ The owner, 2026-11-04: every fighter over as far as a script and the code
 allow, without asking, and he tries them move by move afterwards —
 [`port-review.md`](./port-review.md) is that list.
 
-1. **Gohan's Bukuuh Kyaku:** it dives and hits nothing. Its blow and `a9` need
-   `connected` to tell a hit from a block, and a hold of a body the blow caught
-   in any state, not one `throwable` (`rom.md`, Gohan). `HANDLER_HOLDS` takes a
-   drawing per step for it. *Done when:* a recording shows the hold, the throw
-   and, on a block, the spring back.
-2. **Each fighter's own recording** (`port-review.md` names his objects), through
+1. **Each fighter's own recording** (`port-review.md` names his objects), through
    `OWN_OBJECTS`, in place of the drafted ones.
-3. **The owner's pass, move by move**, deleting from `port-review.md`.
+2. **The owner's pass, move by move**, deleting from `port-review.md`.
 
 ## After the port: the common part
 

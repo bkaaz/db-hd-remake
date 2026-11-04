@@ -48380,6 +48380,256 @@
       }
     ]
   },
+  "m30_gohan_a9": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "30",
+        "dur": 3
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 3
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 3
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 3
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 3
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 3
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 3
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 3
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 3
+      },
+      {
+        "frame": "28",
+        "dur": 2
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 3
+      },
+      {
+        "frame": "30",
+        "dur": 2
+      },
+      {
+        "frame": "28",
+        "dur": 5
+      }
+    ]
+  },
+  "m30_gohan_a9_air": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "31",
+        "dur": 3
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 3
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 3
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 3
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 3
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 3
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 3
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 3
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 3
+      },
+      {
+        "frame": "29",
+        "dur": 2
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 3
+      },
+      {
+        "frame": "31",
+        "dur": 2
+      },
+      {
+        "frame": "29",
+        "dur": 5
+      }
+    ]
+  },
   "m30_gohan_d1": {
     "loop": false,
     "steps": [

@@ -20,6 +20,26 @@ because a number would only need translating back.
 
 ---
 
+## A block pauses two frames too few
+
+*Cosmetic.* The original's `$30B2` reads `8a` on a blocked blow and `88` on this
+hit (`logs/fight-3.txt`: Rushing Uppercut and Bukuuh Kyaku), 10 frames against 8;
+ours pauses a block as long as the hit type says.
+
+## The air reel plays on past its fall pose
+
+*Annoying — every fighter, read from a recording of Bukuuh Kyaku's `1a`.* Move
+`1a`'s script holds drawing 9 from frame 24 until the landing; `reel_air` has no
+`holdStep`, so it plays on into the lying drawings of `m1a` in the air.
+`bukuuh_spring` holds it; the state in Goku's template does not.
+
+## The port report gives a move speeds that belong to the move it leaves for
+
+*Cosmetic — the report only.* `npm run rom -- port a9 --fighter gohan` prints
+`speed: vel 0, 0: 1.5` for `ma9`, but that vx is set after the handler's move
+`1a` (`$20:A994`), so Gohan hangs still through `a9`. `ownJumps`
+(`src/rom/parts.ts`) drops the frame jump of that shape; speeds still count.
+
 ## Objects that fly on a slant fall under gravity
 
 *Breaks play — seen on Masenko, read from the data for the rest.* A spawn with

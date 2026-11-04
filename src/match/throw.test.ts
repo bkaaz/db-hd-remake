@@ -64,6 +64,40 @@ describe("Throws", () => {
     expect([h.x, h.y]).toEqual([148, 200]);
   });
 
+  it("takes the body a blow caught in any state, and in the air plays the held animation's _air", () => {
+    const t = thrower();
+    (t as unknown as { grab: GrabDef }).grab = { ...GRAB, at: {}, caught: true };
+    const h = held();
+    Object.assign(h, { throwable: false, y: 120, groundY: 200 });
+    new Throws().update(t, h);
+    expect(h.hold).toHaveBeenCalledWith("m30_goku_9d_air");
+    expect([h.x, h.y]).toEqual([130, 120]);
+  });
+
+  it("passes a quiet launch on, so the reaction's own sound stays silent", () => {
+    const t = thrower();
+    Object.assign(t, { grab: { ...GRAB, launch: { ...GRAB.launch, quiet: true } } });
+    const h = held();
+    const throws = new Throws();
+    throws.update(t, h);
+    t.stateFrame = 21;
+    throws.update(t, h);
+    expect(h.release).toHaveBeenCalledWith("reel_down", [-2.5, -8], true);
+  });
+
+  it("holds a caught body on the floor in the plain animation, and no body at all without `caught` unless throwable", () => {
+    const t = thrower();
+    (t as unknown as { grab: GrabDef }).grab = { ...GRAB, at: {}, caught: true };
+    const floor = held();
+    Object.assign(floor, { throwable: false, y: 200, groundY: 200 });
+    new Throws().update(t, floor);
+    expect(floor.hold).toHaveBeenCalledWith("m30_goku_9d");
+    const out = held();
+    Object.assign(out, { throwable: false });
+    new Throws().update(thrower(), out);
+    expect(out.hold).not.toHaveBeenCalled();
+  });
+
   it("lets him go on the launch's frame: the damage, the reaction at its speed, facing the thrower's way", () => {
     const t = thrower();
     const h = held();
@@ -77,7 +111,7 @@ describe("Throws", () => {
     t.stateFrame = 21;
     throws.update(t, h);
     expect(h.hurtBy).toHaveBeenCalledWith(40);
-    expect(h.release).toHaveBeenCalledWith("reel_down", [-2.5, -8]);
+    expect(h.release).toHaveBeenCalledWith("reel_down", [-2.5, -8], undefined);
     expect(h.facing).toBe(1);
     // put where the last step holds him, then let go once
     expect([h.x, h.y]).toEqual([36, 136]);

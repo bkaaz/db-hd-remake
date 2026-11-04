@@ -43,7 +43,7 @@ to fix.
   was guessed (`?`). It is what makes a large diff reviewable.
 - **The dummy plays the batch.** Debug **mode 5** (`data/debug.json`) is
   Claude's: overwrite it with a timeline of the batch's inputs; never add
-  modes. The owner opens `?scene=debug&mode=5&p2=<fighter>`, presses `T`
+  modes. Mode 4 is the owner's: the dummy always blocks, never overwritten. The owner opens `?scene=debug&mode=5&p2=<fighter>`, presses `T`
   and records (`L`); `logs/session.log` is read for all moves at once.
 - One commit per batch, on the owner's word.
 

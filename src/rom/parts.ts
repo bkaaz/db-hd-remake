@@ -6,7 +6,7 @@ import { CROUCH, crouchAfterAttack } from "./crouch";
 import { fallAfterJumpAttack, fallStep, JUMP } from "./fall";
 import { handlerAt, handlerFacts, type HandlerFact } from "./handler";
 import { readCommands } from "./commands";
-import { readScript, type ScriptOp } from "./script";
+import { readScript, spawnsFired, type ScriptOp } from "./script";
 
 /**
  * A move cut into the parts our states play, and the step whose hit record
@@ -58,7 +58,9 @@ export function moveParts(rom: Uint8Array, t: FighterTables, move: number): Move
   const named = (type: number, anim: number) => t.objects.spawns.find((s) => s.type === type && s.anim === anim);
   const uncut = holds ? (type: number, anim: number) => named(type, anim)?.name : undefined;
   const onStep = (type: number, anim: number) => (named(type, anim)?.onStep?.includes(move) ? named(type, anim)?.name : undefined);
-  const anims = moveAnims(move, ops, boxesOf, steps, frames, uncut, onStep);
+  // a handler that sets the counter picks by it; left alone, the spawns count themselves off
+  const picks = facts.some((f) => f.counter !== undefined);
+  const anims = moveAnims(move, holds && !picks ? spawnsFired(ops) : ops, boxesOf, steps, frames, uncut, onStep);
 
   const striking = strikingSteps(ops, boxesOf);
   const starts = stepStarts(ops);
@@ -122,11 +124,21 @@ function stepLoopCuts(ops: ScriptOp[], facts: HandlerFact[]): number[] {
  */
 function byStep(ops: ScriptOp[], facts: HandlerFact[]): { step?: number; to?: number }[] {
   const starts = stepStarts(ops);
-  return facts.map((f) =>
+  return ownJumps(facts).map((f) =>
     f.step === undefined && (f.frame ?? f.from) !== undefined && f.frame !== undefined && f.to !== undefined
       ? { step: starts.filter((start) => start <= (f.frame ?? f.from)!).length - 1, to: f.to }
       : f,
   );
+}
+
+/** Without a jump made after setting another move: its frame is that move's (Gohan's `a9` into `1a` at 21, `$20:A994`). */
+export function ownJumps(facts: HandlerFact[]): HandlerFact[] {
+  const place = (f: HandlerFact) => [f.frame, f.step, ...(f.when ?? [])].join("|");
+  const left = new Set<string>();
+  return facts.filter((f) => {
+    if (f.move !== undefined && f.who !== "opponent") left.add(place(f));
+    return f.to === undefined || !left.has(place(f));
+  });
 }
 
 /**

@@ -59,6 +59,12 @@ export interface GrabDef {
    */
   at: Record<string, [number, number][]>;
   /**
+   * Whoever the blow before it caught, in any state and in the air, held at
+   * once with no `throwable` asked — Bukuuh Kyaku's `a9` ($20:A94C). Off the
+   * floor he plays `m30_<thrower>_<move>_air`.
+   */
+  caught?: boolean;
+  /**
    * The throw ($0F:B321): on this frame of the state he is let go into
    * `reaction`, costs `damage` less his defence, and leaves at `vel` —
    * facing the thrower's way, x backwards.
@@ -68,6 +74,8 @@ export interface GrabDef {
     damage: number;
     reaction: string;
     vel: [number, number];
+    /** Without the reaction's own sound: `$0F:B321` plays none, a handler may (Bukuuh Kyaku's does not). */
+    quiet?: boolean;
     /**
      * Thrown the way the thrower faces, still facing him, rather than over
      * his back facing his way: `$0F:B321` given the thrower's own facing, not
@@ -422,6 +430,14 @@ export interface StateDef {
    * "frames": 8 }`.
    */
   shake?: ShakeDef;
+  /** Connecting leaves this state at once: the attacker's hitstop begins a frame into the next one, not here. */
+  catches?: boolean;
+  /**
+   * The state's frame on entry, its animation shown from there — a handler
+   * starting another move part-way (Bukuuh Kyaku's `1a` at 21, `$20:A994`),
+   * where a part cut for it would cut every state playing the animation whole.
+   */
+  startsAt?: number;
   /** A throw: the opponent held from this state's start and let go with a launch (`match/throw.ts`, ADR 0035). */
   grab?: GrabDef;
 
@@ -731,6 +747,8 @@ export interface Signals {
    * the moment its blow is spent (Slash Down Kick, $20:87AA).
    */
   connected?: boolean;
+  /** The attack this entity is in was blocked, this state: `connected` and not a hit. */
+  blocked?: boolean;
   /** A `rush` has set the entity down by the opponent this state. */
   arrived?: boolean;
   /** The opponent's state `frees` this one, since it entered its state. */
@@ -810,6 +828,7 @@ export const TRIGGERS = [
   "grab",
   "cancelable",
   "connected",
+  "blocked",
   "arrived",
   "freed",
   "ballLanded",
@@ -954,6 +973,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "connected":
       value = signals.connected === true;
+      break;
+    case "blocked":
+      value = signals.blocked === true;
       break;
     case "arrived":
       value = signals.arrived === true;

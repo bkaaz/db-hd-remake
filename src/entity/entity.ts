@@ -291,6 +291,9 @@ export class Entity {
   private readonly grabRange: number;
   /** Held by a thrower (`match/throw.ts`): an animation and nothing else, where he is put. */
   private held = false;
+  /** Entering a state without its sound: a throw that makes none (`GrabDef.launch.quiet`). */
+  private quietEntry = false;
+  private pauseDue = 0;
   private readonly pushWidth: number;
   /** Whether its animations carry `push` boxes (`pushBodies`). */
   private readonly authorsPush: boolean;
@@ -694,10 +697,12 @@ export class Entity {
    * cut short leaves him — at a speed set after it is entered: x
    * facing-relative, as a state's `launch`.
    */
-  release(state = this.def.states?.initial ?? "", vel?: [number, number]): void {
+  release(state = this.def.states?.initial ?? "", vel?: [number, number], quiet = false): void {
     this.held = false;
     this.previewing = false;
+    this.quietEntry = quiet;
     this.forceState(state);
+    this.quietEntry = false;
     if (vel) [this.vx, this.vy] = vel;
   }
 
@@ -797,6 +802,16 @@ export class Entity {
     this.swing.hit(this.sm?.def.rehit);
   }
 
+  /** A hitstop to begin on arriving in the next state (`catches`), that state's first frame still played. */
+  pauseInNextState(frames: number): void {
+    this.pauseDue = frames;
+  }
+
+  /** Record that the blow it just landed was blocked: the `blocked` trigger. */
+  markBlocked(): void {
+    this.swing.block();
+  }
+
   /** The last 30 frames of the stick, if a button went down this frame — why a command was missed. */
   private padPress(): string | null {
     const pressed = this.pad.at(0).pressed;
@@ -814,6 +829,11 @@ export class Entity {
   }
 
   /** Frames to freeze both fighters for when this entity's attack connects. */
+  /** This attack's hit is a hold's to pause, not the blow's (`catches`). */
+  get attackCatches(): boolean {
+    return !!this.sm?.def.catches;
+  }
+
   get attackHitstop(): number {
     return this.sm?.def.hitstop ?? this.hitstop;
   }
@@ -1094,7 +1114,7 @@ export class Entity {
     if (!this.sm) return;
     // a special starts stopped, whatever it was started from ($0D:D7A0)
     if (this.sm.startedByCommand) [this.vx, this.vy, this.shove] = [0, 0, 0];
-    const sounds = this.sm.def.sound;
+    const sounds = this.quietEntry ? undefined : this.sm.def.sound;
     for (const id of typeof sounds === "string" ? [sounds] : (sounds ?? [])) {
       this.audio?.play(id);
     }
@@ -1149,6 +1169,9 @@ export class Entity {
     }
     const rebound = this.sm.def.rebound;
     if (rebound) this.vy = reboundSpeed(rebound, this.landedAt);
+    if (this.sm.def.startsAt) this.jumpTo(this.sm.def.startsAt);
+    this.freeze(this.pauseDue);
+    this.pauseDue = 0;
   }
 
   /**
@@ -1175,7 +1198,9 @@ export class Entity {
   update(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
     const opponentX = opponent?.x ?? null;
     if (this.previewing) {
-      this.advanceAnim();
+      // a hold's drawings go step for step with the thrower, who waits out a freeze too
+      if (this.freezeFrames > 0) this.freezeFrames--;
+      else this.advanceAnim();
       return;
     }
     if (!this.sm) return;
@@ -1305,6 +1330,7 @@ export class Entity {
         // from. It was already recorded for a different reason: an attack may
         // only land once per entry into its state.
         hitConfirmed: this.swing.spent,
+        blocked: this.swing.blocked,
         arrived: this.arrived,
         freed: this.freed,
         ...this.finaleSaid,

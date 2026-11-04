@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
-import { moveParts } from "./parts";
+import { moveParts, ownJumps } from "./parts";
 import { fighterNamed } from "./roster";
 
 describe.skipIf(!existsSync(ROM_PATH))("moveParts, on the cartridge", () => {
@@ -31,5 +31,30 @@ describe.skipIf(!existsSync(ROM_PATH))("moveParts, on the cartridge", () => {
 
   it("cuts where a handler running by frame jumps to a step of its own: Vertical Ki's landing at 56", () => {
     expect(starts(0xb1).at(-1)).toBe(56);
+  });
+});
+
+describe("ownJumps", () => {
+  const set = { frame: 0, what: "sets move", move: 0x1a };
+  const jump = { frame: 0, what: "jumps to frame", to: 21 };
+
+  it("drops a jump made after setting another move: that move's frame", () => {
+    expect(ownJumps([set, jump])).toEqual([set]);
+  });
+
+  it("keeps a jump on another branch, or after the opponent's move is set", () => {
+    const landed = { ...jump, when: ["once it has landed"] };
+    expect(ownJumps([set, landed])).toEqual([set, landed]);
+    const theirs = { ...set, who: "opponent" as const };
+    expect(ownJumps([theirs, jump])).toEqual([theirs, jump]);
+  });
+});
+
+describe.skipIf(!existsSync(ROM_PATH))("Bukuuh Kyaku's a9", () => {
+  const { anims } = moveParts(new Uint8Array(readFileSync(ROM_PATH)), fighterNamed(new Uint8Array(readFileSync(ROM_PATH)), "gohan"), 0xa9);
+
+  it("is one part, 1a's frame 21 no cut of its own", () => {
+    expect(Object.keys(anims)).toEqual(["ma9"]);
+    expect(anims.ma9.steps.reduce((n, s) => n + (s.dur ?? 0), 0)).toBe(73);
   });
 });

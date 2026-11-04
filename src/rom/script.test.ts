@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH, scriptAt } from "./cartridge";
-import { readScript } from "./script";
+import { readScript, spawnsFired, type ScriptOp } from "./script";
 
 const at0 = (...bytes: number[]) => readScript(Uint8Array.from(bytes), 0);
 
@@ -115,5 +115,14 @@ describe.skipIf(!existsSync(ROM_PATH))("readScript, on the cartridge", () => {
       [0x6a, 0x18],
       [0x6b, 0x20],
     ]);
+  });
+});
+
+describe("spawnsFired", () => {
+  const spawn = (counter: number) => ({ op: "spawn", counter }) as ScriptOp;
+  const sound = { op: "sound", id: 9 } as unknown as ScriptOp;
+
+  it("keeps each spawn the counter reaches and drops those it has passed", () => {
+    expect(spawnsFired([spawn(0), sound, spawn(1), spawn(0), spawn(2)])).toEqual([spawn(0), sound, spawn(1), spawn(2)]);
   });
 });

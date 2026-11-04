@@ -89,6 +89,17 @@ export type ScriptOp =
 
 /** Bytes per command, by its first byte; steps (01-7f) are 3. */
 const LENGTH: Record<number, number> = { 0xa0: 3, 0xa1: 3, 0xd0: 5, 0xc0: 2, 0xe0: 2, 0xb0: 16, 0xb1: 9, 0x90: 1, 0x80: 21 };
+/** The script without the spawns the counter passes over, left at 0 by its handler: each that fires counts it up (field 0x6e). */
+export function spawnsFired(ops: readonly ScriptOp[]): ScriptOp[] {
+  let counter = 0;
+  return ops.filter((op) => {
+    if (op.op !== "spawn") return true;
+    if (op.counter !== counter) return false;
+    counter++;
+    return true;
+  });
+}
+
 /** The opponent's track is read this many bytes behind the script's own position ($01:86D9). */
 const TRACK_LAG = 0x15;
 const ROSTER_SIZE = 10;

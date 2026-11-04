@@ -59,7 +59,6 @@
   "hit_09": {
     "label": "a melee blow landing — sound 09",
     "gain": 0.85,
-    "vary": 0.1,
     "file": "09.wav",
     "rom": 9
   },

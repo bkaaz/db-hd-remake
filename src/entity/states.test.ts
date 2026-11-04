@@ -877,6 +877,16 @@ describe("connected", () => {
   });
 });
 
+describe("blocked", () => {
+  it("fires on a block and not on a hit, which only `connected` sees", () => {
+    const blocked = new StateMachine(withAttack("blocked"));
+    blocked.update(NONE, { ...QUIET, hitConfirmed: true });
+    expect(blocked.current).toBe("idle");
+    blocked.update(NONE, { ...QUIET, hitConfirmed: true, blocked: true });
+    expect(blocked.current).not.toBe("idle");
+  });
+});
+
 describe("a reaction leaves on the blow's clock, not on the pose", () => {
   /** A flinch whose only way out is the hitstun running out. */
   function stunned(): StatesFile {

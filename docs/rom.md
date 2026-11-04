@@ -617,7 +617,9 @@ the likely cause `?`.
 **The player's buttons pick a move in `$0D:FEC8`** — the move ids are
 numbers in that code, the same for every fighter; which button picks which
 is the table in `src/rom/buttons.ts`. Pressed buttons are fields `0xE8` /
-`0xE9` (the pad's low and high byte), held directions `0xED`. On the ground
+`0xE9` (the pad's low and high byte), held directions `0xED`. The S-CPU reads
+the pads at `$00:96BB`: `$4218` held into `$6C`, pressed into `$70`; `$421A` into
+`$6E` and `$72`. On the ground
 Y and B have a close and a far move: close when the gap between the two
 fighters (field `0x20`) is under the attacker's own line (`$0D:C4A1`), two
 bytes per fighter at `$3D:9EDB` — Goku 44 for Y, 48 for B. A recording
@@ -1099,7 +1101,7 @@ slot shows player two's tile base `0x100` up.
 | `a4` → `a5` | Knee Slasher; connected, hit or block, it becomes `a5` (`$20:A778`) | ← (charge) → B |
 | `a6` | Zankuu Kyaku | ↓ (charge) ↑ B |
 | `a7` | Bakuretsu Punch | ← (charge) → Y |
-| `a8` → `a9` | Bukuuh Kyaku: a hit holds the opponent in `30` for `a9`'s blows and throw, its drawings by step from `$20:AA72` (on the floor) or `$20:AA86`; a block sends him back as `1a` (`$20:A994`) | → ↓ B, in the air |
+| `a8` → `a9` | Bukuuh Kyaku: a hit holds the opponent in `30` where he is, both hanging, for `a9`'s 73 frames, its drawings by step from `$20:AA72` (y `C8` or more) or `$20:AA86`; the hit's pause on `a9`'s frame 1, already in those poses (recorded, on a block on `1a`'s 22 too); the contact's spark, then six fire (the counter passes the last four spawns, recorded), the only damage is the throw on its end (32 less defence, `1b`, 2.5 / −7, his way, no sound). A block, and that end, sends him back as `1a` from frame 21, vx −1.5, vy −7 (`$20:A994`, setting the move gives gravity back, `$01:853F`), on the script's `hold` of drawing 9 from frame 24 until he lands. A defender with field `0x25` bit 2 is not held `?` | → ↓ B, in the air |
 | `aa` | Triangle Illusion (3D): Side Slash's way, turning on 33 | R + B |
 | `ab` | Renzoku Energy Dan | ↓ ↘ → A |
 | `ac` | Kamehame-Ha: let go before 20 small, before 36 medium, fired from 32 | ↓ ↙ → A |
@@ -1116,6 +1118,7 @@ access to I/O* on; each writes into `logs/`.
 
 | script | answers |
 |---|---|
+| `record-fight.lua` | **start here**: both fighters, camera, hitstop, sounds asked for, voices' samples and object slots, every frame anything happens, into a new `logs/fight-<n>.txt` |
 | `record-ram.lua` | every RAM region and the pad, once per frame — find a value by what was pressed |
 | `log-dma.lua` | every DMA, beside the sprite id — where graphics come from |
 | `trace-tiles.lua` | every ROM read the SA-1 makes while it fills the tile buffer, in order |

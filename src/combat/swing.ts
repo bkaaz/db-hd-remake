@@ -18,6 +18,7 @@ export class Swing {
   /** Frames until it may connect again. `Infinity` is "not this entry". */
   private wait = 0;
   private landed = false;
+  private guarded = false;
 
   /** May this attack connect right now? */
   get canHit(): boolean {
@@ -27,6 +28,16 @@ export class Swing {
   /** Has it connected at all? What a cancel hangs off, and never withdrawn. */
   get spent(): boolean {
     return this.landed;
+  }
+
+  /** It connected on a guard — what a move that seizes on a hit must not take for one. */
+  get blocked(): boolean {
+    return this.guarded;
+  }
+
+  /** The blow it just landed was blocked. */
+  block(): void {
+    this.guarded = true;
   }
 
   /**
@@ -53,6 +64,7 @@ export class Swing {
   reset(): void {
     this.wait = 0;
     this.landed = false;
+    this.guarded = false;
   }
 }
 

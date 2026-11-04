@@ -2763,6 +2763,14 @@
       ],
       "transitions": [
         {
+          "when": "blocked",
+          "to": "bukuuh_spring"
+        },
+        {
+          "when": "connected",
+          "to": "bukuuh_hits"
+        },
+        {
           "when": "landed",
           "to": "bukuuh_land"
         },
@@ -2771,7 +2779,11 @@
           "to": "jump_fall_attacked"
         }
       ],
-      "damage": 0
+      "type": "light",
+      "damage": 0,
+      "catches": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17"
     },
     "bukuuh_land": {
       "anim": "ma8_2",
@@ -2786,6 +2798,61 @@
           "to": "idle"
         }
       ]
+    },
+    "bukuuh_hits": {
+      "anim": "ma9",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "grab": {
+        "at": {},
+        "caught": true,
+        "launch": {
+          "frame": 72,
+          "damage": 32,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -7
+          ],
+          "ahead": true,
+          "quiet": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bukuuh_spring"
+        }
+      ],
+      "damage": 0
+    },
+    "bukuuh_spring": {
+      "anim": "m1a",
+      "airborne": true,
+      "turn": false,
+      "launch": [
+        -1.5,
+        -7
+      ],
+      "startsAt": 21,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ],
+      "holdStep": 6
     },
     "renzoku": {
       "anim": "mab",

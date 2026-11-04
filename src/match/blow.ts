@@ -71,6 +71,7 @@ export function landBlow(
   // specials, which do not exist yet, so a normal attack on guard is free to
   // eat — deliberately, since a block you cannot afford is not a block.
   const blocked = defender.guarding && defender.guardHit();
+  if (blocked) attacker.markBlocked();
   const noise = attacker.attackSounds;
   // the defender's side plays it, as the original's does ($0D:D1B7)
   defender.sound(blocked ? noise.block : noise.hit);
@@ -106,7 +107,10 @@ export function landBlow(
   // a bolt waits out the pause with every bolt (Projectiles.update), as the
   // original's objects wait on $30B2; a hold of its own would only start
   // counting once that pause was over, and hold it twice as long
-  if (!attacker.travels) attacker.freeze(stop);
+  // and a blow that catches pauses a frame into the state it leaves for, as the
+  // original's does: the poses have changed by the time the pause shows them
+  if (attacker.attackCatches) attacker.pauseInNextState(stop);
+  else if (!attacker.travels) attacker.freeze(stop);
   defender.freeze(stop);
   return { attack, damage: dealt, blocked, took, flash: blocked ? 0 : attacker.attackFlash };
 }

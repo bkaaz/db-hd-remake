@@ -36,6 +36,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackBurns: false,
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
+    markBlocked: vi.fn(),
     travels: false,
     turnToward: vi.fn(),
     turnFrom: vi.fn(),
@@ -117,6 +118,15 @@ describe("landBlow", () => {
     const blocked = context();
     landBlow(body("hit"), body("hurt", { guarding: true }), blocked);
     expect(blocked.effects.spawn).toHaveBeenCalledWith("guard_spark", expect.any(Number), expect.any(Number));
+  });
+
+  it("pauses the attacker of a blow that catches in its next state, the defender at once", () => {
+    const attacker = body("hit", { attackCatches: true, pauseInNextState: vi.fn() });
+    const defender = body("hurt");
+    landBlow(attacker, defender, context());
+    expect(attacker.pauseInNextState).toHaveBeenCalledWith(6);
+    expect(attacker.freeze).not.toHaveBeenCalled();
+    expect(defender.freeze).toHaveBeenCalledWith(6);
   });
 
   it("connects when a hit box reaches a hurt box", () => {

@@ -50,3 +50,18 @@ describe.skipIf(!existsSync(ROM_PATH))("heldByTable, on the cartridge", () => {
     expect(heldAnims(rom, 1).m30_gohan_9d?.steps).toEqual([{ frame: "32", dur: 30 }]);
   });
 });
+
+describe.skipIf(!existsSync(ROM_PATH))("Bukuuh Kyaku's hold", () => {
+  const rom = new Uint8Array(readFileSync(ROM_PATH));
+  const { m30_gohan_a9: floor, m30_gohan_a9_air: air } = heldAnims(rom, 0);
+
+  it("shows goku a drawing per step of a9, on the floor and off it, from their two tables", () => {
+    expect(floor.steps.slice(0, 3).map((s) => s.frame)).toEqual(["25", "23", "25"]);
+    expect(air.steps.slice(0, 3).map((s) => s.frame)).toEqual(["26", "59", "26"]);
+  });
+
+  it("lasts as long as a9: thirty steps, 73 frames", () => {
+    expect(floor.steps).toHaveLength(30);
+    expect(floor.steps.reduce((n, s) => n + (s.dur ?? 0), 0)).toBe(73);
+  });
+});

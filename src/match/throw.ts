@@ -42,9 +42,10 @@ export class Throws {
     }
     if (!grab) return;
     if (!hold) {
-      if (!other.throwable) return;
+      if (!grab.caught && !other.throwable) return;
       // the move's own number names the held animation: m9d → m30_goku_9d
-      other.hold(`m30_${thrower.name}_${thrower.animation.slice(1, 3)}`);
+      const held = `m30_${thrower.name}_${thrower.animation.slice(1, 3)}`;
+      other.hold(grab.caught && other.y < other.groundY ? `${held}_air` : held);
       // he turns to face the thrower ($20:8212)
       other.facing = thrower.facing === 1 ? -1 : 1;
       this.holding.set(thrower, { held: other, state: thrower.state, launched: false });
@@ -60,7 +61,7 @@ export class Throws {
       // or ahead of him, still facing him (`ahead`, Vegeta's) — $0F:B321's facing
       other.facing = grab.launch.ahead ? (thrower.facing === 1 ? -1 : 1) : thrower.facing;
       other.hurtBy(grab.launch.damage);
-      other.release(grab.launch.reaction, grab.launch.vel);
+      other.release(grab.launch.reaction, grab.launch.vel, grab.launch.quiet);
       hold.launched = true;
     }
   }
