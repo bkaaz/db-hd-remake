@@ -31,6 +31,11 @@ describe.skipIf(!existsSync(ROM_PATH))("heldAnims, on the cartridge", () => {
     expect(Object.keys(held)).toContain("m30_piccolo_d9");
   });
 
+  it("holds each in the first drawing of his own move 34 when Gotenks throws him (fight-9: d024 on Gotenks)", () => {
+    expect(heldAnims(rom, 3).m30_gotenks_9d?.steps).toEqual([{ frame: "36", dur: 30 }]);
+    expect(heldAnims(rom, 0).m30_gotenks_9d?.steps).toEqual([{ frame: "25", dur: 30 }]);
+  });
+
   it("cries out at each of Vegeta's three blows while he holds him (his handler's 30 at 32, 56, 96)", () => {
     const steps = heldAnims(rom, 0).m30_vegeta_9d.steps;
     expect(steps.flatMap((st, i) => (st.sfx ? [i] : []))).toEqual([2, 4, 6]);

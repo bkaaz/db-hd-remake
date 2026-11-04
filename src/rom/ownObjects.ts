@@ -60,6 +60,12 @@ export interface OwnObject {
 const WITH_48: Load[] = [{ resource: 0x48, vram: 0x6800 }, { resource: 0x4f, vram: 0x6c00 }];
 
 export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
+  gotenks: [
+    // ad, Ghosts Kamikaze Attack: palette 0x23 in OBJ palette 0, and tiles in 0x40 as
+    // well as the 0x4A its move loads, on top of it (logs/objects-gotenks.bin);
+    // up to three by how long A is held; its flight is in its states.json ($0F:C328)
+    { name: "gotenks_ghost", type: 0x3, anim: 0x6, hits: true, palette: 0x23, loads: [{ resource: 0x40, vram: 0x6800 }, { resource: 0x4a, vram: 0x6b00 }] },
+  ],
   gohan: [
     // ad, Masenko: its move loads nothing; its tiles are in resource 0x46, there
     // from the fight's start at $6800 and $7800, a player each (the recording's

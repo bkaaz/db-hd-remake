@@ -155,6 +155,9 @@ nine fighters would each want a copy of it. A grunt *is* his.
   `attributes.json` says `follows` rides on its owner until he leaves that
   start of the animation: `"pose"` showing the frame his drawing names,
   `"body"` playing its own (`src/fx/follow.ts`).
+- **`aim` steers a shot to the opponent's height**: from frame `from` its vy is
+  `speed` toward `above` px over his feet, 0 within `within` (`entity/aim.ts`). Its
+  forward speed stays its own, so it chases a jump and never turns back.
 - **`sound` plays once on entering the state; `loopSound` is retriggered every
   `loopEvery` frames until you leave it, or until `loopUntil`.** Not a seamless loop: that repeats at
   exactly the clip's own length and can never overlap itself, and the original's

@@ -74,6 +74,19 @@ describe("Throws", () => {
     expect([h.x, h.y]).toEqual([130, 120]);
   });
 
+  it("turns his back on the thrower from `turnsAt` on, not before", () => {
+    const t = thrower();
+    (t as unknown as { grab: GrabDef }).grab = { ...GRAB, turnsAt: 8 };
+    const h = held();
+    const throws = new Throws();
+    t.stateFrame = 8;
+    throws.update(t, h);
+    expect(h.facing).toBe(-1);
+    t.stateFrame = 9;
+    throws.update(t, h);
+    expect(h.facing).toBe(1);
+  });
+
   it("passes a quiet launch on, so the reaction's own sound stays silent", () => {
     const t = thrower();
     Object.assign(t, { grab: { ...GRAB, launch: { ...GRAB.launch, quiet: true } } });

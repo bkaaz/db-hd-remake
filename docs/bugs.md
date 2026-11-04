@@ -29,8 +29,36 @@ work, so a blow stands still and ends standing until each is drafted or correcte
 at his review. Vegetto `shooting_kick`, `crouch_b`, `crouch_y_2`; Freeza `attack_y`,
 `attack_b`, `double_leg_kick`, `sender_a1`, `flaming_headbutt_2`, `crouch_b`; Mr. Buu
 `crouch_b`, `flying_bomber`, `sender_a1`, `rolling_tackle`, `crouch_y_2`; Buu
-`crouch_y_2`. Goku's `meteor` and Vegeta's `energy_dash_run` show the same speed
-missing, but they are written by hand and may move another way `?`.
+`crouch_y_2`.
+
+## Drafted objects are drawn with holes in them
+
+*Annoying, Vegetto, Cell, Buu `?`.* A picture may reach the resource kept at `$6800`
+as well as the one its move loads over it; a draft that held only the second left a
+transparent band across Gotenks's ghost. `draftObject` keeps both now, but
+`objects.json` of Vegetto (`4_02`, `4_04`), Cell (`0x4e`'s) and Buu (`0x50`'s, `0x45`'s)
+were written before that. Each wants `0x6800`'s load added and his objects exported again.
+
+## A drafted object's colours are a guess, and may be his body's
+
+*Annoying, drafted fighters.* The draft gives an object the first palette its
+handler or code loads, or else his own: Gotenks's came out in `0x70`, his body's,
+where the recording shows `0x23`. An object's real colours are in `npm run rom -- vram`
+once it is recorded.
+
+## Freeza's throw has no held animation on its first move
+
+*Cosmetic `?`, Freeza.* His `9d` hands over to `9e`, and only `m30_freeza_9e`
+exists, so through `m9d` the body keeps the pose it was caught in; `Throws` names
+the held animation by the thrower's. Not tried in a fight.
+
+## A drafted run does not stop by the opponent, and flies at the wrong speed
+
+*Breaks play, drafted fighters `?`.* A handler may end a run under a distance and
+keep the speed of the jump after it in `$F0` / `$F2` (Gotenks's `a8`, `$20:BC95`;
+`b4`, `$20:C313`). The reader sees neither: the draft runs the whole step, carries
+the run's speed into the air, and misses a landing's slide. Gotenks is corrected by
+hand; to check on each fighter's run: the report's "vel" after a "jumps to move frame".
 
 ## The reels have a second pose we never show
 

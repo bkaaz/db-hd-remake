@@ -165,7 +165,10 @@ export class Projectiles {
     const hits: ProjectileHit[] = [];
     for (let i = this.live.length - 1; i >= 0; i--) {
       const { name, bolt, foe, owner, companions, beam, ride, thrownIn } = this.live[i];
-      if (!paused) bolt.update(NO_INPUT, null, ANYWHERE);
+      if (!paused) {
+        bolt.aimAt(foe.y);
+        bolt.update(NO_INPUT, null, ANYWHERE);
+      }
       // the original's object takes its thrower's place every frame (Energy Field, $0F:BBB3)
       if (ride) {
         bolt.x = owner.x + ride.ahead * owner.facing;

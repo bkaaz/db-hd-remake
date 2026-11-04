@@ -11,6 +11,7 @@
  * scripting escape hatch come in later slices.
  */
 
+import type { Aim } from "./aim";
 import { borrowed, inputsOfErrors, type InputsOf } from "./inputsOf";
 import type { Trail } from "./trail";
 import type { ScreenCue } from "../screen";
@@ -66,6 +67,8 @@ export interface GrabDef {
    * floor he plays `m30_<thrower>_<move>_air`.
    */
   caught?: boolean;
+  /** On this frame of the state he turns his back on the thrower, and goes on so (Gotenks's 9d at 8, `$20:BD5A`). */
+  turnsAt?: number;
   /**
    * The throw ($0F:B321): on this frame of the state he is let go into
    * `reaction`, costs `damage` less his defence, and leaves at `vel` —
@@ -392,6 +395,8 @@ export interface StateDef {
   trail?: Trail;
   /** Closing on the opponent by a share of the distance (`entity/approach.ts`). */
   approach?: Approach;
+  /** A shot's vy closing on the opponent's height (`entity/aim.ts`). */
+  aim?: Aim;
   /** Rushing at the opponent until a set distance, then `arrived` (`entity/approach.ts`). */
   rush?: Rush;
   /** A scene played on the opponent — Saiyan Meteor's (`match/seize.ts`). */
@@ -784,6 +789,8 @@ export interface Signals {
    * (`throwable`) — what `grab:N` asks; undefined while he could not.
    */
   grabbable?: number;
+  /** The opponent's distance in sprite px, whatever he is doing — what `within:N` asks. */
+  distance?: number;
   /** Ki in the meter right now — what a state's `cost` is measured against. */
   ki: number;
   /**
@@ -806,7 +813,7 @@ export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
 export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
-const COUNTED = /^(frames:\d+|health:\d+|grab:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+const COUNTED = /^(frames:\d+|health:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
 /** `command:a4` — the move whose command is met, two hex digits (ADR 0050). */
 const COMMAND = /^command:[0-9a-f]{2}$/;
 
@@ -859,7 +866,7 @@ const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitio
 
 const warned = new Set<string>();
 
-/** `frames:N`, `released:<button>`, `health:N` (N or less) and `grab:N` (under N px), or undefined for any other trigger. */
+/** `frames:N`, `released:<button>`, `health:N` (N or less), `grab:N` and `within:N` (under N px), or undefined for any other trigger. */
 function counted(key: string, signals: Signals): boolean | undefined {
   const [kind, arg] = key.split(":");
   // how long a charge has run decides what it becomes (the Kamehameha)
@@ -870,6 +877,8 @@ function counted(key: string, signals: Signals): boolean | undefined {
   if (kind === "health") return signals.health !== undefined && signals.health <= Number(arg);
   // a command's own range for an opponent standing still, not the throw's (Galactic Gunfire's 64, $0D:F95B)
   if (kind === "grab") return signals.grabbable !== undefined && signals.grabbable < Number(arg);
+  // a run that ends by the opponent, in the air or reeling too (Gotenks's a8, $20:BCC4)
+  if (kind === "within") return signals.distance !== undefined && signals.distance < Number(arg);
   return undefined;
 }
 

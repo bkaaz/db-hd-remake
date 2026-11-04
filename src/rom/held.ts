@@ -31,6 +31,11 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
         out[`${name}_air`] = heldByStep(rom, byStep.air, character, ops);
         continue;
       }
+      const own = OWN_MOVE_HOLDS[thrower]?.[move];
+      if (own) {
+        out[name] = heldInOwnMove(rom, own, character);
+        continue;
+      }
       const table = HANDLER_HOLDS[thrower]?.[move];
       const anim = table ? heldByTable(rom, table, character) : heldIn(ops, character);
       if (!anim) continue;
@@ -62,6 +67,23 @@ const HANDLER_HOLDS: Partial<Record<string, Record<number, { table: number; fram
 const STEP_HOLDS: Partial<Record<string, Record<number, { floor: number; air: number }>>> = {
   gohan: { 0xa9: { floor: 0x20aa72, air: 0x20aa86 } },
 };
+
+/**
+ * Holds that are no track and no table: the thrower puts him in a move of his
+ * own, stopped on its first drawing until the launch (Gotenks's 9d: move 34,
+ * not 30, its handler `$20:BD5A`).
+ */
+const OWN_MOVE_HOLDS: Partial<Record<string, Record<number, { move: number; frames: number }>>> = {
+  gotenks: { 0x9d: { move: 0x34, frames: 30 } },
+};
+
+/** This character's first drawing of the move he is put in, as long as he stays in it. */
+export function heldInOwnMove(rom: Uint8Array, hold: { move: number; frames: number }, character: number): Anim {
+  const ops = readScript(rom, scriptAt(rom, fighterTables(rom, character), hold.move));
+  const drawing = ops.flatMap((op) => ((op.op === "hold" || op.op === "show") && op.drawing !== null ? [op.drawing] : []))[0];
+  if (drawing === undefined) throw new Error(`move ${hold.move.toString(16)} of character ${character} draws nothing`);
+  return { loop: false, steps: [{ frame: String(drawing), dur: hold.frames }] };
+}
 
 function wordAt(rom: Uint8Array, address: number): number {
   const at = toFile(address);

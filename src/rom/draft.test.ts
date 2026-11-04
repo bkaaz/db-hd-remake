@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ROM_PATH } from "./cartridge";
 import { draftSpecials } from "./draft";
-import { framesOf, objectName } from "./draftObjects";
+import { draftObject, framesOf, objectName } from "./draftObjects";
 import { tablesOf } from "./fighterStates";
 
 describe("objectName", () => {
@@ -59,6 +59,14 @@ describe.skipIf(!existsSync(ROM_PATH))("draftSpecials, on the cartridge", () => 
     const { states } = draft("gohan", { ad: "masenko" }).specials;
     expect(states.masenko.healthCost).toBe(10);
     expect(states.masenko_2.healthCost).toBeUndefined();
+  });
+
+  it("keeps what stays at $6800 under what a move loads: the ghost's picture reaches both", () => {
+    const shot = draft("gotenks", {}).objects.find((o) => o.move === 0xad)!;
+    expect(draftObject(rom, tablesOf(rom, "gotenks"), "gotenks", 0xad, shot.spawn)?.loads).toEqual([
+      { resource: 0x40, vram: 0x6800 },
+      { resource: 0x4a, vram: 0x6b00 },
+    ]);
   });
 
   it("counts an object's frames from its table", () => {

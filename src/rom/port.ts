@@ -185,13 +185,14 @@ function launchOf(facts: HandlerFact[]): { launch?: PortReport["launch"] } {
 
 /**
  * Each change of speed, by frame. A fact a by-step handler does on every frame
- * of a step has no frame of its own: it falls on the step's first. A step's
- * stop counts only when nothing conditions it; one at the script's end has a frame.
+ * of a step has no frame of its own: it falls on the step's first, or on the
+ * bound it waits for. A step's stop counts only when nothing conditions it;
+ * one at the script's end has a frame.
  */
 function speedsOf(facts: readonly HandlerFact[], stepFrame: readonly number[]): { frame: number; vx: number }[] {
   return facts
     .flatMap((f) => {
-      const frame = f.frame ?? (f.step === undefined ? undefined : stepFrame[f.step]);
+      const frame = f.frame ?? f.from ?? (f.step === undefined ? undefined : stepFrame[f.step]);
       if (frame === undefined) return [];
       if (f.vx !== undefined) return [{ frame, vx: f.vx }];
       return f.what === "stops" && f.frame === null && !f.when?.length ? [{ frame, vx: 0 }] : [];

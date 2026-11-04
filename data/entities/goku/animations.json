@@ -46222,6 +46222,15 @@
       }
     ]
   },
+  "m30_gotenks_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "25",
+        "dur": 30
+      }
+    ]
+  },
   "m30_gotenks_a7": {
     "loop": false,
     "steps": [

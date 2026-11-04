@@ -195,6 +195,10 @@ allow, without asking, and he tries them move by move afterwards —
 1. **Each fighter's own recording** (`port-review.md` names his objects), through
    `OWN_OBJECTS`, in place of the drafted ones.
 2. **The owner's pass, move by move**, deleting from `port-review.md`.
+3. **Gotenks's Volleyball, a scene of about 500 frames.** The ring (object 3/03)
+   catches the opponent: he plays `4d`, Gotenks `b6`, and the ball (3/04, its
+   shadow 3/0E) bounces, rises and ricochets at 16 until 120 damage and `1b`.
+   Not `seize` as it stands: split, and recorded with `record-fight.lua`, first.
 
 ## After the port: the common part
 

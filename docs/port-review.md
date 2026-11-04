@@ -20,7 +20,7 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | move | input | left out |
 |---|---|---|
 | `af` ultra_headbutt | ground: R + Y | — |
-| `9d` throw | ground: → + X | m9d's blow, a reaction no type copies |
+| `9d` throw | ground: → + X | — |
 | `a5` sliding_headbutt | ground: ↘ + Y | — |
 | `a0` sender_a0 | ground: → ← → X | — |
 | `a1` sender_a1 | ground: ↓ ↙ ← X | — |
@@ -30,9 +30,8 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `bd` ultra_renzoku | ground: ↓ ↘ → ↓ ↘ → A | — |
 | `ac` kikoha | ground: ← ↙ ↓ ↘ → A | — |
 | `a7` omaenanka | ground: → ↘ ↓ ↙ ← Y | — |
-| `ad` heat_seeking | ground: ↓ ↙ → A | what its handler decides on a button held or a level `?` |
 | `b4` rolling_thunder | ground: ← ↙ ↓ ↘ → Y | — |
-| `ae` volleyball | ground: → ← ↙ ↓ ↘ → Y | — |
+| `ae` volleyball | ground: → ← ↙ ↓ ↘ → Y | **Not playable:** the shot passes through; it opens a scene (`plan.md`) |
 | `b0` air_dive | air: → ↓ Y | — |
 | `b3` aerial_kantsu | air: → ← → A | mb3_2's blow, a reaction no type copies; mb3_3's blow, a reaction no type copies; mb3_4's blow, a reaction no type copies; mb3_5's blow, a reaction no type copies; mb3_6's blow, a reaction no type copies |
 | `90` attack_y_close | his own normal | — |
@@ -45,7 +44,7 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `b1` move_b1 | from another move | — |
 | `b2` move_b2 | from another move | mb2's blow, a reaction no type copies |
 
-Objects, no recording yet (4): frames from the table, 4 frames each `?`, colours `?`: `gotenks_3_08`, `gotenks_3_06`, `gotenks_3_03`, `gotenks_3_0a`.
+Objects: `gotenks_ghost` from his recording. `gotenks_3_08` and `gotenks_3_03` take its colours and `3_08` its frames, the rest drafted `?`; `3_03` becomes 03/04 and 03/0e in the recording, neither built. `gotenks_3_0a` (`b3`, in the air) is not in it.
 Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_start`, `dash_back`, `dash_back_end`, `dash_back_run`, `dash_fwd`, `dash_fwd_end`, `dash_fwd_run`, `intro`, `ko_bounce`, `ko_bounce2`, `ko_down`, `ko_fall`, `ko_lie`, `ko_rise`, `reel_trip`, `trip_fall`, `trip_land`, `win`, `win_2`, `win_air`.
 
 ## Vegetto

@@ -11,7 +11,7 @@ const SENDERS = { "9f": "sender_9f", a0: "sender_a0", a1: "sender_a1", "9d": "th
 export const MOVE_NAMES: Partial<Record<FighterName, Record<string, string>>> = {
   gotenks: {
     ...SENDERS, af: "ultra_headbutt", a5: "sliding_headbutt", a7: "omaenanka", b4: "rolling_thunder", a8: "wild_boar",
-    b3: "aerial_kantsu", ab: "renzoku", bd: "ultra_renzoku", ac: "kikoha", ad: "heat_seeking", ae: "volleyball", b0: "air_dive",
+    b3: "aerial_kantsu", ab: "renzoku", bd: "ultra_renzoku", ac: "kikoha", ad: "ghost_kamikaze", ae: "volleyball", b0: "air_dive",
   },
   vegetto: {
     ...SENDERS, aa: "shooting_kick", "9e": "forward_kick", a5: "geri_combo", a7: "elbow_dash", a8: "slashdown_kick",

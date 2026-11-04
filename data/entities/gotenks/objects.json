@@ -4,8 +4,12 @@
     "type": 3,
     "anim": 8,
     "hits": true,
-    "palette": 112,
+    "palette": 35,
     "loads": [
+      {
+        "resource": 64,
+        "vram": 26624
+      },
       {
         "resource": 73,
         "vram": 27392
@@ -14,43 +18,8 @@
     "animations": {
       "play": {
         "frames": [
-          0,
           1,
-          2,
-          3,
-          4,
-          5
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
-  },
-  {
-    "name": "gotenks_3_06",
-    "type": 3,
-    "anim": 6,
-    "hits": true,
-    "palette": 112,
-    "loads": [
-      {
-        "resource": 74,
-        "vram": 27392
-      }
-    ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9
+          0
         ],
         "dur": 4,
         "loop": true
@@ -62,8 +31,12 @@
     "type": 3,
     "anim": 3,
     "hits": false,
-    "palette": 112,
+    "palette": 35,
     "loads": [
+      {
+        "resource": 64,
+        "vram": 26624
+      },
       {
         "resource": 73,
         "vram": 27392
@@ -89,8 +62,12 @@
     "type": 3,
     "anim": 10,
     "hits": true,
-    "palette": 112,
+    "palette": 35,
     "loads": [
+      {
+        "resource": 64,
+        "vram": 26624
+      },
       {
         "resource": 73,
         "vram": 27392

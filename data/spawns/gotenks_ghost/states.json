@@ -1,0 +1,23 @@
+{
+  "_comment": "Gotenks's ghost, ad (object 3/06, $0F:C328). Frames by npm run rom -- export --fighter gotenks; this file by hand. It hangs, climbs at 2 from 16, leans forward at 32 and from 36 goes at 3 with vy closing on the opponent's height ($0F:CC45, logs/fight-9.txt); gone at 96 ($0F:C334). Type and damage are the objects' hit table's ($3D:9624).",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [16, { "vy": -2, "gravity": 0 }],
+        [32, { "vx": 2, "vy": -2 }],
+        [36, { "vx": 3 }]
+      ],
+      "aim": { "from": 36, "above": 32, "within": 16, "speed": 2.12109375 },
+      "lasts": 96,
+      "type": "high",
+      "damage": 50,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
+    }
+  }
+}

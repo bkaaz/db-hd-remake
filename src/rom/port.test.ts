@@ -34,6 +34,12 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
     expect(portReport(rom, gotenks, 0x95).parts[0].velAt).toEqual([[8, 2], [10, 0]]);
   });
 
+  it("puts a stop that waits for a frame on that frame, not on its step: Gotenks's b4 at 90", () => {
+    const parts = portReport(rom, fighterNamed(rom, "gotenks"), 0xb4).parts;
+    expect(parts[2].velAt).toEqual([[16, 4]]);
+    expect(parts[3].velAt).toEqual([[0, 0]]);
+  });
+
   it("cuts a move where a handler pinned to a step by CMP jumps", () => {
     // Saiyan Meteor's rush: CMP #$0C on field 0x46, then frame 128 once he is close
     const meteor = portReport(rom, GOKU, 0xad);

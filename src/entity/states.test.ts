@@ -920,6 +920,16 @@ describe("a reaction leaves on the blow's clock, not on the pose", () => {
   });
 });
 
+describe("within:N", () => {
+  const near = { initial: "idle", states: { idle: { anim: "idle", transitions: [{ when: "within:80", to: "leap" }] }, leap: { anim: "idle" } } };
+
+  it("asks the distance alone, where grab:N asks for a body that can be held", () => {
+    expect(new StateMachine(near as never).update(NONE, { ...QUIET, distance: 80 })).toBeNull();
+    expect(new StateMachine(near as never).update(NONE, { ...QUIET, distance: 79 })).toBe("leap");
+    expect(new StateMachine(near as never).update(NONE, QUIET)).toBeNull();
+  });
+});
+
 describe("grab:N", () => {
   const near = { initial: "idle", states: { idle: { anim: "idle", transitions: [{ when: "grab:64", to: "seize" }] }, seize: { anim: "hurt" } } };
 

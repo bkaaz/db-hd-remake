@@ -12,8 +12,8 @@ import type { PartReport } from "./port";
 /**
  * A fighter's own object with no recording yet (ADR 0036 wants one): all the
  * code gives, and a guess at the rest. Its frames are what its table holds,
- * shown 4 frames each `?`; its tiles what its move loads, or else what stays
- * at `$6800` all fight; its colours the first palette its handler or its code
+ * shown 4 frames each `?`; its tiles what stays at `$6800` all fight with what
+ * its move loads over it, a picture reaching both; its colours the first palette its handler or its code
  * loads, or else his own. A recording replaces the lot: `OWN_OBJECTS`.
  */
 
@@ -70,6 +70,8 @@ export function draftObject(rom: Uint8Array, t: FighterTables, fighter: string, 
   if (frames.length === 0) return null;
   const loads = spawnerLoads(rom, t, s.type, s.anim);
   const at6800 = toFile(AT_6800 + 2 * t.character)!;
+  const kept = { resource: rom[at6800] | (rom[at6800 + 1] << 8), vram: 0x6800 };
+  const overIt = loads.some((l) => l.vram > kept.vram);
   const palette = paletteLoad(rom, handlerAt(rom, t.character, move)) ?? paletteLoad(rom, objectEntry(rom, s.type)) ?? OWN_PALETTES + 16 * t.character;
   return {
     name: objectName(fighter, s),
@@ -77,7 +79,7 @@ export function draftObject(rom: Uint8Array, t: FighterTables, fighter: string, 
     anim: s.anim,
     hits: s.blow.damage > 0,
     palette,
-    loads: loads.length > 0 ? loads : [{ resource: rom[at6800] | (rom[at6800 + 1] << 8), vram: 0x6800 }],
+    loads: loads.length === 0 ? [kept] : overIt ? [kept, ...loads] : loads,
     animations: { play: { frames, dur: 4, loop: true } },
   };
 }

@@ -54,6 +54,7 @@ export class Throws {
     if (hold.launched) return;
     const place = heldAt(grab.at[other.name], thrower.animStep, { ...thrower.placement, y: thrower.y });
     if (place) [other.x, other.y] = [place.x, place.y];
+    if (grab.turnsAt !== undefined && thrower.stateFrame - 1 >= grab.turnsAt) other.facing = thrower.facing;
     // the state's count is 1 on the frame it is entered, the move's ($44) 0:
     // let go 20 frames after the throw began, as recorded (tools/re/log-throw.lua)
     if (thrower.stateFrame - 1 >= grab.launch.frame) {

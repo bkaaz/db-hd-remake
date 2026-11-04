@@ -37,7 +37,7 @@ animation ends". → `states.ts`
 
 **Grab / held** — a throw: a state with `grab` takes hold of an opponent within
 `grabRange` who is `throwable` (trigger `grab`, or `grab:N` for a command's own
-range); he plays
+range; `within:N` asks the distance alone, for a run); he plays
 `m30_<thrower>_<move>` where the thrower's step puts him, until the launch
 lets him go. → `match/throw.ts`, ADR 0035
 

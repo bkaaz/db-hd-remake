@@ -140,7 +140,7 @@
         "stand_up"
       ],
       "when": "command:ad",
-      "to": "heat_seeking"
+      "to": "ghost_kamikaze"
     },
     {
       "from": [
@@ -268,11 +268,11 @@
           "damage": 40,
           "reaction": "reel_down",
           "vel": [
-            -2.5,
+            2.5,
             -8
-          ],
-          "ahead": true
-        }
+          ]
+        },
+        "turnsAt": 8
       },
       "transitions": [
         {
@@ -511,22 +511,35 @@
       ],
       "transitions": [
         {
+          "when": [
+            "frames:10",
+            "within:80"
+          ],
+          "to": "wild_boar_2"
+        },
+        {
           "when": "animEnd",
           "to": "wild_boar_2"
         }
-      ]
+      ],
+      "trail": {
+        "fx": "dust",
+        "every": 2,
+        "from": 10
+      }
     },
     "wild_boar_2": {
       "anim": "ma8_2",
       "turn": false,
       "vel": [
-        5,
+        0,
         0
       ],
       "air": [
         [
           6,
           {
+            "vx": 3,
             "vy": -6,
             "gravity": "own"
           }
@@ -1089,7 +1102,7 @@
         }
       ]
     },
-    "heat_seeking": {
+    "ghost_kamikaze": {
       "anim": "mad",
       "turn": false,
       "vel": [
@@ -1099,12 +1112,28 @@
       "healthCost": 10,
       "transitions": [
         {
+          "when": [
+            "frames:18",
+            "!frames:23",
+            "released:blast"
+          ],
+          "to": "ghost_kamikaze_one"
+        },
+        {
+          "when": [
+            "frames:23",
+            "!frames:35",
+            "released:blast"
+          ],
+          "to": "ghost_kamikaze_two"
+        },
+        {
           "when": "animEnd",
-          "to": "heat_seeking_2"
+          "to": "ghost_kamikaze_2"
         }
       ]
     },
-    "heat_seeking_2": {
+    "ghost_kamikaze_2": {
       "anim": "mad_2",
       "turn": false,
       "vel": [
@@ -1112,7 +1141,7 @@
         0
       ],
       "fires": {
-        "spawn": "gotenks_3_06",
+        "spawn": "gotenks_ghost",
         "at": [
           24,
           -32
@@ -1122,11 +1151,11 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "heat_seeking_3"
+          "to": "ghost_kamikaze_3"
         }
       ]
     },
-    "heat_seeking_3": {
+    "ghost_kamikaze_3": {
       "anim": "mad_3",
       "turn": false,
       "vel": [
@@ -1134,7 +1163,7 @@
         0
       ],
       "fires": {
-        "spawn": "gotenks_3_06",
+        "spawn": "gotenks_ghost",
         "at": [
           24,
           -32
@@ -1144,11 +1173,11 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "heat_seeking_4"
+          "to": "ghost_kamikaze_4"
         }
       ]
     },
-    "heat_seeking_4": {
+    "ghost_kamikaze_4": {
       "anim": "mad_4",
       "turn": false,
       "vel": [
@@ -1156,7 +1185,7 @@
         0
       ],
       "fires": {
-        "spawn": "gotenks_3_06",
+        "spawn": "gotenks_ghost",
         "at": [
           24,
           -32
@@ -1225,16 +1254,28 @@
       "damage": 19,
       "transitions": [
         {
+          "when": [
+            "frames:17",
+            "within:48"
+          ],
+          "to": "rolling_thunder_4"
+        },
+        {
           "when": "animEnd",
           "to": "rolling_thunder_4"
         }
-      ]
+      ],
+      "trail": {
+        "fx": "dust",
+        "every": 4,
+        "from": 17
+      }
     },
     "rolling_thunder_4": {
       "anim": "mb4_4",
       "turn": false,
       "vel": [
-        4,
+        0,
         0
       ],
       "transitions": [
@@ -1248,13 +1289,14 @@
       "anim": "mb4_5",
       "turn": false,
       "vel": [
-        4,
+        0,
         0
       ],
       "air": [
         [
           0,
           {
+            "vx": 2,
             "vy": -10,
             "gravity": "own"
           }
@@ -1703,7 +1745,7 @@
       "anim": "maa",
       "turn": false,
       "vel": [
-        0,
+        1.5,
         0
       ],
       "hitSound": "hit_09",
@@ -1715,7 +1757,65 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          1,
+          1.375
+        ],
+        [
+          2,
+          1.25
+        ],
+        [
+          3,
+          1.125
+        ],
+        [
+          4,
+          1.0
+        ],
+        [
+          5,
+          0.875
+        ],
+        [
+          6,
+          0.75
+        ],
+        [
+          7,
+          0.625
+        ],
+        [
+          8,
+          0.5
+        ],
+        [
+          9,
+          0.375
+        ],
+        [
+          10,
+          0.25
+        ],
+        [
+          11,
+          0.125
+        ],
+        [
+          12,
+          0.0
+        ]
+      ],
+      "sound": "land_0c",
+      "groundFx": "dust",
+      "trail": {
+        "fx": "dust",
+        "every": 4,
+        "to": 12
+      },
+      "sameSwing": true
     },
     "move_b1": {
       "anim": "mb1",
@@ -1747,6 +1847,34 @@
         {
           "when": "animEnd",
           "to": "idle"
+        }
+      ]
+    },
+    "ghost_kamikaze_one": {
+      "anim": "mad",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "frames:10",
+          "to": "ghost_kamikaze_4"
+        }
+      ]
+    },
+    "ghost_kamikaze_two": {
+      "anim": "mad",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "frames:10",
+          "to": "ghost_kamikaze_3"
         }
       ]
     }

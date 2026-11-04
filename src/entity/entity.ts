@@ -1,4 +1,5 @@
 import { Container, Graphics, Sprite } from "pixi.js";
+import { aimSpeed } from "./aim";
 import { applyAir, fall, ON_GROUND, type AirSetting } from "./air";
 import { hitAgain } from "./hitAgain";
 import type { ShakeDef } from "../camera/shake";
@@ -1200,6 +1201,12 @@ export class Entity {
     this.setAnim(name);
   }
 
+  /** A shot with an `aim` answers a body standing at `y`; anything else ignores it. */
+  aimAt(y: number): void {
+    const aim = this.sm?.def.aim;
+    if (aim && this.stateFrames >= aim.from) this.vy = aimSpeed(aim, (this.y - y) / this.scale);
+  }
+
   /** Where a spawn goes once its bolt is gone (`onRelease`), if anywhere. */
   get releaseState(): string | undefined {
     return this.def.states?.onRelease;
@@ -1342,6 +1349,7 @@ export class Entity {
         close: this.closeTo(opponentX),
         grab: !!opponent?.throwable && Math.abs(opponent.x - this.x) / this.scale < this.grabRange,
         grabbable: opponent?.throwable ? Math.abs(opponent.x - this.x) / this.scale : undefined,
+        distance: opponent ? Math.abs(opponent.x - this.x) / this.scale : undefined,
         // `spent` means this attack has connected — set on a hit and on a block,
         // never on a whiff, which is exactly what a chain is allowed to continue
         // from. It was already recorded for a different reason: an attack may
