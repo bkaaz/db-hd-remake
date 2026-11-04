@@ -1103,7 +1103,7 @@ slot shows player two's tile base `0x100` up.
 | `aa` | Triangle Illusion (3D): Side Slash's way, turning on 33 | R + B |
 | `ab` | Renzoku Energy Dan | ↓ ↘ → A |
 | `ac` | Kamehame-Ha: let go before 20 small, before 36 medium, fired from 32 | ↓ ↙ → A |
-| `ad` | Masenko, object `2/03` | ← ↙ ↓ ↘ → A |
+| `ad` | Masenko, object `2/03`: flies at `b0`'s vx 3 / vy −3 unchanged, no gravity | ← ↙ ↓ ↘ → A |
 | `ae` | Rushing Suki Combo, health 80 or less | → ↘ ↓ ↙ ← → B |
 
 `9e` and `b1` have scripts and handlers, but no button or code of his was found

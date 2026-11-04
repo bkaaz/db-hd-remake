@@ -27,7 +27,6 @@ Dummy: `?scene=debug&mode=5&p2=gohan`, `T` (mode 5 is rewritten per batch).
 | Bakuretsu Punch `a7` | `bakuretsu` | ← (charge) → Y | the dust |
 | Bukuuh Kyaku `a8`, `a9` | `bukuuh_kyaku` | → ↓ B, in the air | **not playable**: dives, hits nothing (`plan.md`) |
 | Renzoku Energy Dan `ab` | `renzoku` | ↓ ↘ → A | — |
-| Masenko `ad` | `masenko` | ← ↙ ↓ ↘ → A | its hit sounds `?` |
 | Kamehame-Ha `ac` | `kame_charge` | ↓ ↙ → A, held | — |
 | Rushing Suki Combo `ae` | `suki_combo` | → ↘ ↓ ↙ ← → B, health ≤ 80 | palette run, re-arm at 136, last blow's effect `?` |
 | `9f`, `a0`, `a1` | `sender_*` | ↓ ↘ → / → ← → / ↓ ↙ ← + X | — |

@@ -20,6 +20,17 @@ because a number would only need translating back.
 
 ---
 
+## Objects that fly on a slant fall under gravity
+
+*Breaks play — seen on Masenko, read from the data for the rest.* A spawn with
+`airborne` and a `launch` needs `gravity: 0` in its `attributes.json`, or it takes
+the default gravity: it arcs, reaches the floor and slides along it. Masenko had
+it and is fixed; `objectStates` (`src/rom/draftObjects.ts`) writes the `launch` and
+no attributes, so every drafted object with a vy still has it (Piccolo's
+`piccolo_5_03`, Cell's, Freeza's, Buu's, Gotenks', Vegetto's). So do Vegeta's
+`vegeta_vertical_ki` and `vegeta_gunfire_shot`, whose comments say vy is kept the
+whole fall: they speed up instead.
+
 ## A reaction can strike with a hit box its drawing carries
 
 *Cosmetic, or worse — not tried.* Some drawings the cartridge's reactions and
