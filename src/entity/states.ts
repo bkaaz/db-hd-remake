@@ -191,6 +191,8 @@ export interface StateDef {
    * (`combat/knockback.ts`). On top of `vel`, on the ground only.
    */
   shove?: number;
+  /** Frames the shove keeps its whole speed and then stops; none: it slows by friction (`combat/knockback.ts`). */
+  shoveFor?: number;
   /** Whether the entity may turn to face its opponent while in this state. */
   turn?: boolean;
   /** `turn`, but only from this frame of the state: the get-up turns on its last step (`$0F:A38B`). */
@@ -1615,6 +1617,9 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);
+    }
+    if (def.shoveFor !== undefined && (!Number.isInteger(def.shoveFor) || def.shoveFor < 1)) {
+      errors.push(`${where}: "shoveFor" must be a whole number of frames`);
     }
 
     // Unlike `vel`, a component may be null — that means "keep this axis".

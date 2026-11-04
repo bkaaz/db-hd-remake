@@ -15,7 +15,7 @@ import { burnVariant, paletteVariant, shimmerVariant, markedVariant, runVariant 
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
-import { slowed } from "../combat/knockback";
+import { shoveAfter } from "../combat/knockback";
 import { trailAt } from "./trail";
 import { moveStep } from "../fx/follow";
 import { hoverOffset } from "./hover";
@@ -120,6 +120,8 @@ export interface Blow {
 /** One fighter's innards, for the debug readout only — see `Entity.debug`. */
 export interface EntityDebug {
   state: string;
+  x: number;
+  y: number;
   rank: number;
   step: number;
   steps: number;
@@ -454,6 +456,8 @@ export class Entity {
   get debug(): EntityDebug {
     return {
       state: this.state,
+      x: this.x,
+      y: this.y,
       rank: this.sm?.def.rank ?? 0,
       step: this.stepIndex,
       steps: this.anim?.steps.length ?? 0,
@@ -1434,7 +1438,7 @@ export class Entity {
         this.x += dx * this.scale;
         this.arrived = arrived;
       }
-      this.shove = slowed(this.shove);
+      this.shove = shoveAfter(this.shove, this.stateFrames + 1, this.sm.def.shoveFor);
     }
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
     const ball = this.sm.def.ball;

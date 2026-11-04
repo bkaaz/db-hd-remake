@@ -64,6 +64,18 @@ do
       emu.removeMemoryCallback(exec, emu.callbackType.exec, START, LAST, SNES)
       exec = nil
     end
+    -- a fight's opening kept as a state of its own: a later run starts here, not at the roster
+    if RUN.saveAt == count then
+      local keep
+      keep = emu.addMemoryCallback(function()
+        if not keep then return end
+        local file = assert(io.open(RUN.saveTo, "wb"))
+        file:write(emu.createSavestate())
+        file:close()
+        emu.removeMemoryCallback(keep, emu.callbackType.exec, START, LAST, SNES)
+        keep = nil
+      end, emu.callbackType.exec, START, LAST, SNES)
+    end
     if not poked and count >= RUN.healthAt then
       for side, hp in pairs(RUN.health) do
         emu.write(P[side] + HEALTH, hp & 0xff, IRAM)

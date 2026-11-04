@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { slowed } from "./knockback";
+import { shoveAfter, slowed } from "./knockback";
 
 /** Every frame's movement of a push, applied then slowed, until it stops. */
 function travel(speed: number): number[] {
@@ -23,5 +23,15 @@ describe("knockback", () => {
     expect(slowed(0.1)).toBe(0);
     expect(slowed(-0.1)).toBe(0);
     expect(slowed(0)).toBe(0);
+  });
+});
+describe("the shove", () => {
+  it("slows by friction when its state says nothing", () => {
+    expect(shoveAfter(-3, 1, undefined)).toBe(slowed(-3));
+  });
+
+  it("keeps its whole speed for `shoveFor` frames, then stops", () => {
+    expect(shoveAfter(-3, 11, 12)).toBe(-3);
+    expect(shoveAfter(-3, 12, 12)).toBe(0);
   });
 });

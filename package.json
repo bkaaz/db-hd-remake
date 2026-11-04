@@ -22,6 +22,7 @@
     "which": "tsx scripts/which.ts",
     "rom": "tsx scripts/rom.ts",
     "original": "tsx scripts/original.ts",
+    "moves": "tsx scripts/moves.ts",
     "dis": "tsx scripts/dis.ts",
     "sound-test": "tsx scripts/sound-test.ts"
   },

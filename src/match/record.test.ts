@@ -10,6 +10,8 @@ import { commandChanges, motionChanges, pressChanges, queueChanges } from "./rec
  */
 const snapshot = (buffer: [string, number][]): EntityDebug => ({
   state: "idle",
+  x: 0,
+  y: 0,
   rank: 0,
   step: 0,
   steps: 1,
