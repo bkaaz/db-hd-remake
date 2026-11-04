@@ -1,0 +1,1246 @@
+{
+  "replaces": [
+    "attack_y_close",
+    "attack_y",
+    "attack_b",
+    "crouch_y",
+    "jump_b",
+    "jump_fwd_y"
+  ],
+  "entries": [
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:b6",
+      "to": "matamol"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a8",
+      "to": "extension_punch"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": [
+        "grab",
+        "command:9d"
+      ],
+      "to": "throw"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a0",
+      "to": "sender_a0"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:b5",
+      "to": "kantsu"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a1",
+      "to": "sender_a1"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:af",
+      "to": "earth_stab"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:9f",
+      "to": "sender_9f"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:b1",
+      "to": "whip"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": [
+        "command:b7",
+        "health:80"
+      ],
+      "to": "putty_uppercut"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:b3",
+      "to": "buu_burn"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:b4",
+      "to": "energy_sphere"
+    },
+    {
+      "from": [
+        "jump_up",
+        "jump_fwd",
+        "jump_back"
+      ],
+      "when": [
+        "frames:2",
+        "command:b2"
+      ],
+      "to": "disk_tackle"
+    },
+    {
+      "from": [
+        "jump_fall"
+      ],
+      "when": "command:b2",
+      "to": "disk_tackle"
+    },
+    {
+      "from": [
+        "jump_up",
+        "jump_fwd",
+        "jump_back"
+      ],
+      "when": [
+        "frames:2",
+        "command:d2"
+      ],
+      "to": "slashdown_blast"
+    },
+    {
+      "from": [
+        "jump_fall"
+      ],
+      "when": "command:d2",
+      "to": "slashdown_blast"
+    },
+    {
+      "from": [
+        "jump_up",
+        "jump_fwd",
+        "jump_back"
+      ],
+      "when": [
+        "frames:2",
+        "command:d1"
+      ],
+      "to": "horizontal_blast"
+    },
+    {
+      "from": [
+        "jump_fall"
+      ],
+      "when": "command:d1",
+      "to": "horizontal_blast"
+    },
+    {
+      "from": [
+        "jump_up",
+        "jump_fwd",
+        "jump_back"
+      ],
+      "when": [
+        "frames:2",
+        "command:a9"
+      ],
+      "to": "floater"
+    },
+    {
+      "from": [
+        "jump_fall"
+      ],
+      "when": "command:a9",
+      "to": "floater"
+    }
+  ],
+  "states": {
+    "matamol": {
+      "anim": "mb6",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 16,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "extension_punch": {
+      "anim": "ma8",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          1,
+          2
+        ],
+        [
+          12,
+          1.33203125
+        ],
+        [
+          18,
+          0
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "throw": {
+      "anim": "m9d",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vy": -8,
+            "gravity": "own",
+            "vx": 2
+          }
+        ]
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              0,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              0,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              0,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              0,
+              0
+            ]
+          ],
+          "vegetto": [
+            [
+              0,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              0,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              0,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              0,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              0,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        "launch": {
+          "frame": 0,
+          "damage": 58,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -7
+          ],
+          "ahead": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a0": {
+      "anim": "ma0",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "kantsu": {
+      "anim": "mb5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "healthCost": 5,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "kantsu_2"
+        }
+      ]
+    },
+    "kantsu_2": {
+      "anim": "mb5_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "buu_9_09",
+        "at": [
+          40,
+          -40
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a1": {
+      "anim": "ma1",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "earth_stab_again": {
+      "anim": "mb0",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "command:b0",
+          "to": "earth_stab_again"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "earth_stab": {
+      "anim": "maf",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "earth_stab_2"
+        }
+      ]
+    },
+    "earth_stab_2": {
+      "anim": "maf_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_9f": {
+      "anim": "m9f",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "whip": {
+      "anim": "mb1",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "putty_uppercut": {
+      "anim": "mb7",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "buu_burn": {
+      "anim": "mb3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "healthCost": 10,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "buu_burn_2"
+        }
+      ]
+    },
+    "buu_burn_2": {
+      "anim": "mb3_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "buu_9_06",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly",
+        "with": [
+          {
+            "spawn": "buu_9_04",
+            "at": [
+              32,
+              -72
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_sphere": {
+      "anim": "mb4",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "healthCost": 10,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "energy_sphere_2"
+        }
+      ]
+    },
+    "energy_sphere_2": {
+      "anim": "mb4_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "buu_9_15",
+        "at": [
+          16,
+          0
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "energy_sphere_3"
+        }
+      ]
+    },
+    "energy_sphere_3": {
+      "anim": "mb4_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "buu_9_12",
+        "at": [
+          22,
+          -11
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "energy_sphere_4"
+        }
+      ]
+    },
+    "energy_sphere_4": {
+      "anim": "mb4_4",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "buu_9_0e",
+        "at": [
+          -16,
+          -42
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "energy_sphere_5"
+        }
+      ]
+    },
+    "energy_sphere_5": {
+      "anim": "mb4_5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "disk_tackle": {
+      "anim": "mb2",
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          8,
+          {
+            "vx": 6
+          }
+        ],
+        [
+          36,
+          {
+            "vx": 0
+          }
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 40,
+      "transitions": [
+        {
+          "when": "connected",
+          "to": "idle"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "slashdown_blast": {
+      "anim": "md2",
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "slashdown_blast_2"
+        }
+      ]
+    },
+    "slashdown_blast_2": {
+      "anim": "md2_2",
+      "turn": false,
+      "airborne": true,
+      "fires": {
+        "spawn": "buu_a_20",
+        "at": [
+          25,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "slashdown_blast_3"
+        }
+      ]
+    },
+    "slashdown_blast_3": {
+      "anim": "md2_3",
+      "turn": false,
+      "airborne": true,
+      "fires": {
+        "spawn": "buu_a_20",
+        "at": [
+          25,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "slashdown_blast_4"
+        }
+      ]
+    },
+    "slashdown_blast_4": {
+      "anim": "md2_4",
+      "turn": false,
+      "airborne": true,
+      "fires": {
+        "spawn": "buu_a_20",
+        "at": [
+          25,
+          -14
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "horizontal_blast": {
+      "anim": "md1",
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "horizontal_blast_2"
+        }
+      ]
+    },
+    "horizontal_blast_2": {
+      "anim": "md1_2",
+      "turn": false,
+      "airborne": true,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          32,
+          -32
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "horizontal_blast_3"
+        }
+      ]
+    },
+    "horizontal_blast_3": {
+      "anim": "md1_3",
+      "turn": false,
+      "airborne": true,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          32,
+          -32
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "horizontal_blast_4"
+        }
+      ]
+    },
+    "horizontal_blast_4": {
+      "anim": "md1_4",
+      "turn": false,
+      "airborne": true,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          32,
+          -32
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "floater": {
+      "anim": "ma9",
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "floater_2"
+        }
+      ]
+    },
+    "floater_2": {
+      "anim": "ma9_2",
+      "turn": false,
+      "airborne": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "attack_y_close": {
+      "anim": "m90",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "light",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "attack_y_close_2"
+        }
+      ]
+    },
+    "attack_y_close_2": {
+      "anim": "m90_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "light",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "attack_y_close_3"
+        }
+      ]
+    },
+    "attack_y_close_3": {
+      "anim": "m90_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_y": {
+      "anim": "m92",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          18,
+          4
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 18,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "attack_y_2"
+        }
+      ]
+    },
+    "attack_y_2": {
+      "anim": "m92_2",
+      "turn": false,
+      "vel": [
+        4,
+        0
+      ],
+      "velAt": [
+        [
+          0,
+          0
+        ],
+        [
+          8,
+          4
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "attack_y_3"
+        }
+      ]
+    },
+    "attack_y_3": {
+      "anim": "m92_3",
+      "turn": false,
+      "vel": [
+        4,
+        0
+      ],
+      "velAt": [
+        [
+          0,
+          0
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_b": {
+      "anim": "m93",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          2,
+          1.33203125
+        ],
+        [
+          14,
+          1.59765625
+        ],
+        [
+          20,
+          0
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 28,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "crouch_y": {
+      "anim": "m94",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "light",
+      "damage": 22,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "crouch_y_2"
+        }
+      ]
+    },
+    "crouch_y_2": {
+      "anim": "m94_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 22,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "jump_b": {
+      "anim": "m97",
+      "turn": false,
+      "airborne": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "long",
+      "damage": 18,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_b_2"
+        }
+      ]
+    },
+    "jump_b_2": {
+      "anim": "m97_2",
+      "turn": false,
+      "airborne": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "long",
+      "damage": 18,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "jump_fwd_y": {
+      "anim": "m98",
+      "turn": false,
+      "airborne": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fwd_y_2"
+        }
+      ]
+    },
+    "jump_fwd_y_2": {
+      "anim": "m98_2",
+      "turn": false,
+      "airborne": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "long",
+      "damage": 26,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    }
+  }
+}

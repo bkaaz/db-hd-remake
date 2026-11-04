@@ -1,0 +1,38 @@
+{
+  "voice_hurt": {
+    "gain": 0.85,
+    "vary": 0.05,
+    "file": "buu_30.wav",
+    "rom": 48
+  },
+  "voice_ko": {
+    "gain": 0.85,
+    "vary": 0,
+    "file": "buu_31.wav",
+    "rom": 49
+  },
+  "voice_shout": {
+    "gain": 0.85,
+    "vary": 0.04,
+    "file": "buu_32.wav",
+    "rom": 50
+  },
+  "line_26": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_26.wav",
+    "line": 38
+  },
+  "line_28": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_28.wav",
+    "line": 40
+  },
+  "line_2c": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_2c.wav",
+    "line": 44
+  }
+}
