@@ -1,0 +1,18 @@
+{
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "turn": false,
+      "vel": [
+        4,
+        0
+      ],
+      "type": "halt",
+      "damage": 40,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
+    }
+  }
+}
