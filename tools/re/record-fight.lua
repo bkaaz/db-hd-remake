@@ -79,7 +79,7 @@ local function fighter(name, base)
     name, byte(base + 0x40), byte(base + 0x44), byte(base + 0x46), word(base + 0x0a),
     word(base + 0x20), signed(word(base + 0x23)), signed(word(base + 0x07)),
     signed(word(base + 0x7c)) / 256, signed(word(base + 0x7e)) / 256,
-    byte(base + 0x12), byte(base + 0x60), byte(base + 0x68), byte(base + 0x25), byte(base + 0x96))
+    byte(base + 0x12), word(base + 0x60), byte(base + 0x68), byte(base + 0x25), byte(base + 0x96))
 end
 
 local function slot(i)

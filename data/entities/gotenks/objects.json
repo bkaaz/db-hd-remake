@@ -30,7 +30,7 @@
     "name": "gotenks_3_03",
     "type": 3,
     "anim": 3,
-    "hits": false,
+    "hits": true,
     "palette": 35,
     "loads": [
       {
@@ -53,7 +53,7 @@
           5
         ],
         "dur": 4,
-        "loop": true
+        "loop": false
       }
     }
   },

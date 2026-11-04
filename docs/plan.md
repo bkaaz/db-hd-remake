@@ -195,11 +195,12 @@ allow, without asking, and he tries them move by move afterwards —
 1. **Each fighter's own recording** (`port-review.md` names his objects), through
    `OWN_OBJECTS`, in place of the drafted ones.
 2. **The owner's pass, move by move**, deleting from `port-review.md`.
-3. **Gotenks's Volleyball, a scene of 528 frames** (`npm run original --
-   volleyball-hit`, `-block`, `-miss`). The ring (object 3/03) on a standing body:
-   he plays `4d`, Gotenks `b6`, and the ball (3/04, its shadow 3/0E) bounces, rises
-   and ricochets at 16 until 120 damage and `1b`. Blocked it bursts as `0a/17` and
-   nothing follows; missed, it flies on. Not `seize` as it stands.
+3. **The rest of Gotenks's Volleyball** (`npm run original -- volleyball-hit`, with
+   `shots`). Its frame is in: the ring catches, `volleyball_scene` holds and hides
+   him, 120 and `1b` at the end. Left: the bubble closing on him (`4d`'s drawn
+   effect), the ball and its shadow (objects 3/04, 3/0E: bounces, a rise, ricochets
+   at 16), Gotenks's own part (`b6`: waits, runs to the ball, kicks, leaps, shoots),
+   the white flash at the end.
 
 ## After the port: the common part
 

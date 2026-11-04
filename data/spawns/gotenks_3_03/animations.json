@@ -1,30 +1,84 @@
 {
   "play": {
-    "loop": true,
+    "loop": false,
     "steps": [
       {
         "frame": "0",
-        "dur": 4
+        "dur": 4,
+        "boxes": [
+          {
+            "type": "hit",
+            "x": -4,
+            "y": -8,
+            "w": 8,
+            "h": 16
+          }
+        ]
       },
       {
         "frame": "1",
-        "dur": 4
+        "dur": 4,
+        "boxes": [
+          {
+            "type": "hit",
+            "x": -4,
+            "y": -16,
+            "w": 16,
+            "h": 32
+          }
+        ]
       },
       {
         "frame": "2",
-        "dur": 4
+        "dur": 4,
+        "boxes": [
+          {
+            "type": "hit",
+            "x": -4,
+            "y": -16,
+            "w": 28,
+            "h": 32
+          }
+        ]
       },
       {
         "frame": "3",
-        "dur": 4
+        "dur": 4,
+        "boxes": [
+          {
+            "type": "hit",
+            "x": -4,
+            "y": -24,
+            "w": 36,
+            "h": 48
+          }
+        ]
       },
       {
         "frame": "4",
-        "dur": 4
+        "dur": 4,
+        "boxes": [
+          {
+            "type": "hit",
+            "x": 8,
+            "y": -24,
+            "w": 32,
+            "h": 48
+          }
+        ]
       },
       {
         "frame": "5",
-        "dur": 4
+        "dur": 4,
+        "boxes": [
+          {
+            "type": "hit",
+            "x": 16,
+            "y": -24,
+            "w": 32,
+            "h": 48
+          }
+        ]
       }
     ]
   }

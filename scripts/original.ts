@@ -27,7 +27,7 @@ if (!existsSync(state)) throw new Error(`${state} is missing: a save state from 
 const out = resolve(`logs/run-${name}.txt`);
 
 const script = resolve("logs/run-script.lua");
-writeFileSync(script, runTable(scenario, { state, out }) + readFileSync("tools/re/run.lua", "utf8") + readFileSync("tools/re/record-fight.lua", "utf8"));
+writeFileSync(script, runTable(scenario, { state, out, shots: resolve(`logs/run-${name}`) }) + readFileSync("tools/re/run.lua", "utf8") + readFileSync("tools/re/record-fight.lua", "utf8"));
 const run = spawnSync(MESEN, ["--testRunner", resolve(ROM_PATH), script, `--timeout=${TIMEOUT_SECONDS}`], { stdio: "ignore" });
 if (run.status !== 0) throw new Error(`Mesen stopped with ${run.status}: the scenario did not reach its last frame`);
 

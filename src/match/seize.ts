@@ -1,5 +1,6 @@
 import type { ShakeDef } from "../camera/shake";
 import type { Entity } from "../entity/entity";
+import type { SeizeDef } from "../entity/states";
 import type { ScreenCue } from "../screen";
 import { finaleStep, throwBall, type Finale } from "./finale";
 
@@ -70,7 +71,10 @@ export class Seizures {
     const frame = seizer.stateFrame - 1;
     if (s && (!def || seizer.state !== s.state)) {
       // cut short: let go where he is, as a throw cut short does
-      if (s.phase !== "done") s.held.release();
+      if (s.phase !== "done") {
+        s.held.hide(false);
+        s.held.release();
+      }
       seizer.showThrownBall(null);
       seizer.showFloorBand(null);
       this.seizing.delete(seizer);
@@ -81,19 +85,23 @@ export class Seizures {
       if (frame < def.at) return;
       other.hold(def.anim);
       // set down once, beside him, facing him ($20:8A78, $20:8A81)
-      other.x = seizer.x + seizer.facing * def.place[0] * seizer.scaleOf;
-      other.y = seizer.y + def.place[1] * seizer.scaleOf;
+      if (def.place) {
+        other.x = seizer.x + seizer.facing * def.place[0] * seizer.scaleOf;
+        other.y = seizer.y + def.place[1] * seizer.scaleOf;
+      }
       other.facing = seizer.facing === 1 ? -1 : 1;
+      if (def.cry) other.sound(def.cry);
       this.seizing.set(seizer, { held: other, state: seizer.state, phase: "held", vx: 0, flight: { y: 0, vy: 0, bounces: [] }, landings: 0 });
       return;
     }
     const { held } = s;
     const scale = held.scaleOf;
-    if (s.phase === "held" && frame >= def.launch.frame) {
+    if (def.hides !== undefined && frame === def.hides) held.hide(true);
+    if (s.phase === "held" && def.launch && frame >= def.launch.frame) {
       // thrown up and away from him, crying out ($20:8B6B, $20:8B74)
       const away = held.x >= seizer.x ? 1 : -1;
       s.vx = away * def.launch.vel[0];
-      s.flight = { y: (held.y - held.floor) / scale, vy: def.launch.vel[1], bounces: def.bounces };
+      s.flight = { y: (held.y - held.floor) / scale, vy: def.launch.vel[1], bounces: def.bounces ?? [] };
       held.sound("voice_hurt");
       s.phase = "flying";
     }
@@ -154,8 +162,13 @@ export class Seizures {
   }
 
   /** The throw's own blow ($0F:B321): he faces the seizer's way, thrown backwards. */
-  private letGo(s: Seizure, seizer: Entity, release: { damage: number; reaction: string; vel: [number, number] }): void {
+  private letGo(s: Seizure, seizer: Entity, release: SeizeDef["release"]): void {
     const { held } = s;
+    if (release.at) {
+      held.x -= seizer.facing * release.at[0] * held.scaleOf;
+      held.y += release.at[1] * held.scaleOf;
+    }
+    held.hide(false);
     held.facing = seizer.facing;
     held.hurtBy(release.damage);
     held.release(release.reaction, release.vel);

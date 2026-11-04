@@ -1201,6 +1201,16 @@ export class Entity {
     this.setAnim(name);
   }
 
+  /** The thrower's state this shot opens where it lands. */
+  get opens(): string | undefined {
+    return this.sm?.def.opens;
+  }
+
+  /** Not drawn while a scene has him: he goes on being where he is. */
+  hide(hidden: boolean): void {
+    this.view.visible = !hidden;
+  }
+
   /** A shot with an `aim` answers a body standing at `y`; anything else ignores it. */
   aimAt(y: number): void {
     const aim = this.sm?.def.aim;

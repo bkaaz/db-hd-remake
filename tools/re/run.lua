@@ -45,16 +45,30 @@ do
     emu.addMemoryCallback(function() if loaded then return high(side) end end, emu.callbackType.read, address + 1, address + 1, SNES)
   end
 
+  -- the screen as a PNG, on the frames the scenario asks for
+  local count = 0
+  local function shoot()
+    count = count + 1
+    if not RUN.shots[count] then return end
+    local file = assert(io.open(string.format("%s-f%d.png", RUN.shotsAt, count), "wb"))
+    file:write(emu.takeScreenshot())
+    file:close()
+  end
+
   -- once a frame: false until the state is in; its health set, and the timeline on
   local poked = false
   function RUN.frame()
     if not loaded then return false end
+    shoot()
     if exec then
       emu.removeMemoryCallback(exec, emu.callbackType.exec, START, LAST, SNES)
       exec = nil
     end
     if not poked then
-      for side, hp in pairs(RUN.health) do emu.write(P[side] + HEALTH, hp, IRAM) end
+      for side, hp in pairs(RUN.health) do
+        emu.write(P[side] + HEALTH, hp & 0xff, IRAM)
+        emu.write(P[side] + HEALTH + 1, hp >> 8, IRAM)
+      end
       poked = true
     end
     if byte(0x0b2) == 0 then at = at + 1 end

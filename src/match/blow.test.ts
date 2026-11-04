@@ -242,6 +242,26 @@ describe("landBlow", () => {
   });
 });
 
+describe("a shot that opens a scene", () => {
+  it("takes a body whole: no reaction, no damage, no spark, no pause", () => {
+    const attacker = body("hit", { opens: "scene" });
+    const defender = body("hurt");
+    const ctx = context();
+    expect(landBlow(attacker, defender, ctx)).toMatchObject({ damage: 0, blocked: false, flash: 0 });
+    expect(defender.gotHit).not.toHaveBeenCalled();
+    expect(defender.freeze).not.toHaveBeenCalled();
+    expect(ctx.effects.spawn).not.toHaveBeenCalled();
+  });
+
+  it("is an ordinary blow on a guard: it bursts, and opens nothing", () => {
+    const attacker = body("hit", { opens: "scene", attackBurst: "burst_m" } as Partial<Entity>);
+    const defender = body("hurt", { guarding: true, guardHit: vi.fn(() => true) } as Partial<Entity>);
+    const ctx = context();
+    expect(landBlow(attacker, defender, ctx)?.blocked).toBe(true);
+    expect(ctx.effects.spawn).toHaveBeenCalledWith("burst_m", expect.anything(), expect.anything());
+  });
+});
+
 describe("the noise of a blow", () => {
   it("is played on the defender's side, as the original plays it", () => {
     const [attacker, defender] = [body("hit"), body("hurt")];

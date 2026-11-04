@@ -14,6 +14,8 @@ export interface Scenario {
   hp2?: number;
   p1?: Script;
   p2?: Script;
+  /** Frames to keep a picture of the screen from, `logs/run-<name>-f<frame>.png`. */
+  shots?: number[];
 }
 
 /** One frame of a pad: `$4219` and `$4218` less left and right, and `dir` + fwd, − back. */
@@ -44,12 +46,13 @@ export function padFrames(script: Script | undefined, frames: number): PadFrame[
 }
 
 /** The Lua table `tools/re/run.lua` reads. */
-export function runTable(s: Scenario, paths: { state: string; out: string }): string {
+export function runTable(s: Scenario, paths: { state: string; out: string; shots: string }): string {
   const pad = (script?: Script) => {
     const frames = padFrames(script, s.frames);
     if (typeof frames === "string") throw new Error(frames);
     return `{${frames.map((f) => `{${f.high},${f.low},${f.dir}}`).join(",")}}`;
   };
   const health = [s.hp1 !== undefined ? `[1]=${s.hp1}` : "", s.hp2 !== undefined ? `[2]=${s.hp2}` : ""].filter(Boolean).join(",");
-  return `RUN = { state = ${JSON.stringify(paths.state)}, out = ${JSON.stringify(paths.out)}, frames = ${s.frames}, health = {${health}}, pads = { ${pad(s.p1)}, ${pad(s.p2)} } }\n`;
+  const shots = (s.shots ?? []).map((f) => `[${f}]=true`).join(",");
+  return `RUN = { state = ${JSON.stringify(paths.state)}, out = ${JSON.stringify(paths.out)}, shotsAt = ${JSON.stringify(paths.shots)}, shots = {${shots}}, frames = ${s.frames}, health = {${health}}, pads = { ${pad(s.p1)}, ${pad(s.p2)} } }\n`;
 }

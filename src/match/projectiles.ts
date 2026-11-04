@@ -179,6 +179,7 @@ export class Projectiles {
       if (beam) owner.beamReaches(bolt.x);
       const result = paused ? null : landBlow(bolt, foe, impact);
       if (result) hits.push({ result, foe });
+      if (result && !result.blocked && bolt.opens) owner.forceState(bolt.opens);
       // strayed too far from the screen's middle, off a side or the top ($0F:B47D)
       const stranded = objectGone(bolt.x, bolt.y, view);
       // and is gone the moment he leaves the move that put it out ($0F:BB51)

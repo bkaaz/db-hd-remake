@@ -1877,6 +1877,41 @@
           "to": "ghost_kamikaze_3"
         }
       ]
+    },
+    "volleyball_scene": {
+      "anim": "mae_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "holdStep": 1,
+      "seize": {
+        "at": 0,
+        "anim": "m30_gotenks_ae",
+        "cry": "voice_hurt",
+        "hides": 41,
+        "release": {
+          "frame": 527,
+          "damage": 120,
+          "reaction": "reel_down",
+          "vel": [
+            2.5,
+            -7
+          ],
+          "at": [
+            51,
+            -92
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "when": "frames:529",
+          "to": "idle"
+        }
+      ]
     }
   }
 }

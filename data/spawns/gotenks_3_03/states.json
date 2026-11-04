@@ -1,13 +1,19 @@
 {
+  "_comment": "Gotenks's Volleyball ring, ae (object 3/03, $0F:C2FC). Frames by npm run rom -- export --fighter gotenks; this file by hand. It flies at b0's 3, frames up to 5 every 4, gone at 85 or when he leaves ae. On a body it opens the scene; on a guard it bursts as 0a/17 (npm run original -- volleyball-block).",
   "initial": "fly",
   "states": {
     "fly": {
       "anim": "play",
       "turn": false,
-      "vel": [
-        3,
-        0
-      ]
+      "vel": [3, 0],
+      "lasts": 85,
+      "endsWithMove": true,
+      "opens": "volleyball_scene",
+      "type": "heavy",
+      "damage": 0,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
     }
   }
 }

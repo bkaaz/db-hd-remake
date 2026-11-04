@@ -100,11 +100,18 @@ export interface GrabDef {
  */
 export interface SeizeDef {
   at: number;
-  place: [number, number];
+  /** Where he is set down from the seizer; none leaves him where he stands. */
+  place?: [number, number];
   anim: string;
-  launch: { frame: number; vel: [number, number] };
-  bounces: number[];
-  release: { frame: number; damage: number; reaction: string; vel: [number, number] };
+  /** What he cries out as he is taken (Volleyball's `4d`). */
+  cry?: string;
+  /** From this frame he is not drawn, gone into the scene until he is let go. */
+  hides?: number;
+  /** Thrown up and away; none keeps him where he was set down. */
+  launch?: { frame: number; vel: [number, number] };
+  bounces?: number[];
+  /** `at`: where he comes out, from where he was held, x toward the seizer. */
+  release: { frame: number; damage: number; reaction: string; vel: [number, number]; at?: [number, number] };
   /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
   bursts?: { fx: string; from: number; to: number; every: number; at: [number, number] };
   /** How it ends (`match/finale.ts`): with one, he is let go when it is done, not on `release.frame`. */
@@ -395,6 +402,8 @@ export interface StateDef {
   trail?: Trail;
   /** Closing on the opponent by a share of the distance (`entity/approach.ts`). */
   approach?: Approach;
+  /** A shot that lands puts its thrower in this state instead of striking: the scene it opens (Volleyball's ring). */
+  opens?: string;
   /** A shot's vy closing on the opponent's height (`entity/aim.ts`). */
   aim?: Aim;
   /** Rushing at the opponent until a set distance, then `arrived` (`entity/approach.ts`). */

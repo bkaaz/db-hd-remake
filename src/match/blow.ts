@@ -72,6 +72,8 @@ export function landBlow(
   // eat — deliberately, since a block you cannot afford is not a block.
   const blocked = defender.guarding && defender.guardHit();
   if (blocked) attacker.markBlocked();
+  // a shot that opens a scene takes him whole: no blow, no spark, no pause ($0F:C2FC)
+  if (!blocked && attacker.opens) return { attack, damage: 0, blocked, took, flash: 0 };
   const noise = attacker.attackSounds;
   // the defender's side plays it, as the original's does ($0D:D1B7)
   defender.sound(blocked ? noise.block : noise.hit);

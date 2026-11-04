@@ -1124,6 +1124,10 @@ to start them `?`.
 
 ## How it was found
 
+Health (field `0x60`) is a word: Gotenks's 400 is `0190`. In practice a blow takes
+none of it, and an ultimate's "health 80 or less" does not hold: Volleyball goes out
+at 400 `?`.
+
 `tools/re/` — Mesen 2 Lua scripts, run from Debug → Script Window with *Allow
 access to I/O* on; each writes into `logs/`.
 

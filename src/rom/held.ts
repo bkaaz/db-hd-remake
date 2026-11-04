@@ -74,7 +74,8 @@ const STEP_HOLDS: Partial<Record<string, Record<number, { floor: number; air: nu
  * not 30, its handler `$20:BD5A`).
  */
 const OWN_MOVE_HOLDS: Partial<Record<string, Record<number, { move: number; frames: number }>>> = {
-  gotenks: { 0x9d: { move: 0x34, frames: 30 } },
+  // ae: the body until the bubble has closed on it, as long as logs/run-volleyball-hit.txt shows it
+  gotenks: { 0x9d: { move: 0x34, frames: 30 }, 0xae: { move: 0x4d, frames: 41 } },
 };
 
 /** This character's first drawing of the move he is put in, as long as he stays in it. */

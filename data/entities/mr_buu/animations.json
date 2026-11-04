@@ -54516,6 +54516,15 @@
       }
     ]
   },
+  "m30_gotenks_ae": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "31",
+        "dur": 41
+      }
+    ]
+  },
   "m30_vegetto_9d": {
     "loop": false,
     "steps": [

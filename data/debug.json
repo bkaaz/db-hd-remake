@@ -11,12 +11,7 @@
     { "p2": { "does": ["attack 24"] } },
     { "p2": { "guard": "always", "does": [60] } },
     { "p1": { "at": 0.3 }, "p2": { "at": 0.55, "does": [
-      30, "down 2", "down fwd 2", "fwd 2", "fwd attack", 150, "back 40", 20,
-      "back 2", "down back 2", "down 2", "down fwd 2", "fwd 2", "fwd attack", 240, "back 40", 20,
-      "down 2", "down back 2", "fwd 2", "fwd blast 140", 200,
-      "down 2", "down back 2", "fwd 2", "fwd blast 26", 170,
-      "down 2", "down back 2", "fwd 2", "fwd blast 19", 150,
-      "fwd 60", "fwd strike", 150, "back 60", 30
+      30, "fwd 3", "back 3", "down back 3", "down 3", "down fwd 3", "fwd 3", "fwd attack 3", 900
     ] } }
   ]
 }

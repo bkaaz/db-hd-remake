@@ -155,6 +155,10 @@ nine fighters would each want a copy of it. A grunt *is* his.
   `attributes.json` says `follows` rides on its owner until he leaves that
   start of the animation: `"pose"` showing the frame his drawing names,
   `"body"` playing its own (`src/fx/follow.ts`).
+- **`opens` makes a shot a door**: landing on a body that does not block, it strikes
+  nothing and puts its thrower in the named state, whose `seize` plays the scene. A
+  `seize` with no `place` takes him where he stands, with no `launch` keeps him there,
+  `hides` stops drawing him from a frame, and `release.at` is where he comes out.
 - **`aim` steers a shot to the opponent's height**: from frame `from` its vy is
   `speed` toward `above` px over his feet, 0 within `within` (`entity/aim.ts`). Its
   forward speed stays its own, so it chases a jump and never turns back.
