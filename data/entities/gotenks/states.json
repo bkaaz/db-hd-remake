@@ -3937,11 +3937,36 @@
           "vel": [
             2.5,
             -7
-          ],
-          "at": [
-            51,
-            -92
           ]
+        },
+        "ball": {
+          "fx": "gotenks_ball",
+          "shadow": "gotenks_ball_shadow",
+          "above": 40,
+          "bubble": {
+            "size": 8,
+            "frames": 80
+          },
+          "shows": 40,
+          "falls": 82,
+          "gravity": 0.46875,
+          "floor": 188,
+          "bounce": -4,
+          "kick": {
+            "frame": 154,
+            "vy": -12
+          },
+          "hang": 193,
+          "ricochet": {
+            "frame": 201,
+            "speed": 16
+          },
+          "shadowAt": [
+            152,
+            176
+          ],
+          "burst": "burst_l",
+          "sound": "land_0d"
         }
       },
       "transitions": [

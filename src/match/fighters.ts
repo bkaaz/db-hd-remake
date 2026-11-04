@@ -163,6 +163,9 @@ export class Fighters {
       const world = {
         dust: (x: number, y: number) => this.impact.effects.spawn("dust", x, y),
         effect: (name: string, x: number, y: number) => this.impact.effects.spawn(name, x, y),
+        drop: (fx: Entity) => this.impact.effects.drop(fx),
+        // one short of the camera's: logs/run-volleyball-hit.txt, walls at 268 and 496
+        left: () => (this.lastCamera?.x ?? 0) - 1,
         // the screen's corner plus a random byte each way, as $0F:F284 does — some fall below it
         anywhere: (name: string) => {
           if (this.lastCamera)

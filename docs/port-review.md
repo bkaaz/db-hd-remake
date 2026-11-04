@@ -31,7 +31,7 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `ac` kikoha | ground: ← ↙ ↓ ↘ → A | — |
 | `a7` omaenanka | ground: → ↘ ↓ ↙ ← Y | — |
 | `b4` rolling_thunder | ground: ← ↙ ↓ ↘ → Y | — |
-| `ae` volleyball | ground: → ← ↙ ↓ ↘ → Y | its frame only: the ring catches, he is gone, 120 at the end; no bubble, ball or Gotenks's part (`plan.md`) |
+| `ae` volleyball | ground: → ← ↙ ↓ ↘ → Y | the ring, bubble, ball and shadow are in; Gotenks stands through it, the kicks come by the clock (`plan.md`) |
 | `b0` air_dive | air: → ↓ Y | — |
 | `b3` aerial_kantsu | air: → ← → A | mb3_2's blow, a reaction no type copies; mb3_3's blow, a reaction no type copies; mb3_4's blow, a reaction no type copies; mb3_5's blow, a reaction no type copies; mb3_6's blow, a reaction no type copies |
 | `90` attack_y_close | his own normal | — |
@@ -44,7 +44,7 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `b1` move_b1 | from another move | — |
 | `b2` move_b2 | from another move | mb2's blow, a reaction no type copies |
 
-Objects: `gotenks_ghost` from his recording. `gotenks_3_08` and `gotenks_3_03` take its colours and `3_08` its frames, the rest drafted `?`; `3_03`'s ball and shadow are not built (`plan.md`). `gotenks_3_0a` (`b3`, in the air) is not in it.
+Objects: `gotenks_ghost` from his recording. `gotenks_3_08` and `gotenks_3_03` take its colours and `3_08` its frames, the rest drafted `?`; `gotenks_ball` and its shadow from the same, shown by `match/ball.ts`. `gotenks_3_0a` (`b3`, in the air) is not in it.
 Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_start`, `dash_back`, `dash_back_end`, `dash_back_run`, `dash_fwd`, `dash_fwd_end`, `dash_fwd_run`, `intro`, `ko_bounce`, `ko_bounce2`, `ko_down`, `ko_fall`, `ko_lie`, `ko_rise`, `reel_trip`, `trip_fall`, `trip_land`, `win`, `win_2`, `win_air`.
 
 ## Vegetto

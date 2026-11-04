@@ -2,6 +2,7 @@ import type { ShakeDef } from "../camera/shake";
 import type { Entity } from "../entity/entity";
 import type { SeizeDef } from "../entity/states";
 import type { ScreenCue } from "../screen";
+import { BallScene, type BallWorld } from "./ball";
 import { finaleStep, throwBall, type Finale } from "./finale";
 
 /**
@@ -34,9 +35,8 @@ export function flightStep(f: Flight, gravity: number, floor: number): Flight & 
 }
 
 /** What a frame of a scene asks of the world around the pair. */
-export interface SeizeWorld {
+export interface SeizeWorld extends BallWorld {
   dust(x: number, y: number): void;
-  effect(name: string, x: number, y: number): void;
   /** An effect somewhere on the screen, as the original picks a random spot ($0F:F284). */
   anywhere(name: string): void;
   screen(c: ScreenCue): void;
@@ -55,6 +55,8 @@ interface Seizure {
   landings: number;
   /** The ball thrown at him, once it is (`finale.ts`). */
   finale?: Finale;
+  /** What flies in his place (`ball.ts`). */
+  ball?: BallScene;
 }
 
 /** The landings' shakes, in order: patterns 2, 1, 0 for 8 frames ($20:8D24, `8D54`, `8D85`). */
@@ -72,6 +74,7 @@ export class Seizures {
     if (s && (!def || seizer.state !== s.state)) {
       // cut short: let go where he is, as a throw cut short does
       if (s.phase !== "done") {
+        s.ball?.end();
         s.held.hide(false);
         s.held.release();
       }
@@ -97,6 +100,10 @@ export class Seizures {
     const { held } = s;
     const scale = held.scaleOf;
     if (def.hides !== undefined && frame === def.hides) held.hide(true);
+    if (def.ball && s.phase !== "done") {
+      s.ball ??= new BallScene(def.ball, seizer, held, world);
+      s.ball.update(frame);
+    }
     if (s.phase === "held" && def.launch && frame >= def.launch.frame) {
       // thrown up and away from him, crying out ($20:8B6B, $20:8B74)
       const away = held.x >= seizer.x ? 1 : -1;
@@ -164,10 +171,7 @@ export class Seizures {
   /** The throw's own blow ($0F:B321): he faces the seizer's way, thrown backwards. */
   private letGo(s: Seizure, seizer: Entity, release: SeizeDef["release"]): void {
     const { held } = s;
-    if (release.at) {
-      held.x -= seizer.facing * release.at[0] * held.scaleOf;
-      held.y += release.at[1] * held.scaleOf;
-    }
+    if (s.ball) ({ x: held.x, y: held.y } = s.ball.end());
     held.hide(false);
     held.facing = seizer.facing;
     held.hurtBy(release.damage);

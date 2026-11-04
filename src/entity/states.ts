@@ -11,6 +11,7 @@
  * scripting escape hatch come in later slices.
  */
 
+import type { SceneBallDef } from "../match/ball";
 import type { Aim } from "./aim";
 import { borrowed, inputsOfErrors, type InputsOf } from "./inputsOf";
 import type { Trail } from "./trail";
@@ -110,8 +111,9 @@ export interface SeizeDef {
   /** Thrown up and away; none keeps him where he was set down. */
   launch?: { frame: number; vel: [number, number] };
   bounces?: number[];
-  /** `at`: where he comes out, from where he was held, x toward the seizer. */
-  release: { frame: number; damage: number; reaction: string; vel: [number, number]; at?: [number, number] };
+  release: { frame: number; damage: number; reaction: string; vel: [number, number] };
+  /** What flies in his place; he comes out where it ends (`match/ball.ts`). */
+  ball?: SceneBallDef;
   /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
   bursts?: { fx: string; from: number; to: number; every: number; at: [number, number] };
   /** How it ends (`match/finale.ts`): with one, he is let go when it is done, not on `release.frame`. */
@@ -1324,6 +1326,7 @@ export function effectsNamed(
     if (def.trail) names.add(def.trail.fx);
     if (def.seize?.bursts) names.add(def.seize.bursts.fx);
     if (def.seize?.finale) names.add(def.seize.finale.fx);
+    if (def.seize?.ball) for (const fx of [def.seize.ball.fx, def.seize.ball.shadow, def.seize.ball.burst]) names.add(fx);
   }
   return [...names];
 }

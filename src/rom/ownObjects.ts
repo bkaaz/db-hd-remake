@@ -36,6 +36,8 @@ export interface OwnObject {
    * (`npm run rom -- vram`), named in the cartridge.
    */
   loads?: Load[];
+  /** Its tile base, for an object its code puts out rather than a script's `b0`. */
+  tiles?: number;
   /**
    * Its code shows a frame a tick from a table, `length` bytes at `at` (a CPU
    * address): its timing, whole — gone at the end, or round again if `loop`.
@@ -59,12 +61,19 @@ export interface OwnObject {
 /** What his a9, ab and b1 draw from: their own 0x4F, and 0x48 always beneath it. */
 const WITH_48: Load[] = [{ resource: 0x48, vram: 0x6800 }, { resource: 0x4f, vram: 0x6c00 }];
 
+/** What Gotenks's ae draws from: the 0x49 it loads, and 0x40 always beneath it. */
+const VOLLEYBALL: Load[] = [{ resource: 0x40, vram: 0x6800 }, { resource: 0x49, vram: 0x6b00 }];
+
 export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
   gotenks: [
     // ad, Ghosts Kamikaze Attack: palette 0x23 in OBJ palette 0, and tiles in 0x40 as
     // well as the 0x4A its move loads, on top of it (logs/objects-gotenks.bin);
     // up to three by how long A is held; its flight is in its states.json ($0F:C328)
     { name: "gotenks_ghost", type: 0x3, anim: 0x6, hits: true, palette: 0x23, loads: [{ resource: 0x40, vram: 0x6800 }, { resource: 0x4a, vram: 0x6b00 }] },
+    // ae, Volleyball: the ball and its shadow, shown frame by frame by `match/ball.ts`;
+    // the shadow in palette 0x74, OBJ palette 4 (logs/objects-gotenks.bin)
+    { name: "gotenks_ball", type: 0x3, anim: 0x4, hits: false, palette: 0x23, loads: VOLLEYBALL, tiles: 0x80, animations: { play: { frames: [0, 1], dur: 9999, loop: false } } },
+    { name: "gotenks_ball_shadow", type: 0x3, anim: 0xe, hits: false, palette: 0x74, loads: VOLLEYBALL, tiles: 0x80, animations: { play: { frames: [0, 1, 2], dur: 9999, loop: false } } },
   ],
   gohan: [
     // ad, Masenko: its move loads nothing; its tiles are in resource 0x46, there
@@ -155,6 +164,7 @@ export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[
       hits: o.hits,
       palette: paletteRecord(rom, o.palette).at,
       ...(o.alt && { alt: paletteRecord(rom, o.alt).at }),
+      ...(o.tiles !== undefined && { tiles: o.tiles }),
       ...(o.shimmer && { shimmer: Array.from({ length: o.shimmer }, (_, i) => paletteRecord(rom, o.palette + 1 + i).at) }),
       loads,
     };

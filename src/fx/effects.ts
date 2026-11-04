@@ -132,6 +132,14 @@ export class Effects {
     return true;
   }
 
+  /** Take one effect away now, whatever it was showing. */
+  drop(fx: Entity): void {
+    const i = this.live.findIndex((l) => l.fx === fx);
+    if (i < 0) return;
+    fx.view.destroy({ children: true });
+    this.live.splice(i, 1);
+  }
+
   /** Sweep away whatever is still in the air when the scene ends. */
   destroy(): void {
     for (const { fx } of this.live) fx.view.destroy({ children: true });

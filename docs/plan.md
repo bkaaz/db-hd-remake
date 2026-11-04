@@ -196,11 +196,11 @@ allow, without asking, and he tries them move by move afterwards —
    `OWN_OBJECTS`, in place of the drafted ones.
 2. **The owner's pass, move by move**, deleting from `port-review.md`.
 3. **The rest of Gotenks's Volleyball** (`npm run original -- volleyball-hit`, with
-   `shots`). Its frame is in: the ring catches, `volleyball_scene` holds and hides
-   him, 120 and `1b` at the end. Left: the bubble closing on him (`4d`'s drawn
-   effect), the ball and its shadow (objects 3/04, 3/0E: bounces, a rise, ricochets
-   at 16), Gotenks's own part (`b6`: waits, runs to the ball, kicks, leaps, shoots),
-   the white flash at the end.
+   `shots`). The ring, the bubble, the ball and its shadow are in (`match/ball.ts`).
+   Left: Gotenks's part (`b6`: waits 112 frames, runs at 3 to 30 px off the ball,
+   kicks it, leaps, strikes it away, lands and watches, spoken lines 09 and 07), with
+   the ball's two kicks on his steps rather than on the scene's clock; the white
+   flash at the end.
 
 ## After the port: the common part
 

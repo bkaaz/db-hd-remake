@@ -42,7 +42,7 @@ describe("flightStep", () => {
 });
 
 describe("Seizures, a scene that hides him", () => {
-  const def: SeizeDef = { at: 0, anim: "held", cry: "voice_hurt", hides: 2, release: { frame: 4, damage: 120, reaction: "reel_down", vel: [2.5, -7], at: [51, -92] } };
+  const def: SeizeDef = { at: 0, anim: "held", cry: "voice_hurt", hides: 2, release: { frame: 4, damage: 120, reaction: "reel_down", vel: [2.5, -7] } };
   const seizer = () => ({ seize: def, state: "scene", stateFrame: 1, x: 100, y: 200, facing: 1, scaleOf: 1 }) as unknown as Entity & { stateFrame: number };
   const held = () =>
     ({ x: 300, y: 200, facing: -1, scaleOf: 1, floor: 200, hold: vi.fn(), hide: vi.fn(), sound: vi.fn(), hurtBy: vi.fn(), release: vi.fn() }) as unknown as Entity;
@@ -66,11 +66,11 @@ describe("Seizures, a scene that hides him", () => {
     expect(h.hide).toHaveBeenCalledWith(true);
   });
 
-  it("lets him go seen, from `at` toward the seizer, hurt", () => {
+  it("lets him go seen, hurt, where he was", () => {
     const h = held();
     play(seizer(), h, 5);
     expect(h.hide).toHaveBeenLastCalledWith(false);
-    expect([h.x, h.y]).toEqual([249, 108]);
+    expect([h.x, h.y]).toEqual([300, 200]);
     expect(h.hurtBy).toHaveBeenCalledWith(120);
     expect(h.release).toHaveBeenCalledWith("reel_down", [2.5, -7]);
   });
