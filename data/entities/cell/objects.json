@@ -1,0 +1,311 @@
+[
+  {
+    "name": "cell_7_05",
+    "type": 7,
+    "anim": 5,
+    "hits": true,
+    "palette": 176,
+    "loads": [
+      {
+        "resource": 78,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_7_03",
+    "type": 7,
+    "anim": 3,
+    "hits": true,
+    "palette": 246,
+    "loads": [
+      {
+        "resource": 78,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_7_04",
+    "type": 7,
+    "anim": 4,
+    "hits": false,
+    "palette": 246,
+    "loads": [
+      {
+        "resource": 78,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_7_0a",
+    "type": 7,
+    "anim": 10,
+    "hits": true,
+    "palette": 246,
+    "loads": [
+      {
+        "resource": 78,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_7_07",
+    "type": 7,
+    "anim": 7,
+    "hits": false,
+    "palette": 246,
+    "loads": [
+      {
+        "resource": 2118,
+        "vram": 24576
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_7_08",
+    "type": 7,
+    "anim": 8,
+    "hits": false,
+    "palette": 246,
+    "loads": [
+      {
+        "resource": 2118,
+        "vram": 24576
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_7_02",
+    "type": 7,
+    "anim": 2,
+    "hits": false,
+    "palette": 176,
+    "loads": [
+      {
+        "resource": 78,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_a_21",
+    "type": 10,
+    "anim": 33,
+    "hits": true,
+    "palette": 176,
+    "loads": [
+      {
+        "resource": 78,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_a_22",
+    "type": 10,
+    "anim": 34,
+    "hits": true,
+    "palette": 176,
+    "loads": [
+      {
+        "resource": 2142,
+        "vram": 24576
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_a_23",
+    "type": 10,
+    "anim": 35,
+    "hits": true,
+    "palette": 176,
+    "loads": [
+      {
+        "resource": 2136,
+        "vram": 24576
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "cell_7_06",
+    "type": 7,
+    "anim": 6,
+    "hits": true,
+    "palette": 246,
+    "loads": [
+      {
+        "resource": 78,
+        "vram": 27648
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  }
+]

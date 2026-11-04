@@ -1,0 +1,3785 @@
+{
+  "initial": "idle",
+  "onGotHit": "hurt",
+  "onGuard": "guard_hit",
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark",
+  "round": {
+    "intro": "intro",
+    "ko": "ko_rise",
+    "down": "ko_down",
+    "win": [
+      "win",
+      "win_air"
+    ]
+  },
+  "states": {
+    "idle": {
+      "anim": "m00",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "crouch_down"
+        },
+        {
+          "when": "held:guard",
+          "to": "guard"
+        },
+        {
+          "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
+        },
+        {
+          "when": [
+            "command:ad",
+            "health:80"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "command:ac",
+            "health:80"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": "command:a7",
+          "to": "ki_flame"
+        },
+        {
+          "when": "command:aa",
+          "to": "chou_kamehameha"
+        },
+        {
+          "when": "command:a6",
+          "to": "psychic_lift"
+        },
+        {
+          "when": "command:a5",
+          "to": "energy_burst"
+        },
+        {
+          "when": "command:ab",
+          "to": "kamehameha"
+        },
+        {
+          "when": "command:a4",
+          "to": "suki_combo"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a8",
+          "to": "cell_junior"
+        },
+        {
+          "when": "command:9e",
+          "to": "kantsu"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:dash"
+          ],
+          "to": "dash_fwd"
+        },
+        {
+          "when": [
+            "held:back",
+            "pressed:dash"
+          ],
+          "to": "dash_back"
+        },
+        {
+          "when": "held:fwd",
+          "to": "walk_fwd"
+        },
+        {
+          "when": "held:back",
+          "to": "walk_back"
+        },
+        {
+          "when": "held:up",
+          "to": "jump_up"
+        }
+      ]
+    },
+    "walk_fwd": {
+      "anim": "m01",
+      "vel": [
+        1.34765625,
+        0
+      ],
+      "turn": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "crouch_down"
+        },
+        {
+          "when": "held:guard",
+          "to": "guard"
+        },
+        {
+          "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
+        },
+        {
+          "when": [
+            "command:ad",
+            "health:80"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "command:ac",
+            "health:80"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": "command:a7",
+          "to": "ki_flame"
+        },
+        {
+          "when": "command:aa",
+          "to": "chou_kamehameha"
+        },
+        {
+          "when": "command:a6",
+          "to": "psychic_lift"
+        },
+        {
+          "when": "command:a5",
+          "to": "energy_burst"
+        },
+        {
+          "when": "command:ab",
+          "to": "kamehameha"
+        },
+        {
+          "when": "command:a4",
+          "to": "suki_combo"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a8",
+          "to": "cell_junior"
+        },
+        {
+          "when": "command:9e",
+          "to": "kantsu"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:dash"
+          ],
+          "to": "dash_fwd"
+        },
+        {
+          "when": [
+            "held:back",
+            "pressed:dash"
+          ],
+          "to": "dash_back"
+        },
+        {
+          "when": "held:up",
+          "to": "jump_fwd"
+        },
+        {
+          "when": "!held:fwd",
+          "to": "idle"
+        }
+      ]
+    },
+    "walk_back": {
+      "anim": "m02",
+      "vel": [
+        -1.046875,
+        0
+      ],
+      "turn": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "crouch_down"
+        },
+        {
+          "when": "held:guard",
+          "to": "guard"
+        },
+        {
+          "when": [
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge_start"
+        },
+        {
+          "when": [
+            "command:ad",
+            "health:80"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "command:ac",
+            "health:80"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": "command:a7",
+          "to": "ki_flame"
+        },
+        {
+          "when": "command:aa",
+          "to": "chou_kamehameha"
+        },
+        {
+          "when": "command:a6",
+          "to": "psychic_lift"
+        },
+        {
+          "when": "command:a5",
+          "to": "energy_burst"
+        },
+        {
+          "when": "command:ab",
+          "to": "kamehameha"
+        },
+        {
+          "when": "command:a4",
+          "to": "suki_combo"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a8",
+          "to": "cell_junior"
+        },
+        {
+          "when": "command:9e",
+          "to": "kantsu"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "pressed:dash"
+          ],
+          "to": "dash_fwd"
+        },
+        {
+          "when": [
+            "held:back",
+            "pressed:dash"
+          ],
+          "to": "dash_back"
+        },
+        {
+          "when": "held:up",
+          "to": "jump_back"
+        },
+        {
+          "when": "!held:back",
+          "to": "idle"
+        }
+      ]
+    },
+    "crouch_down": {
+      "anim": "m03",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "transitions": [
+        {
+          "when": "held:guard",
+          "to": "guard_low"
+        },
+        {
+          "when": [
+            "command:ad",
+            "health:80"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "command:ac",
+            "health:80"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": "command:a7",
+          "to": "ki_flame"
+        },
+        {
+          "when": "command:aa",
+          "to": "chou_kamehameha"
+        },
+        {
+          "when": "command:a6",
+          "to": "psychic_lift"
+        },
+        {
+          "when": "command:a5",
+          "to": "energy_burst"
+        },
+        {
+          "when": "command:ab",
+          "to": "kamehameha"
+        },
+        {
+          "when": "command:a4",
+          "to": "suki_combo"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a8",
+          "to": "cell_junior"
+        },
+        {
+          "when": "command:9e",
+          "to": "kantsu"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "giga_shoulder"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "crouch_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "crouch_b"
+        },
+        {
+          "when": "!held:down",
+          "to": "stand_up"
+        },
+        {
+          "when": "animEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "crouch": {
+      "anim": "m03_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "transitions": [
+        {
+          "when": "held:guard",
+          "to": "guard_low"
+        },
+        {
+          "when": [
+            "command:ad",
+            "health:80"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "command:ac",
+            "health:80"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": "command:a7",
+          "to": "ki_flame"
+        },
+        {
+          "when": "command:aa",
+          "to": "chou_kamehameha"
+        },
+        {
+          "when": "command:a6",
+          "to": "psychic_lift"
+        },
+        {
+          "when": "command:a5",
+          "to": "energy_burst"
+        },
+        {
+          "when": "command:ab",
+          "to": "kamehameha"
+        },
+        {
+          "when": "command:a4",
+          "to": "suki_combo"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a8",
+          "to": "cell_junior"
+        },
+        {
+          "when": "command:9e",
+          "to": "kantsu"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "giga_shoulder"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "crouch_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "crouch_b"
+        },
+        {
+          "when": "!held:down",
+          "to": "stand_up"
+        }
+      ]
+    },
+    "stand_up": {
+      "anim": "m04",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "crouch_down"
+        },
+        {
+          "when": [
+            "command:ad",
+            "health:80"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "command:ac",
+            "health:80"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": "command:a7",
+          "to": "ki_flame"
+        },
+        {
+          "when": "command:aa",
+          "to": "chou_kamehameha"
+        },
+        {
+          "when": "command:a6",
+          "to": "psychic_lift"
+        },
+        {
+          "when": "command:a5",
+          "to": "energy_burst"
+        },
+        {
+          "when": "command:ab",
+          "to": "kamehameha"
+        },
+        {
+          "when": "command:a4",
+          "to": "suki_combo"
+        },
+        {
+          "when": "command:9f",
+          "to": "sender_9f"
+        },
+        {
+          "when": "command:a1",
+          "to": "sender_a1"
+        },
+        {
+          "when": "command:a8",
+          "to": "cell_junior"
+        },
+        {
+          "when": "command:9e",
+          "to": "kantsu"
+        },
+        {
+          "when": "command:a0",
+          "to": "sender_a0"
+        },
+        {
+          "when": [
+            "grab",
+            "command:9d"
+          ],
+          "to": "throw"
+        },
+        {
+          "when": "command:a2",
+          "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "attack_y_close"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "attack_y"
+        },
+        {
+          "when": [
+            "pressed:smash",
+            "close:smash"
+          ],
+          "to": "attack_b_close"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "attack_b"
+        },
+        {
+          "when": "pressed:strike",
+          "to": "attack_x"
+        },
+        {
+          "when": "pressed:blast",
+          "to": "ki"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "jump_up": {
+      "anim": "m05",
+      "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": 0,
+            "vy": -8.8125
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "command:a9"
+          ],
+          "to": "negative_arrow"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:attack"
+          ],
+          "to": "jump_y"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:smash"
+          ],
+          "to": "jump_b"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_fwd": {
+      "anim": "m06",
+      "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": 2.25,
+            "vy": -8.8125
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "command:a9"
+          ],
+          "to": "negative_arrow"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:attack"
+          ],
+          "to": "jump_fwd_y"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:smash"
+          ],
+          "to": "jump_fwd_b"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_back": {
+      "anim": "m07",
+      "turn": false,
+      "air": [
+        [
+          2,
+          {
+            "vx": -1.72265625,
+            "vy": -8.8125
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "command:a9"
+          ],
+          "to": "negative_arrow"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:attack"
+          ],
+          "to": "jump_fwd_y"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:smash"
+          ],
+          "to": "jump_fwd_b"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_fall": {
+      "anim": "m05_2",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "command:a9",
+          "to": "negative_arrow"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "jump_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "jump_b"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_fall_attacked": {
+      "anim": "m05_2",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "jump_y": {
+      "anim": "m96",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 32,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "jump_b": {
+      "anim": "m97",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 27,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "jump_fwd_y": {
+      "anim": "m98",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 32,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "jump_fwd_b": {
+      "anim": "m99",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 27,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "land": {
+      "anim": "m3b",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "sound": "land_0c",
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
+      "transitions": [
+        {
+          "when": [
+            "held:up",
+            "held:fwd"
+          ],
+          "to": "jump_fwd"
+        },
+        {
+          "when": [
+            "held:up",
+            "held:back"
+          ],
+          "to": "jump_back"
+        },
+        {
+          "when": "held:up",
+          "to": "jump_up"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "dash_fwd": {
+      "anim": "m0a",
+      "vel": [
+        3.19921875,
+        0
+      ],
+      "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "idle"
+        },
+        {
+          "when": "!held:fwd",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_fwd_run"
+        }
+      ]
+    },
+    "dash_back": {
+      "anim": "m0b",
+      "vel": [
+        -2.8984375,
+        0
+      ],
+      "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "idle"
+        },
+        {
+          "when": "!held:back",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_back_run"
+        }
+      ]
+    },
+    "attack_y_close": {
+      "anim": "m90",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "heavy",
+      "damage": 27,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_y": {
+      "anim": "m92",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "heavy",
+      "damage": 30,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_b_close": {
+      "anim": "m91",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "light",
+      "damage": 26,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_b": {
+      "anim": "m93",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "heavy",
+      "damage": 32,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "attack_x": {
+      "anim": "m9a",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "attack_x_2"
+        }
+      ]
+    },
+    "crouch_y": {
+      "anim": "m94",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "crouching": true,
+      "type": "heavy",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "crouch_b": {
+      "anim": "m95",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "crouching": true,
+      "type": "light",
+      "damage": 24,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "meteor_fall": {
+      "anim": "m05_2",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": -2,
+            "vy": 0,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "ki": {
+      "anim": "m9b",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "ki_fire"
+        }
+      ]
+    },
+    "charge_start": {
+      "anim": "m0c",
+      "vel": [
+        0,
+        0
+      ],
+      "glow": 2,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "charge"
+        }
+      ]
+    },
+    "charge": {
+      "anim": "m0c_2",
+      "vel": [
+        0,
+        0
+      ],
+      "heal": {
+        "every": 2,
+        "turn": 13,
+        "gain": 5
+      },
+      "loopSound": "charge_19",
+      "loopEvery": 8,
+      "glow": 0,
+      "transitions": [
+        {
+          "when": [
+            "animEnd",
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "charge_end"
+        }
+      ]
+    },
+    "charge_end": {
+      "anim": "m0c_3",
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "ki_fire": {
+      "anim": "m9b_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "ki_blast",
+        "at": [
+          56,
+          -64
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "guard": {
+      "anim": "m0e",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "guarding": true,
+      "transitions": [
+        {
+          "when": "held:down",
+          "to": "guard_low"
+        },
+        {
+          "when": "!held:guard",
+          "to": "idle"
+        }
+      ]
+    },
+    "guard_low": {
+      "anim": "m10",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": true,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "guarding": true,
+      "transitions": [
+        {
+          "when": "!held:down",
+          "to": "guard"
+        },
+        {
+          "when": "!held:guard",
+          "to": "crouch"
+        }
+      ]
+    },
+    "guard_hit": {
+      "anim": "m0d",
+      "vel": [
+        0,
+        0
+      ],
+      "shove": -2,
+      "turn": false,
+      "guarding": true,
+      "inputsOf": {
+        "state": "idle",
+        "from": 4
+      },
+      "transitions": [
+        {
+          "when": "frames:4",
+          "to": "idle"
+        }
+      ]
+    },
+    "guard_crouch": {
+      "anim": "m0f",
+      "vel": [
+        0,
+        0
+      ],
+      "shove": -2,
+      "turn": false,
+      "crouching": true,
+      "guard": "guard_crouch",
+      "guarding": true,
+      "inputsOf": {
+        "state": "idle",
+        "from": 4
+      },
+      "transitions": [
+        {
+          "when": "frames:4",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt": {
+      "anim": "m15",
+      "rank": 1,
+      "vel": [
+        -1,
+        0
+      ],
+      "turn": false,
+      "ifAirborne": "hurt_air",
+      "ifCrouching": "hurt_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt_chain": {
+      "anim": "m15",
+      "rank": 1,
+      "vel": [
+        -0.67,
+        0
+      ],
+      "turn": false,
+      "ifAirborne": "juggle",
+      "ifCrouching": "hurt_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt_crouch": {
+      "anim": "m17",
+      "rank": 1,
+      "crouching": true,
+      "vel": [
+        -1,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "hurt_heavy": {
+      "anim": "m16",
+      "rank": 2,
+      "vel": [
+        -3.1,
+        0
+      ],
+      "turn": false,
+      "ifAirborne": "hurt_heavy_air",
+      "ifCrouching": "hurt_heavy_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt_heavy_crouch": {
+      "anim": "m18",
+      "rank": 2,
+      "crouching": true,
+      "vel": [
+        -3.1,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_light": {
+      "anim": "m15",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "ifCrouching": "reel_light_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_light_crouch": {
+      "anim": "m17",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_heavy": {
+      "anim": "m16",
+      "rank": 2,
+      "shove": -3,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "ifCrouching": "reel_heavy_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_heavy_crouch": {
+      "anim": "m18",
+      "rank": 2,
+      "shove": -3,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_halt": {
+      "anim": "m16",
+      "rank": 2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "ifCrouching": "reel_halt_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_halt_crouch": {
+      "anim": "m18",
+      "rank": 2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_long": {
+      "anim": "m42",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "ifCrouching": "reel_long_crouch",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "reel_long_crouch": {
+      "anim": "m43",
+      "rank": 1,
+      "shove": -2,
+      "turn": false,
+      "sound": "voice_hurt",
+      "crouching": true,
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "crouch"
+        }
+      ]
+    },
+    "reel_air": {
+      "anim": "m1a",
+      "rank": 1,
+      "launch": [
+        -2,
+        -6
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "reel_down": {
+      "anim": "m1b",
+      "rank": 3,
+      "launch": [
+        -2,
+        -4
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "down_fall"
+        },
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ],
+      "invulnerable": true
+    },
+    "down_fall": {
+      "anim": "m1b_2",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ],
+      "invulnerable": true
+    },
+    "down_bounce": {
+      "anim": "m1b_3",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "down_lie"
+        }
+      ],
+      "invulnerable": true
+    },
+    "down_lie": {
+      "anim": "m1b_4",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_0c",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "get_up"
+        }
+      ]
+    },
+    "reel_high": {
+      "anim": "m1e",
+      "rank": 1,
+      "launch": [
+        -0.75,
+        -7.5
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifHitAgain": {
+        "to": "reel_high",
+        "times": 2,
+        "then": "reel_down"
+      },
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "high_fall"
+        },
+        {
+          "when": "landed",
+          "to": "high_bounce"
+        }
+      ]
+    },
+    "high_fall": {
+      "anim": "m1e_2",
+      "rank": 1,
+      "airborne": true,
+      "turn": false,
+      "ifHitAgain": {
+        "to": "reel_high",
+        "times": 2,
+        "then": "reel_down"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "high_bounce"
+        }
+      ]
+    },
+    "high_bounce": {
+      "anim": "m1e_3",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "high_lie"
+        }
+      ],
+      "invulnerable": true
+    },
+    "high_lie": {
+      "anim": "m1e_4",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_0c",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "get_up"
+        }
+      ]
+    },
+    "reel_trip": {
+      "anim": "m19",
+      "rank": 3,
+      "launch": [
+        -2,
+        -4
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "invulnerable": true,
+      "ifAirborne": "reel_air",
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "trip_fall"
+        },
+        {
+          "when": "landed",
+          "to": "trip_land"
+        }
+      ]
+    },
+    "trip_fall": {
+      "anim": "m19_2",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "trip_land"
+        }
+      ]
+    },
+    "trip_land": {
+      "anim": "m19_3",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "get_up"
+        }
+      ]
+    },
+    "get_up": {
+      "anim": "m1f",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "hurt_air": {
+      "anim": "m24",
+      "rank": 1,
+      "launch": [
+        -1.2,
+        -1
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "hurt_heavy_air": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -3.5,
+        -2.5
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "juggle": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -0.67,
+        -2
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "launched": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -0.67,
+        -4
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "blown": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -6,
+        -3
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "slam": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -2.5,
+        -1.8
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ],
+      "ifAirborne": "slam_air"
+    },
+    "slam_air": {
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -1,
+        6.2
+      ],
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "downed"
+        }
+      ]
+    },
+    "downed": {
+      "anim": "m1f",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "sound": "land_0d",
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "pinned": {
+      "anim": "m4a",
+      "rank": 4,
+      "invulnerable": true,
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          1,
+          {
+            "vx": 0,
+            "vy": 0
+          }
+        ],
+        [
+          2,
+          {
+            "vy": 2
+          }
+        ]
+      ],
+      "holdStep": 0,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "pinned_bounce"
+        }
+      ],
+      "pushless": true
+    },
+    "pinned_bounce": {
+      "anim": "m4a_2",
+      "rank": 4,
+      "invulnerable": true,
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0,
+        -4
+      ],
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 2,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "holdStep": 1,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "pinned_lie"
+        }
+      ],
+      "pushless": true
+    },
+    "pinned_lie": {
+      "anim": "m4a_3",
+      "rank": 4,
+      "invulnerable": true,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "pinned_held"
+        }
+      ],
+      "pushless": true,
+      "frees": 9
+    },
+    "pinned_held": {
+      "anim": "m4b",
+      "rank": 4,
+      "invulnerable": true,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "holdStep": 37,
+      "transitions": [],
+      "pushless": true
+    },
+    "dash_fwd_run": {
+      "anim": "m0a_2",
+      "vel": [
+        3.19921875,
+        0
+      ],
+      "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "idle"
+        },
+        {
+          "when": "!held:fwd",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_fwd_run"
+        }
+      ]
+    },
+    "dash_back_run": {
+      "anim": "m0b_2",
+      "vel": [
+        -2.8984375,
+        0
+      ],
+      "turn": false,
+      "inputsOf": {
+        "state": "idle",
+        "only": "buttons"
+      },
+      "transitions": [
+        {
+          "when": "!held:dash",
+          "to": "idle"
+        },
+        {
+          "when": "!held:back",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "dash_back_run"
+        }
+      ]
+    },
+    "ko_rise": {
+      "anim": "m1c",
+      "rank": 4,
+      "launch": [
+        -3,
+        -9
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_ko",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "ko_fall"
+        },
+        {
+          "when": "landed",
+          "to": "ko_bounce"
+        }
+      ]
+    },
+    "ko_fall": {
+      "anim": "m1c_2",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "ko_bounce"
+        }
+      ]
+    },
+    "ko_bounce": {
+      "anim": "m1c_3",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "ko_bounce2"
+        }
+      ]
+    },
+    "ko_bounce2": {
+      "anim": "m1c_4",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "launch": [
+        null,
+        -1.5
+      ],
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "ko_lie"
+        }
+      ]
+    },
+    "ko_lie": {
+      "anim": "m1c_5",
+      "rank": 4,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "invulnerable": true,
+      "fullSpeed": true,
+      "transitions": [
+        {
+          "when": "frames:32",
+          "to": "ko_down"
+        }
+      ]
+    },
+    "ko_down": {
+      "anim": "m1c_5",
+      "rank": 4,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "invulnerable": true,
+      "transitions": []
+    },
+    "win": {
+      "anim": "m3e",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_2"
+        }
+      ],
+      "damage": 0
+    },
+    "win_2": {
+      "anim": "m3e_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_2"
+        }
+      ],
+      "damage": 0
+    },
+    "win_air": {
+      "anim": "m82",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hover": true,
+      "transitions": []
+    },
+    "intro": {
+      "anim": "m3c",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "loopSound": "charge_19",
+      "loopEvery": 8,
+      "loopFrom": 65,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "giga_shoulder": {
+      "anim": "ma2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "trip",
+      "damage": 40,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "throw": {
+      "anim": "m9d",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              44,
+              0
+            ],
+            [
+              44,
+              -44
+            ],
+            [
+              40,
+              -44
+            ],
+            [
+              40,
+              -44
+            ]
+          ],
+          "vegeta": [
+            [
+              44,
+              0
+            ],
+            [
+              36,
+              -48
+            ],
+            [
+              32,
+              -48
+            ],
+            [
+              32,
+              -48
+            ]
+          ],
+          "gohan": [
+            [
+              40,
+              0
+            ],
+            [
+              43,
+              -48
+            ],
+            [
+              40,
+              -48
+            ],
+            [
+              40,
+              -48
+            ]
+          ],
+          "gotenks": [
+            [
+              48,
+              0
+            ],
+            [
+              38,
+              -56
+            ],
+            [
+              38,
+              -56
+            ],
+            [
+              38,
+              -56
+            ]
+          ],
+          "vegetto": [
+            [
+              40,
+              0
+            ],
+            [
+              52,
+              -32
+            ],
+            [
+              48,
+              -32
+            ],
+            [
+              48,
+              -32
+            ]
+          ],
+          "piccolo": [
+            [
+              44,
+              0
+            ],
+            [
+              46,
+              -40
+            ],
+            [
+              42,
+              -40
+            ],
+            [
+              42,
+              -40
+            ]
+          ],
+          "freeza": [
+            [
+              48,
+              0
+            ],
+            [
+              50,
+              -36
+            ],
+            [
+              48,
+              -36
+            ],
+            [
+              48,
+              -36
+            ]
+          ],
+          "cell": [
+            [
+              58,
+              0
+            ],
+            [
+              64,
+              -20
+            ],
+            [
+              60,
+              -20
+            ],
+            [
+              60,
+              -20
+            ]
+          ],
+          "mr_buu": [
+            [
+              52,
+              0
+            ],
+            [
+              44,
+              -40
+            ],
+            [
+              40,
+              -40
+            ],
+            [
+              40,
+              -40
+            ]
+          ],
+          "buu": [
+            [
+              44,
+              0
+            ],
+            [
+              44,
+              -52
+            ],
+            [
+              40,
+              -52
+            ],
+            [
+              40,
+              -52
+            ]
+          ]
+        },
+        "launch": {
+          "frame": 29,
+          "damage": 40,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -8
+          ],
+          "ahead": true
+        }
+      },
+      "fires": {
+        "spawn": "burst_m",
+        "at": [
+          48,
+          -96
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "sender_a0": {
+      "anim": "ma0",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "kantsu": {
+      "anim": "m9e",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "healthCost": 5,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "kantsu_2"
+        }
+      ]
+    },
+    "kantsu_2": {
+      "anim": "m9e_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_7_05",
+        "at": [
+          56,
+          -64
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "cell_junior": {
+      "anim": "ma8",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "cell_junior_2"
+        }
+      ]
+    },
+    "cell_junior_2": {
+      "anim": "ma8_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "cell_junior_3"
+        }
+      ]
+    },
+    "cell_junior_3": {
+      "anim": "ma8_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_7_03",
+        "at": [
+          -24,
+          -32
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a1": {
+      "anim": "ma1",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "air": [
+        [
+          8,
+          {
+            "vy": -6,
+            "gravity": "own",
+            "vx": 2
+          }
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "sender_9f": {
+      "anim": "m9f",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "air": [
+        [
+          8,
+          {
+            "vy": -6,
+            "gravity": "own",
+            "vx": 2
+          }
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "suki_combo": {
+      "anim": "ma4",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          14,
+          2
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 29,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_2"
+        }
+      ]
+    },
+    "suki_combo_2": {
+      "anim": "ma4_2",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 29,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_3"
+        }
+      ]
+    },
+    "suki_combo_3": {
+      "anim": "ma4_3",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 29,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_4"
+        }
+      ]
+    },
+    "suki_combo_4": {
+      "anim": "ma4_4",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 40,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "kamehameha": {
+      "anim": "mab",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "healthCost": 10,
+      "fires": {
+        "spawn": "cell_7_04",
+        "at": [
+          -3,
+          -47
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "kamehameha_2"
+        }
+      ]
+    },
+    "kamehameha_2": {
+      "anim": "mab_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_7_0a",
+        "at": [
+          16,
+          -88
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_burst": {
+      "anim": "ma5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "energy_burst_2"
+        }
+      ]
+    },
+    "energy_burst_2": {
+      "anim": "ma5_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "high",
+      "damage": 42,
+      "fires": {
+        "spawn": "cell_7_07",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly",
+        "with": [
+          {
+            "spawn": "cell_7_08",
+            "at": [
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "psychic_lift": {
+      "anim": "ma6",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {},
+        "launch": {
+          "frame": 90,
+          "damage": 43,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -8
+          ],
+          "ahead": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "ki_flame": {
+      "anim": "ma7",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "ki_flame_2"
+        }
+      ]
+    },
+    "ki_flame_2": {
+      "anim": "ma7_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 34,
+      "fires": {
+        "spawn": "cell_7_02",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly",
+        "with": [
+          {
+            "spawn": "cell_a_21",
+            "at": [
+              32,
+              -80
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "ki_flame_3"
+        }
+      ]
+    },
+    "ki_flame_3": {
+      "anim": "ma7_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_a_21",
+        "at": [
+          32,
+          -80
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "ki_flame_4"
+        }
+      ]
+    },
+    "ki_flame_4": {
+      "anim": "ma7_4",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_a_21",
+        "at": [
+          32,
+          -80
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "bakuretsu_rush": {
+      "anim": "mac",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_2"
+        }
+      ]
+    },
+    "bakuretsu_rush_2": {
+      "anim": "mac_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          0,
+          2
+        ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_3"
+        }
+      ]
+    },
+    "bakuretsu_rush_3": {
+      "anim": "mac_3",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_4"
+        }
+      ]
+    },
+    "bakuretsu_rush_4": {
+      "anim": "mac_4",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_5"
+        }
+      ]
+    },
+    "bakuretsu_rush_5": {
+      "anim": "mac_5",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_6"
+        }
+      ]
+    },
+    "bakuretsu_rush_6": {
+      "anim": "mac_6",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_7"
+        }
+      ]
+    },
+    "bakuretsu_rush_7": {
+      "anim": "mac_7",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_8"
+        }
+      ]
+    },
+    "bakuretsu_rush_8": {
+      "anim": "mac_8",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 20,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_9"
+        }
+      ]
+    },
+    "bakuretsu_rush_9": {
+      "anim": "mac_9",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 80,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_rush_10"
+        }
+      ]
+    },
+    "bakuretsu_rush_10": {
+      "anim": "mac_10",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_a_22",
+        "at": [
+          30,
+          0
+        ],
+        "state": "fly",
+        "with": [
+          {
+            "spawn": "cell_a_22",
+            "at": [
+              30,
+              0
+            ]
+          },
+          {
+            "spawn": "cell_a_22",
+            "at": [
+              30,
+              0
+            ]
+          },
+          {
+            "spawn": "cell_a_22",
+            "at": [
+              30,
+              0
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "tri_eruption": {
+      "anim": "mad",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "tri_eruption_2"
+        }
+      ],
+      "damage": 0
+    },
+    "tri_eruption_2": {
+      "anim": "mad_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "tri_eruption_3"
+        }
+      ]
+    },
+    "tri_eruption_3": {
+      "anim": "mad_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "tri_eruption_4"
+        }
+      ],
+      "damage": 0
+    },
+    "tri_eruption_4": {
+      "anim": "mad_4",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_a_23",
+        "at": [
+          30,
+          0
+        ],
+        "state": "fly",
+        "with": [
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          },
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          },
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "tri_eruption_5"
+        }
+      ]
+    },
+    "tri_eruption_5": {
+      "anim": "mad_5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_a_23",
+        "at": [
+          30,
+          0
+        ],
+        "state": "fly",
+        "with": [
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          },
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          },
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "tri_eruption_6"
+        }
+      ]
+    },
+    "tri_eruption_6": {
+      "anim": "mad_6",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "cell_a_23",
+        "at": [
+          30,
+          0
+        ],
+        "state": "fly",
+        "with": [
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          },
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          },
+          {
+            "spawn": "cell_a_23",
+            "at": [
+              30,
+              0
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "negative_arrow": {
+      "anim": "ma9",
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "negative_arrow_2"
+        }
+      ]
+    },
+    "negative_arrow_2": {
+      "anim": "ma9_2",
+      "turn": false,
+      "airborne": true,
+      "fires": {
+        "spawn": "cell_7_06",
+        "at": [
+          54,
+          -35
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "attack_x_2": {
+      "anim": "m9a_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "light",
+      "damage": 18,
+      "fires": {
+        "spawn": "cell_7_02",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "chou_kamehameha": {
+      "anim": "maa",
+      "healthCost": 10,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -4,
+          -48
+        ],
+        "from": 16,
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:20",
+            "released:blast"
+          ],
+          "to": "chou_kamehameha_go_s"
+        },
+        {
+          "when": "frames:20",
+          "to": "chou_kamehameha_2"
+        }
+      ]
+    },
+    "chou_kamehameha_2": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -4,
+          -48
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:12",
+            "released:blast"
+          ],
+          "to": "chou_kamehameha_go_m"
+        },
+        {
+          "when": "frames:12",
+          "to": "chou_kamehameha_3"
+        }
+      ]
+    },
+    "chou_kamehameha_3": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -4,
+          -48
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "released:blast",
+          "to": "chou_kamehameha_go_m"
+        },
+        {
+          "when": "frames:4",
+          "to": "chou_kamehameha_4"
+        }
+      ]
+    },
+    "chou_kamehameha_4": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -4,
+          -48
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:8",
+          "to": "chou_kamehameha_fire_l"
+        }
+      ]
+    },
+    "chou_kamehameha_go_s": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -4,
+          -48
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "chou_kamehameha_fire_s"
+        }
+      ]
+    },
+    "chou_kamehameha_fire_s": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          66,
+          -61
+        ],
+        "size": 2,
+        "max": 5,
+        "flat": true
+      },
+      "fires": {
+        "spawn": "kame_s",
+        "at": [
+          72,
+          -61
+        ],
+        "with": [
+          {
+            "spawn": "kame_base",
+            "at": [
+              60,
+              -61
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "chou_kamehameha_end_s"
+        }
+      ]
+    },
+    "chou_kamehameha_end_s": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:8",
+          "to": "idle"
+        }
+      ]
+    },
+    "chou_kamehameha_go_m": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -4,
+          -48
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "chou_kamehameha_fire_m"
+        }
+      ]
+    },
+    "chou_kamehameha_fire_m": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          66,
+          -61
+        ],
+        "size": 2,
+        "max": 5
+      },
+      "fires": {
+        "spawn": "kame_m",
+        "at": [
+          72,
+          -61
+        ],
+        "with": [
+          {
+            "spawn": "kame_base",
+            "at": [
+              60,
+              -61
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "chou_kamehameha_end_m"
+        }
+      ]
+    },
+    "chou_kamehameha_end_m": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:12",
+          "to": "idle"
+        }
+      ]
+    },
+    "chou_kamehameha_fire_l": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          66,
+          -61
+        ],
+        "size": 4,
+        "max": 9
+      },
+      "fires": {
+        "spawn": "kame_l",
+        "at": [
+          72,
+          -61
+        ],
+        "with": [
+          {
+            "spawn": "kame_base",
+            "at": [
+              60,
+              -61
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "chou_kamehameha_end_l"
+        }
+      ]
+    },
+    "chou_kamehameha_end_l": {
+      "anim": "maa_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:16",
+          "to": "idle"
+        }
+      ]
+    }
+  }
+}

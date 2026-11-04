@@ -1,0 +1,56 @@
+{
+  "voice_hurt": {
+    "gain": 0.85,
+    "vary": 0.05,
+    "file": "cell_30.wav",
+    "rom": 48
+  },
+  "voice_ko": {
+    "gain": 0.85,
+    "vary": 0,
+    "file": "cell_31.wav",
+    "rom": 49
+  },
+  "voice_shout": {
+    "gain": 0.85,
+    "vary": 0.04,
+    "file": "cell_32.wav",
+    "rom": 50
+  },
+  "line_16": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_16.wav",
+    "line": 22
+  },
+  "line_17": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_17.wav",
+    "line": 23
+  },
+  "line_18": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_18.wav",
+    "line": 24
+  },
+  "line_19": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_19.wav",
+    "line": 25
+  },
+  "line_1a": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_1a.wav",
+    "line": 26
+  },
+  "line_2c": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_2c.wav",
+    "line": 44
+  }
+}
