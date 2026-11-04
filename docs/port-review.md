@@ -5,7 +5,8 @@ at a time. **A move he approves is deleted from this file**, like an item of
 [`plan.md`](./plan.md), which points here; this file holds no other work.
 
 Each line: the state to start from, the input, what the port left out or
-guessed (`?`). **Not playable** means it waits for something: a recording, or
+guessed (`?`). In a drafted fighter a speed may also point the wrong way: `port`
+reads a speed's size, not always its sign. **Not playable** means it waits for something: a recording, or
 a mechanism the engine lacks (`plan.md`).
 
 After any change to a reader or the cutter: `npm run rom -- export --all`, then
@@ -84,7 +85,7 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `a7` elbow_dash | ground: ↓ ↘ → Y | — |
 | `af` big_bang | ground: ← ↙ ↓ ↘ → A | — |
 | `a5` geri_combo | ground: → ↘ ↓ ↙ ← B | — |
-| `ae` final_kame | ground: ↓ ↙ → A | mae_2: only the first of its spawn counters; what its handler decides on a button held or a level `?` |
+| `ae` final_kame | ground: ↓ ↙ → A | written after Gohan's Kamehame-Ha, by hand: its three levels, no spoken line checked `?` |
 | `b0` galactic_juggle | ground: ↓ ↙ ← ↙ ↓ ↘ → Y | what its handler decides on a button held or a level `?` |
 | `a8` slashdown_kick | air: → ↓ B | — |
 | `93` attack_b | his own normal | — |
@@ -175,7 +176,7 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `ab` kamehameha | ground: ← ↙ ↓ ↘ → A | — |
 | `a5` energy_burst | ground: → ↘ ↓ ↙ ← B | what its handler decides on a button held or a level `?` |
 | `a6` psychic_lift | ground: → ↘ ↓ ↙ ← Y | — |
-| `aa` chou_kamehameha | ground: ↓ ↙ → A | maa_2: only the first of its spawn counters; what its handler decides on a button held or a level `?` |
+| `aa` chou_kamehameha | ground: ↓ ↙ → A | written after Gohan's Kamehame-Ha, by hand: its three levels, no spoken line checked `?` |
 | `a7` ki_flame | ground: ← ↙ ↓ ↘ → Y | — |
 | `ac` bakuretsu_rush | ground: → ← → ← → Y | — |
 | `ad` tri_eruption | ground: ↓ ↙ ← ↙ ↓ ↘ → Y | mad's blow, a reaction no type copies; mad_3's blow, a reaction no type copies |
