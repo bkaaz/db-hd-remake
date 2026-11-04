@@ -16,6 +16,7 @@
  *                                    preview/ — every stage when no id is given
  *   npm run rom -- roster            every fighter: drawings, resources, palette, boxes
  *   npm run rom -- states --all      every generated fighter's states.json, written again
+ *   npm run rom -- draft --fighter x a first specials.json, objects.json and spawn states from the reports
  *   npm run rom -- export --all      goku and every fighter that has states, exported again
  *   npm run rom -- commands          his command table into data/entities/<name>/commands.json
  *   … --fighter vegetto              any reading command above, for another fighter
@@ -41,6 +42,10 @@ import { describeFact } from "../src/rom/describe.ts";
 import { arrow, buttonName, commandsFile, readCommands } from "../src/rom/commands.ts";
 import { NORMALS } from "../src/rom/buttons.ts";
 import { fighterStates, generatedFighters, tablesOf } from "../src/rom/fighterStates.ts";
+import { draftSpecials } from "../src/rom/draft.ts";
+import { moveParts } from "../src/rom/parts.ts";
+import { draftedObjects, draftObject, objectName, objectStates } from "../src/rom/draftObjects.ts";
+import { MOVE_NAMES } from "../src/rom/moveNames.ts";
 import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
 import { fullestLife, readLives, readSnapshots } from "../src/rom/recording.ts";
@@ -391,6 +396,52 @@ if (command === "tiles") {
     const page = tileResourceOf(rom, t, 0) ?? 0;
     console.log(`${c} ${name.padEnd(8)} ${t.drawings} drawings, resources ${hex(page >> 8)}xx, palette 0x${t.palette.toString(16)}, boxes 0x${t.boxes.toString(16)}`);
   });
+} else if (command === "draft" && T !== GOKU) {
+  // a first specials.json from the reports; a second run needs --force, the file being by hand from then on
+  const path = `data/entities/${name}/specials.json`;
+  if (existsSync(path) && !args.includes("--force")) throw new Error(`${path} is there: --force to write it again`);
+  const types = JSON.parse(readFileSync("data/hit-types.json", "utf8")) as Record<string, unknown>;
+  const known = (type: string) => type in types;
+  const shared = (type: number, anim: number) => GOKU.objects.spawns.find((sp) => sp.type === type && sp.anim === anim)?.name;
+  const spawnOf = (type: number, anim: number) => shared(type, anim) ?? objectName(name, { type, anim });
+  // a normal on code of his own, or cut in two by what it puts out, cannot be goku's state on his animation
+  const template = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
+  const normals = Object.fromEntries(
+    Object.entries(template.states).flatMap(([state, def]) => {
+      const move = /^m(9[0-9a])$/.exec(def.anim ?? "")?.[1];
+      if (!move) return [];
+      const id = parseInt(move, 16);
+      const whole = moveParts(rom, T, id).parts.length === 1 && sameHandler(rom, GOKU, T, id);
+      return whole ? [] : [[move, state]];
+    }),
+  );
+  const jumping = Object.keys(normals).filter((m) => template.states[normals[m]].airborne);
+  const draft = draftSpecials(rom, T, MOVE_NAMES[name as FighterName] ?? {}, spawnOf, known, normals, jumping);
+  const objects = draft.objects.flatMap(({ move, spawn }) => {
+    if (shared(spawn.type, spawn.anim)) return [];
+    const object = draftObject(rom, T, name, move, spawn);
+    if (object) {
+      mkdirSync(`data/spawns/${object.name}`, { recursive: true });
+      writeFileSync(`data/spawns/${object.name}/states.json`, JSON.stringify(objectStates(rom, spawn, known), null, 2) + "\n");
+    } else console.log(`no frames for object ${hex(spawn.type)}/${hex(spawn.anim)}`);
+    return object ? [object] : [];
+  });
+  const unique = [...new Map(objects.map((o) => [o.name, o])).values()];
+  // what has no picture to show is fired by nobody: gone with no trace of a state naming it
+  const exists = (spawn: string) => !spawn.startsWith(`${name}_`) || unique.some((o) => o.name === spawn);
+  for (const def of Object.values(draft.specials.states)) {
+    if (!def.fires) continue;
+    const all = [{ spawn: def.fires.spawn, at: def.fires.at }, ...(def.fires.with ?? [])].filter((f) => exists(f.spawn));
+    if (all.length === 0) delete def.fires;
+    else {
+      const [first, ...rest] = all;
+      def.fires = { ...def.fires, ...first, ...(rest.length > 0 ? { with: rest } : { with: undefined }) };
+    }
+  }
+  writeFileSync(`data/entities/${name}/objects.json`, JSON.stringify(unique, null, 2) + "\n");
+  writeFileSync(path, JSON.stringify(draft.specials, null, 2) + "\n");
+  for (const m of draft.moves) console.log(`| \`${m.move}\` ${m.state} | ${m.input} | ${m.left.join("; ") || "—"} |`);
+  console.log(`${unique.length} objects with no recording`);
 } else if (command === "export" && args.includes("--all")) {
   // each in a run of its own: the tables and the objects are this run's, one fighter's
   for (const fighter of ["goku", ...generatedFighters()]) {
@@ -412,16 +463,17 @@ if (command === "tiles") {
   }
   console.log(`${name}: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
   // his own objects: tiles and palette from code, timing from his recording (ADR 0036)
-  const own = OWN_OBJECTS[name as FighterName];
-  if (own) {
+  const own = [...(OWN_OBJECTS[name as FighterName] ?? []), ...draftedObjects(name)];
+  if (own.length > 0) {
     // his own: the script writes objects-rec.txt, kept as objects-<name>.txt
     // once it is his, so recording the next fighter leaves this one's alone
     const recording = `logs/objects-${name}.txt`;
-    if (!existsSync(recording)) throw new Error(`${recording} is missing: record his objects (tools/re/record-objects.lua) and keep logs/objects-rec.txt as it`);
-    const lives = readLives(readFileSync(recording, "utf8"));
+    const needed = own.some((o) => !o.ticks && !o.animations);
+    if (needed && !existsSync(recording)) throw new Error(`${recording} is missing: record his objects (tools/re/record-objects.lua) and keep logs/objects-rec.txt as it`);
+    const lives = existsSync(recording) ? readLives(readFileSync(recording, "utf8")) : [];
     // one exported before is kept: a later recording may show it for less
     // time, and the frames it misses would be dropped (Final Flash, 2026-11-02)
-    const kept = own.filter((o) => existsSync(`data/spawns/${o.name}`));
+    const kept = own.filter((o) => existsSync(`data/spawns/${o.name}/animations.json`));
     for (const o of kept) console.log(`${o.name}: kept as exported before — delete data/spawns/${o.name} to export it again`);
     const { recorded, missed } = inRecording(own.filter((o) => !kept.includes(o)), lives);
     if (missed.length > 0) throw new Error(`not in ${recording}: ${missed.map((o) => o.name).join(", ")}`);

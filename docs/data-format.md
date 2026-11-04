@@ -43,7 +43,8 @@ load it.
 | `frames.json` | the editor, Sprites tab |
 | `animations.json` | the editor, Animations tab — **and** `npm run anim`; for `goku`, `npm run rom -- export` writes it whole ([ADR 0017](./adr/0017-the-cartridges-animations-are-named-by-move-id.md)) |
 | `states.json` | **by hand**; the editor's States tab is a read-only view. Another fighter's is written whole by `npm run rom -- states --fighter <name>`, or all of them by `states --all`; a test fails when one is out of date ([ADR 0038](./adr/0038-a-fighters-own-specials-are-merged-into-the-template.md)) |
-| `specials.json` | by hand — another fighter's own specials, merged into his `states.json` by that command; shape in `src/rom/specials.ts` |
+| `specials.json` | by hand, first drafted by `npm run rom -- draft --fighter <name>` ([ADR 0070](./adr/0070-the-rest-of-the-roster-is-drafted-from-the-reports.md)) — another fighter's own specials, merged into his `states.json` by that command; shape in `src/rom/specials.ts` |
+| `objects.json` | `npm run rom -- draft` — his objects with no recording yet, as `npm run rom -- export` draws them; shape `OwnObject`, `src/rom/ownObjects.ts` |
 | `sounds.json` | the editor, Sounds tab; a fighter's voice from the cartridge (the entries with a `rom` or a `line`) by `npm run rom -- export`, which keeps the rest |
 | `attributes.json` | by hand |
 | `palettes.json` | by hand — colour sets of our own, as rules over his palette, which `npm run rom -- export` draws in every lighting ([ADR 0063](./adr/0063-a-colour-set-of-ours-is-a-rule-over-his-palette.md)); shape in `src/entity/palettesFile.ts` |

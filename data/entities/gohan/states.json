@@ -2770,7 +2770,8 @@
           "when": "animEnd",
           "to": "jump_fall_attacked"
         }
-      ]
+      ],
+      "damage": 0
     },
     "bukuuh_land": {
       "anim": "ma8_2",

@@ -275,6 +275,15 @@ npm run rom -- states --fighter vegeta
 npm run rom -- states --all
                   # every generated fighter again — after any change to
                   # goku's states; a test fails until it is run
+npm run rom -- draft --fighter cell
+                  # a first specials.json and his objects from the reports
+                  # (ADR 0070); --force writes it again
+npm run rom -- export --all
+                  # goku and every fighter with states, exported again;
+                  # then git diff data/ says what a reader's change moved
+npm run rom -- states --all
+                  # every generated fighter again — after any change to
+                  # goku's states; a test fails until it is run
 npm run rom -- export --all
                   # goku and every fighter with states, exported again;
                   # then git diff data/ says what a reader's change moved

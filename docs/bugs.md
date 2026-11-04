@@ -20,14 +20,13 @@ because a number would only need translating back.
 
 ---
 
-## Vegeta cannot be picked on the select screen
+## A reaction can strike with a hit box its drawing carries
 
-*Annoying.* `data/roster.json` names `majin_vegeta`, `vegito`, `frieza`,
-`perfect_cell`, `majin_buu` and `kid_buu`; the entities and `ROSTER`
-(`src/rom/roster.ts`) say `vegeta`, `vegetto`, `freeza`, `cell`, `mr_buu`, `buu`.
-A slot is only available if its id is an entity (`src/scenes/select.ts`), so
-Vegeta has none, and the others will stay greyed as they are ported. Read from
-the code, not seen in the game.
+*Cosmetic, or worse — not tried.* Some drawings the cartridge's reactions and
+poses reuse hold a hit box: Vegetto's `hurt_air`, `juggle`, `slam` and his dash,
+Cell's `win`, the beams' poses. The original only arms a blow when a move asks;
+ours strikes with any box in the animation, here for 0 damage. Read from the
+validator on `states.json`, not seen in a fight.
 
 ---
 

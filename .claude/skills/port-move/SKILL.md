@@ -21,6 +21,14 @@ rewrites that whole and merges them in (ADR 0038).
 After changing Goku's `states.json`, `states --all` brings every generated
 fighter up to date; `fighterStates.test.ts` fails until it is run.
 
+## A fighter's first draft
+
+`npm run rom -- export --fighter <name>`, `commands`, then `draft --fighter
+<name>` (ADR 0070) and `export` again for its objects, then `states`. His names
+go in `src/rom/moveNames.ts` first. What the draft left out is printed one line
+a move: it goes into `docs/port-review.md`. Correct `specials.json` by hand from
+there, never `--force` once it has been corrected.
+
 ## How a fighter is ported: in batches (owner, 2026-11-02)
 
 The owner's review is the slow part, so a fighter goes over in **batches**,

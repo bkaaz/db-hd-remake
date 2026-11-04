@@ -74,8 +74,14 @@ const WIN = 0x98;
 export function winPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
   const out: Record<string, number> = {};
   for (const [time, own] of lightingRecords(rom, t)) {
-    out[named(time, "win")] = paletteRecord(rom, own + WIN).at;
-    out[named(time, "win", "alt")] = paletteRecord(rom, own + 1 + WIN).at;
+    for (const [name, record] of [[named(time, "win"), own + WIN], [named(time, "win", "alt"), own + 1 + WIN]] as const) {
+      // past the table's end for Piccolo and Freeza, whose 3e loads none this way
+      try {
+        out[name] = paletteRecord(rom, record).at;
+      } catch {
+        continue;
+      }
+    }
   }
   return out;
 }

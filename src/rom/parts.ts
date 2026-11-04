@@ -54,7 +54,7 @@ export function moveParts(rom: Uint8Array, t: FighterTables, move: number): Move
   // or its command does (the row's byte 6): Vegeta's throw, whose handler only holds him there
   const holds =
     facts.some((f) => f.who === "opponent" && f.move === HOLD) ||
-    readCommands(rom, t.character).some((c) => c.move === move && c.opponentMove === HOLD);
+    readCommands(rom, t.character).some((c) => c.move === move && c.opponentMove !== null);
   const named = (type: number, anim: number) => t.objects.spawns.find((s) => s.type === type && s.anim === anim);
   const uncut = holds ? (type: number, anim: number) => named(type, anim)?.name : undefined;
   const onStep = (type: number, anim: number) => (named(type, anim)?.onStep?.includes(move) ? named(type, anim)?.name : undefined);

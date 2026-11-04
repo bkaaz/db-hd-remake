@@ -197,7 +197,9 @@ allow, without asking, and he tries them move by move afterwards —
    in any state, not one `throwable` (`rom.md`, Gohan). `HANDLER_HOLDS` takes a
    drawing per step for it. *Done when:* a recording shows the hold, the throw
    and, on a block, the spring back.
-2. **The next fighters**, a batch each (the `port-move` skill).
+2. **Each fighter's own recording** (`port-review.md` names his objects), through
+   `OWN_OBJECTS`, in place of the drafted ones.
+3. **The owner's pass, move by move**, deleting from `port-review.md`.
 
 ## After the port: the common part
 

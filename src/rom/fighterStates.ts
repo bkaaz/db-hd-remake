@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import type { StatesFile } from "../entity/states";
+import type { AnimInfo, StatesFile } from "../entity/states";
 import { blowOfAnim } from "./animBlow";
 import { readAttributes, withAttributes } from "./attributes";
 import { GOKU, scriptAt, type FighterTables } from "./cartridge";
@@ -71,7 +71,21 @@ export function fighterStates(rom: Uint8Array, name: string, t: FighterTables): 
   const moved = withAttributes(made.file, readAttributes(rom, t.character));
   // his commands tried as the cartridge tries them, the table's last row first
   const file = inTableOrder(own ? withSpecials(moved, own) : moved, readCommands(rom, t.character));
-  return { file, made, own };
+  return { file: { ...file, states: blowsSaid(file.states, animations) }, made, own };
+}
+
+/**
+ * A drawing may carry a hit box in a state that names no blow: a part of a
+ * move whose reaction no type copies, or a pose reused in a reaction. The game
+ * asks such a state to say 0 for itself (`validateStates`), and that is all
+ * this says: ours hit with what `attackDamage` makes of nothing anyway.
+ */
+function blowsSaid(states: StatesFile["states"], animations: Record<string, unknown>): StatesFile["states"] {
+  const strikes = (anim: string | undefined) =>
+    ((animations[anim ?? ""] as AnimInfo | undefined)?.steps ?? []).some((s) => s.boxes?.some((b) => b.type === "hit"));
+  return Object.fromEntries(
+    Object.entries(states).map(([name, def]) => [name, def.type === undefined && def.damage === undefined && strikes(def.anim) ? { ...def, damage: 0 } : def]),
+  );
 }
 
 function readJson<T>(path: string): T {

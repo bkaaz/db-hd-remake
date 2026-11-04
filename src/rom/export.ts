@@ -11,7 +11,7 @@ import type { Rgba } from "../sprites/png";
 import { animName } from "./animation";
 import { layoutAt, pointer, scriptAt, tileResourceOf, type FighterTables, type SpawnDef } from "./cartridge";
 import { decompress } from "./decompress";
-import { drawFrame, flipLayout, readLayout, readPalette, type Drawing } from "./frame";
+import { drawFrame, flipLayout, readLayout, readPalette, type Drawing, type Piece } from "./frame";
 import { PLAIN, parseFrameId, type Look } from "./look";
 import { objectFrame } from "./object";
 import { objectVram, resourceStream } from "./resource";
@@ -36,8 +36,11 @@ export function drawDrawing(rom: Uint8Array, t: FighterTables, drawing: number, 
   if (resource === null) throw new Error(`drawing ${drawing} is unused`);
   const at = resourceStream(rom, resource);
   if (at === null) throw new Error(`drawing ${drawing} wants resource ${resource.toString(16)}, an unused slot`);
-  const pieces = flipLayout(readLayout(rom, pointer(rom, layoutAt(t, drawing))), look.h, look.v);
-  return drawFrame(decompress(rom, at).data, pieces, typeof palette === "number" ? readPalette(rom, palette) : palette);
+  const tiles = decompress(rom, at).data;
+  // a piece past the set is another resource's, an effect in the drawing: Freeza's ac, tile 135
+  const inSet = (p: Piece) => 32 * (p.tile + (p.big ? 0x12 : 1)) <= tiles.length;
+  const pieces = flipLayout(readLayout(rom, pointer(rom, layoutAt(t, drawing))).filter(inSet), look.h, look.v);
+  return drawFrame(tiles, pieces, typeof palette === "number" ? readPalette(rom, palette) : palette);
 }
 
 const BLANK: Drawing = { image: { width: 1, height: 1, data: new Uint8Array(4) }, origin: { x: 0, y: 0 } };
