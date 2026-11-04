@@ -31,7 +31,6 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `ac` kikoha | ground: ← ↙ ↓ ↘ → A | — |
 | `a7` omaenanka | ground: → ↘ ↓ ↙ ← Y | — |
 | `b4` rolling_thunder | ground: ← ↙ ↓ ↘ → Y | — |
-| `ae` volleyball | ground: → ← ↙ ↓ ↘ → Y | the ring, bubble, ball and shadow are in; Gotenks stands through it, the kicks come by the clock (`plan.md`) |
 | `b0` air_dive | air: → ↓ Y | — |
 | `b3` aerial_kantsu | air: → ← → A | mb3_2's blow, a reaction no type copies; mb3_3's blow, a reaction no type copies; mb3_4's blow, a reaction no type copies; mb3_5's blow, a reaction no type copies; mb3_6's blow, a reaction no type copies |
 | `90` attack_y_close | his own normal | — |

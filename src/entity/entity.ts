@@ -643,7 +643,8 @@ export class Entity {
 
   /** The scene the current state plays on the opponent, if it is one. */
   get seize(): SeizeDef | undefined {
-    return this.sm?.def.seize;
+    const def = this.sm?.def;
+    return def?.sceneOf ? this.def.states?.states[def.sceneOf]?.seize : def?.seize;
   }
 
   /** Screen px per sprite px. */
@@ -1535,7 +1536,7 @@ export class Entity {
 
     this.stepIndex += 1;
     if (this.stepIndex >= this.anim.steps.length) {
-      if (this.anim.loop) {
+      if (this.anim.loop || this.sm?.def.animLoops) {
         this.stepIndex = 0;
       } else {
         this.stepIndex = this.anim.steps.length - 1;

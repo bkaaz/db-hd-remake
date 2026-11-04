@@ -3931,7 +3931,6 @@
         "cry": "voice_hurt",
         "hides": 41,
         "release": {
-          "frame": 527,
           "damage": 120,
           "reaction": "reel_down",
           "vel": [
@@ -3953,12 +3952,9 @@
           "floor": 188,
           "bounce": -4,
           "kick": {
-            "frame": 154,
             "vy": -12
           },
-          "hang": 193,
           "ricochet": {
-            "frame": 201,
             "speed": 16
           },
           "shadowAt": [
@@ -3966,15 +3962,182 @@
             176
           ],
           "burst": "burst_l",
-          "sound": "land_0d"
+          "sound": "land_0d",
+          "states": {
+            "scene": "volleyball_scene",
+            "run": "volleyball_go",
+            "kick": "volleyball_kick",
+            "hang": "volleyball_hang",
+            "strike": "volleyball_strike",
+            "land": "volleyball_land",
+            "after": "idle"
+          },
+          "reach": 32,
+          "leapFrom": 20,
+          "watch": 300,
+          "inside": 64,
+          "spark": {
+            "fx": "hit_spark",
+            "at": [
+              32,
+              -16
+            ]
+          },
+          "flash": 18
         }
       },
+      "transitions": []
+    },
+    "volleyball_go": {
+      "turn": false,
+      "invulnerable": true,
+      "sceneOf": "volleyball_scene",
+      "anim": "mb6",
+      "vel": [
+        3,
+        0
+      ],
       "transitions": [
         {
-          "when": "frames:529",
-          "to": "idle"
+          "when": "within:32",
+          "to": "volleyball_stop"
+        },
+        {
+          "when": "frames:6",
+          "to": "volleyball_run"
         }
       ]
+    },
+    "volleyball_run": {
+      "turn": false,
+      "invulnerable": true,
+      "sceneOf": "volleyball_scene",
+      "anim": "mb6_2",
+      "vel": [
+        3,
+        0
+      ],
+      "animLoops": true,
+      "transitions": [
+        {
+          "when": "within:32",
+          "to": "volleyball_stop"
+        }
+      ]
+    },
+    "volleyball_stop": {
+      "turn": false,
+      "invulnerable": true,
+      "sceneOf": "volleyball_scene",
+      "anim": "mb6_3",
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "volleyball_kick"
+        }
+      ]
+    },
+    "volleyball_kick": {
+      "turn": false,
+      "invulnerable": true,
+      "sceneOf": "volleyball_scene",
+      "anim": "mb6_4",
+      "vel": [
+        0,
+        0
+      ],
+      "air": [
+        [
+          19,
+          {
+            "vy": -10,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [],
+      "damage": 0
+    },
+    "volleyball_hang": {
+      "turn": false,
+      "invulnerable": true,
+      "sceneOf": "volleyball_scene",
+      "anim": "mb6_5",
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "volleyball_strike"
+        }
+      ]
+    },
+    "volleyball_strike": {
+      "turn": false,
+      "invulnerable": true,
+      "sceneOf": "volleyball_scene",
+      "anim": "mb6_6",
+      "airborne": true,
+      "holdStep": 3,
+      "air": [
+        [
+          0,
+          {
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "volleyball_land"
+        }
+      ],
+      "damage": 0
+    },
+    "volleyball_land": {
+      "turn": false,
+      "invulnerable": true,
+      "sceneOf": "volleyball_scene",
+      "anim": "mb6_6",
+      "vel": [
+        0,
+        0
+      ],
+      "holdStep": 6,
+      "sound": "line_09",
+      "transitions": [
+        {
+          "when": "frames:20",
+          "to": "volleyball_watch"
+        }
+      ],
+      "damage": 0
+    },
+    "volleyball_watch": {
+      "turn": false,
+      "invulnerable": true,
+      "sceneOf": "volleyball_scene",
+      "anim": "mb6_6",
+      "vel": [
+        0,
+        0
+      ],
+      "holdStep": 6,
+      "sound": "line_07",
+      "transitions": [],
+      "damage": 0
     }
   }
 }

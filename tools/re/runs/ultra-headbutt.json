@@ -1,0 +1,10 @@
+{
+  "state": "gotenks-vegetto",
+  "frames": 220,
+  "p1": {
+    "does": [
+      "fwd 40",
+      "dash attack 3"
+    ]
+  }
+}

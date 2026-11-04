@@ -20,13 +20,25 @@ export interface SceneBallDef {
   /** The y it comes to rest at, and the vy of its one bounce. */
   floor: number;
   bounce: number;
-  kick: { frame: number; vy: number };
-  hang: number;
-  ricochet: { frame: number; speed: number };
+  kick: { vy: number };
+  ricochet: { speed: number };
+  /** The seizer's states it answers: he leaves `scene` when it rests, and each sets it off or waits on it. */
+  states: { scene: string; run: string; kick: string; hang: string; strike: string; land: string; after: string };
+  /** How near he must rise to it, and from which frame of `kick` he is rising ($20:BFC8). */
+  reach: number;
+  leapFrom: number;
+  /** Frames he watches it from landing, 15 more at most ($20:C01B). */
+  watch: number;
+  /** How far inside the screen it must be for him to end it ($20:C07F). */
+  inside: number;
+  /** What his blows leave, ahead of him ($20 script: b0 at 32, −16). */
+  spark: { fx: string; at: [number, number] };
   /** The heights the shadow changes size at ($0F:C46B). */
   shadowAt: [number, number];
   burst: string;
   sound: string;
+  /** Frames of white as it ends. */
+  flash: number;
 }
 
 type Stage = "still" | "falling" | "flying" | "ricochet";
@@ -51,14 +63,17 @@ const TOP_AT = 0x2c;
 const BOTTOM = 0xac;
 const BOTTOM_AT = 0xbc;
 
+/** What the seizer does to the ball this frame. */
+export type BallEvent = "kick" | "hang" | "strike";
+
 /** One frame of the ball; `hit` when it met a wall. `facing` sends it off, `left` is the screen's edge. */
-export function ballStep(b: Ball, def: SceneBallDef, frame: number, facing: number, left: number): { ball: Ball; hit: boolean } {
+export function ballStep(b: Ball, def: SceneBallDef, frame: number, event: BallEvent | null, facing: number, left: number): { ball: Ball; hit: boolean } {
   const n = { ...b };
   let hit = false;
   if (frame === def.falls) n.stage = "falling";
-  if (frame === def.kick.frame) return { ball: { ...n, stage: "flying", vy: def.kick.vy }, hit };
-  if (frame === def.hang) return { ball: { ...n, stage: "still", vy: 0 }, hit };
-  if (frame === def.ricochet.frame) Object.assign(n, { stage: "ricochet", vx: facing * def.ricochet.speed, vy: def.ricochet.speed });
+  if (event === "kick") return { ball: { ...n, stage: "flying", vy: def.kick.vy }, hit };
+  if (event === "hang") return { ball: { ...n, stage: "still", vy: 0 }, hit };
+  if (event === "strike") Object.assign(n, { stage: "ricochet", vx: facing * def.ricochet.speed, vy: def.ricochet.speed });
   if (n.stage === "falling" || n.stage === "flying") {
     n.vy += def.gravity;
     n.y += n.vy;
@@ -92,13 +107,23 @@ export function shadowFrame(def: SceneBallDef, y: number): number {
 export interface BallWorld {
   effect(name: string, x: number, y: number): Entity | null;
   drop(fx: Entity): void;
+  flash(frames: number): void;
   /** The screen's left edge, as the original's `$0571` has it. */
   left(): number;
 }
 
-/** A ball on the screen: its two effects kept where `ballStep` says, and the bubble on the seizer's light. */
+/** Well enough inside the screen to end it there. */
+export function ballInside(b: Ball, def: SceneBallDef, left: number): boolean {
+  const edge = def.inside;
+  return b.x - left >= edge && left + SCREEN - b.x >= edge && b.y >= edge && b.y < BOTTOM_AT + 20;
+}
+
+/** A ball on the screen: its two effects kept where `ballStep` says, and the seizer's part in it. */
 export class BallScene {
   private ball: Ball;
+  private was = "";
+  /** Frames left of his watching, once he has landed. */
+  private watching: number | null = null;
   private readonly fx: Entity | null;
   private readonly shadow: Entity | null;
 
@@ -113,9 +138,40 @@ export class BallScene {
     this.shadow = world.effect(def.shadow, this.ball.x, held.floor);
   }
 
+  /** He has watched long enough and it can end where it is. */
+  get done(): boolean {
+    return this.watching === 0 && ballInside(this.ball, this.def, this.world.left());
+  }
+
+  /** Which event his state sets off this frame, moving him on where the ball decides. */
+  private seizerPart(frame: number): BallEvent | null {
+    const { seizer, ball } = this;
+    const { states, reach, leapFrom, spark, watch } = this.def;
+    const entered = seizer.state !== this.was;
+    this.was = seizer.state;
+    const blow = () => this.world.effect(spark.fx, seizer.x + seizer.facing * spark.at[0], seizer.y + spark.at[1]);
+    if (seizer.state === states.scene && ball.stage === "still" && ball.bounced) seizer.forceState(states.run);
+    if (entered && seizer.state === states.land) this.watching = watch + (frame & 15);
+    else if (this.watching) this.watching--;
+    if (entered && seizer.state === states.kick) {
+      blow();
+      return "kick";
+    }
+    if (seizer.state === states.kick && seizer.stateFrame > leapFrom && Math.abs(seizer.y - ball.y) < reach) {
+      seizer.forceState(states.hang);
+      return "hang";
+    }
+    if (entered && seizer.state === states.strike) {
+      blow();
+      return "strike";
+    }
+    return null;
+  }
+
   update(frame: number): void {
     const { def, seizer } = this;
-    const { ball, hit } = ballStep(this.ball, def, frame, seizer.facing, this.world.left());
+    const event = this.seizerPart(frame);
+    const { ball, hit } = ballStep(this.ball, def, frame, event, seizer.facing, this.world.left());
     this.ball = ball;
     if (hit) seizer.sound(def.sound);
     const radius = bubbleRadius(def, frame);
@@ -130,7 +186,9 @@ export class BallScene {
   end(): { x: number; y: number } {
     for (const fx of [this.fx, this.shadow]) if (fx) this.world.drop(fx);
     this.world.effect(this.def.burst, this.ball.x, this.ball.y);
+    this.world.flash(this.def.flash);
     this.seizer.showThrownBall(null);
+    this.seizer.forceState(this.def.states.after);
     return this.ball;
   }
 }

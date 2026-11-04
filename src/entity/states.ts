@@ -111,7 +111,8 @@ export interface SeizeDef {
   /** Thrown up and away; none keeps him where he was set down. */
   launch?: { frame: number; vel: [number, number] };
   bounces?: number[];
-  release: { frame: number; damage: number; reaction: string; vel: [number, number] };
+  /** `frame`: when he is let go; with a `ball`, when it says. */
+  release: { frame?: number; damage: number; reaction: string; vel: [number, number] };
   /** What flies in his place; he comes out where it ends (`match/ball.ts`). */
   ball?: SceneBallDef;
   /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
@@ -404,6 +405,10 @@ export interface StateDef {
   trail?: Trail;
   /** Closing on the opponent by a share of the distance (`entity/approach.ts`). */
   approach?: Approach;
+  /** The state whose `seize` this one goes on playing: a scene over several states. */
+  sceneOf?: string;
+  /** Its animation goes round, whatever the file says: a run that lasts as long as it must. */
+  animLoops?: boolean;
   /** A shot that lands puts its thrower in this state instead of striking: the scene it opens (Volleyball's ring). */
   opens?: string;
   /** A shot's vy closing on the opponent's height (`entity/aim.ts`). */

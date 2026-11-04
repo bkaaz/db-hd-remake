@@ -57,6 +57,8 @@ interface Seizure {
   finale?: Finale;
   /** What flies in his place (`ball.ts`). */
   ball?: BallScene;
+  /** The scene's frame, which goes on counting through its later states (`sceneOf`). */
+  elapsed: number;
 }
 
 /** The landings' shakes, in order: patterns 2, 1, 0 for 8 frames ($20:8D24, `8D54`, `8D85`). */
@@ -70,8 +72,9 @@ export class Seizures {
     const def = seizer.seize;
     const s = this.seizing.get(seizer);
     // the state's count is 1 on the frame it is entered: the move's frame is one less
-    const frame = seizer.stateFrame - 1;
-    if (s && (!def || seizer.state !== s.state)) {
+    let frame = seizer.stateFrame - 1;
+    if (s) s.elapsed = frame = seizer.state === s.state ? frame : s.elapsed + 1;
+    if (s && !def) {
       // cut short: let go where he is, as a throw cut short does
       if (s.phase !== "done") {
         s.ball?.end();
@@ -94,7 +97,7 @@ export class Seizures {
       }
       other.facing = seizer.facing === 1 ? -1 : 1;
       if (def.cry) other.sound(def.cry);
-      this.seizing.set(seizer, { held: other, state: seizer.state, phase: "held", vx: 0, flight: { y: 0, vy: 0, bounces: [] }, landings: 0 });
+      this.seizing.set(seizer, { held: other, state: seizer.state, phase: "held", vx: 0, flight: { y: 0, vy: 0, bounces: [] }, landings: 0, elapsed: frame });
       return;
     }
     const { held } = s;
@@ -165,7 +168,8 @@ export class Seizures {
       seizer.showFloorBand(f && f.band > 0 ? { y: held.floor, size: f.band } : null);
       return;
     }
-    if (s.phase !== "done" && frame >= def.release.frame) this.letGo(s, seizer, def.release);
+    const over = s.ball ? s.ball.done : frame >= (def.release.frame ?? Infinity);
+    if (s.phase !== "done" && over) this.letGo(s, seizer, def.release);
   }
 
   /** The throw's own blow ($0F:B321): he faces the seizer's way, thrown backwards. */

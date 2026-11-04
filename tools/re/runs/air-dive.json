@@ -1,0 +1,13 @@
+{
+  "state": "gotenks-vegetto",
+  "frames": 200,
+  "p1": {
+    "does": [
+      10,
+      "up fwd 12",
+      "fwd 3",
+      "down 3",
+      "down attack 3"
+    ]
+  }
+}

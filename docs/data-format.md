@@ -159,7 +159,7 @@ nine fighters would each want a copy of it. A grunt *is* his.
   nothing and puts its thrower in the named state, whose `seize` plays the scene. A
   `seize` with no `place` takes him where he stands, with no `launch` keeps him there,
   `hides` stops drawing him from a frame, and `ball` flies in his place and lets him
-  out where it ends (`match/ball.ts`).
+  out where it ends (`match/ball.ts`). A later state of the scene names it in `sceneOf`.
 - **`aim` steers a shot to the opponent's height**: from frame `from` its vy is
   `speed` toward `above` px over his feet, 0 within `within` (`entity/aim.ts`). Its
   forward speed stays its own, so it chases a jump and never turns back.
