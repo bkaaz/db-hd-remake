@@ -7,6 +7,12 @@ import { fighterNamed } from "./roster";
 describe.skipIf(!existsSync(ROM_PATH))("moveParts, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
 
+  it("cuts a dash where its handler sends it: a run of one step, and Gohan's of three", () => {
+    const cuts = (t: Parameters<typeof moveParts>[1]) => moveParts(rom, t, 0x0a).parts.map((p) => p.from);
+    expect(cuts(fighterNamed(rom, "vegeta"))).toEqual([0, 8, 16]);
+    expect(cuts(fighterNamed(rom, "gohan"))).toEqual([0, 6, 18]);
+  });
+
   it("cuts pinned (4a) where each fall lands: its fall, its bounce, then lying", () => {
     expect(moveParts(rom, GOKU, 0x4a).parts.map((p) => [p.anim, p.from])).toEqual([
       ["m4a", 0],

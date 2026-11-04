@@ -159,7 +159,10 @@ export function portReport(rom: Uint8Array, t: FighterTables, move: number): Por
     anyFrame: facts.filter((f) => !f.frame && f.step === undefined),
     ...launchOf(facts),
     holds: [...new Set(facts.flatMap((f) => (f.hold === undefined ? [] : [f.hold])))].flatMap((table) => {
-      const steps = holdSteps(facts.filter((f) => f.hold === table), stepStarts(ops));
+      const starts = stepStarts(ops);
+      // nothing marks the list's end, and past the launch nobody is held: Gohan's holds until 30
+      const launch = launchOf(facts).launch?.frame ?? Infinity;
+      const steps = holdSteps(facts.filter((f) => f.hold === table), starts).filter((s) => starts[s] <= launch);
       return ROSTER.map((against, c) => ({ against, steps, at: holdOffsets(rom, table, c, steps) }));
     }),
     handler,

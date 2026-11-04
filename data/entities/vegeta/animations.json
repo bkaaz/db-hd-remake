@@ -56357,6 +56357,15 @@
       }
     ]
   },
+  "m30_gohan_9d": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "32",
+        "dur": 30
+      }
+    ]
+  },
   "m30_gohan_d1": {
     "loop": false,
     "steps": [

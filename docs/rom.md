@@ -930,7 +930,7 @@ heavy reel — `16`, crouching `14`; ours `halt`), `0x0008` light,
 and −4.0 up; blows pass it by from frame 0; it lands with dust and `0d`,
 no bounce, and gets up after 12 frames — `$10:AEB6`), `0x0040` knockdown (move `1b`),
 `0x0080` → move `42`/`43`, `0x0400` → move `1e` (`$D3BB`, ours `high`), `0x0800` `$D670`,
-`0x1000` `$D540`; `0x0001`, `0x0002`, `0x0100` and `0x0200` are not read
+`0x1000` `$D540` (move `1b` on knockback 5, ours `down`); `0x0001`, `0x0002`, `0x0100` and `0x0200` are not read
 there. `0x0080` (`$D558`, the jump attacks') is a long light reel: `42`
 standing, 24 frames of the light reel's drawing, `43` crouching
 (`$0D:D7BA`), knockback index 6. **A body in `1e` hit again** goes back into `1e` whatever the blow (`$0D:D25D`): field `0x7b` counts the hits, and from the third (`0x7b` ≥ 3) it is the knockdown `1b` instead; any move but `1e` and `30` clears it (`$01:8529`). A recording of Vegeta's `9c` on Goku: all three blows `1e`. Airborne, bits of byte 1: `01` → move `1a` (`$D616`, knockback
@@ -1084,6 +1084,30 @@ own page — Goku `0x1xx`, Vegeta `0x2xx` … Buu `0xAxx`. A resource's record n
 A new fighter's tables are `fighterNamed(rom, "vegetto")`; what they
 lack is `objects` — his objects' pictures and timing, read from their
 types' code by the reader to come (`plan.md`).
+
+### Gohan
+
+Handlers in `$20:A3F4`–`$20:BDF8`. His own objects' tiles are resource `0x46`,
+there from the fight's start at `$6800` and `$7800`, a player each; an object's
+slot shows player two's tile base `0x100` up.
+
+| move | what | input |
+|---|---|---|
+| `9d` | the throw: holds 32 px ahead in one drawing (`$20:A6F2`, the table `$20:A716`, not a track), lets go at 30 | → + X |
+| `9f`, `a0`, `a1` | as Goku's: blows to another part of the arena | ↓ ↘ → / → ← → / ↓ ↙ ← + X |
+| `a2` | Rushing Uppercut | → + Y |
+| `a4` → `a5` | Knee Slasher; connected, hit or block, it becomes `a5` (`$20:A778`) | ← (charge) → B |
+| `a6` | Zankuu Kyaku | ↓ (charge) ↑ B |
+| `a7` | Bakuretsu Punch | ← (charge) → Y |
+| `a8` → `a9` | Bukuuh Kyaku: a hit holds the opponent in `30` for `a9`'s blows and throw, its drawings by step from `$20:AA72` (on the floor) or `$20:AA86`; a block sends him back as `1a` (`$20:A994`) | → ↓ B, in the air |
+| `aa` | Triangle Illusion (3D): Side Slash's way, turning on 33 | R + B |
+| `ab` | Renzoku Energy Dan | ↓ ↘ → A |
+| `ac` | Kamehame-Ha: let go before 20 small, before 36 medium, fired from 32 | ↓ ↙ → A |
+| `ad` | Masenko, object `2/03` | ← ↙ ↓ ↘ → A |
+| `ae` | Rushing Suki Combo, health 80 or less | → ↘ ↓ ↙ ← → B |
+
+`9e` and `b1` have scripts and handlers, but no button or code of his was found
+to start them `?`.
 
 ## How it was found
 

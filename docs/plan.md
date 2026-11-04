@@ -186,6 +186,36 @@ recording; which moves repeat or hold is listed by hand in
 
 > **One exchange is complete.** Everything below multiplies it.
 
+## Now: the rest of the roster
+
+The owner, 2026-11-04: every fighter over as far as a script and the code
+allow, without asking, and he tries them move by move afterwards —
+[`port-review.md`](./port-review.md) is that list.
+
+1. **Gohan's Bukuuh Kyaku:** it dives and hits nothing. Its blow and `a9` need
+   `connected` to tell a hit from a block, and a hold of a body the blow caught
+   in any state, not one `throwable` (`rom.md`, Gohan). `HANDLER_HOLDS` takes a
+   drawing per step for it. *Done when:* a recording shows the hold, the throw
+   and, on a block, the spring back.
+2. **The next fighters**, a batch each (the `port-move` skill).
+
+## After the port: the common part
+
+[ADR 0069](./adr/0069-the-common-part-waits-for-the-end-of-the-port.md). Waits
+for the last fighter from the cartridge; nothing here starts before that.
+
+1. **The template out of Goku:** a file of its own, his specials into his
+   `specials.json`, and he is generated like the rest. Any difference from his
+   hand-written file is a mistake in one or the other. Mark ADR 0038. *Done
+   when:* `goku/states.json` comes out of the command and the test covers him.
+2. **Named groups in `entries`** in place of the lists of states, by script.
+3. **Rules of the game out of `attributes.json`** (`comboLimits`).
+4. **Freeze the port:** its flat states and hit types kept as they are.
+5. **The generator stops overwriting** a blow's type.
+
+Then the mechanics, the order provisional: ki, cancels and combos, vanish, the
+aura (`combat.md`). `npm run chains` has to hold for each fighter, not only one.
+
 ## Next: Vanish
 
 Settled 2026-09-26, described in [`combat.md`](./combat.md) §5.

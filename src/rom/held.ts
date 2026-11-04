@@ -1,6 +1,6 @@
 import type { Anim } from "../entity/entityFile";
 import { stepStarts } from "./animation";
-import { scriptAt } from "./cartridge";
+import { scriptAt, toFile } from "./cartridge";
 import { handlerAt, handlerFacts } from "./handler";
 import { fighterTables, ROSTER } from "./roster";
 import { readScript, type ScriptOp } from "./script";
@@ -10,7 +10,8 @@ import { readScript, type ScriptOp } from "./script";
  * and each of his moves with an opponent track (script command `80`), the
  * drawings that track names for this fighter's character, each held as
  * long as the thrower's step — `m30_<thrower>_<move>`, move `30` being the
- * original's hold, which plays no script of its own.
+ * original's hold, which plays no script of its own. A handler may name them
+ * itself instead of a track: `HANDLER_HOLDS`.
  */
 export function heldAnims(rom: Uint8Array, character: number): Record<string, Anim> {
   const out: Record<string, Anim> = {};
@@ -23,7 +24,8 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
       } catch {
         continue;
       }
-      const anim = heldIn(ops, character);
+      const table = HANDLER_HOLDS[thrower]?.[move];
+      const anim = table ? heldByTable(rom, table, character) : heldIn(ops, character);
       if (!anim) continue;
       // what the thrower's handler makes him cry out, on the step it does it on (Vegeta's throw: 30 at each blow)
       const cries = handlerFacts(rom, handlerAt(rom, c, move), stepStarts(ops).length, c).flatMap((f) =>
@@ -33,6 +35,27 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
     }
   });
   return out;
+}
+
+/**
+ * Holds whose drawing the handler writes into the opponent's field 0x0a from
+ * a table of its own, rather than a track: one pointer per character (same
+ * bank), to the word it shows him in for as many `frames` as it holds
+ * (Gohan's 9d: `$20:A6F2` on `$20:A716`, every frame, the list's first word).
+ */
+const HANDLER_HOLDS: Partial<Record<string, Record<number, { table: number; frames: number }>>> = {
+  gohan: { 0x9d: { table: 0x20a716, frames: 30 } },
+};
+
+/** The one drawing a handler's table holds this character in. */
+export function heldByTable(rom: Uint8Array, hold: { table: number; frames: number }, character: number): Anim {
+  const word = (address: number) => {
+    const at = toFile(address);
+    if (at === null) throw new Error(`${address.toString(16)} is not ROM`);
+    return rom[at] | (rom[at + 1] << 8);
+  };
+  const list = (hold.table & 0xff0000) | word(hold.table + 2 * character);
+  return { loop: false, steps: [{ frame: String(word(list)), dur: hold.frames }] };
 }
 
 /** The track's drawings for one character, step by step; null for a script with no track. */

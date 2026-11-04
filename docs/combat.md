@@ -205,6 +205,14 @@ that send him up, into a fight in the air: there is no fight in the air,
 and there will be none (owner, 2026-11-03). Its winner's pose, `82`, is
 one of two the winner strikes at random.
 
+## Where it is going
+
+Once every fighter is ported (the owner, 2026-11-04): close to Budokai 3 and
+Burst Limit, much simplified. A vanish attack, strings joined up — a combo, a
+launch, a vanish and on — an aura mode, and ki on the cartridge's fighters, who
+pay in health today. None of it is settled in detail; what comes first:
+[`plan.md`](./plan.md).
+
 ## Open
 
 - What punishes a string thrown at nothing.

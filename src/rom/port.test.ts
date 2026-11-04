@@ -23,6 +23,8 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
     expect(meteor.holds[0]).toMatchObject({ against: "goku", steps: [0], at: [[40, 0]] });
     // the throw holds every frame: all three steps, as before
     expect(portReport(rom, GOKU, 0x9d).holds[0].at).toEqual([[24, 0], [22, 0], [-32, -32]]);
+    // and no further than the launch: past Gohan's 30 his list is code
+    expect(portReport(rom, fighterNamed(rom, "gohan"), 0x9d).holds[0].at).toEqual([[32, 0], [32, 0], [32, 0], [32, 0]]);
   });
 
   it("cuts a move where a handler pinned to a step by CMP jumps", () => {

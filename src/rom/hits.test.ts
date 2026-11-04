@@ -21,6 +21,11 @@ describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
     expect(groundReaction(far)).toBe("heavy");
   });
 
+  it("reads $D540's bit as the knockdown: Gohan's Triangle Illusion", () => {
+    const [blow] = hitRecords(rom, fighterNamed(rom, "gohan").character, 0xaa);
+    expect([groundReaction(blow), blow.damage]).toEqual(["down", 26]);
+  });
+
   it("gives each of Quadruple Kick's four blows its own record: 24, 25, 26, 27", () => {
     const records = hitRecords(rom, GOKU, 0xa5);
     const starts = blowStarts(readScript(rom, scriptAt(rom, GOKU_TABLES, 0xa5)), (d) =>

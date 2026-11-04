@@ -1,0 +1,137 @@
+{
+  "_comment": "Written by npm run rom -- commands from the cartridge's command table ($3D:9EEF); never by hand.",
+  "commands": [
+    {
+      "move": "aa",
+      "where": "ground",
+      "words": [
+        "9010"
+      ]
+    },
+    {
+      "move": "a2",
+      "where": "ground",
+      "words": [
+        "4108"
+      ]
+    },
+    {
+      "move": "9d",
+      "where": "ground",
+      "words": [
+        "1740"
+      ]
+    },
+    {
+      "move": "a0",
+      "where": "ground",
+      "words": [
+        "0042",
+        "0100",
+        "0200",
+        "0100"
+      ]
+    },
+    {
+      "move": "a1",
+      "where": "ground",
+      "words": [
+        "0042",
+        "0200",
+        "0600",
+        "0400"
+      ]
+    },
+    {
+      "move": "9f",
+      "where": "ground",
+      "words": [
+        "0042",
+        "0100",
+        "0500",
+        "0400"
+      ]
+    },
+    {
+      "move": "ab",
+      "where": "ground",
+      "words": [
+        "0082",
+        "0100",
+        "0500",
+        "0400"
+      ]
+    },
+    {
+      "move": "a4",
+      "where": "ground",
+      "words": [
+        "8002",
+        "2100",
+        "0201"
+      ]
+    },
+    {
+      "move": "a6",
+      "where": "ground",
+      "words": [
+        "8002",
+        "2800",
+        "0401"
+      ]
+    },
+    {
+      "move": "a7",
+      "where": "ground",
+      "words": [
+        "4002",
+        "2100",
+        "0201"
+      ]
+    },
+    {
+      "move": "ad",
+      "where": "ground",
+      "words": [
+        "0082",
+        "0100",
+        "0500",
+        "0400",
+        "0600",
+        "0200"
+      ]
+    },
+    {
+      "move": "ac",
+      "where": "ground",
+      "words": [
+        "0082",
+        "0100",
+        "0600",
+        "0400"
+      ]
+    },
+    {
+      "move": "ae",
+      "where": "ground",
+      "words": [
+        "8002",
+        "0100",
+        "0200",
+        "0600",
+        "0400",
+        "0500",
+        "0100"
+      ]
+    },
+    {
+      "move": "a8",
+      "where": "air",
+      "words": [
+        "8002",
+        "0400",
+        "0100"
+      ]
+    }
+  ]
+}

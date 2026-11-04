@@ -1,0 +1,79 @@
+import { existsSync, readFileSync } from "node:fs";
+import type { StatesFile } from "../entity/states";
+import { blowOfAnim } from "./animBlow";
+import { readAttributes, withAttributes } from "./attributes";
+import { GOKU, scriptAt, type FighterTables } from "./cartridge";
+import { readCommands } from "./commands";
+import { inTableOrder } from "./entries";
+import { OWN_OBJECTS } from "./ownObjects";
+import { ownMoves } from "./ownMoves";
+import { fighterNamed, ROSTER, type FighterName } from "./roster";
+import { readScript } from "./script";
+import { withSpecials, type SpecialsFile } from "./specials";
+import { statesFrom, type Template } from "./template";
+import { moveOf } from "./todo";
+
+/**
+ * A fighter's `states.json` as it should stand. The command that writes the
+ * file and the test that calls it out of date both come here, so the two
+ * cannot disagree about what "up to date" means.
+ */
+
+export interface FighterStates {
+  file: StatesFile;
+  /** What the template did to Goku's states on the way. */
+  made: Template;
+  /** His `specials.json`, if he has one. */
+  own: SpecialsFile | null;
+}
+
+/**
+ * His tables. He knows the shared objects (type a: sparks, bursts, dust) by
+ * name, so a step that puts one out names it — the sparks of Vegeta's throw —
+ * but none of Goku's own; and his own put out on a step by name: they cut no
+ * part (Big Bang's flash).
+ */
+export function tablesOf(rom: Uint8Array, name: string): FighterTables {
+  const stepped = (OWN_OBJECTS[name as FighterName] ?? []).flatMap((o) =>
+    o.onStep ? [{ name: o.name, type: o.type, anim: o.anim, onStep: o.onStep, steps: [], loop: false, hits: false, palette: 0, loads: [] }] : [],
+  );
+  return fighterNamed(rom, name, { ...GOKU.objects, spawns: [...GOKU.objects.spawns.filter((sp) => sp.type === 0xa), ...stepped] });
+}
+
+/** Every fighter whose `states.json` is generated: all that have one but Goku, whose own is the template. */
+export function generatedFighters(): FighterName[] {
+  return ROSTER.filter((name) => name !== "goku" && existsSync(`data/entities/${name}/states.json`));
+}
+
+export function fighterStates(rom: Uint8Array, name: string, t: FighterTables): FighterStates {
+  const animations = readJson<Record<string, unknown>>(`data/entities/${name}/animations.json`);
+  const template = readJson<StatesFile>("data/entities/goku/states.json");
+  // goku's own moves: what his command table picks, and what those go on to
+  const specials = ownMoves(rom, GOKU);
+  const made = statesFrom(template, {
+    has: (a) => a in animations,
+    special: (a) => specials.has(parseInt(a.slice(1, 3), 16)),
+    foreign: (v) => v.startsWith("goku_"),
+    blowOf: (a) => blowOfAnim(rom, t, a),
+    // a shared object, from the b0 in his own script that puts it out
+    spawnAt: (a, spawn) => {
+      const def = GOKU.objects.spawns.find((sp) => sp.name === spawn);
+      const move = moveOf(a);
+      if (!def || move === null) return null;
+      const op = readScript(rom, scriptAt(rom, t, move)).find((o) => o.op === "spawn" && o.type === def.type && o.anim === def.anim);
+      return op && op.op === "spawn" ? [op.dx, op.dy] : null;
+    },
+  });
+  // his own specials, by hand beside it, merged in so a run does not wipe them
+  const specialsPath = `data/entities/${name}/specials.json`;
+  const own = existsSync(specialsPath) ? readJson<SpecialsFile>(specialsPath) : null;
+  // his own walk, dash and jump on the template's states ($3D:9D9B)
+  const moved = withAttributes(made.file, readAttributes(rom, t.character));
+  // his commands tried as the cartridge tries them, the table's last row first
+  const file = inTableOrder(own ? withSpecials(moved, own) : moved, readCommands(rom, t.character));
+  return { file, made, own };
+}
+
+function readJson<T>(path: string): T {
+  return JSON.parse(readFileSync(path, "utf8")) as T;
+}

@@ -36,7 +36,11 @@ export function moveParts(rom: Uint8Array, t: FighterTables, move: number): Move
   const boxesOf = (d: number) => readBoxes(rom, t.boxes, d);
   const facts = factsOf(rom, t, move, ops);
   const rearms = facts.filter((f) => f.what === "re-arms the blow" && f.frame !== null).map((f) => f.frame!);
-  const byHand = [...(HAND_CUTS[move] ?? []), ...(move === JUMP ? [fallStep(ops, fallAfterJumpAttack(rom, t.character))] : [])];
+  const byHand = [
+    ...(HAND_CUTS[move] ?? []),
+    ...(DASHES.includes(move) ? dashCuts(ops, facts) : []),
+    ...(move === JUMP ? [fallStep(ops, fallAfterJumpAttack(rom, t.character))] : []),
+  ];
   const steps = [...new Set([...jumpCuts(ops, byStep(ops, facts)), ...stepLoopCuts(ops, facts), ...byHand])];
   const frames = [
     ...jumpFrameCuts(ops, facts),
@@ -129,11 +133,21 @@ function byStep(ops: ScriptOp[], facts: HandlerFact[]): { step?: number; to?: nu
  * Cuts read by hand from handlers `handler.ts` does not follow yet. Pinned (`4a`, `$0F:A4B7`): it holds frame 3 until it lands,
  * then goes on from 23 — cut at step 1, a frame later — and holds 28 until it
  * lands again, then 32: step 3. One part a fall, as the states take them.
- * The dash (`0a` / `0b`, `$20:8004`): its run loops 8–15 from 16 while it
- * is held, and let go it plays 16 on, its way out — cut there too.
  * Galactic Gunfire's `af` holds step 1 until pinned frees it (`f0`, ADR
  * 0057) and goes on into step 2: cut there, so the state freed plays it.
  */
-const HAND_CUTS: Record<number, number[]> = { 0x0a: [2], 0x0b: [2], 0x4a: [1, 3], 0xaf: [2] };
+const HAND_CUTS: Record<number, number[]> = { 0x4a: [1, 3], 0xaf: [2] };
+/** The dash, forward and back. */
+const DASHES = [0x0a, 0x0b];
+
+/**
+ * Where a dash's handler sends it, whatever step it is on: back to the start
+ * of its run while it is held, and let go to its way out (`$20:8004`, 8 and
+ * 16; Gohan's `$20:B68B`, whose run is three steps long, 6 and 18).
+ */
+function dashCuts(ops: ScriptOp[], facts: HandlerFact[]): number[] {
+  const starts = stepStarts(ops);
+  return facts.flatMap((f) => (f.frame === null && f.to !== undefined && starts.includes(f.to) ? [starts.indexOf(f.to)] : []));
+}
 /** Move 30: the original's hold, where a throw keeps the opponent. */
 const HOLD = 0x30;

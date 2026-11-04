@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ROM_PATH } from "./cartridge";
-import { heldAnims, heldIn } from "./held";
+import { heldAnims, heldByTable, heldIn } from "./held";
 import type { ScriptOp } from "./script";
 
 describe("heldIn", () => {
@@ -34,5 +34,19 @@ describe.skipIf(!existsSync(ROM_PATH))("heldAnims, on the cartridge", () => {
   it("cries out at each of Vegeta's three blows while he holds him (his handler's 30 at 32, 56, 96)", () => {
     const steps = heldAnims(rom, 0).m30_vegeta_9d.steps;
     expect(steps.flatMap((st, i) => (st.sfx ? [i] : []))).toEqual([2, 4, 6]);
+  });
+});
+
+describe.skipIf(!existsSync(ROM_PATH))("heldByTable, on the cartridge", () => {
+  const rom = new Uint8Array(readFileSync(ROM_PATH));
+
+  it("holds each character in the one drawing Gohan's 9d names for him, until it lets him go at 30", () => {
+    const hold = { table: 0x20a716, frames: 30 };
+    expect(heldByTable(rom, hold, 0).steps).toEqual([{ frame: "25", dur: 30 }]);
+    expect(heldByTable(rom, hold, 2).steps).toEqual([{ frame: "35", dur: 30 }]);
+  });
+
+  it("is what a fighter's m30_gohan_9d plays, Gohan's 9d having no track", () => {
+    expect(heldAnims(rom, 1).m30_gohan_9d?.steps).toEqual([{ frame: "32", dur: 30 }]);
   });
 });

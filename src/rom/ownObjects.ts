@@ -58,6 +58,18 @@ export interface OwnObject {
 const WITH_48: Load[] = [{ resource: 0x48, vram: 0x6800 }, { resource: 0x4f, vram: 0x6c00 }];
 
 export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
+  gohan: [
+    // ad, Masenko: its move loads nothing; its tiles are in resource 0x46, there
+    // from the fight's start at $6800 and $7800, a player each (the recording's
+    // slot says base 0x18: player two's 0x180, the script's +0x80 and his 0x100).
+    // Palette 0x10E and the four after it, stepped every 4th frame ($0F:BF6D);
+    // its two frames by $74 bit 2, gone at 80 ($0F:BF4C)
+    { name: "gohan_masenko", type: 0x2, anim: 0x3, hits: true, palette: 0x10e, shimmer: 4, loads: [{ resource: 0x46, vram: 0x6800 }] },
+    // 3c, his intro: effects put out on its step, nothing they do but show.
+    // Drawn from his own sprite, palette 0x117 / his own, the recording's frames
+    { name: "gohan_intro_a", type: 0x2, anim: 0x5, hits: false, palette: 0x117, onStep: [0x3c] },
+    { name: "gohan_intro_b", type: 0x2, anim: 0x6, hits: false, palette: 0x60, onStep: [0x3c] },
+  ],
   vegeta: [
     // ad, the Big Bang shot upward: a flash at the hands as it fires (its blow
     // is "other", damage 0), then the ball, which flies up and forward and

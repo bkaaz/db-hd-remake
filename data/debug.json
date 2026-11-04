@@ -12,9 +12,18 @@
     { "p2": { "does": ["down 60"] } },
     { "p2": { "does": [
       60,
-      "up fwd 2", 90,
-      "up back 2", 90,
-      "fwd dash 20", "fwd dash attack", 90
+      "fwd attack", 120,
+      "dash smash", 150,
+      "back 60", "fwd smash", 150,
+      "down 60", "up smash", 150,
+      "back 60", "fwd attack", 150,
+      "down 2", "down fwd 2", "fwd 2", "fwd blast", 180,
+      "back 2", "down back 2", "down 2", "down fwd 2", "fwd 2", "fwd blast", 150,
+      "down 2", "down back 2", "fwd 2", "fwd blast 40", 240,
+      "down 2", "down fwd 2", "fwd 2", "fwd strike", 120,
+      "fwd 2", "back 2", "fwd 2", "fwd strike", 120,
+      "down 2", "down back 2", "back 2", "back strike", 120,
+      "up fwd 8", "fwd 2", "down 2", "down smash", 150
     ] } }
   ]
 }

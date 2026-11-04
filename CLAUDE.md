@@ -69,6 +69,8 @@ The project owner wants to go **slowly and deliberately**:
   lists work to do; the reasoning goes to `docs/adr/`, the timing is in git.
   `roadmap.md` and `entity-editor.md` describe the arc and the history and must
   never grow a to-do list again. A queue that only shrinks cannot drift.
+  `docs/port-review.md` is its one exception, by the owner's word (2026-11-04):
+  the moves of the port he has still to try, deleted as he approves them.
 - **Write bugs down in `docs/bugs.md` the moment you notice one** — no need to
   ask, and no need to fix it there and then. Noticing and fixing are separate
   acts: a fix smuggled into unrelated work is a fix nobody reviewed. Mention the
@@ -270,6 +272,12 @@ npm run rom -- export --fighter vegeta
 npm run rom -- states --fighter vegeta
                   # his states from goku's: the shared moves on his
                   # animations with his blows, goku's specials dropped
+npm run rom -- states --all
+                  # every generated fighter again — after any change to
+                  # goku's states; a test fails until it is run
+npm run rom -- export --all
+                  # goku and every fighter with states, exported again;
+                  # then git diff data/ says what a reader's change moved
 npm run rom -- objects [logs/objects-rec.txt]
                   # a recording of the object slots read back: each
                   # object's frames and timing, speed, what it becomes

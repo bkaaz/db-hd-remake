@@ -1,0 +1,1503 @@
+{
+  "_comment": "Gohan's own specials, by hand; npm run rom -- states --all merges them into states.json (src/rom/specials.ts). Names as the owner's list (2026-11-04), ids by the command table. throw is 9d, → + X in grab range ($20:A619): he holds the opponent 32 px ahead, in one drawing ($20:A6F2, HANDLER_HOLDS), lets him go at 30, ahead of him, 40 less defence, reel_down. triangle_illusion is aa, R + B ($20:A4E3, by step), Side Slash's way: behind the opponent, on frame 33 turns and closes by a 32nd of the way to 8 px short; its blow is 0x1200, $D540's knockdown on knockback 5 (ours down). Its 16 px step ($20:A51F) and the palette + 8 in the depth are left out `?`. rushing_uppercut is a2, → + Y ($20:B144): vx 3 from 1, stopped at 24. knee_slasher is a4, ← → B ($20:A73E): vx 4 at 17, stopped at 54; connected, hit or block, it becomes a5, knee_slasher_2 ($20:A778), vx 2 from 1. The dust each raises ($0D:DE6C) is left out `?`. zankuu_kyaku is a6, ↓ ↑ B ($20:A7E4): blows pass him by to 6; at 6 gravity off, vx 3, vy -7; from 13 to 24 vy + 0.5 while he rises; vx 0 at 14, -1 at 22, 0 at 30; gravity on at 29; landing from 30. bakuretsu is a7, ← → Y ($20:A877): vx 2 from 1 to 61, four blows re-armed at 24, 36, 54. bukuuh_kyaku is a8, → ↓ B in the air ($20:A8D9): hangs to 21, then dives at 5.5, 5.5 with gravity off; a landing goes to frame 52 (bukuuh_land). NOT DONE: its blow (0x180000, 0 damage) and a9, what follows it: on a hit the opponent is held in move 30 while he strikes, then thrown (32 less defence, reel_down, 2.5 / -7) and he springs back as 1a; on a block he springs back alone. The engine cannot tell a hit from a block in `connected`, so for now it dives and hits nothing. renzoku is ab, ↓ ↘ → A ($20:BDF8), 5 health: three rapid_blast shots at 48, -48. masenko is ad, ← ↙ ↓ ↘ → A ($20:B309), 10 health: at 18 his gohan_masenko at 16, -80. kame_* is ac, ↓ ↙ → A ($20:AF4A), 10 health, the shared Kamehameha: A let go before 20 the small, before 36 the medium (fired from 32 at the soonest), else the large at 44; the choice jumps to 42. Ball at -16, -40, head at 36, -42. The head gone it jumps to 132 / 128 / 124: 8 / 12 / 16 frames of the pose and the 8 of kame_out. suki_combo is ae, → ↘ ↓ ↙ ← → B ($20:B38C), health 80 or less: vx 3 from 1, ten blows (re-armed at 24, 42, 54, 72, 84, 96, 120, 136); at 143 gravity off, vx 3, vy -7; from 150 to 161 vy + 0.5 while he rises, vx 0 at 151, -1 at 159, 0 at 167, gravity on at 166; landing from 166. Its palette run 0x140–0x144 at the start, the re-arm at 136 and what it draws on its last blow ($20:B558) are left out `?`. sender_9f / a0 / a1 are as Vegeta's, the closed way's knockdown: 9f and a0 stand ($0F:AA78); a1 ($20:B357) leaps at 1, -6 from 12 and lands from 28. intro is his 3c ($20:A478), gohan_intro_a and _b on its step 16, without Goku's charging sound. win_air is his 82 ($20:A60B): no bobbing, from frame 16 round and round. The dash (0a, 0b, $20:B68B) is goku's on his own frames: run 6–17, out from 18. His knockdown (1b, 1e, $20:A3F4) is goku's, lying longer, and his win (3e) goku's without the second part.",
+  "replaces": [
+    "intro",
+    "win_air"
+  ],
+  "read": [
+    "0a",
+    "0b",
+    "1b",
+    "1e",
+    "3e"
+  ],
+  "entries": [
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": [
+        "grab",
+        "command:9d"
+      ],
+      "to": "throw"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": [
+        "command:ae",
+        "health:80"
+      ],
+      "to": "suki_combo"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:aa",
+      "to": "triangle_illusion"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a2",
+      "to": "rushing_uppercut"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a4",
+      "to": "knee_slasher"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a6",
+      "to": "zankuu_kyaku"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a7",
+      "to": "bakuretsu"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:ab",
+      "to": "renzoku"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:ac",
+      "to": "kame_charge"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:ad",
+      "to": "masenko"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:9f",
+      "to": "sender_9f"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a0",
+      "to": "sender_a0"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:a1",
+      "to": "sender_a1"
+    },
+    {
+      "from": [
+        "jump_up",
+        "jump_fwd",
+        "jump_back"
+      ],
+      "when": [
+        "frames:2",
+        "command:a8"
+      ],
+      "to": "bukuuh_kyaku"
+    },
+    {
+      "from": [
+        "jump_fall"
+      ],
+      "when": "command:a8",
+      "to": "bukuuh_kyaku"
+    }
+  ],
+  "states": {
+    "throw": {
+      "anim": "m9d",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "vegetto": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ],
+            [
+              32,
+              0
+            ]
+          ]
+        },
+        "launch": {
+          "frame": 30,
+          "damage": 40,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -8
+          ],
+          "ahead": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "triangle_illusion": {
+      "anim": "maa",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "behind": true,
+      "approach": {
+        "at": 33,
+        "short": 8,
+        "over": 32
+      },
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 26,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "rushing_uppercut": {
+      "anim": "ma2",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          1,
+          3
+        ],
+        [
+          24,
+          0
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "high",
+      "damage": 29,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "knee_slasher": {
+      "anim": "ma4",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          17,
+          4
+        ],
+        [
+          54,
+          0
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "connected",
+          "to": "knee_slasher_2"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "knee_slasher_2": {
+      "anim": "ma5",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          1,
+          2
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 26,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "zankuu_kyaku": {
+      "anim": "ma6",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "zankuu_kyaku_2"
+        }
+      ]
+    },
+    "zankuu_kyaku_2": {
+      "anim": "ma6_2",
+      "turn": false,
+      "airborne": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 38,
+      "holdStep": 7,
+      "air": [
+        [
+          0,
+          {
+            "vx": 3,
+            "vy": -7,
+            "gravity": 0
+          }
+        ],
+        [
+          7,
+          {
+            "gravity": 0.5,
+            "toApex": true
+          }
+        ],
+        [
+          8,
+          {
+            "vx": 0
+          }
+        ],
+        [
+          16,
+          {
+            "vx": -1
+          }
+        ],
+        [
+          19,
+          {
+            "gravity": 0
+          }
+        ],
+        [
+          23,
+          {
+            "gravity": "own"
+          }
+        ],
+        [
+          24,
+          {
+            "vx": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "bakuretsu": {
+      "anim": "ma7",
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
+        [
+          1,
+          2
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 22,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_2"
+        }
+      ]
+    },
+    "bakuretsu_2": {
+      "anim": "ma7_2",
+      "vel": [
+        2,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 22,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_3"
+        }
+      ]
+    },
+    "bakuretsu_3": {
+      "anim": "ma7_3",
+      "vel": [
+        2,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 22,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bakuretsu_4"
+        }
+      ]
+    },
+    "bakuretsu_4": {
+      "anim": "ma7_4",
+      "vel": [
+        2,
+        0
+      ],
+      "velAt": [
+        [
+          7,
+          0
+        ]
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 34,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "bukuuh_kyaku": {
+      "anim": "ma8",
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ],
+        [
+          21,
+          {
+            "vx": 5.5,
+            "vy": 5.5
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "bukuuh_land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "bukuuh_land": {
+      "anim": "ma8_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "renzoku": {
+      "anim": "mab",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "healthCost": 5,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "renzoku_2"
+        }
+      ]
+    },
+    "renzoku_2": {
+      "anim": "mab_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          48,
+          -48
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "renzoku_3"
+        }
+      ]
+    },
+    "renzoku_3": {
+      "anim": "mab_3",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          48,
+          -48
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "renzoku_4"
+        }
+      ]
+    },
+    "renzoku_4": {
+      "anim": "mab_4",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "rapid_blast",
+        "at": [
+          48,
+          -48
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "masenko": {
+      "anim": "mad",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "healthCost": 10,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "masenko_2"
+        }
+      ]
+    },
+    "masenko_2": {
+      "anim": "mad_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "gohan_masenko",
+        "at": [
+          16,
+          -80
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "kame_charge": {
+      "anim": "mac",
+      "healthCost": 10,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -16,
+          -40
+        ],
+        "from": 16,
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:20",
+            "released:blast"
+          ],
+          "to": "kame_go_s"
+        },
+        {
+          "when": "frames:20",
+          "to": "kame_charge_2"
+        }
+      ]
+    },
+    "kame_charge_2": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -16,
+          -40
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:12",
+            "released:blast"
+          ],
+          "to": "kame_go_m"
+        },
+        {
+          "when": "frames:12",
+          "to": "kame_charge_3"
+        }
+      ]
+    },
+    "kame_charge_3": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -16,
+          -40
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "released:blast",
+          "to": "kame_go_m"
+        },
+        {
+          "when": "frames:4",
+          "to": "kame_charge_4"
+        }
+      ]
+    },
+    "kame_charge_4": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -16,
+          -40
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:8",
+          "to": "kame_fire_l"
+        }
+      ]
+    },
+    "kame_go_s": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -16,
+          -40
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "kame_fire_s"
+        }
+      ]
+    },
+    "kame_fire_s": {
+      "anim": "mac_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          30,
+          -42
+        ],
+        "size": 2,
+        "max": 5,
+        "flat": true
+      },
+      "fires": {
+        "spawn": "kame_s",
+        "at": [
+          36,
+          -42
+        ],
+        "with": [
+          {
+            "spawn": "kame_base",
+            "at": [
+              24,
+              -42
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "kame_end_s"
+        }
+      ]
+    },
+    "kame_end_s": {
+      "anim": "mac_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:8",
+          "to": "kame_out"
+        }
+      ]
+    },
+    "kame_go_m": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -16,
+          -40
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "kame_fire_m"
+        }
+      ]
+    },
+    "kame_fire_m": {
+      "anim": "mac_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          30,
+          -42
+        ],
+        "size": 2,
+        "max": 5
+      },
+      "fires": {
+        "spawn": "kame_m",
+        "at": [
+          36,
+          -42
+        ],
+        "with": [
+          {
+            "spawn": "kame_base",
+            "at": [
+              24,
+              -42
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "kame_end_m"
+        }
+      ]
+    },
+    "kame_end_m": {
+      "anim": "mac_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:12",
+          "to": "kame_out"
+        }
+      ]
+    },
+    "kame_fire_l": {
+      "anim": "mac_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "band": {
+        "from": [
+          30,
+          -42
+        ],
+        "size": 4,
+        "max": 9
+      },
+      "fires": {
+        "spawn": "kame_l",
+        "at": [
+          36,
+          -42
+        ],
+        "with": [
+          {
+            "spawn": "kame_base",
+            "at": [
+              24,
+              -42
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "spawnEnd",
+          "to": "kame_end_l"
+        }
+      ]
+    },
+    "kame_end_l": {
+      "anim": "mac_2",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:16",
+          "to": "kame_out"
+        }
+      ]
+    },
+    "kame_out": {
+      "anim": "mac",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:8",
+          "to": "idle"
+        }
+      ]
+    },
+    "suki_combo": {
+      "anim": "mae",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 22,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_2"
+        }
+      ],
+      "velAt": [
+        [
+          1,
+          3
+        ]
+      ]
+    },
+    "suki_combo_2": {
+      "anim": "mae_2",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_3"
+        }
+      ]
+    },
+    "suki_combo_3": {
+      "anim": "mae_3",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 22,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_4"
+        }
+      ]
+    },
+    "suki_combo_4": {
+      "anim": "mae_4",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_5"
+        }
+      ]
+    },
+    "suki_combo_5": {
+      "anim": "mae_5",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 22,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_6"
+        }
+      ]
+    },
+    "suki_combo_6": {
+      "anim": "mae_6",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_7"
+        }
+      ]
+    },
+    "suki_combo_7": {
+      "anim": "mae_7",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_8"
+        }
+      ]
+    },
+    "suki_combo_8": {
+      "anim": "mae_8",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_9"
+        }
+      ]
+    },
+    "suki_combo_9": {
+      "anim": "mae_9",
+      "vel": [
+        3,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "suki_combo_10"
+        }
+      ],
+      "air": [
+        [
+          23,
+          {
+            "vx": 3,
+            "vy": -7,
+            "gravity": 0
+          }
+        ]
+      ]
+    },
+    "suki_combo_10": {
+      "anim": "mae_10",
+      "airborne": true,
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 60,
+      "holdStep": 6,
+      "air": [
+        [
+          5,
+          {
+            "gravity": 0.5,
+            "toApex": true
+          }
+        ],
+        [
+          6,
+          {
+            "vx": 0
+          }
+        ],
+        [
+          14,
+          {
+            "vx": -1
+          }
+        ],
+        [
+          17,
+          {
+            "gravity": 0
+          }
+        ],
+        [
+          21,
+          {
+            "gravity": "own"
+          }
+        ],
+        [
+          22,
+          {
+            "vx": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "sender_9f": {
+      "anim": "m9f",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a0": {
+      "anim": "ma0",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a1": {
+      "anim": "ma1",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 24,
+      "holdStep": 4,
+      "air": [
+        [
+          12,
+          {
+            "vx": 1,
+            "vy": -6,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "intro": {
+      "anim": "m3c",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "win_air": {
+      "anim": "m82",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_air_2"
+        }
+      ]
+    },
+    "win_air_2": {
+      "anim": "m82_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "win_air_2"
+        }
+      ]
+    }
+  }
+}

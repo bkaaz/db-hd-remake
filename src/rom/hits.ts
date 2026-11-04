@@ -86,6 +86,8 @@ const REACTION_TYPES: Record<number, string> = {
   0x40: "down",
   0x80: "long",
   0x400: "high",
+  // $D540: the knockdown, 1b, on knockback 5 — Gohan's Triangle Illusion
+  0x1000: "down",
   // to another part of the arena ($D3F3, $D46E, $D4D4): with none to go to, the
   // closed way's — a knockdown (9f, a0, a1; rom.md, Which reaction)
   0x10000: "down",

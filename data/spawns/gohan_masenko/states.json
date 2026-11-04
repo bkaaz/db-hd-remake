@@ -1,0 +1,21 @@
+{
+  "_comment": "Gohan's Masenko, ad (object 2/03, docs/rom.md). Frames and animation by npm run rom -- export --fighter gohan; this file by hand: 3 / -3 px a frame is b0's vx / vy, its life 80 frames ($0F:BF4C). Type and damage are the objects' hit table's ($3D:9624). Its hit and block sounds are the other projectiles' — not read for it.",
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "airborne": true,
+      "launch": [
+        3,
+        -3
+      ],
+      "turn": false,
+      "lasts": 80,
+      "type": "down",
+      "damage": 50,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a"
+    }
+  }
+}
