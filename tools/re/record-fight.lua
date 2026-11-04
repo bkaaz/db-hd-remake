@@ -38,7 +38,9 @@ local SETTINGS_PHASES = {
 -- record-objects.lua keeps the VRAM an object's export needs.
 
 local DIR = "/Users/bkaaz/workspace/db-hd-remake/logs/"
-local FRAMES = math.floor(RECORD_SECONDS * 60)
+-- RUN stands before this file when `npm run original` plays a scenario: its
+-- state, its pads and its length (tools/re/run.lua); nil from the Script Window
+local FRAMES = RUN and RUN.frames or math.floor(RECORD_SECONDS * 60)
 local P1, P2 = 0x100, 0x200 -- the fighter blocks in SA-1 I-RAM; fields: src/rom/cartridge.ts
 local SLOTS, FIRST, SIZE = 10, 0x300, 0x10
 local IRAM = emu.memType.sa1InternalRam
@@ -47,7 +49,7 @@ local DSP = emu.memType.spcDspRegisters
 -- what is switched on, in frames
 local PHASES = {}
 for _, phase in ipairs(SETTINGS_PHASES) do
-  if phase.seconds > 0 then
+  if phase.seconds > 0 and not RUN then
     PHASES[#PHASES + 1] = { name = phase.name, frames = math.floor(phase.seconds * 60), pad = phase.pad }
   end
 end
@@ -61,7 +63,7 @@ local function freeName()
   end
 end
 
-local path = freeName()
+local path = RUN and RUN.out or freeName()
 local log = assert(io.open(path, "w"))
 log:setvbuf("line")
 log:write("# f<frame> hit=<$30B2> cam=<x>,<y> (8.8)\n")
@@ -140,6 +142,7 @@ end
 
 local ref
 ref = emu.addEventCallback(function()
+  if RUN and not RUN.frame() then return end
   frame = frame + 1
   if #PHASES > 0 then
     if left == 0 then nextPhase() end
@@ -177,6 +180,7 @@ ref = emu.addEventCallback(function()
     open = false
     log:close()
     emu.displayMessage("record-fight", "done: " .. path)
+    if RUN then emu.stop(0) end
   end
 end, emu.eventType.endFrame)
 

@@ -21,6 +21,7 @@
     "typecheck": "tsc --noEmit",
     "which": "tsx scripts/which.ts",
     "rom": "tsx scripts/rom.ts",
+    "original": "tsx scripts/original.ts",
     "dis": "tsx scripts/dis.ts",
     "sound-test": "tsx scripts/sound-test.ts"
   },

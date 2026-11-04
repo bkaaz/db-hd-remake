@@ -1129,6 +1129,7 @@ access to I/O* on; each writes into `logs/`.
 
 | script | answers |
 |---|---|
+| `run.lua` | what `npm run original` puts before `record-fight.lua`: a save state and both pads, no window (ADR 0074) |
 | `record-fight.lua` | **start here**: both fighters, camera, hitstop, sounds asked for, voices' samples and object slots, every frame anything happens, into a new `logs/fight-<n>.txt` |
 | `record-ram.lua` | every RAM region and the pad, once per frame — find a value by what was pressed |
 | `log-dma.lua` | every DMA, beside the sprite id — where graphics come from |

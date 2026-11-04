@@ -106,16 +106,18 @@ default ports:
 - `npm run typecheck` and `npm run build` are free to run at any time; do run
   them before handing work back.
 
-## Verifying changes (ask first — always)
+## Verifying changes
 
-**Never drive a browser (Playwright / Chrome DevTools) on your own initiative,
-not even for a quick smoke check.** The owner usually has the game open next to
-the session and can see for themselves; unsolicited screenshot requests waste
-their time. Browser automation is also poor at what matters here — timing and
-feel — because of seconds of latency between a synthetic keypress and a capture.
+**Playwright is allowed without asking** (owner, 2026-11-04), against the servers
+already running: load a scene by its URL and let the game's own dummy play, then
+read `logs/session.log` or take a screenshot. It still cannot judge timing or feel
+from a synthetic keypress — seconds of latency — so a move is played by the dummy,
+never by keys, and how a thing feels stays with the owner. **The original is played
+the same way**: `npm run original` (ADR 0074). Check a move yourself before handing
+it over rather than asking the owner to record it.
 
-After a change, run typecheck/build **and `npm test`**, then **offer these
-options and let the owner choose** (the first is the default):
+After a change, run typecheck/build **and `npm test`**, then say what you checked
+and **offer what is left** (the first is the default):
 
 1. **No check** — the owner already sees it works, or trusts the change.
 2. **The owner tests** — hand over a short list of concrete things to look at;
@@ -135,9 +137,6 @@ hit miss", "how many frames was he free" — all of these are in the log and non
 of them are on a screenshot. It records **events, not frames**: every state
 change, every blow, every press entering or leaving the buffer, each line
 carrying both fighters and the gap since the previous line. See `src/log.ts`.
-
-Browser automation stays available for bugs the owner reports and for
-reproduction work — but the owner picks it; you only offer it.
 
 ### Unit tests — how pure logic gets verified
 
@@ -306,6 +305,10 @@ npm run rom -- hud
 npm run rom -- stage 0
                   # a stage's background layers, flat, into preview/; with
                   # no id every stage and rom-stages.png, all on one sheet
+npm run original -- volleyball-hit
+                  # the original played from a terminal, no window: a scenario
+                  # of tools/re/runs/ from its save state in raw/states/, into
+                  # logs/run-<name>.txt in record-fight.lua's format (ADR 0074)
 npm run sound-test
                   # the original's sound test, recorded by
                   # tools/re/record-sound-test.lua, cut into one file per
@@ -361,7 +364,8 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   └── sound-test.ts             #   the sound test's recording, one file per id
 ├── .claude/skills/               # procedures loaded on demand (add-animation)
 ├── tools/re/                     # Mesen 2 Lua scripts that record the original
-│                                 #   into logs/ (docs/rom.md)
+│                                 #   into logs/ (docs/rom.md); runs/ the scenarios
+│                                 #   npm run original plays
 ├── tools/entity-editor/          # the authoring tool (Canvas 2D)
 │   ├── server.ts                 #   Vite dev-server plugin: /api/* endpoints (Node)
 │   └── src/                      #   editor UI (browser)
@@ -379,7 +383,8 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │                                 #   id: 05.wav, goku_31.wav, line_0d.wav
 ├── raw/                          # BYOA, gitignored — what those were made from
 │                                 #   and cannot be regenerated (the recordings,
-│                                 #   untouched rips, the ROM). npm run pack -- --raw
+│                                 #   untouched rips, the ROM, states/ the save
+│                                 #   states of a fight). npm run pack -- --raw
 ├── preview/                      # gitignored: images drawn for a person to look
 │                                 #   at (npm run sheet). Nothing reads them back
 ├── dist/                         # what leaves the repo: web/ is the build,
