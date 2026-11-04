@@ -1,0 +1,56 @@
+{
+  "voice_hurt": {
+    "gain": 0.85,
+    "vary": 0.05,
+    "file": "mr_buu_30.wav",
+    "rom": 48
+  },
+  "voice_ko": {
+    "gain": 0.85,
+    "vary": 0,
+    "file": "mr_buu_31.wav",
+    "rom": 49
+  },
+  "voice_shout": {
+    "gain": 0.85,
+    "vary": 0.04,
+    "file": "mr_buu_32.wav",
+    "rom": 50
+  },
+  "line_21": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_21.wav",
+    "line": 33
+  },
+  "line_22": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_22.wav",
+    "line": 34
+  },
+  "line_23": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_23.wav",
+    "line": 35
+  },
+  "line_24": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_24.wav",
+    "line": 36
+  },
+  "line_25": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_25.wav",
+    "line": 37
+  },
+  "line_2c": {
+    "gain": 0.85,
+    "vary": 0.03,
+    "file": "line_2c.wav",
+    "line": 44
+  }
+}

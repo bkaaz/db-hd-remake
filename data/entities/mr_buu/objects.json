@@ -1,0 +1,192 @@
+[
+  {
+    "name": "mr_buu_a_25",
+    "type": 10,
+    "anim": 37,
+    "hits": true,
+    "palette": 37,
+    "loads": [
+      {
+        "resource": 2389,
+        "vram": 24576
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "mr_buu_a_26",
+    "type": 10,
+    "anim": 38,
+    "hits": true,
+    "palette": 37,
+    "loads": [
+      {
+        "resource": 2389,
+        "vram": 24576
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "mr_buu_8_17",
+    "type": 8,
+    "anim": 23,
+    "hits": false,
+    "palette": 192,
+    "loads": [
+      {
+        "resource": 66,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "mr_buu_8_04",
+    "type": 8,
+    "anim": 4,
+    "hits": false,
+    "palette": 192,
+    "loads": [
+      {
+        "resource": 66,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "mr_buu_8_08",
+    "type": 8,
+    "anim": 8,
+    "hits": true,
+    "palette": 192,
+    "loads": [
+      {
+        "resource": 2365,
+        "vram": 24576
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "mr_buu_8_09",
+    "type": 8,
+    "anim": 9,
+    "hits": true,
+    "palette": 192,
+    "loads": [
+      {
+        "resource": 2367,
+        "vram": 24576
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "mr_buu_8_06",
+    "type": 8,
+    "anim": 6,
+    "hits": false,
+    "palette": 192,
+    "loads": [
+      {
+        "resource": 66,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  }
+]
