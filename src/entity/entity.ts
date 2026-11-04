@@ -32,6 +32,7 @@ import {
   groundSpeed,
   guardStateFor,
   hitFxOf,
+  mayTurn,
   reactionFor,
   StateMachine,
   type CloseButton,
@@ -1283,7 +1284,7 @@ export class Entity {
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
-    if (this.sm.def.turn && opponentX !== null && opponentX !== this.x) {
+    if (mayTurn(this.sm.def, this.stateFrames) && opponentX !== null && opponentX !== this.x) {
       this.facing = opponentX > this.x ? 1 : -1;
     }
 

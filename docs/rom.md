@@ -655,6 +655,9 @@ up, `04`), so a block (`0d`, `0f`, `$0F:A081`) is over at frame 4 unless
 something is held. The landing (`$0F:A451`) reads the directions only
 while ↑ is held — a jump. Lying `1f` with field `f0` set goes into move
 `40` instead, `f0` 300, gravity off (`$0F:A35E`; what sets it `?`).
+With `f0` 0 it turns to face and reads `$0F:9EB1` only on a step past the byte
+of the fighter's entry at `$0F:A3B4`: 2, 2, 5, 5, 1, 2, 4, 2, 2, 6 by the
+roster's order — Gohan from step 6, his frame 33.
 `npm run rom -- entries` lists the states playing such a move that lack
 an entry for one of his commands. **The table is read from its end**:
 `$0D:F588` points Y at the last row's byte 4 — ground `8C` (so row `88`,
@@ -737,7 +740,10 @@ until 44 (`$0D:D7A0` stops it), re-arms at 32, and raises dust
 (`$0D:DE6C`) on every 4th frame of the game (`$74 & 3`) from frame 1 to 43;
 its second blow is a `1e`. `1e` plays as `1b` does (`$0F:A217`) but leaves
 field `0x96` alone until frame 64, the bounce — hittable in flight, where a
-blow's airborne bits apply (a light or heavy one: `1a`).
+blow's airborne bits apply (a light or heavy one: `1a`). While the move is
+`1e` gravity is the word of the fighter's entry at `$0D:CB33`, not field `0x86`
+(`$0D:CB12`): `62`, `5E`, `62`, `5A`, `62`, `68`, `5C`, `6A`, `6E`, `5A` by the
+roster's order, in 256ths — Gohan 0.38 against his 0.5.
 Side Slash (`a8`, `$20:83BB`, by step through `$20:83D1`) sends the
 mover behind the opponent (`$0D:D8D5`) through step 0, stands through step
 2, and on frame 28 turns to face him (`$0D:C455`) and sets vx to a 32nd of

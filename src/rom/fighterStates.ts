@@ -3,6 +3,7 @@ import type { AnimInfo, StatesFile } from "../entity/states";
 import { blowOfAnim } from "./animBlow";
 import { readAttributes, withAttributes } from "./attributes";
 import { CROUCH } from "./crouch";
+import { getUpFrame, highGravity, withKnockdown } from "./knockdown";
 import { GOKU, scriptAt, type FighterTables } from "./cartridge";
 import { readCommands } from "./commands";
 import { inTableOrder } from "./entries";
@@ -77,7 +78,9 @@ export function fighterStates(rom: Uint8Array, name: string, t: FighterTables): 
   const moved = withAttributes(made.file, readAttributes(rom, t.character));
   // his commands tried as the cartridge tries them, the table's last row first
   const file = inTableOrder(own ? withSpecials(moved, own) : moved, readCommands(rom, t.character));
-  return { file: { ...file, states: blowsSaid(heldOn(heldOn(heldTumble(file.states, rom, t), "crouch", CROUCH, rom, t, animations), "ko_down", KO, rom, t, animations), animations) }, made, own };
+  const held = blowsSaid(heldOn(heldOn(heldTumble(file.states, rom, t), "crouch", CROUCH, rom, t, animations), "ko_down", KO, rom, t, animations), animations);
+  const getUp = (animations.m1f as { steps: { dur: number }[] }).steps.map((s) => s.dur);
+  return { file: { ...file, states: withKnockdown(held, highGravity(rom, t.character), getUpFrame(rom, t.character, getUp)) }, made, own };
 }
 
 /** The air reel stops where his `1a` holds, on a step of its own in each fighter's script. */

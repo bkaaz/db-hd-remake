@@ -13,12 +13,6 @@ After any change to a reader or the cutter: `npm run rom -- export --all`, then
 `npm run rom -- states --all`, then `git diff data/`. A diff on a fighter already
 approved names what to try again.
 
-## Gohan
-
-| move | state | input | left out or guessed |
-|---|---|---|---|
-| knockdown, win | | | — |
-
 ## Gotenks
 
 Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug&p2=gotenks`.

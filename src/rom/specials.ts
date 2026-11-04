@@ -29,6 +29,11 @@ export interface SpecialsFile {
    * export cuts from his handler. `states` stops calling them "to read".
    */
   read?: string[];
+  /**
+   * The winner's poses, in place of the template's: `82` is the original's pose
+   * above the arena and does not fit every fighter on the ground.
+   */
+  poses?: string[];
 }
 
 /** What asks for a button: a press, or a command (ADR 0050). */
@@ -58,7 +63,11 @@ export function withSpecials(file: StatesFile, specials: SpecialsFile): StatesFi
       states[name] = { ...state, transitions: [...transitions.slice(0, at), { when, to }, ...transitions.slice(at)] };
     }
   }
-  return { ...file, states };
+  for (const pose of specials.poses ?? []) {
+    if (!(pose in states)) throw new Error(`"${pose}" is a winner's pose, which is no state`);
+  }
+  const round = specials.poses && file.round ? { ...file.round, win: specials.poses } : file.round;
+  return { ...file, states, round };
 }
 
 function list(when: Transition["when"]): string[] {

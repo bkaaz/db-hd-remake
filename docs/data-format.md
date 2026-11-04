@@ -110,6 +110,8 @@ The start and end of a round are the file's `round` — his intro, the state
 a KO forces, the one he lies done in, the winner's poses (`RoundStates`) —
 and `fullSpeed` on a state whose arrival ends a KO's half speed before that
 (`src/match/opening.ts`, `src/match/round.ts`, ADR 0064, 0066, 0067).
+A fighter's `specials.json` may name his own poses (`poses`) in place of the
+template's.
 
 Validation is `validateStates()` in `src/entity/states.ts`, run by the game (on
 screen at load) and by the editor. **What it checks is in that function** and is

@@ -180,6 +180,8 @@ export interface StateDef {
   shove?: number;
   /** Whether the entity may turn to face its opponent while in this state. */
   turn?: boolean;
+  /** `turn`, but only from this frame of the state: the get-up turns on its last step (`$0F:A38B`). */
+  turnFrom?: number;
   /**
    * The hit type of this state's attack, which decides `onHit`, `hitstun`,
    * `hitstop` and `relaunch` — a state naming one sets none of them itself,
@@ -668,6 +670,11 @@ export interface RoundStates {
    * original gives only above the arena — a fight this game will not have.
    */
   win: string[];
+}
+
+/** Whether a body in `def` may turn to face its opponent on the state's frame `elapsed`. */
+export function mayTurn(def: StateDef, elapsed: number): boolean {
+  return !!def.turn || (def.turnFrom !== undefined && elapsed >= def.turnFrom);
 }
 
 /** What the entity's controller is asking for this frame, facing-relative. */
@@ -1551,6 +1558,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     errors.push(...inputsOfErrors(where, def, authored));
     if (def.glow !== undefined && (!Number.isInteger(def.glow) || def.glow < 0)) errors.push(`${where}: "glow" is the state's frame it starts on, 0 or more`);
     if (def.win !== undefined && (!Number.isInteger(def.win) || def.win < 0)) errors.push(`${where}: "win" is the state's frame it starts on, 0 or more`);
+    if (def.turnFrom !== undefined && (!Number.isInteger(def.turnFrom) || def.turnFrom < 0)) errors.push(`${where}: "turnFrom" is the state's frame it starts on, 0 or more`);
     const moves = def.endsWithMove;
     if (moves !== undefined && moves !== true && !(Array.isArray(moves) && moves.every((m) => /^[0-9a-f]{2}$/.test(m)))) {
       errors.push(`${where}: "endsWithMove" is true or a list of move ids, two hex digits each`);

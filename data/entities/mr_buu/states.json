@@ -1644,6 +1644,14 @@
       ],
       "airborne": true,
       "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0.4296875
+          }
+        ]
+      ],
       "sound": "voice_hurt",
       "ifHitAgain": {
         "to": "reel_high",
@@ -1666,6 +1674,14 @@
       "rank": 1,
       "airborne": true,
       "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0.4296875
+          }
+        ]
+      ],
       "ifHitAgain": {
         "to": "reel_high",
         "times": 2,
@@ -1683,6 +1699,14 @@
       "rank": 3,
       "airborne": true,
       "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0.4296875
+          }
+        ]
+      ],
       "rebound": {
         "share": 0.25,
         "min": 2
@@ -1782,9 +1806,11 @@
         0
       ],
       "turn": false,
+      "turnFrom": 24,
       "inputsOf": {
         "state": "idle",
-        "only": "buttons"
+        "only": "buttons",
+        "from": 24
       },
       "transitions": [
         {
@@ -1916,9 +1942,11 @@
       ],
       "turn": false,
       "sound": "land_0d",
+      "turnFrom": 24,
       "inputsOf": {
         "state": "idle",
-        "only": "buttons"
+        "only": "buttons",
+        "from": 24
       },
       "transitions": [
         {

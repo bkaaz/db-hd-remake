@@ -54,4 +54,12 @@ describe("withSpecials", () => {
     expect(() => withSpecials(TEMPLATE, { ...BALL, replaces: ["nothing"], states: { ...BALL.states, nothing: { anim: "m93" } } })).toThrow(/makes no such state/);
     expect(() => withSpecials(TEMPLATE, { ...BALL, replaces: ["kick"] })).toThrow(/does not define it/);
   });
+
+  it("gives him his own winner's poses, keeping the rest of the round", () => {
+    const round = { ko: "ki", down: "crouch", win: ["kick", "ki"] };
+    const out = withSpecials({ ...TEMPLATE, round }, { ...BALL, poses: ["kick"] });
+    expect(out.round).toEqual({ ...round, win: ["kick"] });
+    expect(withSpecials({ ...TEMPLATE, round }, BALL).round).toEqual(round);
+    expect(() => withSpecials({ ...TEMPLATE, round }, { ...BALL, poses: ["nothing"] })).toThrow(/no state/);
+  });
 });

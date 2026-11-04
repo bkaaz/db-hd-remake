@@ -10,22 +10,9 @@
     { "p2": { "does": ["attack 6", "attack 10", "smash", 120] } },
     { "p2": { "does": ["attack 24"] } },
     { "p2": { "guard": "always", "does": [60] } },
-    { "p1": { "at": 0 }, "p2": { "at": 0.12, "loop": false, "does": [
-      "fwd 90", 10, "fwd strike", 240,
-      "fwd 120", 10, "fwd attack", 200,
-      "fwd 120", 10, "dash smash", 240,
-      "fwd 120", 10, "back 60", "fwd smash", 240,
-      "fwd 120", 10, "down 60", "up smash", 240,
-      "fwd 120", 10, "back 60", "fwd attack", 240,
-      "fwd 120", 10, "down 2", "down fwd 2", "fwd 2", "fwd blast", 240,
-      "fwd 120", 10, "down 2", "down back 2", "fwd 2", "fwd blast 10", 300,
-      "fwd 120", 10, "down 2", "down back 2", "fwd 2", "fwd blast 28", 300,
-      "fwd 120", 10, "down 2", "down back 2", "fwd 2", "fwd blast 60", 340,
-      "fwd 120", 10, "down 2", "down fwd 2", "fwd 2", "fwd strike", 240,
-      "fwd 120", 10, "fwd 2", "back 2", "fwd 2", "fwd strike", 240,
-      "fwd 120", 10, "down 2", "down back 2", "back 2", "back strike", 240,
-      "fwd dash 30", 40, "back dash 30", 60,
-      "fwd 120", 10, "fwd 2", "down fwd 2", "down 2", "down back 2", "back 2", "fwd 2", "fwd smash", 400
+    { "p1": { "at": 0.3 }, "p2": { "at": 0.42, "does": [
+      "fwd 90", 10, "fwd attack", 300,
+      "fwd 120", 10, "back 60", "fwd smash", 300
     ] } }
   ]
 }

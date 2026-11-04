@@ -479,6 +479,10 @@ queue.
   held crouch — the original's own (`rom.md`, a handler starting a move
   part-way), seen in the emulator too. Ours could return straight to the held
   crouch.
+- **The winners' poses in the air** (owner, 2026-11-04). `82` is the original's
+  pose above the arena, and Gohan's does not fit on the ground, so it is off for
+  him for now (`poses` in his `specials.json`). To come back to: what becomes of
+  these poses, for every fighter who has one.
 - **Five objects a fighter** (owner, 2026-11-01: not yet) — the original
   gives each player five object slots and puts out nothing past them
   (`rom.md`, Object slots): Double Punch's dust thins, a ki blast spam

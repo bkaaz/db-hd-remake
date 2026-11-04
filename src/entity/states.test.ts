@@ -11,6 +11,7 @@ import {
   spawnsNamed,
   groundSpeed,
   guardStateFor,
+  mayTurn,
   reactionFor,
   StateMachine,
   validateStates,
@@ -1967,5 +1968,23 @@ describe("goku's landing", () => {
       return sm.update(input, QUIET);
     };
     expect([from({ ...UP, fwd: true }), from({ ...UP, back: true }), from(UP)]).toEqual(["jump_fwd", "jump_back", "jump_up"]);
+  });
+});
+
+describe("mayTurn", () => {
+  it("lets a state with turn turn on any frame, and one without on none", () => {
+    expect(mayTurn({ anim: "m", turn: true }, 0)).toBe(true);
+    expect(mayTurn({ anim: "m", turn: false }, 99)).toBe(false);
+  });
+
+  it("holds a turnFrom state still until its frame", () => {
+    expect(mayTurn({ anim: "m", turn: false, turnFrom: 32 }, 31)).toBe(false);
+    expect(mayTurn({ anim: "m", turn: false, turnFrom: 32 }, 32)).toBe(true);
+  });
+
+  it("is refused by the validator when it is no frame", () => {
+    const f = machine();
+    f.states.idle = { ...f.states.idle, turnFrom: -1 };
+    expect(validateStates(f, ANIMS).errors.join()).toContain('"turnFrom"');
   });
 });
