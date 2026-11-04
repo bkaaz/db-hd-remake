@@ -116,6 +116,19 @@ describe("Round", () => {
     expect(r.locked).toBe(true);
   });
 
+  it("is done once the pose has played 304 frames", () => {
+    const { r } = round();
+    const [a, b] = [fighter(), fighter(0)];
+    run(r, [a, b], 1);
+    b.state = "ko_down";
+    run(r, [a, b], 81);
+    expect(r.now).toBe("win");
+    run(r, [a, b], 303);
+    expect(r.done).toBe(false);
+    run(r, [a, b], 1);
+    expect(r.done).toBe(true);
+  });
+
   it("picks the winner's pose at random among his", () => {
     const { r } = round(0.75);
     const [a, b] = [fighter(), fighter(0)];

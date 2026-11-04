@@ -133,7 +133,7 @@ pose is held until that bolt is gone (`spawnEnd`). The beam itself and the
 charge sphere are not built — see `plan.md`. → `combat.md` (The buttons)
 
 **KO** — health run out, with the debug scene's KO switch on: the fall in half
-speed, the announcement, the winner's pose; no next round. → `src/match/round.ts`,
+speed, the announcement, the winner's pose; then X builds the scene again. → `src/match/round.ts`,
 `rom.md` (A KO and the round's end), ADR 0064
 
 **Launcher** — a blow that lifts a grounded opponent into a juggle instead of

@@ -31,6 +31,13 @@ import { showMessage, showPrompt, type Notice } from "../ui/notices";
 const SPRITE_SCALE = 1;
 
 /**
+ * Frames of the winner's pose before X may fight again: a moment of it, not
+ * the 304 the original plays before its next round (owner) — this scene is
+ * for trying things again.
+ */
+const AGAIN_AFTER = 60;
+
+/**
  * The debug scene: two bodies on a stage, hitting each other, with everything
  * about the engine on show.
  *
@@ -72,10 +79,14 @@ export class DebugScene implements Scene {
      * the first key or click — so an intro is not played half in silence.
      */
     private waiting: { awake: () => boolean; prompt: Notice } | null,
+    /** Asks the player something in the screen's middle, until taken down. */
+    private readonly prompt: (text: string) => Notice,
   ) {}
 
   /** Frames since the scene began: half speed skips the odd ones. */
   private frame = 0;
+  /** Once the round is done: X fights it again, which this says. */
+  private again: Notice | null = null;
 
   static async create(
     ctx: SceneContext,
@@ -187,6 +198,7 @@ export class DebugScene implements Scene {
       opening,
       // only an intro has anything to lose: without one nothing sounds before a key
       opening.over || ctx.audio.awake ? null : { awake: () => ctx.audio.awake, prompt: showPrompt(ctx.page.notices, "press any key") },
+      (text) => showPrompt(ctx.page.notices, text),
     );
   }
 
@@ -201,6 +213,9 @@ export class DebugScene implements Scene {
       this.waiting.prompt.destroy();
       this.waiting = null;
     }
+    // the pose plays on while X is awaited
+    const again = this.round.done || this.round.posed >= AGAIN_AFTER ? this.fightAgain(keyboard) : null;
+    if (again) return again;
     // a KO's half speed: an odd frame only draws ($0E:821C)
     if (this.round.skips(this.frame++)) return this.nextMode(keyboard);
     // under the announcement only the announcement moves
@@ -247,6 +262,19 @@ export class DebugScene implements Scene {
   }
 
   /**
+   * The round done, or a moment into the pose: X builds the scene again as
+   * it was asked for — health, places, intro and all. The press is the first
+   * taken after the prompt, so a button held through the pose cannot start
+   * the next fight at once.
+   */
+  private fightAgain(keyboard: Keyboard): SceneRequest | null {
+    const pressed = keyboard.frame().blast;
+    if (this.again) return pressed ? { ...this.req } : null;
+    this.again = this.prompt("press X to fight again");
+    return null;
+  }
+
+  /**
    * `M` steps to the next mode by asking to be rebuilt, which is the machinery
    * the character select already uses — so the address bar always says which
    * setup is running and can be copied straight into a bug report. Everything
@@ -275,6 +303,7 @@ export class DebugScene implements Scene {
     this.readouts.destroy();
     for (const notice of this.notices) notice.destroy();
     this.waiting?.prompt.destroy();
+    this.again?.destroy();
     this.view.destroy();
   }
 }

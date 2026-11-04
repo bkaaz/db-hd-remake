@@ -61,7 +61,7 @@ export class Keyboard {
   };
 
   /**
-   * @param toggles the debug switches B, I, T and L flip — the panel's too
+   * @param toggles the debug switches its keys flip (`TOGGLE_KEYS`) — the panel's too
    *   (`src/debug/toggles.ts`)
    */
   constructor(

@@ -281,12 +281,6 @@ npm run rom -- draft --fighter cell
 npm run rom -- export --all
                   # goku and every fighter with states, exported again;
                   # then git diff data/ says what a reader's change moved
-npm run rom -- states --all
-                  # every generated fighter again — after any change to
-                  # goku's states; a test fails until it is run
-npm run rom -- export --all
-                  # goku and every fighter with states, exported again;
-                  # then git diff data/ says what a reader's change moved
 npm run rom -- objects [logs/objects-rec.txt]
                   # a recording of the object slots read back: each
                   # object's frames and timing, speed, what it becomes
@@ -446,8 +440,8 @@ and a budget of two re-launches closes the uppercut loop.
 
 **There is still no round.** Behind the debug scene's intro switch the fight
 opens with both intros and READY, FIGHT!; behind its KO switch a fighter whose
-health runs out is knocked out and the other strikes his pose — then the game
-stands still: no reset, no second round, no second screen. That, and a second
+health runs out is knocked out and the other strikes his pose, and X starts the
+same scene again — no second round, no second screen. That, and a second
 player, is what the game is missing before it is one.
 
 **What is next: `docs/plan.md`** — the queue, and the only one. Why the engine is

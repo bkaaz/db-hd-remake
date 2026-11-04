@@ -5,7 +5,7 @@ import type { RoundStates } from "../entity/states";
  * end): a fighter whose health runs out is knocked out, the fight runs at
  * half speed until he lands for the last time, and once he lies done and the
  * other stands — or both lie — the announcement goes up, everyone holds still
- * under it, and then the winner strikes his pose.
+ * under it, and then the winner strikes his pose and the round is done.
  *
  * Separate from `Fighters` because none of it is a rule *between* two
  * bodies: it watches both and steps in once, at the end. There is no next
@@ -46,6 +46,8 @@ export interface RoundWorld {
 const SECOND_PICTURE = 24;
 /** Where `a/1f` stands on the screen ($0D:EB88, entry 1). */
 const KO_Y = 80;
+/** How long the winner's pose plays before the round is done ($0D:EBCC: field 0x70 to 0x130). */
+const POSE = 304;
 const GONE = 80;
 /** Its sound, on its first tick and on the second picture. */
 const ANNOUNCED = "hit_09";
@@ -60,6 +62,7 @@ export class Round {
   /** `$30B0` bit 1: every other frame is skipped. */
   private slow = false;
   private announcing: { what: Announcement; ticks: number; winner: Contender | null } | null = null;
+  private posing = 0;
 
   constructor(private readonly world: RoundWorld) {}
 
@@ -77,6 +80,16 @@ export class Round {
     return this.phase === "announce";
   }
 
+  /** The pose played out, or a draw called: what comes next is the scene's. */
+  get done(): boolean {
+    return this.phase === "over";
+  }
+
+  /** Frames the winner has been in his pose. */
+  get posed(): number {
+    return this.posing;
+  }
+
   /** Once the round is decided, nobody's buttons count. */
   get locked(): boolean {
     return this.phase !== "fight";
@@ -91,6 +104,8 @@ export class Round {
   step(fighters: Contender[], on: boolean, quiet: boolean): void {
     if (this.phase === "fight") this.fight(fighters, on, quiet);
     else if (this.phase === "announce") this.announce();
+    // a draw is over at once ($0F:B2DE clears $0580 itself)
+    else if (this.phase === "win" && ++this.posing >= POSE) this.phase = "over";
   }
 
   private fight(fighters: Contender[], on: boolean, quiet: boolean): void {
