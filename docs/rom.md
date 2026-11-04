@@ -1030,15 +1030,32 @@ hair, which the pose's drawings lack — and loops its last part; `0/07`
 own + `0x98` (field `0x17`) on frame 1 — record `0xE8` by day, his hair
 black where the drawings paint it in the aura's colours 12–13. Goku's
 loads the hair's palette too on frame 2: record own + `0x130` (`$20:80EF`).
+Both count field `0x70` (`$0D:EBCC`) and at 304 clear `$0580`, which lets
+`$0D:CEC5` end the round.
 
 **`82`, the winner's pose above the arena** — `fb` gives it in `$0552`'s
 mode instead of `3e`: Goku's (`$20:81D9`) leaps with a fist up, says line
 `03`, holds drawing `40`, and bobs all the while (`$0D:C40A`: field `0x10`,
 the draw offset, 0 to −6 px and back, a pixel every 4 frames of its
 counter `0x16`, 48 round); Vegeta's (`$20:9272`) says line `10` and loops
-from frame 8. `3c` (Goku turning Super Saiyan) and `3f` are set only by
-the sequencer in bank `$02` (`$02:DD8B`) — the story `?`, not a fight. Both count field `0x70` (`$0D:EBCC`) and at
-304 clear `$0580`, which lets `$0D:CEC5` end the round.
+from frame 8. `3f` is set only by the sequencer in bank `$02`
+(`$02:DD8B`) — the story `?`, not a fight.
+
+**`3c`, the fighter's intro**, is played on the screen before the fight
+(scene `$32` = 6, run by bank `$02`): both fighters take it on the same
+frame (`$02:A242`, `$02:A254`), at world x `0xC0` and `0x140`; a button
+skips the scene (`$1A73`). Goku's (`$20:8058`) turns Super Saiyan: effect
+`29`, object `0/05` on its step 2 — his black hair, `$0F:B828`: frame step
+− 2, gone from step 6 or out of `3c`, at his place — line `32` at 65, and
+from frame 65 effect `19` every 8th frame of the game; on frame 2 it loads
+resource `51` at `$6C00` / `$7C00` and palette record `0x118` (`0x27B161`)
+into OBJ palette 4, player two's 5 (`$01:89DE`). 161 frames, then the
+script ends. Vegeta's (`$20:920D`): effects `1b` at 32 and `2f` at 68, his
+aura flickering (`d2` / `ca`), then holds `36`; 132 frames. In scene 6
+only, from frame 69 until step 20 his x stands 16 px behind where he
+began. The fight then starts with `a/1e` over both standing (`$0D:EB45`
+with 0, `$0E:8155`): READY, FIGHT!, then `fa` — 2 frames keeping the
+drawing — and the fight.
 
 ## Another fighter
 

@@ -5,6 +5,7 @@
   "hitFx": "hit_spark",
   "guardFx": "guard_spark",
   "round": {
+    "intro": "intro",
     "ko": "ko_rise",
     "down": "ko_down",
     "win": [
@@ -2355,6 +2356,20 @@
         {
           "when": "animEnd",
           "to": "win_air_2"
+        }
+      ]
+    },
+    "intro": {
+      "anim": "m3c",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     },

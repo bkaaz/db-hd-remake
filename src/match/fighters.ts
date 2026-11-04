@@ -134,6 +134,10 @@ export class Fighters {
     if (this.opponent) {
       this.opponent.groundY = stage.groundY;
       this.opponent.x = at.p2 !== undefined ? stage.xAt(at.p2) : ROUND_START.right;
+      // facing each other from the start: a state that does not turn (an
+      // intro) would otherwise begin with player two's back to player one
+      this.player.turnToward(this.opponent.x);
+      this.opponent.turnToward(this.player.x);
     }
   }
 

@@ -1219,8 +1219,9 @@ export class Entity {
     // fighters equally and must not decide when the next hit of a multi-hit
     // move arrives.
     this.swing.tick();
-    const until = this.sm.def.loopUntil;
-    if (this.hum.id && (until === undefined || this.stateFrames < until)) {
+    const { loopUntil: until, loopFrom: from } = this.sm.def;
+    const humming = (until === undefined || this.stateFrames < until) && (from === undefined || this.stateFrames >= from);
+    if (this.hum.id && humming) {
       if (this.hum.left <= 0) {
         this.audio?.play(this.hum.id);
         this.hum.left = this.sm.def.loopEvery ?? HUM_EVERY;

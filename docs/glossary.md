@@ -108,6 +108,10 @@ and because both sides freeze equally it changes nothing about who acts first.
 bar that moves below 150, the names. Ours is HTML around the screen
 (ADR 0041). → `src/hud/`, ADR 0032
 
+**Intro** — a fighter's `3c`, played on the arena before the fight with the
+debug scene's intro switch on, both at once, then READY and FIGHT!.
+→ `src/match/opening.ts`, `rom.md` (`3c`, the fighter's intro), ADR 0067
+
 **Hitstun** — how long the **defender** is helpless after a blow, counted in
 frames and set by the blow's hit type, not by the length of the reaction
 animation. Everything about combos is arithmetic on this number. → `combat.md` §1

@@ -55,11 +55,11 @@ export class Effects {
    * printed over and over. The mirror doubles that for free and, unlike a
    * rotation, is exact — it moves whole pixels, so nothing is resampled.
    */
-  spawn(name: string, x: number, y: number, copiesLeft?: number, facing?: 1 | -1, owner?: { entity: Entity; at: [number, number] }): void {
+  spawn(name: string, x: number, y: number, copiesLeft?: number, facing?: 1 | -1, owner?: { entity: Entity; at: [number, number] }): Entity | null {
     const def = this.defs.get(name);
-    if (!def) return;
+    if (!def) return null;
     const variants = Object.keys(def.animations);
-    if (variants.length === 0) return;
+    if (variants.length === 0) return null;
     const fx = new Entity(def, this.scale);
     fx.preview(variants[Math.floor(Math.random() * variants.length)]);
     // what its spawner's script put out faces the spawner's way, as the
@@ -71,6 +71,7 @@ export class Effects {
     const by = def.attributes.follows;
     const rides = by && owner ? { ...owner, by, since: { play: owner.entity.animationPlay, move: moveOf(owner.entity.animation) } } : undefined;
     this.live.push({ fx, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false, owner: rides });
+    return fx;
   }
 
   /**

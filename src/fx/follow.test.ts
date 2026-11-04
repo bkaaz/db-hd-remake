@@ -23,6 +23,11 @@ describe("riding", () => {
     expect(riding({ step: 3 }, since, owner({ play: 5, step: 6 }))).toBe("3");
   });
 
+  it("by step, is gone from its last step on", () => {
+    expect(riding({ step: 2, to: 6 }, since, owner({ step: 5 }))).toBe("3");
+    expect(riding({ step: 2, to: 6 }, since, owner({ step: 6 }))).toBeNull();
+  });
+
   it("by step, is gone once he leaves the move", () => {
     expect(riding({ step: 3 }, since, owner({ move: 0x00, step: 4 }))).toBeNull();
     expect(riding({ step: 3 }, since, owner({ move: null, step: 4 }))).toBeNull();

@@ -28,7 +28,14 @@ function fighter(health = 400): Contender & { health: number; state: string; hea
 function round(dice = 0) {
   const shown: Announcement[] = [];
   const played: string[] = [];
-  const r = new Round({ announce: (a) => shown.push(a), sound: (s) => played.push(s), random: () => dice });
+  const r = new Round({
+    announce: (a) => {
+      shown.push(a);
+      return { at: () => {} };
+    },
+    sound: (s) => played.push(s),
+    random: () => dice,
+  });
   return { r, shown, played };
 }
 
@@ -106,7 +113,7 @@ describe("Round", () => {
     expect(a.state).toBe("win");
     expect(b.state).toBe("ko_down");
     expect(r.now).toBe("win");
-    expect(r.decided).toBe(true);
+    expect(r.locked).toBe(true);
   });
 
   it("picks the winner's pose at random among his", () => {

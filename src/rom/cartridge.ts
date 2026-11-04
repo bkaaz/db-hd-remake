@@ -131,7 +131,9 @@ export const GOKU: FighterTables = {
       // and flashing black in play (2026-10-29); PalMod names 0x27B161 the
       // "KI Blast effects" palette
       { name: "ki_blast", type: 0xa, anim: 3, steps: [2, 2], loop: true, hits: true, palette: 0x27b161 },
-      { name: "goku_hair", type: 0, anim: 5, steps: [32, 8, 8, 6], loop: false, hits: false },
+      // his black hair in his intro, 3c ($0F:B828): rides by step (`follows`),
+      // so on its step, cutting nothing
+      { name: "goku_hair", type: 0, anim: 5, steps: [32, 8, 8, 6], loop: false, hits: false, onStep: [0x3c] },
       // Vegeta's Renzoku Energy Dan shot (aa, three of them): a shared object
       // in the explosions' tiles and palette (logs/objects-vegeta.bin: palette
       // 2 holds 0x27AE98, resources 0x30 / 0x31 in place); its frame flips
@@ -193,6 +195,9 @@ export const GOKU: FighterTables = {
       // the dust a body raises hitting the floor ($0D:DE6C, from the knockdown
       // handler): 6 frames a step ($0F:E559), in the explosions' slot and tiles
       { name: "dust", type: 0xa, anim: 0x0d, steps: [6, 6, 6, 6], loop: false, hits: false, palette: BURST_PALETTE, loads: BURST_LOADS },
+      // the round's start ($0F:E7C9): READY, FIGHT! on tick 64, gone on 96
+      { name: "ready", type: 0xa, anim: 0x1e, steps: [64, 32], frames: [0, 1], loop: false, hits: false,
+        palette: ANNOUNCEMENT_PALETTE, loads: [{ resource: 0x34, vram: 0x6b00 }], tiles: 0x80 },
       // the round's end ($0F:E857): K. then K.O. on tick 24, gone on 80 —
       // DOUBLE K.O. alone; put in slot 0 by $0D:EB45 with tile base 08, in
       // OBJ palette 3, which $01:89FB loads with record 0xE3 — resource

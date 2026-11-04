@@ -1,9 +1,9 @@
 /**
  * An effect that rides on whoever put it out — normal Goku's hair over
  * Saiyan Meteor's ae ($0F:B8F2), idle's lightning ($0F:B862), his hair in
- * his winning pose ($0F:B8CD): on his position and facing every frame, and
- * gone once he leaves what put it out. Pure, so the rule is tested; `Effects`
- * applies it.
+ * his winning pose ($0F:B8CD) and in his intro ($0F:B828): on his position
+ * and facing every frame, and gone once he leaves what put it out. Pure, so
+ * the rule is tested; `Effects` applies it.
  */
 
 /**
@@ -21,9 +21,10 @@ export function followedFrame(drawing: string | undefined): string | null {
 /**
  * How a follower rides: by its owner's pose, on his body with its own
  * animation, or by the step of his move's script — the frame his step less
- * `step`, for as long as he is in the move, whatever part of it plays.
+ * `step`, for as long as he is in the move, whatever part of it plays, and
+ * gone from his step `to` when there is one.
  */
-export type FollowBy = "pose" | "body" | { step: number };
+export type FollowBy = "pose" | "body" | { step: number; to?: number };
 
 /** What a follower reads of its owner each frame. */
 export interface Owner {
@@ -47,7 +48,8 @@ export interface Owner {
 export function riding(by: FollowBy, since: { play: number; move: number | null }, owner: Owner): string | "own" | null {
   if (typeof by === "object") {
     const frame = owner.step - by.step;
-    return owner.move !== null && owner.move === since.move && frame >= 0 ? String(frame) : null;
+    const within = frame >= 0 && (by.to === undefined || owner.step < by.to);
+    return owner.move !== null && owner.move === since.move && within ? String(frame) : null;
   }
   if (owner.play !== since.play) return null;
   return by === "pose" ? followedFrame(owner.drawing) : "own";

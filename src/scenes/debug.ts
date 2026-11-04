@@ -4,7 +4,8 @@ import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
 import type { Keyboard } from "../input/keyboard";
 import { Fighters } from "../match/fighters";
-import { Round } from "../match/round";
+import { Round, type RoundWorld } from "../match/round";
+import { Opening } from "../match/opening";
 import { NO_INPUT } from "../entity/entity";
 import { Projectiles } from "../match/projectiles";
 import { isColourSet, type DebugRequest, type Scene, type SceneContext, type SceneRequest } from "../scene";
@@ -20,7 +21,7 @@ import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
 import { Readouts } from "../ui/debug";
 import { Hud } from "../hud/hud";
-import { showMessage, type Notice } from "../ui/notices";
+import { showMessage, showPrompt, type Notice } from "../ui/notices";
 
 /**
  * Sprites are drawn at their own size: the world is in game px and the view
@@ -64,6 +65,13 @@ export class DebugScene implements Scene {
     private readonly notices: Notice[],
     /** How the fight ends, when the KO switch lets it (`match/round.ts`). */
     private readonly round: Round,
+    /** How it starts, when the intro switch asks for it (`match/opening.ts`). */
+    private readonly opening: Opening,
+    /**
+     * Held on the first frame until the sound wakes — a browser wakes it on
+     * the first key or click — so an intro is not played half in silence.
+     */
+    private waiting: { awake: () => boolean; prompt: Notice } | null,
   ) {}
 
   /** Frames since the scene began: half speed skips the odd ones. */
@@ -116,7 +124,7 @@ export class DebugScene implements Scene {
     const projectiles = await Projectiles.load(view.world, [...new Set(defs.flatMap((d) => spawnsNamed(d.states)))], SPRITE_SCALE);
     const effects = await Effects.load(
       view.world,
-      [...new Set([...defs.flatMap((d) => effectsNamed(d.states, d.animations)), ...projectiles.effectsNeeded(), "ko", "double_ko"])],
+      [...new Set([...defs.flatMap((d) => effectsNamed(d.states, d.animations)), ...projectiles.effectsNeeded(), "ready", "ko", "double_ko"])],
       SPRITE_SCALE,
     );
     const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles });
@@ -148,13 +156,18 @@ export class DebugScene implements Scene {
     ]);
     if (typeof hud === "string") notices.push(showMessage(ctx.page.notices, hud, true));
 
-    // the announcement stands where the original puts it on the screen: x 128, y 80 ($0D:EB88)
+    // an announcement stands in the screen's middle ($0D:EB88), at a height the round says
     const announcer = ctx.audio.side("round");
-    const round = new Round({
-      announce: (what) => effects.spawn(what, camera.x + 128, camera.y + 80),
+    const world: RoundWorld = {
+      announce: (what) => {
+        const fx = effects.spawn(what, camera.x + 128, camera.y);
+        return { at: (y) => fx && (fx.y = camera.y + y) };
+      },
       sound: (id) => announcer.play(id),
       random: Math.random,
-    });
+    };
+    const round = new Round(world);
+    const opening = new Opening(world, fighters.bodies, ctx.keyboard.toggles.get("intro"));
 
     return new DebugScene(
       view,
@@ -171,11 +184,23 @@ export class DebugScene implements Scene {
       new Readouts(ctx.page),
       notices,
       round,
+      opening,
+      // only an intro has anything to lose: without one nothing sounds before a key
+      opening.over || ctx.audio.awake ? null : { awake: () => ctx.audio.awake, prompt: showPrompt(ctx.page.notices, "press any key") },
     );
   }
 
   /** One game frame, in the order the parts of it have to happen. */
   step(keyboard: Keyboard): SceneRequest | null {
+    if (this.waiting) {
+      // the key that wakes it is for waking only: Space would refill the
+      // health a mode or the address set, M leave the mode
+      keyboard.takeRefill();
+      keyboard.takeModeStep();
+      if (!this.waiting.awake()) return null;
+      this.waiting.prompt.destroy();
+      this.waiting = null;
+    }
     // a KO's half speed: an odd frame only draws ($0E:821C)
     if (this.round.skips(this.frame++)) return this.nextMode(keyboard);
     // under the announcement only the announcement moves
@@ -184,7 +209,7 @@ export class DebugScene implements Scene {
       this.effects.update(false, this.camera.screen);
       return this.nextMode(keyboard);
     }
-    const decided = this.round.decided;
+    const locked = this.round.locked || !this.opening.over;
     const dummy = this.dummy.input({
       on: keyboard.toggles.get("dummy"),
       facing: this.fighters.opponent?.facing ?? -1,
@@ -192,8 +217,8 @@ export class DebugScene implements Scene {
       frozen: this.fighters.frozen,
     });
     this.fighters.update(
-      decided ? NO_INPUT : keyboard.frame(),
-      decided ? NO_INPUT : dummy,
+      locked ? NO_INPUT : keyboard.frame(),
+      locked ? NO_INPUT : dummy,
       { bodies: this.camera.world, shots: this.camera.screen, view: { x: this.camera.x, y: this.camera.y } },
     );
     // Pushed apart before the camera reads the moves, as the original evens
@@ -203,7 +228,8 @@ export class DebugScene implements Scene {
     this.fighters.keepInView(this.camera);
     if (keyboard.takeRefill()) this.fighters.refill();
     this.fighters.exchangeBlows();
-    this.round.step(this.fighters.bodies, keyboard.toggles.get("ko"), this.fighters.quiet);
+    if (this.opening.over) this.round.step(this.fighters.bodies, keyboard.toggles.get("ko"), this.fighters.quiet);
+    else this.opening.step(this.fighters.bodies);
     this.stage.flash(this.fighters.takeFlash());
     for (const c of this.fighters.takeScreen()) this.stage.cue(c);
     const { health, dial } = this.fighters.status();
@@ -248,6 +274,7 @@ export class DebugScene implements Scene {
     this.hud?.destroy();
     this.readouts.destroy();
     for (const notice of this.notices) notice.destroy();
+    this.waiting?.prompt.destroy();
     this.view.destroy();
   }
 }

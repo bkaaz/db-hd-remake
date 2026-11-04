@@ -156,8 +156,9 @@ const BUTTON_KEYS: Record<string, keyof Buttons | undefined> = {
 
 const TOGGLE_KEYS: Record<string, Toggle | undefined> = {
   b: "boxes",
-  i: "readout",
+  r: "readout",
   t: "dummy",
+  i: "intro",
   k: "ko",
   l: "recording",
 };

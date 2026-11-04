@@ -512,6 +512,8 @@ export interface StateDef {
   loopEvery?: number;
   /** The state's frame `loopSound` stops being fired on — Saiyan Meteor's charge, 36 ($20:89C7). */
   loopUntil?: number;
+  /** The state's frame `loopSound` starts being fired on — Goku's intro, 65 ($20:805E). */
+  loopFrom?: number;
   /**
    * Effect entity spawned where this state's attack connects. Same idea as
    * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
@@ -626,6 +628,8 @@ export interface StatesFile {
 
 /** docs/rom.md, A KO and the round's end — each is entered from outside, never transitioned into. */
 export interface RoundStates {
+  /** His intro, played on the arena before the fight (`3c`, `match/opening.ts`). */
+  intro?: string;
   /** Forced on him when his health runs out: the KO's `1c`. */
   ko: string;
   /** Lying here, he is done: the round may end, and a KO's half speed is over ($0D:EBB8). */
@@ -1638,7 +1642,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     if (file.onGotHit && states[file.onGotHit]) roots.push(file.onGotHit);
     if (file.onGuard && states[file.onGuard]) roots.push(file.onGuard);
     if (file.onRelease && states[file.onRelease]) roots.push(file.onRelease);
-    for (const name of [file.round?.ko, ...(file.round?.win ?? [])]) if (name && states[name]) roots.push(name);
+    for (const name of [file.round?.intro, file.round?.ko, ...(file.round?.win ?? [])]) if (name && states[name]) roots.push(name);
     for (const def of Object.values(states)) {
       if (def.onHit && states[def.onHit] && !roots.includes(def.onHit)) roots.push(def.onHit);
       // A stance's own block reaction is forced from outside like any other.

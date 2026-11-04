@@ -160,6 +160,16 @@ export class Audio implements SoundPlayer {
     });
   }
 
+  /**
+   * Whether a sound asked for now is heard: a browser keeps the context
+   * asleep until the page is first clicked or typed in. With no context at
+   * all nothing is ever heard, so nothing is worth waiting for.
+   */
+  get awake(): boolean {
+    const ctx = this.context();
+    return !ctx || ctx.state === "running";
+  }
+
   private context(): AudioContext | null {
     if (this.ctx) return this.ctx;
     try {

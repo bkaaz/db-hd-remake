@@ -7,9 +7,10 @@ function memory(start: Record<string, string> = {}): Memory & { kept: Record<str
 }
 
 describe("Toggles", () => {
-  it("starts with the boxes and the readout on, the dummy, the KO and the recording off", () => {
+  it("starts with the boxes and the readout on, the dummy, the intro, the KO and the recording off", () => {
     const t = new Toggles(null);
-    expect([t.get("boxes"), t.get("readout"), t.get("dummy"), t.get("ko"), t.get("recording")]).toEqual([true, true, false, false, false]);
+    const all = (["boxes", "readout", "dummy", "intro", "ko", "recording"] as const).map((n) => t.get(n));
+    expect(all).toEqual([true, true, false, false, false, false]);
   });
 
   it("remembers the KO switch", () => {

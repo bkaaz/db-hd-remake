@@ -151,8 +151,8 @@ export interface Attributes {
    * `"pose"` shows the frame his drawing names — normal Goku's hair
    * ($0F:B8F2); `"body"` plays its own animation — idle's lightning
    * ($0F:B862); `{ step: n }` shows his move's step less n, while he is in
-   * the move — his hair in his winning pose ($0F:B8CD). False: it plays
-   * where it was put.
+   * the move and below its step `to` — his hair in his winning pose
+   * ($0F:B8CD) and his intro ($0F:B828). False: it plays where it was put.
    */
   follows: false | FollowBy;
   /**

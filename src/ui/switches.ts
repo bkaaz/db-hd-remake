@@ -14,6 +14,7 @@ const SWITCHES: [Toggle, string][] = [
   ["boxes", "boxes"],
   ["readout", "readout"],
   ["dummy", "dummy attacks"],
+  ["intro", "intro"],
   ["ko", "KO"],
 ];
 

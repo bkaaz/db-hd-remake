@@ -26,12 +26,17 @@ export interface Contender {
   sound(id: string): void;
 }
 
-/** The announcement's two pictures (`a/1f`): K. then K.O., or DOUBLE K.O. */
-export type Announcement = "ko" | "double_ko";
+/** What goes up over the fight: READY then FIGHT! (`a/1e`); K. then K.O., or DOUBLE K.O. (`a/1f`). */
+export type Announcement = "ready" | "ko" | "double_ko";
+
+/** An announcement up on the screen, to be put at a height on it. */
+export interface Placard {
+  at(screenY: number): void;
+}
 
 /** Where the round puts what it shows and plays, outside any fighter. */
 export interface RoundWorld {
-  announce(what: Announcement): void;
+  announce(what: Announcement): Placard;
   sound(id: string): void;
   /** 0 to 1, for which of his poses the winner strikes. */
   random(): number;
@@ -39,6 +44,8 @@ export interface RoundWorld {
 
 /** `a/1f`'s ticks ($0F:E857): its second picture and sound, and when it is gone. */
 const SECOND_PICTURE = 24;
+/** Where `a/1f` stands on the screen ($0D:EB88, entry 1). */
+const KO_Y = 80;
 const GONE = 80;
 /** Its sound, on its first tick and on the second picture. */
 const ANNOUNCED = "hit_09";
@@ -71,7 +78,7 @@ export class Round {
   }
 
   /** Once the round is decided, nobody's buttons count. */
-  get decided(): boolean {
+  get locked(): boolean {
     return this.phase !== "fight";
   }
 
@@ -106,7 +113,7 @@ export class Round {
     this.announcing = { what: winner ? "ko" : "double_ko", ticks: 0, winner };
     this.phase = "announce";
     this.slow = false;
-    this.world.announce(this.announcing.what);
+    this.world.announce(this.announcing.what).at(KO_Y);
     this.world.sound(ANNOUNCED);
   }
 

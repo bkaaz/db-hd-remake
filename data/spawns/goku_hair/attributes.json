@@ -1,0 +1,5 @@
+{
+  "_comment": "Goku's black hair in his intro, 3c: its code ($0F:B828) keeps it on him, shows his move's step less 2 and is gone from step 6 or once he leaves the move — written by hand, as the export writes no attributes.",
+  "follows": { "step": 2, "to": 6 },
+  "mirrors": false
+}

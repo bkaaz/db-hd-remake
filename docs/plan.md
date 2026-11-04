@@ -170,9 +170,8 @@ still differs from the original:
 1. **The rest of the specials** — every move of Goku's command table
    (`rom.md`, The buttons); what is left is what
    `npm run rom -- todo --fighter goku` lists.
-2. **The rest of the objects** — `goku_hair` is exported but nothing plays
-   it: there is no pre-fight screen, and `fires` only takes a projectile.
-   Moves cut at a spawn lose their loop (dizzy, `m26`–`m3a`).
+2. **The rest of the objects** — moves cut at a spawn lose their loop
+   (dizzy, `m26`–`m3a`).
 3. **The blows that change the arena — last of Goku's moves** (owner,
    2026-10-31). `9f`, `a0`, `a1` (X specials) send the opponent to another
    part of the arena, a flight shown between the two (`rom.md`, Which

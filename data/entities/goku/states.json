@@ -5,6 +5,7 @@
   "hitFx": "hit_spark",
   "guardFx": "guard_spark",
   "round": {
+    "intro": "intro",
     "ko": "ko_rise",
     "down": "ko_down",
     "win": [
@@ -3687,6 +3688,23 @@
       "turn": false,
       "hover": true,
       "transitions": []
+    },
+    "intro": {
+      "anim": "m3c",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "loopSound": "charge_19",
+      "loopEvery": 8,
+      "loopFrom": 65,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
     }
   }
 }

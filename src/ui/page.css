@@ -188,3 +188,4 @@ button.record.on { background: #5a2020; border-color: #c04040; color: var(--text
   text-align: center;
 }
 .notice.loud { margin: auto 0; color: #ffaa66; font-size: 16px; padding: 8px 12px; }
+.notice.prompt { margin: auto 0; color: #ffffff; font-size: 16px; padding: 8px 12px; }
