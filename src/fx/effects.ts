@@ -17,6 +17,8 @@ import { moveOf } from "../combat/corner";
 /** One effect on screen, and what is left of its copies (`attributes.copies`). */
 interface Live {
   fx: Entity;
+  /** Put out this frame: what put it out has moved, so it is on its first frame already. */
+  fresh: boolean;
   name: string;
   copiesLeft: number;
   copied: boolean;
@@ -72,7 +74,7 @@ export class Effects {
     this.world.addChild(fx.view);
     const by = def.attributes.follows;
     const rides = by && owner ? { ...owner, by, since: { play: owner.entity.animationPlay, move: moveOf(owner.entity.animation) } } : undefined;
-    this.live.push({ fx, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false, owner: rides });
+    this.live.push({ fx, fresh: true, name, copiesLeft: copiesLeft ?? def.attributes.copies.count, copied: false, owner: rides });
     return fx;
   }
 
@@ -88,7 +90,10 @@ export class Effects {
     for (let i = this.live.length - 1; i >= 0; i--) {
       const live = this.live[i];
       const { fx } = live;
-      if (!paused) fx.update(NO_INPUT, null, bounds);
+      // a tick on the frame it appears would end it a frame short of the step
+      // it was timed against: Gohan's body gone before he stands ($0F:BED8's 36)
+      if (!paused && !live.fresh) fx.update(NO_INPUT, null, bounds);
+      live.fresh = false;
       if (live.owner && !this.ride(live)) {
         fx.view.destroy({ children: true });
         this.live.splice(i, 1);

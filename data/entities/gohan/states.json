@@ -2257,7 +2257,7 @@
       "turn": false,
       "transitions": [
         {
-          "when": "animEnd",
+          "when": "frames:71",
           "to": "idle"
         }
       ],
@@ -2274,7 +2274,8 @@
           46,
           null
         ]
-      ]
+      ],
+      "holdStep": 9
     },
     "throw": {
       "anim": "m9d",

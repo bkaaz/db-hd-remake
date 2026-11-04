@@ -17,7 +17,7 @@ approved names what to try again.
 
 | move | state | input | left out or guessed |
 |---|---|---|---|
-| knockdown, win, intro | | | intro objects named by nothing but the move, `gohan_intro_b` may look wrong `?` |
+| knockdown, win | | | — |
 
 ## Gotenks
 

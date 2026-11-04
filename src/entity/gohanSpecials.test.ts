@@ -14,6 +14,15 @@ describe("Gohan's Kamehameha", () => {
   });
 });
 
+describe("Gohan's intro", () => {
+  it("rests in its last pose for 13 frames, as logs/fight-7.txt, not one frame of it", () => {
+    const steps = animations.m3c.steps as { dur: number }[];
+    expect(states.intro.holdStep).toBe(steps.length - 1);
+    const before = steps.slice(0, -1).reduce((n, s) => n + s.dur, 0);
+    expect(states.intro.transitions).toEqual([{ when: `frames:${before + 13}`, to: "idle" }]);
+  });
+});
+
 describe("Rushing Suki Combo", () => {
   it("runs to white and back, in the colours of either side", () => {
     expect(states.suki_combo.paletteRun).toEqual({ plain: ["run0", "run1", "run4", "run1", "run0"], alt: ["run2", "run3", "run4", "run3", "run2"] });

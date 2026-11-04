@@ -1,3 +1,4 @@
+import { matchingNames } from "./animSearch";
 import {
   state,
   emitChange,
@@ -117,6 +118,9 @@ export function renderFrames(container: HTMLElement): void {
 
 // --- Animations panel ----------------------------------------------------
 
+/** What the animation list is narrowed by; kept here, since every change renders the panel anew. */
+let animQuery = "";
+
 export function renderAnims(container: HTMLElement): void {
   container.replaceChildren();
 
@@ -135,18 +139,34 @@ export function renderAnims(container: HTMLElement): void {
   }
 
   const select = el("select");
-  for (const a of state.anims) {
-    const opt = el("option", { value: a.name, textContent: a.name });
-    if (a.name === state.selectedAnimName) opt.selected = true;
-    select.append(opt);
-  }
-  select.addEventListener("change", () => {
-    state.selectedAnimName = select.value;
+  const found = el("span", { className: "hint" });
+  const listMatches = (): string[] => {
+    const names = state.anims.map((a) => a.name);
+    const matches = matchingNames(names, animQuery, state.selectedAnimName);
+    select.replaceChildren(...matches.map((name) => el("option", { value: name, textContent: name, selected: name === state.selectedAnimName })));
+    found.textContent = `${matches.length} / ${names.length}`;
+    return matches;
+  };
+  const pick = (name: string) => {
+    state.selectedAnimName = name;
     state.selectedStepIndex = null;
     state.selectedBoxIndex = null;
     emitChange();
+  };
+  select.addEventListener("change", () => pick(select.value));
+  // only the list is rebuilt while typing: a whole render would take the focus away
+  const search = el("input", { type: "search", placeholder: "search…", value: animQuery, title: "Words of the name, any order. Enter picks the first match" });
+  search.addEventListener("input", () => {
+    animQuery = search.value;
+    listMatches();
   });
-  container.append(el("div", { className: "row" }, [el("label", { textContent: "Animation:" }), select]));
+  search.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const first = listMatches().find((name) => name !== state.selectedAnimName);
+    if (first) pick(first);
+  });
+  listMatches();
+  container.append(el("div", { className: "row" }, [el("label", { textContent: "Animation:" }), search, found]), el("div", { className: "row" }, [select]));
 
   const anim = selectedAnim();
   if (!anim) return;

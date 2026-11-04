@@ -1051,7 +1051,7 @@ holds each on frame 0 and runs him in turn (`$01:8382`): recorded, player one
 `0x07` off the screen until then; a button skips the scene (`$1A73`). Gohan's
 (`$20:A478`) on frame 1 glows (his palette + 8), on `11` takes his own back and
 `0x117` into OBJ palette 4 / 5 and shows himself in it (field `0x15`, `8` / `A`),
-`2/06` staying in his own, on `2E` back to palette 0 / 1. Goku's (`$20:8058`) turns Super Saiyan: effect
+`2/06` staying in his own, on `2E` back to palette 0 / 1. From 16 to 52 his own drawings (`be`–`c3`) are dust, and his body is `2/06`: back to front his sprite, `2/06`, `2/05` (OAM snapshots); the script's `hold` on 58 lasts 13 frames, recorded for both sides. Goku's (`$20:8058`) turns Super Saiyan: effect
 `29`, object `0/05` on its step 2 — his black hair, `$0F:B828`: frame step
 − 2, gone from step 6 or out of `3c`, at his place — line `32` at 65, and
 from frame 65 effect `19` every 8th frame of the game; on frame 2 it loads
