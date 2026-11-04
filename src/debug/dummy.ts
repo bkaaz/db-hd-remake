@@ -31,7 +31,7 @@ export interface Script {
  */
 const ROTATION = [90, "attack", 90, "smash", 90, "blast"];
 
-/** Buttons are edges — they fire on the first frame of their step and no more. */
+/** Pressed on the first frame of their step, held to its last. */
 const BUTTONS = ["attack", "guard", "smash", "blast", "strike", "dash"];
 /** Directions are held, and two of them are relative to which way the dummy looks. */
 const DIRECTIONS = ["fwd", "back", "up", "down"];
@@ -90,8 +90,10 @@ export class Dummy {
 
     const world = { ...NO_INPUT, holding: { ...NO_INPUT.holding } };
     for (const token of step?.tokens ?? []) {
-      // A button is an edge: held for a whole step it would re-press sixty
-      // times a second, which is not what one step of "attack" means.
+      // A button is an edge and a hold: pressed on the step's first frame, or it
+      // would re-press sixty times a second, and down for the rest of it — what a
+      // charged shot lets go of and a dash runs on.
+      if (BUTTONS.includes(token)) world.holding[token as keyof WorldInput["holding"]] = true;
       if (BUTTONS.includes(token) && !first) continue;
       press(world, token, facing);
     }
@@ -126,8 +128,7 @@ function press(world: WorldInput, token: string, facing: number): void {
       return;
     default:
       // Every other key of WorldInput is a flat boolean; `holding` is the one
-      // that is not, and no timeline token names it — the dummy presses, it
-      // does not lean on a key.
+      // that is not, set by the step above.
       world[token as Exclude<keyof WorldInput, "holding">] = true;
   }
 }

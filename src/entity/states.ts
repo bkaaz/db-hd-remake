@@ -18,6 +18,7 @@ import type { FinaleDef } from "../match/finale";
 import type { Approach, Rush } from "./approach";
 import type { BallDef } from "../combat/ball";
 import { airProblem, leavesGround, type AirTimeline } from "./air";
+import type { HitLightKind } from "../combat/hitLight";
 import { hitAgainProblem, type IfHitAgain } from "./hitAgain";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
@@ -430,6 +431,15 @@ export interface StateDef {
    * "frames": 8 }`.
    */
   shake?: ShakeDef;
+  /** The blow of the state before goes on here: a part cut for something else, nothing re-armed (Suki Combo at 118). */
+  sameSwing?: boolean;
+  /** What this state's blow lights where it lands, a hit and not a block (`combat/hitLight.ts`). */
+  hitLight?: HitLightKind;
+  /**
+   * Palettes run through from frame 1, `alt` on the alternate colours: the
+   * original picks by player, whose colours they are (Gohan's `ae`, `$20:B3DE`).
+   */
+  paletteRun?: { plain: string[]; alt: string[] };
   /** Connecting leaves this state at once: the attacker's hitstop begins a frame into the next one, not here. */
   catches?: boolean;
   /**

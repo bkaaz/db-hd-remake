@@ -89,6 +89,13 @@ export type ScriptOp =
 
 /** Bytes per command, by its first byte; steps (01-7f) are 3. */
 const LENGTH: Record<number, number> = { 0xa0: 3, 0xa1: 3, 0xd0: 5, 0xc0: 2, 0xe0: 2, 0xb0: 16, 0xb1: 9, 0x90: 1, 0x80: 21 };
+/** The step a script's `hold` stops on, counted as an animation counts its steps; null with none. */
+export function holdStepOf(ops: readonly ScriptOp[]): number | null {
+  const shown = ops.filter((op) => op.op === "hold" || (op.op === "show" && op.frames > 0));
+  const at = shown.findIndex((op) => op.op === "hold");
+  return at < 0 ? null : at;
+}
+
 /** The script without the spawns the counter passes over, left at 0 by its handler: each that fires counts it up (field 0x6e). */
 export function spawnsFired(ops: readonly ScriptOp[]): ScriptOp[] {
   let counter = 0;

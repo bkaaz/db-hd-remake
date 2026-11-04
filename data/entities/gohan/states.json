@@ -605,7 +605,8 @@
           "when": "!held:down",
           "to": "stand_up"
         }
-      ]
+      ],
+      "holdStep": 1
     },
     "stand_up": {
       "anim": "m04",
@@ -1557,6 +1558,7 @@
     },
     "reel_air": {
       "anim": "m1a",
+      "holdStep": 6,
       "rank": 1,
       "launch": [
         -2,
@@ -3279,7 +3281,7 @@
       ]
     },
     "kame_out": {
-      "anim": "mac",
+      "anim": "mac_2",
       "vel": [
         0,
         0
@@ -3287,10 +3289,11 @@
       "turn": false,
       "transitions": [
         {
-          "when": "frames:8",
+          "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "startsAt": 96
     },
     "suki_combo": {
       "anim": "mae",
@@ -3314,7 +3317,24 @@
           1,
           3
         ]
-      ]
+      ],
+      "paletteRun": {
+        "plain": [
+          "run0",
+          "run1",
+          "run4",
+          "run1",
+          "run0"
+        ],
+        "alt": [
+          "run2",
+          "run3",
+          "run4",
+          "run3",
+          "run2"
+        ]
+      },
+      "hitLight": "ball"
     },
     "suki_combo_2": {
       "anim": "mae_2",
@@ -3332,7 +3352,8 @@
           "when": "animEnd",
           "to": "suki_combo_3"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_3": {
       "anim": "mae_3",
@@ -3350,7 +3371,8 @@
           "when": "animEnd",
           "to": "suki_combo_4"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_4": {
       "anim": "mae_4",
@@ -3368,7 +3390,8 @@
           "when": "animEnd",
           "to": "suki_combo_5"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_5": {
       "anim": "mae_5",
@@ -3386,7 +3409,8 @@
           "when": "animEnd",
           "to": "suki_combo_6"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_6": {
       "anim": "mae_6",
@@ -3404,7 +3428,8 @@
           "when": "animEnd",
           "to": "suki_combo_7"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_7": {
       "anim": "mae_7",
@@ -3422,7 +3447,8 @@
           "when": "animEnd",
           "to": "suki_combo_8"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_8": {
       "anim": "mae_8",
@@ -3440,7 +3466,9 @@
           "when": "animEnd",
           "to": "suki_combo_9"
         }
-      ]
+      ],
+      "hitLight": "ball",
+      "sameSwing": true
     },
     "suki_combo_9": {
       "anim": "mae_9",
@@ -3468,7 +3496,8 @@
             "gravity": 0
           }
         ]
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_10": {
       "anim": "mae_10",
@@ -3523,7 +3552,9 @@
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "hitLight": "pillar",
+      "sound": "sfx_3a"
     },
     "sender_9f": {
       "anim": "m9f",

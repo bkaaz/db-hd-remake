@@ -63,6 +63,14 @@ export function glowPalettes(rom: Uint8Array, t: FighterTables): Record<string, 
   return out;
 }
 
+/** Palette records a fighter's handler runs through, as sheets of their own: Gohan's `ae` ($20:B417, $20:B421). */
+const RUNS: Record<number, number[]> = { 2: [0x140, 0x141, 0x142, 0x143, 0x144] };
+
+/** `run0` … by the record's place in `RUNS`, keyed by character. */
+export function runPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
+  return Object.fromEntries((RUNS[t.character] ?? []).map((id, i) => [`run${i}`, paletteRecord(rom, id).at]));
+}
+
 /** How far the winning pose's palette is from the fighter's own (Vegeta's `3e`, $20:9257: field 0x17 + 0x98). */
 const WIN = 0x98;
 

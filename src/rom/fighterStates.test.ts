@@ -1,8 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { validateStates, type AnimInfo, type StatesFile } from "../entity/states";
-import { ROM_PATH } from "./cartridge";
-import { fighterStates, generatedFighters, tablesOf } from "./fighterStates";
+import { ROM_PATH, scriptAt } from "./cartridge";
+import { AIR_REEL, fighterStates, generatedFighters, tablesOf } from "./fighterStates";
+import { CROUCH } from "./crouch";
+import { holdStepOf, readScript } from "./script";
 
 describe.skipIf(!existsSync(ROM_PATH))("a fighter's generated states.json, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
@@ -21,6 +23,22 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's generated states.json, on th
         if (spawn) expect(existsSync(`data/spawns/${spawn}/animations.json`), `${name} ${state} fires ${spawn}`).toBe(true);
       }
     }
+  });
+
+  it.each(["goku", ...generatedFighters()])("%s's air reel stops on the step his 1a holds, the jump's fall pose", (name) => {
+    const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
+    const t = tablesOf(rom, name);
+    expect(states.reel_air.holdStep).toBe(holdStepOf(readScript(rom, scriptAt(rom, t, AIR_REEL))));
+  });
+
+  it.each(["goku", ...generatedFighters()])("%s's crouch stays on the drawing his 03 holds", (name) => {
+    const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
+    const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, { steps: { frame: string }[] }>;
+    const { steps } = animations[states.crouch.anim!];
+    const hold = readScript(rom, scriptAt(rom, tablesOf(rom, name), CROUCH)).find((op) => op.op === "hold");
+    // Vegeta's holds nothing: his handler keeps him there ($20:9139)
+    if (hold?.op !== "hold") return;
+    expect(steps[states.crouch.holdStep ?? steps.length - 1].frame).toBe(String(hold.drawing));
   });
 
   it.each(generatedFighters())("%s passes the validator the game runs on loading him", (name) => {

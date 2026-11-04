@@ -1,5 +1,5 @@
 {
-  "_comment": "Gohan's own specials, by hand; npm run rom -- states --all merges them into states.json (src/rom/specials.ts). Names as the owner's list (2026-11-04), ids by the command table. throw is 9d, → + X in grab range ($20:A619): he holds the opponent 32 px ahead, in one drawing ($20:A6F2, HANDLER_HOLDS), lets him go at 30, ahead of him, 40 less defence, reel_down. triangle_illusion is aa, R + B ($20:A4E3, by step), Side Slash's way: behind the opponent, on frame 33 turns and closes by a 32nd of the way to 8 px short; its blow is 0x1200, $D540's knockdown on knockback 5 (ours down). Its 16 px step ($20:A51F) and the palette + 8 in the depth are left out `?`. rushing_uppercut is a2, → + Y ($20:B144): vx 3 from 1, stopped at 24. knee_slasher is a4, ← → B ($20:A73E): vx 4 at 17, stopped at 54; connected, hit or block, it becomes a5, knee_slasher_2 ($20:A778), vx 2 from 1. The dust each raises ($0D:DE6C) is left out `?`. zankuu_kyaku is a6, ↓ ↑ B ($20:A7E4): blows pass him by to 6; at 6 gravity off, vx 3, vy -7; from 13 to 24 vy + 0.5 while he rises; vx 0 at 14, -1 at 22, 0 at 30; gravity on at 29; landing from 30. bakuretsu is a7, ← → Y ($20:A877): vx 2 from 1 to 61, four blows re-armed at 24, 36, 54. bukuuh_kyaku is a8, → ↓ B in the air ($20:A8D9): hangs to 21, then dives at 5.5, 5.5 with gravity off; a landing goes to frame 52 (bukuuh_land). Its blow is 0x180000 for 0, a reaction no type copies: light `?`, gone at once in the hold. A hit is a9, bukuuh_hits ($20:A9C0): both hang where they met, gravity off, blows pass him by, the opponent held (ADR 0071) in a drawing a step from $20:AA72 or, off the floor, $20:AA86; the last frame throws him ($20:AA29, 32 less defence, reel_down, 2.5 / -7, the way Gohan faces). The hit's pause comes a frame into a9 or 1a, the poses already changed (catches). The throw makes no sound (quiet, a recording). A block, and the end of a9, is bukuuh_spring: move 1a from its frame 21, vx -1.5, vy -7, gravity back ($20:A994), held on step 6, the script's hold, until landing. A body with field 0x25 bit 2 is not held, he dives on ($20:A945): what sets it is not read `?`. renzoku is ab, ↓ ↘ → A ($20:BDF8), 5 health: three rapid_blast shots at 48, -48. masenko is ad, ← ↙ ↓ ↘ → A ($20:B309), 10 health: at 18 his gohan_masenko at 16, -80. kame_* is ac, ↓ ↙ → A ($20:AF4A), 10 health, the shared Kamehameha: A let go before 20 the small, before 36 the medium (fired from 32 at the soonest), else the large at 44; the choice jumps to 42. Ball at -16, -40, head at 36, -42. The head gone it jumps to 132 / 128 / 124: 8 / 12 / 16 frames of the pose and the 8 of kame_out. suki_combo is ae, → ↘ ↓ ↙ ← → B ($20:B38C), health 80 or less: vx 3 from 1, ten blows (re-armed at 24, 42, 54, 72, 84, 96, 120, 136); at 143 gravity off, vx 3, vy -7; from 150 to 161 vy + 0.5 while he rises, vx 0 at 151, -1 at 159, 0 at 167, gravity on at 166; landing from 166. Its palette run 0x140–0x144 at the start, the re-arm at 136 and what it draws on its last blow ($20:B558) are left out `?`. sender_9f / a0 / a1 are as Vegeta's, the closed way's knockdown: 9f and a0 stand ($0F:AA78); a1 ($20:B357) leaps at 1, -6 from 12 and lands from 28. intro is his 3c ($20:A478), gohan_intro_a and _b on its step 16, without Goku's charging sound. win_air is his 82 ($20:A60B): no bobbing, from frame 16 round and round. The dash (0a, 0b, $20:B68B) is goku's on his own frames: run 6–17, out from 18. His knockdown (1b, 1e, $20:A3F4) is goku's, lying longer, and his win (3e) goku's without the second part.",
+  "_comment": "Gohan's own specials, by hand; npm run rom -- states --all merges them into states.json (src/rom/specials.ts). Names as the owner's list (2026-11-04), ids by the command table. throw is 9d, → + X in grab range ($20:A619): he holds the opponent 32 px ahead, in one drawing ($20:A6F2, HANDLER_HOLDS), lets him go at 30, ahead of him, 40 less defence, reel_down. triangle_illusion is aa, R + B ($20:A4E3, by step), Side Slash's way: behind the opponent, on frame 33 turns and closes by a 32nd of the way to 8 px short; its blow is 0x1200, $D540's knockdown on knockback 5 (ours down). Its 16 px step ($20:A51F) and the palette + 8 in the depth are left out `?`. rushing_uppercut is a2, → + Y ($20:B144): vx 3 from 1, stopped at 24. knee_slasher is a4, ← → B ($20:A73E): vx 4 at 17, stopped at 54; connected, hit or block, it becomes a5, knee_slasher_2 ($20:A778), vx 2 from 1. The dust each raises ($0D:DE6C) is left out `?`. zankuu_kyaku is a6, ↓ ↑ B ($20:A7E4): blows pass him by to 6; at 6 gravity off, vx 3, vy -7; from 13 to 24 vy + 0.5 while he rises; vx 0 at 14, -1 at 22, 0 at 30; gravity on at 29; landing from 30. bakuretsu is a7, ← → Y ($20:A877): vx 2 from 1 to 61, four blows re-armed at 24, 36, 54. bukuuh_kyaku is a8, → ↓ B in the air ($20:A8D9): hangs to 21, then dives at 5.5, 5.5 with gravity off; a landing goes to frame 52 (bukuuh_land). Its blow is 0x180000 for 0, a reaction no type copies: light `?`, gone at once in the hold. A hit is a9, bukuuh_hits ($20:A9C0): both hang where they met, gravity off, blows pass him by, the opponent held (ADR 0071) in a drawing a step from $20:AA72 or, off the floor, $20:AA86; the last frame throws him ($20:AA29, 32 less defence, reel_down, 2.5 / -7, the way Gohan faces). The hit's pause comes a frame into a9 or 1a, the poses already changed (catches). The throw makes no sound (quiet, a recording). A block, and the end of a9, is bukuuh_spring: move 1a from its frame 21, vx -1.5, vy -7, gravity back ($20:A994), held on step 6, the script's hold, until landing. A body with field 0x25 bit 2 is not held, he dives on ($20:A945): what sets it is not read `?`. renzoku is ab, ↓ ↘ → A ($20:BDF8), 5 health: three rapid_blast shots at 48, -48. masenko is ad, ← ↙ ↓ ↘ → A ($20:B309), 10 health: at 18 his gohan_masenko at 16, -80. kame_* is ac, ↓ ↙ → A ($20:AF4A), 10 health, the shared Kamehameha: A let go before 20 the small, before 36 the medium (fired from 32 at the soonest), else the large at 44; the choice jumps to 42. Ball at -16, -40, head at 36, -42. The head gone it jumps to 132 / 128 / 124: 8 / 12 / 16 frames of the pose and the 8 of kame_out, the script's last step (mac_2 from 96). suki_combo is ae, → ↘ ↓ ↙ ← → B ($20:B38C), health 80 or less: vx 3 from 1, ten blows (re-armed at 24, 42, 54, 72, 84, 96, 120, 136); at 143 gravity off, vx 3, vy -7; from 150 to 161 vy + 0.5 while he rises, vx 0 at 151, -1 at 159, 0 at 167, gravity on at 166; landing from 166. Its palette run is 0x140, 141, 144, 141, 140 for player one, 142, 143, 144, 143, 142 for two ($20:B3CC): ours by alt colours. Each blow that lands to 137 lights a ball at the spark ($20:B624), the last a pillar over it ($20:B558), and 3a sounds at 145 ($20:B4E0). The part at 118 is cut for field 0x96 alone: the blow of 96 goes on through it (sameSwing), 9 blows in all, as recorded. sender_9f / a0 / a1 are as Vegeta's, the closed way's knockdown: 9f and a0 stand ($0F:AA78); a1 ($20:B357) leaps at 1, -6 from 12 and lands from 28. intro is his 3c ($20:A478), gohan_intro_a and _b on its step 16, without Goku's charging sound. win_air is his 82 ($20:A60B): no bobbing, from frame 16 round and round. The dash (0a, 0b, $20:B68B) is goku's on his own frames: run 6–17, out from 18. His knockdown (1b, 1e, $20:A3F4) is goku's, lying longer, and his win (3e) goku's without the second part.",
   "replaces": [
     "intro",
     "win_air"
@@ -1213,7 +1213,7 @@
       ]
     },
     "kame_out": {
-      "anim": "mac",
+      "anim": "mac_2",
       "vel": [
         0,
         0
@@ -1221,10 +1221,11 @@
       "turn": false,
       "transitions": [
         {
-          "when": "frames:8",
+          "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "startsAt": 96
     },
     "suki_combo": {
       "anim": "mae",
@@ -1248,7 +1249,24 @@
           1,
           3
         ]
-      ]
+      ],
+      "paletteRun": {
+        "plain": [
+          "run0",
+          "run1",
+          "run4",
+          "run1",
+          "run0"
+        ],
+        "alt": [
+          "run2",
+          "run3",
+          "run4",
+          "run3",
+          "run2"
+        ]
+      },
+      "hitLight": "ball"
     },
     "suki_combo_2": {
       "anim": "mae_2",
@@ -1266,7 +1284,8 @@
           "when": "animEnd",
           "to": "suki_combo_3"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_3": {
       "anim": "mae_3",
@@ -1284,7 +1303,8 @@
           "when": "animEnd",
           "to": "suki_combo_4"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_4": {
       "anim": "mae_4",
@@ -1302,7 +1322,8 @@
           "when": "animEnd",
           "to": "suki_combo_5"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_5": {
       "anim": "mae_5",
@@ -1320,7 +1341,8 @@
           "when": "animEnd",
           "to": "suki_combo_6"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_6": {
       "anim": "mae_6",
@@ -1338,7 +1360,8 @@
           "when": "animEnd",
           "to": "suki_combo_7"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_7": {
       "anim": "mae_7",
@@ -1356,7 +1379,8 @@
           "when": "animEnd",
           "to": "suki_combo_8"
         }
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_8": {
       "anim": "mae_8",
@@ -1374,7 +1398,9 @@
           "when": "animEnd",
           "to": "suki_combo_9"
         }
-      ]
+      ],
+      "hitLight": "ball",
+      "sameSwing": true
     },
     "suki_combo_9": {
       "anim": "mae_9",
@@ -1402,7 +1428,8 @@
             "gravity": 0
           }
         ]
-      ]
+      ],
+      "hitLight": "ball"
     },
     "suki_combo_10": {
       "anim": "mae_10",
@@ -1457,7 +1484,9 @@
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "hitLight": "pillar",
+      "sound": "sfx_3a"
     },
     "sender_9f": {
       "anim": "m9f",

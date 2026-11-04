@@ -7,9 +7,10 @@ import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement, type WorldRect } from "../combat/hit";
 import type { SoundPlayer } from "../audio/playback";
 import { activeBall, BALL_COLOUR, nextRadius } from "../combat/ball";
+import { HitLight, PILLAR_HEIGHT } from "../combat/hitLight";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
-import { burnVariant, paletteVariant, shimmerVariant } from "../combat/palettes";
+import { burnVariant, paletteVariant, shimmerVariant, runVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -291,6 +292,7 @@ export class Entity {
   private readonly grabRange: number;
   /** Held by a thrower (`match/throw.ts`): an animation and nothing else, where he is put. */
   private held = false;
+  private readonly hitLight = new HitLight();
   /** Entering a state without its sound: a throw that makes none (`GrabDef.launch.quiet`). */
   private quietEntry = false;
   private pauseDue = 0;
@@ -807,6 +809,12 @@ export class Entity {
     this.pauseDue = frames;
   }
 
+  /** A blow of this state landed at world x, y: what it lights, if it does. */
+  lightHit(x: number, y: number): void {
+    const kind = this.sm?.def.hitLight;
+    if (kind) this.hitLight.land(kind, x, y);
+  }
+
   /** Record that the blow it just landed was blocked: the `blocked` trigger. */
   markBlocked(): void {
     this.swing.block();
@@ -1084,7 +1092,11 @@ export class Entity {
     const glowing = glow !== undefined && this.stateFrames >= glow;
     const win = this.sm?.def.win;
     const winning = win !== undefined && this.stateFrames >= win;
-    const variant = this.burning
+    const run = this.sm?.def.paletteRun;
+    const running = run && runVariant(this.altColours ? run.alt : run.plain, this.stateFrames);
+    const variant = running
+      ? running
+      : this.burning
       ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting)
       : shimmer
         ? (shimmerVariant(shimmer, this.shimmerFrame) ?? null)
@@ -1123,7 +1135,7 @@ export class Entity {
     const wanted = this.sm.def.loopSound ?? "";
     if (wanted !== this.hum.id) this.hum = { id: wanted, left: 0 };
     this.setAnim(this.sm.def.anim, restart);
-    this.swing.reset();
+    if (!this.sm.def.sameSwing) this.swing.reset();
     if (this.sm.def.type !== undefined) this.armed = true;
     this.behind = this.sm.def.behind ?? false;
     this.approaching = null;
@@ -1244,6 +1256,7 @@ export class Entity {
     // fighters equally and must not decide when the next hit of a multi-hit
     // move arrives.
     this.swing.tick();
+    this.hitLight.tick();
     const { loopUntil: until, loopFrom: from } = this.sm.def;
     const humming = (until === undefined || this.stateFrames < until) && (from === undefined || this.stateFrames >= from);
     if (this.hum.id && humming) {
@@ -1417,6 +1430,12 @@ export class Entity {
     if (thrown && thrown.radius > 0) this.ballG.circle(thrown.x, thrown.y, thrown.radius * this.scale).fill(BALL_COLOUR);
     // kind 4: 2 × size tall, 2 px over the floor (y 0xC6), across the screen and past its sides
     const fb = this.floorBand;
+    const { ball: hitBall, pillar } = this.hitLight;
+    if (hitBall) this.ballG.circle(hitBall.x, hitBall.y, hitBall.radius * this.scale).fill(BALL_COLOUR);
+    if (pillar) {
+      const k = this.scale;
+      this.ballG.rect(pillar.x - pillar.half * k, this.groundY + k - PILLAR_HEIGHT * k, 2 * pillar.half * k, PILLAR_HEIGHT * k).fill(BALL_COLOUR);
+    }
     if (fb) this.ballG.rect(this.x - BAND_REACH, fb.y - (2 + fb.size) * this.scale, 2 * BAND_REACH, 2 * fb.size * this.scale).fill(BALL_COLOUR);
     if (this.ballRadius > 0) {
       const [dx, dy] = this.ballAt;

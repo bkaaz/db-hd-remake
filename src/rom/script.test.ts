@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH, scriptAt } from "./cartridge";
-import { readScript, spawnsFired, type ScriptOp } from "./script";
+import { holdStepOf, readScript, spawnsFired, type ScriptOp } from "./script";
 
 const at0 = (...bytes: number[]) => readScript(Uint8Array.from(bytes), 0);
 
@@ -124,5 +124,18 @@ describe("spawnsFired", () => {
 
   it("keeps each spawn the counter reaches and drops those it has passed", () => {
     expect(spawnsFired([spawn(0), sound, spawn(1), spawn(0), spawn(2)])).toEqual([spawn(0), sound, spawn(1), spawn(2)]);
+  });
+});
+
+describe("holdStepOf", () => {
+  const show = (frames: number) => ({ op: "show", frames, drawing: 1 }) as ScriptOp;
+  const hold = { op: "hold", drawing: 2 } as ScriptOp;
+
+  it("counts the steps shown before the hold, not the commands between", () => {
+    expect(holdStepOf([show(4), { op: "sound", id: 9 } as ScriptOp, show(4), hold, show(4)])).toBe(2);
+  });
+
+  it("is null for a script that holds nothing", () => {
+    expect(holdStepOf([show(4)])).toBeNull();
   });
 });

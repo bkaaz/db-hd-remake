@@ -1670,6 +1670,7 @@
     },
     "reel_air": {
       "anim": "m1a",
+      "holdStep": 5,
       "rank": 1,
       "launch": [
         -2,

@@ -620,7 +620,8 @@
           "when": "!held:down",
           "to": "stand_up"
         }
-      ]
+      ],
+      "holdStep": 0
     },
     "stand_up": {
       "anim": "m04",
@@ -1601,6 +1602,7 @@
     },
     "reel_air": {
       "anim": "m1a",
+      "holdStep": 5,
       "rank": 1,
       "launch": [
         -2,

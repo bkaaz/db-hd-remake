@@ -66,7 +66,7 @@ local log = assert(io.open(path, "w"))
 log:setvbuf("line")
 log:write("# f<frame> hit=<$30B2> cam=<x>,<y> (8.8)\n")
 log:write("#   P1|P2 move frame step drawing x y sy vx vy face=<0x12> hp=<0x60> stun=<0x68> f25=<0x25> f96=<0x96>\n")
-log:write("#   sound <ids written to $2141>; voices <src of each sounding voice>; slot <n>: <its 16 bytes>\n")
+log:write("#   sound <ids written to $2141>; voices <src of each sounding voice>; effects <$30BA | $30CA>; slot <n>: <its 16 bytes>\n")
 
 local function byte(at) return emu.read(at, IRAM) end
 local function word(at) return byte(at) | (byte(at + 1) << 8) end
@@ -86,6 +86,16 @@ local function slot(i)
   return table.concat(out, " ")
 end
 
+-- the drawn effects' blocks at $30BA / $30CA, a side each: kind, x, y, right x, size (docs/rom.md)
+local function effects()
+  local out = {}
+  for _, at in ipairs({ 0x0ba, 0x0ca }) do
+    for b = 0, 0x0b do out[#out + 1] = string.format("%02x", byte(at + b)) end
+    out[#out + 1] = "|"
+  end
+  return table.concat(out, " ")
+end
+
 local function voices()
   if DSP == nil then return "" end
   local out = {}
@@ -97,7 +107,7 @@ local function voices()
   return table.concat(out, " ")
 end
 
-local frame, open, sounds, slots, heard = 0, true, {}, {}, ""
+local frame, open, sounds, slots, heard, drawn = 0, true, {}, {}, "", ""
 
 emu.addMemoryCallback(function(_, value)
   if open and value ~= 0 then sounds[#sounds + 1] = string.format("%02x", value) end
@@ -144,6 +154,11 @@ ref = emu.addEventCallback(function()
   if now ~= heard then
     lines[#lines + 1] = "  voices " .. now
     heard = now
+  end
+  local fx = effects()
+  if fx ~= drawn then
+    lines[#lines + 1] = "  effects " .. fx
+    drawn = fx
   end
   for i = 0, SLOTS - 1 do
     local bytes = slot(i)

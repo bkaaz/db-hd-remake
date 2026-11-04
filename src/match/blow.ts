@@ -99,6 +99,7 @@ export function landBlow(
   if (burst) effects.spawn(burst, where.x + where.w / 2, where.y + where.h / 2);
   else {
     const at = impactPoint(where, attacker.facing);
+    if (!blocked) attacker.lightHit(at.x, at.y);
     effects.spawn(blocked ? attacker.attackGuardFx : attacker.attackFx, at.x, at.y);
   }
   // Both sides pause, not just the one taking it: freezing only the defender

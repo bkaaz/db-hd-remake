@@ -14,6 +14,14 @@ export function burnVariant(variants: readonly string[], frame: number): string 
   return variants[Math.floor(frame / FRAMES_EACH) % variants.length];
 }
 
+/** Frames each palette of a fighter's run shows, the first a frame short ($20:B3CC counts from frame 1). */
+const RUN_EACH = 4;
+
+/** Which palette of a state's run shows on `frame` of it; undefined before and after. */
+export function runVariant(variants: readonly string[], frame: number): string | undefined {
+  return frame < 1 ? undefined : variants[Math.floor(frame / RUN_EACH)];
+}
+
 /** Frames each palette of an object's run shows ($01:84EF is asked every 4th frame). */
 const SHIMMER_EACH = 4;
 

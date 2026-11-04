@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { burnVariant, paletteVariant, shimmerVariant } from "./palettes";
+import { burnVariant, paletteVariant, shimmerVariant, runVariant } from "./palettes";
 
 const fire = Array.from({ length: 15 }, (_, i) => `fire${i}`);
 
@@ -53,5 +53,17 @@ describe("paletteVariant", () => {
   it("drops a glow he has no sheet for, and keeps player two's colours", () => {
     expect(paletteVariant({ lighting: "night", glow: true, alt: true }, goku)).toBe("night_alt");
     expect(paletteVariant({ lighting: "night", glow: true, alt: false }, goku)).toBe("night");
+  });
+});
+
+describe("runVariant", () => {
+  const run = ["a", "b", "c", "d", "e"];
+
+  it("starts on frame 1, the first a frame short, then four frames each", () => {
+    expect([0, 1, 3, 4, 7, 8, 16, 19].map((f) => runVariant(run, f))).toEqual([undefined, "a", "a", "b", "b", "c", "e", "e"]);
+  });
+
+  it("is over after the last", () => {
+    expect(runVariant(run, 20)).toBeUndefined();
   });
 });

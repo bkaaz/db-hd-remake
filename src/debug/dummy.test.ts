@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { Dummy, type Script } from "./dummy";
 
@@ -91,7 +92,7 @@ describe("the debug dummy", () => {
 });
 
 describe("a dummy that only ever crouches", () => {
-  /** What `data/debug.json` mode 4 says: hold down, forever. */
+  /** A crouching dummy: hold down, forever. */
   const script = { does: ["down 60"] };
 
   it("holds down on every frame, including across the loop", () => {
@@ -114,5 +115,25 @@ describe("a dummy that only ever crouches", () => {
       // that presses nothing must not be leaning on anything either.
       expect(Object.values(holding).every((v) => v === false)).toBe(true);
     }
+  });
+});
+
+describe("a button held through its step", () => {
+  const frames = (dummy: Dummy, n: number) =>
+    Array.from({ length: n }, () => dummy.input({ on: true, facing: 1, frozen: false }));
+
+  it("is pressed on the first frame only and down on all of them", () => {
+    const dummy = Dummy.from({ does: ["blast 3", 5] }) as Dummy;
+    const [one, two, three, after] = frames(dummy, 4);
+    expect([one.blast, two.blast, three.blast]).toEqual([true, false, false]);
+    expect([one.holding.blast, three.holding.blast, after.holding.blast]).toEqual([true, true, false]);
+  });
+});
+
+describe("data/debug.json", () => {
+  const { modes } = JSON.parse(readFileSync("data/debug.json", "utf8")) as { modes: { p2?: Script }[] };
+
+  it.each(modes.map((mode, i) => [i, mode] as const))("mode %i is a timeline the dummy can play", (_, mode) => {
+    expect(typeof Dummy.from(mode.p2)).toBe("object");
   });
 });

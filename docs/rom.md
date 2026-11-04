@@ -928,7 +928,7 @@ for everyone (`$0D:D68A`).
 **Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
 bits of bytes 0–1 as one word: `0x0004` `$D622` (stopped dead, then the
 heavy reel — `16`, crouching `14`; ours `halt`), `0x0008` light,
-`0x0010` heavy, `0x0020` → move `19` (ours `trip`; `$D60A`: knockback `0f`, 2.0 back
+`0x0010` heavy (`$D356`, `$D382`: by the defender's field `0x97` bit 0 another reel — standing `14`, crouching `18`, knockback 3 for heavy; recorded, Suki Combo on a stander: `14` on the blows whose spark is 14 px higher, so which part of him was struck `?`), `0x0020` → move `19` (ours `trip`; `$D60A`: knockback `0f`, 2.0 back
 and −4.0 up; blows pass it by from frame 0; it lands with dust and `0d`,
 no bounce, and gets up after 12 frames — `$10:AEB6`), `0x0040` knockdown (move `1b`),
 `0x0080` → move `42`/`43`, `0x0400` → move `1e` (`$D3BB`, ours `high`), `0x0800` `$D670`,
@@ -1106,7 +1106,7 @@ slot shows player two's tile base `0x100` up.
 | `ab` | Renzoku Energy Dan | ↓ ↘ → A |
 | `ac` | Kamehame-Ha: let go before 20 small, before 36 medium, fired from 32 | ↓ ↙ → A |
 | `ad` | Masenko, object `2/03`: flies at `b0`'s vx 3 / vy −3 unchanged, no gravity | ← ↙ ↓ ↘ → A |
-| `ae` | Rushing Suki Combo, health 80 or less | → ↘ ↓ ↙ ← → B |
+| `ae` | Rushing Suki Combo, health 80 or less: a palette run to white from frame 1 (`0x140`, `141`, `144`, `141`, `140`; player two `142`, `143`, `144`, `143`, `142`, 4 frames each, `$20:B3CC`); to frame `88` a blow that lands lights a kind 2 ball at its spark, radius 16, 2 more a frame, gone at 32 (`$20:B624`, `$20:B45B`); at `8F` he leaps, sound `3a` at `91` on the defender's side (`$20:B4E0`), and a last blow that lands stands a kind 4 column over the spark, 64 wide, `+0A` `6D` at line `5C`, 2 less a side each frame (`$20:B558`, `$20:B5C0`) | → ↘ ↓ ↙ ← → B |
 
 `9e` and `b1` have scripts and handlers, but no button or code of his was found
 to start them `?`.

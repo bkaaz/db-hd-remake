@@ -15,7 +15,7 @@ approved names what to try again.
 
 ## Gohan
 
-Dummy: `?scene=debug&mode=5&p2=gohan`, `T` (mode 5 is rewritten per batch).
+Dummy: `?scene=debug&mode=5&p2=gohan&hp2=80`, `T`, player one left alone in his corner (mode 5 is rewritten per batch; the 80 is the Suki Combo's).
 
 | move | state | input | left out or guessed |
 |---|---|---|---|
@@ -27,7 +27,7 @@ Dummy: `?scene=debug&mode=5&p2=gohan`, `T` (mode 5 is rewritten per batch).
 | Bakuretsu Punch `a7` | `bakuretsu` | ← (charge) → Y | the dust |
 | Renzoku Energy Dan `ab` | `renzoku` | ↓ ↘ → A | — |
 | Kamehame-Ha `ac` | `kame_charge` | ↓ ↙ → A, held | — |
-| Rushing Suki Combo `ae` | `suki_combo` | → ↘ ↓ ↙ ← → B, health ≤ 80 | palette run, re-arm at 136, last blow's effect `?` |
+| Rushing Suki Combo `ae` | `suki_combo` | → ↘ ↓ ↙ ← → B, health ≤ 80 | the palette run picks by alt colours, not by player |
 | `9f`, `a0`, `a1` | `sender_*` | ↓ ↘ → / → ← → / ↓ ↙ ← + X | — |
 | dash, knockdown, win, intro | | | intro objects named by nothing but the move, `gohan_intro_b` may look wrong `?` |
 

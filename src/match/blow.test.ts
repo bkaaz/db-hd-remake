@@ -37,6 +37,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
     markBlocked: vi.fn(),
+    lightHit: vi.fn(),
     travels: false,
     turnToward: vi.fn(),
     turnFrom: vi.fn(),
@@ -127,6 +128,15 @@ describe("landBlow", () => {
     expect(attacker.pauseInNextState).toHaveBeenCalledWith(6);
     expect(attacker.freeze).not.toHaveBeenCalled();
     expect(defender.freeze).toHaveBeenCalledWith(6);
+  });
+
+  it("lights a landed blow, not a blocked one", () => {
+    const landed = body("hit");
+    landBlow(landed, body("hurt"), context());
+    expect(landed.lightHit).toHaveBeenCalledOnce();
+    const blocked = body("hit");
+    landBlow(blocked, body("hurt", { guarding: true }), context());
+    expect(blocked.lightHit).not.toHaveBeenCalled();
   });
 
   it("connects when a hit box reaches a hurt box", () => {
