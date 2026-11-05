@@ -1,3 +1,4 @@
+import { hitFields, objectHit } from "./objectHit";
 import { existsSync, readFileSync } from "node:fs";
 import type { StatesFile } from "../entity/states";
 import { toFile, type FighterTables } from "./cartridge";
@@ -88,9 +89,11 @@ export function draftObject(rom: Uint8Array, t: FighterTables, fighter: string, 
 export function objectStates(rom: Uint8Array, s: Spawned, knownType: (type: string) => boolean): StatesFile {
   const life = objectFacts(rom, s.type, s.anim).flatMap((f) => [...(f.from !== undefined ? [f.from] : []), ...(f.when ?? []).map((w) => Number(LIFE.exec(w)?.[1] ?? NaN))]);
   const lasts = life.find((n) => Number.isFinite(n) && n > 0);
-  const blow = s.blow.damage > 0 && knownType(s.blow.type) ? { type: s.blow.type, damage: s.blow.damage, burstsInto: "burst_s", hitSound: "burst_0a", blockSound: "burst_0a" } : {};
+  const strikes = s.blow.damage > 0 && knownType(s.blow.type);
+  const { file, state } = hitFields(objectHit(rom, s.type, s.anim));
+  const blow = strikes ? { type: s.blow.type, damage: s.blow.damage, ...state } : {};
   const flight = s.vy !== 0 ? { airborne: true, launch: [s.vx, s.vy] } : { vel: [s.vx, 0] };
-  return { initial: "fly", states: { fly: { anim: "play", turn: false, ...flight, ...(lasts && { lasts }), ...blow } } } as unknown as StatesFile;
+  return { initial: "fly", ...(strikes && file), states: { fly: { anim: "play", turn: false, ...flight, ...(lasts && { lasts }), ...blow } } } as unknown as StatesFile;
 }
 
 /** The objects `draft` left for his export, beside his `specials.json`. */

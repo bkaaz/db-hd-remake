@@ -1,10 +1,10 @@
 {
   "play": {
-    "loop": false,
+    "loop": true,
     "steps": [
       {
         "frame": "0",
-        "dur": 3
+        "dur": 4
       },
       {
         "frame": "1",
@@ -13,14 +13,6 @@
       {
         "frame": "2",
         "dur": 4
-      },
-      {
-        "frame": "0",
-        "dur": 4
-      },
-      {
-        "frame": "1",
-        "dur": 1
       }
     ]
   }

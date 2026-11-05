@@ -61,7 +61,7 @@ export interface SpawnDef {
    * whose code plays a way in, a loop and a way out ($0F:E70F): the object's
    * frames each shows, frames each is held, and whether it repeats.
    */
-  animations?: Record<string, { frames: number[]; dur: number; loop: boolean }>;
+  animations?: Record<string, { frames: number[]; dur: number | number[]; loop: boolean }>;
   loop: boolean;
   /** Give each frame a hit box over its picture — a projectile. */
   hits: boolean;

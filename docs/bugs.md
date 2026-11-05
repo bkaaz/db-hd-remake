@@ -323,7 +323,27 @@ to a window that is not focused, so `held.right` is never cleared.
 Fix is a `blur` listener that clears every held direction. Attack buttons need
 nothing — they disarm themselves every frame.
 
-- **Freeza, Cell, Mr. Buu and Buu: some objects may stop looping.** Their objects' frames were
-  taken from one recorded life, over whatever their code gave (`npm run rom -- recorded --frames`
-  did this to all four before it became opt-in). An object that loops in the original now plays
-  that life's length and ends with it. Not yet compared object by object with `npm run rom -- code`.
+- **Buu's `buu_9_12` and `buu_9_0e`: guessed timing.** Their `animations` say frames 0 to n at 4 each,
+  from the draft; the code holds each frame for what a table says and has an empty frame last, as
+  `buu_9_15` does (`$0F:DD4D` and the tables after it). Which table is whose is not read yet.
+
+- **Objects that may outlive the original's.** `mr_buu_8_06` (Mr. Buu's X) is up 21 frames against the
+  recording's 15, `cell_7_07` 42 against 29. Both end with the thrower's move as their code says; any
+  timer of their own is not read. `freeza_6_0e`, `cell_7_02`, `cell_a_22` and `cell_a_23` are in the same
+  position, ending with the move alone.
+- **Buu's Energy Sphere objects end with the move.** `buu_9_15`, `buu_9_12` and `buu_9_0e` live as long as
+  the sphere `9/17`–`19` in the original (`$0F:DFB6`), which is not ported.
+- **Freeza's `aa`: `burst_m` comes out and the log never shows it gone** (`logs/moves/freeza/aa.ours.txt`).
+  Not looked into; the run may simply end first.
+
+- **17 objects leave the wrong thing when they land.** The draft gave every object the same small
+  explosion; `$2A:8E31` says most of these stay and leave a melee blow's spark, and some explode bigger.
+  The list is `NOT_YET` in `src/rom/objectHit.test.ts`, and it tells which is which. Vegeta's own
+  `vegeta_energy_field`, `_energy_dash`, `_ground_flare` and `_jumping_bomb` stay, but sound like an
+  explosion and name no spark, so they leave `spark_1`: not compared with the original yet.
+- **Mr. Buu's Y stands longer after landing.** Its object counts through the hit pause in the original
+  (`8/08` does not test `$30B2`) and is gone 15 frames out; ours stops with every bolt during a pause,
+  so it stays about 7 frames more. `Projectiles.update` pauses them all.
+- **`npm run moves -- <fighter> --only <name>` with no such case overwrites `report.txt` with "0 of 0".**
+  `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
+

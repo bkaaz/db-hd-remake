@@ -12,7 +12,11 @@
       "damage": 28,
       "burstsInto": "burst_s",
       "hitSound": "burst_0a",
-      "blockSound": "burst_0a"
+      "blockSound": "burst_0a",
+      "endsWithMove": [
+        "94"
+      ],
+      "lasts": 15
     }
   }
 }

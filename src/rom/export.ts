@@ -132,7 +132,7 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
   // each animation as the object's frames it shows and how long each is held
   const wanted: Record<string, { frames: number[]; durs: number[]; loop: boolean }> = def.animations
     ? Object.fromEntries(
-        Object.entries(def.animations).map(([name, a]) => [name, { frames: a.frames, durs: a.frames.map(() => a.dur), loop: a.loop }]),
+        Object.entries(def.animations).map(([name, a]) => [name, { frames: a.frames, durs: a.frames.map((_, i) => (typeof a.dur === "number" ? a.dur : a.dur[i])), loop: a.loop }]),
       )
     : { play: { frames: def.steps.map((_, step) => def.frames?.[step] ?? step), durs: def.steps, loop: def.loop } };
   const parts = Object.entries(wanted).map(([name, a]) => ({

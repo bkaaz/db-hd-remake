@@ -4,7 +4,7 @@
     "steps": [
       {
         "frame": "0",
-        "dur": 4,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -17,7 +17,7 @@
       },
       {
         "frame": "1",
-        "dur": 4,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -27,38 +27,6 @@
             "h": 16
           }
         ]
-      },
-      {
-        "frame": "2",
-        "dur": 4
-      },
-      {
-        "frame": "3",
-        "dur": 4
-      },
-      {
-        "frame": "4",
-        "dur": 4
-      },
-      {
-        "frame": "5",
-        "dur": 4
-      },
-      {
-        "frame": "6",
-        "dur": 4
-      },
-      {
-        "frame": "7",
-        "dur": 4
-      },
-      {
-        "frame": "8",
-        "dur": 4
-      },
-      {
-        "frame": "9",
-        "dur": 4
       }
     ]
   }

@@ -1,6 +1,6 @@
 {
   "play": {
-    "loop": false,
+    "loop": true,
     "steps": [
       {
         "frame": "0",
@@ -20,23 +20,11 @@
       },
       {
         "frame": "4",
-        "dur": 5
+        "dur": 3
       },
       {
         "frame": "5",
-        "dur": 29
-      },
-      {
-        "frame": "0",
-        "dur": 3
-      },
-      {
-        "frame": "1",
-        "dur": 3
-      },
-      {
-        "frame": "2",
-        "dur": 2
+        "dur": 27
       }
     ]
   }

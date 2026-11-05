@@ -5,7 +5,7 @@ import { objectEntry, objectFacts } from "./objectCode";
 
 describe.skipIf(!existsSync(ROM_PATH))("objectFacts, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
-  const at = (type: number, anim: number, what: string) => objectFacts(rom, type, anim).filter((f) => f.what === what);
+  const at = (type: number, anim: number, what: string) => objectFacts(rom, type, anim).filter((f) => f.what.startsWith(what));
 
   it("finds the ki blast's type in the table by type", () => {
     expect(objectEntry(rom, 0x0a)).toBe(0x0fe0d7);
@@ -14,6 +14,11 @@ describe.skipIf(!existsSync(ROM_PATH))("objectFacts, on the cartridge", () => {
   it("reads the ki blast: gone after 53 frames out of hitstop, its frame flipped every 2nd frame of the game", () => {
     expect(at(0x0a, 0x03, "is gone").map((f) => f.from)).toContain(53);
     expect(at(0x0a, 0x03, "changes the frame shown")[0].when).toContain("every 2nd frame of the game");
+  });
+
+  it("spells out how a frame is worked out: Freeza's Death Beam by the game's frame count, his ball from a table", () => {
+    expect(at(0x06, 0x06, "changes the frame shown")[0].what).toContain("LDA $74 AND #8 LSR");
+    expect(at(0x06, 0x11, "changes the frame shown")[0].what).toContain("LDA $fd3c2");
   });
 
   it("reads a palette run where the code works the record out, every 4th frame: the beams' base and heads, not the ki blast", () => {

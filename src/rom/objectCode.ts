@@ -1,7 +1,7 @@
 import { toFile } from "./cartridge";
 import type { HandlerFact } from "./handler";
 import { ROUTINES as SHARED, type Routine } from "./routines";
-import type { Instruction } from "./disasm";
+import { long, type Instruction } from "./disasm";
 import { walk, type Body } from "./walk";
 
 const hex = (n: number) => n.toString(16).padStart(2, "0");
@@ -62,9 +62,20 @@ export function objectEntry(rom: Uint8Array, type: number): number {
   return (TYPES & 0xff0000) | rom[at] | (rom[at + 1] << 8);
 }
 
+/** How a value reached the accumulator: the instructions back from its load, so a frame's formula can be read off. */
+function worked(history: Instruction[]): string {
+  let from = history.length - 1;
+  while (from > 0 && history[from].mnemonic !== "LDA") from--;
+  return `at ${long(history[from].address)}: ` + history
+    .slice(from, -1)
+    .map((i) => `${i.mnemonic}${i.operand === undefined || i.operand === null ? "" : ` ${i.mode === "im" ? "#" : "$"}${i.operand.toString(16)}${i.mode === "dx" || i.mode === "ax" ? ",x" : i.mode === "ay" || i.mode === "dy" ? ",y" : ""}`}`)
+    .join(" ");
+}
+
 export function objectFacts(rom: Uint8Array, type: number, anim: number): HandlerFact[] {
   let seen: (Instruction | undefined)[] = [undefined, undefined, undefined];
   let thrower = false;
+  const history: Instruction[] = [];
   const body: Body = {
     frames: TIMER,
     dispatch: { field: 0x01, entries: [anim], tagged: false },
@@ -76,6 +87,7 @@ export function objectFacts(rom: Uint8Array, type: number, anim: number): Handle
     observe(ins, cpu, add) {
       const [earlier, before, last] = seen;
       seen = [before, last, ins];
+      history.push(ins);
       const read = (i: typeof ins | undefined, field: number) => i?.mnemonic === "LDA" && i.mode === "ay" && i.operand === field;
       if (ins.mnemonic === "CMP" && ins.mode === "im" && (read(last, THROWER_MOVE) || (last?.mnemonic === "BEQ" && thrower)))
         add({ what: `tests its thrower's move for ${hex(ins.operand)}` });
@@ -94,7 +106,7 @@ export function objectFacts(rom: Uint8Array, type: number, anim: number): Handle
       if (ins.mnemonic === "STZ" && ins.operand === TIMER) add({ what: "restarts its timer" });
       if (ins.mnemonic === "STZ" && ins.operand === FRAME) add({ what: "shows frame 0" });
       if (ins.mnemonic === "STA" && ins.operand === FRAME)
-        add({ what: cpu.regs.a === null ? "changes the frame shown" : `shows frame ${cpu.regs.a & 0xff}` });
+        add({ what: cpu.regs.a === null ? `changes the frame shown: ${worked(history)}` : `shows frame ${cpu.regs.a & 0xff}` });
     },
   };
   return walk(rom, objectEntry(rom, type), body);

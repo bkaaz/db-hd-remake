@@ -1,20 +1,7 @@
 {
   "play": {
-    "loop": false,
+    "loop": true,
     "steps": [
-      {
-        "frame": "2",
-        "dur": 7,
-        "boxes": [
-          {
-            "type": "hit",
-            "x": -20,
-            "y": -8,
-            "w": 40,
-            "h": 16
-          }
-        ]
-      },
       {
         "frame": "0",
         "dur": 8,
@@ -30,19 +17,6 @@
       },
       {
         "frame": "2",
-        "dur": 9,
-        "boxes": [
-          {
-            "type": "hit",
-            "x": -20,
-            "y": -8,
-            "w": 40,
-            "h": 16
-          }
-        ]
-      },
-      {
-        "frame": "0",
         "dur": 8,
         "boxes": [
           {

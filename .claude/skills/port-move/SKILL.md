@@ -99,9 +99,14 @@ first.
   (`OwnObject.ticks`, `loop` if it wraps — then no recording is needed);
   a counter that wraps (`INC $02,X / CMP #n`) is `animations`, frames 0 to
   n − 1 — never the frames a recording happened to show (Final Flash's
-  head lost one that way);
+  head lost one that way): a life that hit something is cut short, and one
+  under slowdown is stretched. `code` prints how a frame is worked out: `$74`
+  is the game's frame count, a long address a table to read, whose end the
+  timer's `CMP` says (Freeza's `6/14` has four frames in it, gone after three).
+  `dur` may be a list, one a frame, for a table of times;
   "becomes 0a/02" where its slot is rewritten (a floor test: `burstsAbove`).
-  What it does on a hit is the type's table at `$2A:8EC7` (`rom.md`). Only
+  What it does on a hit comes from `objectHit` (`rom.md`), never a default: most
+  standing objects stay and leave a melee spark. Only
   what the code will not give: a recording, one long session per fighter
   (`tools/re/record-objects.lua`, the list from `npm run rom -- spawns`),
   read back with `npm run rom -- objects`. `npm run moves -- <fighter> --objects`

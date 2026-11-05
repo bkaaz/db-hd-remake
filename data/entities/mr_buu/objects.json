@@ -10,7 +10,17 @@
         "resource": 2389,
         "vram": 24576
       }
-    ]
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 2,
+        "loop": true
+      }
+    }
   },
   {
     "name": "mr_buu_a_26",
@@ -23,7 +33,17 @@
         "resource": 2389,
         "vram": 24576
       }
-    ]
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 2,
+        "loop": true
+      }
+    }
   },
   {
     "name": "mr_buu_8_17",
@@ -96,7 +116,7 @@
           3
         ],
         "dur": 4,
-        "loop": true
+        "loop": false
       }
     }
   },

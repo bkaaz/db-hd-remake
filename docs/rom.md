@@ -156,6 +156,8 @@ Kamehameha's beam and Final Flash's heads records `0x130`–`0x133`
 `…A4`, `$0F:BAAC`, counted in the thrower's field `0xF0`). A resource's
 own record palette is not it — `0x4D`'s is the Big Bang's.
 
+**How an object picks its frame** is one of four, all in its code: from the game's count (`$74 & 8 >> 2`, Freeza's `6/06`, a flip every 8 frames), by flipping field `02` on a timer (`LDA $02,X / EOR #1`, Cell's `7/06`), from a table a tick (`$0F:D3C2`, 0 0 0 0 1 1 1 1 2 2 2 2, Freeza's `6/11`, the timer's `CMP` saying where it wraps or ends), or held for a table's time per frame (`$0F:E329`, 6 8 3 4 3 3 3, Cell's `a/21`, back to frame 2 after 6). The recorded frames of a slowed game are stretched: `6/11` shows 8 frames a picture where the table says 4.
+
 **An object's behaviour is its type's code** (read: `npm run rom -- code a 3`): `$0F:B44B` runs the ten slots
 and jumps through a word table by type at `$0F:B467` (type `0` `$0F:B789`,
 `a` the ki blast `$0F:E0D7`); a type may jump again by animation (type `0`:
@@ -282,7 +284,7 @@ the ki blast `a/03` → `a/01`; the Kamehameha's heads `a/13` / `14` / `15` →
 their step 1, 4–11 px away at random, while their `+0C` is under 2 / 1 —
 three explosions and two (`$0F:E1A9`); all step through `$0F:E2A9`'s
 6 8 3 4 3 3 3 frames and are gone. Recorded for all three (2026-10-30).
-Type `1` by animation at `$2A:8EC7`: `1/04`–`06` → `a/02` (`$2A:8F0B`),
+`src/rom/objectHit.ts` reads the answer for any object: most of a fighter's standing objects stay. Type `1` by animation at `$2A:8EC7`: `1/04`–`06` → `a/02` (`$2A:8F0B`),
 `1/0b`–`0d` → `a/02` / `17` / `18` and burning (`$2A:8F2D`–`8F77`). `1/02` and `1/07`–`09` (Ground Flare, Energy Field, the sprays) stay: their blow is disarmed and `$2A:9A0B` leaves a melee blow's spark beside them, `a/00` landed or `a/06` blocked (by the defender's `0x25` bit 3).
 
 **Burning** (`$0D:EC98`): every 2 frames a counter shared by both players
