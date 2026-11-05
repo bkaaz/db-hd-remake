@@ -6,13 +6,16 @@
  */
 
 import { stepStarts } from "./animation";
-import { scriptAt, tileResourceOf, type FighterTables } from "./cartridge";
+import { BURST_LOADS, scriptAt, tileResourceOf, type FighterTables } from "./cartridge";
 import { handlerAt, handlerFacts } from "./handler";
 import type { Load } from "./resource";
 import { readScript, type ScriptOp } from "./script";
 
 /** OBJ VRAM's first word: player one's sprite, unpacked whole from his drawing's tile set. */
 const SPRITE = 0x6000;
+
+/** Type `a`, the shared objects: their tiles lie in OBJ VRAM all fight, whatever the move loads (Kakusan's `a/25`, tile base 0). */
+const SHARED = 0xa;
 
 /**
  * What the first move whose script spawns `type`/`anim` loads for player one.
@@ -25,6 +28,7 @@ const SPRITE = 0x6000;
  * Gunfire's shots on `ae`'s — which only its `loads` can say.
  */
 export function spawnerLoads(rom: Uint8Array, t: FighterTables, type: number, anim: number): Load[] {
+  if (type === SHARED) return BURST_LOADS;
   for (let move = 0; move < 0x100; move++) {
     let ops;
     try {

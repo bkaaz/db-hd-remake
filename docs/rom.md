@@ -338,6 +338,8 @@ every 4 frames (palette records `0x130`–`0x133` through `$01:84EF`, above).
 
 The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
+Type `a` objects draw from tile base 0 in the shared `0x30` at `$6500` and `0x31` at `$7500`, there all fight, in palette `0x27AE98` (`npm run rom -- vram`). A reel takes its first shove step before the hit pause, for a fist and a bolt alike.
+
 Object slots: ten of 16 bytes at I-RAM `$3300`; each type's behaviour is its
 own code in bank `$0F`. **Five are each player's** — player one's at `$3300`
 + `0x20` × n, player two's at `$3310` + `0x20` × n — and `$0D:D905` finds a

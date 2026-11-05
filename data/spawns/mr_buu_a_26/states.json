@@ -12,10 +12,10 @@
       "lasts": 53,
       "type": "heavy",
       "damage": 18,
-      "burstsInto": "burst_s",
+      "burstsInto": "burst",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a",
-      "burstsAbove": 0
+      "burstsAbove": -200
     }
   }
 }

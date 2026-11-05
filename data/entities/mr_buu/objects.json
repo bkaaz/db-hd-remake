@@ -7,8 +7,12 @@
     "palette": 34,
     "loads": [
       {
-        "resource": 2389,
-        "vram": 24576
+        "resource": 48,
+        "vram": 25856
+      },
+      {
+        "resource": 49,
+        "vram": 29952
       }
     ],
     "animations": {
@@ -30,8 +34,12 @@
     "palette": 34,
     "loads": [
       {
-        "resource": 2389,
-        "vram": 24576
+        "resource": 48,
+        "vram": 25856
+      },
+      {
+        "resource": 49,
+        "vram": 29952
       }
     ],
     "animations": {

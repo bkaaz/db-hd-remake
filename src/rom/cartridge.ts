@@ -110,7 +110,7 @@ export const FIRE = Object.fromEntries(Array.from({ length: 15 }, (_, n) => [`fi
  * (2026-10-30) — and resource 0x31's own palette, the one in OAM slot 2.
  */
 const BURST_STEPS = [6, 8, 3, 4, 3, 3, 3];
-const BURST_LOADS = [{ resource: 0x30, vram: 0x6500 }, { resource: 0x31, vram: 0x7500 }];
+export const BURST_LOADS = [{ resource: 0x30, vram: 0x6500 }, { resource: 0x31, vram: 0x7500 }];
 const BURST_PALETTE = 0x27ae98;
 
 export const GOKU: FighterTables = {

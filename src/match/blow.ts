@@ -117,6 +117,7 @@ export function landBlow(
   // original's does: the poses have changed by the time the pause shows them
   if (attacker.attackCatches) attacker.pauseInNextState(stop);
   else if (!attacker.travels) attacker.freeze(stop);
+  if (!blocked) defender.shoveBeforePause();
   defender.freeze(stop);
   return { attack, damage: dealt, blocked, took, flash: blocked ? 0 : attacker.attackFlash };
 }

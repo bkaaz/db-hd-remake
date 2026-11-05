@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { afterInput, byMove, commandTokens, differences, moveCases, readFight } from "./moveCheck";
+import { afterInput, byMove, commandTokens, differences, farCases, moveCases, readFight } from "./moveCheck";
 
 describe("commandTokens", () => {
   it("reads a command's directions oldest first, the button on the newest", () => {
@@ -20,6 +20,18 @@ describe("commandTokens", () => {
   it("takes a direction out of the button word when there is no sequence", () => {
     expect(commandTokens(["8108"])).toEqual(["fwd smash 3"]);
     expect(commandTokens(["9010"])).toEqual(["smash dash 3"]);
+  });
+});
+
+describe("farCases", () => {
+  it("plays a ground command without walking up, and leaves out the air's", () => {
+    const cases = farCases([
+      { move: "ab", where: "ground", words: ["0082", "0100"] },
+      { move: "a8", where: "air", words: ["8002", "0400", "0100"] },
+    ]);
+    expect(cases.map((c) => c.name)).toEqual(["ab far"]);
+    expect(cases[0].does[0]).toBe(20);
+    expect(cases[0].does).not.toContain("fwd 46");
   });
 });
 

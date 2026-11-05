@@ -6,6 +6,7 @@
  *   npm run moves -- vegetto --original only Mesen (test runner, no window)
  *   npm run moves -- vegetto --ours     only our game, on the server already running
  *   npm run moves -- vegetto --only aa,9e  prints the comparison instead of writing it
+ *   npm run moves -- vegetto --far      his commands from where the round starts: a shot's flight
  *   npm run moves -- vegetto --report   the comparison again, nothing played
  *   npm run moves -- vegetto --objects  his objects recorded, into logs/objects-vegetto.*
  *
@@ -20,7 +21,7 @@ import { homedir } from "node:os";
 import { resolve } from "node:path";
 import type { CommandsFile } from "../src/input/command.ts";
 import { ROM_PATH } from "../src/rom/cartridge.ts";
-import { afterInput, byMove, differences, moveCases, readFight, type MoveCase, type Stretch } from "../src/rom/moveCheck.ts";
+import { afterInput, byMove, differences, farCases, moveCases, readFight, type MoveCase, type Stretch } from "../src/rom/moveCheck.ts";
 import { runTable, type Scenario } from "../src/rom/run.ts";
 
 const MESEN = process.env.MESEN ?? `${homedir()}/Downloads/Mesen.app/Contents/MacOS/Mesen`;
@@ -35,7 +36,7 @@ const dir = `logs/moves/${fighter}`;
 mkdirSync(dir, { recursive: true });
 
 const commands = (JSON.parse(readFileSync(`data/entities/${fighter}/commands.json`, "utf8")) as CommandsFile).commands;
-const cases = moveCases(commands).filter((c) => !only || only.some((o) => c.name === o || c.name.startsWith(`${o} `)));
+const cases = (flags.includes("--far") ? farCases(commands) : moveCases(commands)).filter((c) => !only || only.some((o) => c.name === o || c.name.startsWith(`${o} `)));
 const fileOf = (c: MoveCase) => c.name.replace(/ /g, "-");
 
 /** His face from Goku's at the roster's corner, for player one's cursor: `back` is right on this screen. */

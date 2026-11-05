@@ -10,7 +10,7 @@ const NOT_YET = new Set([
   "piccolo_5_0b", "piccolo_5_07", "piccolo_5_06", "piccolo_5_05",
   "freeza_6_14", "freeza_6_15",
   "cell_7_03", "cell_a_21", "cell_a_22", "cell_a_23",
-  "mr_buu_a_25", "mr_buu_a_26", "mr_buu_8_17", "mr_buu_8_04",
+  "mr_buu_8_17", "mr_buu_8_04",
   "buu_a_20", "buu_9_08",
 ]);
 

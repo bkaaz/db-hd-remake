@@ -46,6 +46,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     gotHit: vi.fn(),
     guardHit: vi.fn(() => true),
     freeze: vi.fn(),
+    shoveBeforePause: vi.fn(),
     sound: vi.fn(),
     ...extra,
   };
@@ -73,6 +74,15 @@ describe("landBlow", () => {
     landBlow(bolt, defender, context());
     expect(defender.turnFrom).toHaveBeenCalledWith(1);
     expect(defender.turnToward).not.toHaveBeenCalled();
+  });
+
+  it("gives a first step of shove before the pause on a landed blow, none on a blocked one", () => {
+    const hit = body("hurt");
+    landBlow(body("hit"), hit, context());
+    expect(hit.shoveBeforePause).toHaveBeenCalledOnce();
+    const guarding = body("hurt", { guarding: true });
+    landBlow(body("hit"), guarding, context());
+    expect(guarding.shoveBeforePause).not.toHaveBeenCalled();
   });
 
   it("turns the defender to face whoever landed the blow", () => {

@@ -336,7 +336,7 @@ nothing — they disarm themselves every frame.
 - **Freeza's `aa`: `burst_m` comes out and the log never shows it gone** (`logs/moves/freeza/aa.ours.txt`).
   Not looked into; the run may simply end first.
 
-- **16 objects leave the wrong thing when they land.** The draft gave every object the same small
+- **14 objects leave the wrong thing when they land.** The draft gave every object the same small
   explosion; `$2A:8E31` says most of these stay and leave a melee blow's spark, and some explode bigger.
   The list is `NOT_YET` in `src/rom/objectHit.test.ts`, and it tells which is which. Vegeta's own
   `vegeta_energy_field`, `_energy_dash`, `_ground_flare` and `_jumping_bomb` stay, but sound like an
@@ -346,4 +346,14 @@ nothing — they disarm themselves every frame.
   so it stays about 7 frames more. `Projectiles.update` pauses them all.
 - **`npm run moves -- <fighter> --only <name>` with no such case overwrites `report.txt` with "0 of 0".**
   `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
-
+- **Some objects fly unseen: their sheets hold no pixel.** They still fly and strike. Cell's `cell_a_21`,
+  `_a_22`, `_a_23` and Buu's `buu_a_20` take tiles from the wrong place, as Kakusan's did: type `a` draws
+  from the shared `0x30`/`0x31` (`npm run rom -- vram logs/objects-<name>.bin`). `buu_9_06`, `buu_9_08`,
+  `freeza_6_15` and `mr_buu_8_12` are blank too, cause not read. The list is `DRAWS_NOTHING` in
+  `src/rom/objectTiles.test.ts`. A spawn already exported is kept, so `animations.json` has to go first.
+- **Kakusan's three land too close together from near.** The original's come 14 and 23 frames apart and
+  the opponent goes 90 px over its reel; ours land one straight after the other's pause and he goes 39 px
+  (`logs/moves/mr_buu/ab.*`). From afar it agrees (`--far`). Why is not read: the middle ball sits 1 px into
+  his body for five frames after the first pause before it strikes, at the same gap and on the same frame of
+  its own (ball and box confirmed by `$2A:8D63`'s mean). His `$7A`, `$26` and `$96` stay clear, so it is not
+  `$2A:8B92`'s gate. The low ball's wait is geometry: it strikes once his shove stops at the screen's edge.

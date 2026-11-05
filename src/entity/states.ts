@@ -398,7 +398,8 @@ export interface StateDef {
   /**
    * For a falling bolt: its ground is this many game px above its thrower's
    * floor, and reaching it puts out its `burstsInto` there and ends it —
-   * Vertical Ki's shot, rewritten as a/02 at y B8 ($0F:BB05; ADR 0056).
+   * Vertical Ki's shot, rewritten as a/02 at y B8 ($0F:BB05; ADR 0056). Negative
+   * for one that flies on through the floor: Kakusan's low ball, whose code has no floor.
    */
   burstsAbove?: number;
   /**
@@ -1557,8 +1558,8 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       );
     }
 
-    if (floorEnds && (typeof def.burstsAbove !== "number" || def.burstsAbove < 0 || !def.burstsInto)) {
-      errors.push(`${where}: "burstsAbove" needs a number of game px, 0 or more, and a "burstsInto" to leave there`);
+    if (floorEnds && (typeof def.burstsAbove !== "number" || !def.burstsInto)) {
+      errors.push(`${where}: "burstsAbove" needs a number of game px and a "burstsInto" to leave there`);
     }
 
     if (def.damage !== undefined && (typeof def.damage !== "number" || def.damage < 0)) {

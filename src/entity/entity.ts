@@ -284,6 +284,8 @@ export class Entity {
   private remaining = 0;
   /** Latched once a non-looping animation reaches its end (drives `animEnd`). */
   private animEnded = false;
+  /** The steps of this state's shove already taken: `shoveBeforePause`. */
+  private shovedAhead = 0;
   /**
    * Whether this entity's current attack already landed. An attack's hit box is
    * active for several frames, but it may only connect once per entry into the
@@ -503,6 +505,16 @@ export class Entity {
   /** What the corner rule reads of this body (`combat/corner.ts`). */
   get shoved(): Shoved {
     return { x: this.x, facing: this.facing, shove: this.shove, move: moveOf(this.animation), health: this.hp };
+  }
+
+  /**
+   * A blow's first step of shove, taken before its pause: the original's reel runs
+   * one frame first (recordings: 320 → 323 under the pause). It counts toward `shoveFor`.
+   */
+  shoveBeforePause(): void {
+    if (this.shove === 0) return;
+    this.x += this.facing * this.shove * this.scale;
+    this.shovedAhead = 1;
   }
 
   /** Its shove handed to the other at the screen's edge, or one taken from him ($0D:C8F0). */
@@ -1182,6 +1194,7 @@ export class Entity {
     if (price) this.hp = Math.max(1, this.hp - price);
     this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
+    this.shovedAhead = 0;
     this.stateFrames = 0;
     if (!this.sm.def.ifHitAgain) this.hitsAgain = 0;
     this.air = ON_GROUND;
@@ -1442,7 +1455,7 @@ export class Entity {
         this.x += dx * this.scale;
         this.arrived = arrived;
       }
-      this.shove = shoveAfter(this.shove, this.stateFrames + 1, this.sm.def.shoveFor);
+      this.shove = shoveAfter(this.shove, this.stateFrames + 1 + this.shovedAhead, this.sm.def.shoveFor);
     }
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
     const ball = this.sm.def.ball;

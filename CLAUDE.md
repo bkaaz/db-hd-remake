@@ -316,6 +316,7 @@ npm run original -- volleyball-hit
 npm run moves -- vegetto
                   # every move of a fighter played in the original and in ours, and
                   # what differs, into logs/moves/ (ADR 0075); --only a,b, --report;
+                  # --far plays his commands with room for a shot to fly;
                   # --objects records his objects. Needs Playwright (PLAYWRIGHT=dir)
 npm run sound-test
                   # the original's sound test, recorded by

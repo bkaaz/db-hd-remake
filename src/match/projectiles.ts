@@ -165,8 +165,9 @@ export class Projectiles {
     const hits: ProjectileHit[] = [];
     // the first to land stops the rest where they are: Kakusan's three take their turns ($30B2)
     let halted = paused;
-    for (let i = this.live.length - 1; i >= 0; i--) {
-      const { name, bolt, foe, owner, companions, beam, ride, thrownIn } = this.live[i];
+    // oldest first, as the original's slots: of Kakusan's three, the first to be put out strikes first
+    for (const shot of [...this.live]) {
+      const { name, bolt, foe, owner, companions, beam, ride, thrownIn } = shot;
       if (!paused) {
         bolt.aimAt(foe.y);
         bolt.update(NO_INPUT, null, ANYWHERE);
@@ -198,7 +199,7 @@ export class Projectiles {
         logEvent(`bolt ${name} gone (${why}) at x ${Math.round(bolt.x)}, screen x ${Math.round(bolt.x - view.x)}`);
         bolt.view.destroy({ children: true });
         for (const c of companions) this.release(c);
-        this.live.splice(i, 1);
+        this.live.splice(this.live.indexOf(shot), 1);
         if (beam) owner.beamReaches(null);
         owner.spawnEnded();
       }

@@ -75,6 +75,17 @@ export function moveCases(commands: CommandDef[]): MoveCase[] {
   return [...cases, ...MOVING];
 }
 
+/**
+ * Each ground command from where the round starts, not walked up to: what a shot
+ * does in flight only shows with room to fly. Apart from `moveCases`, whose
+ * counts are the ones a fighter is judged by, as it doubles the run.
+ */
+export function farCases(commands: CommandDef[]): MoveCase[] {
+  return commands
+    .filter((c) => c.where !== "air")
+    .map((c) => ({ name: `${c.move} far`, does: [20, ...commandTokens(c.words), 300], before: CROUCH }));
+}
+
 /** One stretch of a move in either game. `frames` counts a hit pause, as both games do. */
 export interface Stretch {
   move: string;
