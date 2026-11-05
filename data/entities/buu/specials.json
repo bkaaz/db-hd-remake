@@ -547,10 +547,19 @@
       ],
       "transitions": [
         {
+          "when": "connected",
+          "to": "candy_scene"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "type": "light",
+      "damage": 0,
+      "catches": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17"
     },
     "buu_burn": {
       "anim": "mb3",
@@ -1252,6 +1261,66 @@
           "to": "land"
         }
       ]
+    },
+    "candy_scene": {
+      "anim": "mb8",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "candy_scene_2"
+        }
+      ],
+      "seize": {
+        "at": 0,
+        "anim": "m59",
+        "release": {
+          "frame": 94,
+          "damage": 100,
+          "reaction": "reel_tumble",
+          "vel": [
+            1.5,
+            -10
+          ]
+        }
+      }
+    },
+    "candy_scene_2": {
+      "anim": "mb8_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "candy_scene_3"
+        }
+      ],
+      "sceneOf": "candy_scene"
+    },
+    "candy_scene_3": {
+      "anim": "mb8_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "frames:112",
+          "to": "idle"
+        }
+      ],
+      "sceneOf": "candy_scene"
     }
   }
 }

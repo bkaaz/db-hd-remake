@@ -741,10 +741,19 @@
       ],
       "transitions": [
         {
+          "when": "connected",
+          "to": "assault_scene"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "type": "light",
+      "damage": 0,
+      "catches": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17"
     },
     "bukuuh_kyaku": {
       "anim": "mbe",
@@ -1347,6 +1356,130 @@
           "to": "idle"
         }
       ]
+    },
+    "assault_scene": {
+      "anim": "ma4",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "assault_scene_2"
+        }
+      ],
+      "seize": {
+        "at": 0,
+        "anim": "m53",
+        "release": {
+          "frame": 189,
+          "damage": 70,
+          "reaction": "reel_down",
+          "vel": [
+            2.5,
+            -7
+          ]
+        }
+      }
+    },
+    "assault_scene_2": {
+      "anim": "ma4_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "assault_scene_3"
+        }
+      ],
+      "sceneOf": "assault_scene"
+    },
+    "assault_scene_3": {
+      "anim": "ma4_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "assault_scene_4"
+        }
+      ],
+      "sceneOf": "assault_scene"
+    },
+    "assault_scene_4": {
+      "anim": "ma4_4",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "assault_scene_5"
+        }
+      ],
+      "sceneOf": "assault_scene"
+    },
+    "assault_scene_5": {
+      "anim": "ma4_5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "assault_scene_6"
+        }
+      ],
+      "sceneOf": "assault_scene"
+    },
+    "assault_scene_6": {
+      "anim": "ma4_6",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "assault_scene_7"
+        }
+      ],
+      "sceneOf": "assault_scene"
+    },
+    "assault_scene_7": {
+      "anim": "ma4_7",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "sceneOf": "assault_scene"
     }
   }
 }

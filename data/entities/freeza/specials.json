@@ -963,7 +963,15 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "fires": {
+        "spawn": "freeza_6_15",
+        "at": [
+          40,
+          -52
+        ],
+        "state": "fly"
+      }
     },
     "jasenkoh": {
       "anim": "mad",
@@ -1663,6 +1671,34 @@
           "to": "idle"
         }
       ]
+    },
+    "jubaku_scene": {
+      "anim": "mac_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "seize": {
+        "at": 0,
+        "anim": "m37",
+        "release": {
+          "frame": 126,
+          "damage": 80,
+          "reaction": "reel_down",
+          "vel": [
+            2.5,
+            -7
+          ]
+        }
+      }
     }
   }
 }

@@ -154,5 +154,18 @@
         "vram": 26624
       }
     ]
+  },
+  {
+    "name": "freeza_6_15",
+    "type": 6,
+    "anim": 21,
+    "hits": true,
+    "palette": 41,
+    "loads": [
+      {
+        "resource": 67,
+        "vram": 26624
+      }
+    ]
   }
 ]

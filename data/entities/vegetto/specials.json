@@ -814,10 +814,15 @@
       "damage": 0,
       "transitions": [
         {
+          "when": "connected",
+          "to": "juggle_scene"
+        },
+        {
           "when": "animEnd",
           "to": "move_b2"
         }
-      ]
+      ],
+      "catches": true
     },
     "slashdown_kick": {
       "anim": "ma8",
@@ -1504,6 +1509,114 @@
         }
       ],
       "startsAt": 96
+    },
+    "juggle_scene": {
+      "anim": "mb1",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "juggle_scene_2"
+        }
+      ],
+      "seize": {
+        "at": 0,
+        "anim": "m50",
+        "release": {
+          "frame": 338,
+          "damage": 120,
+          "reaction": "reel_down",
+          "vel": [
+            2.5,
+            -7
+          ]
+        }
+      }
+    },
+    "juggle_scene_2": {
+      "anim": "mb1_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "juggle_scene_3"
+        }
+      ],
+      "sceneOf": "juggle_scene"
+    },
+    "juggle_scene_3": {
+      "anim": "mb1_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "juggle_scene_4"
+        }
+      ],
+      "sceneOf": "juggle_scene"
+    },
+    "juggle_scene_4": {
+      "anim": "mb1_4",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "juggle_scene_5"
+        }
+      ],
+      "sceneOf": "juggle_scene"
+    },
+    "juggle_scene_5": {
+      "anim": "mb1_5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "juggle_scene_6"
+        }
+      ],
+      "sceneOf": "juggle_scene"
+    },
+    "juggle_scene_6": {
+      "anim": "mb1_6",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "sceneOf": "juggle_scene"
     }
   }
 }

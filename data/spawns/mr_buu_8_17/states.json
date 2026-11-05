@@ -7,7 +7,14 @@
       "vel": [
         0,
         0
-      ]
+      ],
+      "type": "down",
+      "damage": 0,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "opens": "breath_scene",
+      "endsWithMove": true
     }
   }
 }

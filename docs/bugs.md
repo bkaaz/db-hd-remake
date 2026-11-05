@@ -37,40 +37,11 @@ day's alone, and `gotenks_goten` has no sheet for another light. His intro's `ru
 are own + `0xC9` and + `0xC5` (`$20:B96C`), fixed the same way; by evening + `0xC9` is `0x13B`,
 which our reader cannot follow `?`. From the code: no evening state of the original was played.
 
-## Drafted moves keep a by-step speed and a return to the crouch they lost
-
-*Annoying, drafted fighters.* The draft dropped a speed a handler sets on a step,
-and sent a crouching blow's end to `idle`; both are fixed in `port.ts` and `draft.ts`,
-and Gotenks is drafted again. Not the others: their `specials.json` may hold hand
-work, so a blow stands still and ends standing until each is drafted or corrected
-at his review. Freeza `attack_y`,
-`attack_b`, `double_leg_kick`, `sender_a1`, `flaming_headbutt_2`, `crouch_b`; Mr. Buu
-`crouch_b`, `flying_bomber`, `sender_a1`, `rolling_tackle`, `crouch_y_2`; Buu
-`crouch_y_2`.
-
-## Drafted objects are drawn with holes in them
-
-*Annoying, Vegetto, Cell, Buu `?`.* A picture may reach the resource kept at `$6800`
-as well as the one its move loads over it; a draft that held only the second left a
-transparent band across Gotenks's ghost. `draftObject` keeps both now, but
-`objects.json` of Vegetto (`4_02`, `4_04`), Cell (`0x4e`'s) and Buu (`0x50`'s, `0x45`'s)
-were written before that. Each wants `0x6800`'s load added and his objects exported again.
-
-## A drafted object's colours are a guess, and may be his body's
-
-*Annoying, drafted fighters.* The draft gives an object the first palette its
-handler or code loads, or else his own: Gotenks's came out in `0x70`, his body's,
-where the recording shows `0x23`. An object's real colours are in `npm run rom -- vram`
-once it is recorded.
-
 ## Moves that go behind the opponent are drawn over him
 
-*Annoying, drafted fighters and two by hand.* A handler's `$0D:D8D5` puts the mover
-behind; the draft did not read it, and states written before it did may lack `behind`:
-Piccolo's throw and Sonic Kick, Freeza's Double Leg Kick, Cell's
-Giga Shoulder, Mr. Buu's throw and Flying Bomber, Buu's Matamol, and by hand Goku's
-Saiyan Meteor and Vegeta's Galactic Gunfire. The last may be the entry below on the body
-he throws `?`. `npm run rom -- port <move>` says "goes behind the opponent".
+*Annoying, a few.* A handler's `$0D:D8D5` puts the mover behind. Left without `behind`: Piccolo's throw,
+Mr. Buu's throw, and by hand Goku's Saiyan Meteor and Vegeta's Galactic Gunfire. The last may be the entry below on
+the body he throws `?`. `npm run rom -- port <move>` says "goes behind the opponent".
 
 ## Freeza's throw has no held animation on its first move
 

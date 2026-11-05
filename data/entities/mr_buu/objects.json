@@ -29,7 +29,7 @@
     "name": "mr_buu_8_17",
     "type": 8,
     "anim": 23,
-    "hits": false,
+    "hits": true,
     "palette": 37,
     "loads": [
       {
@@ -42,7 +42,7 @@
     "name": "mr_buu_8_04",
     "type": 8,
     "anim": 4,
-    "hits": false,
+    "hits": true,
     "palette": 192,
     "loads": [
       {

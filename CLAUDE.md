@@ -309,6 +309,10 @@ npm run original -- volleyball-hit
                   # the original played from a terminal, no window: a scenario
                   # of tools/re/runs/ from its save state in raw/states/, into
                   # logs/run-<name>.txt in record-fight.lua's format (ADR 0074)
+npm run moves -- vegetto
+                  # every move of a fighter played in the original and in ours, and
+                  # what differs, into logs/moves/ (ADR 0075); --only a,b, --report;
+                  # --objects records his objects. Needs Playwright (PLAYWRIGHT=dir)
 npm run sound-test
                   # the original's sound test, recorded by
                   # tools/re/record-sound-test.lua, cut into one file per

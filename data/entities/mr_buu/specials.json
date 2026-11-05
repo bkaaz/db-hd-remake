@@ -1240,6 +1240,80 @@
       "damage": 18,
       "hitSound": "hit_09",
       "blockSound": "block_17"
+    },
+    "breath_scene": {
+      "anim": "mb1",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "frames:450",
+          "to": "idle"
+        }
+      ],
+      "seize": {
+        "at": 0,
+        "anim": "m57",
+        "release": {
+          "frame": 440,
+          "damage": 80,
+          "reaction": "reel_down",
+          "vel": [
+            2.5,
+            -7
+          ]
+        }
+      },
+      "holdStep": 9
+    },
+    "oyatsu_scene": {
+      "anim": "ma6",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "oyatsu_scene_2"
+        }
+      ],
+      "seize": {
+        "at": 0,
+        "anim": "m5f",
+        "release": {
+          "frame": 212,
+          "damage": 80,
+          "reaction": "reel_down",
+          "vel": [
+            2.5,
+            -7
+          ]
+        }
+      }
+    },
+    "oyatsu_scene_2": {
+      "anim": "ma6_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "frames:216",
+          "to": "idle"
+        }
+      ],
+      "sceneOf": "oyatsu_scene",
+      "holdStep": 1
     }
   }
 }

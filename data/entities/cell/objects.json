@@ -7,6 +7,10 @@
     "palette": 34,
     "loads": [
       {
+        "resource": 76,
+        "vram": 26624
+      },
+      {
         "resource": 78,
         "vram": 27648
       }
@@ -19,6 +23,10 @@
     "hits": true,
     "palette": 247,
     "loads": [
+      {
+        "resource": 76,
+        "vram": 26624
+      },
       {
         "resource": 78,
         "vram": 27648
@@ -33,6 +41,10 @@
     "palette": 246,
     "loads": [
       {
+        "resource": 76,
+        "vram": 26624
+      },
+      {
         "resource": 78,
         "vram": 27648
       }
@@ -45,6 +57,10 @@
     "hits": true,
     "palette": 246,
     "loads": [
+      {
+        "resource": 76,
+        "vram": 26624
+      },
       {
         "resource": 78,
         "vram": 27648
@@ -85,6 +101,10 @@
     "palette": 246,
     "loads": [
       {
+        "resource": 76,
+        "vram": 26624
+      },
+      {
         "resource": 78,
         "vram": 27648
       }
@@ -97,6 +117,10 @@
     "hits": true,
     "palette": 34,
     "loads": [
+      {
+        "resource": 76,
+        "vram": 26624
+      },
       {
         "resource": 78,
         "vram": 27648
@@ -136,6 +160,10 @@
     "hits": true,
     "palette": 246,
     "loads": [
+      {
+        "resource": 76,
+        "vram": 26624
+      },
       {
         "resource": 78,
         "vram": 27648
