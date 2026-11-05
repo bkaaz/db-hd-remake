@@ -991,21 +991,6 @@
       ]
     },
     "powersault": {
-      "anim": "mac",
-      "turn": false,
-      "vel": [
-        0,
-        0
-      ],
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "powersault_2"
-        }
-      ]
-    },
-    "powersault_2": {
-      "anim": "mac_2",
       "turn": false,
       "vel": [
         0,
@@ -1020,7 +1005,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "anim": "mac"
     },
     "butt_drop": {
       "anim": "m9e",

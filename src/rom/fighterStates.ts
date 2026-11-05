@@ -7,6 +7,7 @@ import { getUpFrame, highGravity, withKnockdown } from "./knockdown";
 import { GOKU, scriptAt, type FighterTables } from "./cartridge";
 import { readCommands } from "./commands";
 import { inTableOrder } from "./entries";
+import { draftedObjects } from "./draftObjects";
 import { OWN_OBJECTS } from "./ownObjects";
 import { ownMoves } from "./ownMoves";
 import { fighterNamed, ROSTER, type FighterName } from "./roster";
@@ -36,7 +37,7 @@ export interface FighterStates {
  * part (Big Bang's flash).
  */
 export function tablesOf(rom: Uint8Array, name: string): FighterTables {
-  const stepped = (OWN_OBJECTS[name as FighterName] ?? []).flatMap((o) =>
+  const stepped = [...(OWN_OBJECTS[name as FighterName] ?? []), ...draftedObjects(name)].flatMap((o) =>
     o.onStep ? [{ name: o.name, type: o.type, anim: o.anim, onStep: o.onStep, steps: [], loop: false, hits: false, palette: 0, loads: [] }] : [],
   );
   return fighterNamed(rom, name, { ...GOKU.objects, spawns: [...GOKU.objects.spawns.filter((sp) => sp.type === 0xa), ...stepped] });

@@ -159,13 +159,12 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `aa` rolling_tackle | ground: ↓ ↘ → Y | — |
 | `b0` buu_breath | ground: ↓ ↘ → B + Y | — |
 | `a5` oyatsu_kosen | ground: ↓ ↑ B | — |
-| `ac` powersault | ground: ↓ ↑ Y | — |
 | `9e` butt_drop | air: ↓ + B | — |
 | `95` crouch_b | his own normal | — |
 | `9a` attack_x | his own normal | — |
 
 Objects, no recording yet (5): frames from the table, 4 frames each `?`, colours `?`: `mr_buu_a_25`, `mr_buu_a_26`, `mr_buu_8_17`, `mr_buu_8_04`, `mr_buu_8_06`.
-Objects with nothing to draw from their table, so left out: `08/12`, `08/05`.
+Objects with nothing to draw from their table, so left out: `08/12`.
 Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_start`, `dash_back`, `dash_fwd`, `down_bounce`, `down_fall`, `down_lie`, `high_bounce`, `high_fall`, `high_lie`, `intro`, `ko_bounce`, `ko_bounce2`, `ko_down`, `ko_fall`, `ko_lie`, `ko_rise`, `reel_down`, `reel_high`, `reel_trip`, `trip_fall`, `trip_land`, `win`, `win_air`.
 
 ## Buu

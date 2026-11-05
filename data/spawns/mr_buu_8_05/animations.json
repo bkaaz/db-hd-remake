@@ -1,0 +1,19 @@
+{
+  "play": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "1",
+        "dur": 7
+      },
+      {
+        "frame": "2",
+        "dur": 6
+      },
+      {
+        "frame": "3",
+        "dur": 5
+      }
+    ]
+  }
+}

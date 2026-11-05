@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { blowStarts } from "./animation";
 import { blowOfAnim } from "./animBlow";
 import { fighterNamed, ROSTER } from "./roster";
+import { tablesOf } from "./fighterStates";
 import { GOKU as GOKU_TABLES, ROM_PATH, scriptAt } from "./cartridge";
 import { readBoxes } from "./collision";
 import { readScript } from "./script";
@@ -58,7 +59,7 @@ describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
     const fighters = ROSTER.filter((name) => existsSync(`data/entities/${name}/states.json`));
     expect(fighters).toContain("goku");
     for (const fighter of fighters) {
-      const t = fighter === "goku" ? GOKU_TABLES : fighterNamed(rom, fighter);
+      const t = fighter === "goku" ? GOKU_TABLES : tablesOf(rom, fighter);
       const states = (JSON.parse(readFileSync(`data/entities/${fighter}/states.json`, "utf8")) as StatesFile).states;
       const blows = Object.entries(states).filter(([, def]) => def.type !== undefined);
       expect(blows.length).toBeGreaterThan(0);

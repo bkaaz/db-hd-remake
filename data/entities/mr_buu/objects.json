@@ -213,5 +213,37 @@
         "vram": 25856
       }
     ]
+  },
+  {
+    "name": "mr_buu_8_05",
+    "type": 8,
+    "anim": 5,
+    "hits": false,
+    "palette": 37,
+    "loads": [
+      {
+        "resource": 66,
+        "vram": 26624
+      }
+    ],
+    "tiles": 128,
+    "onStep": [
+      172
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          1,
+          2,
+          3
+        ],
+        "dur": [
+          7,
+          6,
+          5
+        ],
+        "loop": false
+      }
+    }
   }
 ]
