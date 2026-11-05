@@ -1,0 +1,31 @@
+# Questions and the roster check's report
+
+What came up while the owner was away (from 2026-11-05), for him to read on return: what was
+checked, what was fixed, and what is still his to say. `npm run moves -- <fighter>` repeats any
+fighter's comparison; `logs/moves/<fighter>/report.txt` holds the last one. Deleted when answered.
+
+## Questions
+
+1. **Gotenks's discharges (intro):** do you see a pale smear instead of a sharp line, or something
+   else, such as when or where they appear? (Measured: they should be solid, `docs/bugs.md`.)
+2. **Goten and Trunks splitting (win):** in which light did you look, and as which player? Is it the
+   final colour, the flash or the moment of change? By day the palettes match the original.
+
+## Report
+
+### For everyone
+
+- A reel's knockback held 3 × 12 and 2 × 8 px in every recording; ours slowed by friction, a heavy
+  blow moved a body 19 px instead of 36. Goku, Vegeta and Gohan feel this too: **try it again**.
+- A bolt's hit now stops its thrower too, as a melee blow does: his blast lasts 9 frames longer on a hit.
+- The first bolt to land stops the rest for the pause.
+- A fighter who finds the opponent behind him now plays his turn (`41`), 6 frames, from idle,
+  walking and the crouch. Before he flipped at once. **Try it on all of them:** it costs frames.
+
+### Vegetto
+
+Fixed: Shooting Kick, Far Smash and low Smash's movement, low blows' return to the crouch, Aerial
+Kick (117 frames, as the original), Geri Combo's hold and throw, Kakusan's three, Final Kamehameha's
+ending, his objects from a recording (Big Bang's ball, the flashes of low Y and X).
+Left: **Galactic Juggle** whiffs correctly but its landing scene (`b1`, 480 frames) is not ported;
+Kakusan's balls land closer together than the original's; Elbow Dash lands 3 frames early.

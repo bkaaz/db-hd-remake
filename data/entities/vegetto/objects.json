@@ -7,6 +7,10 @@
     "palette": 128,
     "loads": [
       {
+        "resource": 75,
+        "vram": 26624
+      },
+      {
         "resource": 82,
         "vram": 27648
       }
@@ -19,24 +23,25 @@
           2,
           3,
           4,
-          5,
-          6,
-          7,
-          8,
-          9
+          5
         ],
         "dur": 4,
-        "loop": true
+        "loop": false
       }
-    }
+    },
+    "alt": 129
   },
   {
     "name": "vegetto_4_04",
     "type": 4,
     "anim": 4,
     "hits": true,
-    "palette": 128,
+    "palette": 304,
     "loads": [
+      {
+        "resource": 75,
+        "vram": 26624
+      },
       {
         "resource": 82,
         "vram": 27648
@@ -51,7 +56,8 @@
         "dur": 4,
         "loop": true
       }
-    }
+    },
+    "shimmer": 3
   },
   {
     "name": "vegetto_4_03",
@@ -69,13 +75,12 @@
       "play": {
         "frames": [
           0,
-          1,
-          2,
-          3
+          1
         ],
         "dur": 4,
-        "loop": true
+        "loop": false
       }
-    }
+    },
+    "alt": 129
   }
 ]

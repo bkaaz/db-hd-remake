@@ -6,6 +6,7 @@
  *   npm run moves -- vegetto --original only Mesen (test runner, no window)
  *   npm run moves -- vegetto --ours     only our game, on the server already running
  *   npm run moves -- vegetto --only aa,9e
+ *   npm run moves -- vegetto --objects  his objects recorded, into logs/objects-vegetto.*
  *
  * He plays against a standing Goku in practice: player one in Mesen, where player
  * two's pad does nothing, and two in ours, where only two has a timeline. Results in `logs/moves/<fighter>/`. Ours needs Playwright, which is not a dependency:
@@ -133,6 +134,23 @@ function readOurs(lines: string[]): Side {
   return out;
 }
 
+/** All his moves in one run of `record-objects.lua`, whose log is what `rom -- objects` and `rom -- vram` read (ADR 0036). */
+async function recordObjects(): Promise<void> {
+  const state = await fightState();
+  const does = cases.filter((c) => !c.name.startsWith("jump") && !c.name.startsWith("dash") && c.name !== "charge").flatMap((c) => [...c.does.slice(0, -1), 240]);
+  const frames = does.reduce<number>((n, t) => n + (typeof t === "number" ? t : Number(t.split(" ").at(-1))), 0) + 100;
+  const script = resolve(`${dir}/objects.lua`);
+  const table = runTable({ state, frames, hp1: 80, p1: { does } }, { state: resolve(`raw/states/${state}.mss`), out: "", shots: "" });
+  const drive = `\nlocal playing = 0\nemu.addEventCallback(function()\n  if not RUN.frame() then return end\n  playing = playing + 1\n  if playing >= RUN.frames then emu.stop(0) end\nend, emu.eventType.endFrame)\n`;
+  writeFileSync(script, table + readFileSync("tools/re/run.lua", "utf8") + drive + readFileSync("tools/re/record-objects.lua", "utf8"));
+  await new Promise<void>((done, fail) => {
+    const run = spawn(MESEN, ["--testRunner", resolve(ROM_PATH), script, "--timeout=280"], { stdio: "ignore" });
+    run.on("exit", (code) => (code === 0 ? done() : fail(new Error(`Mesen stopped with ${code}`))));
+  });
+  for (const ext of ["txt", "bin"]) writeFileSync(`logs/objects-${fighter}.${ext}`, readFileSync(`logs/objects-rec.${ext}`));
+  console.log(`logs/objects-${fighter}.txt`);
+}
+
 async function playOurs(): Promise<void> {
   const { chromium } = (await import(PLAYWRIGHT)).default;
   const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -204,6 +222,7 @@ function report(): void {
 }
 
 async function main(): Promise<void> {
+  if (flags.includes("--objects")) return recordObjects();
   if (both || flags.includes("--original")) await playOriginal();
   if (both || flags.includes("--ours")) await playOurs();
   report();
