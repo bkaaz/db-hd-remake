@@ -5,7 +5,8 @@
  *   npm run moves -- vegetto            both games, then the comparison
  *   npm run moves -- vegetto --original only Mesen (test runner, no window)
  *   npm run moves -- vegetto --ours     only our game, on the server already running
- *   npm run moves -- vegetto --only aa,9e
+ *   npm run moves -- vegetto --only aa,9e  prints the comparison instead of writing it
+ *   npm run moves -- vegetto --report   the comparison again, nothing played
  *   npm run moves -- vegetto --objects  his objects recorded, into logs/objects-vegetto.*
  *
  * He plays against a standing Goku in practice: player one in Mesen, where player
@@ -29,7 +30,7 @@ const AT_ONCE = 6;
 const [fighter, ...flags] = process.argv.slice(2);
 if (!fighter) throw new Error("npm run moves -- <fighter> [--original] [--ours] [--only a,b]");
 const only = flags.includes("--only") ? flags[flags.indexOf("--only") + 1].split(",") : null;
-const both = !flags.includes("--original") && !flags.includes("--ours");
+const both = !flags.includes("--original") && !flags.includes("--ours") && !flags.includes("--report");
 const dir = `logs/moves/${fighter}`;
 mkdirSync(dir, { recursive: true });
 
@@ -66,16 +67,28 @@ function mesen(scenario: Scenario, out: string): Promise<void> {
   });
 }
 
-/** The fight standing, kept as a state: from the roster it costs a thousand frames a run. */
+/**
+ * The fight standing, kept as a state: from the roster it costs two thousand frames a run. Blast
+ * presses go through the config and the arena's screen; too few and the round never opens, too
+ * many and one is a ki blast in it, so he takes the first count that leaves both standing apart.
+ */
 async function fightState(): Promise<string> {
   const name = `fight-${fighter}`;
   if (existsSync(`raw/states/${name}.mss`)) return name;
-  await mesen({
-    state: "select-practice", frames: 1810, saveAt: 1800, saveTo: name,
-    p1: { does: [10, ...toFace(fighter), 15, "blast 4", 40, ...COM_TO_GOKU, 20, "blast 4", 70, "blast 4", 70, "blast 4", 600, "blast 4", 80, "blast 4"] },
-    shots: [1800],
-  }, `${dir}/_fight.txt`);
-  return name;
+  const log = `${dir}/_fight.txt`;
+  for (let presses = 10; presses <= 30; presses++) {
+    await mesen({
+      state: "select-practice", frames: 2610, saveAt: 2600, saveTo: name,
+      p1: { does: [10, ...toFace(fighter), 15, "blast 4", 40, ...COM_TO_GOKU, 20, ...Array.from({ length: presses }, () => ["blast 3", 42]).flat()] },
+      shots: [2600],
+    }, log);
+    const fight = readFileSync(log, "utf8").split("\n");
+    const last = (who: string) => fight.filter((l) => l.startsWith(`  ${who} `)).at(-1) ?? "";
+    // `fa` is the round opening: before it the two stand as idly on the config's screen
+    const opened = fight.some((l) => l.startsWith("  P1 fa "));
+    if (opened && / 00 .* x 192 /.test(last("P1")) && / 00 .* x 320 /.test(last("P2"))) return name;
+  }
+  throw new Error(`no count of presses opened a round for ${fighter}`);
 }
 
 interface Side { p1: Stretch[]; p2: Stretch[]; notes: string[] }
@@ -134,20 +147,33 @@ function readOurs(lines: string[]): Side {
   return out;
 }
 
-/** All his moves in one run of `record-objects.lua`, whose log is what `rom -- objects` and `rom -- vram` read (ADR 0036). */
+/**
+ * `record-objects.lua` over all his moves, into what `rom -- objects` and `rom -- vram` read (ADR 0036):
+ * each command alone from where a round opens, whose bolt may fly its whole life, then the lot close
+ * up. A run writes `logs/objects-rec.*` alone, so they go one at a time and the logs are joined.
+ */
 async function recordObjects(): Promise<void> {
   const state = await fightState();
-  const does = cases.filter((c) => !c.name.startsWith("jump") && !c.name.startsWith("dash") && c.name !== "charge").flatMap((c) => [...c.does.slice(0, -1), 240]);
-  const frames = does.reduce<number>((n, t) => n + (typeof t === "number" ? t : Number(t.split(" ").at(-1))), 0) + 100;
-  const script = resolve(`${dir}/objects.lua`);
-  const table = runTable({ state, frames, hp1: 80, p1: { does } }, { state: resolve(`raw/states/${state}.mss`), out: "", shots: "" });
-  const drive = `\nlocal playing = 0\nemu.addEventCallback(function()\n  if not RUN.frame() then return end\n  playing = playing + 1\n  if playing >= RUN.frames then emu.stop(0) end\nend, emu.eventType.endFrame)\n`;
-  writeFileSync(script, table + readFileSync("tools/re/run.lua", "utf8") + drive + readFileSync("tools/re/record-objects.lua", "utf8"));
-  await new Promise<void>((done, fail) => {
-    const run = spawn(MESEN, ["--testRunner", resolve(ROM_PATH), script, "--timeout=280"], { stdio: "ignore" });
-    run.on("exit", (code) => (code === 0 ? done() : fail(new Error(`Mesen stopped with ${code}`))));
-  });
-  for (const ext of ["txt", "bin"]) writeFileSync(`logs/objects-${fighter}.${ext}`, readFileSync(`logs/objects-rec.${ext}`));
+  const length = (does: (string | number)[]) => does.reduce<number>((n, t) => n + (typeof t === "number" ? t : Number(t.split(" ").at(-1))), 0);
+  const moving = (c: MoveCase) => !c.name.startsWith("jump") && !c.name.startsWith("dash") && c.name !== "charge";
+  const far = cases.filter((c) => moving(c) && !c.name.includes(" ")).map((c) => c.does.filter((t) => t !== "fwd 46").map((t) => (t === 300 ? 460 : t)));
+  const close = cases.filter(moving).flatMap((c) => [...c.does.slice(0, -1), 240]);
+  const logs: Buffer[] = [];
+  const bins: Buffer[] = [];
+  for (const does of [...far, close]) {
+    const script = resolve(`${dir}/objects.lua`);
+    const table = runTable({ state, frames: length(does) + 60, hp1: 80, p1: { does } }, { state: resolve(`raw/states/${state}.mss`), out: "", shots: "" });
+    const drive = `\nlocal playing = 0\nemu.addEventCallback(function()\n  if not RUN.frame() then return end\n  playing = playing + 1\n  if playing >= RUN.frames then emu.stop(0) end\nend, emu.eventType.endFrame)\n`;
+    writeFileSync(script, table + readFileSync("tools/re/run.lua", "utf8") + drive + readFileSync("tools/re/record-objects.lua", "utf8"));
+    await new Promise<void>((done, fail) => {
+      const run = spawn(MESEN, ["--testRunner", resolve(ROM_PATH), script, "--timeout=280"], { stdio: "ignore" });
+      run.on("exit", (code) => (code === 0 ? done() : fail(new Error(`Mesen stopped with ${code}`))));
+    });
+    logs.push(readFileSync("logs/objects-rec.txt"));
+    bins.push(readFileSync("logs/objects-rec.bin"));
+  }
+  writeFileSync(`logs/objects-${fighter}.txt`, Buffer.concat(logs));
+  writeFileSync(`logs/objects-${fighter}.bin`, Buffer.concat(bins));
   console.log(`logs/objects-${fighter}.txt`);
 }
 
@@ -217,14 +243,17 @@ function report(): void {
     for (const l of off) table.push(`    ! ${l}`);
   }
   table.unshift(`${fighter}: ${same} of ${cases.length} agree`);
-  writeFileSync(`${dir}/report.txt`, table.join("\n") + "\n");
+  // a part of a fighter says what it found here and leaves his whole report as it was
+  if (only) console.log(table.join("\n"));
+  else writeFileSync(`${dir}/report.txt`, table.join("\n") + "\n");
   console.log(`${table[0]} — ${dir}/report.txt`);
 }
 
 async function main(): Promise<void> {
   if (flags.includes("--objects")) return recordObjects();
-  if (both || flags.includes("--original")) await playOriginal();
-  if (both || flags.includes("--ours")) await playOurs();
+  const reporting = flags.includes("--report");
+  if (!reporting && (both || flags.includes("--original"))) await playOriginal();
+  if (!reporting && (both || flags.includes("--ours"))) await playOurs();
   report();
 }
 

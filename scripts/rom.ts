@@ -40,7 +40,7 @@ import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
 import { describeFact } from "../src/rom/describe.ts";
 import { arrow, buttonName, commandsFile, readCommands } from "../src/rom/commands.ts";
-import { NORMALS } from "../src/rom/buttons.ts";
+import { closeLines, NORMALS } from "../src/rom/buttons.ts";
 import { fighterStates, generatedFighters, tablesOf } from "../src/rom/fighterStates.ts";
 import { draftSpecials } from "../src/rom/draft.ts";
 import { moveParts } from "../src/rom/parts.ts";
@@ -110,7 +110,7 @@ function writeStates(name: string, t: FighterTables): void {
       console.log(`${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, t.character, move))}) — to read`);
   }
   const his = readAttributes(rom, t.character);
-  // his defence, gravity and grab range; Goku's for what is not read (push width, close ranges); his lightings, and the fire
+  // his defence, gravity, grab range and close lines; Goku's for what is not read (push width); his lightings, and the fire
   const attributes = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8"));
   writeFileSync(
     `data/entities/${name}/attributes.json`,
@@ -120,6 +120,7 @@ function writeStates(name: string, t: FighterTables): void {
         defence: his.defence,
         gravity: his.gravity,
         grabRange: commandContext(rom, t.character).grab,
+        closeRange: { attack: closeLines(rom, t.character).y, smash: closeLines(rom, t.character).b },
         palettes: [...Object.keys(litOf(t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE)],
         burn: Object.keys(FIRE),
       },
@@ -127,7 +128,7 @@ function writeStates(name: string, t: FighterTables): void {
       2,
     ) + "\n",
   );
-  console.log(`${name}: ${Object.keys(file.states).length} states; his defence, gravity, walk, dash and jump; Goku's push width and close ranges`);
+  console.log(`${name}: ${Object.keys(file.states).length} states; his defence, gravity, walk, dash, jump and close lines; Goku's push width`);
 }
 
 // `--fighter <name>` reads another fighter of the roster, and exports only him

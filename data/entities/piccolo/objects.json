@@ -11,23 +11,7 @@
         "vram": 26624
       }
     ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    "alt": 37
   },
   {
     "name": "piccolo_5_0a",
@@ -41,25 +25,7 @@
         "vram": 26624
       }
     ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    "alt": 37
   },
   {
     "name": "piccolo_5_02",
@@ -73,38 +39,7 @@
         "vram": 26624
       }
     ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11,
-          12,
-          13,
-          14,
-          15,
-          16,
-          17,
-          18,
-          19,
-          20,
-          21,
-          22,
-          23
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    "alt": 37
   },
   {
     "name": "piccolo_5_03",
@@ -118,38 +53,7 @@
         "vram": 26624
       }
     ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11,
-          12,
-          13,
-          14,
-          15,
-          16,
-          17,
-          18,
-          19,
-          20,
-          21,
-          22,
-          23
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    "alt": 37
   },
   {
     "name": "piccolo_5_07",
@@ -167,29 +71,58 @@
       "play": {
         "frames": [
           0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11,
-          12,
-          13,
-          14,
-          15,
-          16,
-          17,
-          18,
-          19,
-          20,
-          21
+          1
         ],
-        "dur": 4,
+        "dur": 12,
+        "loop": true
+      }
+    },
+    "alt": 37
+  },
+  {
+    "name": "piccolo_5_06",
+    "type": 5,
+    "anim": 6,
+    "hits": true,
+    "palette": 36,
+    "alt": 37,
+    "loads": [
+      {
+        "resource": 65,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 12,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "piccolo_5_05",
+    "type": 5,
+    "anim": 5,
+    "hits": true,
+    "palette": 36,
+    "alt": 37,
+    "loads": [
+      {
+        "resource": 65,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 12,
         "loop": true
       }
     }

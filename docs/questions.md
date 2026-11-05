@@ -29,3 +29,14 @@ Kick (117 frames, as the original), Geri Combo's hold and throw, Kakusan's three
 ending, his objects from a recording (Big Bang's ball, the flashes of low Y and X).
 Left: **Galactic Juggle** whiffs correctly but its landing scene (`b1`, 480 frames) is not ported;
 Kakusan's balls land closer together than the original's; Elbow Dash lands 3 frames early.
+
+### Piccolo
+
+Fixed: Sonic Kick moves and goes behind, the mystic blows' second part is by whether the first landed
+(one hit, as the original), Bukuuh Kyaku no longer hangs for ever in the air and holds and throws,
+Beam Cannon has its three levels on the Kamehameha's way and its ending, Shocking Stunner seizes at
+close range, his objects come from a recording. Every fighter now has his own close-range lines
+(`$3D:9EDB`), before all had Goku's: **this changes which Y and B come out at a distance, for all.**
+Left, not ported: **Aerial Assault's** scene when it lands. Shocking Stunner's opponent flashes in
+palettes `0x113`/`0x114` while held (not done) and his throw's choice of `1e` or `1b` is not read `?`.
+Beam Cannon's head's frames every 12 and its band are a guess `?`.

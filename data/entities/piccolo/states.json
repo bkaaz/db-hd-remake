@@ -2235,7 +2235,18 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          36,
+          1
+        ],
+        [
+          73,
+          0
+        ]
+      ],
+      "behind": true
     },
     "throw": {
       "anim": "m9d",
@@ -2651,6 +2662,13 @@
           "to": "low_counter"
         },
         {
+          "when": [
+            "animEnd",
+            "connected"
+          ],
+          "to": "move_b1"
+        },
+        {
           "when": "animEnd",
           "to": "move_b3"
         }
@@ -2674,6 +2692,13 @@
             "command:ab"
           ],
           "to": "high_counter"
+        },
+        {
+          "when": [
+            "animEnd",
+            "connected"
+          ],
+          "to": "move_a8"
         },
         {
           "when": "animEnd",
@@ -2726,57 +2751,6 @@
         }
       ]
     },
-    "beam_cannon": {
-      "anim": "mbc",
-      "turn": false,
-      "vel": [
-        0,
-        0
-      ],
-      "healthCost": 10,
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "beam_cannon_2"
-        }
-      ]
-    },
-    "beam_cannon_2": {
-      "anim": "mbc_2",
-      "turn": false,
-      "vel": [
-        0,
-        0
-      ],
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "beam_cannon_3"
-        }
-      ]
-    },
-    "beam_cannon_3": {
-      "anim": "mbc_3",
-      "turn": false,
-      "vel": [
-        0,
-        0
-      ],
-      "fires": {
-        "spawn": "piccolo_5_07",
-        "at": [
-          36,
-          -58
-        ],
-        "state": "fly"
-      },
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "idle"
-        }
-      ]
-    },
     "regeneration": {
       "anim": "mb7",
       "turn": false,
@@ -2815,32 +2789,32 @@
         [
           0,
           {
-            "vx": 0,
-            "vy": 0,
+            "vx": 5.5,
+            "vy": 5.5,
             "gravity": 0
           }
         ]
       ],
-      "fires": {
-        "spawn": "hit_spark",
-        "at": [
-          32,
-          16
-        ],
-        "state": "fly"
-      },
       "holdStep": 13,
       "transitions": [
         {
+          "when": "blocked",
+          "to": "bukuuh_spring"
+        },
+        {
           "when": "connected",
-          "to": "land"
+          "to": "bukuuh_hits"
         },
         {
           "when": "landed",
           "to": "land"
         }
       ],
-      "damage": 0
+      "type": "light",
+      "damage": 0,
+      "catches": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17"
     },
     "attack_b_2": {
       "anim": "m93_2",
@@ -2889,6 +2863,504 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "move_b1": {
+      "anim": "mb1",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "move_a8": {
+      "anim": "ma8",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "bukuuh_hits": {
+      "anim": "mbf",
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              32,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              32,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              32,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              32,
+              0
+            ]
+          ],
+          "vegetto": [
+            [
+              32,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              32,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              32,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              32,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              32,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              32,
+              0
+            ]
+          ]
+        },
+        "caught": true,
+        "launch": {
+          "frame": 47,
+          "damage": 40,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -7
+          ],
+          "ahead": true,
+          "quiet": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "bukuuh_spring"
+        }
+      ],
+      "damage": 0
+    },
+    "bukuuh_spring": {
+      "anim": "m1a",
+      "airborne": true,
+      "turn": false,
+      "launch": [
+        -1,
+        -7
+      ],
+      "startsAt": 21,
+      "holdStep": 6,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "stunner_hold": {
+      "anim": "mba",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "vegeta": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "gohan": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "gotenks": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "vegetto": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "piccolo": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "freeza": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "cell": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "mr_buu": [
+            [
+              24,
+              -48
+            ]
+          ],
+          "buu": [
+            [
+              24,
+              -48
+            ]
+          ]
+        },
+        "caught": true,
+        "launch": {
+          "frame": 111,
+          "damage": 20,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -7
+          ],
+          "ahead": true,
+          "quiet": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "beam_cannon": {
+      "anim": "mbc",
+      "healthCost": 10,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          14,
+          -64
+        ],
+        "grow": 2,
+        "from": 12
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:20",
+            "released:blast"
+          ],
+          "to": "beam_go_s"
+        },
+        {
+          "when": "frames:20",
+          "to": "beam_cannon_2"
+        }
+      ]
+    },
+    "beam_cannon_2": {
+      "anim": "mbc",
+      "startsAt": 20,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          14,
+          -64
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:12",
+            "released:blast"
+          ],
+          "to": "beam_go_m"
+        },
+        {
+          "when": "frames:12",
+          "to": "beam_cannon_3"
+        }
+      ]
+    },
+    "beam_cannon_3": {
+      "anim": "mbc",
+      "startsAt": 32,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          14,
+          -64
+        ],
+        "grow": 2
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "beam_go_l"
+        }
+      ]
+    },
+    "beam_go_s": {
+      "anim": "mbc_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "beam_fire_s"
+        }
+      ]
+    },
+    "beam_fire_s": {
+      "anim": "mbc_3",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "piccolo_5_05",
+        "at": [
+          36,
+          -58
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
+          "to": "beam_end_s"
+        }
+      ]
+    },
+    "beam_end_s": {
+      "anim": "mbc_3",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:16",
+          "to": "beam_out"
+        }
+      ]
+    },
+    "beam_go_m": {
+      "anim": "mbc_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "beam_fire_m"
+        }
+      ]
+    },
+    "beam_fire_m": {
+      "anim": "mbc_3",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "piccolo_5_06",
+        "at": [
+          36,
+          -58
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
+          "to": "beam_end_m"
+        }
+      ]
+    },
+    "beam_end_m": {
+      "anim": "mbc_3",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:20",
+          "to": "beam_out"
+        }
+      ]
+    },
+    "beam_go_l": {
+      "anim": "mbc_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "beam_fire_l"
+        }
+      ]
+    },
+    "beam_fire_l": {
+      "anim": "mbc_3",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "piccolo_5_07",
+        "at": [
+          36,
+          -58
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
+          "to": "beam_end_l"
+        }
+      ]
+    },
+    "beam_end_l": {
+      "anim": "mbc_3",
+      "holdStep": 0,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "frames:24",
+          "to": "beam_out"
+        }
+      ]
+    },
+    "beam_out": {
+      "anim": "mbc_3",
+      "startsAt": 88,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
       "transitions": [
         {
           "when": "animEnd",

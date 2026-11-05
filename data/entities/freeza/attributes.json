@@ -5,8 +5,8 @@
   "health": 400,
   "defence": 8,
   "closeRange": {
-    "attack": 44,
-    "smash": 48
+    "attack": 46,
+    "smash": 58
   },
   "grabRange": 40,
   "comboLimits": false,

@@ -60,7 +60,10 @@ export function objectRecord(rom: Uint8Array, type: number, anim: number): HitRe
     if (off === null) throw new Error(`object hit pointer ${p.toString(16)} is not ROM`);
     return off;
   };
-  const at = inBank(word(inBank(word(inBank(OBJECT_HITS & 0xffff) + 2 * type)) + 2 * anim));
+  const pointer = word(inBank(word(inBank(OBJECT_HITS & 0xffff) + 2 * type)) + 2 * anim);
+  // an object that strikes nobody has no record: the zero word in its place (Piccolo's `a4`'s)
+  if (pointer === 0) return { upToStep: null, reaction: 0, damage: 0, stun: 0 };
+  const at = inBank(pointer);
   return {
     upToStep: null,
     reaction: rom[at] | (rom[at + 1] << 8) | (rom[at + 2] << 16),

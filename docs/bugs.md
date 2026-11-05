@@ -20,6 +20,13 @@ because a number would only need translating back.
 
 ---
 
+## A bolt hits with the whole of its picture
+
+*Annoying, every drafted object `?`.* `export.ts` makes an object's hit box its drawing's rectangle,
+computed and not read. The original's differs at the edge: Piccolo's Gekiretsudokan hits a standing
+body it does not reach in ours, Shocking Stunner misses one it reaches. What an object collides with
+is in the cartridge somewhere near `$2A:87DE` and is not read. `npm run moves -- piccolo --only bd,b9`.
+
 ## Gotenks's discharges are blended into what is behind them
 
 *Annoying, Gotenks, his intro (`3f`).* `gotenks_discharge` has `adds`, so it is added to

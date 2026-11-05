@@ -6,7 +6,7 @@
   "defence": 12,
   "closeRange": {
     "attack": 44,
-    "smash": 48
+    "smash": 60
   },
   "grabRange": 48,
   "comboLimits": false,

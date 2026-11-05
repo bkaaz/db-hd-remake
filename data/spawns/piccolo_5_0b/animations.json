@@ -1,10 +1,10 @@
 {
   "play": {
-    "loop": true,
+    "loop": false,
     "steps": [
       {
         "frame": "0",
-        "dur": 4,
+        "dur": 6,
         "boxes": [
           {
             "type": "hit",
@@ -43,7 +43,7 @@
       },
       {
         "frame": "3",
-        "dur": 4,
+        "dur": 7,
         "boxes": [
           {
             "type": "hit",
@@ -56,7 +56,7 @@
       },
       {
         "frame": "4",
-        "dur": 4,
+        "dur": 7,
         "boxes": [
           {
             "type": "hit",
@@ -69,7 +69,7 @@
       },
       {
         "frame": "5",
-        "dur": 4,
+        "dur": 7,
         "boxes": [
           {
             "type": "hit",
@@ -82,7 +82,7 @@
       },
       {
         "frame": "6",
-        "dur": 4,
+        "dur": 7,
         "boxes": [
           {
             "type": "hit",
@@ -108,7 +108,7 @@
       },
       {
         "frame": "8",
-        "dur": 4,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
