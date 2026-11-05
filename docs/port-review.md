@@ -156,7 +156,6 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `a0` sender_a0 | ground: → ← → X | — |
 | `a1` sender_a1 | ground: ↓ ↙ ← X | — |
 | `9f` sender_9f | ground: ↓ ↘ → X | — |
-| `aa` rolling_tackle | ground: ↓ ↘ → Y | — |
 | `b0` buu_breath | ground: ↓ ↘ → B + Y | — |
 | `a5` oyatsu_kosen | ground: ↓ ↑ B | — |
 | `95` crouch_b | his own normal | — |

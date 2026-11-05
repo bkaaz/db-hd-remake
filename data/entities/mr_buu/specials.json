@@ -616,9 +616,25 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 32,
+      "air": [
+        [
+          1,
+          {
+            "vx": 3,
+            "vy": -4,
+            "gravity": 0
+          }
+        ],
+        [
+          5,
+          {
+            "gravity": "own"
+          }
+        ]
+      ],
       "transitions": [
         {
-          "when": "animEnd",
+          "when": "landed",
           "to": "rolling_tackle_2"
         }
       ]
@@ -630,9 +646,26 @@
         0,
         0
       ],
+      "holdStep": 1,
+      "air": [
+        [
+          1,
+          {
+            "vx": 1,
+            "vy": -2,
+            "gravity": 0
+          }
+        ],
+        [
+          6,
+          {
+            "gravity": "own"
+          }
+        ]
+      ],
       "transitions": [
         {
-          "when": "animEnd",
+          "when": "landed",
           "to": "rolling_tackle_3"
         }
       ]
