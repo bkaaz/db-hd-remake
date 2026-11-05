@@ -1,3 +1,4 @@
+import { objectBox } from "./collision";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { blowStarts } from "./animation";
@@ -83,5 +84,19 @@ describe("recordAt", () => {
 
   it("falls through to the record for every step", () => {
     expect(recordAt(kicks, 40)?.damage).toBe(26);
+  });
+});
+
+describe.skipIf(!existsSync(ROM_PATH))("objectBox, on the cartridge", () => {
+  const rom = new Uint8Array(readFileSync(ROM_PATH));
+
+  it("reads what an object strikes with, which is not its picture", () => {
+    expect(objectBox(rom, 0xa, 0x03, 0)).toEqual({ type: "hit", x: -4, y: -8, w: 8, h: 16 });
+    expect(objectBox(rom, 6, 6, 0)).toEqual({ type: "hit", x: -20, y: -8, w: 40, h: 16 });
+  });
+
+  it("says nothing for a frame that strikes with nothing", () => {
+    expect(objectBox(rom, 5, 0xb, 8)).toBeNull();
+    expect(objectBox(rom, 7, 3, 0)).toBeNull();
   });
 });

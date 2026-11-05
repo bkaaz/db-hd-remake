@@ -53,8 +53,7 @@ Left, not ported: **Jubaku Ha's** scene when it lands.
 Fixed: Giga Shoulder moves and goes behind, Chou Kamehameha's ending, Psychic Lift raises the opponent
 81 px over 81 frames and throws him from there. Objects from a recording.
 Left, not ported: **Cell Junior** (the ball bounces and comes at the opponent, reading its code is ahead),
-**Tri-Eruption's** scene. Suki Combo's last blow misses by a hair where the original's lands, and Ki Flame
-hits at a distance where the original's misses (`docs/bugs.md`, a bolt's box) `?`.
+**Tri-Eruption's** scene. Suki Combo's last blow misses by a hair where the original's lands `?`.
 
 ### Mr. Buu
 
@@ -80,6 +79,12 @@ its last pose for all who have one, 14 frames longer (**try it**). Vegeta's B in
 (`crouch` had no entry for it). Triangle Illusion and Wild Boar throw at knockback 5, 111 px instead of 58.
 Gotenks's close Y struck twice. Not changed: Jumping Bomb travels 21 px further than the original, whose
 speed may depend on the side he faces `?`.
+
+### Every object's blow
+
+An object struck with the whole of its picture, computed; now with its own rectangle, read from
+`$2A:9AE3`. Every ki blast and beam has a new reach: **try them.** Beam heads and many objects are narrower
+than drawn. Gohan's and Gotenks's and Goku's too.
 
 ### Across the roster, not done
 

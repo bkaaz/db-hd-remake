@@ -270,6 +270,8 @@ caller, `0x80` there meaning none), and `$2A:89D0` tries the pairs `80/88`,
 `90/98`, `80/98`, `90/88`, leaving the first that touches in `$DC`. Ours
 are put elsewhere (ADR 0044).
 
+**What an object strikes with** (`$2A:88F6`): `$2A:9AE3` by type, its pointer by animation, its pointer by the frame shown: x1 y1 x2 y2, signed, turned by the facing, `0x80` first for nothing. Only an object with both top bits of its first byte (`c0`) strikes (`$2A:81DC`), player one's in the even slots, two's in the odd. `objectBox` in `src/rom/collision.ts`.
+
 **What a projectile becomes when it hits** (`$2A:8E31`): by the hitting
 object's type (`$92 & 0F` of the defender, table `$2A:8E4B`), then its
 animation (`$93`, type `a`'s table `$2A:98EB`), the slot is killed and

@@ -41,7 +41,8 @@ describe.skipIf(!existsSync(ROM_PATH))("objects, on the cartridge", () => {
     expect(area("kame_m")).toBeLessThan(area("kame_l"));
     for (const size of ["s", "m", "l"]) {
       const steps = spawns[`kame_${size}`].animations.play.steps;
-      expect(steps.map((s) => [s.dur, s.boxes?.[0]?.type])).toEqual([[4, "hit"], [4, "hit"]]);
+      // the large head strikes on its first frame alone: its second has no record ($2A:9AE3)
+      expect(steps.map((s) => [s.dur, s.boxes?.[0]?.type])).toEqual([[4, "hit"], [4, size === "l" ? undefined : "hit"]]);
     }
     const base = spawns.kame_base.animations;
     expect(Object.keys(base)).toEqual(["in", "loop", "out"]);

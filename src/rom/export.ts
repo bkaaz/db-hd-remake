@@ -1,3 +1,4 @@
+import { objectBox } from "./collision";
 /**
  * A fighter, read out of the cartridge into our entity format: one sheet with
  * every drawing and every way a move shows one, its frames, its animations,
@@ -156,10 +157,9 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
     animations[part.name] = {
       loop: part.loop,
       steps: part.shows.map(({ frame, dur }) => {
-        const f = frames[String(frame)];
-        // a projectile hits with the whole of its picture: computed, not read
-        const box = { type: "hit" as const, x: -f.anchor[0], y: -f.anchor[1], w: f.w, h: f.h };
-        return def.hits ? { frame: String(frame), dur, boxes: [box] } : { frame: String(frame), dur };
+        // what it strikes with is its own record, not its picture ($2A:88F6)
+        const box = def.hits ? objectBox(rom, def.type, def.anim, frame) : null;
+        return box ? { frame: String(frame), dur, boxes: [box] } : { frame: String(frame), dur };
       }),
     };
   }
