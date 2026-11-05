@@ -1,6 +1,6 @@
 {
   "play": {
-    "loop": true,
+    "loop": false,
     "steps": [
       {
         "frame": "0",
@@ -12,90 +12,6 @@
       },
       {
         "frame": "2",
-        "dur": 4
-      },
-      {
-        "frame": "3",
-        "dur": 4
-      },
-      {
-        "frame": "4",
-        "dur": 4
-      },
-      {
-        "frame": "5",
-        "dur": 4
-      },
-      {
-        "frame": "6",
-        "dur": 4
-      },
-      {
-        "frame": "7",
-        "dur": 4
-      },
-      {
-        "frame": "8",
-        "dur": 4
-      },
-      {
-        "frame": "9",
-        "dur": 4
-      },
-      {
-        "frame": "10",
-        "dur": 4
-      },
-      {
-        "frame": "11",
-        "dur": 4
-      },
-      {
-        "frame": "12",
-        "dur": 4
-      },
-      {
-        "frame": "13",
-        "dur": 4
-      },
-      {
-        "frame": "14",
-        "dur": 4
-      },
-      {
-        "frame": "15",
-        "dur": 4
-      },
-      {
-        "frame": "16",
-        "dur": 4
-      },
-      {
-        "frame": "17",
-        "dur": 4
-      },
-      {
-        "frame": "18",
-        "dur": 4
-      },
-      {
-        "frame": "19",
-        "dur": 4
-      },
-      {
-        "frame": "20",
-        "dur": 4
-      },
-      {
-        "frame": "21",
-        "dur": 4
-      },
-      {
-        "frame": "22",
-        "dur": 4
-      },
-      {
-        "frame": "23",
         "dur": 4
       }
     ]

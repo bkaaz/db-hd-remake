@@ -14,6 +14,74 @@
     ]
   },
   "states": {
+    "reel_tumble": {
+      "_comment": "$0F:A203, knockback index 18: thrown high and far, Freeza's Flaming Headbutt.",
+      "anim": "m20",
+      "rank": 3,
+      "launch": [
+        -1,
+        -13
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "tumble_fall"
+        },
+        {
+          "when": "landed",
+          "to": "tumble_lie"
+        }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0.3828125
+          }
+        ]
+      ]
+    },
+    "tumble_fall": {
+      "anim": "m20_2",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "tumble_lie"
+        }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0.3828125
+          }
+        ]
+      ]
+    },
+    "tumble_lie": {
+      "anim": "m20_3",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "frames:60",
+          "to": "get_up"
+        }
+      ]
+    },
     "turn_round": {
       "_comment": "$0F:A499: he finds the opponent behind him and turns, 6 frames of his turning drawing.",
       "anim": "m41",
@@ -1127,6 +1195,16 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          6,
+          2
+        ],
+        [
+          10,
+          0
+        ]
       ]
     },
     "attack_b_close": {
@@ -1163,6 +1241,16 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          10,
+          2
+        ],
+        [
+          32,
+          0
+        ]
       ]
     },
     "attack_x": {
@@ -1213,6 +1301,10 @@
         [
           21,
           4
+        ],
+        [
+          23,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -1221,12 +1313,8 @@
       "damage": 24,
       "transitions": [
         {
-          "when": "connected",
-          "to": "idle"
-        },
-        {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
       ]
     },
@@ -2307,7 +2395,18 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          0,
+          1
+        ],
+        [
+          26,
+          0
+        ]
+      ],
+      "behind": true
     },
     "throw": {
       "anim": "m9d",
@@ -2405,10 +2504,25 @@
       "damage": 24,
       "transitions": [
         {
+          "when": "landed",
+          "to": "sender_a1_2"
+        },
+        {
           "when": "animEnd",
-          "to": "idle"
+          "to": "sender_a1_2"
         }
-      ]
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 2,
+            "vy": -4,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "holdStep": 5
     },
     "freeza_slash": {
       "anim": "ma9",
@@ -2506,6 +2620,16 @@
           "when": "animEnd",
           "to": "flaming_headbutt_3"
         }
+      ],
+      "velAt": [
+        [
+          37,
+          2
+        ],
+        [
+          46,
+          6
+        ]
       ]
     },
     "flaming_headbutt_3": {
@@ -2521,7 +2645,10 @@
           "to": "idle"
         }
       ],
-      "damage": 0
+      "type": "tumble",
+      "damage": 114,
+      "hitSound": "hit_09",
+      "blockSound": "block_17"
     },
     "kienzan": {
       "anim": "ma8",
@@ -2567,16 +2694,6 @@
         0,
         0
       ],
-      "velAt": [
-        [
-          12,
-          1
-        ],
-        [
-          20,
-          0
-        ]
-      ],
       "fires": {
         "spawn": "freeza_6_06",
         "at": [
@@ -2602,7 +2719,7 @@
       "velAt": [
         [
           8,
-          1
+          -1
         ]
       ],
       "invulnerable": true,
@@ -2617,12 +2734,12 @@
       "anim": "ma5_2",
       "turn": false,
       "vel": [
-        1,
+        -1,
         0
       ],
       "velAt": [
         [
-          12,
+          4,
           0
         ]
       ],
@@ -2706,16 +2823,6 @@
       "vel": [
         0,
         0
-      ],
-      "velAt": [
-        [
-          4,
-          1
-        ],
-        [
-          16,
-          0
-        ]
       ],
       "fires": {
         "spawn": "freeza_6_11",
@@ -3626,6 +3733,22 @@
           "to": "jump_fall_attacked"
         }
       ]
+    },
+    "sender_a1_2": {
+      "anim": "ma1",
+      "startsAt": 20,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
     }
   }
 }

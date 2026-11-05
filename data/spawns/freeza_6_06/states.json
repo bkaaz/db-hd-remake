@@ -4,16 +4,18 @@
     "fly": {
       "anim": "play",
       "turn": false,
-      "vel": [
-        3,
-        0
-      ],
       "lasts": 80,
       "type": "heavy",
       "damage": 38,
       "burstsInto": "burst_s",
       "hitSound": "burst_0a",
-      "blockSound": "burst_0a"
+      "blockSound": "burst_0a",
+      "airborne": true,
+      "launch": [
+        3,
+        2.12109375
+      ],
+      "burstsAbove": 0
     }
   }
 }

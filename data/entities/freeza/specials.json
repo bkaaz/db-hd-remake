@@ -226,7 +226,18 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          0,
+          1
+        ],
+        [
+          26,
+          0
+        ]
+      ],
+      "behind": true
     },
     "throw": {
       "anim": "m9d",
@@ -324,10 +335,25 @@
       "damage": 24,
       "transitions": [
         {
+          "when": "landed",
+          "to": "sender_a1_2"
+        },
+        {
           "when": "animEnd",
-          "to": "idle"
+          "to": "sender_a1_2"
         }
-      ]
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 2,
+            "vy": -4,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "holdStep": 5
     },
     "freeza_slash": {
       "anim": "ma9",
@@ -425,6 +451,16 @@
           "when": "animEnd",
           "to": "flaming_headbutt_3"
         }
+      ],
+      "velAt": [
+        [
+          37,
+          2
+        ],
+        [
+          46,
+          6
+        ]
       ]
     },
     "flaming_headbutt_3": {
@@ -439,7 +475,11 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "type": "tumble",
+      "damage": 114,
+      "hitSound": "hit_09",
+      "blockSound": "block_17"
     },
     "kienzan": {
       "anim": "ma8",
@@ -485,16 +525,6 @@
         0,
         0
       ],
-      "velAt": [
-        [
-          12,
-          1
-        ],
-        [
-          20,
-          0
-        ]
-      ],
       "fires": {
         "spawn": "freeza_6_06",
         "at": [
@@ -520,7 +550,7 @@
       "velAt": [
         [
           8,
-          1
+          -1
         ]
       ],
       "invulnerable": true,
@@ -535,12 +565,12 @@
       "anim": "ma5_2",
       "turn": false,
       "vel": [
-        1,
+        -1,
         0
       ],
       "velAt": [
         [
-          12,
+          4,
           0
         ]
       ],
@@ -624,16 +654,6 @@
       "vel": [
         0,
         0
-      ],
-      "velAt": [
-        [
-          4,
-          1
-        ],
-        [
-          16,
-          0
-        ]
       ],
       "fires": {
         "spawn": "freeza_6_11",
@@ -1096,6 +1116,16 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          6,
+          2
+        ],
+        [
+          10,
+          0
+        ]
       ]
     },
     "attack_b": {
@@ -1114,6 +1144,16 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          10,
+          2
+        ],
+        [
+          32,
+          0
+        ]
       ]
     },
     "crouch_b": {
@@ -1127,6 +1167,10 @@
         [
           21,
           4
+        ],
+        [
+          23,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -1135,12 +1179,8 @@
       "damage": 24,
       "transitions": [
         {
-          "when": "connected",
-          "to": "idle"
-        },
-        {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
       ]
     },
@@ -1606,6 +1646,21 @@
         {
           "when": "animEnd",
           "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "sender_a1_2": {
+      "anim": "ma1",
+      "startsAt": 20,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     }

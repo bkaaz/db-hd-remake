@@ -40,3 +40,10 @@ close range, his objects come from a recording. Every fighter now has his own cl
 Left, not ported: **Aerial Assault's** scene when it lands. Shocking Stunner's opponent flashes in
 palettes `0x113`/`0x114` while held (not done) and his throw's choice of `1e` or `1b` is not read `?`.
 Beam Cannon's head's frames every 12 and its band are a guess `?`.
+
+### Freeza
+
+Fixed: his normals' and Double Leg Kick's movement, Flaming Headbutt's run and its new reaction (`20`,
+a high tumble, `reel_tumble`), Kienzan's disc falls on its way (vy 2.12, not read by `port`: every other
+"vx 3, vy 2.12" object may share it `?`), Kishin Ha steps back, low blows crouch. Objects from a recording.
+Left, not ported: **Jubaku Ha's** scene when it lands.

@@ -14,12 +14,88 @@
     ]
   },
   "states": {
+    "reel_tumble": {
+      "_comment": "$0F:A203, knockback index 18: thrown high and far, Freeza's Flaming Headbutt.",
+      "anim": "m20",
+      "rank": 3,
+      "launch": [
+        -1,
+        -13
+      ],
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "tumble_fall"
+        },
+        {
+          "when": "landed",
+          "to": "tumble_lie"
+        }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0.3828125
+          }
+        ]
+      ]
+    },
+    "tumble_fall": {
+      "anim": "m20_2",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "tumble_lie"
+        }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0.3828125
+          }
+        ]
+      ]
+    },
+    "tumble_lie": {
+      "anim": "m20_3",
+      "rank": 4,
+      "invulnerable": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "frames:60",
+          "to": "get_up"
+        }
+      ]
+    },
     "turn_round": {
       "_comment": "$0F:A499: he finds the opponent behind him and turns, 6 frames of his turning drawing.",
       "anim": "m41",
-      "vel": [0, 0],
+      "vel": [
+        0,
+        0
+      ],
       "turn": false,
-      "transitions": [{ "when": "animEnd", "to": "idle" }]
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
     },
     "idle": {
       "turnsBy": "turn_round",

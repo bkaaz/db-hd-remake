@@ -89,6 +89,8 @@ const REACTION_TYPES: Record<number, string> = {
   0x40: "down",
   0x80: "long",
   0x400: "high",
+  // $D670: move 20, knockback 18 — Freeza's Flaming Headbutt
+  0x800: "tumble",
   // $D540: the knockdown, 1b, on knockback 5 — Gohan's Triangle Illusion
   0x1000: "down",
   // to another part of the arena ($D3F3, $D46E, $D4D4): with none to go to, the
