@@ -485,6 +485,8 @@ export interface StateDef {
    * where a part cut for it would cut every state playing the animation whole.
    */
   startsAt?: number;
+  /** Plays its animation from the start though the last state played it too: a handler sending a move back round (Planet Attack, `$0F:F3BC`). */
+  replays?: boolean;
   /** A throw: the opponent held from this state's start and let go with a launch (`match/throw.ts`, ADR 0035). */
   grab?: GrabDef;
 

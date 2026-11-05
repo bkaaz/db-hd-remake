@@ -1187,7 +1187,7 @@ export class Entity {
     // resetting the clock would put an audible hitch at the seam.
     const wanted = this.sm.def.loopSound ?? "";
     if (wanted !== this.hum.id) this.hum = { id: wanted, left: 0 };
-    this.setAnim(this.sm.def.anim, restart);
+    this.setAnim(this.sm.def.anim, restart || !!this.sm.def.replays);
     if (!this.sm.def.sameSwing) this.swing.reset();
     if (this.sm.def.type !== undefined) this.armed = true;
     this.behind = this.sm.def.behind ?? false;

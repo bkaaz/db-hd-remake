@@ -898,30 +898,14 @@
           "when": "animEnd",
           "to": "planet_attack_2"
         }
-      ],
-      "velAt": [
-        [
-          6,
-          6
-        ]
       ]
     },
     "planet_attack_2": {
       "anim": "ma8_2",
       "turn": false,
       "vel": [
-        0,
+        6,
         0
-      ],
-      "velAt": [
-        [
-          0,
-          6
-        ],
-        [
-          5,
-          1.5
-        ]
       ],
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -933,10 +917,24 @@
           "to": "rolling_tackle"
         },
         {
-          "when": "animEnd",
+          "when": "connected",
           "to": "planet_attack_3"
+        },
+        {
+          "when": "blocked",
+          "to": "planet_attack_3"
+        },
+        {
+          "when": "animEnd",
+          "to": "planet_attack_2b"
         }
-      ]
+      ],
+      "trail": {
+        "fx": "dust",
+        "every": 1,
+        "from": 0,
+        "to": 4
+      }
     },
     "planet_attack_3": {
       "anim": "ma8_3",
@@ -1504,6 +1502,74 @@
           "to": "idle"
         }
       ]
+    },
+    "planet_attack_2b": {
+      "anim": "ma8_2",
+      "turn": false,
+      "vel": [
+        6,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 32,
+      "transitions": [
+        {
+          "when": "command:aa",
+          "to": "rolling_tackle"
+        },
+        {
+          "when": "connected",
+          "to": "planet_attack_3"
+        },
+        {
+          "when": "blocked",
+          "to": "planet_attack_3"
+        },
+        {
+          "when": "animEnd",
+          "to": "planet_attack_2c"
+        }
+      ],
+      "replays": true
+    },
+    "planet_attack_2c": {
+      "anim": "ma8_2",
+      "turn": false,
+      "vel": [
+        6,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 32,
+      "transitions": [
+        {
+          "when": "command:aa",
+          "to": "rolling_tackle"
+        },
+        {
+          "when": "connected",
+          "to": "planet_attack_3"
+        },
+        {
+          "when": "blocked",
+          "to": "planet_attack_3"
+        },
+        {
+          "when": "animEnd",
+          "to": "planet_attack_3"
+        }
+      ],
+      "trail": {
+        "fx": "dust",
+        "every": 1,
+        "from": 7,
+        "to": 9
+      },
+      "replays": true
     }
   }
 }

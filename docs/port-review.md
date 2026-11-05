@@ -158,8 +158,6 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `9f` sender_9f | ground: ↓ ↘ → X | — |
 | `aa` rolling_tackle | ground: ↓ ↘ → Y | — |
 | `b0` buu_breath | ground: ↓ ↘ → B + Y | — |
-| `a4` tornado_hip | ground: ← → B | — |
-| `a8` planet_attack | ground: ← → Y | what its handler decides on a button held or a level `?` |
 | `a5` oyatsu_kosen | ground: ↓ ↑ B | — |
 | `ac` powersault | ground: ↓ ↑ Y | — |
 | `9e` butt_drop | air: ↓ + B | — |
