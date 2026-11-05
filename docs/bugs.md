@@ -336,7 +336,7 @@ nothing — they disarm themselves every frame.
 - **Freeza's `aa`: `burst_m` comes out and the log never shows it gone** (`logs/moves/freeza/aa.ours.txt`).
   Not looked into; the run may simply end first.
 
-- **17 objects leave the wrong thing when they land.** The draft gave every object the same small
+- **16 objects leave the wrong thing when they land.** The draft gave every object the same small
   explosion; `$2A:8E31` says most of these stay and leave a melee blow's spark, and some explode bigger.
   The list is `NOT_YET` in `src/rom/objectHit.test.ts`, and it tells which is which. Vegeta's own
   `vegeta_energy_field`, `_energy_dash`, `_ground_flare` and `_jumping_bomb` stay, but sound like an

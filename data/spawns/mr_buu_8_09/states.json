@@ -1,5 +1,7 @@
 {
   "initial": "fly",
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark",
   "states": {
     "fly": {
       "anim": "play",
@@ -10,13 +12,13 @@
       ],
       "type": "light",
       "damage": 28,
-      "burstsInto": "burst_s",
-      "hitSound": "burst_0a",
-      "blockSound": "burst_0a",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "endsWithMove": [
         "94"
       ],
-      "lasts": 15
+      "lasts": 15,
+      "outlivesHit": true
     }
   }
 }
