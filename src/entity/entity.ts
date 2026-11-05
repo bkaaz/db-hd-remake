@@ -84,6 +84,7 @@ holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean; stri
 export interface Opponent {
   x: number;
   throwable: boolean;
+  airborne: boolean;
   groundVx: number;
 }
 
@@ -586,6 +587,11 @@ export class Entity {
     if (this.sm.def.launch) return 0;
     if (this.airborne) return this.facing * this.vx;
     return this.facing * (this.approaching ?? groundSpeed(this.sm.def, this.stateFrames));
+  }
+
+  /** `setPressed`'s. */
+  get isPressed(): boolean {
+    return this.pressed;
   }
 
   /** Whether its body touched the other's last frame (field `0x97` bit 7, `$2A:8AFB`). */
@@ -1465,7 +1471,8 @@ export class Entity {
     [this.vx, this.vy, this.air] = [vx, vy, air];
     if (this.airborne) {
       const flying = this.facing * this.vx;
-      this.x += (this.pressed && opponent ? pressedSpeed({ x: this.x, vx: flying }, { x: opponent.x, vx: opponent.groundVx }) : flying) * this.scale;
+      // only against a body in the air too: Goku's spin kick flies on over one on the ground, Sender `a1` slows on one it knocked up
+      this.x += (this.pressed && opponent?.airborne ? pressedSpeed({ x: this.x, vx: flying }, { x: opponent.x, vx: opponent.groundVx }) : flying) * this.scale;
       this.y += this.vy * this.scale;
       this.vy = fall({ ...air, vx, vy: this.vy }, this.gravity);
       if (this.y >= this.groundY) {

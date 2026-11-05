@@ -25,7 +25,7 @@ function fighter(health = 400): Contender & { health: number; state: string; hea
   };
 }
 
-function round(dice = 0) {
+function round() {
   const shown: Announcement[] = [];
   const played: string[] = [];
   const r = new Round({
@@ -34,7 +34,6 @@ function round(dice = 0) {
       return { at: () => {} };
     },
     sound: (s) => played.push(s),
-    random: () => dice,
   });
   return { r, shown, played };
 }
@@ -129,13 +128,13 @@ describe("Round", () => {
     expect(r.done).toBe(true);
   });
 
-  it("picks the winner's pose at random among his", () => {
-    const { r } = round(0.75);
+  it("gives the winner his ground pose, never the one from arenas with no floor", () => {
+    const { r } = round();
     const [a, b] = [fighter(), fighter(0)];
     run(r, [a, b], 1);
     b.state = "ko_down";
     run(r, [a, b], 81);
-    expect(a.state).toBe("win_air");
+    expect(a.state).toBe("win");
   });
 
   it("calls both down a draw: DOUBLE K.O., one sound, and nobody's pose", () => {

@@ -175,7 +175,6 @@ export class DebugScene implements Scene {
         return { at: (y) => fx && (fx.y = camera.y + y) };
       },
       sound: (id) => announcer.play(id),
-      random: Math.random,
     };
     const round = new Round(world);
     const opening = new Opening(world, fighters.bodies, ctx.keyboard.toggles.get("intro"));

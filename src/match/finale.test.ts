@@ -113,3 +113,23 @@ describe("a finale that sweeps", () => {
     expect(f.phase).toBe("band");
   });
 });
+
+describe("a finale that keeps its band lit", () => {
+  const LIT: FinaleDef = { ...METEOR, sweep: { each: 8, half: 28 }, white: 3, lit: true };
+
+  /** Steps until `phase`, and the finale as it reached it. */
+  function until(def: FinaleDef, phase: Finale["phase"]): Finale {
+    let f = throwBall(def, 0, 0, 0, 200);
+    while (f.phase !== phase) [f] = finaleStep(f, def, 200);
+    return f;
+  }
+
+  it("holds the band through the white and drops it at the end", () => {
+    expect(until(LIT, "white").band).toBeGreaterThan(0);
+    expect(until(LIT, "done").band).toBe(0);
+  });
+
+  it("drops it as the white begins otherwise", () => {
+    expect(until({ ...LIT, lit: undefined }, "white").band).toBe(0);
+  });
+});

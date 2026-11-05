@@ -36,6 +36,9 @@ export interface FinaleDef {
    */
   sweep?: { each: number; half: number };
 
+  /** The band stays on through the white, added light over both fighters, until the effect is cleared ($0F:F158). */
+  lit?: boolean;
+
   /** Frames the arena is held white before the blow ($20:8EB5: 60). */
   white: number;
   /** A burst somewhere on the screen every `every` frames of the white ($0F:F241). */
@@ -119,13 +122,13 @@ export function finaleStep(f: Finale, def: FinaleDef, floor: number): [Finale, F
   if (f.phase === "band") {
     if (f.left > 0) return [{ ...f, left: f.left - 1 }, {}];
     if (f.band < BAND.full) return [{ ...f, band: f.band + BAND.grow }, {}];
-    return [{ ...f, phase: "white", band: 0, left: def.white }, { white: true, toll: true }];
+    return [{ ...f, phase: "white", band: def.lit ? f.band : 0, left: def.white }, { white: true, toll: true }];
   }
   if (f.phase === "white") {
     const left = f.left - 1;
     const elapsed = def.white - left;
     if (left > 0) return [{ ...f, left }, { burst: elapsed % def.every === 0, toll: elapsed % TOLL === 0 }];
-    return [{ ...f, left: 0, phase: "done" }, { done: true }];
+    return [{ ...f, left: 0, phase: "done", band: 0 }, { done: true }];
   }
   return [f, {}];
 }

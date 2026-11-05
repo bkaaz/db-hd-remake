@@ -29,7 +29,6 @@ function world() {
       return { at: (y) => heights.push(y) };
     },
     sound: (s) => played.push(s),
-    random: () => 0,
   };
   return { w, shown, heights, played };
 }

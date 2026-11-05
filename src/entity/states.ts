@@ -110,9 +110,10 @@ export interface SeizeDef {
    * What happens to him on which frames of the scene: another animation, a
    * frame of his own shown, set down `at` from the seizer (x toward the
    * seizer's facing, y from the floor), drifting by `drift` px a frame until
-   * the next says otherwise, hidden or shown — Oyatsu Kosen eating him.
+   * the next says otherwise, hidden or shown — Oyatsu Kosen eating him. With
+   * `every`, again each `every` frames: an animation of his that goes round (`57`).
    */
-  steps?: { frame: number; anim?: string; show?: number; at?: [number, number]; drift?: [number, number] | null; hide?: boolean }[];
+  steps?: { frame: number; anim?: string; show?: number; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; every?: number }[];
   /** A circle of light on him: `start` px on frame `from`, 1 more a frame to `top`, then 1 less, at `at` from his feet (his `5f`, `$0F:A67F`). */
   light?: { from: number; start: number; top: number; at: [number, number] };
   /** What he cries out as he is taken (Volleyball's `4d`). */

@@ -117,7 +117,10 @@ export class Seizures {
     const { held } = s;
     const scale = held.scaleOf;
     if (def.hides !== undefined && frame === def.hides) held.hide(true);
-    for (const step of def.steps ?? []) if (frame === step.frame) this.playStep(s, seizer, step);
+    for (const step of def.steps ?? []) {
+      const due = step.every ? frame >= step.frame && (frame - step.frame) % step.every === 0 : frame === step.frame;
+      if (due) this.playStep(s, seizer, step);
+    }
     if (s.drift && s.phase === "held") {
       held.x += seizer.facing * s.drift[0] * scale;
       held.y += s.drift[1] * scale;

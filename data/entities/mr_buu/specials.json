@@ -6,7 +6,9 @@
     "attack_x",
     "charge_start",
     "charge",
-    "charge_end"
+    "charge_end",
+    "intro",
+    "win"
   ],
   "entries": [
     {
@@ -1351,12 +1353,14 @@
           ],
           "sounds": {
             "white": "explosion_2c"
-          }
+          },
+          "lit": true
         },
         "steps": [
           {
             "frame": 95,
-            "anim": "m57"
+            "anim": "m57",
+            "every": 42
           }
         ]
       },
@@ -1875,8 +1879,8 @@
       ],
       "transitions": [
         {
-          "when": "finaleDone",
-          "to": "breath_scene_6"
+          "when": "frames:111",
+          "to": "breath_scene_5b"
         }
       ]
     },
@@ -2062,6 +2066,60 @@
           "to": "idle"
         }
       ]
+    },
+    "breath_scene_5b": {
+      "anim": "mb1",
+      "startsAt": 92,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "holdStep": 10,
+      "sceneOf": "breath_scene",
+      "airborne": true,
+      "air": [
+        [
+          92,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "finaleDone",
+          "to": "breath_scene_6"
+        }
+      ]
+    },
+    "intro": {
+      "anim": "m3c",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 7,
+      "transitions": [
+        {
+          "when": "frames:175",
+          "to": "idle"
+        }
+      ]
+    },
+    "win": {
+      "anim": "m3e",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 26,
+      "transitions": []
     }
   }
 }

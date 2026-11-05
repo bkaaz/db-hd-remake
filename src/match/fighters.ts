@@ -266,9 +266,10 @@ export class Fighters {
     const [a, b] = [player.pushBodies, opponent.pushBodies];
     if (a && b) {
       const overlap = bodyOverlap(a, b, player.x <= opponent.x);
-      // a blow still on him keeps them pressed after the bodies part ($2A:8188, bit 6, measured: Tornado Hip)
+      // a blow still on him keeps them pressed after the bodies part, but does not press them:
+      // Tornado Hip slows from close, where the bodies met first, and not from afar (recorded; $2A:8188, bit 6)
       const onHim = (from: Entity, to: Entity) => contact({ boxes: from.boxes("hit"), at: from.placement }, { boxes: to.boxes("hurt"), at: to.placement }) !== null;
-      const pressed = overlap > 0 || onHim(player, opponent) || onHim(opponent, player);
+      const pressed = overlap > 0 || (player.isPressed && (onHim(player, opponent) || onHim(opponent, player)));
       player.setPressed(pressed);
       opponent.setPressed(pressed);
       const { ax, bx } = pushApart(player.x, opponent.x, overlap, bounds);

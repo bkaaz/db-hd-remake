@@ -342,6 +342,10 @@ The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 **Mr. Buu's Energy Field** (`8/12`, `$0F:D8BE`) has no picture: it strikes with what the move's `b1` effect of kind 2 draws, the circle. It adds 2 to the radius (`$30C4` / `$30D4`) up to `0x41`; from `0x40` the radius is `0x40` plus `$0F:D939` `1 2 2 1` by `$74 & 3`. The frame shown is radius / 4, which names its box; gone once its owner leaves `af` / `d8` (`$0F:B5F5`). None of it steps in a hit pause. The circle shrinks by 2 a frame from the script's frame 140. A hit disarms its blow (top bits `f8` → `b8`) and puts `a/02` in another slot; armed again 60 frames later.
 
+**Mr. Buu's win** (`3e`) holds `35` from frame 128, to the end of the round; the script's steps after it do not play (recorded).
+
+**Mr. Buu's intro** (`3c`) holds `2f`, arms up, 113 frames from frame 62, 175 in all (recorded), with no effect of its own: only his line.
+
 **Mr. Buu's charge** (`0c`, handler `$0F:E8C7`) does not load the glow's palette (`$0F:A072`: CGRAM stands still), and its sound is `46` (`$0F:A03A`, by character; `9` has `17`, others `19`). Frame 5 puts out `8/03`, frame 10 `8/0a`, two pictures of steam by turns while the move lasts; held, step 5 goes back to frame 10, and let go it plays that step with `8/0b`.
 
 **Mr. Buu's Oyatsu Kosen** (`a5`, then `a6`, handler `$0F:F2B3`): the object `8/04` reaches him and stays, and he plays `5f`, set 80 px off: 96 frames of a pose, then kind 2 on him at 0, −40, size 8, 1 larger a frame to 47 and back. At its top he is the drawing `c1`, 40 px up: candy. `a6` holds `7d`, then `7e` with `8/16` for 68 frames, and draws him in, 2 and 1 px a frame, into `48` at his mouth. Chewing, and on frame 80 he comes out at +44, −32 (`$0F:F2CE`), vx 2, vy 2, bounces once at vy −8 and lands into `1b` at vx 2.5, vy −7, with `a/17`.
@@ -493,7 +497,7 @@ calls `$00:BC94` (the stage's columns `?`).
 **Before that, each fighter's dx for the frame** (`$0D:C8F0`): vx, or the
 shove (fields `0x88`/`0x8c`) while one runs. Two bodies pressed together
 (field `0x97` bit 7) and moving into each other both get the average of
-their vx; a shove then stands in for its body's. Bit 7 is cleared and set each frame by the push (`$2A:80ED`, `$2A:8112`), and in Tornado Hip stayed set for as long as his blow's box stayed on the opponent (bit 6, `$2A:8188`), though their bodies had parted: why a run at vx 4 goes 2 a frame after each hit `?`. **A shove into the screen's edge** (x < camera + 17, or ≥ camera
+their vx; a shove then stands in for its body's. Bit 7 is cleared and set each frame by the push (`$2A:80ED`, `$2A:8112`), and in Tornado Hip from close stayed set for as long as his blow's box stayed on the opponent (bit 6, `$2A:8188`), though their bodies had parted, so a run at vx 4 goes 2 a frame after each hit; from afar, where the bodies had not met, it does not `?`. **A shove into the screen's edge** (x < camera + 17, or ≥ camera
 + 240) passes to the other fighter, reversed and added to his dx, for the
 frames it had left — unless the shoved one has no health, field `0x25` bit
 2, or a move in the bit table `$0D:CA35` (moves `11`–`16`, `29`–`32`, `7e`).
