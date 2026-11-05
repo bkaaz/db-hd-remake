@@ -342,6 +342,8 @@ The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 **Mr. Buu's Energy Field** (`8/12`, `$0F:D8BE`) has no picture: it strikes with what the move's `b1` effect of kind 2 draws, the circle. It adds 2 to the radius (`$30C4` / `$30D4`) up to `0x41`; from `0x40` the radius is `0x40` plus `$0F:D939` `1 2 2 1` by `$74 & 3`. The frame shown is radius / 4, which names its box; gone once its owner leaves `af` / `d8` (`$0F:B5F5`). None of it steps in a hit pause. The circle shrinks by 2 a frame from the script's frame 140. A hit disarms its blow (top bits `f8` → `b8`) and puts `a/02` in another slot; armed again 60 frames later.
 
+**Mr. Buu's Butt Drop** (`9e`, handler `$0F:EE42`) starts stopped with vy −2 (field `0x82`, `$0F:EE4F`), and falls on his gravity, its blow out while it falls; landing jumps it to frame 24. On step 3 it leaves the floor at vx 2, vy −4, with gravity from step 4, and on step 5 it waits at frame 40 until it lands (`$0F:EEA6`), then a frame of `05`.
+
 **Mr. Buu's Powersault** (`ac`) puts `8/05` out at its blow: no blow of its own, tiles `+0x80` in OBJ palette 0, on his x, its frame by his step (`$0F:D7B7`: 1, 2, 3 on steps 2 to 4), gone as he leaves the move.
 
 **Mr. Buu's Planet Attack** (`a8`, handler `$0F:F336`) is a rush: vx 6 from the move's frame 16, dust while a slot is free (`$0D:DE6C`), drawings `8c` and `8d` round and round. Its blow connecting clears field `0x25` bit 7, and the handler jumps to frame 26 with vx 1.5; from frame 26 it goes back to 16 until it has counted 24 frames armed (`F0`), so three rounds at most.

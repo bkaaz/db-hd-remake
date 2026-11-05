@@ -159,7 +159,6 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `aa` rolling_tackle | ground: ↓ ↘ → Y | — |
 | `b0` buu_breath | ground: ↓ ↘ → B + Y | — |
 | `a5` oyatsu_kosen | ground: ↓ ↑ B | — |
-| `9e` butt_drop | air: ↓ + B | — |
 | `95` crouch_b | his own normal | — |
 | `9a` attack_x | his own normal | — |
 

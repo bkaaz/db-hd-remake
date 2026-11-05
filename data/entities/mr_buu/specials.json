@@ -1017,7 +1017,7 @@
           0,
           {
             "vx": 0,
-            "vy": 0,
+            "vy": -2,
             "gravity": "own"
           }
         ]
@@ -1088,7 +1088,7 @@
           }
         ],
         [
-          5,
+          4,
           {
             "gravity": "own"
           }
@@ -1097,7 +1097,7 @@
       "transitions": [
         {
           "when": "landed",
-          "to": "land"
+          "to": "butt_drop_5"
         }
       ]
     },
@@ -1556,6 +1556,21 @@
         "to": 9
       },
       "replays": true
+    },
+    "butt_drop_5": {
+      "anim": "m05",
+      "startsAt": 20,
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "frames:20",
+          "to": "land"
+        }
+      ]
     }
   }
 }
