@@ -340,6 +340,8 @@ every 4 frames (palette records `0x130`–`0x133` through `$01:84EF`, above).
 
 The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
+**Mr. Buu's Energy Field** (`8/12`, `$0F:D8BE`) has no picture: it strikes with what the move's `b1` effect of kind 2 draws, the circle. It adds 2 to the radius (`$30C4` / `$30D4`) up to `0x41`; from `0x40` the radius is `0x40` plus `$0F:D939` `1 2 2 1` by `$74 & 3`. The frame shown is radius / 4, which names its box; gone once its owner leaves `af` / `d8` (`$0F:B5F5`). None of it steps in a hit pause. The circle shrinks by 2 a frame from the script's frame 140. A hit disarms its blow (top bits `f8` → `b8`) and puts `a/02` in another slot; armed again 60 frames later.
+
 Type `a` objects draw from tile base 0 in the shared `0x30` at `$6500` and `0x31` at `$7500`, there all fight, in palette `0x27AE98` (`npm run rom -- vram`). A reel takes its first shove step before the hit pause, for a fist and a bolt alike.
 
 Object slots: ten of 16 bytes at I-RAM `$3300`; each type's behaviour is its

@@ -718,6 +718,11 @@
     },
     "energy_field_3": {
       "anim": "maf_3",
+      "ball": [
+        { "at": [0, -56], "from": 0, "until": 33, "grow": 2 },
+        { "at": [0, -56], "from": 33, "until": 104, "grow": 0, "pulse": [65, 66, 66, 65] },
+        { "at": [0, -56], "from": 104, "grow": -2 }
+      ],
       "turn": false,
       "vel": [
         0,

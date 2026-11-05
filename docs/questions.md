@@ -81,8 +81,7 @@ Tri-Eruption is 116 frames where the original's is 200, and knocks down where it
 Fixed: his Y's and X's blows counted twice (body and object), Flying Bomber moves and goes behind,
 Butt Drop falls, bounces and strikes again, Planet Attack's speed, low blows crouch, Kakusan's three
 different shots. Objects from a recording. The dash's charge commands now reach `npm run moves` too.
-Buu Breath's and Oyatsu Kosen's scenes are approximate (below). Left: **Energy Field's** ball draws from
-tiles at base 0 that the exporter finds empty (`8/12`): it strikes, but shows nothing `?`.
+Buu Breath's and Oyatsu Kosen's scenes are approximate (below).
 
 ### Buu
 

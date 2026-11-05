@@ -155,19 +155,15 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `9d` throw | ground: → + X | m9d's blow, a reaction no type copies |
 | `a0` sender_a0 | ground: → ← → X | — |
 | `a1` sender_a1 | ground: ↓ ↙ ← X | — |
-| `ab` kakusan | ground: ↓ ↙ ← A | — |
 | `9f` sender_9f | ground: ↓ ↘ → X | — |
 | `aa` rolling_tackle | ground: ↓ ↘ → Y | — |
 | `b0` buu_breath | ground: ↓ ↘ → B + Y | — |
-| `af` energy_field | ground: ← ↙ ↓ ↘ → A | — |
 | `ae` mightiness_bomber | ground: ↓ ↙ → A | what its handler decides on a button held or a level `?` |
 | `a4` tornado_hip | ground: ← → B | — |
 | `a8` planet_attack | ground: ← → Y | what its handler decides on a button held or a level `?` |
 | `a5` oyatsu_kosen | ground: ↓ ↑ B | — |
 | `ac` powersault | ground: ↓ ↑ Y | — |
 | `9e` butt_drop | air: ↓ + B | — |
-| `92` attack_y | his own normal | — |
-| `94` crouch_y | his own normal | — |
 | `95` crouch_b | his own normal | — |
 | `9a` attack_x | his own normal | — |
 

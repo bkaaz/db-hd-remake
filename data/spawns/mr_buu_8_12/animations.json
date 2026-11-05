@@ -17,7 +17,7 @@
       },
       {
         "frame": "1",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -43,7 +43,7 @@
       },
       {
         "frame": "3",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -69,7 +69,7 @@
       },
       {
         "frame": "5",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -95,7 +95,7 @@
       },
       {
         "frame": "7",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -121,7 +121,7 @@
       },
       {
         "frame": "9",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -134,7 +134,7 @@
       },
       {
         "frame": "10",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -147,7 +147,7 @@
       },
       {
         "frame": "11",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -173,7 +173,7 @@
       },
       {
         "frame": "13",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -199,7 +199,7 @@
       },
       {
         "frame": "15",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -212,7 +212,7 @@
       },
       {
         "frame": "16",
-        "dur": 100,
+        "dur": 72,
         "boxes": [
           {
             "type": "hit",
@@ -225,7 +225,7 @@
       },
       {
         "frame": "15",
-        "dur": 4,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -238,7 +238,7 @@
       },
       {
         "frame": "14",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -316,7 +316,7 @@
       },
       {
         "frame": "8",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -355,7 +355,7 @@
       },
       {
         "frame": "5",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",
@@ -394,7 +394,7 @@
       },
       {
         "frame": "2",
-        "dur": 3,
+        "dur": 2,
         "boxes": [
           {
             "type": "hit",

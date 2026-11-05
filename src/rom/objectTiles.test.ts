@@ -6,7 +6,7 @@ import { drawingAtSpawn, spawnerLoads } from "./objectTiles";
 import { fighterNamed } from "./roster";
 import type { ScriptOp } from "./script";
 
-/** Their sheets hold no pixel, so they fly unseen: `docs/bugs.md`. Delete as each is put right. */
+/** Their sheets hold no pixel, so they fly unseen: `docs/bugs.md`. Delete as each is put right; `mr_buu_8_12` stays, its picture is the state's circle. */
 const DRAWS_NOTHING = new Set(["buu_9_06", "buu_9_08", "buu_a_20", "cell_a_21", "cell_a_22", "cell_a_23", "freeza_6_15", "mr_buu_8_12"]);
 
 const spawn = (anim: number): ScriptOp => ({ op: "spawn", counter: 0, type: 1, anim, tiles: 0, palette: 0, dx: 0, dy: 0, timer: 0, vx: 0, vy: 0 });

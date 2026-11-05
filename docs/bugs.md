@@ -348,8 +348,8 @@ nothing — they disarm themselves every frame.
   `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
 - **Some objects fly unseen: their sheets hold no pixel.** They still fly and strike. Cell's `cell_a_21`,
   `_a_22`, `_a_23` and Buu's `buu_a_20` take tiles from the wrong place, as Kakusan's did: type `a` draws
-  from the shared `0x30`/`0x31` (`npm run rom -- vram logs/objects-<name>.bin`). `buu_9_06`, `buu_9_08`,
-  `freeza_6_15` and `mr_buu_8_12` are blank too, cause not read. The list is `DRAWS_NOTHING` in
+  from the shared `0x30`/`0x31` (`npm run rom -- vram logs/objects-<name>.bin`). `buu_9_06`, `buu_9_08`
+  and `freeza_6_15` are blank too, cause not read; they may be drawn effects, as Energy Field's `mr_buu_8_12` is (`rom.md`), which stays blank on purpose. The list is `DRAWS_NOTHING` in
   `src/rom/objectTiles.test.ts`. A spawn already exported is kept, so `animations.json` has to go first.
 - **Kakusan's three land too close together from near.** The original's come 14 and 23 frames apart and
   the opponent goes 90 px over its reel; ours land one straight after the other's pause and he goes 39 px
@@ -357,3 +357,5 @@ nothing — they disarm themselves every frame.
   his body for five frames after the first pause before it strikes, at the same gap and on the same frame of
   its own (ball and box confirmed by `$2A:8D63`'s mean). His `$7A`, `$26` and `$96` stay clear, so it is not
   `$2A:8B92`'s gate. The low ball's wait is geometry: it strikes once his shove stops at the screen's edge.
+- **Mr. Buu's Energy Field's blow is gone after its first hit.** The original's object stays with its blow disarmed, puts `a/02` out in another slot, and is armed again 60 frames later (`logs/moves/mr_buu/af.orig.txt`, f199 and f259). Ours bursts, as `objectHit` reads it, so a second touch never lands. The circle is the state's and goes on.
+- **Boxes that only touch may strike in the original and not in ours `?`.** Energy Field lands at frame `0b`, box ±44 from x 250, on Goku's hurt box edge at 294 (320 − 26): exactly touching. Ours needs an overlap, so it lands a box step later. One measurement; `src/combat/hit.ts`.
