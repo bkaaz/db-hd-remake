@@ -40,7 +40,7 @@ const fileOf = (c: MoveCase) => c.name.replace(/ /g, "-");
 
 /** His face from Goku's at the roster's corner, for player one's cursor: `back` is right on this screen. */
 const FACE: Record<string, [number, number]> = {
-  goku: [0, 0], vegeta: [1, 0], gohan: [2, 0], gotenks: [3, 0], vegetto: [4, 0],
+  goku: [0, 0], vegeta: [1, 0], gotenks: [2, 0], gohan: [3, 0], vegetto: [4, 0],
   piccolo: [0, 1], mr_buu: [1, 1], buu: [2, 1], freeza: [3, 1], cell: [4, 1],
 };
 /** And Goku for the COM cursor, four to the left of Vegetto's where it starts. */

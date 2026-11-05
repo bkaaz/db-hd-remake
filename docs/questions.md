@@ -73,6 +73,14 @@ the cartridge's order. Objects from a recording.
 Left, not ported: **Candy Beam's** scene (`b7`, `b8`), **Energy Sphere's** objects by part. A command of
 the air whose conditions ask for the ground (`b2`) has no way in now `?`.
 
+### Goku, Vegeta, Gohan, Gotenks (you had approved them; compared again)
+
+Goku agrees in almost everything, which is the tool's own check. Changed: the Kamehameha now ends in
+its last pose for all who have one, 14 frames longer (**try it**). Vegeta's B in the crouch never came out
+(`crouch` had no entry for it). Triangle Illusion and Wild Boar throw at knockback 5, 111 px instead of 58.
+Gotenks's close Y struck twice. Not changed: Jumping Bomb travels 21 px further than the original, whose
+speed may depend on the side he faces `?`.
+
 ### Across the roster, not done
 
 - **Sender moves** (`a0`, `a1`, `9f`) leave out the fight above the arena, as the owner decided.

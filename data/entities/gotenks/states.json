@@ -2932,7 +2932,13 @@
           "when": "animEnd",
           "to": "jump_fall_attacked"
         }
-      ]
+      ],
+      "launches": {
+        "reel_down": [
+          -3,
+          -6
+        ]
+      }
     },
     "ultra_renzoku": {
       "anim": "mbd",
@@ -3866,7 +3872,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "sameSwing": true
     },
     "attack_y_2": {
       "anim": "m92_2",
@@ -4010,7 +4017,13 @@
         "every": 4,
         "to": 12
       },
-      "sameSwing": true
+      "sameSwing": true,
+      "launches": {
+        "reel_down": [
+          -3,
+          -6
+        ]
+      }
     },
     "move_b1": {
       "anim": "mb1",

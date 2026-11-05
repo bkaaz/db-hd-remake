@@ -709,6 +709,10 @@
           "to": "crouch_y"
         },
         {
+          "when": "pressed:smash",
+          "to": "crouch_b"
+        },
+        {
           "when": "!held:down",
           "to": "stand_up"
         },
@@ -5209,6 +5213,10 @@
         {
           "when": "pressed:attack",
           "to": "crouch_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "crouch_b"
         },
         {
           "when": "!held:down",

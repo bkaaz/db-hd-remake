@@ -2514,7 +2514,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "kame_end_s"
         }
       ]
@@ -2530,7 +2533,7 @@
       "transitions": [
         {
           "when": "frames:8",
-          "to": "idle"
+          "to": "kame_out"
         }
       ]
     },
@@ -2568,7 +2571,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "kame_end_m"
         }
       ]
@@ -2584,7 +2590,7 @@
       "transitions": [
         {
           "when": "frames:12",
-          "to": "idle"
+          "to": "kame_out"
         }
       ]
     },
@@ -2622,7 +2628,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "kame_end_l"
         }
       ]
@@ -2638,7 +2647,7 @@
       "transitions": [
         {
           "when": "frames:16",
-          "to": "idle"
+          "to": "kame_out"
         }
       ]
     },
@@ -3821,6 +3830,21 @@
       "loopSound": "charge_19",
       "loopEvery": 8,
       "loopFrom": 65,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "kame_out": {
+      "anim": "maa_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "startsAt": 96,
       "transitions": [
         {
           "when": "animEnd",

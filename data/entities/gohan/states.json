@@ -2629,7 +2629,13 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "launches": {
+        "reel_down": [
+          -3,
+          -6
+        ]
+      }
     },
     "rushing_uppercut": {
       "anim": "ma2",
@@ -3266,7 +3272,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "kame_end_s"
         }
       ]
@@ -3341,7 +3350,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "kame_end_m"
         }
       ]
@@ -3395,7 +3407,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "kame_end_l"
         }
       ]
