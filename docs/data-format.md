@@ -166,6 +166,9 @@ nine fighters would each want a copy of it. A grunt *is* his.
 - **`fires.also` is more bolts on the same frame**, each hitting on its own, at its own
   `at` and with the first bolt's `spawn` and `state` unless it names its own (Kakusan's
   three). Unlike `with`, which never hits and goes when the bolt goes.
+- **A frame's `shadow: true` in `frames.json`** says the fighter casts the floor's shadow while it shows, in the
+  sheet's frames `shadow0` to `shadow3`, by height (`entity/shadow.ts`). Written by the export; one painted into
+  the drawing needs none.
 - **`holdFrames` ends a `holdStep`** on that frame of the state, rather than at the
   state's end; **a `grab`'s `lift`** raises the held body a pixel a frame from frame
   `from`, `px` in all. Both for Psychic Lift's rise.

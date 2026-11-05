@@ -14,11 +14,13 @@ import { layoutAt, pointer, scriptAt, tileResourceOf, type FighterTables, type S
 import { decompress } from "./decompress";
 import { drawFrame, flipLayout, readLayout, readPalette, type Drawing, type Piece } from "./frame";
 import { PLAIN, parseFrameId, type Look } from "./look";
+import { shadowFrame } from "../entity/shadow";
 import { objectFrame } from "./object";
 import { objectVram, resourceStream } from "./resource";
 import { heldAnims } from "./held";
 import { moveParts } from "./parts";
 import { readScript } from "./script";
+import { castsShadow, shadowDrawings } from "./shadow";
 import { packSheet, type Placed } from "./sheet";
 
 export interface Exported {
@@ -93,8 +95,22 @@ export function exportFighter(rom: Uint8Array, t: FighterTables): Exported {
     delete animations[name];
     notes.push(`${name} left out: shows frame ${bad.frame}, which has no picture`);
   }
+  // last, so a sheet's other frames stay where they are
+  const shadow = shadowDrawings(rom, t.character);
+  shadow.sizes.forEach((pieces, size) => {
+    const id = shadowFrame(size);
+    const { image, origin } = drawFrame(shadow.tiles, pieces, readPalette(rom, t.palette));
+    items.push({ id, image, origin });
+    for (const [v, palette] of Object.entries(t.variants ?? {})) {
+      variantItems[v].push({ id, image: drawFrame(shadow.tiles, pieces, typeof palette === "number" ? readPalette(rom, palette) : palette).image, origin });
+    }
+  });
   const variants = Object.fromEntries(Object.entries(variantItems).map(([v, list]) => [v, packSheet(list).sheet]));
-  return { ...packSheet(items), animations, notes, variants };
+  const packed = packSheet(items);
+  for (const [id, frame] of Object.entries(packed.frames)) {
+    if (!id.startsWith("shadow") && castsShadow(rom, t.character, parseFrameId(id).drawing)) frame.shadow = true;
+  }
+  return { ...packed, animations, notes, variants };
 }
 
 /** Each object the fighter's moves spawn that we export, with the tiles and palette its `b0` gives. */

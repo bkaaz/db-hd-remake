@@ -108,6 +108,8 @@ facing. The somersault is two drawings, raised 48 px and turned. The export
 makes each such way of showing a drawing a frame of its own
 (`src/rom/look.ts`).
 
+**The floor's shadow** (`$00:8212`, after a fighter's drawing, so behind him): a drawing casts one if its bit is set in the map `$00:82F6` gives by character; others have one painted in, or none. Layouts: `$09:B26E` by character, four sizes, tiles from `0x80` (the resource at `$6800`, `$01:848B`; player two's `0x180`), his own palette, at his x and y `0xC8` less `$30AE`. The size is `(0xB8 − y)` clamped at 0, `& 0x30`, `>> 4`; none for y under `0x79` or from `0xCB`, or while `$30A8` is set `?`. `src/rom/shadow.ts`, `src/entity/shadow.ts`.
+
 **Which fighter is drawn over the other** is one bit for the pair, `$30B0`
 bit 0 (`$00:812E`): clear, player one's sprites go into OAM first and so
 in front; set, player two's. Arming a blow (`$0D:D8A2`) puts the mover in

@@ -43,6 +43,8 @@ export interface FrameDef {
   h: number;
   /** Pivot in px from the frame's top-left corner. */
   anchor: [number, number];
+  /** He casts the floor's shadow while it shows (`entity/shadow.ts`); one painted in needs none. */
+  shadow?: boolean;
 }
 
 /** One frame of an animation: which sprite, for how long, hitting what. */

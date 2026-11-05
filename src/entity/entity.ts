@@ -19,6 +19,7 @@ import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { shoveAfter } from "../combat/knockback";
+import { shadowFrame, shadowSize } from "./shadow";
 import { trailAt } from "./trail";
 import { moveStep } from "../fx/follow";
 import { hoverOffset } from "./hover";
@@ -259,6 +260,8 @@ export class Entity {
 
   readonly view = new Container();
   private readonly sprite = new Sprite();
+  /** The floor's shadow, behind him and staying on the floor as he jumps. */
+  private readonly shadow = new Sprite();
   private readonly boxG = new Graphics();
   /** The charging ball, added light over the fighter — see combat/ball.ts. */
   private readonly ballG = new Graphics();
@@ -386,7 +389,7 @@ export class Entity {
     if (def.attributes.adds) this.sprite.blendMode = "add";
     this.ballG.blendMode = "add";
     this.bandG.blendMode = "add";
-    this.view.addChild(this.sprite, this.bandG, this.ballG, this.boxG);
+    this.view.addChild(this.shadow, this.sprite, this.bandG, this.ballG, this.boxG);
     this.sm = def.states ? new StateMachine(withHitTypes(def.states), def.animations) : null;
     if (this.sm) this.setAnim(this.sm.def.anim);
     else this.setAnim(Object.keys(def.animations)[0] ?? "");
@@ -1481,6 +1484,7 @@ export class Entity {
     this.sprite.x = this.x;
     this.sprite.y = this.y + (this.sm?.def.hover ? hoverOffset(this.stateFrames) * this.scale : 0);
     this.sprite.scale.set(this.facing * this.scale * this.size, this.scale * this.size);
+    this.renderShadow();
 
     this.ballG.clear();
     this.bandG.clear();
@@ -1514,6 +1518,20 @@ export class Entity {
       // One window pixel, however far the view scales the world.
       this.boxG.rect(r.x, r.y, r.w, r.h).stroke({ color: BOX_COLORS[b.type] ?? 0xffffff, pixelLine: true });
     }
+  }
+
+  private renderShadow(): void {
+    const step = this.currentStep();
+    const size = step && this.def.frames.get(step.frame)?.shadow ? shadowSize(this.y / this.scale) : null;
+    const id = size === null ? null : shadowFrame(size);
+    const ft = id === null ? undefined : this.def.frames.get(id);
+    this.shadow.visible = ft !== undefined;
+    if (!ft || id === null) return;
+    const variant = this.shownVariant ? this.def.variants.get(this.shownVariant)?.get(id) : undefined;
+    this.shadow.texture = variant ?? ft.tex;
+    this.shadow.anchor.set(ft.anchor[0] / ft.w, ft.anchor[1] / ft.h);
+    this.shadow.scale.set(this.scale);
+    this.shadow.position.set(this.x, this.groundY);
   }
 
   private drawBand(band: BandDef, frames: number, gone: number, head: number): void {

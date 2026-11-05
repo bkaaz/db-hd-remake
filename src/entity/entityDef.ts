@@ -33,6 +33,8 @@ export interface FrameTex {
   anchor: [number, number];
   w: number;
   h: number;
+  /** `FrameDef.shadow`. */
+  shadow?: boolean;
 }
 
 /** An authored entity, loaded and ready to instantiate. */
@@ -64,6 +66,7 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
       anchor: f.anchor,
       w: f.w,
       h: f.h,
+      shadow: f.shadow,
     });
   }
 
