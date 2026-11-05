@@ -208,15 +208,20 @@
       ],
       "velAt": [
         [
-          0,
+          1,
           1
         ],
         [
-          32,
+          33,
           0
         ]
       ],
-      "behind": true
+      "behind": true,
+      "approach": {
+        "at": 38,
+        "short": 8,
+        "over": 32
+      }
     },
     "throw": {
       "anim": "m9d",

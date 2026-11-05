@@ -58,8 +58,12 @@ describe("overlaps", () => {
     expect(overlaps(a, { x: 11, y: 0, w: 10, h: 10 })).toBe(false);
   });
 
-  it("does not count touching edges", () => {
-    expect(overlaps(a, { x: 10, y: 0, w: 10, h: 10 })).toBe(false);
+  it("counts touching edges, as the original does ($2A:89D0)", () => {
+    expect(overlaps(a, { x: 10, y: 0, w: 10, h: 10 })).toBe(true);
+  });
+
+  it("does not count a gap of a pixel", () => {
+    expect(overlaps({ x: 0, y: 0, w: 10, h: 10 }, { x: 11, y: 0, w: 10, h: 10 })).toBe(false);
   });
 
   it("requires both axes to overlap", () => {

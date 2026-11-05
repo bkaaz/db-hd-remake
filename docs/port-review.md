@@ -151,7 +151,6 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 
 | move | input | left out |
 |---|---|---|
-| `ad` flying_bomber | ground: R + B | — |
 | `9d` throw | ground: → + X | m9d's blow, a reaction no type copies |
 | `a0` sender_a0 | ground: → ← → X | — |
 | `a1` sender_a1 | ground: ↓ ↙ ← X | — |

@@ -45,9 +45,9 @@ export function boxToWorld(box: BoxLike, at: Placement): WorldRect {
   };
 }
 
-/** Rectangle overlap. Touching edges do not count as a hit. */
+/** Rectangle overlap, touching edges included: `$2A:89D0` counts the first player's right edge on the second's left. */
 export function overlaps(a: WorldRect, b: WorldRect): boolean {
-  return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+  return a.x <= b.x + b.w && b.x <= a.x + a.w && a.y <= b.y + b.h && b.y <= a.y + a.h;
 }
 
 /** The rectangle two boxes share. Only meaningful when they overlap. */

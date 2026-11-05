@@ -342,6 +342,8 @@ The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 **Mr. Buu's Energy Field** (`8/12`, `$0F:D8BE`) has no picture: it strikes with what the move's `b1` effect of kind 2 draws, the circle. It adds 2 to the radius (`$30C4` / `$30D4`) up to `0x41`; from `0x40` the radius is `0x40` plus `$0F:D939` `1 2 2 1` by `$74 & 3`. The frame shown is radius / 4, which names its box; gone once its owner leaves `af` / `d8` (`$0F:B5F5`). None of it steps in a hit pause. The circle shrinks by 2 a frame from the script's frame 140. A hit disarms its blow (top bits `f8` → `b8`) and puts `a/02` in another slot; armed again 60 frames later.
 
+**Mr. Buu's Flying Bomber** (`ad`, handler `$0F:F4DF`) walks at vx 1, stops on step 5, and on frame 38 turns to him and takes 1/32 of the way to 8 px short of him (`$0F:F542`), as Side Slash does. The same code (`22 DB D7 0D A5 00 18 79 20 00`) is at `$10:B69C`, `$10:C552`, `$10:D978`, `$20:841E`, `$20:979E`, `$20:A58A`, `$20:C1D0`, `$20:C7DD`.
+
 **Mr. Buu's Rolling Tackle** (`aa`, handler `$0F:F3E8`) comes only out of Planet Attack (`a8`, `d1`). A hop: vx 3, vy −4 on step 0, his gravity from step 1, its blow from frame 16; landing jumps it to 64, a second, lower hop at vx 1, vy −2 for step 4, gravity from step 5, and landing again to 76 at vx 0.
 
 **Mr. Buu's Butt Drop** (`9e`, handler `$0F:EE42`) starts stopped with vy −2 (field `0x82`, `$0F:EE4F`), and falls on his gravity, its blow out while it falls; landing jumps it to frame 24. On step 3 it leaves the floor at vx 2, vy −4, with gravity from step 4, and on step 5 it waits at frame 40 until it lands (`$0F:EEA6`), then a frame of `05`.
@@ -994,7 +996,7 @@ counts down outside hitstop. A blow sets hitstop (`$30B2`) to `0x8a`.
 **Bodies** (`$2A:80ED`, every frame from `$00:8DEA` but in hitstop):
 slots 0 and 1 of the drawing's box record, the body and the head, placed
 by x, y and the draw offset (`$2A:87DE` / `886A`), tested in the plane —
-body/body, head/head, then each against the other's (`$2A:89D0`). The
+body/body, head/head, then each against the other's (`$2A:89D0`: the signs of `a.x1 − b.x2` and `a.x2 − b.x1` differ, so player one's right edge on player two's left counts, the reverse does not; ours counts both). The
 first pair that touches gives the overlap along x; each fighter moves half
 of it away from the other, within 16 px of the screen's edges
 (`$2A:8AFB`), and field `0x97` bit 7 is set on both. Skipped while either
