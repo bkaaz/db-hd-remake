@@ -964,9 +964,10 @@ the attacker's facing) and vy from a table of 6-byte entries at `$0D:D68A`.
 Light (index 2) pushes 2.0 px/frame, heavy (3) 3.0, knockdown (4) 2.0 and
 −4.0 up, the high knockdown `1e` (`0c`) 0.75 and −7.5 — `14` (0.75, −6.0)
 for Vegeta's `9c` and fighter 4's `a4` (`$0D:D3BF` compares the attacker's move with his script set, field `0x41`: `019c`, `04a4`), `13` (0.5, −8.0) for `a3` — the long light reel (6) 2.0 for 10 frames, in the air (16) 2.0
-and −6.0 up. The push **slows by 0.25 every frame** until it stops
-(`$0D:EC5F`, which slows vx the same way) — 9 px in all for light, 19.5
-for heavy. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in
+and −6.0 up. A reel's handler (`$0F:A14C`) never calls `$0D:EC5F`, so its push **keeps its whole
+speed for the entry's frames**, outside hitstop: 16 px for light, 36 for heavy, as recorded. The
+moves that do call it (`$0F:A283`, `$0F:A338`, `$0F:E9D3`, `$0F:EA8A`, `$10:AF7A`, `$10:B031`,
+`$20:A464`) slow it by 0.25 a frame; whether a block's (`0d`, `0f`) holds too is not recorded away from an edge `?`. `0x8c` takes the entry's first word — 8 light, 12 heavy, 48 in
 the air, 64 down or dizzy — the frames a push of that speed lasts, and
 counts down outside hitstop. A blow sets hitstop (`$30B2`) to `0x8a`.
 

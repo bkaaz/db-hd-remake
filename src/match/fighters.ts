@@ -241,7 +241,9 @@ export class Fighters {
   /** A fighter who entered a state that `fires` puts a bolt in the world. */
   private fire(owner: Entity, foe: Entity): void {
     const shot = owner.takeFired();
-    if (shot) this.projectiles.spawn(shot, owner, foe);
+    if (!shot) return;
+    this.projectiles.spawn(shot, owner, foe);
+    for (const place of shot.also) this.projectiles.spawn({ ...shot, ...place, with: [] }, owner, foe);
   }
 
   /**

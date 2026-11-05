@@ -14,7 +14,15 @@
     ]
   },
   "states": {
+    "turn_round": {
+      "_comment": "$0F:A499: he finds the opponent behind him and turns, 6 frames of his turning drawing.",
+      "anim": "m41",
+      "vel": [0, 0],
+      "turn": false,
+      "transitions": [{ "when": "animEnd", "to": "idle" }]
+    },
     "idle": {
+      "turnsBy": "turn_round",
       "anim": "m00",
       "vel": [
         0,
@@ -166,6 +174,7 @@
       ]
     },
     "walk_fwd": {
+      "turnsBy": "turn_round",
       "anim": "m01",
       "vel": [
         1.5,
@@ -313,6 +322,7 @@
       ]
     },
     "walk_back": {
+      "turnsBy": "turn_round",
       "anim": "m02",
       "vel": [
         -1.25,
@@ -566,6 +576,7 @@
       ]
     },
     "crouch": {
+      "turnsBy": "turn_round",
       "anim": "m03_2",
       "vel": [
         0,

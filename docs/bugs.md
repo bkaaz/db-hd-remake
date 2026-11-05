@@ -43,7 +43,7 @@ which our reader cannot follow `?`. From the code: no evening state of the origi
 and sent a crouching blow's end to `idle`; both are fixed in `port.ts` and `draft.ts`,
 and Gotenks is drafted again. Not the others: their `specials.json` may hold hand
 work, so a blow stands still and ends standing until each is drafted or corrected
-at his review. Vegetto `shooting_kick`, `crouch_b`, `crouch_y_2`; Freeza `attack_y`,
+at his review. Freeza `attack_y`,
 `attack_b`, `double_leg_kick`, `sender_a1`, `flaming_headbutt_2`, `crouch_b`; Mr. Buu
 `crouch_b`, `flying_bomber`, `sender_a1`, `rolling_tackle`, `crouch_y_2`; Buu
 `crouch_y_2`.
@@ -67,7 +67,7 @@ once it is recorded.
 
 *Annoying, drafted fighters and two by hand.* A handler's `$0D:D8D5` puts the mover
 behind; the draft did not read it, and states written before it did may lack `behind`:
-Vegetto's Shooting Kick, Piccolo's throw and Sonic Kick, Freeza's Double Leg Kick, Cell's
+Piccolo's throw and Sonic Kick, Freeza's Double Leg Kick, Cell's
 Giga Shoulder, Mr. Buu's throw and Flying Bomber, Buu's Matamol, and by hand Goku's
 Saiyan Meteor and Vegeta's Galactic Gunfire. The last may be the entry below on the body
 he throws `?`. `npm run rom -- port <move>` says "goes behind the opponent".

@@ -764,6 +764,7 @@ export class Entity {
     facing: 1 | -1;
     size: number;
     with: { spawn: string; x: number; y: number }[];
+    also: { x: number; y: number }[];
     /** Whether the thrower draws its band to this one — the state has a `band`. */
     beam: boolean;
   } | null {
@@ -782,6 +783,7 @@ export class Entity {
       facing: this.facing,
       size,
       with: (fires.with ?? []).map((w) => ({ spawn: w.spawn, ...placed(w.at) })),
+      also: (fires.also ?? []).map(placed),
       beam: this.sm?.def.band !== undefined,
     };
   }
@@ -1321,7 +1323,10 @@ export class Entity {
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
     if (mayTurn(this.sm.def, this.stateFrames) && opponentX !== null && opponentX !== this.x) {
-      this.facing = opponentX > this.x ? 1 : -1;
+      const facing = opponentX > this.x ? 1 : -1;
+      const turned = facing !== this.facing;
+      this.facing = facing;
+      if (turned && this.sm.def.turnsBy) this.forceState(this.sm.def.turnsBy);
     }
 
     const fwd = this.facing > 0 ? input.right : input.left;

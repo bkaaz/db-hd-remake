@@ -56,7 +56,7 @@ do
   end
 
   -- once a frame: false until the state is in; its health set, and the timeline on
-  local poked = false
+  local poked, was, stood = false, nil, 0
   function RUN.frame()
     if not loaded then return false end
     shoot()
@@ -83,7 +83,13 @@ do
       end
       poked = true
     end
-    if RUN.free or byte(0x0b2) == 0 then at = at + 1 end
+    -- a frame the game had no time for (the SA-1 slows it) moves nothing: the timeline waits with it,
+    -- or a press held for 30 frames would last fewer of the game's than the dummy's
+    local now = word(P[1] + 0x44) .. "," .. word(P[2] + 0x44) .. "," .. word(P[1] + X) .. "," .. word(P[2] + X)
+    local lag = now == was and stood < 4
+    stood = lag and stood + 1 or 0
+    was = now
+    if not lag and (RUN.free or byte(0x0b2) == 0) then at = at + 1 end
     return true
   end
 end

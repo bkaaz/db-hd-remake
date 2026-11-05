@@ -18,7 +18,7 @@ import { homedir } from "node:os";
 import { resolve } from "node:path";
 import type { CommandsFile } from "../src/input/command.ts";
 import { ROM_PATH } from "../src/rom/cartridge.ts";
-import { afterInput, byMove, differences, moveCases, type MoveCase, type Stretch } from "../src/rom/moveCheck.ts";
+import { afterInput, byMove, differences, moveCases, readFight, type MoveCase, type Stretch } from "../src/rom/moveCheck.ts";
 import { runTable, type Scenario } from "../src/rom/run.ts";
 
 const MESEN = process.env.MESEN ?? `${homedir()}/Downloads/Mesen.app/Contents/MacOS/Mesen`;
@@ -77,48 +77,13 @@ async function fightState(): Promise<string> {
   return name;
 }
 
-const FIGHTER = /^\s+(P[12]) (\S+)\s+\d+\s+\d+ \S+ x\s*(-?\d+) y\s*(-?\d+) /;
-const SLOT = /^\s+slot (\d+): (\S\S) (\S\S)/;
-
 interface Side { p1: Stretch[]; p2: Stretch[]; notes: string[] }
 
-/** A record-fight log as stretches: a gap in the log is frames nothing happened on. */
+/** He is player one in Mesen and two in ours: a mirror, as a round opens the same way round the middle. */
 function readOriginal(log: string): Side {
-  const runs: Record<string, (Stretch & { x: number; y: number; at: number })[]> = { P1: [], P2: [] };
-  const notes: string[] = [];
-  const inSlot = new Map<string, string>();
-  let frame = 0;
-  let pause = 0;
-  for (const line of log.split("\n")) {
-    const at = /^f(\d+) hit=(\S\S)/.exec(line);
-    if (at) {
-      frame = Number(at[1]);
-      const hit = parseInt(at[2], 16);
-      if (hit && !pause) notes.push(`f${frame} pause ${at[2]}`);
-      pause = hit;
-    }
-    const slot = SLOT.exec(line);
-    if (slot) {
-      const type = parseInt(slot[2], 16) & 0x0f;
-      const kind = parseInt(slot[2], 16) ? `${type.toString(16).padStart(2, "0")}/${slot[3]}` : "";
-      if (kind && inSlot.get(slot[1]) !== kind) notes.push(`f${frame} object ${kind}`);
-      inSlot.set(slot[1], kind);
-    }
-    const m = FIGHTER.exec(line);
-    if (!m) continue;
-    const list = runs[m[1]];
-    const [x, y] = [Number(m[3]), Number(m[4])];
-    const last = list.at(-1);
-    if (last?.move === m[2]) {
-      last.frames = frame - last.at + 1;
-      last.dx = x - last.x;
-      last.dy = y - last.y;
-    } else list.push({ move: m[2], frames: 1, dx: 0, dy: 0, x, y, at: frame });
-  }
-  const plain = (l: typeof runs.P1): Stretch[] => l.map(({ move, frames, dx, dy }) => ({ move, frames, dx, dy }));
-  // he is player one here and two in ours: a mirror, as a round opens the same way round the middle
+  const fight = readFight(log);
   const mirrored = (l: Stretch[]) => l.map((r) => ({ ...r, dx: -r.dx }));
-  return { p1: mirrored(plain(runs.P2)), p2: mirrored(plain(runs.P1)), notes };
+  return { p1: mirrored(fight.P2), p2: mirrored(fight.P1), notes: fight.notes };
 }
 
 async function playOriginal(): Promise<void> {
@@ -138,7 +103,7 @@ async function playOriginal(): Promise<void> {
 /** State name → the move its animation belongs to, so that the two games' names meet. */
 function movesOf(name: string): (state: string) => string {
   const states = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")).states as Record<string, { anim?: string }>;
-  return (state) => /^m([0-9a-f]{2})/.exec(states[state]?.anim ?? "")?.[1] ?? state;
+  return (state) => (state === "held" ? "30" : (/^m([0-9a-f]{2})/.exec(states[state]?.anim ?? "")?.[1] ?? state));
 }
 
 const LINE = /^(\d+) \+\s*\d+\s+P1 (\S+)\s+@(-?\d+),(-?\d+) .*?P2 (\S+)\s+@(-?\d+),(-?\d+) .*?\| (.*)$/;

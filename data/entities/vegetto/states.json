@@ -14,7 +14,23 @@
     ]
   },
   "states": {
+    "turn_round": {
+      "_comment": "$0F:A499: he finds the opponent behind him and turns, 6 frames of his turning drawing.",
+      "anim": "m41",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
     "idle": {
+      "turnsBy": "turn_round",
       "anim": "m00",
       "vel": [
         0,
@@ -154,6 +170,7 @@
       ]
     },
     "walk_fwd": {
+      "turnsBy": "turn_round",
       "anim": "m01",
       "vel": [
         1.44921875,
@@ -289,6 +306,7 @@
       ]
     },
     "walk_back": {
+      "turnsBy": "turn_round",
       "anim": "m02",
       "vel": [
         -1.1484375,
@@ -518,6 +536,7 @@
       ]
     },
     "crouch": {
+      "turnsBy": "turn_round",
       "anim": "m03_2",
       "vel": [
         0,
@@ -1101,6 +1120,10 @@
         [
           12,
           2
+        ],
+        [
+          22,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -1153,6 +1176,10 @@
         [
           9,
           4
+        ],
+        [
+          36,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -1162,7 +1189,7 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
       ]
     },
@@ -2320,7 +2347,18 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          0,
+          1
+        ],
+        [
+          28,
+          0
+        ]
+      ],
+      "behind": true
     },
     "forward_kick": {
       "anim": "m9e",
@@ -2579,7 +2617,13 @@
           "when": "animEnd",
           "to": "aerial_kick_2"
         }
-      ]
+      ],
+      "launches": {
+        "reel_high": [
+          -0.75,
+          -6
+        ]
+      }
     },
     "aerial_kick_2": {
       "anim": "ma4_2",
@@ -2598,7 +2642,23 @@
           "when": "animEnd",
           "to": "aerial_kick_3"
         }
-      ]
+      ],
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0,
+            "vy": -2.3125,
+            "vx": 1.5
+          }
+        ]
+      ],
+      "launches": {
+        "reel_high": [
+          -0.75,
+          -6
+        ]
+      }
     },
     "aerial_kick_3": {
       "anim": "ma4_3",
@@ -2617,7 +2677,23 @@
           "when": "animEnd",
           "to": "aerial_kick_4"
         }
-      ]
+      ],
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0,
+            "vy": -2.3125,
+            "vx": 1.5
+          }
+        ]
+      ],
+      "launches": {
+        "reel_high": [
+          -0.75,
+          -6
+        ]
+      }
     },
     "aerial_kick_4": {
       "anim": "ma4_4",
@@ -2625,9 +2701,18 @@
       "airborne": true,
       "air": [
         [
+          0,
+          {
+            "gravity": 0,
+            "vy": -2.3125,
+            "vx": 1.5
+          }
+        ],
+        [
           12,
           {
-            "gravity": "own"
+            "gravity": "own",
+            "vx": 0
           }
         ]
       ],
@@ -2701,32 +2786,22 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "heavy",
-      "damage": 18,
       "fires": {
         "spawn": "rapid_blast",
         "at": [
           48,
           -60
         ],
-        "state": "fly",
-        "with": [
-          {
-            "spawn": "rapid_blast",
-            "at": [
-              48,
-              -60
-            ]
-          },
-          {
-            "spawn": "rapid_blast",
-            "at": [
-              48,
-              -60
-            ]
-          }
+        "state": "fly_3",
+        "also": [
+          [
+            40,
+            -44
+          ],
+          [
+            32,
+            -28
+          ]
         ]
       },
       "transitions": [
@@ -2734,7 +2809,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "damage": 0
     },
     "sender_9f": {
       "anim": "m9f",
@@ -2780,7 +2856,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "catches": true
     },
     "big_bang": {
       "anim": "maf",
@@ -2854,10 +2931,15 @@
       "damage": 0,
       "transitions": [
         {
+          "when": "connected",
+          "to": "geri_combo_2"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "catches": true
     },
     "galactic_juggle": {
       "anim": "mb0",
@@ -2940,7 +3022,7 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
       ]
     },
@@ -3201,7 +3283,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "final_kame_end_s"
         }
       ],
@@ -3218,7 +3303,7 @@
       "transitions": [
         {
           "when": "frames:8",
-          "to": "idle"
+          "to": "final_kame_out"
         }
       ],
       "damage": 0
@@ -3278,7 +3363,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "final_kame_end_m"
         }
       ],
@@ -3295,7 +3383,7 @@
       "transitions": [
         {
           "when": "frames:12",
-          "to": "idle"
+          "to": "final_kame_out"
         }
       ],
       "damage": 0
@@ -3334,7 +3422,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "final_kame_end_l"
         }
       ],
@@ -3351,9 +3442,132 @@
       "transitions": [
         {
           "when": "frames:16",
+          "to": "final_kame_out"
+        }
+      ],
+      "damage": 0
+    },
+    "geri_combo_2": {
+      "anim": "ma6",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              38,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              38,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              38,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              38,
+              0
+            ]
+          ],
+          "vegetto": [
+            [
+              38,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              38,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              38,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              38,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              38,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              38,
+              0
+            ]
+          ]
+        },
+        "caught": true,
+        "launch": {
+          "frame": 51,
+          "damage": 42,
+          "reaction": "reel_down",
+          "vel": [
+            -2.5,
+            -7
+          ],
+          "ahead": true,
+          "quiet": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "geri_combo_3"
+        }
+      ],
+      "damage": 0
+    },
+    "geri_combo_3": {
+      "anim": "ma2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
           "to": "idle"
         }
       ],
+      "damage": 0
+    },
+    "final_kame_out": {
+      "anim": "mae_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "startsAt": 96,
       "damage": 0
     }
   }

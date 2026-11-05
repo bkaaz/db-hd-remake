@@ -163,6 +163,8 @@ export class Projectiles {
    */
   update(paused: boolean, view: { x: number; y: number }, impact: BlowContext): ProjectileHit[] {
     const hits: ProjectileHit[] = [];
+    // the first to land stops the rest where they are: Kakusan's three take their turns ($30B2)
+    let halted = paused;
     for (let i = this.live.length - 1; i >= 0; i--) {
       const { name, bolt, foe, owner, companions, beam, ride, thrownIn } = this.live[i];
       if (!paused) {
@@ -177,8 +179,11 @@ export class Projectiles {
       if (!paused) for (const c of companions) c.update(NO_INPUT, null, ANYWHERE);
       // the thrower draws the band to it, if its state has one (combat/band.ts)
       if (beam) owner.beamReaches(bolt.x);
-      const result = paused ? null : landBlow(bolt, foe, impact);
+      const result = halted ? null : landBlow(bolt, foe, impact);
+      if (result) halted = true;
       if (result) hits.push({ result, foe });
+      // the pause is the whole game's ($30B2): his hand stops too, as a blast of his lasts 65 frames on a hit and 56 without
+      if (result) owner.freeze(bolt.attackHitstop);
       if (result && !result.blocked && bolt.opens) owner.forceState(bolt.opens);
       // strayed too far from the screen's middle, off a side or the top ($0F:B47D)
       const stranded = objectGone(bolt.x, bolt.y, view);

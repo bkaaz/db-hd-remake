@@ -193,6 +193,8 @@ export interface StateDef {
   shove?: number;
   /** Frames the shove keeps its whole speed and then stops; none: it slows by friction (`combat/knockback.ts`). */
   shoveFor?: number;
+  /** Finding him behind, the state it plays the turn in: idle, walking and the crouch, into `41` ($0D:C455). */
+  turnsBy?: string;
   /** Whether the entity may turn to face its opponent while in this state. */
   turn?: boolean;
   /** `turn`, but only from this frame of the state: the get-up turns on its last step (`$0F:A38B`). */
@@ -514,6 +516,8 @@ export interface StateDef {
      * Kamehameha's base at the hands, which lives as long as the beam's head.
      */
     with?: { spawn: string; at: [number, number] }[];
+    /** The same bolt again at these places, each hitting on its own: Kakusan's three, from counters 0 to 2. */
+    also?: [number, number][];
   };
   /**
    * The step of the animation this state stops on and holds for as long as it
