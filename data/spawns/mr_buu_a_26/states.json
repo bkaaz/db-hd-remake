@@ -14,7 +14,8 @@
       "damage": 18,
       "burstsInto": "burst_s",
       "hitSound": "burst_0a",
-      "blockSound": "burst_0a"
+      "blockSound": "burst_0a",
+      "burstsAbove": 0
     }
   }
 }

@@ -1,10 +1,10 @@
 {
   "play": {
-    "loop": true,
+    "loop": false,
     "steps": [
       {
         "frame": "0",
-        "dur": 4
+        "dur": 7
       },
       {
         "frame": "1",

@@ -764,7 +764,7 @@ export class Entity {
     facing: 1 | -1;
     size: number;
     with: { spawn: string; x: number; y: number }[];
-    also: { x: number; y: number }[];
+    also: { x: number; y: number; spawn: string; state?: string }[];
     /** Whether the thrower draws its band to this one — the state has a `band`. */
     beam: boolean;
   } | null {
@@ -783,7 +783,7 @@ export class Entity {
       facing: this.facing,
       size,
       with: (fires.with ?? []).map((w) => ({ spawn: w.spawn, ...placed(w.at) })),
-      also: (fires.also ?? []).map(placed),
+      also: (fires.also ?? []).map((a) => ({ ...placed(a.at), spawn: a.spawn ?? fires.spawn, state: a.state ?? fires.state })),
       beam: this.sm?.def.band !== undefined,
     };
   }

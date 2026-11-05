@@ -1190,16 +1190,13 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "light",
-      "damage": 18,
       "transitions": [
         {
           "when": "animEnd",
           "to": "attack_x_2"
         }
-      ]
+      ],
+      "damage": 0
     },
     "crouch_y": {
       "anim": "m94",
@@ -1208,16 +1205,13 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "light",
-      "damage": 28,
       "transitions": [
         {
           "when": "animEnd",
           "to": "crouch_y_2"
         }
-      ]
+      ],
+      "damage": 0
     },
     "crouch_b": {
       "anim": "m95",
@@ -1233,8 +1227,18 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
+      ],
+      "velAt": [
+        [
+          8,
+          2
+        ],
+        [
+          22,
+          0
+        ]
       ]
     },
     "meteor_fall": {
@@ -2295,7 +2299,18 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          0,
+          1
+        ],
+        [
+          32,
+          0
+        ]
+      ],
+      "behind": true
     },
     "throw": {
       "anim": "m9d",
@@ -2578,10 +2593,25 @@
       "damage": 24,
       "transitions": [
         {
+          "when": "landed",
+          "to": "sender_a1_2"
+        },
+        {
           "when": "animEnd",
           "to": "sender_a1_2"
         }
-      ]
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 2,
+            "vy": -4,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "holdStep": 3
     },
     "sender_a1_2": {
       "anim": "ma1_2",
@@ -2619,10 +2649,6 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "heavy",
-      "damage": 18,
       "fires": {
         "spawn": "mr_buu_a_25",
         "at": [
@@ -2630,9 +2656,10 @@
           -58
         ],
         "state": "fly",
-        "with": [
+        "also": [
           {
             "spawn": "rapid_blast",
+            "state": "fly_3",
             "at": [
               48,
               -56
@@ -2640,6 +2667,7 @@
           },
           {
             "spawn": "mr_buu_a_26",
+            "state": "fly",
             "at": [
               48,
               -54
@@ -2652,7 +2680,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "damage": 0
     },
     "sender_9f": {
       "anim": "m9f",
@@ -2790,16 +2819,21 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "down",
-      "damage": 50,
       "transitions": [
         {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "fires": {
+        "spawn": "mr_buu_8_12",
+        "at": [
+          0,
+          -56
+        ],
+        "state": "fly"
+      },
+      "damage": 0
     },
     "mightiness_bomber": {
       "anim": "mae",
@@ -2945,6 +2979,12 @@
           "when": "animEnd",
           "to": "planet_attack_2"
         }
+      ],
+      "velAt": [
+        [
+          6,
+          6
+        ]
       ]
     },
     "planet_attack_2": {
@@ -2958,6 +2998,10 @@
         [
           0,
           6
+        ],
+        [
+          5,
+          1.5
         ]
       ],
       "hitSound": "hit_09",
@@ -2979,7 +3023,7 @@
       "anim": "ma8_3",
       "turn": false,
       "vel": [
-        6,
+        1.5,
         0
       ],
       "transitions": [
@@ -3071,14 +3115,14 @@
           {
             "vx": 0,
             "vy": 0,
-            "gravity": 0
+            "gravity": "own"
           }
         ]
       ],
       "transitions": [
         {
           "when": "landed",
-          "to": "jump_fall_attacked"
+          "to": "butt_drop_3"
         },
         {
           "when": "animEnd",
@@ -3097,23 +3141,22 @@
       "transitions": [
         {
           "when": "landed",
-          "to": "jump_fall_attacked"
+          "to": "butt_drop_3"
         },
         {
           "when": "animEnd",
-          "to": "butt_drop_3"
+          "to": "butt_drop_2"
         }
       ]
     },
     "butt_drop_3": {
       "anim": "m9e_3",
+      "vel": [
+        0,
+        0
+      ],
       "turn": false,
-      "airborne": true,
       "transitions": [
-        {
-          "when": "landed",
-          "to": "jump_fall_attacked"
-        },
         {
           "when": "animEnd",
           "to": "butt_drop_4"
@@ -3123,19 +3166,35 @@
     "butt_drop_4": {
       "anim": "m9e_4",
       "turn": false,
-      "airborne": true,
+      "vel": [
+        0,
+        0
+      ],
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "down",
       "damage": 34,
+      "holdStep": 3,
+      "air": [
+        [
+          1,
+          {
+            "vx": 2,
+            "vy": -4,
+            "gravity": 0
+          }
+        ],
+        [
+          5,
+          {
+            "gravity": "own"
+          }
+        ]
+      ],
       "transitions": [
         {
           "when": "landed",
-          "to": "jump_fall_attacked"
-        },
-        {
-          "when": "animEnd",
-          "to": "jump_fall_attacked"
+          "to": "land"
         }
       ]
     },
@@ -3146,10 +3205,6 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "heavy",
-      "damage": 30,
       "fires": {
         "spawn": "mr_buu_8_08",
         "at": [
@@ -3163,7 +3218,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "damage": 0
     },
     "crouch_y_2": {
       "anim": "m94_2",
@@ -3172,10 +3228,6 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "light",
-      "damage": 28,
       "fires": {
         "spawn": "mr_buu_8_09",
         "at": [
@@ -3187,9 +3239,10 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
-      ]
+      ],
+      "damage": 0
     },
     "attack_x_2": {
       "anim": "m9a_2",
@@ -3198,10 +3251,6 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "light",
-      "damage": 18,
       "fires": {
         "spawn": "mr_buu_8_06",
         "at": [
@@ -3215,7 +3264,11 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "type": "light",
+      "damage": 18,
+      "hitSound": "hit_09",
+      "blockSound": "block_17"
     }
   }
 }

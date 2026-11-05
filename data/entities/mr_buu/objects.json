@@ -4,88 +4,39 @@
     "type": 10,
     "anim": 37,
     "hits": true,
-    "palette": 37,
+    "palette": 34,
     "loads": [
       {
         "resource": 2389,
         "vram": 24576
       }
-    ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    ]
   },
   {
     "name": "mr_buu_a_26",
     "type": 10,
     "anim": 38,
     "hits": true,
-    "palette": 37,
+    "palette": 34,
     "loads": [
       {
         "resource": 2389,
         "vram": 24576
       }
-    ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    ]
   },
   {
     "name": "mr_buu_8_17",
     "type": 8,
     "anim": 23,
     "hits": false,
-    "palette": 192,
+    "palette": 37,
     "loads": [
       {
         "resource": 66,
         "vram": 26624
       }
-    ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    ]
   },
   {
     "name": "mr_buu_8_04",
@@ -122,23 +73,7 @@
         "resource": 2365,
         "vram": 24576
       }
-    ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    ]
   },
   {
     "name": "mr_buu_8_09",
@@ -170,23 +105,19 @@
     "type": 8,
     "anim": 6,
     "hits": false,
-    "palette": 192,
+    "palette": 37,
     "loads": [
       {
         "resource": 66,
         "vram": 26624
       }
-    ],
-    "animations": {
-      "play": {
-        "frames": [
-          0,
-          1,
-          2
-        ],
-        "dur": 4,
-        "loop": true
-      }
-    }
+    ]
+  },
+  {
+    "name": "mr_buu_8_12",
+    "type": 8,
+    "anim": 18,
+    "hits": true,
+    "palette": 37
   }
 ]

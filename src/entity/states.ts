@@ -518,8 +518,8 @@ export interface StateDef {
      * Kamehameha's base at the hands, which lives as long as the beam's head.
      */
     with?: { spawn: string; at: [number, number] }[];
-    /** The same bolt again at these places, each hitting on its own: Kakusan's three, from counters 0 to 2. */
-    also?: [number, number][];
+    /** More bolts on the same frame, each hitting on its own, its own spawn or this one's: Kakusan's three. */
+    also?: { at: [number, number]; spawn?: string; state?: string }[];
   };
   /**
    * The step of the animation this state stops on and holds for as long as it
@@ -1356,6 +1356,7 @@ export function spawnsNamed(states: StatesFile | null | undefined): string[] {
   for (const def of Object.values(states?.states ?? {})) {
     if (def.fires) names.add(def.fires.spawn);
     for (const w of def.fires?.with ?? []) names.add(w.spawn);
+    for (const a of def.fires?.also ?? []) if (a.spawn) names.add(a.spawn);
   }
   return [...names];
 }

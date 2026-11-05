@@ -17,7 +17,7 @@ export interface MoveCase {
 }
 
 const WALK = ["00", "01", "02"];
-const CROUCH = [...WALK, "03", "04", "05", "06", "07"];
+const CROUCH = [...WALK, "03", "04", "05", "06", "07", "3b"];
 const JUMP = [...WALK, "05", "06", "07", "08", "09", "3b"];
 /** Close enough that a blow lands, as `fwd` walks from where a round opens. Mesen takes a few frames to answer a state just loaded. */
 const NEAR = [20, "fwd 46", 8];
@@ -38,10 +38,11 @@ function button(word: number): string {
 /** What a command's words ask of the pad: each direction three frames, the newest once more with the button. */
 export function commandTokens(words: string[]): string[] {
   const [buttonWord, ...newestFirst] = words.map((w) => parseInt(w, 16));
-  const stick = newestFirst.reverse().map((w) => direction(w >> 8));
+  const oldestFirst = newestFirst.reverse();
+  const stick = oldestFirst.map((w) => direction(w >> 8));
   const last = stick.at(-1) ?? direction(buttonWord >> 8);
-  // a stick going up leaves the floor if it waits: a frame, and the button with it
-  const held = (s: string, i: number) => `${s}${i === stick.length - 1 && s.startsWith("up") ? 1 : 3}`;
+  // a charge (bit 0, `input/command.ts`) is held 48 frames; a stick going up leaves the floor if it waits
+  const held = (s: string, i: number) => `${s}${oldestFirst[i] & 1 ? 50 : i === stick.length - 1 && s.startsWith("up") ? 1 : 3}`;
   return [...stick.map(held), `${last}${button(buttonWord)} 3`];
 }
 

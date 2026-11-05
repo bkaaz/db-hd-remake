@@ -55,3 +55,12 @@ Fixed: Giga Shoulder moves and goes behind, Chou Kamehameha's ending, Psychic Li
 Left, not ported: **Cell Junior** (the ball bounces and comes at the opponent, reading its code is ahead),
 **Tri-Eruption's** scene. Suki Combo's last blow misses by a hair where the original's lands, and Ki Flame
 hits at a distance where the original's misses (`docs/bugs.md`, a bolt's box) `?`.
+
+### Mr. Buu
+
+Fixed: his Y's and X's blows counted twice (body and object), Flying Bomber moves and goes behind,
+Butt Drop falls, bounces and strikes again, Planet Attack's speed, low blows crouch, Kakusan's three
+different shots. Objects from a recording. The dash's charge commands now reach `npm run moves` too.
+Left, not ported: **Buu Breath's** and **Oyatsu Kosen's** scenes (the opponent turned into candy and
+chocolate), **Energy Field's** ball: its object draws from tiles at base 0 that the exporter finds empty
+(`8/12`), so it shows nothing and does not hit `?`.

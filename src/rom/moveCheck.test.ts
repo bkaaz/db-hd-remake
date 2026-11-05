@@ -13,6 +13,10 @@ describe("commandTokens", () => {
     expect(commandTokens(["8002", "0900", "0600"])).toEqual(["down back 3", "up fwd 1", "up fwd smash 3"]);
   });
 
+  it("holds a charge for all of its 48 frames", () => {
+    expect(commandTokens(["8002", "2100", "0201"])).toEqual(["back 50", "fwd 3", "fwd smash 3"]);
+  });
+
   it("takes a direction out of the button word when there is no sequence", () => {
     expect(commandTokens(["8108"])).toEqual(["fwd smash 3"]);
     expect(commandTokens(["9010"])).toEqual(["smash dash 3"]);
