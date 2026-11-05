@@ -13,7 +13,10 @@ const BY_TYPE = 0x2a8e4b;
 const BANK = 0x2a0000;
 const LONGEST_HANDLER = 40;
 
-export type ObjectHit = { stays: true } | { stays: false; becomes: { type: number; anim: number } };
+/** `burns`: the handler calls `$2A:99CC`, which sets the defender burning. */
+export type ObjectHit = { stays: true } | { stays: false; becomes: { type: number; anim: number }; burns: boolean };
+
+const SETS_BURNING = 0x99cc;
 
 function pointerAt(rom: Uint8Array, table: number, index: number): number {
   const at = toFile(table + 2 * index);
@@ -48,10 +51,15 @@ export function objectHit(rom: Uint8Array, type: number, anim: number): ObjectHi
   const written = code.findIndex((i, n) => i.mnemonic === "LDA" && i.mode === "im" && code[n + 1]?.mnemonic === "STA" && code[n + 1].operand === 0);
   if (written < 0) return { stays: true };
   const word = code[written].operand;
-  return { stays: false, becomes: { type: word & 0x0f, anim: word >> 8 } };
+  const burns = code.some((i) => i.mnemonic === "JSR" && (i.operand & 0xffff) === SETS_BURNING);
+  return { stays: false, becomes: { type: word & 0x0f, anim: word >> 8 }, burns };
 }
 
 /** The explosions a landed object is rewritten as, by name: `GOKU.objects`, type `a`. */
+/** The largest explosion alone asks for the white screen, on its first frame (`$0F:E234`: `$37` = `16`). */
+const WHITENS = 0x18;
+const WHITE_FRAMES = 16;
+
 const BURSTS: Record<number, string> = { 0x01: "burst", 0x02: "burst_s", 0x17: "burst_m", 0x18: "burst_l" };
 
 /** What `hit` looks and sounds like in a spawn's states file: its blow's fields, and the sparks an object that stays leaves. */
@@ -61,6 +69,6 @@ export function hitFields(hit: ObjectHit): { file: { hitFx?: string; guardFx?: s
   }
   const burst = hit.becomes.type === 0xa ? BURSTS[hit.becomes.anim] : undefined;
   if (!burst) throw new Error(`no spawn for object ${hit.becomes.type.toString(16)}/${hit.becomes.anim.toString(16)}`);
-  return { file: {}, state: { burstsInto: burst, hitSound: "burst_0a", blockSound: "burst_0a" } };
+  return { file: {}, state: { burstsInto: burst, hitSound: "burst_0a", blockSound: "burst_0a", ...(hit.burns && { burns: true }), ...(hit.becomes.anim === WHITENS && { hitFlash: WHITE_FRAMES }) } };
 }
 

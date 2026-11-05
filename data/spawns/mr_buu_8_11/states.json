@@ -24,7 +24,9 @@
         "start": 25,
         "grow": 1,
         "max": 32
-      }
+      },
+      "burns": true,
+      "hitFlash": 16
     },
     "fly": {
       "anim": "play",
@@ -46,7 +48,9 @@
         "from": 0,
         "start": 32,
         "grow": 0
-      }
+      },
+      "burns": true,
+      "hitFlash": 16
     }
   }
 }

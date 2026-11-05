@@ -342,7 +342,7 @@ The export makes each object Goku spawns a spawn entity (ADR 0018); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 **Mr. Buu's Energy Field** (`8/12`, `$0F:D8BE`) has no picture: it strikes with what the move's `b1` effect of kind 2 draws, the circle. It adds 2 to the radius (`$30C4` / `$30D4`) up to `0x41`; from `0x40` the radius is `0x40` plus `$0F:D939` `1 2 2 1` by `$74 & 3`. The frame shown is radius / 4, which names its box; gone once its owner leaves `af` / `d8` (`$0F:B5F5`). None of it steps in a hit pause. The circle shrinks by 2 a frame from the script's frame 140. A hit disarms its blow (top bits `f8` → `b8`) and puts `a/02` in another slot; armed again 60 frames later.
 
-**Mr. Buu's Mightiness Bomber** (`8/0f`–`11`, `$0F:D87E`, handler `$0F:F75D`) has no picture either: the circle. Put out at his +52, −56 on the move's frame 22, radius +1 a frame to `0x10`, the handler moves it on 1 px a frame (`$F2`). At frames 38 and 46, with A held, the slot becomes the next object (`$0F:F7A2`: `8/10` to radius `0x18`, `8/11` to `0x20`); released, the move jumps to 53. On 54 it leaves at `vx` 4 and no longer needs him (`$0C` set, `$0F:D8A1`). A hit before then ends all of it (`$0F:F7F2` finds no slot), and he plays the rest of the script. Its box is one size per object, ±16, ±24, ±32, damage 50, 68, 80, and a hit rewrites the slot as `a/02`, `17`, `18`; the circle shrinks by 2 a frame where it was, through the hit's pause too.
+**Mr. Buu's Mightiness Bomber** (`8/0f`–`11`, `$0F:D87E`, handler `$0F:F75D`) has no picture either: the circle. Put out at his +52, −56 on the move's frame 22, radius +1 a frame to `0x10`, the handler moves it on 1 px a frame (`$F2`). At frames 38 and 46, with A held, the slot becomes the next object (`$0F:F7A2`: `8/10` to radius `0x18`, `8/11` to `0x20`); released, the move jumps to 53. On 54 it leaves at `vx` 4 and no longer needs him (`$0C` set, `$0F:D8A1`). A hit before then ends all of it (`$0F:F7F2` finds no slot), and he plays the rest of the script. Its box is one size per object, ±16, ±24, ±32, damage 50, 68, 80, and a hit rewrites the slot as `a/02`, `17`, `18` and sets the defender burning (`$2A:99CC`); the circle shrinks by 2 a frame where it was, through the hit's pause too.
 
 Type `a` objects draw from tile base 0 in the shared `0x30` at `$6500` and `0x31` at `$7500`, there all fight, in palette `0x27AE98` (`npm run rom -- vram`). A reel takes its first shove step before the hit pause, for a fist and a bolt alike.
 
@@ -874,7 +874,7 @@ keeps BG palettes 2–7 (`$0D:DF40`) and fades them a sixteenth a frame
 down to 6/16 (`$0D:DF64`), `1f` back up to 16/16 (`$0E:85C4`), `24` keeps
 them at `$7E:0300` and turns them white, `21` does the same for 16 frames
 (`$38`) — the Kamehameha's white screen — and `22` puts them back; `1c`,
-`24` set `$30B0` bit 7 and `21`, `22` clear it `?`. `16` is not read.
+`24` set `$30B0` bit 7 and `21`, `22` clear it `?`. `16` whitens too: `a/18` alone asks for it, on its first frame, if the defender is in `1b`, `1c`, `75`, `77` or `7e` (`$0F:E234`); `a/02` and `a/17` have no such code.
 Saiyan Meteor asks `1c` at 200, `1f` at 274, `24` as the ball lands, then
 `21` and `22` in one frame — so `21` never runs. While white, `$0F:F241`
 puts out an `a/02` every 4th frame of the game in a free slot, 60 frames.
