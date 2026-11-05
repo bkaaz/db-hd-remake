@@ -47,3 +47,11 @@ Fixed: his normals' and Double Leg Kick's movement, Flaming Headbutt's run and i
 a high tumble, `reel_tumble`), Kienzan's disc falls on its way (vy 2.12, not read by `port`: every other
 "vx 3, vy 2.12" object may share it `?`), Kishin Ha steps back, low blows crouch. Objects from a recording.
 Left, not ported: **Jubaku Ha's** scene when it lands.
+
+### Cell
+
+Fixed: Giga Shoulder moves and goes behind, Chou Kamehameha's ending, Psychic Lift raises the opponent
+81 px over 81 frames and throws him from there. Objects from a recording.
+Left, not ported: **Cell Junior** (the ball bounces and comes at the opponent, reading its code is ahead),
+**Tri-Eruption's** scene. Suki Combo's last blow misses by a hair where the original's lands, and Ki Flame
+hits at a distance where the original's misses (`docs/bugs.md`, a bolt's box) `?`.

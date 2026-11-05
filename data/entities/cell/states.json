@@ -2447,7 +2447,18 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          31,
+          1
+        ],
+        [
+          63,
+          0
+        ]
+      ],
+      "behind": true
     },
     "throw": {
       "anim": "m9d",
@@ -3019,7 +3030,7 @@
       "grab": {
         "at": {},
         "launch": {
-          "frame": 90,
+          "frame": 171,
           "damage": 43,
           "reaction": "reel_down",
           "vel": [
@@ -3027,6 +3038,10 @@
             -8
           ],
           "ahead": true
+        },
+        "lift": {
+          "from": 7,
+          "px": 81
         }
       },
       "transitions": [
@@ -3034,7 +3049,9 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "holdStep": 1,
+      "holdFrames": 81
     },
     "ki_flame": {
       "anim": "ma7",
@@ -3757,7 +3774,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "chou_kamehameha_end_s"
         }
       ]
@@ -3773,7 +3793,7 @@
       "transitions": [
         {
           "when": "frames:8",
-          "to": "idle"
+          "to": "chou_kamehameha_out"
         }
       ]
     },
@@ -3832,7 +3852,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "chou_kamehameha_end_m"
         }
       ]
@@ -3848,7 +3871,7 @@
       "transitions": [
         {
           "when": "frames:12",
-          "to": "idle"
+          "to": "chou_kamehameha_out"
         }
       ]
     },
@@ -3886,7 +3909,10 @@
       },
       "transitions": [
         {
-          "when": "spawnEnd",
+          "when": [
+            "frames:8",
+            "spawnEnd"
+          ],
           "to": "chou_kamehameha_end_l"
         }
       ]
@@ -3902,6 +3928,21 @@
       "transitions": [
         {
           "when": "frames:16",
+          "to": "chou_kamehameha_out"
+        }
+      ]
+    },
+    "chou_kamehameha_out": {
+      "anim": "maa_2",
+      "startsAt": 96,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
           "to": "idle"
         }
       ]

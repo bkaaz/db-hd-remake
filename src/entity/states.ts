@@ -68,6 +68,8 @@ export interface GrabDef {
    * floor he plays `m30_<thrower>_<move>_air`.
    */
   caught?: boolean;
+  /** From frame `from` he rises a pixel a frame, `px` in all: Cell's Psychic Lift. */
+  lift?: { from: number; px: number };
   /** On this frame of the state he turns his back on the thrower, and goes on so (Gotenks's 9d at 8, `$20:BD5A`). */
   turnsAt?: number;
   /**
@@ -525,6 +527,8 @@ export interface StateDef {
    * rather than played out into the recovery behind it.
    */
   holdStep?: number;
+  /** Let go of that step on this frame of the state, for a hold that ends: Psychic Lift's rise. */
+  holdFrames?: number;
   /** Drawn bobbing where he stands, as the pose above the arena is (`entity/hover.ts`). */
   hover?: boolean;
   /** Arriving here, a KO's half speed is over before he lies done — Goku's last landing ($10:B022), not Vegeta's. */

@@ -1555,7 +1555,9 @@ export class Entity {
     if (!this.anim || this.anim.steps.length === 0) return;
     this.remaining -= 1;
     if (this.remaining > 0) return;
-    if (this.sm?.def.holdStep === this.stepIndex) return;
+    const held = this.sm?.def.holdStep === this.stepIndex;
+    const until = this.sm?.def.holdFrames;
+    if (held && (until === undefined || this.stateFrames < until)) return;
 
     this.stepIndex += 1;
     if (this.stepIndex >= this.anim.steps.length) {
