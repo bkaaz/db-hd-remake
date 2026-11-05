@@ -79,3 +79,13 @@ export function pushApart(ax0: number, bx0: number, overlap: number, bounds: Bou
 
   return { ax, bx };
 }
+
+/**
+ * A body's speed, world px a frame, while pressed against another: moving into
+ * each other, both take the average ($0D:C8F0). A shove is on top of this and
+ * not part of it: why a fighter running into a reeling one goes at half speed.
+ */
+export function pressedSpeed(me: { x: number; vx: number }, other: { x: number; vx: number }): number {
+  const towards = me.x < other.x ? me.vx >= 0 && other.vx <= 0 : me.x > other.x && me.vx <= 0 && other.vx >= 0;
+  return towards ? (me.vx + other.vx) / 2 : me.vx;
+}

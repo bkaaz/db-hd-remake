@@ -4,6 +4,7 @@ import type { Camera } from "../camera/camera";
 import type { ShakeDef } from "../camera/shake";
 import type { ScreenCue } from "../screen";
 import { bodyOverlap, pushApart, separate, type Bounds } from "../combat/push";
+import { contact } from "../combat/hit";
 import { Entity, type WorldInput } from "../entity/entity";
 import { VIEW } from "../view";
 import type { EntityDef } from "../entity/entityDef";
@@ -257,10 +258,20 @@ export class Fighters {
     const { player, opponent } = this;
     if (!opponent) return;
     if (player.frozen || opponent.frozen) return;
-    if (player.pushless || opponent.pushless) return;
+    if (player.pushless || opponent.pushless) {
+      player.setPressed(false);
+      opponent.setPressed(false);
+      return;
+    }
     const [a, b] = [player.pushBodies, opponent.pushBodies];
     if (a && b) {
-      const { ax, bx } = pushApart(player.x, opponent.x, bodyOverlap(a, b, player.x <= opponent.x), bounds);
+      const overlap = bodyOverlap(a, b, player.x <= opponent.x);
+      // a blow still on him keeps them pressed after the bodies part ($2A:8188, bit 6, measured: Tornado Hip)
+      const onHim = (from: Entity, to: Entity) => contact({ boxes: from.boxes("hit"), at: from.placement }, { boxes: to.boxes("hurt"), at: to.placement }) !== null;
+      const pressed = overlap > 0 || onHim(player, opponent) || onHim(opponent, player);
+      player.setPressed(pressed);
+      opponent.setPressed(pressed);
+      const { ax, bx } = pushApart(player.x, opponent.x, overlap, bounds);
       player.x = ax;
       opponent.x = bx;
       return;

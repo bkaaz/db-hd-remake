@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bodyOverlap, pushApart, separate, type Bounds } from "./push";
+import { bodyOverlap, pressedSpeed, pushApart, separate, type Bounds } from "./push";
 
 const WIDE: Bounds = { min: -1000, max: 1000 };
 /** Two fighters 20 wide each: they must stay at least 20 apart, centre to centre. */
@@ -89,5 +89,26 @@ describe("pushApart", () => {
   it("moves each half the overlap, away from the other", () => {
     expect(pushApart(0, 14, 6, WIDE)).toEqual({ ax: -3, bx: 17 });
     expect(pushApart(14, 0, 6, WIDE)).toEqual({ ax: 17, bx: -3 });
+  });
+});
+
+describe("pressedSpeed", () => {
+  it("halves a run into a standing body, for both", () => {
+    expect(pressedSpeed({ x: 0, vx: 4 }, { x: 30, vx: 0 })).toBe(2);
+    expect(pressedSpeed({ x: 30, vx: 0 }, { x: 0, vx: 4 })).toBe(2);
+  });
+
+  it("averages two running into each other, from either side", () => {
+    expect(pressedSpeed({ x: 0, vx: 4 }, { x: 30, vx: -2 })).toBe(1);
+    expect(pressedSpeed({ x: 30, vx: -2 }, { x: 0, vx: 4 })).toBe(1);
+  });
+
+  it("leaves one moving away alone", () => {
+    expect(pressedSpeed({ x: 0, vx: -4 }, { x: 30, vx: 0 })).toBe(-4);
+    expect(pressedSpeed({ x: 30, vx: 4 }, { x: 0, vx: 0 })).toBe(4);
+  });
+
+  it("leaves two moving the same way alone", () => {
+    expect(pressedSpeed({ x: 0, vx: 4 }, { x: 30, vx: 2 })).toBe(4);
   });
 });

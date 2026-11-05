@@ -19,6 +19,7 @@ import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { shoveAfter } from "../combat/knockback";
+import { pressedSpeed } from "../combat/push";
 import { shadowFrame, shadowSize } from "./shadow";
 import { trailAt } from "./trail";
 import { moveStep } from "../fx/follow";
@@ -83,6 +84,8 @@ holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean; stri
 export interface Opponent {
   x: number;
   throwable: boolean;
+  airborne: boolean;
+  groundVx: number;
 }
 
 export const NO_INPUT: WorldInput = {
@@ -268,6 +271,8 @@ export class Entity {
   /** The beam's band: added light too, but drawn under the objects at either end of it (owner, 2026-11-01). */
   private readonly bandG = new Graphics();
   private ballRadius = 0;
+  /** `setPressed`. */
+  private pressed = false;
   /** Where the ball was last held, so it shrinks in place once let go. */
   private ballAt: [number, number] = [0, 0];
   /** Where the head of the beam this entity threw has got to, world px — told by the bolts. */
@@ -572,6 +577,17 @@ export class Entity {
   /** The throw the state just entered makes, if it is one. */
   get grab(): GrabDef | undefined {
     return this.sm?.def.grab;
+  }
+
+  /** Its speed on the ground this frame, world sprite px, shove apart: what `pressedSpeed` averages. */
+  get groundVx(): number {
+    if (!this.sm) return 0;
+    return this.facing * (this.approaching ?? groundSpeed(this.sm.def, this.stateFrames));
+  }
+
+  /** Whether its body touched the other's last frame (field `0x97` bit 7, `$2A:8AFB`). */
+  setPressed(pressed: boolean): void {
+    this.pressed = pressed;
   }
 
   /** Its ball's radius now, in sprite px: 0 with none. */
@@ -1457,8 +1473,10 @@ export class Entity {
         this.turnToward(opponentX);
         this.approaching = approachSpeed(approach, (opponentX - this.x) / this.scale);
       }
-      const speed = this.approaching ?? groundSpeed(this.sm.def, this.stateFrames);
-      this.x += this.facing * (speed + this.shove) * this.scale;
+      const own = this.groundVx;
+      // a shove stands in for his own speed ($0D:C955), so only a body with none takes the average
+      const vx = this.pressed && this.shove === 0 && opponent && !opponent.airborne ? pressedSpeed({ x: this.x, vx: own }, { x: opponent.x, vx: opponent.groundVx }) : own;
+      this.x += (vx + this.facing * this.shove) * this.scale;
       const rush = this.sm.def.rush;
       if (rush && !this.arrived && rushing(rush, this.stateFrames) && opponentX !== null) {
         const { dx, arrived } = rushStep(rush, (opponentX - this.x) / this.scale);

@@ -474,8 +474,8 @@ calls `$00:BC94` (the stage's columns `?`).
 
 **Before that, each fighter's dx for the frame** (`$0D:C8F0`): vx, or the
 shove (fields `0x88`/`0x8c`) while one runs. Two bodies pressed together
-(field `0x97` bit 7 `?`) and moving into each other both get the average of
-their vx. **A shove into the screen's edge** (x < camera + 17, or ≥ camera
+(field `0x97` bit 7) and moving into each other both get the average of
+their vx; a shove then stands in for its body's. Bit 7 is cleared and set each frame by the push (`$2A:80ED`, `$2A:8112`), and in Tornado Hip stayed set for as long as his blow's box stayed on the opponent (bit 6, `$2A:8188`), though their bodies had parted: why a run at vx 4 goes 2 a frame after each hit `?`. **A shove into the screen's edge** (x < camera + 17, or ≥ camera
 + 240) passes to the other fighter, reversed and added to his dx, for the
 frames it had left — unless the shoved one has no health, field `0x25` bit
 2, or a move in the bit table `$0D:CA35` (moves `11`–`16`, `29`–`32`, `7e`).
@@ -946,7 +946,7 @@ for everyone (`$0D:D68A`).
 **Which reaction** (`$0D:D29C`–`D353`). Grounded (field `0x23` ≥ `0xc8`),
 bits of bytes 0–1 as one word: `0x0004` `$D622` (stopped dead, then the
 heavy reel — `16`, crouching `14`; ours `halt`), `0x0008` light,
-`0x0010` heavy (`$D356`, `$D382`: by the defender's field `0x97` bit 0 another reel — standing `14`, crouching `18`, knockback 3 for heavy; recorded, Suki Combo on a stander: `14` on the blows whose spark is 14 px higher, so which part of him was struck `?`), `0x0020` → move `19` (ours `trip`; `$D60A`: knockback `0f`, 2.0 back
+`0x0010` heavy (`$D356`, `$D382`: by the defender's field `0x97` bit 0 another reel — standing `14`, crouching `18`, knockback 3 for heavy; recorded, Suki Combo on a stander: `14` on the blows whose spark is 14 px higher. `$2A:8E00` sets the bit when `$DC` is 0 or 3, clears it otherwise: which pair of boxes met `?`), `0x0020` → move `19` (ours `trip`; `$D60A`: knockback `0f`, 2.0 back
 and −4.0 up; blows pass it by from frame 0; it lands with dust and `0d`,
 no bounce, and gets up after 12 frames — `$10:AEB6`), `0x0040` knockdown (move `1b`),
 `0x0080` → move `42`/`43`, `0x0400` → move `1e` (`$D3BB`, ours `high`), `0x0800` `$D670`,
