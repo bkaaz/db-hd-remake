@@ -322,3 +322,8 @@ to a window that is not focused, so `held.right` is never cleared.
 
 Fix is a `blur` listener that clears every held direction. Attack buttons need
 nothing — they disarm themselves every frame.
+
+- **Freeza, Cell, Mr. Buu and Buu: some objects may stop looping.** Their objects' frames were
+  taken from one recorded life, over whatever their code gave (`npm run rom -- recorded --frames`
+  did this to all four before it became opt-in). An object that loops in the original now plays
+  that life's length and ends with it. Not yet compared object by object with `npm run rom -- code`.

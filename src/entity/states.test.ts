@@ -1359,6 +1359,38 @@ describe("StateMachine", () => {
     });
   });
 
+  it("refuses a turnsBy that is no state", () => {
+    const f = machine();
+    f.states.idle.turnsBy = "nowhere";
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"turnsBy"'))).toBe(true);
+    f.states.idle.turnsBy = "walk_fwd";
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"turnsBy"'))).toBe(false);
+  });
+
+  it("refuses a holdFrames with no holdStep to end, or not a whole number", () => {
+    const f = machine();
+    const anims = { ...ANIMS, pose: { loop: false, steps: [{}, {}] } } as Record<string, AnimInfo>;
+    f.states.fire = { anim: "pose", holdFrames: 10, transitions: [{ when: "animEnd", to: "idle" }] };
+    expect(validateStates(f, anims).errors.some((e) => e.includes('"holdFrames"'))).toBe(true);
+    f.states.fire.holdStep = 1;
+    f.states.fire.holdFrames = 2.5;
+    expect(validateStates(f, anims).errors.some((e) => e.includes('"holdFrames"'))).toBe(true);
+    f.states.fire.holdFrames = 10;
+    expect(validateStates(f, anims).errors.some((e) => e.includes('"holdFrames"'))).toBe(false);
+  });
+
+  it("refuses a further bolt with no place, and a lift without its numbers", () => {
+    const f = machine();
+    f.states.idle.fires = { spawn: "ball", at: [0, 0], also: [{ at: [1] as unknown as [number, number] }] };
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"fires.also"'))).toBe(true);
+    f.states.idle.fires.also = [{ at: [1, 2] }];
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"fires.also"'))).toBe(false);
+    f.states.idle.grab = { at: {}, launch: { frame: 1, damage: 1, reaction: "hurt", vel: [0, 0] }, lift: { from: 1, px: 0 } };
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"grab.lift"'))).toBe(true);
+    f.states.idle.grab.lift = { from: 1, px: 40 };
+    expect(validateStates(f, ANIMS).errors.some((e) => e.includes('"grab.lift"'))).toBe(false);
+  });
+
   it("refuses a holdStep its animation does not have", () => {
     const f = machine();
     const anims = { ...ANIMS, pose: { loop: false, steps: [{}, {}] } };

@@ -74,7 +74,8 @@ The HUD is the same kind of thing: `data/hud/hud.json` and
 - **Knockback is on the reaction, not the blow.** A reaction faces its
   attacker, so a negative `vel` x is "backwards, away", and it slides for as
   long as the reaction lasts. A `shove` is the cartridge's kind: a speed on
-  entering that loses 0.25 a frame until it stops (ADR 0021). How long a
+  entering that loses 0.25 a frame until it stops (ADR 0021); with `shoveFor` it
+  keeps its whole speed that many frames and then stops, as a reel does. How long a
   reaction lasts comes from the blow's `hitstun`, not from the pose: a shorter
   animation holds its last frame, a longer one is cut off. A drawing has no
   business setting frame data.
@@ -160,6 +161,14 @@ nine fighters would each want a copy of it. A grunt *is* his.
   `seize` with no `place` takes him where he stands, with no `launch` keeps him there,
   `hides` stops drawing him from a frame, and `ball` flies in his place and lets him
   out where it ends (`match/ball.ts`). A later state of the scene names it in `sceneOf`.
+- **`turnsBy` is the state a body plays its turn in**, on finding the opponent behind
+  it: idle, walking and the crouch, into `turn_round`. With none it flips on the spot.
+- **`fires.also` is more bolts on the same frame**, each hitting on its own, at its own
+  `at` and with the first bolt's `spawn` and `state` unless it names its own (Kakusan's
+  three). Unlike `with`, which never hits and goes when the bolt goes.
+- **`holdFrames` ends a `holdStep`** on that frame of the state, rather than at the
+  state's end; **a `grab`'s `lift`** raises the held body a pixel a frame from frame
+  `from`, `px` in all. Both for Psychic Lift's rise.
 - **`aim` steers a shot to the opponent's height**: from frame `from` its vy is
   `speed` toward `above` px over his feet, 0 within `within` (`entity/aim.ts`). Its
   forward speed stays its own, so it chases a jump and never turns back.

@@ -1,5 +1,8 @@
 import { Container, Graphics, Sprite } from "pixi.js";
 import { aimSpeed } from "./aim";
+import { alsoFired } from "./alsoFired";
+import { staysOnStep } from "./heldStep";
+import { faceOpponent } from "./turning";
 import { applyAir, fall, ON_GROUND, type AirSetting } from "./air";
 import { hitAgain } from "./hitAgain";
 import type { ShakeDef } from "../camera/shake";
@@ -33,7 +36,6 @@ import {
   groundSpeed,
   guardStateFor,
   hitFxOf,
-  mayTurn,
   reactionFor,
   StateMachine,
   type CloseButton,
@@ -783,7 +785,7 @@ export class Entity {
       facing: this.facing,
       size,
       with: (fires.with ?? []).map((w) => ({ spawn: w.spawn, ...placed(w.at) })),
-      also: (fires.also ?? []).map((a) => ({ ...placed(a.at), spawn: a.spawn ?? fires.spawn, state: a.state ?? fires.state })),
+      also: alsoFired(fires, placed),
       beam: this.sm?.def.band !== undefined,
     };
   }
@@ -1322,12 +1324,9 @@ export class Entity {
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
-    if (mayTurn(this.sm.def, this.stateFrames) && opponentX !== null && opponentX !== this.x) {
-      const facing = opponentX > this.x ? 1 : -1;
-      const turned = facing !== this.facing;
-      this.facing = facing;
-      if (turned && this.sm.def.turnsBy) this.forceState(this.sm.def.turnsBy);
-    }
+    const turn = faceOpponent(this.sm.def, this.stateFrames, this.x, opponentX, this.facing);
+    this.facing = turn.facing;
+    if (turn.turnsBy) this.forceState(turn.turnsBy);
 
     const fwd = this.facing > 0 ? input.right : input.left;
     const back = this.facing > 0 ? input.left : input.right;
@@ -1555,9 +1554,7 @@ export class Entity {
     if (!this.anim || this.anim.steps.length === 0) return;
     this.remaining -= 1;
     if (this.remaining > 0) return;
-    const held = this.sm?.def.holdStep === this.stepIndex;
-    const until = this.sm?.def.holdFrames;
-    if (held && (until === undefined || this.stateFrames < until)) return;
+    if (staysOnStep(this.sm?.def, this.stepIndex, this.stateFrames)) return;
 
     this.stepIndex += 1;
     if (this.stepIndex >= this.anim.steps.length) {

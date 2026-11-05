@@ -87,6 +87,20 @@ describe("Throws", () => {
     expect(h.facing).toBe(1);
   });
 
+  it("raises him a pixel a frame from `lift.from`, and stops at `lift.px`", () => {
+    const t = thrower();
+    (t as unknown as { grab: GrabDef }).grab = { ...GRAB, lift: { from: 5, px: 3 } };
+    const h = held();
+    const throws = new Throws();
+    const heightAt = (frame: number) => {
+      t.stateFrame = frame;
+      throws.update(t, h);
+      return h.y;
+    };
+    // in world px: the placement's scale is 2
+    expect([5, 6, 7, 8, 9, 15].map(heightAt)).toEqual([200, 198, 196, 194, 194, 194]);
+  });
+
   it("passes a quiet launch on, so the reaction's own sound stays silent", () => {
     const t = thrower();
     Object.assign(t, { grab: { ...GRAB, launch: { ...GRAB.launch, quiet: true } } });

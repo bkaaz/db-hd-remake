@@ -104,7 +104,10 @@ first.
   What it does on a hit is the type's table at `$2A:8EC7` (`rom.md`). Only
   what the code will not give: a recording, one long session per fighter
   (`tools/re/record-objects.lua`, the list from `npm run rom -- spawns`),
-  read back with `npm run rom -- objects`.
+  read back with `npm run rom -- objects`. `npm run moves -- <fighter> --objects`
+  makes that recording, and `npm run rom -- recorded --fighter <name>` writes the
+  palettes it shows into `objects.json`. Its `--frames` also takes the frames from
+  the recording: only for an object whose code gave none.
 - **A shared object** (type `a`: ki blast, explosions, dust, Kamehameha) is
   one spawn for everyone, named by what it is (ADR 0037); only its colours
   may be the fighter's.
@@ -190,8 +193,10 @@ before asking for a new mechanism:
 ## 4. Check
 
 `npm test` — `src/rom/hits.test.ts` and `port.test.ts` hold goku's states
-to the cartridge. Then `npm run blows -- goku`. Hand the owner one concrete
-thing to try, and a recording (`L`) for anything about behaviour.
+to the cartridge. Then `npm run blows -- goku`, and `npm run moves -- <fighter>
+--only <move>`, which plays the move in the original and in ours and prints what
+differs (ADR 0075). Hand the owner one move to try, the next only after he answers,
+and a recording (`L`) for anything about behaviour.
 
 ## What the report cannot tell yet
 

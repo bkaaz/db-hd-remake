@@ -283,6 +283,10 @@ npm run rom -- export --all
 npm run rom -- objects [logs/objects-rec.txt]
                   # a recording of the object slots read back: each
                   # object's frames and timing, speed, what it becomes
+npm run rom -- recorded --fighter vegetto
+                  # his objects.json's palettes from logs/objects-<name>.*
+                  # (npm run moves -- <name> --objects); --frames takes the
+                  # frames from it too, over what the code gave; --dry-run
 npm run rom -- code a 3
                   # an object's code read: how long it lives, how it
                   # steps, what it waits on (type, animation)

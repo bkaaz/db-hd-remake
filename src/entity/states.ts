@@ -1608,6 +1608,19 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     if (def.holdStep !== undefined && (!Number.isInteger(def.holdStep) || def.holdStep < 0 || (steps !== undefined && def.holdStep >= steps))) {
       errors.push(`${where}: "holdStep" must be a step of its animation, 0 to ${(steps ?? 1) - 1}`);
     }
+    if (def.holdFrames !== undefined && (def.holdStep === undefined || !Number.isInteger(def.holdFrames) || def.holdFrames < 1)) {
+      errors.push(`${where}: "holdFrames" must be a whole number of frames, on a state with a "holdStep"`);
+    }
+    if (def.turnsBy !== undefined && !states[def.turnsBy]) {
+      errors.push(`${where}: "turnsBy" names "${def.turnsBy}", which is not a state`);
+    }
+    if (def.fires?.also?.some((a) => !Array.isArray(a.at) || a.at.length !== 2)) {
+      errors.push(`${where}: each of "fires.also" needs an "at" of [x, y]`);
+    }
+    const lift = def.grab?.lift;
+    if (lift && (!Number.isInteger(lift.from) || lift.from < 0 || !Number.isInteger(lift.px) || lift.px < 1)) {
+      errors.push(`${where}: "grab.lift" needs "from" and "px", whole numbers, e.g. { "from": 10, "px": 40 }`);
+    }
     if (
       def.shake !== undefined &&
       (!Number.isInteger(def.shake.pattern) || def.shake.pattern < 0 || def.shake.pattern >= SHAKE_PATTERNS ||

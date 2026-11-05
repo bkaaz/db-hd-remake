@@ -19,6 +19,8 @@
  *   npm run rom -- draft --fighter x a first specials.json, objects.json and spawn states from the reports
  *   npm run rom -- export --all      goku and every fighter that has states, exported again
  *   npm run rom -- commands          his command table into data/entities/<name>/commands.json
+ *   npm run rom -- recorded --fighter x  his objects.json's palettes from logs/objects-x.*
+ *                                    (--frames: its frames too, --dry-run)
  *   … --fighter vegetto              any reading command above, for another fighter
  *   npm run rom -- export            every drawing into assets/sheets/goku.png and
  *                                    data/entities/goku/frames.json (frame n = drawing n),
@@ -31,7 +33,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { FIRE, GOKU, ROM_PATH, scriptAt, tileResourceOf, type FighterTables } from "../src/rom/cartridge.ts";
 import { fighterTables, ROSTER, type FighterName } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
@@ -50,7 +52,8 @@ import { grabOf } from "../src/rom/grab.ts";
 import { objectEntry, objectFacts } from "../src/rom/objectCode.ts";
 import { fullestLife, readLives, readSnapshots } from "../src/rom/recording.ts";
 import { findPalette, matchLoads } from "../src/rom/vramMatch.ts";
-import { inRecording, OWN_OBJECTS, ownObjects } from "../src/rom/ownObjects.ts";
+import { inRecording, OWN_OBJECTS, ownObjects, type OwnObject } from "../src/rom/ownObjects.ts";
+import { correctObjects, paletteIdAt, recordedKinds } from "../src/rom/recordedObjects.ts";
 import { lineName, spokenLines } from "../src/rom/lines.ts";
 import { voiceSounds } from "../src/rom/voice.ts";
 import { romIds, type Sounds } from "../src/audio/sounds.ts";
@@ -305,6 +308,37 @@ if (command === "tiles") {
     const becomes = [...new Set(all.flatMap((l) => (l.then ? [`${hex(l.then.type)}/${hex(l.then.anim)}${l.hit ? " on a hit" : ""}`] : [])))];
     console.log(`${kind}  ${all.length}× — longest ${full.to - full.from} frames, vx ${full.vx}, vy ${full.vy}${becomes.length ? `, becomes ${becomes.join(", ")}` : ""}`);
     console.log(`  frames: ${full.steps.map((s) => `${s.frame}×${s.dur}`).join(" ")}`);
+  }
+} else if (command === "recorded") {
+  // his objects.json corrected from his recording: palettes, with --frames what it
+  // shows too (recordedObjects.ts says why not by default); --dry-run says what would change
+  const path = `data/entities/${name}/objects.json`;
+  const objects: OwnObject[] = JSON.parse(readFileSync(path, "utf8"));
+  const kinds = recordedKinds(
+    readLives(readFileSync(`logs/objects-${name}.txt`, "utf8")),
+    readSnapshots(new Uint8Array(readFileSync(`logs/objects-${name}.bin`))),
+    (colours) => {
+      const at = findPalette(rom, new Uint8Array(colours))[0];
+      return at === undefined ? null : paletteIdAt(rom, at);
+    },
+  );
+  const corrected = correctObjects(objects, kinds, { frames: args.includes("--frames") });
+  // an object is reported only for what its file does not already say
+  const changes = corrected.objects.flatMap((after, i) => {
+    const before = objects[i];
+    const said = [
+      ...(after.palette !== before.palette ? [`palette ${hex(before.palette)} → ${hex(after.palette)}`] : []),
+      ...(before.animations && !after.animations ? ["frames as recorded"] : []),
+    ];
+    return said.length > 0 ? [`${after.name}: ${said.join(", ")}`] : [];
+  });
+  const stale = corrected.asRecorded.filter((spawn) => existsSync(`data/spawns/${spawn}/animations.json`) && objects.find((o) => o.name === spawn)?.animations);
+  for (const line of changes) console.log(line);
+  if (changes.length === 0) console.log(`${path}: as recorded already`);
+  if (!args.includes("--dry-run") && changes.length > 0) {
+    writeFileSync(path, JSON.stringify(corrected.objects, null, 2) + "\n");
+    for (const spawn of stale) rmSync(`data/spawns/${spawn}/animations.json`);
+    console.log(`now: npm run rom -- export --fighter ${name}`);
   }
 } else if (command === "vram") {
   // each object's tiles and colours in a recording's snapshots, named in the
