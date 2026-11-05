@@ -108,7 +108,7 @@ than drawn. Gohan's and Gotenks's and Goku's too.
 
 ### Across the roster, not done
 
-- **Gotenks's Rolling Thunder and Rapid Fire** (`bd`, `ab`) strike more often than the original's in the first compare: to try `?`.
+- **Gotenks's Renzoku and Ultra Renzoku** (↓ ↘ → A, ↓ ↘ → ↓ ↘ → A): the opponent reels longer than in the original (61 frames against 98 and 314), their shots land sooner one after another `?`.
 
 - **Sender moves** (`a0`, `a1`, `9f`) leave out the fight above the arena, as the owner decided.
 - **The charge** taking over a punch begun a frame before: `docs/bugs.md`, already known.
