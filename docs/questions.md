@@ -4,6 +4,23 @@ What came up while the owner was away (from 2026-11-05), for him to read on retu
 checked, what was fixed, and what is still his to say. `npm run moves -- <fighter>` repeats any
 fighter's comparison; `logs/moves/<fighter>/report.txt` holds the last one. Deleted when answered.
 
+## Where it stands (2026-11-05)
+
+Cases that agree with the original, `npm run moves`; the Sender moves, the charge and small differences of a few px stay among the rest:
+
+- goku: 39 of 43 agree
+- vegeta: 32 of 44 agree
+- gohan: 32 of 40 agree
+- gotenks: 31 of 42 agree
+- vegetto: 31 of 40 agree
+- piccolo: 37 of 42 agree
+- freeza: 32 of 41 agree
+- cell: 33 of 42 agree
+- mr_buu: 30 of 41 agree
+- buu: 30 of 47 agree
+
+Not compared by this tool: how anything looks, sounds and voices, blocked blows, a fighter on the right in Mesen, frames of a long scene (its frames where nothing moves count as the SA-1's slowdown). Looked at side by side: only Big Bang.
+
 ## Questions
 
 1. **Gotenks's discharges (intro):** do you see a pale smear instead of a sharp line, or something
@@ -90,6 +107,8 @@ An object struck with the whole of its picture, computed; now with its own recta
 than drawn. Gohan's and Gotenks's and Goku's too.
 
 ### Across the roster, not done
+
+- **Gotenks's Rolling Thunder and Rapid Fire** (`bd`, `ab`) strike more often than the original's in the first compare: to try `?`.
 
 - **Sender moves** (`a0`, `a1`, `9f`) leave out the fight above the arena, as the owner decided.
 - **The charge** taking over a punch begun a frame before: `docs/bugs.md`, already known.
