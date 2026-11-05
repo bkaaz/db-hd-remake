@@ -166,25 +166,6 @@
       ],
       "when": [
         "frames:2",
-        "command:b2"
-      ],
-      "to": "disk_tackle"
-    },
-    {
-      "from": [
-        "jump_fall"
-      ],
-      "when": "command:b2",
-      "to": "disk_tackle"
-    },
-    {
-      "from": [
-        "jump_up",
-        "jump_fwd",
-        "jump_back"
-      ],
-      "when": [
-        "frames:2",
         "command:d2"
       ],
       "to": "slashdown_blast"
@@ -252,7 +233,18 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          31,
+          1
+        ],
+        [
+          64,
+          0
+        ]
+      ],
+      "behind": true
     },
     "extension_punch": {
       "anim": "ma8",
@@ -292,16 +284,6 @@
       "vel": [
         0,
         0
-      ],
-      "air": [
-        [
-          0,
-          {
-            "vy": -8,
-            "gravity": "own",
-            "vx": 2
-          }
-        ]
       ],
       "invulnerable": true,
       "grab": {
@@ -368,7 +350,7 @@
           ]
         },
         "launch": {
-          "frame": 0,
+          "frame": 41,
           "damage": 58,
           "reaction": "reel_down",
           "vel": [
@@ -380,12 +362,8 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
-          "to": "idle"
+          "to": "throw_spring"
         }
       ]
     },
@@ -478,7 +456,15 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "fires": {
+        "spawn": "buu_9_08",
+        "at": [
+          32,
+          0
+        ],
+        "state": "fly"
+      }
     },
     "earth_stab": {
       "anim": "maf",
@@ -506,7 +492,15 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "fires": {
+        "spawn": "buu_9_08",
+        "at": [
+          32,
+          0
+        ],
+        "state": "fly"
+      }
     },
     "sender_9f": {
       "anim": "m9f",
@@ -581,18 +575,18 @@
         0
       ],
       "fires": {
-        "spawn": "buu_9_06",
+        "spawn": "buu_9_04",
         "at": [
-          0,
-          0
+          32,
+          -72
         ],
         "state": "fly",
         "with": [
           {
-            "spawn": "buu_9_04",
+            "spawn": "buu_9_06",
             "at": [
-              32,
-              -72
+              0,
+              0
             ]
           }
         ]
@@ -1159,16 +1153,16 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "heavy",
-      "damage": 22,
       "transitions": [
         {
           "when": "animEnd",
-          "to": "idle"
+          "to": "crouch"
         }
-      ]
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "heavy",
+      "damage": 22
     },
     "jump_b": {
       "anim": "m97",
@@ -1239,6 +1233,23 @@
         {
           "when": "animEnd",
           "to": "jump_fall_attacked"
+        }
+      ]
+    },
+    "throw_spring": {
+      "anim": "m1a",
+      "airborne": true,
+      "turn": false,
+      "launch": [
+        -2,
+        -8
+      ],
+      "startsAt": 21,
+      "holdStep": 6,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
         }
       ]
     }

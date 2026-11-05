@@ -64,3 +64,17 @@ different shots. Objects from a recording. The dash's charge commands now reach 
 Left, not ported: **Buu Breath's** and **Oyatsu Kosen's** scenes (the opponent turned into candy and
 chocolate), **Energy Field's** ball: its object draws from tiles at base 0 that the exporter finds empty
 (`8/12`), so it shows nothing and does not hit `?`.
+
+### Buu
+
+Fixed: Matamol moves and goes behind, his throw lasts and springs off as the original's, Earth Stab
+rises under the opponent, Buu Burn's ball is what hits, low Y returns to the crouch, the air commands in
+the cartridge's order. Objects from a recording.
+Left, not ported: **Candy Beam's** scene (`b7`, `b8`), **Energy Sphere's** objects by part. A command of
+the air whose conditions ask for the ground (`b2`) has no way in now `?`.
+
+### Across the roster, not done
+
+- **Sender moves** (`a0`, `a1`, `9f`) leave out the fight above the arena, as the owner decided.
+- **The charge** taking over a punch begun a frame before: `docs/bugs.md`, already known.
+- **A block's shove** stays on friction: no recording away from an edge says otherwise `?`.
