@@ -158,7 +158,6 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `9f` sender_9f | ground: ↓ ↘ → X | — |
 | `aa` rolling_tackle | ground: ↓ ↘ → Y | — |
 | `b0` buu_breath | ground: ↓ ↘ → B + Y | — |
-| `ae` mightiness_bomber | ground: ↓ ↙ → A | what its handler decides on a button held or a level `?` |
 | `a4` tornado_hip | ground: ← → B | — |
 | `a8` planet_attack | ground: ← → Y | what its handler decides on a button held or a level `?` |
 | `a5` oyatsu_kosen | ground: ↓ ↑ B | — |
@@ -168,7 +167,7 @@ Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug
 | `9a` attack_x | his own normal | — |
 
 Objects, no recording yet (5): frames from the table, 4 frames each `?`, colours `?`: `mr_buu_a_25`, `mr_buu_a_26`, `mr_buu_8_17`, `mr_buu_8_04`, `mr_buu_8_06`.
-Objects with nothing to draw from their table, so left out: `08/12`, `08/0f`, `08/05`.
+Objects with nothing to draw from their table, so left out: `08/12`, `08/05`.
 Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_start`, `dash_back`, `dash_fwd`, `down_bounce`, `down_fall`, `down_lie`, `high_bounce`, `high_fall`, `high_lie`, `intro`, `ko_bounce`, `ko_bounce2`, `ko_down`, `ko_fall`, `ko_lie`, `ko_rise`, `reel_down`, `reel_high`, `reel_trip`, `trip_fall`, `trip_land`, `win`, `win_air`.
 
 ## Buu

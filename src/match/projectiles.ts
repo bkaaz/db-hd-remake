@@ -6,6 +6,7 @@ import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { landBlow, type BlowContext, type BlowResult } from "./blow";
 import { objectGone } from "../camera/camera";
 import { logEvent } from "../log";
+import { nextRadius } from "../combat/ball";
 import { leftMove, movesHeld } from "./thrownIn";
 
 /** No edge holds a bolt back: it is gone once it strays too far (`objectGone`). */
@@ -57,6 +58,8 @@ export class Projectiles {
   private readonly live: Live[] = [];
   /** Companions whose bolt is gone, playing their `onRelease` state out. */
   private readonly leaving: Entity[] = [];
+  /** Balls a hit let go, shrinking where it struck. */
+  private fading: { owner: Entity; x: number; y: number; radius: number }[] = [];
 
   private constructor(
     /** The game's world, in game px. */
@@ -195,6 +198,7 @@ export class Projectiles {
       const burst = bolt.attackBurst;
       if (floored && !result && burst) impact.effects.spawn(burst, bolt.x, bolt.y);
       if ((result && !bolt.outlivesHit) || floored || stranded || orphaned || bolt.expired) {
+        if (result && bolt.ballNow > 0) this.fading.push({ owner, x: bolt.x, y: bolt.y, radius: bolt.ballNow });
         const why = result ? "hit" : floored ? "floored" : stranded ? "strayed" : orphaned ? "orphaned" : "expired";
         logEvent(`bolt ${name} gone (${why}) at x ${Math.round(bolt.x)}, screen x ${Math.round(bolt.x - view.x)}`);
         bolt.view.destroy({ children: true });
@@ -204,6 +208,7 @@ export class Projectiles {
         owner.spawnEnded();
       }
     }
+    this.fadeBalls();
     for (let i = this.leaving.length - 1; i >= 0; i--) {
       const c = this.leaving[i];
       if (!paused) c.update(NO_INPUT, null, ANYWHERE);
@@ -213,6 +218,15 @@ export class Projectiles {
       }
     }
     return hits;
+  }
+
+  /** One step of each ball a hit let go: where it was, through the hit's pause too (Mightiness Bomber, `$2A:A597`). */
+  private fadeBalls(): void {
+    this.fading = this.fading.filter((ball) => {
+      ball.radius = nextRadius(ball.radius, undefined, 0);
+      ball.owner.showThrownBall(ball.radius > 0 ? ball : null);
+      return ball.radius > 0;
+    });
   }
 
   /** A companion whose bolt is gone: into its way out if it has one, else gone now. */

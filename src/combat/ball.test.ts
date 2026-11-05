@@ -86,3 +86,45 @@ describe("Mr. Buu's Energy Field", () => {
     });
   });
 });
+
+describe("Mr. Buu's Mightiness Bomber", () => {
+  const states = JSON.parse(readFileSync("data/entities/mr_buu/specials.json", "utf8")).states as Record<string, { fires: { spawn: string; at: [number, number]; state: string }; transitions: { when: string | string[] }[] }>;
+  const spawn = (name: string) => JSON.parse(readFileSync(`data/spawns/${name}/states.json`, "utf8")).states as Record<string, { ball: BallDef; vel: [number, number]; lasts?: number }>;
+
+  it("appears at a level's own start, not 1: a ball carried on from a smaller object", () => {
+    expect(nextRadius(0, { at: [0, 0], from: 0, start: 17, grow: 1, max: 24 }, 0)).toBe(17);
+  });
+
+  it.each([["mr_buu_8_0f", 1, 16], ["mr_buu_8_10", 17, 24], ["mr_buu_8_11", 25, 32]])("%s grows from %i to %i at the hand, by 1 a frame ($0F:D87E), and flies at that size", (name, from, to) => {
+    const { charge, fly } = spawn(name);
+    let r = 0;
+    const seen: number[] = [];
+    for (let frame = 0; frame <= to - from + 2; frame++) seen.push((r = nextRadius(r, charge.ball, frame)));
+    expect(seen[0]).toBe(from);
+    expect(seen[1]).toBe(from + 1);
+    expect(seen.at(-1)).toBe(to);
+    expect(nextRadius(nextRadius(0, fly.ball, 0), fly.ball, 1)).toBe(to);
+  });
+
+  it("creeps 1 px a frame at the hand and leaves at 4 ($0F:F7DD)", () => {
+    expect(spawn("mr_buu_8_0f").charge.vel).toEqual([1, 0]);
+    expect(spawn("mr_buu_8_0f").fly.vel).toEqual([4, 0]);
+  });
+
+  it("each level takes up where the last stopped: the hand's 16, then 8, then 8 frames ($0F:F785)", () => {
+    expect(states.mightiness_bomber_2.fires.at[0]).toBe(52);
+    expect(states.mightiness_bomber_3.fires.at[0]).toBe(52 + 16);
+    expect(states.mightiness_bomber_4.fires.at[0]).toBe(52 + 24);
+    expect(states.mightiness_go_s.fires.at[0]).toBe(52 + 16);
+    expect(states.mightiness_go_m.fires.at[0]).toBe(52 + 24);
+    expect(states.mightiness_go_l.fires.at[0]).toBe(52 + 32);
+  });
+
+  it("goes on to the next level only while its ball is out: one that hit has nothing to charge", () => {
+    for (const name of ["mightiness_bomber_2", "mightiness_bomber_3", "mightiness_bomber_4"]) {
+      const timed = states[name].transitions.filter((t) => [t.when].flat().some((w) => w.startsWith("frames:")));
+      expect(timed.length).toBeGreaterThan(0);
+      for (const t of timed) expect(t.when).toContain("!spawnEnd");
+    }
+  });
+});

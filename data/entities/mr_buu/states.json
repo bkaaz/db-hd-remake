@@ -2884,24 +2884,6 @@
         }
       ]
     },
-    "mightiness_bomber_2": {
-      "anim": "mae_2",
-      "turn": false,
-      "vel": [
-        0,
-        0
-      ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "down",
-      "damage": 40,
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "idle"
-        }
-      ]
-    },
     "tornado_hip": {
       "anim": "ma4",
       "turn": false,
@@ -3377,6 +3359,186 @@
       ],
       "sceneOf": "oyatsu_scene",
       "holdStep": 1
+    },
+    "mightiness_bomber_2": {
+      "anim": "mae_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "mr_buu_8_0f",
+        "at": [
+          52,
+          -56
+        ],
+        "state": "charge"
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:16",
+            "!spawnEnd",
+            "released:blast"
+          ],
+          "to": "mightiness_go_s"
+        },
+        {
+          "when": [
+            "frames:16",
+            "!spawnEnd"
+          ],
+          "to": "mightiness_bomber_3"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "mightiness_bomber_3": {
+      "anim": "mae_2",
+      "startsAt": 16,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "mr_buu_8_10",
+        "at": [
+          68,
+          -56
+        ],
+        "state": "charge"
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:23",
+            "!spawnEnd",
+            "released:blast"
+          ],
+          "to": "mightiness_go_m"
+        },
+        {
+          "when": [
+            "frames:23",
+            "!spawnEnd"
+          ],
+          "to": "mightiness_bomber_4"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "mightiness_bomber_4": {
+      "anim": "mae_2",
+      "startsAt": 24,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "mr_buu_8_11",
+        "at": [
+          76,
+          -56
+        ],
+        "state": "charge"
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:31",
+            "!spawnEnd"
+          ],
+          "to": "mightiness_go_l"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "mightiness_go_s": {
+      "anim": "mae_2",
+      "startsAt": 32,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "mr_buu_8_0f",
+        "at": [
+          68,
+          -56
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "mightiness_go_m": {
+      "anim": "mae_2",
+      "startsAt": 32,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "mr_buu_8_10",
+        "at": [
+          76,
+          -56
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "mightiness_go_l": {
+      "anim": "mae_2",
+      "startsAt": 32,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "mr_buu_8_11",
+        "at": [
+          84,
+          -56
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
     }
   }
 }

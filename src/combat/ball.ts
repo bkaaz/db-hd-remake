@@ -19,6 +19,8 @@ export interface BallDef {
   from?: number;
   /** The state's frame it is gone on, at once — the effect cleared ($20:8B3C). */
   until?: number;
+  /** The radius it appears at, 1 if not named: a ball carried on from a smaller object's. */
+  start?: number;
   /** Radius gained each frame while a state holds it; less than 0, lost, in place: Energy Field's end. */
   grow: number;
   /** The radius it stops growing at — Saiyan Meteor's 63 ($20:8F46). */
@@ -44,6 +46,6 @@ export function nextRadius(radius: number, defs: BallDef | BallDef[] | undefined
   if (!def) return 0;
   if (def.pulse) return def.pulse[frame % def.pulse.length];
   if (def.grow < 0) return Math.max(0, radius + def.grow);
-  if (radius === 0) return def.from !== undefined && frame >= def.from ? 1 : 0;
+  if (radius === 0) return def.from !== undefined && frame >= def.from ? (def.start ?? 1) : 0;
   return Math.min(radius + def.grow, def.max ?? Infinity);
 }

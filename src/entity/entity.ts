@@ -574,6 +574,11 @@ export class Entity {
     return this.sm?.def.grab;
   }
 
+  /** Its ball's radius now, in sprite px: 0 with none. */
+  get ballNow(): number {
+    return this.ballRadius;
+  }
+
   /** Draw a ball it has thrown at (`x`, `y`) in the world, sprite-px `radius`; null for none. */
   showThrownBall(ball: { x: number; y: number; radius: number } | null): void {
     this.thrownBall = ball;
@@ -628,7 +633,9 @@ export class Entity {
     this.stepIndex = i;
     this.remaining = Math.max(1, (steps[i]?.dur ?? 1) - left);
     this.animEnded = false;
-    this.applyFrame();
+    // landing on a step's first frame is that step beginning: Mightiness Bomber's release has its sound on one
+    if (left === 0) this.stepBegins();
+    else this.applyFrame();
   }
 
 

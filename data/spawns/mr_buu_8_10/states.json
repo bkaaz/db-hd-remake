@@ -1,0 +1,52 @@
+{
+  "initial": "fly",
+  "states": {
+    "charge": {
+      "anim": "play",
+      "turn": false,
+      "vel": [
+        1,
+        0
+      ],
+      "type": "down",
+      "damage": 68,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "endsWithMove": true,
+      "lasts": 9,
+      "ball": {
+        "at": [
+          0,
+          0
+        ],
+        "from": 0,
+        "start": 17,
+        "grow": 1,
+        "max": 24
+      }
+    },
+    "fly": {
+      "anim": "play",
+      "turn": false,
+      "vel": [
+        4,
+        0
+      ],
+      "type": "down",
+      "damage": 68,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "ball": {
+        "at": [
+          0,
+          0
+        ],
+        "from": 0,
+        "start": 24,
+        "grow": 0
+      }
+    }
+  }
+}

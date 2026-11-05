@@ -147,5 +147,71 @@
     "anim": 18,
     "hits": true,
     "palette": 37
+  },
+  {
+    "name": "mr_buu_8_0f",
+    "type": 8,
+    "anim": 15,
+    "hits": true,
+    "palette": 37,
+    "animations": {
+      "play": {
+        "frames": [
+          0
+        ],
+        "dur": 1,
+        "loop": false
+      }
+    },
+    "loads": [
+      {
+        "resource": 48,
+        "vram": 25856
+      }
+    ]
+  },
+  {
+    "name": "mr_buu_8_10",
+    "type": 8,
+    "anim": 16,
+    "hits": true,
+    "palette": 37,
+    "animations": {
+      "play": {
+        "frames": [
+          0
+        ],
+        "dur": 1,
+        "loop": false
+      }
+    },
+    "loads": [
+      {
+        "resource": 48,
+        "vram": 25856
+      }
+    ]
+  },
+  {
+    "name": "mr_buu_8_11",
+    "type": 8,
+    "anim": 17,
+    "hits": true,
+    "palette": 37,
+    "animations": {
+      "play": {
+        "frames": [
+          0
+        ],
+        "dur": 1,
+        "loop": false
+      }
+    },
+    "loads": [
+      {
+        "resource": 48,
+        "vram": 25856
+      }
+    ]
   }
 ]
