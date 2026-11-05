@@ -10,11 +10,15 @@
       ],
       "type": "down",
       "damage": 0,
-      "burstsInto": "burst_s",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a",
       "opens": "breath_scene",
-      "endsWithMove": true
+      "endsWithMove": [
+        "b0",
+        "b1"
+      ],
+      "outlivesHit": true,
+      "lasts": 108
     }
   }
 }

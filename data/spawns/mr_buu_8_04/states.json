@@ -10,11 +10,15 @@
       ],
       "type": "down",
       "damage": 0,
-      "burstsInto": "burst_s",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a",
       "opens": "oyatsu_scene",
-      "endsWithMove": true
+      "endsWithMove": [
+        "a5",
+        "a6"
+      ],
+      "outlivesHit": true,
+      "lasts": 90
     }
   }
 }

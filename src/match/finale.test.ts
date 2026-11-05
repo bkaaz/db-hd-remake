@@ -91,3 +91,25 @@ describe("the finale", () => {
     expect(events.filter((e) => e.burst)).toHaveLength(14);
   });
 });
+
+describe("a finale that sweeps", () => {
+  const BREATH: FinaleDef = { ...METEOR, sweep: { each: 8, half: 28 }, white: 300 };
+
+  it("starts at the screen's left, keeps the apex's x, and crosses the screen", () => {
+    const f = throwBall(BREATH, 500, 100, 100, 200, 2);
+    expect(f).toMatchObject({ phase: "sweep", x: 100, y: 100, vx: 16, vy: 500, left: 32 });
+    const [next] = finaleStep(f, BREATH, 200);
+    expect(next.x).toBe(116);
+  });
+
+  it("gives way to the band after 32 frames, and has no ball or clock to hold", () => {
+    let f = throwBall(BREATH, 0, 0, 0, 200);
+    let frames = 0;
+    while (f.phase === "sweep") {
+      [f] = finaleStep(f, BREATH, 200);
+      frames++;
+    }
+    expect(frames).toBe(32);
+    expect(f.phase).toBe("band");
+  });
+});

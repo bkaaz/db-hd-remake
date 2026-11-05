@@ -245,5 +245,101 @@
         "loop": false
       }
     }
+  },
+  {
+    "name": "mr_buu_8_16",
+    "type": 8,
+    "anim": 22,
+    "hits": false,
+    "palette": 192,
+    "loads": [
+      {
+        "resource": 66,
+        "vram": 26624
+      }
+    ],
+    "tiles": 128,
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "mr_buu_8_03",
+    "type": 8,
+    "anim": 3,
+    "hits": false,
+    "palette": 37,
+    "loads": [
+      {
+        "resource": 66,
+        "vram": 26624
+      }
+    ],
+    "tiles": 128,
+    "animations": {
+      "play": {
+        "frames": [
+          0
+        ],
+        "dur": 10,
+        "loop": false
+      }
+    }
+  },
+  {
+    "name": "mr_buu_8_0a",
+    "type": 8,
+    "anim": 10,
+    "hits": false,
+    "palette": 37,
+    "loads": [
+      {
+        "resource": 66,
+        "vram": 26624
+      }
+    ],
+    "tiles": 128,
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 5,
+        "loop": true
+      }
+    }
+  },
+  {
+    "name": "mr_buu_8_0b",
+    "type": 8,
+    "anim": 11,
+    "hits": false,
+    "palette": 37,
+    "loads": [
+      {
+        "resource": 66,
+        "vram": 26624
+      }
+    ],
+    "tiles": 128,
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 5,
+        "loop": false
+      }
+    }
   }
 ]

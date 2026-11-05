@@ -57,8 +57,22 @@ interface Seizure {
   finale?: Finale;
   /** What flies in his place (`ball.ts`). */
   ball?: BallScene;
+  /** Px a frame he is moved by, toward the seizer's facing and down (`steps`). */
+  drift?: [number, number] | null;
   /** The scene's frame, which goes on counting through its later states (`sceneOf`). */
   elapsed: number;
+}
+
+/** Where a let-go's explosion goes, over his feet: Oyatsu Kosen's `a/17` at y `C0`, recorded. */
+const BURST_ABOVE = 8;
+
+/** The circle a scene's `light` shows on `frame`, or null with none. */
+export function lightOn(light: NonNullable<SeizeDef["light"]>, frame: number, held: { x: number; y: number }, scale: number): { x: number; y: number; radius: number } | null {
+  const t = frame - light.from;
+  if (t < 0) return null;
+  const rising = light.top - light.start;
+  const radius = t <= rising ? light.start + t : light.top - (t - rising);
+  return radius > 0 ? { x: held.x + light.at[0] * scale, y: held.y + light.at[1] * scale, radius } : null;
 }
 
 /** The landings' shakes, in order: patterns 2, 1, 0 for 8 frames ($20:8D24, `8D54`, `8D85`). */
@@ -103,11 +117,22 @@ export class Seizures {
     const { held } = s;
     const scale = held.scaleOf;
     if (def.hides !== undefined && frame === def.hides) held.hide(true);
+    for (const step of def.steps ?? []) if (frame === step.frame) this.playStep(s, seizer, step);
+    if (s.drift && s.phase === "held") {
+      held.x += seizer.facing * s.drift[0] * scale;
+      held.y += s.drift[1] * scale;
+    }
+    if (def.light) seizer.showThrownBall(lightOn(def.light, frame, held, scale));
     if (def.ball && s.phase !== "done") {
       s.ball ??= new BallScene(def.ball, seizer, held, world);
       s.ball.update(frame);
     }
     if (s.phase === "held" && def.launch && frame >= def.launch.frame) {
+      if (def.launch.from) {
+        held.x = seizer.x + seizer.facing * def.launch.from[0] * scale;
+        held.y = seizer.y + def.launch.from[1] * scale;
+        held.hide(false);
+      }
       // thrown up and away from him, crying out ($20:8B6B, $20:8B74)
       const away = held.x >= seizer.x ? 1 : -1;
       s.vx = away * def.launch.vel[0];
@@ -138,8 +163,8 @@ export class Seizures {
         // from the hands at where he lies, its clock held while it flies ($20:8DC6)
         const [dx, dy] = fin.from;
         const from = { x: seizer.x + seizer.facing * dx * seizer.scaleOf, y: seizer.y + dy * seizer.scaleOf };
-        s.finale = throwBall(fin, from.x, from.y, held.x, held.floor, seizer.scaleOf);
-        seizer.holdClock(true);
+        s.finale = throwBall(fin, from.x, from.y, fin.sweep ? world.left() : held.x, held.floor, seizer.scaleOf);
+        if (!fin.sweep) seizer.holdClock(true);
         if (fin.sounds?.thrown) seizer.sound(fin.sounds.thrown);
       } else if (s.finale) {
         const [next, e] = finaleStep(s.finale, fin, held.floor);
@@ -159,27 +184,43 @@ export class Seizures {
         if (e.toll && fin.sounds?.white) seizer.sound(fin.sounds.white);
         if (e.done) {
           world.screen("restore");
-          this.letGo(s, seizer, def.release);
+          this.letGo(s, seizer, def.release, world);
+          seizer.finaleSays("finaleDone");
         }
       }
       // the ball and the explosion are drawn by its thrower, in the world
       const f = s.finale;
       seizer.showThrownBall(f && (f.phase === "flying" || f.phase === "exploding") ? { x: f.x, y: f.y, radius: f.radius / seizer.scaleOf } : null);
       seizer.showFloorBand(f && f.band > 0 ? { y: held.floor, size: f.band } : null);
+      seizer.showSweep(f?.phase === "sweep" && fin.sweep ? { apex: [f.vy, f.y], x: f.x, half: fin.sweep.half, floor: held.floor } : null);
       return;
     }
     const over = s.ball ? s.ball.done : frame >= (def.release.frame ?? Infinity);
-    if (s.phase !== "done" && over) this.letGo(s, seizer, def.release);
+    if (s.phase !== "done" && over) this.letGo(s, seizer, def.release, world);
+  }
+
+  private playStep(s: Seizure, seizer: Entity, step: NonNullable<SeizeDef["steps"]>[number]): void {
+    const { held } = s;
+    if (step.anim) held.hold(step.anim);
+    if (step.show !== undefined) held.jumpTo(step.show);
+    if (step.at) {
+      held.x = seizer.x + seizer.facing * step.at[0] * held.scaleOf;
+      held.y = held.floor + step.at[1] * held.scaleOf;
+    }
+    if (step.drift !== undefined) s.drift = step.drift;
+    if (step.hide !== undefined) held.hide(step.hide);
   }
 
   /** The throw's own blow ($0F:B321): he faces the seizer's way, thrown backwards. */
-  private letGo(s: Seizure, seizer: Entity, release: SeizeDef["release"]): void {
+  private letGo(s: Seizure, seizer: Entity, release: SeizeDef["release"], world: SeizeWorld): void {
     const { held } = s;
     if (s.ball) ({ x: held.x, y: held.y } = s.ball.end());
     held.hide(false);
     held.facing = seizer.facing;
     held.hurtBy(release.damage);
     held.release(release.reaction, release.vel);
+    if (release.burns) held.setBurning();
+    if (release.fx) world.effect(release.fx, held.x, held.y - BURST_ABOVE * held.scaleOf);
     s.phase = "done";
   }
 }

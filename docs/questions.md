@@ -28,8 +28,8 @@ Not compared by this tool: how anything looks, sounds and voices, blocked blows,
 2. **Goten and Trunks splitting (win):** in which light did you look, and as which player? Is it the
    final colour, the flash or the moment of change? By day the palettes match the original.
 
-3. **The ultimates' scenes** (Galactic Juggle, Aerial Assault, Jubaku Ha, Buu Breath, Oyatsu Kosen, Candy
-   Beam): they now seize, play their parts and throw, but the opponent plays one pose in place, without the
+3. **The ultimates' scenes** (Galactic Juggle, Aerial Assault, Jubaku Ha, Candy
+   Beam; Mr. Buu's two are done): they now seize, play their parts and throw, but the opponent plays one pose in place, without the
    original's flight, flashes and sprays, and **their damage is my guess** (70 to 120), save Candy Beam's 100
    from the code. Are they worth doing to the frame now, or after the port?
 
@@ -81,8 +81,6 @@ Tri-Eruption is 116 frames where the original's is 200, and knocks down where it
 Fixed: his Y's and X's blows counted twice (body and object), Flying Bomber moves and goes behind,
 Butt Drop falls, bounces and strikes again, Planet Attack's speed, low blows crouch, Kakusan's three
 different shots. Objects from a recording. The dash's charge commands now reach `npm run moves` too.
-Buu Breath's and Oyatsu Kosen's scenes are approximate (below).
-
 ### Buu
 
 Fixed: Matamol moves and goes behind, his throw lasts and springs off as the original's, Earth Stab

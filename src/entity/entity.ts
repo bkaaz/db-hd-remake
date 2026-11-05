@@ -84,7 +84,6 @@ holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean; stri
 export interface Opponent {
   x: number;
   throwable: boolean;
-  airborne: boolean;
   groundVx: number;
 }
 
@@ -270,6 +269,7 @@ export class Entity {
   private readonly ballG = new Graphics();
   /** The beam's band: added light too, but drawn under the objects at either end of it (owner, 2026-11-01). */
   private readonly bandG = new Graphics();
+  private sweep: { apex: [number, number]; x: number; half: number; floor: number } | null = null;
   private ballRadius = 0;
   /** `setPressed`. */
   private pressed = false;
@@ -579,9 +579,12 @@ export class Entity {
     return this.sm?.def.grab;
   }
 
-  /** Its speed on the ground this frame, world sprite px, shove apart: what `pressedSpeed` averages. */
+  /** Its speed this frame, world sprite px, shove apart: what `pressedSpeed` averages. */
   get groundVx(): number {
     if (!this.sm) return 0;
+    // knocked into the air, its speed is the shove's: the original's vx stays 0 (`1b`, recorded)
+    if (this.sm.def.launch) return 0;
+    if (this.airborne) return this.facing * this.vx;
     return this.facing * (this.approaching ?? groundSpeed(this.sm.def, this.stateFrames));
   }
 
@@ -601,6 +604,11 @@ export class Entity {
   }
 
   /** Draw a finale's band along the floor at world `y` ($0F:F1BC); null for none. */
+  /** Draw a wedge of light from `apex` to the floor at `x`, `half` sprite px either side; null for none (`FinaleDef.sweep`). */
+  showSweep(sweep: { apex: [number, number]; x: number; half: number; floor: number } | null): void {
+    this.sweep = sweep;
+  }
+
   showFloorBand(band: { y: number; size: number } | null): void {
     this.floorBand = band;
   }
@@ -863,6 +871,11 @@ export class Entity {
   lightHit(x: number, y: number): void {
     const kind = this.sm?.def.hitLight;
     if (kind) this.hitLight.land(kind, x, y);
+  }
+
+  /** Burning from now until it lands, as a blow's `burns` sets it: a scene's own let-go (`SeizeDef.release`). */
+  setBurning(): void {
+    if (this.def.attributes.burn.length > 0) this.burning = true;
   }
 
   /** Record that the blow it just landed was blocked: the `blocked` trigger. */
@@ -1451,7 +1464,8 @@ export class Entity {
     const { vx, vy, ...air } = applyAir({ ...this.air, vx: this.vx, vy: this.vy }, this.sm.def.air, this.stateFrames);
     [this.vx, this.vy, this.air] = [vx, vy, air];
     if (this.airborne) {
-      this.x += this.facing * this.vx * this.scale;
+      const flying = this.facing * this.vx;
+      this.x += (this.pressed && opponent ? pressedSpeed({ x: this.x, vx: flying }, { x: opponent.x, vx: opponent.groundVx }) : flying) * this.scale;
       this.y += this.vy * this.scale;
       this.vy = fall({ ...air, vx, vy: this.vy }, this.gravity);
       if (this.y >= this.groundY) {
@@ -1475,7 +1489,7 @@ export class Entity {
       }
       const own = this.groundVx;
       // a shove stands in for his own speed ($0D:C955), so only a body with none takes the average
-      const vx = this.pressed && this.shove === 0 && opponent && !opponent.airborne ? pressedSpeed({ x: this.x, vx: own }, { x: opponent.x, vx: opponent.groundVx }) : own;
+      const vx = this.pressed && this.shove === 0 && opponent ? pressedSpeed({ x: this.x, vx: own }, { x: opponent.x, vx: opponent.groundVx }) : own;
       this.x += (vx + this.facing * this.shove) * this.scale;
       const rush = this.sm.def.rush;
       if (rush && !this.arrived && rushing(rush, this.stateFrames) && opponentX !== null) {
@@ -1515,6 +1529,10 @@ export class Entity {
     this.bandG.clear();
     const thrown = this.thrownBall;
     if (thrown && thrown.radius > 0) this.ballG.circle(thrown.x, thrown.y, thrown.radius * this.scale).fill(BALL_COLOUR);
+    if (this.sweep) {
+      const { apex, x, half, floor } = this.sweep;
+      this.ballG.poly([apex[0], apex[1], x - half * this.scale, floor, x + half * this.scale, floor]).fill(BALL_COLOUR);
+    }
     // kind 4: 2 × size tall, 2 px over the floor (y 0xC6), across the screen and past its sides
     const fb = this.floorBand;
     const { ball: hitBall, pillar } = this.hitLight;

@@ -1282,16 +1282,15 @@
         0,
         0
       ],
-      "glow": 2,
       "transitions": [
         {
           "when": "animEnd",
-          "to": "charge"
+          "to": "charge_rising"
         }
       ]
     },
     "charge": {
-      "anim": "m0c_2",
+      "anim": "m0c_3",
       "vel": [
         0,
         0
@@ -1301,9 +1300,8 @@
         "turn": 13,
         "gain": 5
       },
-      "loopSound": "charge_19",
+      "loopSound": "sfx_46",
       "loopEvery": 8,
-      "glow": 0,
       "transitions": [
         {
           "when": [
@@ -1320,11 +1318,19 @@
       ]
     },
     "charge_end": {
-      "anim": "m0c_3",
+      "anim": "m0c_4",
       "vel": [
         0,
         0
       ],
+      "fires": {
+        "spawn": "mr_buu_8_0b",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly"
+      },
       "transitions": [
         {
           "when": "animEnd",
@@ -2561,8 +2567,8 @@
       },
       "transitions": [
         {
-          "when": "animEnd",
-          "to": "idle"
+          "when": "frames:40",
+          "to": "throw_laugh"
         }
       ],
       "damage": 0
@@ -2596,34 +2602,48 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "air": [
+        [
+          1,
+          {
+            "vx": 2,
+            "vy": -4,
+            "gravity": 0
+          }
+        ],
+        [
+          6,
+          {
+            "gravity": "own"
+          }
+        ]
+      ],
       "transitions": [
         {
           "when": "landed",
-          "to": "sender_a1_2"
+          "to": "sender_a1_3"
         },
         {
           "when": "animEnd",
           "to": "sender_a1_2"
         }
+      ]
+    },
+    "sender_a1_2": {
+      "anim": "ma1_2",
+      "turn": false,
+      "vel": [
+        2,
+        0
       ],
       "air": [
         [
           0,
           {
             "vx": 2,
-            "vy": -4,
             "gravity": "own"
           }
         ]
-      ],
-      "holdStep": 3
-    },
-    "sender_a1_2": {
-      "anim": "ma1_2",
-      "turn": false,
-      "vel": [
-        0,
-        0
       ],
       "transitions": [
         {
@@ -3309,33 +3329,75 @@
       "blockSound": "block_17"
     },
     "breath_scene": {
-      "anim": "mb1",
+      "anim": "mb0_2",
       "turn": false,
       "vel": [
         0,
         0
       ],
       "invulnerable": true,
-      "transitions": [
-        {
-          "when": "frames:450",
-          "to": "idle"
-        }
-      ],
+      "holdStep": 0,
       "seize": {
         "at": 0,
-        "anim": "m57",
+        "place": [
+          80,
+          0
+        ],
+        "anim": "m56",
         "release": {
-          "frame": 440,
-          "damage": 80,
+          "damage": 130,
           "reaction": "reel_down",
           "vel": [
             2.5,
             -7
-          ]
-        }
+          ],
+          "burns": true
+        },
+        "finale": {
+          "frame": 190,
+          "from": [
+            0,
+            -64
+          ],
+          "speed": 0,
+          "radius": 0,
+          "grow": 0,
+          "max": 0,
+          "white": 300,
+          "every": 4,
+          "fx": "burst_s",
+          "sweep": {
+            "each": 8,
+            "half": 28
+          },
+          "shakes": [
+            null,
+            {
+              "pattern": 3,
+              "frames": 0
+            },
+            {
+              "pattern": 3,
+              "frames": 0
+            }
+          ],
+          "sounds": {
+            "white": "explosion_2c"
+          }
+        },
+        "steps": [
+          {
+            "frame": 95,
+            "anim": "m57"
+          }
+        ]
       },
-      "holdStep": 9
+      "transitions": [
+        {
+          "when": "frames:95",
+          "to": "breath_scene_2"
+        }
+      ]
     },
     "oyatsu_scene": {
       "anim": "ma6",
@@ -3345,25 +3407,80 @@
         0
       ],
       "invulnerable": true,
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "oyatsu_scene_2"
-        }
-      ],
+      "holdStep": 1,
       "seize": {
         "at": 0,
+        "place": [
+          80,
+          0
+        ],
         "anim": "m5f",
+        "steps": [
+          {
+            "frame": 135,
+            "at": [
+              80,
+              -40
+            ],
+            "show": 97
+          },
+          {
+            "frame": 219,
+            "drift": [
+              -2,
+              -1
+            ]
+          },
+          {
+            "frame": 245,
+            "at": [
+              4,
+              -70
+            ],
+            "hide": true,
+            "drift": null
+          }
+        ],
+        "light": {
+          "from": 96,
+          "start": 9,
+          "top": 47,
+          "at": [
+            0,
+            -40
+          ]
+        },
+        "launch": {
+          "frame": 324,
+          "from": [
+            44,
+            -32
+          ],
+          "vel": [
+            2,
+            2
+          ]
+        },
+        "bounces": [
+          -8
+        ],
         "release": {
-          "frame": 212,
+          "frame": 369,
           "damage": 80,
           "reaction": "reel_down",
           "vel": [
             2.5,
             -7
-          ]
+          ],
+          "fx": "burst_m"
         }
-      }
+      },
+      "transitions": [
+        {
+          "when": "frames:177",
+          "to": "oyatsu_scene_2"
+        }
+      ]
     },
     "oyatsu_scene_2": {
       "anim": "ma6_2",
@@ -3373,14 +3490,22 @@
         0
       ],
       "invulnerable": true,
+      "holdStep": 0,
+      "sceneOf": "oyatsu_scene",
       "transitions": [
         {
-          "when": "frames:216",
-          "to": "idle"
+          "when": "frames:68",
+          "to": "oyatsu_scene_3"
         }
       ],
-      "sceneOf": "oyatsu_scene",
-      "holdStep": 1
+      "fires": {
+        "spawn": "mr_buu_8_16",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly"
+      }
     },
     "mightiness_bomber_2": {
       "anim": "mae_2",
@@ -3642,6 +3767,275 @@
         {
           "when": "frames:20",
           "to": "land"
+        }
+      ]
+    },
+    "throw_laugh": {
+      "anim": "m9c",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "sender_a1_3": {
+      "anim": "ma1_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "breath_scene_2": {
+      "anim": "mb1",
+      "startsAt": 1,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "holdStep": 1,
+      "sceneOf": "breath_scene",
+      "screen": [
+        [
+          2,
+          "dim"
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "frames:12",
+          "to": "breath_scene_3"
+        }
+      ]
+    },
+    "breath_scene_3": {
+      "anim": "mb1",
+      "startsAt": 3,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "holdStep": 2,
+      "sceneOf": "breath_scene",
+      "air": [
+        [
+          3,
+          {
+            "vx": 0,
+            "vy": -9.375,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "frames:22",
+          "to": "breath_scene_4"
+        }
+      ]
+    },
+    "breath_scene_4": {
+      "anim": "mb1",
+      "startsAt": 19,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "holdStep": 4,
+      "sceneOf": "breath_scene",
+      "airborne": true,
+      "air": [
+        [
+          19,
+          {
+            "vx": 0,
+            "vy": 9,
+            "gravity": 0
+          }
+        ],
+        [
+          20,
+          {
+            "vy": 0
+          }
+        ]
+      ],
+      "toCentre": {
+        "speed": 2,
+        "within": 4
+      },
+      "transitions": [
+        {
+          "when": "arrived",
+          "to": "breath_scene_5"
+        }
+      ]
+    },
+    "breath_scene_5": {
+      "anim": "mb1",
+      "startsAt": 23,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "holdStep": 9,
+      "sceneOf": "breath_scene",
+      "airborne": true,
+      "air": [
+        [
+          23,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "finaleDone",
+          "to": "breath_scene_6"
+        }
+      ]
+    },
+    "breath_scene_6": {
+      "anim": "mb1",
+      "startsAt": 91,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "holdStep": 10,
+      "screen": [
+        [
+          92,
+          "bright"
+        ]
+      ],
+      "air": [
+        [
+          91,
+          {
+            "vx": 0,
+            "vy": -4,
+            "gravity": "own"
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "oyatsu_scene_3": {
+      "anim": "ma6_2",
+      "startsAt": 1,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "sceneOf": "oyatsu_scene",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "oyatsu_scene_4"
+        }
+      ]
+    },
+    "oyatsu_scene_4": {
+      "anim": "m00",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "sceneOf": "oyatsu_scene",
+      "transitions": [
+        {
+          "when": "frames:29",
+          "to": "idle"
+        }
+      ]
+    },
+    "charge_rising": {
+      "anim": "m0c_2",
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "mr_buu_8_03",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "charge_first"
+        }
+      ]
+    },
+    "charge_first": {
+      "anim": "m0c_3",
+      "vel": [
+        0,
+        0
+      ],
+      "heal": {
+        "every": 2,
+        "turn": 13,
+        "gain": 5
+      },
+      "loopSound": "sfx_46",
+      "loopEvery": 8,
+      "fires": {
+        "spawn": "mr_buu_8_0a",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": [
+            "animEnd",
+            "held:attack",
+            "held:smash"
+          ],
+          "to": "charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "charge_end"
         }
       ]
     }

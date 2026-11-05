@@ -29,6 +29,13 @@ export interface FinaleDef {
   grow: number;
   max: number;
 
+  /**
+   * No ball: a wedge of light from `from` down to the floor, swept across the
+   * screen at `each` px a frame, `half` px either side at the floor (kind 6,
+   * Buu Breath's, $0F:F0DF), and then the band.
+   */
+  sweep?: { each: number; half: number };
+
   /** Frames the arena is held white before the blow ($20:8EB5: 60). */
   white: number;
   /** A burst somewhere on the screen every `every` frames of the white ($0F:F241). */
@@ -45,7 +52,7 @@ export interface FinaleDef {
   shakes: [ShakeDef | null, ShakeDef, ShakeDef];
 }
 
-export type FinalePhase = "flying" | "exploding" | "band" | "white" | "done";
+export type FinalePhase = "sweep" | "flying" | "exploding" | "band" | "white" | "done";
 
 export interface Finale {
   phase: FinalePhase;
@@ -66,11 +73,14 @@ export interface Finale {
  * its size is 0xC0 — the screen filled with light, and the white.
  */
 const BAND = { from: 2, grow: 16, full: 0xc0 };
+const SCREEN = 256;
 /** The original's frame counter wraps its `2c` every 64 frames ($0F:F2A0). */
 const TOLL = 64;
 
 /** The ball leaving the hands at (`x`, `y`) for (`tx`, `ty`), `scale` screen px a sprite px. */
 export function throwBall(def: FinaleDef, x: number, y: number, tx: number, ty: number, scale = 1): Finale {
+  // a sweep starts from the screen's left, which the caller gives as `tx`
+  if (def.sweep) return { phase: "sweep", x: tx, y, vx: def.sweep.each * scale, vy: x, radius: 0, left: Math.ceil(SCREEN / def.sweep.each), band: 0 };
   const dx = def.aim === "down" ? 0 : tx - x;
   const dy = ty - y;
   const d = Math.hypot(dx, dy) || 1;
@@ -92,6 +102,10 @@ export interface FinaleEvents {
 
 /** One frame over a floor at `floor`. */
 export function finaleStep(f: Finale, def: FinaleDef, floor: number): [Finale, FinaleEvents] {
+  if (f.phase === "sweep") {
+    if (f.left > 1) return [{ ...f, x: f.x + f.vx, left: f.left - 1 }, {}];
+    return [{ ...f, phase: "band", band: BAND.from, left: 1 }, {}];
+  }
   if (f.phase === "flying") {
     const y = f.y + f.vy;
     if (y < floor) return [{ ...f, x: f.x + f.vx, y }, {}];

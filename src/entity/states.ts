@@ -106,15 +106,24 @@ export interface SeizeDef {
   /** Where he is set down from the seizer; none leaves him where he stands. */
   place?: [number, number];
   anim: string;
+  /**
+   * What happens to him on which frames of the scene: another animation, a
+   * frame of his own shown, set down `at` from the seizer (x toward the
+   * seizer's facing, y from the floor), drifting by `drift` px a frame until
+   * the next says otherwise, hidden or shown — Oyatsu Kosen eating him.
+   */
+  steps?: { frame: number; anim?: string; show?: number; at?: [number, number]; drift?: [number, number] | null; hide?: boolean }[];
+  /** A circle of light on him: `start` px on frame `from`, 1 more a frame to `top`, then 1 less, at `at` from his feet (his `5f`, `$0F:A67F`). */
+  light?: { from: number; start: number; top: number; at: [number, number] };
   /** What he cries out as he is taken (Volleyball's `4d`). */
   cry?: string;
   /** From this frame he is not drawn, gone into the scene until he is let go. */
   hides?: number;
   /** Thrown up and away; none keeps him where he was set down. */
-  launch?: { frame: number; vel: [number, number] };
+  launch?: { frame: number; vel: [number, number]; from?: [number, number] };
   bounces?: number[];
   /** `frame`: when he is let go; with a `ball`, when it says. */
-  release: { frame?: number; damage: number; reaction: string; vel: [number, number] };
+  release: { frame?: number; damage: number; reaction: string; vel: [number, number]; burns?: boolean; fx?: string };
   /** What flies in his place; he comes out where it ends (`match/ball.ts`). */
   ball?: SceneBallDef;
   /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
@@ -1347,6 +1356,7 @@ export function effectsNamed(
     if (def.groundFx) names.add(def.groundFx);
     if (def.trail) names.add(def.trail.fx);
     if (def.seize?.bursts) names.add(def.seize.bursts.fx);
+    if (def.seize?.release.fx) names.add(def.seize.release.fx);
     if (def.seize?.finale) names.add(def.seize.finale.fx);
     if (def.seize?.ball) for (const fx of [def.seize.ball.fx, def.seize.ball.shadow, def.seize.ball.burst]) names.add(fx);
   }
