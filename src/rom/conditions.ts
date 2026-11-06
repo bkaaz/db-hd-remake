@@ -81,3 +81,14 @@ const FLAGS: [number, number, (c: CommandContext) => string][] = [
 export function describeConditions(bytes: readonly number[], context: CommandContext): string[] {
   return FLAGS.filter(([byte, bit]) => (bytes[byte] ?? 0) & bit).map(([, , text]) => text(context));
 }
+
+/** A command row's asks that decide how to play it: the move it comes out of and the throw's range (`moveCheck.ts`). */
+export function rowNeeds(bytes: readonly number[], context: CommandContext): { after?: number; done?: boolean; within?: number } {
+  const [, b1 = 0, b2 = 0] = bytes;
+  const needs: { after?: number; done?: boolean; within?: number } = {};
+  if (b1 & 0xa0) needs.after = context.listA[0];
+  if (b1 & 0x40 || b2 & 0x01) needs.after = context.listB[0];
+  if (b1 & 0x80 || b2 & 0x01) needs.done = true;
+  if (b2 & 0x40) needs.within = context.grab;
+  return needs;
+}

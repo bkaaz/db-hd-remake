@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { afterInput, byMove, commandTokens, differences, farCases, moveCases, readFight } from "./moveCheck";
+import { afterInput, byMove, closeCases, commandTokens, differences, farCases, moveCases, readFight } from "./moveCheck";
 
 describe("commandTokens", () => {
   it("reads a command's directions oldest first, the button on the newest", () => {
@@ -23,6 +23,22 @@ describe("commandTokens", () => {
   });
 });
 
+describe("closeCases", () => {
+  it("walks up first, jumps in for the air's, and leaves out what follows another move", () => {
+    const cases = closeCases(
+      [
+        { move: "b0", where: "ground", words: ["4002", "0100"] },
+        { move: "a8", where: "air", words: ["8002", "0400"] },
+        { move: "aa", where: "ground", words: ["4002"] },
+      ],
+      { aa: { after: "a8" } },
+    );
+    expect(cases.map((c) => c.name)).toEqual(["b0 close", "a8 air close"]);
+    expect(cases[0].does.slice(0, 3)).toEqual([20, "fwd 75", 8]);
+    expect(cases[1].does.slice(0, 4)).toEqual([10, "fwd 10", "up fwd 3", 14]);
+  });
+});
+
 describe("farCases", () => {
   it("plays a ground command without walking up, and leaves out the air's", () => {
     const cases = farCases([
@@ -32,6 +48,34 @@ describe("farCases", () => {
     expect(cases.map((c) => c.name)).toEqual(["ab far"]);
     expect(cases[0].does[0]).toBe(20);
     expect(cases[0].does).not.toContain("fwd 46");
+  });
+});
+
+describe("what a command needs", () => {
+  const throwRow = { move: "9d", where: "ground" as const, words: ["0148"] };
+  const parent = { move: "a8", where: "ground" as const, words: ["4002", "0100"] };
+  const followUp = { move: "aa", where: "ground" as const, words: ["4002", "0100", "0500", "0400"] };
+
+  it("walks inside a throw's range rather than stopping where others do", () => {
+    const [c] = moveCases([throwRow], { "9d": { within: 52 } });
+    expect(c.does[1]).toBe("fwd 66");
+  });
+
+  it("plays the move a command comes out of first, and starts its summary past it", () => {
+    const [, c] = moveCases([parent, followUp], { aa: { after: "a8" } });
+    expect(c.does.join(" ")).toContain("fwd 46 8 fwd 3 fwd attack 3 1 down");
+    expect(c.does.filter((t) => t === 1)).toHaveLength(1);
+    expect(c.before).toContain("a8");
+  });
+
+  it("waits out a blow the command asks to be over", () => {
+    const [, c] = moveCases([parent, followUp], { aa: { after: "a8", done: true } });
+    expect(c.does).toContain(30);
+  });
+
+  it("leaves both out from afar, where they would play something else", () => {
+    const cases = farCases([throwRow, parent, followUp], { "9d": { within: 52 }, aa: { after: "a8" } });
+    expect(cases.map((c) => c.name)).toEqual(["a8 far"]);
   });
 });
 

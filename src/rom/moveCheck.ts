@@ -58,13 +58,42 @@ const MOVING: MoveCase[] = [
   { name: "charge", does: [20, "attack smash 40", 60], before: ["00"] },
 ];
 
+/** What a command asks of where he stands or what he is playing, from its row: `conditions.ts`. */
+export interface CommandNeeds {
+  /** A move it comes out of (Rolling Tackle's Planet Attack), as commands name it. */
+  after?: string;
+  /** A move whose blow is over first: `after`, and wait. */
+  done?: boolean;
+  /** Within this many px of him, the throw's range. */
+  within?: number;
+}
+
+/** The px `fwd` walks a frame from where a round opens, 128 apart: enough to get inside a range, with room. */
+const WALK_PX = 1.25;
+const OPENING_GAP = 128;
+/** Frames for a move's blow to be over before a command that asks it, as Mesen's and ours both wait. */
+const BLOW_OVER = 30;
+
+function walkInside(within: number): (string | number)[] {
+  return [20, `fwd ${Math.ceil((OPENING_GAP - within + 6) / WALK_PX)}`, 8];
+}
+
+/** The pad up to the command itself: walking near, inside its range, or through the move it comes out of. */
+function leadUp(c: CommandDef, commands: CommandDef[], needs: Record<string, CommandNeeds>): { lead: (string | number)[]; before: string[] } {
+  const need = needs[c.move] ?? {};
+  const parent = need.after ? commands.find((p) => p.move === need.after) : undefined;
+  if (parent) return { lead: [...NEAR, ...commandTokens(parent.words), need.done ? BLOW_OVER : 1], before: [...CROUCH, parent.move] };
+  if (need.within !== undefined && need.within < OPENING_GAP - 46 * WALK_PX) return { lead: walkInside(need.within), before: CROUCH };
+  return { lead: NEAR, before: CROUCH };
+}
+
 /** Every command near the opponent, then the four buttons near and far, crouching and in the air; then how he gets about. */
-export function moveCases(commands: CommandDef[]): MoveCase[] {
-  const cases: MoveCase[] = commands.map((c) =>
-    c.where === "air"
-      ? { name: `${c.move} air`, does: [...NEAR, "up fwd 3", 14, ...commandTokens(c.words), 300], before: JUMP }
-      : { name: c.move, does: [...NEAR, ...commandTokens(c.words), 300], before: CROUCH },
-  );
+export function moveCases(commands: CommandDef[], needs: Record<string, CommandNeeds> = {}): MoveCase[] {
+  const cases: MoveCase[] = commands.map((c) => {
+    if (c.where === "air") return { name: `${c.move} air`, does: [...NEAR, "up fwd 3", 14, ...commandTokens(c.words), 300], before: JUMP };
+    const { lead, before } = leadUp(c, commands, needs);
+    return { name: c.move, does: [...lead, ...commandTokens(c.words), 300], before };
+  });
   for (const [key, token] of Object.entries(NORMALS)) {
     cases.push({ name: `${key} close`, does: [20, "fwd 75", 8, `${token} 3`, 200], before: WALK });
     cases.push({ name: `${key} near`, does: [...NEAR, `${token} 3`, 200], before: WALK });
@@ -75,14 +104,26 @@ export function moveCases(commands: CommandDef[]): MoveCase[] {
   return [...cases, ...MOVING];
 }
 
+/** His commands from arm's length: a blow that misses from `moveCases`' distance never shows what it opens, as Galactic Juggle's and Slashdown Kick's. */
+export function closeCases(commands: CommandDef[], needs: Record<string, CommandNeeds> = {}): MoveCase[] {
+  return commands
+    .filter((c) => needs[c.move]?.after === undefined)
+    .map((c) =>
+      c.where === "air"
+        ? { name: `${c.move} air close`, does: [10, "fwd 10", "up fwd 3", 14, ...commandTokens(c.words), 500], before: JUMP }
+        : { name: `${c.move} close`, does: [20, "fwd 75", 8, ...commandTokens(c.words), 500], before: CROUCH },
+    );
+}
+
 /**
  * Each ground command from where the round starts, not walked up to: what a shot
  * does in flight only shows with room to fly. Apart from `moveCases`, whose
  * counts are the ones a fighter is judged by, as it doubles the run.
  */
-export function farCases(commands: CommandDef[]): MoveCase[] {
+export function farCases(commands: CommandDef[], needs: Record<string, CommandNeeds> = {}): MoveCase[] {
   return commands
-    .filter((c) => c.where !== "air")
+    // from afar one that asks a range or another move would only play something else
+    .filter((c) => c.where !== "air" && needs[c.move]?.after === undefined && needs[c.move]?.within === undefined)
     .map((c) => ({ name: `${c.move} far`, does: [20, ...commandTokens(c.words), 300], before: CROUCH }));
 }
 

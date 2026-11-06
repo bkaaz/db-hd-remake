@@ -7,6 +7,7 @@
  *   npm run moves -- vegetto --ours     only our game, on the server already running
  *   npm run moves -- vegetto --only aa,9e  prints the comparison instead of writing it
  *   npm run moves -- vegetto --far      his commands from where the round starts: a shot's flight
+ *   npm run moves -- vegetto --close    his commands from arm's length: what a blow that lands opens
  *   npm run moves -- vegetto --report   the comparison again, nothing played
  *   npm run moves -- vegetto --objects  his objects recorded, into logs/objects-vegetto.*
  *
@@ -20,8 +21,11 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 import type { CommandsFile } from "../src/input/command.ts";
+import { afterInput, byMove, closeCases, differences, farCases, moveCases, readFight, type CommandNeeds, type MoveCase, type Stretch } from "../src/rom/moveCheck.ts";
 import { ROM_PATH } from "../src/rom/cartridge.ts";
-import { afterInput, byMove, differences, farCases, moveCases, readFight, type MoveCase, type Stretch } from "../src/rom/moveCheck.ts";
+import { readCommands } from "../src/rom/commands.ts";
+import { commandContext, rowNeeds } from "../src/rom/conditions.ts";
+import { fighterNamed } from "../src/rom/roster.ts";
 import { runTable, type Scenario } from "../src/rom/run.ts";
 
 const MESEN = process.env.MESEN ?? `${homedir()}/Downloads/Mesen.app/Contents/MacOS/Mesen`;
@@ -36,7 +40,17 @@ const dir = `logs/moves/${fighter}`;
 mkdirSync(dir, { recursive: true });
 
 const commands = (JSON.parse(readFileSync(`data/entities/${fighter}/commands.json`, "utf8")) as CommandsFile).commands;
-const cases = (flags.includes("--far") ? farCases(commands) : moveCases(commands)).filter((c) => !only || only.some((o) => c.name === o || c.name.startsWith(`${o} `)));
+const rom = new Uint8Array(readFileSync(ROM_PATH));
+const { character } = fighterNamed(rom, fighter);
+const context = commandContext(rom, character);
+const hex = (n: number) => n.toString(16).padStart(2, "0");
+const needs: Record<string, CommandNeeds> = Object.fromEntries(
+  readCommands(rom, character).map((c) => {
+    const { after, ...rest } = rowNeeds(c.conditions, context);
+    return [hex(c.move), { ...rest, ...(after !== undefined && { after: hex(after) }) }];
+  }),
+);
+const cases = (flags.includes("--far") ? farCases(commands, needs) : flags.includes("--close") ? closeCases(commands, needs) : moveCases(commands, needs)).filter((c) => !only || only.some((o) => c.name === o || c.name.startsWith(`${o} `)));
 const fileOf = (c: MoveCase) => c.name.replace(/ /g, "-");
 
 /** His face from Goku's at the roster's corner, for player one's cursor: `back` is right on this screen. */
