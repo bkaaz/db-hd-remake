@@ -7,7 +7,7 @@ const FIGHTERS = ["vegetto", "piccolo", "freeza", "cell", "mr_buu", "buu", "gote
 
 /** Drafted with the same explosion for all, and not put right yet: `docs/bugs.md`. Delete as each is. */
 const NOT_YET = new Set([
-  "freeza_6_14", "freeza_6_15",
+  "freeza_6_15",
   "cell_7_03", "cell_a_21", "cell_a_22", "cell_a_23",
   "buu_a_20", "buu_9_08",
 ]);

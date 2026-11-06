@@ -160,8 +160,12 @@ export class Fighters {
     // the screen's middle, as the original's $0571 + $80
     if (this.lastCamera) for (const fighter of [this.player, this.opponent]) fighter?.centreOn(this.lastCamera.x + VIEW.width / 2);
     if (this.opponent) {
-      this.throws.update(this.player, this.opponent);
-      this.throws.update(this.opponent, this.player);
+      const around = {
+        effect: (name: string, x: number, y: number) => this.impact.effects.spawn(name, x, y),
+        flash: (frames: number) => (this.flash = Math.max(this.flash, frames)),
+      };
+      this.throws.update(this.player, this.opponent, around);
+      this.throws.update(this.opponent, this.player, around);
       // one body's state lets the other's held script go on ($0F:A545, ADR 0057)
       if (this.player.freesNow) this.opponent.free();
       if (this.opponent.freesNow) this.player.free();

@@ -13,6 +13,13 @@ After any change to a reader or the cutter: `npm run rom -- export --all`, then
 `npm run rom -- states --all`, then `git diff data/`. A diff on a fighter already
 approved names what to try again.
 
+## Every fighter
+
+Two changes of Piccolo's pass reach all of them, not yet judged by the owner:
+
+- A scene opened by a shot no longer pauses its thrower (`$0F:C2FC`, commit `9a7a253`): Oyatsu Kosen, Buu Breath, Volleyball and Jubaku Ha move by 8 frames.
+- Every move a button or a command begins brings the mover in front (commit `65c6057`; `rom.md` on the draw order).
+
 ## Gotenks
 
 Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug&p2=gotenks`.
@@ -68,38 +75,27 @@ Read move by move against the original (`docs/rom.md`, Piccolo). `?scene=debug&p
 | `a1` sender_a1 | ground: ↓ ↙ ← X | — |
 | `9f` sender_9f | ground: ↓ ↘ → X | — |
 
-Intro and win: his palette and held pose; the win from the code, not recorded `?`.
-
 ## Freeza
 
-Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug&p2=freeza`.
+Read move by move against the original (`docs/rom.md`, Freeza). `?scene=debug&p1=freeza&p2=goku&hp1=80`.
 
 | move | input | left out |
 |---|---|---|
 | `a4` double_leg_kick | ground: R + B | — |
 | `9d` throw | ground: → + X | — |
 | `a7` ground_wave | ground: ← ↙ ↓ A | — |
-| `a0` sender_a0 | ground: → ← → X | what its handler decides on a button held or a level `?` |
-| `a1` sender_a1 | ground: ↓ ↙ ← X | — |
+| `a0` sender_a0 | ground: → ← → X | not read: the Senders are out, by the owner's word |
+| `a1` sender_a1 | ground: ↓ ↙ ← X | not read: the Senders are out |
+| `9f` sender_9f | ground: ↓ ↘ → X | not read: the Senders are out |
 | `a9` freeza_slash | ground: ↓ ↙ ← Y | — |
-| `9f` sender_9f | ground: ↓ ↘ → X | what its handler decides on a button held or a level `?` |
-| `af` flaming_headbutt | ground: ↓ ↙ ← B + Y | maf_3's blow, a reaction no type copies; what its handler decides on a button held or a level `?` |
 | `a8` kienzan | ground: → ↓ ↘ A | — |
 | `a5` kishin_ha | ground: → ↓ ↘ Y | — |
 | `ab` death_ball | ground: ← ↙ ↓ ↘ → A | — |
-| `aa` explosive_grab | ground: → ↘ ↓ ↙ ← Y | — |
+| `aa` explosive_grab | ground: → ↘ ↓ ↙ ← Y, close | — |
 | `ac` jubaku_ha | ground: ↓ ↙ → A | — |
-| `ad` jasenkoh | air: → ↓ B | — |
-| `a6` evil_energy | air: ↓ ↙ ← B | — |
-| `92` attack_y | his own normal | — |
-| `93` attack_b | his own normal | — |
-| `95` crouch_b | his own normal | what its handler decides on a button held or a level `?` |
-| `9e` move_9e | from another move | — |
-| `ae` move_ae | from another move | — |
+| `92`, `93`, `95` | Y far, B far, ↓ + B | compared by the report alone |
 
-Objects, no recording yet (12): frames from the table, 4 frames each `?`, colours `?`: `freeza_6_07`, `freeza_6_08`, `freeza_6_0b`, `freeza_6_12`, `freeza_6_06`, `freeza_6_14`, `freeza_6_05`, `freeza_6_0a`, `freeza_6_11`, `freeza_6_0d`, `freeza_6_0e`, `freeza_6_13`.
-Objects with nothing to draw from their table, so left out: `06/15`.
-Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_start`, `dash_back`, `dash_fwd`, `down_bounce`, `down_fall`, `down_lie`, `high_bounce`, `high_fall`, `high_lie`, `intro`, `reel_down`, `reel_high`, `win`, `win_2`, `win_air`.
+Charge and win: from the code, not looked at against a picture `?`; his own reels the same.
 
 ## Cell
 

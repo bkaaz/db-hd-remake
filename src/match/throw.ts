@@ -27,12 +27,18 @@ export function heldAt(at: readonly [number, number][] | undefined, step: number
   return { x: by.x + by.facing * dx * by.scale, y: by.y + dy * by.scale };
 }
 
+/** What a throw's launch may ask of the world around the pair. */
+export interface ThrowWorld {
+  effect(name: string, x: number, y: number): unknown;
+  flash(frames: number): void;
+}
+
 export class Throws {
   /** By thrower: whom he holds, in which state, and whether he has let go. */
   private readonly holding = new Map<Entity, { held: Entity; state: string; launched: boolean; shocks: boolean }>();
 
   /** After both bodies moved, before blows: the throw `thrower` is making of `other`, if any. */
-  update(thrower: Entity, other: Entity): void {
+  update(thrower: Entity, other: Entity, world?: ThrowWorld): void {
     const grab = thrower.grab;
     const hold = this.holding.get(thrower);
     // handed on: the next state's grab keeps him, with no idle between (Piccolo's counters, then his throw)
@@ -57,7 +63,7 @@ export class Throws {
       // he turns to face the thrower ($20:8212)
       other.facing = thrower.facing === 1 ? -1 : 1;
       this.holding.set(thrower, { held: other, state: thrower.state, launched: false, shocks: !!grab.shocks });
-      return this.update(thrower, other);
+      return this.update(thrower, other, world);
     }
     if (hold.launched) return;
     if (grab.shocks) other.shock(true);
@@ -83,6 +89,9 @@ export class Throws {
       const from = grab.flips && heldAt(grab.at[other.name], thrower.animStep, { ...thrower.placement, y: thrower.y });
       if (from) [other.x, other.y] = [from.x, from.y];
       if (grab.launch.stillCamera) other.keepCamera();
+      const { scale, facing } = thrower.placement;
+      for (const fx of grab.launch.fx ?? []) world?.effect(fx.name, thrower.x + facing * fx.at[0] * scale, thrower.y + fx.at[1] * scale);
+      if (grab.launch.flash) world?.flash(grab.launch.flash);
       other.release(grab.launch.reaction, grab.launch.vel, grab.launch.quiet);
       hold.launched = true;
     }

@@ -20,6 +20,22 @@ because a number would only need translating back.
 
 ---
 
+## Flaming Headbutt does not dip as he leans back
+
+*Cosmetic, Freeza.* `$10:BBCB` and `$10:BBED` move his drawing 2 px a frame down from frame 41 and up from 46 (field `0x10`, `$10:BB55`), and nothing resets it before the script's end. Ours has no drawing offset by frame; the logs' `sy` do not show this field, so it was not measured.
+
+## Kishin Ha's spark sits higher than the original's
+
+*Cosmetic, Freeza.* It lands a frame early (a blow's box, below), on the object's first box where the original's is on its second; the spark is about 10 px over the original's. Not looked into further.
+
+## The Kienzan looks at the opponent's height on its own frames
+
+*Cosmetic, Freeza.* `$0F:D07D` asks when the game's count `$74 & 7` is 0, so its first look falls anywhere in its first 8 frames; ours fixes it at 9.
+
+## Mr. Buu's Oyatsu Kosen has errors and was never checked
+
+*Annoying `?`, Mr. Buu (owner, 2026-11-06).* Oyatsu Kosen, hold ↓ for 3 seconds, then ↑ + B. Which errors he did not say: ask him before fixing. For later.
+
 ## Gotenks's ghosts look at the opponent's height every frame
 
 *Cosmetic `?`, Gotenks, approved.* They share Yuudoh's code (`$0F:CC45`), which only looks every 4th frame, and so overshoot a little; ours settle sooner. `aim.every` in `gotenks_ghost` would do it. Not played against the original.
@@ -38,7 +54,7 @@ because a number would only need translating back.
 
 ## The camera rises where the original's stays
 
-*Cosmetic `?`, a few moves.* `$0F:A72B`, `$0F:EC84`, `$10:B27F`, `$10:B804`, `$20:9BD4` and `$20:D2E3` set field `0x27` bit 0, which stops the camera following vertically; ours rises there. Piccolo's throw has it (`stillCamera`). Which moves they are is not read.
+*Cosmetic `?`, a few moves.* `$0F:A72B`, `$0F:EC84`, `$20:9BD4` and `$20:D2E3` set field `0x27` bit 0, which stops the camera following vertically; ours rises there. Piccolo's throw has it (`stillCamera`). Which moves they are is not read.
 
 ## Vegetto's Galactic Juggle is a parry too
 
@@ -69,12 +85,6 @@ which our reader cannot follow `?`. From the code: no evening state of the origi
 
 *Annoying, a few.* A handler's `$0D:D8D5` puts the mover behind. Left without `behind`: Mr. Buu's throw (`behindAt`, as Piccolo's), and by hand Goku's Saiyan Meteor and Vegeta's Galactic Gunfire. The last may be the entry below on
 the body he throws `?`. `npm run rom -- port <move>` says "goes behind the opponent".
-
-## Freeza's throw has no held animation on its first move
-
-*Cosmetic `?`, Freeza.* His `9d` hands over to `9e`, and only `m30_freeza_9e`
-exists, so through `m9d` the body keeps the pose it was caught in; `Throws` names
-the held animation by the thrower's. Not tried in a fight.
 
 ## A drafted run does not stop by the opponent, and flies at the wrong speed
 
@@ -356,12 +366,10 @@ nothing — they disarm themselves every frame.
 
 - **Objects that may outlive the original's.** `mr_buu_8_06` (Mr. Buu's X) is up 21 frames against the
   recording's 15, `cell_7_07` 42 against 29. Both end with the thrower's move as their code says; any
-  timer of their own is not read. `freeza_6_0e`, `cell_7_02`, `cell_a_22` and `cell_a_23` are in the same
+  timer of their own is not read. `cell_7_02`, `cell_a_22` and `cell_a_23` are in the same
   position, ending with the move alone.
 - **Buu's Energy Sphere objects end with the move.** `buu_9_15`, `buu_9_12` and `buu_9_0e` live as long as
   the sphere `9/17`–`19` in the original (`$0F:DFB6`), which is not ported.
-- **Freeza's `aa`: `burst_m` comes out and the log never shows it gone** (`logs/moves/freeza/aa.ours.txt`).
-  Not looked into; the run may simply end first.
 
 - **14 objects leave the wrong thing when they land.** The draft gave every object the same small
   explosion; `$2A:8E31` says most of these stay and leave a melee blow's spark, and some explode bigger.
@@ -375,8 +383,8 @@ nothing — they disarm themselves every frame.
   `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
 - **Some objects fly unseen: their sheets hold no pixel.** They still fly and strike. Cell's `cell_a_21`,
   `_a_22`, `_a_23` and Buu's `buu_a_20` take tiles from the wrong place, as Kakusan's did: type `a` draws
-  from the shared `0x30`/`0x31` (`npm run rom -- vram logs/objects-<name>.bin`). `buu_9_06`, `buu_9_08`
-  and `freeza_6_15` are blank too, cause not read; they may be drawn effects, as Energy Field's `mr_buu_8_12` is (`rom.md`), which stays blank on purpose. The list is `DRAWS_NOTHING` in
+  from the shared `0x30`/`0x31` (`npm run rom -- vram logs/objects-<name>.bin`). `buu_9_06`
+  and `buu_9_08` are blank too, cause not read; they may be drawn effects, as Energy Field's `mr_buu_8_12` is (`rom.md`), which stays blank on purpose. The list is `DRAWS_NOTHING` in
   `src/rom/objectTiles.test.ts`. A spawn already exported is kept, so `animations.json` has to go first.
 - **Kakusan's three land too close together from near.** The original's come 14 and 23 frames apart and
   the opponent goes 90 px over its reel; ours land one straight after the other's pause and he goes 39 px
@@ -388,10 +396,10 @@ nothing — they disarm themselves every frame.
 - **Mightiness Bomber: a ball whose thrower is hit while it charges vanishes at once.** Not compared with the original: it may shrink. After a hit the original also has more `a/17` / `a/18` slots, 14 and 20 frames on; ours shows one burst. Not read.
 - **Cell's `cell_7_03` should set the defender burning**, as `objectHit` reads it; ours does not. It is on `NOT_YET` for its explosion too.
 - **The small and middle Kamehameha and Final Flash may whiten the screen and should not `?`.** `kame_s`, `kame_m`, `vegeta_final_flash_s` and `_m` have `hitFlash`, but they become `a/02` and `a/17`, and only `a/18` asks for the white (`$0F:E234`). Measured on Mightiness Bomber's three levels: only the largest whitens. Not measured on the Kamehameha itself; the owner has approved it as it is.
-- **Three 3D moves may stop short from afar, as Mr. Buu's Flying Bomber did.** Their handlers hold the code that measures the distance (`rom.md`), but ours walk at a fixed speed: Freeza's Double Leg Kick (`a4`, `$10:B69C`), Cell's Giga Shoulder (`a2`, `$10:C552`), Buu's Matamol (`b6`, `$10:D978`). Not played; `port` does not report it. `npm run moves -- <fighter> --far` shows each.
+- **Two 3D moves may stop short from afar, as Mr. Buu's Flying Bomber did.** Their handlers hold the code that measures the distance (`rom.md`), but ours walk at a fixed speed: Cell's Giga Shoulder (`a2`, `$10:C552`), Buu's Matamol (`b6`, `$10:D978`). Not played; `port` does not report it. `npm run moves -- <fighter> --far` shows each.
 - **Sender `a1` and Planet Attack from afar are off by the report**, not looked into (`npm run moves -- mr_buu --far`).
 - **Kakusan's second shot lands 5 frames after the pause in the original, at once in ours.** Near: the opponent reels 72 frames and 90 px there, 50 and 39 here; from afar they agree. The distance stays 22 px through those 5 frames, and fields `0x26`, `0x7A` and `0x7B` of the defender do not explain it (recorded). Gotenks's Renzoku looks the same `?`.
-- **Gohan's intro shows `run0` … by day on an evening or night arena**, as Vegetto's did: the original plays intros on their own screen, by day, so those records have no other lighting. `relitRun` in `src/rom/arena.ts` could work them out. His `glow` marks follow the lighting since Vegetto's fix.
+- **Gohan's and Freeza's intros show `run0` … by day on an evening or night arena**, as Vegetto's did: the original plays intros on their own screen, by day, so those records have no other lighting. `relitRun` in `src/rom/arena.ts` could work them out. His `glow` marks follow the lighting since Vegetto's fix.
 - **A blow after a connection lands 3 frames early:** Elbow Dash's second, 14 frames after the first where the original's is 17. The state's first frame runs out inside the hit pause, and the blow's box is early too (next entry). Other follow-ups likely share it `?`.
 - **Low B from close: the two bodies part the other way.** The blow lands 3 frames early (below), so Vegetto is 4 px further along when Goku falls on him, and turns round where the original's stands up.
 - **A blow's box is out a frame early in ours, and gone a frame early.** A state's step has advanced by the time `landBlow` looks: Flying Bomber's box, the original's script frames 50 to 57, is 49 to 56 here. A blow reached only on its last frame misses: Flying Bomber from about 168 px, where the original just lands. For every fighter; not changed, it would move every blow by a frame.

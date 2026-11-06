@@ -10,14 +10,17 @@
       ],
       "type": "heavy",
       "damage": 32,
-      "burstsInto": "burst_s",
-      "hitSound": "burst_0a",
-      "blockSound": "burst_0a",
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "endsWithMove": [
         "a5",
         "cb"
       ],
-      "lasts": 12
+      "lasts": 12,
+      "outlivesHit": true,
+      "throughPause": true
     }
-  }
+  },
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark"
 }

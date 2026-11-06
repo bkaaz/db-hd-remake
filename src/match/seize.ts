@@ -72,6 +72,8 @@ interface Seizure {
   elapsed: number;
   /** Frames of a spark's pause still to wait. */
   paused?: number;
+  /** A scene its seizer plays no part in: its own clock, whatever he does (`SeizeDef.free`). */
+  free?: SeizeDef;
 }
 
 /** Where a let-go's explosion goes, over his feet: Oyatsu Kosen's `a/17` at y `C0`, recorded. */
@@ -81,6 +83,7 @@ const BURST_ABOVE = 8;
 export function lightOn(light: NonNullable<SeizeDef["light"]>, frame: number, held: { x: number; y: number }, scale: number): { x: number; y: number; radius: number } | null {
   const t = frame - light.from;
   if (t < 0) return null;
+  if (light.flickers) return { x: held.x + light.at[0] * scale, y: held.y + light.at[1] * scale, radius: light.start + (t & 1) };
   const rising = light.top - light.start;
   const radius = t <= rising ? light.start + t : light.top - (t - rising);
   return radius > 0 ? { x: held.x + light.at[0] * scale, y: held.y + light.at[1] * scale, radius } : null;
@@ -94,8 +97,9 @@ export class Seizures {
 
   /** After both bodies moved: the scene `seizer` is playing on `other`, if any. */
   update(seizer: Entity, other: Entity, world: SeizeWorld): void {
-    const def = seizer.seize;
     const s = this.seizing.get(seizer);
+    const opened = s ? null : seizer.takeFreeScene();
+    const def = s?.free ?? opened ?? seizer.seize;
     // a spark's pause holds the scene with the pair: nothing on its frame happens twice ($30B2)
     if (s?.paused && def) {
       s.paused--;
@@ -103,7 +107,8 @@ export class Seizures {
     }
     // the state's count is 1 on the frame it is entered: the move's frame is one less
     let frame = seizer.stateFrame - 1;
-    if (s) s.elapsed = frame = seizer.state === s.state ? frame : s.elapsed + 1;
+    if (s) s.elapsed = frame = !s.free && seizer.state === s.state ? frame : s.elapsed + 1;
+    if (opened) frame = opened.at;
     if (s && !def) {
       // cut short: let go where he is, as a throw cut short does
       if (s.phase !== "done") {
@@ -129,7 +134,7 @@ export class Seizures {
       }
       other.facing = seizer.facing === 1 ? -1 : 1;
       if (def.cry) other.sound(def.cry);
-      this.seizing.set(seizer, { held: other, state: seizer.state, phase: "held", vx: 0, flight: { y: 0, vy: 0, bounces: [] }, landings: 0, elapsed: frame, barsAt: new Map() });
+      this.seizing.set(seizer, { held: other, state: seizer.state, phase: "held", vx: 0, flight: { y: 0, vy: 0, bounces: [] }, landings: 0, elapsed: frame, barsAt: new Map(), ...(opened && { free: opened }) });
       return;
     }
     const { held } = s;
@@ -165,7 +170,7 @@ export class Seizures {
       seizer.showThrownBall(radius > 0 ? { x: s.domeX ?? held.x, y: held.floor, radius } : null);
     }
     if (def.bars) seizer.showBars(this.barsOn(s, def.bars, seizer, frame));
-    if (def.light) seizer.showThrownBall(lightOn(def.light, frame, held, scale));
+    if (def.light) seizer.showThrownBall(s.phase === "done" ? null : lightOn(def.light, frame, held, scale));
     if (def.ball && s.phase !== "done") {
       s.ball ??= new BallScene(def.ball, seizer, held, world);
       s.ball.update(frame);
@@ -241,6 +246,10 @@ export class Seizures {
     }
     const over = s.ball ? s.ball.done : frame >= (def.release.frame ?? Infinity);
     if (s.phase !== "done" && over) this.letGo(s, seizer, def.release, world);
+    if (s.free && s.phase === "done") {
+      seizer.showThrownBall(null);
+      this.seizing.delete(seizer);
+    }
   }
 
   private playStep(s: Seizure, seizer: Entity, step: NonNullable<SeizeDef["steps"]>[number]): void {
@@ -284,7 +293,8 @@ export class Seizures {
     held.hurtBy(release.damage);
     held.release(release.reaction, release.vel);
     if (release.burns) held.setBurning();
-    if (release.fx) world.effect(release.fx, held.x, held.y - BURST_ABOVE * held.scaleOf);
+    if (release.flash) world.flash(release.flash);
+    if (release.fx) world.effect(release.fx, held.x, held.y - (release.fxAbove ?? BURST_ABOVE) * held.scaleOf);
     s.phase = "done";
   }
 }

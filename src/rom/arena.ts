@@ -66,11 +66,15 @@ export function glowPalettes(rom: Uint8Array, t: FighterTables): Record<string, 
 }
 
 /** Palette records a fighter's handler puts him in, as sheets of their own: Gohan's `ae` ($20:B417, $20:B421) and `3c` ($20:A4AA). */
-const RUNS: Record<number, number[]> = { 3: [0x139, 0x135, 0x137, 0x158, 0x160, 0x168], 2: [0x140, 0x141, 0x142, 0x143, 0x144, 0x117] };
+const RUNS: Record<number, number[]> = { 3: [0x139, 0x135, 0x137, 0x158, 0x160, 0x168], 2: [0x140, 0x141, 0x142, 0x143, 0x144, 0x117], 6: [0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5] };
+
+/** Named records beside them: Freeza's Flaming Headbutt, by frame, player two's own in a mirror ($10:BC84). */
+const NAMED_RUNS: Record<number, Record<string, number>> = { 6: { flame0: 0x126, flame1: 0x127, flame0_alt: 0x128, flame1_alt: 0x129 } };
 
 /** `run0` … by the record's place in `RUNS`, keyed by character. */
 export function runPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
-  return Object.fromEntries((RUNS[t.character] ?? []).map((id, i) => [`run${i}`, paletteRecord(rom, id).at]));
+  const named = Object.entries(NAMED_RUNS[t.character] ?? {}).map(([name, id]) => [name, paletteRecord(rom, id).at]);
+  return Object.fromEntries([...(RUNS[t.character] ?? []).map((id, i) => [`run${i}`, paletteRecord(rom, id).at]), ...named]);
 }
 
 /** How far a move's palette for the screen before the fight is from his own: Vegetto's `3c` is his black hair ($20:D912), Piccolo's his bare arms ($20:D9CF), and his `3e` too. */

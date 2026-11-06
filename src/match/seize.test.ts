@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Entity } from "../entity/entity";
 import type { SeizeDef } from "../entity/states";
-import { flightStep, Seizures, type Flight, type SeizeWorld } from "./seize";
+import { flightStep, lightOn, Seizures, type Flight, type SeizeWorld } from "./seize";
 
 /** Every frame of a flight until it lies still, as [y, landed]. */
 function fly(start: Flight, gravity: number): { ys: number[]; landings: number } {
@@ -43,7 +43,7 @@ describe("flightStep", () => {
 
 describe("Seizures, a scene that hides him", () => {
   const def: SeizeDef = { at: 0, anim: "held", cry: "voice_hurt", hides: 2, release: { frame: 4, damage: 120, reaction: "reel_down", vel: [2.5, -7] } };
-  const seizer = () => ({ seize: def, state: "scene", stateFrame: 1, x: 100, y: 200, facing: 1, scaleOf: 1 }) as unknown as Entity & { stateFrame: number };
+  const seizer = () => ({ takeFreeScene: () => null, seize: def, state: "scene", stateFrame: 1, x: 100, y: 200, facing: 1, scaleOf: 1 }) as unknown as Entity & { stateFrame: number };
   const held = () =>
     ({ x: 300, y: 200, facing: -1, scaleOf: 1, floor: 200, hold: vi.fn(), hide: vi.fn(), sound: vi.fn(), hurtBy: vi.fn(), release: vi.fn() }) as unknown as Entity;
   const world = {} as SeizeWorld;
@@ -88,7 +88,7 @@ describe("Seizures, a scene that throws him and takes him back", () => {
     ],
     release: { frame: 50, damage: 0, reaction: "hurt", vel: [0, 0] },
   };
-  const seizer = { seize: def, state: "scene", stateFrame: 1, x: 100, y: 150, facing: 1, scaleOf: 1, showBars: vi.fn(), showThrownBall: vi.fn() } as unknown as Entity & { stateFrame: number };
+  const seizer = { takeFreeScene: () => null, seize: def, state: "scene", stateFrame: 1, x: 100, y: 150, facing: 1, scaleOf: 1, showBars: vi.fn(), showThrownBall: vi.fn() } as unknown as Entity & { stateFrame: number };
   const held = () => ({ x: 300, y: 200, facing: -1, scaleOf: 1, floor: 200, ownGravity: 0.5, hold: vi.fn(), hide: vi.fn(), sound: vi.fn(), hurtBy: vi.fn(), release: vi.fn() }) as unknown as Entity;
 
   /** The opponent as frame `until` of the scene leaves him. */
@@ -126,7 +126,7 @@ describe("Seizures, a scene's blows", () => {
     release: { frame: 50, damage: 0, reaction: "hurt", vel: [0, 0] },
   };
   function setup() {
-    const seizer = { seize: def, state: "scene", stateFrame: 1, x: 100, y: 200, facing: 1, scaleOf: 1, sound: vi.fn(), freeze: vi.fn(), showBars: vi.fn(), showThrownBall: vi.fn() };
+    const seizer = { takeFreeScene: () => null, seize: def, state: "scene", stateFrame: 1, x: 100, y: 200, facing: 1, scaleOf: 1, sound: vi.fn(), freeze: vi.fn(), showBars: vi.fn(), showThrownBall: vi.fn() };
     const held = { x: 300, y: 200, facing: -1, scaleOf: 1, floor: 200, hold: vi.fn(), holdStill: vi.fn(), holdToScript: vi.fn(), hide: vi.fn(), sound: vi.fn(), freeze: vi.fn(), hurtBy: vi.fn(), release: vi.fn() };
     const effect = vi.fn();
     return { seizer, held, effect, seizures: new Seizures(), world: { effect, screen: vi.fn() } as unknown as SeizeWorld };
@@ -160,5 +160,57 @@ describe("Seizures, a scene's blows", () => {
     expect(held.holdToScript).toHaveBeenCalledTimes(1);
     expect(held.sound).toHaveBeenCalledWith("voice_hurt");
     expect(seizer.sound).toHaveBeenCalledWith("boom");
+  });
+});
+
+describe("a scene its seizer plays no part in", () => {
+  const scene: SeizeDef = { at: 0, free: true, anim: "m37", light: { from: 0, start: 56, top: 57, at: [0, -48], flickers: true }, release: { frame: 3, damage: 80, reaction: "reel_down", vel: [-2, -4], ahead: true, burns: true, fx: "burst_l", fxAbove: 40, flash: 16 } };
+
+  function pair() {
+    const opened: (SeizeDef | null)[] = [scene];
+    const seizer = { takeFreeScene: () => opened.shift() ?? null, seize: undefined, state: "ac", stateFrame: 90, x: 100, y: 200, facing: 1, scaleOf: 1, showThrownBall: vi.fn() } as unknown as Entity & { state: string };
+    const held = { name: "goku", x: 300, y: 200, facing: -1, scaleOf: 1, floor: 200, hold: vi.fn(), hide: vi.fn(), sound: vi.fn(), hurtBy: vi.fn(), release: vi.fn(), setBurning: vi.fn() } as unknown as Entity;
+    const world = { effect: vi.fn(), flash: vi.fn() } as unknown as SeizeWorld;
+    return { seizer, held, world };
+  }
+
+  it("goes on by its own clock when he changes state, and lets go on its own frame", () => {
+    const { seizer, held, world } = pair();
+    const seizures = new Seizures();
+    seizures.update(seizer, held, world);
+    expect(held.hold).toHaveBeenCalledWith("m37");
+    seizures.update(seizer, held, world);
+    seizer.state = "idle";
+    seizures.update(seizer, held, world);
+    expect(held.release).not.toHaveBeenCalled();
+    seizures.update(seizer, held, world);
+    expect(held.release).toHaveBeenCalledWith("reel_down", [-2, -4]);
+    expect(held.hurtBy).toHaveBeenCalledWith(80);
+  });
+
+  it("burns him, whitens the screen and bursts over his middle as it lets go, and asks nothing after", () => {
+    const { seizer, held, world } = pair();
+    const seizures = new Seizures();
+    for (let i = 0; i < 6; i++) seizures.update(seizer, held, world);
+    expect(held.setBurning).toHaveBeenCalledTimes(1);
+    expect(world.flash).toHaveBeenCalledWith(16);
+    expect(world.effect).toHaveBeenCalledWith("burst_l", 300, 160);
+    expect(held.release).toHaveBeenCalledTimes(1);
+    expect(seizer.showThrownBall).toHaveBeenLastCalledWith(null);
+  });
+});
+
+describe("lightOn", () => {
+  const held = { x: 300, y: 200 };
+
+  it("flickers between its two radii for as long as it lasts: $74 & 1 + 0x38 ($0F:A417)", () => {
+    const light = { from: 0, start: 56, top: 57, at: [0, -48] as [number, number], flickers: true as const };
+    expect([0, 1, 2, 3, 200].map((f) => lightOn(light, f, held, 1)?.radius)).toEqual([56, 57, 56, 57, 56]);
+    expect(lightOn(light, 0, held, 1)).toMatchObject({ x: 300, y: 152 });
+  });
+
+  it("without it rises to the top and falls away", () => {
+    const light = { from: 0, start: 1, top: 2, at: [0, 0] as [number, number] };
+    expect([0, 1, 2, 3].map((f) => lightOn(light, f, held, 1)?.radius)).toEqual([1, 2, 1, undefined]);
   });
 });

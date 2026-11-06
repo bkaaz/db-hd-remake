@@ -1,20 +1,61 @@
 {
-  "initial": "fly",
+  "initial": "wait",
   "states": {
-    "fly": {
+    "wait": {
       "anim": "play",
       "turn": false,
       "vel": [
         0,
         0
       ],
+      "ball": {
+        "at": [
+          0,
+          0
+        ],
+        "start": 2,
+        "grow": 1,
+        "max": 16
+      },
+      "endsWithMove": [
+        "ac",
+        "d2"
+      ],
       "type": "down",
       "damage": 0,
-      "lasts": 139,
-      "burstsInto": "burst_s",
+      "opens": "jubaku_scene",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a",
-      "opens": "jubaku_scene"
+      "burstsInto": "burst_s",
+      "transitions": [
+        {
+          "when": "frames:60",
+          "to": "fly"
+        }
+      ]
+    },
+    "fly": {
+      "anim": "play",
+      "turn": false,
+      "vel": [
+        2,
+        0
+      ],
+      "ball": {
+        "at": [
+          0,
+          0
+        ],
+        "start": 2,
+        "grow": 1,
+        "max": 16
+      },
+      "type": "down",
+      "damage": 0,
+      "opens": "jubaku_scene",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "burstsInto": "burst_s"
     }
   }
 }

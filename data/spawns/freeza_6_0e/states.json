@@ -4,14 +4,17 @@
     "fly": {
       "anim": "play",
       "turn": false,
-      "vel": [
-        0,
-        0
-      ],
       "endsWithMove": [
         "a6",
         "cc"
-      ]
+      ],
+      "airborne": true,
+      "launch": [
+        2,
+        2
+      ],
+      "fallsToFloor": true,
+      "lasts": 16
     }
   }
 }

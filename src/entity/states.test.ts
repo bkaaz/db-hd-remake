@@ -1042,6 +1042,9 @@ describe("an airborne state has to notice the ground", () => {
     const bolt = JSON.parse(JSON.stringify(flying));
     bolt.states.thrown.burstsAbove = 16;
     expect(validateStates(bolt, ANIMS).errors.some((e: string) => e.includes('"burstsAbove"'))).toBe(true);
+    const rewritten = JSON.parse(JSON.stringify(bolt));
+    rewritten.states.thrown.landsAs = ["floor"];
+    expect(validateStates(rewritten, ANIMS).errors.filter((e: string) => e.includes('"burstsAbove"'))).toEqual([]);
     bolt.states.thrown.burstsInto = "burst_s";
     const { errors, warnings } = validateStates(bolt, ANIMS);
     expect(errors.filter((e: string) => e.includes('"burstsAbove"'))).toEqual([]);
@@ -1466,6 +1469,11 @@ describe("a state that costs ki", () => {
 });
 
 describe("spawnsNamed", () => {
+  it("names what a bolt is rewritten as on its floor: Evil Energy's two", () => {
+    const bolt = { initial: "fly", states: { fly: { anim: "a", burstsAbove: 8, landsAs: ["floor", "pillar"], transitions: [] } } } as unknown as StatesFile;
+    expect(spawnsNamed(bolt).sort()).toEqual(["floor", "pillar"]);
+  });
+
   const file = (states: StatesFile["states"]): StatesFile => ({ initial: "idle", states });
 
   it("collects every projectile the states fire, without repeating one", () => {

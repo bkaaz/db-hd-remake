@@ -32,40 +32,49 @@
         },
         {
           "when": "landed",
-          "to": "tumble_lie"
+          "to": "tumble_bounce"
         }
       ],
-      "air": [
-        [
-          0,
-          {
-            "gravity": 0.3828125
-          }
-        ]
-      ]
+      "invulnerable": true
     },
     "tumble_fall": {
-      "anim": "m20_2",
+      "anim": "m20",
       "rank": 3,
       "airborne": true,
       "turn": false,
       "transitions": [
         {
           "when": "landed",
+          "to": "tumble_bounce"
+        }
+      ],
+      "invulnerable": true
+    },
+    "tumble_bounce": {
+      "anim": "m20",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "landed",
           "to": "tumble_lie"
         }
       ],
-      "air": [
-        [
-          0,
-          {
-            "gravity": 0.3828125
-          }
-        ]
-      ]
+      "invulnerable": true
     },
     "tumble_lie": {
-      "anim": "m20_3",
+      "anim": "m20_4",
       "rank": 4,
       "invulnerable": true,
       "vel": [
@@ -74,10 +83,10 @@
       ],
       "turn": false,
       "groundFx": "dust",
-      "sound": "land_0d",
+      "sound": "land_0c",
       "transitions": [
         {
-          "when": "frames:60",
+          "when": "animEnd",
           "to": "get_up"
         }
       ]
@@ -999,6 +1008,14 @@
       "turn": false,
       "transitions": [
         {
+          "when": "command:a6",
+          "to": "evil_energy"
+        },
+        {
+          "when": "command:ad",
+          "to": "jasenkoh"
+        },
+        {
           "when": "landed",
           "to": "land"
         }
@@ -1087,7 +1104,6 @@
         0
       ],
       "turn": true,
-      "sound": "land_0c",
       "inputsOf": {
         "state": "idle",
         "only": "buttons"
@@ -2369,9 +2385,36 @@
         0
       ],
       "turn": false,
-      "loopSound": "charge_19",
-      "loopEvery": 8,
-      "loopFrom": 65,
+      "paletteAt": [
+        [
+          1,
+          "run0"
+        ],
+        [
+          100,
+          "run1"
+        ],
+        [
+          108,
+          "run2"
+        ],
+        [
+          114,
+          "run3"
+        ],
+        [
+          120,
+          "run0"
+        ],
+        [
+          140,
+          "run4"
+        ],
+        [
+          148,
+          "run5"
+        ]
+      ],
       "transitions": [
         {
           "when": "animEnd",
@@ -2402,11 +2445,16 @@
           1
         ],
         [
-          26,
+          27,
           0
         ]
       ],
-      "behind": true
+      "behind": true,
+      "approach": {
+        "at": 32,
+        "short": 8,
+        "over": 32
+      }
     },
     "throw": {
       "anim": "m9d",
@@ -2420,7 +2468,20 @@
           "when": "animEnd",
           "to": "move_9e"
         }
-      ]
+      ],
+      "grab": {
+        "at": {},
+        "launch": {
+          "frame": 999,
+          "damage": 0,
+          "reaction": "reel_down",
+          "vel": [
+            0,
+            0
+          ],
+          "quiet": true
+        }
+      }
     },
     "ground_wave": {
       "anim": "ma7",
@@ -2595,10 +2656,14 @@
         0,
         0
       ],
-      "velAt": [
+      "paletteAt": [
         [
           1,
-          0
+          "flame0"
+        ],
+        [
+          4,
+          "flame1"
         ]
       ],
       "transitions": [
@@ -2615,40 +2680,177 @@
         0,
         0
       ],
+      "velAt": [
+        [
+          38,
+          -2
+        ],
+        [
+          43,
+          2
+        ],
+        [
+          48,
+          6
+        ]
+      ],
+      "paletteAt": [
+        [
+          1,
+          "flame0"
+        ],
+        [
+          4,
+          "flame1"
+        ],
+        [
+          7,
+          "flame0"
+        ],
+        [
+          10,
+          "flame1"
+        ],
+        [
+          13,
+          "flame0"
+        ],
+        [
+          16,
+          "flame1"
+        ],
+        [
+          19,
+          "flame0"
+        ],
+        [
+          22,
+          "flame1"
+        ],
+        [
+          25,
+          "flame0"
+        ],
+        [
+          28,
+          "flame1"
+        ],
+        [
+          31,
+          "flame0"
+        ],
+        [
+          34,
+          "flame1"
+        ],
+        [
+          37,
+          "flame0"
+        ],
+        [
+          40,
+          "flame1"
+        ],
+        [
+          43,
+          "flame0"
+        ],
+        [
+          46,
+          "flame1"
+        ],
+        [
+          49,
+          "flame0"
+        ],
+        [
+          52,
+          "flame1"
+        ]
+      ],
       "transitions": [
         {
           "when": "animEnd",
           "to": "flaming_headbutt_3"
         }
-      ],
-      "velAt": [
-        [
-          37,
-          2
-        ],
-        [
-          46,
-          6
-        ]
       ]
     },
     "flaming_headbutt_3": {
       "anim": "maf_3",
       "turn": false,
       "vel": [
-        0,
+        6,
         0
       ],
+      "stopsOnContact": true,
+      "paletteAt": [
+        [
+          1,
+          "flame0"
+        ],
+        [
+          4,
+          "flame1"
+        ],
+        [
+          7,
+          "flame0"
+        ],
+        [
+          10,
+          "flame1"
+        ],
+        [
+          13,
+          "flame0"
+        ],
+        [
+          16,
+          "flame1"
+        ],
+        [
+          19,
+          "flame0"
+        ],
+        [
+          22,
+          "flame1"
+        ],
+        [
+          25,
+          "flame0"
+        ],
+        [
+          28,
+          "flame1"
+        ],
+        [
+          31,
+          "flame0"
+        ],
+        [
+          34,
+          "flame1"
+        ]
+      ],
+      "type": "tumble",
+      "damage": 114,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
       "transitions": [
+        {
+          "when": [
+            "frames:16",
+            "!connected"
+          ],
+          "to": "flaming_headbutt_again"
+        },
         {
           "when": "animEnd",
           "to": "idle"
         }
       ],
-      "type": "tumble",
-      "damage": 114,
-      "hitSound": "hit_09",
-      "blockSound": "block_17"
+      "burns": true
     },
     "kienzan": {
       "anim": "ma8",
@@ -2707,6 +2909,20 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          13,
+          -1
+        ],
+        [
+          17,
+          1
+        ],
+        [
+          21,
+          0
+        ]
       ]
     },
     "kishin_ha": {
@@ -2734,12 +2950,16 @@
       "anim": "ma5_2",
       "turn": false,
       "vel": [
-        -1,
+        1,
         0
       ],
       "velAt": [
         [
           4,
+          -1
+        ],
+        [
+          12,
           0
         ]
       ],
@@ -2837,6 +3057,20 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          5,
+          -1
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          17,
+          0
+        ]
       ]
     },
     "explosive_grab": {
@@ -3078,32 +3312,34 @@
             -2.5,
             -7
           ],
-          "ahead": true
+          "ahead": true,
+          "stillCamera": true,
+          "fx": [
+            {
+              "name": "burst_m",
+              "at": [
+                28,
+                -80
+              ]
+            },
+            {
+              "name": "burst_l",
+              "at": [
+                28,
+                -80
+              ]
+            }
+          ],
+          "flash": 16
         }
-      },
-      "fires": {
-        "spawn": "burst_m",
-        "at": [
-          28,
-          -80
-        ],
-        "state": "fly",
-        "with": [
-          {
-            "spawn": "burst_l",
-            "at": [
-              28,
-              -80
-            ]
-          }
-        ]
       },
       "transitions": [
         {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "stillCamera": true
     },
     "jubaku_ha": {
       "anim": "mac",
@@ -3139,7 +3375,7 @@
           40,
           -52
         ],
-        "state": "fly"
+        "state": "wait"
       }
     },
     "jasenkoh": {
@@ -3187,6 +3423,7 @@
       "anim": "ma6",
       "turn": false,
       "airborne": true,
+      "savesFlight": true,
       "air": [
         [
           0,
@@ -3198,10 +3435,6 @@
         ]
       ],
       "transitions": [
-        {
-          "when": "landed",
-          "to": "land"
-        },
         {
           "when": "animEnd",
           "to": "evil_energy_2"
@@ -3222,13 +3455,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
           "to": "evil_energy_3"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "evil_energy_3": {
@@ -3245,13 +3484,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
           "to": "evil_energy_4"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "evil_energy_4": {
@@ -3268,13 +3513,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
-          "to": "jump_fall_attacked"
+          "to": "evil_energy_fall"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "move_9e": {
@@ -3676,35 +3927,86 @@
             -2.5,
             -7
           ],
-          "ahead": true
-        }
+          "ahead": true,
+          "stillCamera": true
+        },
+        "caught": true
       },
       "transitions": [
         {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "stillCamera": true
     },
     "move_ae": {
       "anim": "mae",
       "turn": false,
-      "vel": [
-        0,
-        0
-      ],
+      "airborne": true,
       "air": [
         [
-          1,
+          0,
           {
+            "vx": 0,
+            "vy": 0,
             "gravity": 0
+          }
+        ],
+        [
+          3,
+          {
+            "vx": -0.5,
+            "vy": -0.5
+          }
+        ],
+        [
+          4,
+          {
+            "vx": -1,
+            "vy": -1
+          }
+        ],
+        [
+          5,
+          {
+            "vx": -1.5,
+            "vy": -1.5
+          }
+        ],
+        [
+          6,
+          {
+            "vx": -2,
+            "vy": -2
+          }
+        ],
+        [
+          7,
+          {
+            "vx": -2.5,
+            "vy": -2.5
+          }
+        ],
+        [
+          8,
+          {
+            "vx": -3,
+            "vy": -3
           }
         ],
         [
           9,
           {
-            "vy": 4.5,
-            "vx": 4.5
+            "vx": 0,
+            "vy": 0
+          }
+        ],
+        [
+          10,
+          {
+            "vx": 4.5,
+            "vy": 4.5
           }
         ]
       ],
@@ -3715,7 +4017,7 @@
       "transitions": [
         {
           "when": "landed",
-          "to": "land"
+          "to": "move_ae_land"
         },
         {
           "when": "animEnd",
@@ -3727,6 +4029,15 @@
       "anim": "mae_2",
       "turn": false,
       "airborne": true,
+      "holdStep": 0,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0
+          }
+        ]
+      ],
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "down",
@@ -3734,11 +4045,7 @@
       "transitions": [
         {
           "when": "landed",
-          "to": "land"
-        },
-        {
-          "when": "animEnd",
-          "to": "jump_fall_attacked"
+          "to": "move_ae_land"
         }
       ]
     },
@@ -3776,15 +4083,180 @@
         "at": 0,
         "anim": "m37",
         "release": {
-          "frame": 126,
+          "frame": 128,
           "damage": 80,
           "reaction": "reel_down",
           "vel": [
-            2.5,
-            -7
-          ]
-        }
+            -2,
+            -4
+          ],
+          "ahead": true,
+          "fx": "burst_l",
+          "fxAbove": 40,
+          "flash": 16,
+          "burns": true
+        },
+        "light": {
+          "from": 0,
+          "start": 56,
+          "top": 57,
+          "at": [
+            0,
+            -48
+          ],
+          "flickers": true
+        },
+        "free": true
       }
+    },
+    "flaming_headbutt_again": {
+      "anim": "maf_3",
+      "replays": true,
+      "sameSwing": true,
+      "turn": false,
+      "vel": [
+        6,
+        0
+      ],
+      "stopsOnContact": true,
+      "paletteAt": [
+        [
+          1,
+          "flame0"
+        ],
+        [
+          4,
+          "flame1"
+        ],
+        [
+          7,
+          "flame0"
+        ],
+        [
+          10,
+          "flame1"
+        ],
+        [
+          13,
+          "flame0"
+        ],
+        [
+          16,
+          "flame1"
+        ],
+        [
+          19,
+          "flame0"
+        ],
+        [
+          22,
+          "flame1"
+        ],
+        [
+          25,
+          "flame0"
+        ],
+        [
+          28,
+          "flame1"
+        ],
+        [
+          31,
+          "flame0"
+        ],
+        [
+          34,
+          "flame1"
+        ]
+      ],
+      "type": "tumble",
+      "damage": 114,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": [
+            "frames:16",
+            "!connected"
+          ],
+          "to": "flaming_headbutt_out"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "burns": true
+    },
+    "flaming_headbutt_out": {
+      "anim": "maf_3",
+      "startsAt": 16,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "paletteAt": [
+        [
+          1,
+          "flame0"
+        ],
+        [
+          4,
+          "flame1"
+        ],
+        [
+          7,
+          "flame0"
+        ],
+        [
+          10,
+          "flame1"
+        ],
+        [
+          13,
+          "flame0"
+        ],
+        [
+          16,
+          "flame1"
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "move_ae_land": {
+      "anim": "mae_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "sound": "land_0c",
+      "transitions": [
+        {
+          "when": "frames:1",
+          "to": "idle"
+        }
+      ],
+      "damage": 0
+    },
+    "evil_energy_fall": {
+      "anim": "m05_2",
+      "turn": false,
+      "airborne": true,
+      "resumesFlight": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "initial": "fly",
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "lasts": 44,
+      "type": "heavy",
+      "damage": 32,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "outlivesHit": true
+    }
+  }
+}

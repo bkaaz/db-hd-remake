@@ -206,6 +206,10 @@ and there will be none (owner, 2026-11-03). Its winner's pose, `82`, is
 one of two the winner strikes at random; not Gohan's, which does not fit on the
 ground (owner, 2026-11-04: off for now, `plan.md`).
 
+**A body in flight keeps one way round** (owner, 2026-11-06). The cartridge
+turns the opponent of Flaming Headbutt upside down as he falls and mirrors him every
+few frames (`rom.md`). Ours keeps him one way round, head up, on purpose.
+
 ## Where it is going
 
 Once every fighter is ported (the owner, 2026-11-04): close to Budokai 3 and

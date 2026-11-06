@@ -344,6 +344,9 @@ export class Entity {
    * px per sprite px, so a big bolt is not also a fast one.
    */
   size = 1;
+  private freeScene: SeizeDef | null = null;
+  /** The speeds a `savesFlight` kept. */
+  private savedFlight: [number, number] = [0, 0];
   /** How many things this entity has thrown that are still in the world. */
   private thrown = 0;
   /**
@@ -597,6 +600,7 @@ export class Entity {
     // knocked into the air, its speed is the shove's: the original's vx stays 0 (`1b`, recorded)
     if (this.sm.def.launch) return 0;
     if (this.airborne) return this.facing * this.vx;
+    if (this.sm.def.stopsOnContact && this.swing.spent) return 0;
     return this.facing * (this.approaching ?? groundSpeed(this.sm.def, this.stateFrames));
   }
 
@@ -703,6 +707,11 @@ export class Entity {
   /** Whether this body has come down since its state began. */
   get hasLanded(): boolean {
     return this.landed;
+  }
+
+  /** The bolts it is rewritten as on reaching its floor. */
+  get landsAs(): readonly string[] {
+    return this.sm?.def.landsAs ?? [];
   }
 
   /** A bolt whose ground is its thrower's floor (`fallsToFloor`). */
@@ -932,6 +941,25 @@ export class Entity {
     }
     if (x !== null) this.fading = null;
     this.beamHead = x;
+  }
+
+  /** A shot of his has opened the scene `name`: a state of his, or one that leaves him be (`SeizeDef.free`). */
+  opensScene(name: string): void {
+    const scene = this.def.states?.states[name]?.seize;
+    if (scene?.free) this.freeScene = scene;
+    else this.forceState(name);
+  }
+
+  /** The free scene a shot opened, once. */
+  takeFreeScene(): SeizeDef | null {
+    const scene = this.freeScene;
+    this.freeScene = null;
+    return scene;
+  }
+
+  /** One more thing of his in the world, put out by a bolt of his rather than by him (`landsAs`). */
+  spawnAdded(): void {
+    this.thrown++;
   }
 
   /** One of the things this entity threw has left the world. */
@@ -1330,6 +1358,8 @@ export class Entity {
     this.stateFrames = 0;
     if (!this.sm.def.ifHitAgain) this.hitsAgain = 0;
     this.air = ON_GROUND;
+    if (this.sm.def.savesFlight) this.savedFlight = [this.vx, this.vy];
+    if (this.sm.def.resumesFlight) [this.vx, this.vy] = this.savedFlight;
     // the shot takes the ball: the original's beam effect replaces it outright
     if (this.sm.def.fires) this.ballRadius = 0;
     const launch = this.sm.def.launch;

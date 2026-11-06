@@ -53,7 +53,7 @@
     "type": 6,
     "anim": 18,
     "hits": false,
-    "palette": 160,
+    "palette": 41,
     "loads": [
       {
         "resource": 67,
@@ -231,5 +231,105 @@
         "vram": 26624
       }
     ]
+  },
+  {
+    "name": "freeza_6_09",
+    "type": 6,
+    "anim": 9,
+    "hits": true,
+    "palette": 41,
+    "loads": [
+      {
+        "resource": 67,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 6,
+        "loop": true
+      }
+    },
+    "tiles": 128
+  },
+  {
+    "name": "freeza_6_0f",
+    "type": 6,
+    "anim": 15,
+    "hits": true,
+    "palette": 42,
+    "loads": [
+      {
+        "resource": 67,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "dur": [
+          5,
+          6,
+          6,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          2
+        ],
+        "loop": false
+      }
+    },
+    "tiles": 128
+  },
+  {
+    "name": "freeza_6_10",
+    "type": 6,
+    "anim": 16,
+    "hits": true,
+    "palette": 42,
+    "loads": [
+      {
+        "resource": 67,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "dur": [
+          19,
+          4,
+          4,
+          4,
+          4
+        ],
+        "loop": false
+      }
+    },
+    "tiles": 128
   }
 ]

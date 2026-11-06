@@ -249,3 +249,22 @@ describe("throwFoe", () => {
     expect(run(by({ placement: { scale: 1, facing: -1 } }), foe())).toHaveBeenCalledWith("burst_m", 356, 140);
   });
 });
+
+describe("a throw's launch", () => {
+  it("puts out its effects from the thrower and whitens the screen, once", () => {
+    const t = thrower();
+    (t as { grab?: GrabDef }).grab = { ...GRAB, launch: { ...GRAB.launch, fx: [{ name: "burst_l", at: [28, -80] }], flash: 16 } };
+    const body = held();
+    const world = { effect: vi.fn(), flash: vi.fn() };
+    const throws = new Throws();
+    t.stateFrame = 1;
+    throws.update(t, body, world);
+    expect(world.effect).not.toHaveBeenCalled();
+    t.stateFrame = 21;
+    throws.update(t, body, world);
+    throws.update(t, body, world);
+    expect(world.effect).toHaveBeenCalledTimes(1);
+    expect(world.effect).toHaveBeenCalledWith("burst_l", 156, 40);
+    expect(world.flash).toHaveBeenCalledWith(16);
+  });
+});

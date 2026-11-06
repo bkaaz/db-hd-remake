@@ -167,6 +167,8 @@ nine fighters would each want a copy of it. A grunt *is* his.
 - **A `grab`'s `flips`** keeps the held body on the step before `step` until `frame`, then draws it upside down. **`stillCamera`** keeps the camera from following vertically while he is in the state; on a grab's `launch`, until the thrown body lands.
 - **`flipsOnLeaving`**: he flips as he leaves the state, with no `turnsBy`.
 - **`behindAt`** is `behind` from a frame of the state. **A bolt's `fallsToFloor`** has its thrower's floor for ground, **`burstsAtEnd`** bursts where its `lasts` runs out, `throughPause` is not held by a hit pause.
+- **A bolt's `landsAs`** names the bolts it is rewritten as on reaching its `burstsAbove` floor, on the floor in its place (ADR 0078). **A `seize`'s `free`** runs the scene a shot `opens` on its own clock, the seizer's state left alone (ADR 0078); its `light.flickers` keeps two radii, `release.flash` whitens the screen, `release.fxAbove` puts its `fx` that high on him. **A `grab.launch`'s `fx` and `flash`** are the same from the thrower.
+- **`stopsOnContact`** ends a state's ground speed at its blow's contact. **`savesFlight`** keeps the speeds he comes in with, **`resumesFlight`** puts them back later in the move.
 - **`throwsFoe` strikes the opponent wherever he is**, on a frame of a state: `ahead` leaves him facing the thrower, `fx` leaves an effect on him (Vegetto's throw).
 - **`turnsBy` is the state a body plays its turn in**, on finding the opponent behind
   it: idle, walking and the crouch, into `turn_round`. With none it flips on the spot.

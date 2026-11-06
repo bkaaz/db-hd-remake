@@ -13,9 +13,16 @@
       "airborne": true,
       "launch": [
         3,
-        2.12109375
+        0
       ],
-      "burstsAbove": 0
+      "fallsToFloor": true,
+      "aim": {
+        "from": 4,
+        "above": 32,
+        "within": 16,
+        "speed": 2.12109375,
+        "every": 8
+      }
     }
   }
 }

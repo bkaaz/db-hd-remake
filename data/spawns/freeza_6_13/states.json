@@ -13,7 +13,12 @@
       "damage": 32,
       "burstsInto": "burst_s",
       "hitSound": "burst_0a",
-      "blockSound": "burst_0a"
+      "blockSound": "burst_0a",
+      "burstsAbove": 8,
+      "landsAs": [
+        "freeza_6_0f",
+        "freeza_6_10"
+      ]
     }
   }
 }

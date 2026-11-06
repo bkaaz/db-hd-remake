@@ -1,7 +1,7 @@
 import type { Container } from "pixi.js";
 import type { Bounds } from "../combat/push";
 import { Entity, NO_INPUT } from "../entity/entity";
-import { effectsNamed } from "../entity/states";
+import { effectsNamed, spawnsNamed } from "../entity/states";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { landBlow, type BlowContext, type BlowResult } from "./blow";
 import { objectGone } from "../camera/camera";
@@ -74,9 +74,14 @@ export class Projectiles {
     scale: number,
   ): Promise<Projectiles> {
     const projectiles = new Projectiles(world, scale);
-    for (const name of names) {
+    const queue = [...names];
+    for (let name = queue.shift(); name; name = queue.shift()) {
+      if (projectiles.defs.has(name)) continue;
       try {
-        projectiles.defs.set(name, await loadEntityDef(name));
+        const def = await loadEntityDef(name);
+        projectiles.defs.set(name, def);
+        // what it becomes is a bolt too, and only it says so
+        queue.push(...spawnsNamed(def.states));
       } catch (e) {
         console.warn(`[projectiles] no "${name}" — run \`npm run lift\`. ${String(e)}`);
       }
@@ -189,7 +194,7 @@ export class Projectiles {
       // the pause is the whole game's ($30B2): his hand stops too, as a blast of his lasts 65 frames on a hit and 56 without
       const opened = result && !result.blocked && bolt.opens;
       if (result && !opened) owner.freeze(bolt.attackHitstop);
-      if (opened) owner.forceState(opened);
+      if (opened) owner.opensScene(opened);
       // strayed too far from the screen's middle, off a side or the top ($0F:B47D)
       const stranded = objectGone(bolt.x, bolt.y, view);
       // and is gone the moment he leaves the move that put it out ($0F:BB51)
@@ -197,7 +202,13 @@ export class Projectiles {
       // down on its floor: its burst where it is, as the original rewrites the slot ($0F:BB05)
       const floored = bolt.burstsAbove !== undefined && bolt.hasLanded;
       const burst = bolt.attackBurst;
-      if (floored && !result && burst) impact.effects.spawn(burst, bolt.x, bolt.y);
+      if (floored && !result && burst && bolt.landsAs.length === 0) impact.effects.spawn(burst, bolt.x, bolt.y);
+      if (floored && !result) {
+        for (const next of bolt.landsAs) {
+          owner.spawnAdded();
+          this.spawn({ spawn: next, x: bolt.x, y: owner.groundY, facing: bolt.facing, size: 1, with: [], beam: false }, owner, foe);
+        }
+      }
       if (bolt.expired && !result && bolt.burstsAtEnd && burst) {
         impact.effects.spawn(burst, bolt.x, bolt.y);
         foe.sound(bolt.attackSounds.hit);

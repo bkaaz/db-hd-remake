@@ -91,6 +91,10 @@ export interface GrabDef {
     vel: [number, number];
     /** Without the reaction's own sound: `$0F:B321` plays none, a handler may (Bukuuh Kyaku's does not). */
     quiet?: boolean;
+    /** Effects put out on the frame he is let go, from the thrower: Explosive Grab's two (`b0`s on its frame 26). */
+    fx?: { name: string; at: [number, number] }[];
+    /** Frames of white as he is let go: `a/18` on a body in `1b` asks for them (`$0F:E261`). */
+    flash?: number;
     /**
      * Thrown the way the thrower faces, still facing him, rather than over
      * his back facing his way: `$0F:B321` given the thrower's own facing, not
@@ -110,6 +114,8 @@ export interface GrabDef {
  */
 export interface SeizeDef {
   at: number;
+  /** Named by a shot's `opens`, it runs by itself and leaves its seizer's move alone: Jubaku Ha's, which is the held one's own `37` (`$0F:A3D5`). */
+  free?: true;
   /** Where he is set down from the seizer; none leaves him where he stands. */
   place?: [number, number];
   anim: string;
@@ -126,7 +132,7 @@ export interface SeizeDef {
    */
   steps?: { frame: number; anim?: string; show?: number; draws?: Record<string, string>; atBy?: Record<string, [number, number]>; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; on?: [number, number] | null; lands?: true; every?: number; toHold?: true; cry?: string; sound?: string }[];
   /** A circle of light on him: `start` px on frame `from`, 1 more a frame to `top`, then 1 less, at `at` from his feet (his `5f`, `$0F:A67F`). */
-  light?: { from: number; start: number; top: number; at: [number, number] };
+  light?: { from: number; start: number; top: number; at: [number, number]; flickers?: true };
   /** A dome of light on the floor where he is, and bars of it (`match/sceneLight.ts`). */
   dome?: SceneDome;
   bars?: SceneBar[];
@@ -142,7 +148,7 @@ export interface SeizeDef {
   launch?: { frame: number; vel: [number, number]; from?: [number, number]; quiet?: boolean };
   bounces?: number[];
   /** `frame`: when he is let go; with a `ball`, when it says. */
-  release: { frame?: number; damage: number; reaction: string; vel: [number, number]; burns?: boolean; fx?: string; ahead?: boolean };
+  release: { frame?: number; damage: number; reaction: string; vel: [number, number]; burns?: boolean; fx?: string; fxAbove?: number; flash?: number; ahead?: boolean };
   /** What flies in his place; he comes out where it ends (`match/ball.ts`). */
   ball?: SceneBallDef;
   /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
@@ -430,6 +436,8 @@ export interface StateDef {
    * for one that flies on through the floor: Kakusan's low ball, whose code has no floor.
    */
   burstsAbove?: number;
+  /** For a bolt that reaches its `burstsAbove`: the bolts it is rewritten as, on the floor, in its place: Evil Energy's two (`$0F:D416`). */
+  landsAs?: string[];
   /**
    * An effect put on the floor under the entity as this state begins — the
    * dust a body raises hitting the ground, which the original puts at the
@@ -526,6 +534,12 @@ export interface StateDef {
    * original picks by player, whose colours they are (Gohan's `ae`, `$20:B3DE`).
    */
   paletteRun?: { plain: string[]; alt: string[] };
+  /** Its ground speed ends with its blow's contact: a run that stops where it lands (Flaming Headbutt, `$10:BC30`). */
+  stopsOnContact?: boolean;
+  /** The speeds he comes in with are kept, for a `resumesFlight` later in the move (fields `0x80`, `0x82`). */
+  savesFlight?: boolean;
+  /** He goes on at the speeds a `savesFlight` kept: Evil Energy, when it lets him fall (`$10:B73F`). */
+  resumesFlight?: boolean;
   /** Connecting leaves this state at once: the attacker's hitstop begins a frame into the next one, not here. */
   catches?: boolean;
   /**
@@ -1434,6 +1448,7 @@ export function effectsNamed(
     if (def.groundFx) names.add(def.groundFx);
     if (def.trail) names.add(def.trail.fx);
     if (def.throwsFoe?.fx) names.add(def.throwsFoe.fx.name);
+    for (const fx of def.grab?.launch.fx ?? []) names.add(fx.name);
     if (def.seize?.sparks?.length) names.add("hit_spark");
     if (def.seize?.bursts) names.add(def.seize.bursts.fx);
     if (def.seize?.release.fx) names.add(def.seize.release.fx);
@@ -1450,6 +1465,7 @@ export function spawnsNamed(states: StatesFile | null | undefined): string[] {
     if (def.fires) names.add(def.fires.spawn);
     for (const w of def.fires?.with ?? []) names.add(w.spawn);
     for (const a of def.fires?.also ?? []) if (a.spawn) names.add(a.spawn);
+    for (const name of def.landsAs ?? []) names.add(name);
   }
   return [...names];
 }
@@ -1650,8 +1666,8 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       );
     }
 
-    if (floorEnds && (typeof def.burstsAbove !== "number" || !def.burstsInto)) {
-      errors.push(`${where}: "burstsAbove" needs a number of game px and a "burstsInto" to leave there`);
+    if (floorEnds && (typeof def.burstsAbove !== "number" || (!def.burstsInto && !def.landsAs?.length))) {
+      errors.push(`${where}: "burstsAbove" needs a number of game px and a "burstsInto" or "landsAs" to leave there`);
     }
 
     if (def.damage !== undefined && (typeof def.damage !== "number" || def.damage < 0)) {

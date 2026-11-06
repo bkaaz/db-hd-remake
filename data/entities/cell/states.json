@@ -32,40 +32,49 @@
         },
         {
           "when": "landed",
-          "to": "tumble_lie"
+          "to": "tumble_bounce"
         }
       ],
-      "air": [
-        [
-          0,
-          {
-            "gravity": 0.3828125
-          }
-        ]
-      ]
+      "invulnerable": true
     },
     "tumble_fall": {
-      "anim": "m20_2",
+      "anim": "m20",
       "rank": 3,
       "airborne": true,
       "turn": false,
       "transitions": [
         {
           "when": "landed",
+          "to": "tumble_bounce"
+        }
+      ],
+      "invulnerable": true
+    },
+    "tumble_bounce": {
+      "anim": "m20",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "rebound": {
+        "share": 0.25,
+        "min": 2
+      },
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "transitions": [
+        {
+          "when": "landed",
           "to": "tumble_lie"
         }
       ],
-      "air": [
-        [
-          0,
-          {
-            "gravity": 0.3828125
-          }
-        ]
-      ]
+      "invulnerable": true
     },
     "tumble_lie": {
-      "anim": "m20_3",
+      "anim": "m20_4",
       "rank": 4,
       "invulnerable": true,
       "vel": [
@@ -74,10 +83,10 @@
       ],
       "turn": false,
       "groundFx": "dust",
-      "sound": "land_0d",
+      "sound": "land_0c",
       "transitions": [
         {
-          "when": "frames:60",
+          "when": "animEnd",
           "to": "get_up"
         }
       ]

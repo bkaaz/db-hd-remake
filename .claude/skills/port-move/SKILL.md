@@ -199,6 +199,8 @@ before asking for a new mechanism:
   state each with `launch`, `frames:` and `burstsAtEnd`;
 - a held body in the cartridge's palette — a `grab`'s `shocks`; in a drawing of a
   table by fighter — a `seize` step's `draws` and `atBy`;
+- an object rewritten on the floor as another that strikes — `landsAs`; a scene a shot opens that does not hold its thrower — a `seize`'s `free` (ADR 0078);
+- a run that stops at contact — `stopsOnContact`; a move in the air that lets him go on as he came in — `savesFlight` and `resumesFlight`;
 - an object gone when he leaves his move — `endsWithMove`, `true` or the
   move ids its code tests (ADR 0062).
 
