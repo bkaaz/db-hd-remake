@@ -11,6 +11,7 @@ import type { EntityDef } from "../entity/entityDef";
 import type { Effects } from "../fx/effects";
 import type { Stage } from "../stage";
 import { landBlow, type BlowContext } from "./blow";
+import { parries } from "./parry";
 import type { Projectiles } from "./projectiles";
 import { Recorder } from "./record";
 import { Seizures } from "./seize";
@@ -222,7 +223,7 @@ export class Fighters {
     );
     player.x = placed.a;
     if (opponent && placed.b !== null) opponent.x = placed.b;
-    camera.lift(this.both().map((f) => f.y));
+    if (!this.both().some((f) => f.holdsCamera)) camera.lift(this.both().map((f) => f.y));
   }
 
   /**
@@ -297,6 +298,13 @@ export class Fighters {
     const gap = this.gap();
     const named = this.named();
     for (const [from, to, a, d] of [["P1", "P2", this.player, this.opponent], ["P2", "P1", this.opponent, this.player]] as const) {
+      if (parries(d, a)) {
+        const where = contact({ boxes: d.boxes("hit"), at: d.placement }, { boxes: a.boxes("hit"), at: a.placement })!;
+        d.forceState(d.parry!.to);
+        this.impact.effects.spawn(a.attackGuardFx, where.x + where.w / 2, where.y + where.h / 2);
+        a.sound("hit_09");
+        continue;
+      }
       const result = landBlow(a, d, this.impact);
       if (result) this.flash = Math.max(this.flash, result.flash);
       this.recorder.blow(result, from, to, gap, named);

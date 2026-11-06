@@ -61,6 +61,7 @@ close range, his objects come from a recording. Every fighter now has his own cl
 Aerial Assault's scene is approximate (below). Left: Shocking Stunner's opponent flashes in
 palettes `0x113`/`0x114` while held (not done) and his throw's choice of `1e` or `1b` is not read `?`.
 Beam Cannon's head's frames every 12 and its band are a guess `?`.
+Second pass, 2026-11-06: Sonic Kick closes on the opponent from afar; the mystic blows reach on in three parts and draw back, and their counters hold him into the throw; Regeneration is a parry, with its whole scene (the arm, 38 damage); Beam Cannon's three levels fire and end as recorded, its head stays and strikes twice, with its band; Shocking Stunner's opponent flashes and flies as `1e`; Bukuuh Kyaku leaves him on the ground; Aerial Assault's whole scene (130 damage), the five balls; intro and win in his own palette, with no charging sound.
 
 ### Freeza
 

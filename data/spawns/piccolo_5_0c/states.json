@@ -1,0 +1,220 @@
+{
+  "initial": "ray0",
+  "states": {
+    "ray0": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        2.32,
+        -1.84
+      ],
+      "transitions": [
+        {
+          "when": "frames:45",
+          "to": "hover0"
+        }
+      ]
+    },
+    "hover0": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "frames:64",
+          "to": "home0"
+        }
+      ]
+    },
+    "home0": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        -2.12,
+        2.07
+      ],
+      "lasts": 13,
+      "burstsAtEnd": true,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a"
+    },
+    "ray1": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0,
+        -3
+      ],
+      "transitions": [
+        {
+          "when": "frames:11",
+          "to": "hover1"
+        }
+      ]
+    },
+    "hover1": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "frames:98",
+          "to": "home1"
+        }
+      ]
+    },
+    "home1": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        2.99,
+        -0.15
+      ],
+      "lasts": 14,
+      "burstsAtEnd": true,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a"
+    },
+    "ray2": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        1.42,
+        -2.62
+      ],
+      "transitions": [
+        {
+          "when": "frames:38",
+          "to": "hover2"
+        }
+      ]
+    },
+    "hover2": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "frames:71",
+          "to": "home2"
+        }
+      ]
+    },
+    "home2": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0.15,
+        2.99
+      ],
+      "lasts": 15,
+      "burstsAtEnd": true,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a"
+    },
+    "ray3": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0.59,
+        -2.93
+      ],
+      "transitions": [
+        {
+          "when": "frames:25",
+          "to": "hover3"
+        }
+      ]
+    },
+    "hover3": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "frames:84",
+          "to": "home3"
+        }
+      ]
+    },
+    "home3": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        2.27,
+        1.9
+      ],
+      "lasts": 14,
+      "burstsAtEnd": true,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a"
+    },
+    "ray4": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        3,
+        0.07
+      ],
+      "transitions": [
+        {
+          "when": "frames:34",
+          "to": "hover4"
+        }
+      ]
+    },
+    "hover4": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ],
+      "transitions": [
+        {
+          "when": "frames:75",
+          "to": "home4"
+        }
+      ]
+    },
+    "home4": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        -1.9,
+        -2.3
+      ],
+      "lasts": 15,
+      "burstsAtEnd": true,
+      "burstsInto": "burst_s",
+      "hitSound": "burst_0a"
+    }
+  }
+}

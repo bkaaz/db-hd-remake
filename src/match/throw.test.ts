@@ -157,6 +157,55 @@ describe("Throws", () => {
     expect(h.hurtBy).not.toHaveBeenCalled();
   });
 
+  it("keeps him through to the next state's grab when that one catches, with nothing between", () => {
+    const t = thrower();
+    const h = held();
+    const throws = new Throws();
+    Object.assign(t, { grab: { ...GRAB, caught: true } });
+    throws.update(t, h);
+    Object.assign(t, { state: "throw_2", animation: "m9e" });
+    throws.update(t, h);
+    expect(h.release).not.toHaveBeenCalled();
+    expect(h.hold).toHaveBeenLastCalledWith("m30_goku_9e");
+  });
+
+  it("makes a held body flash while it holds, and stops as it lets go", () => {
+    const t = thrower();
+    const h = Object.assign(held(), { shock: vi.fn() });
+    const throws = new Throws();
+    Object.assign(t, { grab: { ...GRAB, shocks: true } });
+    throws.update(t, h);
+    expect(h.shock).toHaveBeenLastCalledWith(true);
+    Object.assign(t, { stateFrame: GRAB.launch.frame + 1 });
+    throws.update(t, h);
+    expect(h.shock).toHaveBeenLastCalledWith(false);
+  });
+
+  it("hangs him upside down from its frame, and has the camera wait for him past the launch", () => {
+    const t = thrower();
+    const h = Object.assign(held(), { flipHeld: vi.fn(), keepCamera: vi.fn() });
+    const throws = new Throws();
+    Object.assign(t, { grab: { ...GRAB, flips: { step: 2, frame: 5 }, launch: { ...GRAB.launch, stillCamera: true } } });
+    throws.update(t, h);
+    Object.assign(t, { animStep: 2, stateFrame: 3 });
+    throws.update(t, h);
+    expect(h.flipHeld).not.toHaveBeenCalled();
+    // still at the step before, as the original's body is drawn a frame after it is placed
+    expect(h.x).toBe(100 + 22 * 2);
+    Object.assign(t, { stateFrame: 6 });
+    throws.update(t, h);
+    expect(h.flipHeld).toHaveBeenCalledWith(true);
+    expect(h.x).toBe(100 - 32 * 2);
+    // a step past it, before the launch: he stays where he hangs
+    Object.assign(t, { animStep: 3, stateFrame: 7 });
+    throws.update(t, h);
+    expect(h.x).toBe(100 - 32 * 2);
+    expect(h.keepCamera).not.toHaveBeenCalled();
+    Object.assign(t, { stateFrame: GRAB.launch.frame + 1 });
+    throws.update(t, h);
+    expect(h.keepCamera).toHaveBeenCalled();
+  });
+
   it("holds nobody who cannot be thrown", () => {
     const h = Object.assign(held(), { throwable: false });
     new Throws().update(thrower(), h);

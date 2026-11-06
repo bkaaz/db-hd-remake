@@ -181,7 +181,7 @@ export class Seizures {
       const away = held.x >= seizer.x ? 1 : -1;
       s.vx = away * def.launch.vel[0];
       s.flight = { y: (held.y - held.floor) / scale, vy: def.launch.vel[1], bounces: def.bounces ?? [] };
-      held.sound("voice_hurt");
+      if (!def.launch.quiet) held.sound("voice_hurt");
       s.phase = "flying";
     }
     if (s.phase === "flying") {
@@ -250,9 +250,11 @@ export class Seizures {
     if (step.cry) held.sound(step.cry);
     if (step.sound) seizer.sound(step.sound);
     if (step.show !== undefined) held.jumpTo(step.show);
-    if (step.at) {
-      held.x = seizer.x + seizer.facing * step.at[0] * held.scaleOf;
-      held.y = held.floor + step.at[1] * held.scaleOf;
+    if (step.draws) held.showDrawing(step.draws[held.name]);
+    const at = step.atBy?.[held.name] ?? step.at;
+    if (at) {
+      held.x = seizer.x + seizer.facing * at[0] * held.scaleOf;
+      held.y = held.floor + at[1] * held.scaleOf;
     }
     if (step.drift !== undefined) s.drift = step.drift;
     if (step.hide !== undefined) held.hide(step.hide);
@@ -277,7 +279,8 @@ export class Seizures {
     const { held } = s;
     if (s.ball) ({ x: held.x, y: held.y } = s.ball.end());
     held.hide(false);
-    held.facing = seizer.facing;
+    // an ordinary blow he takes facing it ($20:E2A7's), or thrown over his back
+    held.facing = release.ahead ? (seizer.facing === 1 ? -1 : 1) : seizer.facing;
     held.hurtBy(release.damage);
     held.release(release.reaction, release.vel);
     if (release.burns) held.setBurning();

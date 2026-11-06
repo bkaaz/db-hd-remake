@@ -73,8 +73,8 @@ export function runPalettes(rom: Uint8Array, t: FighterTables): Record<string, n
   return Object.fromEntries((RUNS[t.character] ?? []).map((id, i) => [`run${i}`, paletteRecord(rom, id).at]));
 }
 
-/** How far a move's palette for the screen before the fight is from his own: Vegetto's `3c` is his black hair ($20:D912). */
-const INTRO_RECORD: Record<number, number> = { 4: 0xae };
+/** How far a move's palette for the screen before the fight is from his own: Vegetto's `3c` is his black hair ($20:D912), Piccolo's his bare arms ($20:D9CF), and his `3e` too. */
+const INTRO_RECORD: Record<number, number> = { 4: 0xae, 5: 0xc0 };
 
 /** What takes one palette's colours to another's: each channel's commonest difference, so that a colour at its limit does not count. */
 export function lightingShift(day: readonly Rgb[], lit: readonly Rgb[]): Rgb {

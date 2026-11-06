@@ -10,9 +10,16 @@
       ],
       "type": "halt",
       "damage": 40,
-      "burstsInto": "burst_s",
-      "hitSound": "burst_0a",
-      "blockSound": "burst_0a"
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "outlivesHit": true,
+      "throughPause": true,
+      "endsWithMove": [
+        "bc"
+      ],
+      "rehit": 14
     }
-  }
+  },
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark"
 }

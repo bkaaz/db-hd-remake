@@ -24,6 +24,12 @@
     "night_glow_alt",
     "win",
     "win_alt",
+    "run0",
+    "run0_alt",
+    "evening_run0",
+    "evening_run0_alt",
+    "night_run0",
+    "night_run0_alt",
     "fire0",
     "fire1",
     "fire2",
@@ -38,7 +44,9 @@
     "fire11",
     "fire12",
     "fire13",
-    "fire14"
+    "fire14",
+    "shock0",
+    "shock1"
   ],
   "burn": [
     "fire0",
@@ -56,5 +64,9 @@
     "fire12",
     "fire13",
     "fire14"
+  ],
+  "shock": [
+    "shock0",
+    "shock1"
   ]
 }

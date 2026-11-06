@@ -39,7 +39,9 @@
     "fire11",
     "fire12",
     "fire13",
-    "fire14"
+    "fire14",
+    "shock0",
+    "shock1"
   ],
   "burn": [
     "fire0",
@@ -57,5 +59,9 @@
     "fire12",
     "fire13",
     "fire14"
+  ],
+  "shock": [
+    "shock0",
+    "shock1"
   ]
 }

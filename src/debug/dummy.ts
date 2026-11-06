@@ -23,6 +23,8 @@ export interface Script {
   /** `always` holds the guard button every frame, on top of whatever `does` is doing. */
   guard?: "never" | "always";
   loop?: boolean;
+  /** The clock runs through a hit pause, as a player's hands do: what is entered during one (`input`). */
+  free?: boolean;
 }
 
 /**
@@ -50,6 +52,7 @@ export class Dummy {
     private readonly steps: Step[],
     private readonly guarding: boolean,
     private readonly loops: boolean,
+    private readonly free: boolean,
   ) {}
 
   /** Build one from a mode's script, or say what is wrong with the script. */
@@ -60,7 +63,7 @@ export class Dummy {
       if (typeof step === "string") return step;
       steps.push(step);
     }
-    return new Dummy(steps, script.guard === "always", script.loop ?? true);
+    return new Dummy(steps, script.guard === "always", script.loop ?? true, script.free ?? false);
   }
 
   /**
@@ -83,7 +86,7 @@ export class Dummy {
       this.frame = 0;
       return NO_INPUT;
     }
-    if (frozen) return NO_INPUT;
+    if (frozen && !this.free) return NO_INPUT;
     const step = this.steps[this.at];
     const first = this.frame === 0;
     this.advance();

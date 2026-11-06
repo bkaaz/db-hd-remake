@@ -318,6 +318,8 @@ npm run moves -- vegetto
                   # what differs, into logs/moves/ (ADR 0075); --only a,b, --report;
                   # --far plays his commands with room for a shot to fly;
                   # --close from arm's length, for what a blow that lands opens;
+                  # --parry with the opponent's blow coming at a parrying move;
+                  # --held a blast command with its button held, for its levels;
                   # --objects records his objects. Needs Playwright (PLAYWRIGHT=dir)
 npm run sound-test
                   # the original's sound test, recorded by

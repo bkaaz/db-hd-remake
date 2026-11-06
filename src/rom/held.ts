@@ -66,6 +66,8 @@ const HANDLER_HOLDS: Partial<Record<string, Record<number, { table: number; fram
  */
 const STEP_HOLDS: Partial<Record<string, Record<number, { floor: number; air: number }>>> = {
   gohan: { 0xa9: { floor: 0x20aa72, air: 0x20aa86 } },
+  // $20:E711
+  piccolo: { 0xbf: { floor: 0x20e79e, air: 0x20e7b2 } },
 };
 
 /**

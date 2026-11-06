@@ -1,0 +1,62 @@
+{
+  "initial": "fall",
+  "states": {
+    "fall": {
+      "anim": "fall",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        -2,
+        0
+      ],
+      "endsWithMove": [
+        "b7",
+        "b8"
+      ],
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "bounce"
+        }
+      ],
+      "fallsToFloor": true
+    },
+    "bounce": {
+      "anim": "bounce",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        -2,
+        -3
+      ],
+      "endsWithMove": [
+        "b7",
+        "b8"
+      ],
+      "transitions": [
+        {
+          "when": [
+            "frames:3",
+            "landed"
+          ],
+          "to": "rest"
+        }
+      ],
+      "fallsToFloor": true
+    },
+    "rest": {
+      "anim": "rest",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "lasts": 16,
+      "endsWithMove": [
+        "b7",
+        "b8"
+      ],
+      "fallsToFloor": true
+    }
+  }
+}

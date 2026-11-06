@@ -192,6 +192,13 @@ before asking for a new mechanism:
 - a move free again from a frame, as its handler calls `$0F:9EB1` (and
   `$0D:F9BD`) — `inputsOf` idle, `only: "buttons"` without the directions
   (ADR 0061; `npm run rom -- entries` counts it);
+- a move that waits for a blow, with the list of what gets through — `parry`
+  (ADR 0077); `npm run moves -- <f> --parry` plays it, `--held` a button's levels;
+- a stay-on-hit object that strikes again — `outlivesHit`, `rehit`; one no pause
+  holds — `throughPause`; several by one scene, each out, hovering and home — a
+  state each with `launch`, `frames:` and `burstsAtEnd`;
+- a held body in the cartridge's palette — a `grab`'s `shocks`; in a drawing of a
+  table by fighter — a `seize` step's `draws` and `atBy`;
 - an object gone when he leaves his move — `endsWithMove`, `true` or the
   move ids its code tests (ADR 0062).
 

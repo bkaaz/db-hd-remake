@@ -137,7 +137,7 @@ export class Projectiles {
     bolt.travels = true;
     // one that falls has the floor under it, not the height it left from (Vertical Ki)
     const above = bolt.burstsAbove;
-    bolt.groundY = above === undefined ? from.y : owner.groundY - above * this.scale;
+    bolt.groundY = above === undefined ? (bolt.fallsToFloor ? owner.groundY : from.y) : owner.groundY - above * this.scale;
     bolt.x = from.x;
     bolt.y = from.y;
     this.world.addChild(bolt.view);
@@ -171,7 +171,7 @@ export class Projectiles {
     // oldest first, as the original's slots: of Kakusan's three, the first to be put out strikes first
     for (const shot of [...this.live]) {
       const { name, bolt, foe, owner, companions, beam, ride, thrownIn } = shot;
-      if (!paused) {
+      if (!paused || bolt.throughPause) {
         bolt.aimAt(foe.y);
         bolt.update(NO_INPUT, null, ANYWHERE);
       }
@@ -187,8 +187,9 @@ export class Projectiles {
       if (result) halted = true;
       if (result) hits.push({ result, foe });
       // the pause is the whole game's ($30B2): his hand stops too, as a blast of his lasts 65 frames on a hit and 56 without
-      if (result) owner.freeze(bolt.attackHitstop);
-      if (result && !result.blocked && bolt.opens) owner.forceState(bolt.opens);
+      const opened = result && !result.blocked && bolt.opens;
+      if (result && !opened) owner.freeze(bolt.attackHitstop);
+      if (opened) owner.forceState(opened);
       // strayed too far from the screen's middle, off a side or the top ($0F:B47D)
       const stranded = objectGone(bolt.x, bolt.y, view);
       // and is gone the moment he leaves the move that put it out ($0F:BB51)
@@ -197,6 +198,10 @@ export class Projectiles {
       const floored = bolt.burstsAbove !== undefined && bolt.hasLanded;
       const burst = bolt.attackBurst;
       if (floored && !result && burst) impact.effects.spawn(burst, bolt.x, bolt.y);
+      if (bolt.expired && !result && bolt.burstsAtEnd && burst) {
+        impact.effects.spawn(burst, bolt.x, bolt.y);
+        foe.sound(bolt.attackSounds.hit);
+      }
       if ((result && !bolt.outlivesHit) || floored || stranded || orphaned || bolt.expired) {
         if (result && bolt.ballNow > 0) this.fading.push({ owner, x: bolt.x, y: bolt.y, radius: bolt.ballNow });
         const why = result ? "hit" : floored ? "floored" : stranded ? "strayed" : orphaned ? "orphaned" : "expired";

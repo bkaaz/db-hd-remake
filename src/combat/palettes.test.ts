@@ -1,7 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { burnVariant, paletteVariant, shimmerVariant, runVariant, markedVariant } from "./palettes";
+import { burnVariant, paletteVariant, shimmerVariant, shockVariant, runVariant, markedVariant } from "./palettes";
 
 const fire = Array.from({ length: 15 }, (_, i) => `fire${i}`);
+
+describe("shockVariant", () => {
+  it("goes between the two, four frames each", () => {
+    expect([0, 3, 4, 7, 8].map((f) => shockVariant(["a", "b"], f))).toEqual(["a", "a", "b", "b", "a"]);
+  });
+
+  it("names nothing for one with no sheets", () => {
+    expect(shockVariant([], 0)).toBeUndefined();
+  });
+});
 
 describe("burning", () => {
   it("steps to the next fire palette every 2 frames", () => {

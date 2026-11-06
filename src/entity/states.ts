@@ -71,6 +71,10 @@ export interface GrabDef {
   caught?: boolean;
   /** From frame `from` he rises a pixel a frame, `px` in all: Cell's Psychic Lift. */
   lift?: { from: number; px: number };
+  /** He flashes in his two shock palettes until let go ($20:E552). */
+  shocks?: true;
+  /** He stays on the step before `step` until `frame`, then hangs upside down from where he is held (field 0x14, $20:DAE1). */
+  flips?: { step: number; frame: number };
   /** On this frame of the state he turns his back on the thrower, and goes on so (Gotenks's 9d at 8, `$20:BD5A`). */
   turnsAt?: number;
   /**
@@ -79,6 +83,8 @@ export interface GrabDef {
    * facing the thrower's way, x backwards.
    */
   launch: {
+    /** The camera stays until he lands ($20:DB39). */
+    stillCamera?: boolean;
     frame: number;
     damage: number;
     reaction: string;
@@ -118,7 +124,7 @@ export interface SeizeDef {
    * `lands` ends his flight where he is. With
    * `every`, again each `every` frames: an animation of his that goes round (`57`).
    */
-  steps?: { frame: number; anim?: string; show?: number; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; on?: [number, number] | null; lands?: true; every?: number; toHold?: true; cry?: string; sound?: string }[];
+  steps?: { frame: number; anim?: string; show?: number; draws?: Record<string, string>; atBy?: Record<string, [number, number]>; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; on?: [number, number] | null; lands?: true; every?: number; toHold?: true; cry?: string; sound?: string }[];
   /** A circle of light on him: `start` px on frame `from`, 1 more a frame to `top`, then 1 less, at `at` from his feet (his `5f`, `$0F:A67F`). */
   light?: { from: number; start: number; top: number; at: [number, number] };
   /** A dome of light on the floor where he is, and bars of it (`match/sceneLight.ts`). */
@@ -133,10 +139,10 @@ export interface SeizeDef {
   /** From this frame he is not drawn, gone into the scene until he is let go. */
   hides?: number;
   /** Thrown up and away; none keeps him where he was set down. */
-  launch?: { frame: number; vel: [number, number]; from?: [number, number] };
+  launch?: { frame: number; vel: [number, number]; from?: [number, number]; quiet?: boolean };
   bounces?: number[];
   /** `frame`: when he is let go; with a `ball`, when it says. */
-  release: { frame?: number; damage: number; reaction: string; vel: [number, number]; burns?: boolean; fx?: string };
+  release: { frame?: number; damage: number; reaction: string; vel: [number, number]; burns?: boolean; fx?: string; ahead?: boolean };
   /** What flies in his place; he comes out where it ends (`match/ball.ts`). */
   ball?: SceneBallDef;
   /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
@@ -482,6 +488,27 @@ export interface StateDef {
    * arms another.
    */
   behind?: boolean;
+  /**
+   * The camera does not follow vertically while he is in this state, nor a body
+   * thrown from it (`grab.launch.stillCamera`) until it lands (field 0x27 bit 0).
+   */
+  stillCamera?: boolean;
+  /** Leaving it he flips, whatever else is so (field 0x27 bit 1, $20:DB5C, $01:85BF): a thrower with the body behind him. */
+  flipsOnLeaving?: boolean;
+  /** The same from this frame of the state: a throw's handler that goes behind part-way ($20:DA73, frame 30). */
+  behindAt?: number;
+  /**
+   * A blow that touches its hit box is turned on the striker: he is held and
+   * this state goes to `to` (`match/parry.ts`). `except` names, by his fighter,
+   * the moves that get through ($2A:86D1).
+   */
+  parry?: { to: string; except: Record<string, string[]> };
+  /** For a bolt: its ground is its thrower's floor, not the height it left from, and nothing bursts there (Regeneration's arm). */
+  fallsToFloor?: boolean;
+  /** For a bolt: it bursts where its `lasts` runs out, as it arrives (Aerial Assault's five, $0F:CDFE). */
+  burstsAtEnd?: boolean;
+  /** For a bolt: a hit pause does not hold it, as its code never asks (`$30B2`; $0F:CACA). */
+  throughPause?: boolean;
   /**
    * Shake the backdrop as this state begins, as the original's `$E3` does
    * (`camera/shake.ts`) — the knockdown's bounce sets `{ "pattern": 1,

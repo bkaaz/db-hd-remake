@@ -61,6 +61,8 @@ export class DebugScene implements Scene {
     private readonly fighters: Fighters,
     /** The second body's timeline — see src/debug/dummy.ts. */
     private readonly dummy: Dummy,
+    /** Player one's, if the mode gives him one: then the keyboard does not move him. */
+    private readonly dummy1: Dummy | null,
     /** What built this scene, and how many modes there are to step through. */
     private readonly req: DebugRequest,
     private readonly modes: number,
@@ -112,6 +114,9 @@ export class DebugScene implements Scene {
 
     const dummy = Dummy.from(mode.p2);
     if (typeof dummy === "string") return `mode ${req.mode}: ${dummy}`;
+    // player one's timeline, for a case that needs both to act: `npm run moves -- <f> --parry`
+    const dummy1 = mode.p1?.does ? Dummy.from(mode.p1) : null;
+    if (typeof dummy1 === "string") return `mode ${req.mode}: ${dummy1}`;
 
     const p1 = await loadFighter(req.p1);
     if (typeof p1 === "string") return p1;
@@ -187,6 +192,7 @@ export class DebugScene implements Scene {
       new Shake(),
       fighters,
       dummy,
+      dummy1,
       req,
       count,
       effects,
@@ -233,8 +239,13 @@ export class DebugScene implements Scene {
       // Read before the bodies move, which is the freeze this frame will use.
       frozen: this.fighters.frozen,
     });
+    const one = this.dummy1?.input({
+      on: keyboard.toggles.get("dummy"),
+      facing: this.fighters.player.facing,
+      frozen: this.fighters.frozen,
+    });
     this.fighters.update(
-      locked ? NO_INPUT : pressed,
+      locked ? NO_INPUT : (one ?? pressed),
       locked ? NO_INPUT : dummy,
       { bodies: this.camera.world, shots: this.camera.screen, view: { x: this.camera.x, y: this.camera.y } },
     );

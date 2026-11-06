@@ -8,6 +8,8 @@
  *   npm run moves -- vegetto --only aa,9e  prints the comparison instead of writing it
  *   npm run moves -- vegetto --far      his commands from where the round starts: a shot's flight
  *   npm run moves -- vegetto --close    his commands from arm's length: what a blow that lands opens
+ *   npm run moves -- vegetto --parry    a parrying move with the opponent's blow coming at it
+ *   npm run moves -- vegetto --held     his blast commands with the button held, for their levels
  *   npm run moves -- vegetto --report   the comparison again, nothing played
  *   npm run moves -- vegetto --objects  his objects recorded, into logs/objects-vegetto.*
  *
@@ -21,7 +23,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 import type { CommandsFile } from "../src/input/command.ts";
-import { afterInput, byMove, closeCases, differences, farCases, moveCases, readFight, type CommandNeeds, type MoveCase, type Stretch } from "../src/rom/moveCheck.ts";
+import { afterInput, byMove, closeCases, differences, farCases, moveCases, parryCases, heldCases, readFight, type CommandNeeds, type MoveCase, type Stretch } from "../src/rom/moveCheck.ts";
 import { ROM_PATH } from "../src/rom/cartridge.ts";
 import { readCommands } from "../src/rom/commands.ts";
 import { commandContext, rowNeeds } from "../src/rom/conditions.ts";
@@ -50,7 +52,9 @@ const needs: Record<string, CommandNeeds> = Object.fromEntries(
     return [hex(c.move), { ...rest, ...(after !== undefined && { after: hex(after) }) }];
   }),
 );
-const cases = (flags.includes("--far") ? farCases(commands, needs) : flags.includes("--close") ? closeCases(commands, needs) : moveCases(commands, needs)).filter((c) => !only || only.some((o) => c.name === o || c.name.startsWith(`${o} `)));
+/** What `$2A:8692` asks by fighter and move: the moves that wait for a blow. */
+const PARRYING: Record<string, string[]> = { piccolo: ["b7"], vegetto: ["b0"] };
+const cases = (flags.includes("--far") ? farCases(commands, needs) : flags.includes("--close") ? closeCases(commands, needs) : flags.includes("--parry") ? parryCases(commands, PARRYING[fighter] ?? []) : flags.includes("--held") ? heldCases(commands) : moveCases(commands, needs)).filter((c) => !only || only.some((o) => c.name === o || c.name.startsWith(`${o} `)));
 const fileOf = (c: MoveCase) => c.name.replace(/ /g, "-");
 
 /** His face from Goku's at the roster's corner, for player one's cursor: `back` is right on this screen. */
@@ -122,7 +126,7 @@ async function playOriginal(): Promise<void> {
     for (let c = queue.shift(); c; c = queue.shift()) {
       const out = `${dir}/${fileOf(c)}.orig.txt`;
       const frames = c.does.reduce<number>((n, t) => n + (typeof t === "number" ? t : Number(t.split(" ").at(-1))), 0) + 500;
-      await mesen({ state, frames, hp1: 80, p1: { does: c.does } }, out);
+      await mesen({ state, frames, hp1: 80, free: c.free, p1: { does: c.does }, ...(c.foe && { p2: { does: c.foe } }) }, out);
       writeFileSync(`${dir}/${fileOf(c)}.orig.json`, JSON.stringify(readOriginal(readFileSync(out, "utf8"))));
       console.log(`original ${c.name}`);
     }
@@ -206,7 +210,7 @@ async function playOurs(): Promise<void> {
   await page.route("**/api/debug", (route: { fulfill(o: object): Promise<void> }) => route.fulfill({ json: { modes: [{}, {}, {}, {}, {}, mode] } }));
   for (const c of cases) {
     lines = [];
-    mode = { p2: { does: c.does, loop: false } };
+    mode = { p2: { does: c.does, loop: false, free: c.free }, ...(c.foe && { p1: { does: c.foe, loop: false } }) };
     await page.goto(`http://localhost:5173/?scene=debug&mode=5&p1=goku&p2=${fighter}&hp2=80&arena=tournament`);
     await page.waitForSelector("canvas");
     await page.waitForTimeout(700);

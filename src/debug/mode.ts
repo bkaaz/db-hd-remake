@@ -25,7 +25,7 @@ export interface Placement {
 }
 
 export interface DebugMode {
-  p1?: Placement;
+  p1?: Placement & Script;
   /** The dummy: where it stands, and the timeline it plays — see ./dummy.ts. */
   p2?: Placement & Script;
 }

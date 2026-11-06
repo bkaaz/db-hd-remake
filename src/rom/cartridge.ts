@@ -104,6 +104,8 @@ const KAME_RUN = [0x2ade3c, 0x2ade5c, 0x2ade7c];
 const KAME_LOADS = [{ resource: 0x32, vram: 0x6c00 }];
 
 /** The fire a beam leaves on whoever it hits, the same for every fighter: 15 palettes of 32 bytes from $95:C78E (docs/rom.md). */
+/** Palette records `0x113`, `0x114`: a body held by Shocking Stunner, flashing ($20:E552); filled in by `recordsOf`. */
+export const SHOCK = { shock0: 0x113, shock1: 0x114 };
 export const FIRE = Object.fromEntries(Array.from({ length: 15 }, (_, n) => [`fire${n}`, 0x2ac78e + 32 * n]));
 
 /**

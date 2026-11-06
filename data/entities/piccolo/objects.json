@@ -11,7 +11,16 @@
         "vram": 26624
       }
     ],
-    "alt": 37
+    "alt": 37,
+    "fades": [
+      257,
+      256,
+      257,
+      258,
+      257,
+      259,
+      257
+    ]
   },
   {
     "name": "piccolo_5_0a",
@@ -39,7 +48,13 @@
         "vram": 26624
       }
     ],
-    "alt": 37
+    "alt": 37,
+    "fades": [
+      256,
+      257,
+      258,
+      259
+    ]
   },
   {
     "name": "piccolo_5_03",
@@ -53,7 +68,13 @@
         "vram": 26624
       }
     ],
-    "alt": 37
+    "alt": 37,
+    "fades": [
+      256,
+      257,
+      258,
+      259
+    ]
   },
   {
     "name": "piccolo_5_07",
@@ -71,13 +92,21 @@
       "play": {
         "frames": [
           0,
-          1
+          1,
+          2,
+          3
         ],
-        "dur": 12,
+        "dur": 6,
         "loop": true
       }
     },
-    "alt": 37
+    "alt": 37,
+    "fades": [
+      256,
+      257,
+      258,
+      259
+    ]
   },
   {
     "name": "piccolo_5_06",
@@ -96,12 +125,19 @@
       "play": {
         "frames": [
           0,
-          1
+          1,
+          2
         ],
-        "dur": 12,
+        "dur": 8,
         "loop": true
       }
-    }
+    },
+    "fades": [
+      256,
+      257,
+      258,
+      259
+    ]
   },
   {
     "name": "piccolo_5_05",
@@ -123,6 +159,73 @@
           1
         ],
         "dur": 12,
+        "loop": true
+      }
+    },
+    "fades": [
+      256,
+      257,
+      258,
+      259
+    ]
+  },
+  {
+    "name": "piccolo_5_09",
+    "type": 5,
+    "anim": 9,
+    "hits": false,
+    "palette": 144,
+    "loads": [
+      {
+        "resource": 65,
+        "vram": 26624
+      }
+    ],
+    "alt": 145,
+    "animations": {
+      "fall": {
+        "frames": [
+          0
+        ],
+        "dur": 17,
+        "loop": false
+      },
+      "bounce": {
+        "frames": [
+          1
+        ],
+        "dur": 13,
+        "loop": false
+      },
+      "rest": {
+        "frames": [
+          2
+        ],
+        "dur": 16,
+        "loop": false
+      }
+    }
+  },
+  {
+    "name": "piccolo_5_0c",
+    "type": 5,
+    "anim": 12,
+    "hits": false,
+    "palette": 36,
+    "loads": [
+      {
+        "resource": 65,
+        "vram": 26624
+      }
+    ],
+    "alt": 37,
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1
+        ],
+        "dur": 4,
         "loop": true
       }
     }

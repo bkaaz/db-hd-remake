@@ -75,6 +75,12 @@ describe("the debug dummy", () => {
     expect(frames[90].attack).toBe(true);
   });
 
+  it("with `free`, its clock runs on through a hit pause", () => {
+    const dummy = built({ does: [2, "attack 3"], free: true });
+    const frames = [0, 1, 2].map(() => dummy.input({ on: true, facing: -1, frozen: true }));
+    expect(frames[2].attack).toBe(true);
+  });
+
   it("stops the clock while its body is frozen", () => {
     // Ten frames of hit pause per blow would otherwise drift the timeline, so
     // the same script would mean one thing on a whiff and another in a combo.

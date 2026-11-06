@@ -34,7 +34,8 @@
 
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { FIRE, GOKU, ROM_PATH, scriptAt, tileResourceOf, type FighterTables } from "../src/rom/cartridge.ts";
+import { paletteRecord } from "../src/rom/resource.ts";
+import { FIRE, GOKU, SHOCK, ROM_PATH, scriptAt, tileResourceOf, type FighterTables } from "../src/rom/cartridge.ts";
 import { fighterTables, ROSTER, type FighterName } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
@@ -124,8 +125,9 @@ function writeStates(name: string, t: FighterTables): void {
         gravity: his.gravity,
         grabRange: commandContext(rom, t.character).grab,
         closeRange: { attack: closeLines(rom, t.character).y, smash: closeLines(rom, t.character).b },
-        palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE)],
+        palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE), ...Object.keys(SHOCK)],
         burn: Object.keys(FIRE),
+        shock: Object.keys(SHOCK),
       },
       null,
       2,
@@ -492,7 +494,7 @@ if (command === "tiles") {
 } else if (command === "export" && T !== GOKU) {
   // his lightings and the fire; the shared spawns, the arenas and the HUD stay Goku's export
   const lit = litOf(T);
-  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lit, ...introPalettes(rom, T), ...colourSets(name, T.palette, lit) } });
+  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...shockPalettes(rom), ...lit, ...introPalettes(rom, T), ...colourSets(name, T.palette, lit) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write(`assets/sheets/${name}.png`, `data/entities/${name}`, fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
@@ -526,7 +528,7 @@ if (command === "tiles") {
 } else if (command === "export") {
   // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
   const lit = { ...lightingPalettes(rom, GOKU), ...glowPalettes(rom, GOKU), ...altPalettes(rom, GOKU) };
-  const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...lit, ...colourSets("goku", GOKU.palette, lit) } });
+  const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...shockPalettes(rom), ...lit, ...colourSets("goku", GOKU.palette, lit) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write("assets/sheets/goku.png", "data/entities/goku", fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
@@ -559,6 +561,11 @@ if (command === "tiles") {
 }
 
 /** Writes the sheet and the two sections the export owns; states stay hand-written. */
+/** The shock's two palette records, at their addresses: the same for every fighter. */
+function shockPalettes(rom: Uint8Array): Record<string, number> {
+  return Object.fromEntries(Object.entries(SHOCK).map(([name, record]) => [name, paletteRecord(rom, record).at]));
+}
+
 /** A fighter's voice and lines, on the sound test's files (`npm run sound-test`); his other sounds kept. */
 function writeVoice(t: FighterTables, fighter: string): void {
   const ids = spokenLines(rom, t);

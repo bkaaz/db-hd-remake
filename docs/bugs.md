@@ -20,6 +20,26 @@ because a number would only need translating back.
 
 ---
 
+## Regeneration's arm keeps its daylight colours in every light
+
+*Cosmetic, Piccolo, evening and night.* The arm is his own palette (`piccolo_5_09`, record `0x90`), and a spawn has no sheet per lighting, so by evening and night it does not match his body. From the code; only the day was played.
+
+## Goku and Gotenks turn after their throw with a move of its own
+
+*Cosmetic, approved fighters.* Field `0x27` bit 1 at their throw's end (`$20:820B`, `$20:BC08`): the next move's start flips them, with no `41` (`$01:85BF`; recorded: Goku's). Ours plays `turn_round`, 6 frames. Piccolo has it (`flipsOnLeaving`).
+
+## The camera rises where the original's stays
+
+*Cosmetic `?`, a few moves.* `$0F:A72B`, `$0F:EC84`, `$10:B27F`, `$10:B804`, `$20:9BD4` and `$20:D2E3` set field `0x27` bit 0, which stops the camera following vertically; ours rises there. Piccolo's throw has it (`stillCamera`). Which moves they are is not read.
+
+## Vegetto's Galactic Juggle is a parry too
+
+*Annoying `?`, Vegetto.* `$2A:8692` names `04b0` beside Piccolo's `05b7`: a blow touching his `b0` should turn into `b1`, as Regeneration does (ADR 0077). Ours plays it by connecting only. He is approved, so it is not changed.
+
+## A hit box only touching a hurt box lands in the original
+
+*Cosmetic.* `$2A:89D0` counts an edge on an edge from one side. Low Mystic's third reach from where a round opens touches Goku's body exactly: it lands in the original and misses here (`npm run moves -- piccolo --far`). For every fighter, so not changed. The same routine asks `$44` ≥ 2 (`$2A:8155`): a move's first two frames cannot land, ours can.
+
 ## Gotenks's discharges are blended into what is behind them
 
 *Annoying, Gotenks, his intro (`3f`).* `gotenks_discharge` has `adds`, so it is added to
@@ -39,8 +59,7 @@ which our reader cannot follow `?`. From the code: no evening state of the origi
 
 ## Moves that go behind the opponent are drawn over him
 
-*Annoying, a few.* A handler's `$0D:D8D5` puts the mover behind. Left without `behind`: Piccolo's throw,
-Mr. Buu's throw, and by hand Goku's Saiyan Meteor and Vegeta's Galactic Gunfire. The last may be the entry below on
+*Annoying, a few.* A handler's `$0D:D8D5` puts the mover behind. Left without `behind`: Mr. Buu's throw (`behindAt`, as Piccolo's), and by hand Goku's Saiyan Meteor and Vegeta's Galactic Gunfire. The last may be the entry below on
 the body he throws `?`. `npm run rom -- port <move>` says "goes behind the opponent".
 
 ## Freeza's throw has no held animation on its first move
@@ -358,11 +377,10 @@ nothing — they disarm themselves every frame.
   its own (ball and box confirmed by `$2A:8D63`'s mean). His `$7A`, `$26` and `$96` stay clear, so it is not
   `$2A:8B92`'s gate. The low ball's wait is geometry: it strikes once his shove stops at the screen's edge.
 - **Mr. Buu's Energy Field's blow is gone after its first hit.** The original's object stays with its blow disarmed, puts `a/02` out in another slot, and is armed again 60 frames later (`logs/moves/mr_buu/af.orig.txt`, f199 and f259). Ours bursts, as `objectHit` reads it, so a second touch never lands. The circle is the state's and goes on.
-- **Piccolo's Beam Cannon skips its middle level.** `beam_cannon_2` starts at frame 20 and waits on `frames:12`, but `startsAt` sets the state's clock, so `frames:` counts from the animation's start and fires at once. It should read about `frames:31` (Mr. Buu's Mightiness Bomber, the same shape; a `startsAt` state reaches `frames:N` a frame later than it counts: 16 to `frames:24` took 9). Not played to confirm; found reading `specials.json`.
 - **Mightiness Bomber: a ball whose thrower is hit while it charges vanishes at once.** Not compared with the original: it may shrink. After a hit the original also has more `a/17` / `a/18` slots, 14 and 20 frames on; ours shows one burst. Not read.
 - **Cell's `cell_7_03` should set the defender burning**, as `objectHit` reads it; ours does not. It is on `NOT_YET` for its explosion too.
 - **The small and middle Kamehameha and Final Flash may whiten the screen and should not `?`.** `kame_s`, `kame_m`, `vegeta_final_flash_s` and `_m` have `hitFlash`, but they become `a/02` and `a/17`, and only `a/18` asks for the white (`$0F:E234`). Measured on Mightiness Bomber's three levels: only the largest whitens. Not measured on the Kamehameha itself; the owner has approved it as it is.
-- **Three 3D moves may stop short from afar, as Mr. Buu's Flying Bomber did.** Their handlers hold the code that measures the distance (`rom.md`), but ours walk at a fixed speed: Freeza's Double Leg Kick (`a4`, `$10:B69C`), Cell's Giga Shoulder (`a2`, `$10:C552`), Buu's Matamol (`b6`, `$10:D978`). Piccolo's Sonic Kick (`9e`, `$20:DC1B`) walks too, but that code is not in its handler's range: not read. Not played; `port` does not report it. `npm run moves -- <fighter> --far` shows each.
+- **Three 3D moves may stop short from afar, as Mr. Buu's Flying Bomber did.** Their handlers hold the code that measures the distance (`rom.md`), but ours walk at a fixed speed: Freeza's Double Leg Kick (`a4`, `$10:B69C`), Cell's Giga Shoulder (`a2`, `$10:C552`), Buu's Matamol (`b6`, `$10:D978`). Not played; `port` does not report it. `npm run moves -- <fighter> --far` shows each.
 - **Sender `a1` and Planet Attack from afar are off by the report**, not looked into (`npm run moves -- mr_buu --far`).
 - **Kakusan's second shot lands 5 frames after the pause in the original, at once in ours.** Near: the opponent reels 72 frames and 90 px there, 50 and 39 here; from afar they agree. The distance stays 22 px through those 5 frames, and fields `0x26`, `0x7A` and `0x7B` of the defender do not explain it (recorded). Gotenks's Renzoku looks the same `?`.
 - **Gohan's intro shows `run0` … by day on an evening or night arena**, as Vegetto's did: the original plays intros on their own screen, by day, so those records have no other lighting. `relitRun` in `src/rom/arena.ts` could work them out. His `glow` marks follow the lighting since Vegetto's fix.

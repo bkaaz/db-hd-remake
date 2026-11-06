@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { afterInput, byMove, closeCases, commandTokens, differences, farCases, moveCases, readFight } from "./moveCheck";
+import type { CommandDef } from "../input/command";
+import { afterInput, byMove, closeCases, commandTokens, differences, farCases, heldCases, moveCases, parryCases, readFight } from "./moveCheck";
 
 describe("commandTokens", () => {
   it("reads a command's directions oldest first, the button on the newest", () => {
@@ -76,6 +77,33 @@ describe("what a command needs", () => {
   it("leaves both out from afar, where they would play something else", () => {
     const cases = farCases([throwRow, parent, followUp], { "9d": { within: 52 }, aa: { after: "a8" } });
     expect(cases.map((c) => c.name)).toEqual(["a8 far"]);
+  });
+});
+
+describe("parryCases", () => {
+  it("plays only the parrying move, with the opponent's blow on its way", () => {
+    const cases = parryCases([{ move: "b7", where: "ground", words: ["4000", "0100"] }, { move: "9d", where: "ground", words: ["4000"] }], ["b7"]);
+    expect(cases.map((c) => c.name)).toEqual(["b7 parried"]);
+    expect(cases[0].foe).toContain("attack 3");
+  });
+});
+
+describe("heldCases", () => {
+  it("holds a blast command's button, and leaves the others and the air out", () => {
+    const blast: CommandDef = { move: "bc", where: "ground", words: ["0080", "0100"] };
+    const cases = heldCases([blast, { move: "9d", where: "ground", words: ["4000"] }, { move: "be", where: "air", words: ["0080"] }]);
+    expect(cases.map((c) => c.name)).toEqual(["bc held 26", "bc held 40"]);
+    expect(cases[1].does.at(-2)).toMatch(/blast 40$/);
+  });
+});
+
+describe("a command entered in another's hit pause", () => {
+  it("runs straight on from that move, its timeline free", () => {
+    const parent: CommandDef = { move: "ae", where: "ground", words: ["8000", "0100"] };
+    const counter: CommandDef = { move: "b4", where: "ground", words: ["8000", "0400"] };
+    const [, c] = moveCases([parent, counter], { b4: { after: "ae", done: true, pause: true } });
+    expect(c.free).toBe(true);
+    expect(c.before).toContain("ae");
   });
 });
 

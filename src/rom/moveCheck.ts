@@ -14,6 +14,10 @@ export interface MoveCase {
   does: (string | number)[];
   /** Moves that lead up to it and are not it: the summary starts past them. */
   before: string[];
+  /** The timeline goes on through a hit pause, as a player's hands do. */
+  free?: boolean;
+  /** What the opponent does, where the case needs him to (`parryCases`); he stands still without. */
+  foe?: (string | number)[];
 }
 
 const WALK = ["00", "01", "02"];
@@ -66,6 +70,8 @@ export interface CommandNeeds {
   done?: boolean;
   /** Within this many px of him, the throw's range. */
   within?: number;
+  /** Entered in the hit pause of `after`: the timeline runs on through it. */
+  pause?: boolean;
 }
 
 /** The px `fwd` walks a frame from where a round opens, 128 apart: enough to get inside a range, with room. */
@@ -79,9 +85,10 @@ function walkInside(within: number): (string | number)[] {
 }
 
 /** The pad up to the command itself: walking near, inside its range, or through the move it comes out of. */
-function leadUp(c: CommandDef, commands: CommandDef[], needs: Record<string, CommandNeeds>): { lead: (string | number)[]; before: string[] } {
+function leadUp(c: CommandDef, commands: CommandDef[], needs: Record<string, CommandNeeds>): { lead: (string | number)[]; before: string[]; free?: boolean } {
   const need = needs[c.move] ?? {};
   const parent = need.after ? commands.find((p) => p.move === need.after) : undefined;
+  if (parent && need.pause) return { lead: [...NEAR, ...commandTokens(parent.words)], before: [...CROUCH, parent.move], free: true };
   if (parent) return { lead: [...NEAR, ...commandTokens(parent.words), need.done ? BLOW_OVER : 1], before: [...CROUCH, parent.move] };
   if (need.within !== undefined && need.within < OPENING_GAP - 46 * WALK_PX) return { lead: walkInside(need.within), before: CROUCH };
   return { lead: NEAR, before: CROUCH };
@@ -91,8 +98,8 @@ function leadUp(c: CommandDef, commands: CommandDef[], needs: Record<string, Com
 export function moveCases(commands: CommandDef[], needs: Record<string, CommandNeeds> = {}): MoveCase[] {
   const cases: MoveCase[] = commands.map((c) => {
     if (c.where === "air") return { name: `${c.move} air`, does: [...NEAR, "up fwd 3", 14, ...commandTokens(c.words), 300], before: JUMP };
-    const { lead, before } = leadUp(c, commands, needs);
-    return { name: c.move, does: [...lead, ...commandTokens(c.words), 300], before };
+    const { lead, before, free } = leadUp(c, commands, needs);
+    return { name: c.move, does: [...lead, ...commandTokens(c.words), 300], before, ...(free && { free }) };
   });
   for (const [key, token] of Object.entries(NORMALS)) {
     cases.push({ name: `${key} close`, does: [20, "fwd 75", 8, `${token} 3`, 200], before: WALK });
@@ -112,6 +119,34 @@ export function closeCases(commands: CommandDef[], needs: Record<string, Command
       c.where === "air"
         ? { name: `${c.move} air close`, does: [10, "fwd 10", "up fwd 3", 14, ...commandTokens(c.words), 500], before: JUMP }
         : { name: `${c.move} close`, does: [20, "fwd 75", 8, ...commandTokens(c.words), 500], before: CROUCH },
+    );
+}
+
+/**
+ * A parry played for what it waits for: the opponent's Y, landing as the
+ * move's hit box is out ($2A:8537). Only a fighter's parrying move: the
+ * others do not care what he does.
+ */
+export function parryCases(commands: CommandDef[], parrying: string[]): MoveCase[] {
+  return commands
+    .filter((c) => parrying.includes(c.move))
+    .map((c) => ({ name: `${c.move} parried`, does: [...NEAR, ...commandTokens(c.words), 400], before: CROUCH, foe: [100, "attack 3", 400] }));
+}
+
+/**
+ * A blast command with its button held, for the levels a handler counts
+ * (`$EC`, Beam Cannon's 20, 32 and 44): from where the round starts, a shot's
+ * whole flight and the move's end after it.
+ */
+export function heldCases(commands: CommandDef[]): MoveCase[] {
+  return commands
+    .filter((c) => c.where !== "air" && commandTokens(c.words).at(-1)?.toString().includes("blast"))
+    .flatMap((c) =>
+      [26, 40].map((held) => {
+        const tokens = commandTokens(c.words);
+        const press = String(tokens.pop()).replace(/\d+$/, String(held));
+        return { name: `${c.move} held ${held}`, does: [20, ...tokens, press, 300], before: CROUCH };
+      }),
     );
 }
 

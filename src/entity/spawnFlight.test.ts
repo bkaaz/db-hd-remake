@@ -5,7 +5,10 @@ import { DEFAULT_ATTRIBUTES } from "./entityFile";
 import type { StatesFile } from "./states";
 
 const dir = (name: string) => `data/spawns/${name}`;
+/** Its code adds to its vy every frame: Regeneration's arm ($0F:CBE4). */
+const FALLS = new Set(["piccolo_5_09"]);
 const launched = readdirSync("data/spawns").flatMap((name) => {
+  if (FALLS.has(name)) return [];
   if (!existsSync(`${dir(name)}/states.json`)) return [];
   const { states } = JSON.parse(readFileSync(`${dir(name)}/states.json`, "utf8")) as StatesFile;
   return Object.entries(states).flatMap(([state, def]) => (def.airborne && def.launch ? [{ name, state, vy: def.launch[1] as number }] : []));

@@ -138,6 +138,8 @@ export interface Attributes {
    * Flash's heads (`combat/palettes.ts`).
    */
   shimmer?: string[];
+  /** The two palettes a body held by Shocking Stunner flashes in (`SHOCK`, `$20:E552`). */
+  shock?: string[];
   /**
    * For an effect: whether each one is shown mirrored at random, as the
    * generated sparks are; an effect taken from the cartridge is not.

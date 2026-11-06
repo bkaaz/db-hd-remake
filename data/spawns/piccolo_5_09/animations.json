@@ -1,0 +1,29 @@
+{
+  "fall": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "0",
+        "dur": 17
+      }
+    ]
+  },
+  "bounce": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "1",
+        "dur": 13
+      }
+    ]
+  },
+  "rest": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "2",
+        "dur": 16
+      }
+    ]
+  }
+}

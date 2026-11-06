@@ -14,6 +14,11 @@ export function burnVariant(variants: readonly string[], frame: number): string 
   return variants[Math.floor(frame / FRAMES_EACH) % variants.length];
 }
 
+/** Which of the two a held body flashes in: four frames each ($20:E555, `$74 & 7`). */
+export function shockVariant(variants: readonly string[], frame: number): string | undefined {
+  return variants[Math.floor(frame / 4) % 2];
+}
+
 /** Frames each palette of a fighter's run shows, the first a frame short ($20:B3CC counts from frame 1). */
 const RUN_EACH = 4;
 

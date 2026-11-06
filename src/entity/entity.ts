@@ -14,7 +14,7 @@ import { activeBall, BALL_COLOUR, nextRadius } from "../combat/ball";
 import { HitLight, PILLAR_HEIGHT } from "../combat/hitLight";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
-import { burnVariant, paletteVariant, shimmerVariant, markedVariant, runVariant } from "../combat/palettes";
+import { burnVariant, paletteVariant, shimmerVariant, shockVariant, markedVariant, runVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -358,6 +358,14 @@ export class Entity {
   private heldToScript = false;
   /** Burning, and how far into the fire palettes — counted outside hitstop, as the original's is. */
   private burning = false;
+  private heldFlipped = false;
+  /** The state he is in flips him as he leaves it (`flipsOnLeaving`). */
+  private flipsOnLeaving = false;
+  private cameraKept = false;
+  /** The drawing a scene holds him in, over his animation's (`showDrawing`). */
+  private heldDrawing: string | null = null;
+  /** Frames into a held body's flashing (`grab.shocks`); null when it is not. */
+  private shocked: number | null = null;
   private burnFrame = 0;
   /** Frames into an object's life, for its palette run (`shimmer`). */
   private shimmerFrame = 0;
@@ -697,6 +705,26 @@ export class Entity {
     return this.landed;
   }
 
+  /** A bolt whose ground is its thrower's floor (`fallsToFloor`). */
+  get fallsToFloor(): boolean {
+    return !!this.sm?.def.fallsToFloor;
+  }
+
+  /** A bolt that bursts as its `lasts` runs out (`burstsAtEnd`). */
+  get burstsAtEnd(): boolean {
+    return !!this.sm?.def.burstsAtEnd;
+  }
+
+  /** A bolt a hit pause does not hold (`throughPause`). */
+  get throughPause(): boolean {
+    return !!this.sm?.def.throughPause;
+  }
+
+  /** What this state turns a blow into, if it waits for one (`parry`). */
+  get parry() {
+    return this.sm?.def.parry;
+  }
+
   /** A bolt that plays on where it hits (`outlivesHit`). */
   get outlivesHit(): boolean {
     return !!this.sm?.def.outlivesHit;
@@ -766,6 +794,29 @@ export class Entity {
     if (this.def.animations[anim]) this.setAnim(anim, true);
   }
 
+  /** Upside down while held, from where he is held: `grab.flipsAt`. */
+  flipHeld(on: boolean): void {
+    this.heldFlipped = on;
+  }
+
+  /** The camera stays until he lands: `grab.launch.stillCamera`. */
+  keepCamera(): void {
+    this.cameraKept = true;
+  }
+
+  /** Whether the camera may not follow vertically for him (field 0x27 bit 0). */
+  get holdsCamera(): boolean {
+    if (this.cameraKept && !this.held && !this.airborne) this.cameraKept = false;
+    return this.cameraKept || !!this.sm?.def.stillCamera;
+  }
+
+  /** Held in one drawing named by the mover's table, whatever he was doing ($20:E2E0). */
+  showDrawing(drawing: string | undefined): void {
+    if (drawing === undefined) return;
+    this.heldDrawing = drawing;
+    this.applyFrame();
+  }
+
   /** Stay on the drawing he shows while held, as a script's hold does. */
   holdStill(): void {
     this.heldStill = true;
@@ -786,6 +837,8 @@ export class Entity {
    */
   release(state = this.def.states?.initial ?? "", vel?: [number, number], quiet = false): void {
     this.held = false;
+    this.heldDrawing = null;
+    this.heldFlipped = false;
     this.previewing = false;
     this.quietEntry = quiet;
     this.forceState(state);
@@ -905,6 +958,12 @@ export class Entity {
   /** Burning from now until it lands, as a blow's `burns` sets it: a scene's own let-go (`SeizeDef.release`). */
   setBurning(): void {
     if (this.def.attributes.burn.length > 0) this.burning = true;
+  }
+
+  /** Flash in the opponent's two palettes, or stop: Shocking Stunner's hold ($20:E552). */
+  shock(on: boolean): void {
+    this.shocked = on ? (this.shocked ?? -1) + 1 : null;
+    this.showVariant();
   }
 
   /** Record that the blow it just landed was blocked: the `blocked` trigger. */
@@ -1191,6 +1250,8 @@ export class Entity {
       (marks && markedVariant(marks, this.stateFrames, this.altColours, (v) => this.def.variants.has(v), this.lighting));
     const variant = running
       ? running
+      : this.shocked !== null
+      ? (shockVariant(this.def.attributes.shock ?? [], this.shocked) ?? this.lighting)
       : this.burning
       ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting)
       : shimmer
@@ -1233,6 +1294,8 @@ export class Entity {
     if (!this.sm.def.sameSwing) this.swing.reset();
     if (this.sm.def.type !== undefined) this.armed = true;
     this.behind = this.sm.def.behind ?? false;
+    if (this.flipsOnLeaving) this.facing = this.facing === 1 ? -1 : 1;
+    this.flipsOnLeaving = !!this.sm.def.flipsOnLeaving;
     if (!this.sm.def.keepsApproach) this.approaching = null;
     this.arrived = false;
     this.freed = false;
@@ -1382,6 +1445,7 @@ export class Entity {
     // move arrives.
     this.swing.tick();
     this.hitLight.tick();
+    if (this.sm.def.behindAt === this.stateFrames - 1) this.behind = true;
     const { loopUntil: until, loopFrom: from } = this.sm.def;
     const humming = (until === undefined || this.stateFrames < until) && (from === undefined || this.stateFrames >= from);
     if (this.hum.id && humming) {
@@ -1552,7 +1616,8 @@ export class Entity {
   render(showBoxes: boolean): void {
     this.sprite.x = this.x;
     this.sprite.y = this.y + (this.sm?.def.hover ? hoverOffset(this.stateFrames) * this.scale : 0);
-    this.sprite.scale.set(this.facing * this.scale * this.size, this.scale * this.size);
+    const flip = this.heldFlipped ? -1 : 1;
+    this.sprite.scale.set(flip * this.facing * this.scale * this.size, flip * this.scale * this.size);
     this.renderShadow();
 
     this.ballG.clear();
@@ -1648,9 +1713,10 @@ export class Entity {
   private applyFrame(): void {
     const step = this.currentStep();
     if (!step) return;
-    const ft = this.def.frames.get(step.frame);
+    const frame = this.heldDrawing ?? step.frame;
+    const ft = this.def.frames.get(frame);
     if (!ft) return;
-    const variant = this.shownVariant ? this.def.variants.get(this.shownVariant)?.get(step.frame) : undefined;
+    const variant = this.shownVariant ? this.def.variants.get(this.shownVariant)?.get(frame) : undefined;
     this.sprite.texture = variant ?? ft.tex;
     this.sprite.anchor.set(ft.anchor[0] / ft.w, ft.anchor[1] / ft.h);
   }

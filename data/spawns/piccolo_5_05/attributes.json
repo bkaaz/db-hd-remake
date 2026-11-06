@@ -1,5 +1,15 @@
 {
   "palettes": [
+    "shimmer1",
+    "shimmer2",
+    "shimmer3",
+    "shimmer4",
     "alt"
+  ],
+  "shimmer": [
+    "shimmer1",
+    "shimmer2",
+    "shimmer3",
+    "shimmer4"
   ]
 }

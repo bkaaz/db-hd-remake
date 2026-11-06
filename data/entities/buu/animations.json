@@ -55458,6 +55458,112 @@
       }
     ]
   },
+  "m30_piccolo_bf": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "38",
+        "dur": 4
+      },
+      {
+        "frame": "39",
+        "dur": 4
+      },
+      {
+        "frame": "38",
+        "dur": 4
+      },
+      {
+        "frame": "39",
+        "dur": 4
+      },
+      {
+        "frame": "38",
+        "dur": 4
+      },
+      {
+        "frame": "39",
+        "dur": 4
+      },
+      {
+        "frame": "38",
+        "dur": 4
+      },
+      {
+        "frame": "39",
+        "dur": 4
+      },
+      {
+        "frame": "38",
+        "dur": 4
+      },
+      {
+        "frame": "39",
+        "dur": 4
+      },
+      {
+        "frame": "38",
+        "dur": 4
+      },
+      {
+        "frame": "39",
+        "dur": 4
+      }
+    ]
+  },
+  "m30_piccolo_bf_air": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "85",
+        "dur": 4
+      },
+      {
+        "frame": "86",
+        "dur": 4
+      },
+      {
+        "frame": "85",
+        "dur": 4
+      },
+      {
+        "frame": "86",
+        "dur": 4
+      },
+      {
+        "frame": "85",
+        "dur": 4
+      },
+      {
+        "frame": "86",
+        "dur": 4
+      },
+      {
+        "frame": "85",
+        "dur": 4
+      },
+      {
+        "frame": "86",
+        "dur": 4
+      },
+      {
+        "frame": "85",
+        "dur": 4
+      },
+      {
+        "frame": "86",
+        "dur": 4
+      },
+      {
+        "frame": "85",
+        "dur": 4
+      },
+      {
+        "frame": "86",
+        "dur": 4
+      }
+    ]
+  },
   "m30_piccolo_d9": {
     "loop": false,
     "steps": [

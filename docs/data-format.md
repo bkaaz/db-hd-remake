@@ -162,6 +162,11 @@ nine fighters would each want a copy of it. A grunt *is* his.
   `hides` stops drawing him from a frame, and `ball` flies in his place and lets him
   out where it ends (`match/ball.ts`). A later state of the scene names it in `sceneOf`.
   Its `steps` may keep him at an offset from the seizer in the air (`on`), end his flight (`lands`), play his `anim` only as far as its script's hold (`toHold`, a step's `hold` in `animations.json`; `still` on the `seize` keeps him on its first drawing) or sound (`cry` him, `sound` the seizer); a spark may `sound` and `pause` the pair; `dome`, `bars`, `sparks` and `screens` are what the scene draws by frame (`match/sceneLight.ts`, ADR 0076).
+- **`parry` makes a state wait for a blow** (ADR 0077): a blow whose hit box touches this state's is turned on the striker, who is held, and the state goes to `to`; `except` names by his fighter the moves that get through. A `seize` step's `draws` and `atBy` give the drawing and the offset by the held body's fighter. A `release` with `ahead` leaves him facing the seizer: a blow taken, not a throw. `launch.quiet` skips his cry.
+- **A `grab`'s `shocks`** flashes the held body in `attributes.shock`, four frames each (Shocking Stunner). A state after a grab with a `caught` grab of its own keeps him held, with no idle between.
+- **A `grab`'s `flips`** keeps the held body on the step before `step` until `frame`, then draws it upside down. **`stillCamera`** keeps the camera from following vertically while he is in the state; on a grab's `launch`, until the thrown body lands.
+- **`flipsOnLeaving`**: he flips as he leaves the state, with no `turnsBy`.
+- **`behindAt`** is `behind` from a frame of the state. **A bolt's `fallsToFloor`** has its thrower's floor for ground, **`burstsAtEnd`** bursts where its `lasts` runs out, `throughPause` is not held by a hit pause.
 - **`throwsFoe` strikes the opponent wherever he is**, on a frame of a state: `ahead` leaves him facing the thrower, `fx` leaves an effect on him (Vegetto's throw).
 - **`turnsBy` is the state a body plays its turn in**, on finding the opponent behind
   it: idle, walking and the crouch, into `turn_round`. With none it flips on the spot.

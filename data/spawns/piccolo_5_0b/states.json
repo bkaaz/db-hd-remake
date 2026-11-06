@@ -8,13 +8,18 @@
         0,
         0
       ],
-      "burstsInto": "burst_s",
-      "hitSound": "burst_0a",
-      "blockSound": "burst_0a",
-      "endsWithMove": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "endsWithMove": [
+        "b9",
+        "ba"
+      ],
       "opens": "stunner_hold",
       "type": "down",
-      "damage": 0
+      "damage": 0,
+      "outlivesHit": true
     }
-  }
+  },
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark"
 }

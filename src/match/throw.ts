@@ -29,14 +29,22 @@ export function heldAt(at: readonly [number, number][] | undefined, step: number
 
 export class Throws {
   /** By thrower: whom he holds, in which state, and whether he has let go. */
-  private readonly holding = new Map<Entity, { held: Entity; state: string; launched: boolean }>();
+  private readonly holding = new Map<Entity, { held: Entity; state: string; launched: boolean; shocks: boolean }>();
 
   /** After both bodies moved, before blows: the throw `thrower` is making of `other`, if any. */
   update(thrower: Entity, other: Entity): void {
     const grab = thrower.grab;
     const hold = this.holding.get(thrower);
+    // handed on: the next state's grab keeps him, with no idle between (Piccolo's counters, then his throw)
+    if (hold && !hold.launched && grab?.caught && thrower.state !== hold.state) {
+      hold.state = thrower.state;
+      hold.held.hold(`m30_${thrower.name}_${thrower.animation.slice(1, 3)}`);
+    }
     if (hold && (!grab || thrower.state !== hold.state)) {
-      if (!hold.launched) hold.held.release();
+      if (!hold.launched) {
+        if (hold.shocks) hold.held.shock(false);
+        hold.held.release();
+      }
       this.holding.delete(thrower);
       return;
     }
@@ -48,11 +56,16 @@ export class Throws {
       other.hold(grab.caught && other.y < other.groundY ? `${held}_air` : held);
       // he turns to face the thrower ($20:8212)
       other.facing = thrower.facing === 1 ? -1 : 1;
-      this.holding.set(thrower, { held: other, state: thrower.state, launched: false });
+      this.holding.set(thrower, { held: other, state: thrower.state, launched: false, shocks: !!grab.shocks });
       return this.update(thrower, other);
     }
     if (hold.launched) return;
-    const place = heldAt(grab.at[other.name], thrower.animStep, { ...thrower.placement, y: thrower.y });
+    if (grab.shocks) other.shock(true);
+    const flipped = grab.flips && thrower.stateFrame - 1 >= grab.flips.frame;
+    if (flipped) other.flipHeld(true);
+    // the step past it is where the launch sets him down, never drawn upside down
+    const step = grab.flips ? Math.min(thrower.animStep, grab.flips.step - (flipped ? 0 : 1)) : thrower.animStep;
+    const place = heldAt(grab.at[other.name], step, { ...thrower.placement, y: thrower.y });
     if (place) [other.x, other.y] = [place.x, place.y];
     if (grab.lift) {
       const risen = Math.max(0, Math.min(thrower.stateFrame - grab.lift.from, grab.lift.px));
@@ -66,6 +79,10 @@ export class Throws {
       // or ahead of him, still facing him (`ahead`, Vegeta's) — $0F:B321's facing
       other.facing = grab.launch.ahead ? (thrower.facing === 1 ? -1 : 1) : thrower.facing;
       other.hurtBy(grab.launch.damage);
+      if (grab.shocks) other.shock(false);
+      const from = grab.flips && heldAt(grab.at[other.name], thrower.animStep, { ...thrower.placement, y: thrower.y });
+      if (from) [other.x, other.y] = [from.x, from.y];
+      if (grab.launch.stillCamera) other.keepCamera();
       other.release(grab.launch.reaction, grab.launch.vel, grab.launch.quiet);
       hold.launched = true;
     }

@@ -60,32 +60,25 @@ Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_star
 
 ## Piccolo
 
-Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug&p2=piccolo`.
+Read move by move against the original (`docs/rom.md`, Piccolo). `?scene=debug&p1=piccolo&p2=goku&hp1=80`.
 
 | move | input | left out |
 |---|---|---|
 | `9e` sonic_kick | ground: R + B | — |
 | `9d` throw | ground: → + X | — |
-| `b9` shocking_stunner | ground: ← ↙ ↓ A | — |
+| `b9` shocking_stunner | ground: ← ↙ ↓ A | `1b` from the third hit in `1e` |
 | `a0` sender_a0 | ground: → ← → X | — |
 | `a1` sender_a1 | ground: ↓ ↙ ← X | — |
-| `b4` low_counter | ground: ↓ ↙ ← B | — |
-| `ab` high_counter | ground: ↓ ↙ ← Y | — |
+| `b4` low_counter | ground: ↓ ↙ ← B, in Low Mystic's hit pause | — |
+| `ab` high_counter | ground: ↓ ↙ ← Y, in High Mystic's hit pause | — |
 | `9f` sender_9f | ground: ↓ ↘ → X | — |
 | `bb` yuudoh | ground: → ↓ ↘ A | — |
 | `ae` low_mystic | ground: → ↓ ↘ B | — |
 | `a5` high_mystic | ground: → ↓ ↘ Y | — |
 | `bd` gekiretsudokan | ground: ← ↙ ↓ ↘ → A | — |
-| `bc` beam_cannon | ground: ↓ ↙ → A | mbc_3: only the first of its spawn counters; what its handler decides on a button held or a level `?` |
-| `b7` regeneration | ground: ← ↙ ↓ ↘ → Y | mb7's blow, a reaction no type copies |
-| `a2` aerial_assault | ground: → ← ↓ ↑ Y | ma2's blow, a reaction no type copies; what its handler decides on a button held or a level `?` |
-| `be` bukuuh_kyaku | air: → ↓ B | mbe's blow, a reaction no type copies; mbe: only the first of its spawn counters; what its handler decides on a button held or a level `?` |
-| `93` attack_b | his own normal | — |
-| `b3` move_b3 | from another move | — |
-| `aa` move_aa | from another move | — |
+| `a2` aerial_assault | ground: → ← ↓ ↑ Y, health 80 or less | `$37` = `23` as the balls land, not read |
 
-Objects, no recording yet (5): frames from the table, 4 frames each `?`, colours `?`: `piccolo_5_0b`, `piccolo_5_0a`, `piccolo_5_02`, `piccolo_5_03`, `piccolo_5_07`.
-Goku's states on code of his own, not read: `dash_back`, `dash_fwd`, `intro`, `ko_bounce`, `ko_bounce2`, `ko_down`, `ko_fall`, `ko_lie`, `ko_rise`, `reel_trip`, `trip_fall`, `trip_land`, `win`, `win_air`.
+Intro and win: his palette and held pose; the win from the code, not recorded `?`.
 
 ## Freeza
 
