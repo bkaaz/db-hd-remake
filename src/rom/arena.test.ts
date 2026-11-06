@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { Rgb } from "../entity/palettesFile";
 import type { Rgba } from "../sprites/png";
-import { altPalettes, ARENAS, exportArena, glowPalettes, lightingPalettes, lightingShift, relitRun } from "./arena";
+import { altPalettes, ARENAS, exportArena, glowPalettes, introPalettes, lightingPalettes, lightingShift, relitRun } from "./arena";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { fighterNamed } from "./roster";
 import { stageRecord } from "./stage";
@@ -73,6 +73,22 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
     const [speed, offset] = sky.scroll;
     expect(128 * speed + offset).toBe(128);
     expect(speed).toBe(0.5);
+  });
+});
+
+describe.skipIf(!existsSync(ROM_PATH))("Freeza's intro on an arena", () => {
+  const rom = new Uint8Array(readFileSync(ROM_PATH));
+  const palettes = introPalettes(rom, fighterNamed(rom, "freeza"));
+
+  it("has every record of his intro by evening and by night, in player one's colours for both, as its records are absolute", () => {
+    const names = ["evening", "night"].flatMap((time) => [0, 1, 2, 3, 4, 5].map((i) => `${time}_run${i}`));
+    expect(Object.keys(palettes).sort()).toEqual(names.sort());
+  });
+
+  it("keeps the colours the record leaves alone in that lighting's own", () => {
+    const evening = palettes.evening_run0 as Rgb[];
+    expect(evening.length).toBe(16);
+    expect(evening).not.toEqual(palettes.night_run0);
   });
 });
 

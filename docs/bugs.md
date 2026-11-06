@@ -24,14 +24,6 @@ because a number would only need translating back.
 
 *Sound, Vegeta, Gotenks, Buu, Mr. Buu.* Freeza's throw had a voice at the launch that `$0F:B321` does not play: the reaction's own sound, which `launch.quiet` skips. These four lack `quiet`, and a quick search of their recordings found no sound on the frame they let go; Goku, Gohan, Piccolo and Cell have one there. Not compared one by one.
 
-## Jubaku Ha has one frame with no ball and no dome
-
-*Cosmetic, Freeza.* The shot is gone on the frame it hits and the scene's light is drawn from the next; in the recording the slot's last frame is followed at once by the opponent's `37`.
-
-## Flaming Headbutt does not dip as he leans back
-
-*Cosmetic, Freeza.* `$10:BBCB` and `$10:BBED` move his drawing 2 px a frame down from frame 41 and up from 46 (field `0x10`, `$10:BB55`), and nothing resets it before the script's end. Ours has no drawing offset by frame; the logs' `sy` do not show this field, so it was not measured.
-
 ## Kishin Ha's spark sits higher than the original's
 
 *Cosmetic, Freeza.* It lands a frame early (a blow's box, below), on the object's first box where the original's is on its second; the spark is about 10 px over the original's. Not looked into further.
@@ -407,7 +399,7 @@ nothing — they disarm themselves every frame.
 - **Two 3D moves may stop short from afar, as Mr. Buu's Flying Bomber did.** Their handlers hold the code that measures the distance (`rom.md`), but ours walk at a fixed speed: Cell's Giga Shoulder (`a2`, `$10:C552`), Buu's Matamol (`b6`, `$10:D978`). Not played; `port` does not report it. `npm run moves -- <fighter> --far` shows each.
 - **Sender `a1` and Planet Attack from afar are off by the report**, not looked into (`npm run moves -- mr_buu --far`).
 - **Kakusan's second shot lands 5 frames after the pause in the original, at once in ours.** Near: the opponent reels 72 frames and 90 px there, 50 and 39 here; from afar they agree. The distance stays 22 px through those 5 frames, and fields `0x26`, `0x7A` and `0x7B` of the defender do not explain it (recorded). Gotenks's Renzoku looks the same `?`.
-- **Gohan's and Freeza's intros show `run0` … by day on an evening or night arena**, as Vegetto's did: the original plays intros on their own screen, by day, so those records have no other lighting. `relitRun` in `src/rom/arena.ts` could work them out. His `glow` marks follow the lighting since Vegetto's fix.
+- **Gohan's intro shows `run5` by day on an evening or night arena**, as Freeza's and Vegetto's did: the original plays intros on their own screen, by day, so that record has no other lighting. `ABSOLUTE_INTRO` in `src/rom/arena.ts` works them out for a fighter named there. His `glow` marks follow the lighting since Vegetto's fix.
 - **A blow after a connection lands 3 frames early:** Elbow Dash's second, 14 frames after the first where the original's is 17. The state's first frame runs out inside the hit pause, and the blow's box is early too (next entry). Other follow-ups likely share it `?`.
 - **Low B from close: the two bodies part the other way.** The blow lands 3 frames early (below), so Vegetto is 4 px further along when Goku falls on him, and turns round where the original's stands up.
 - **A blow's box is out a frame early in ours, and gone a frame early.** A state's step has advanced by the time `landBlow` looks: Flying Bomber's box, the original's script frames 50 to 57, is 49 to 56 here. A blow reached only on its last frame misses: Flying Bomber from about 168 px, where the original just lands. For every fighter; not changed, it would move every blow by a frame.

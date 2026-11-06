@@ -9,6 +9,7 @@ import {
   effectsNamed,
   hitFxOf,
   stoppedByContact,
+  dipAt,
   spawnsNamed,
   groundSpeed,
   guardStateFor,
@@ -1466,6 +1467,18 @@ describe("a state that costs ki", () => {
     // listed after it — must still be allowed to fire.
     sm.update({ ...SPECIAL, attack: true }, { ...QUIET, ki: 0 });
     expect(sm.current).toBe("punch");
+  });
+});
+
+describe("dipAt", () => {
+  const dips: [number, number][] = [[38, 2], [40, 0], [43, -4], [48, 0]];
+
+  it("is the last entry's offset up to `frame`, and nothing before the first", () => {
+    expect([37, 38, 39, 40, 43, 47, 48, 90].map((frame) => dipAt(dips, frame))).toEqual([0, 2, 2, 0, -4, -4, 0, 0]);
+  });
+
+  it("is nothing for a state without one", () => {
+    expect(dipAt(undefined, 40)).toBe(0);
   });
 });
 

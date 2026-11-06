@@ -35,7 +35,7 @@ import { pressedNames, stickLine } from "../input/padLine";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions, type MotionName } from "../input/motion";
 import {
-  groundSpeed, stoppedByContact,
+  dipAt, groundSpeed, stoppedByContact,
   guardStateFor,
   hitFxOf,
   reactionFor,
@@ -1656,7 +1656,8 @@ export class Entity {
   /** Push the simulation state into the display objects. */
   render(showBoxes: boolean): void {
     this.sprite.x = this.x;
-    this.sprite.y = this.y + (this.sm?.def.hover ? hoverOffset(this.stateFrames) * this.scale : 0);
+    const dip = dipAt(this.sm?.def.dips, this.stateFrames);
+    this.sprite.y = this.y + ((this.sm?.def.hover ? hoverOffset(this.stateFrames) : 0) + dip) * this.scale;
     const flip = this.heldFlipped ? -1 : 1;
     this.sprite.scale.set(flip * this.facing * this.scale * this.size, flip * this.scale * this.size);
     this.renderShadow();

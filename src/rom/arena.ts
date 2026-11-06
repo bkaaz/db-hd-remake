@@ -80,6 +80,9 @@ export function runPalettes(rom: Uint8Array, t: FighterTables): Record<string, n
 /** How far a move's palette for the screen before the fight is from his own: Vegetto's `3c` is his black hair ($20:D912), Piccolo's his bare arms ($20:D9CF), and his `3e` too. */
 const INTRO_RECORD: Record<number, number> = { 4: 0xae, 5: 0xc0 };
 
+/** A fighter's intro in records that name no player: Freeza's, which are all of his `RUNS`. */
+const ABSOLUTE_INTRO: Record<number, number[]> = { 6: RUNS[6] };
+
 /** What takes one palette's colours to another's: each channel's commonest difference, so that a colour at its limit does not count. */
 export function lightingShift(day: readonly Rgb[], lit: readonly Rgb[]): Rgb {
   const commonest = (channel: number): number => {
@@ -106,11 +109,18 @@ export function relitRun(day: readonly Rgb[], run: readonly Rgb[], lit: readonly
  * is the Kamehameha's beam. Ours plays on the arena, so the rest are worked out.
  */
 export function introPalettes(rom: Uint8Array, t: FighterTables): Record<string, number | Rgb[]> {
-  const offset = INTRO_RECORD[t.character];
-  if (offset === undefined) return {};
   const colours = (record: number) => readPalette(rom, paletteRecord(rom, record).at);
   const out: Record<string, number | Rgb[]> = {};
   const day = 0x40 + 16 * t.character;
+  // absolute records, one set for both players ($10:B06C): `run0` … by day are `runPalettes`'
+  for (const [time, own] of lightingRecords(rom, t)) {
+    if (time === null) continue;
+    (ABSOLUTE_INTRO[t.character] ?? []).forEach((record, i) => {
+      out[named(time, `run${i}`)] = relitRun(colours(day), colours(record), colours(own));
+    });
+  }
+  const offset = INTRO_RECORD[t.character];
+  if (offset === undefined) return out;
   for (const [time, own] of lightingRecords(rom, t)) {
     for (const [side, parts] of [[0, ["run0"]], [1, ["run0", "alt"]]] as const) {
       const name = named(time, ...parts);

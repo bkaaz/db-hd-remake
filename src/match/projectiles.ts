@@ -195,6 +195,8 @@ export class Projectiles {
       const opened = result && !result.blocked && bolt.opens;
       if (result && !opened) owner.freeze(bolt.attackHitstop);
       if (opened) owner.opensScene(opened);
+      // up until the scene's light takes the same circle next frame: the slot goes and his `37` comes with nothing between
+      if (opened && bolt.ballNow > 0) owner.showThrownBall({ x: bolt.x, y: bolt.y, radius: bolt.ballNow });
       // strayed too far from the screen's middle, off a side or the top ($0F:B47D)
       const stranded = objectGone(bolt.x, bolt.y, view);
       // and is gone the moment he leaves the move that put it out ($0F:BB51)

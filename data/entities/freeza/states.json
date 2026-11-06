@@ -2780,6 +2780,24 @@
           "when": "animEnd",
           "to": "flaming_headbutt_3"
         }
+      ],
+      "dips": [
+        [
+          38,
+          2
+        ],
+        [
+          40,
+          0
+        ],
+        [
+          43,
+          -4
+        ],
+        [
+          48,
+          0
+        ]
       ]
     },
     "flaming_headbutt_3": {
