@@ -28,6 +28,10 @@ because a number would only need translating back.
 
 *Cosmetic, seen on Gohan's intro.* His dust stays bright white by night beside a body in that lighting's colours. Not checked whether the original lights objects by arena, or for how many objects it shows.
 
+## Gohan shows an odd colour for a moment as he gets up and turns `?`
+
+*The owner's impression, unsure.* Not reproduced: played after a throw and when jumped over, as player one by day and player two by night, every frame is in his own palette, and the handlers `$0F:A35E` and `$0F:A499` load none. Not played: mirror match, evening, after a burn or a shock, B + Y held (the charge's glow). The original's get-up not recorded.
+
 ## Kishin Ha's spark sits higher than the original's
 
 *Cosmetic, Freeza.* It lands a frame early (a blow's box, below), on the object's first box where the original's is on its second; the spark is about 10 px over the original's. Not looked into further.
