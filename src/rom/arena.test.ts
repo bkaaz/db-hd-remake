@@ -92,6 +92,13 @@ describe.skipIf(!existsSync(ROM_PATH))("Freeza's intro on an arena", () => {
   });
 });
 
+describe.skipIf(!existsSync(ROM_PATH))("Gohan's intro on an arena", () => {
+  it("has the one record it plays by evening and by night", () => {
+    const rom = new Uint8Array(readFileSync(ROM_PATH));
+    expect(Object.keys(introPalettes(rom, fighterNamed(rom, "gohan"))).sort()).toEqual(["evening_run5", "night_run5"]);
+  });
+});
+
 describe("relitRun", () => {
   // colour 0 is transparent; the bright last channel is at its limit, which must not set the shift
   const day: Rgb[] = [[0, 0, 0], [248, 200, 80], [100, 100, 100], [40, 40, 40], [80, 60, 120]];
