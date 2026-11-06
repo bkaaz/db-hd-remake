@@ -2440,10 +2440,11 @@
       ],
       "transitions": [
         {
-          "when": "frames:208",
+          "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "loopUntil": 208
     },
     "shooting_kick": {
       "anim": "maa",
