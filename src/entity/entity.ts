@@ -35,7 +35,7 @@ import { pressedNames, stickLine } from "../input/padLine";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions, type MotionName } from "../input/motion";
 import {
-  groundSpeed,
+  groundSpeed, stoppedByContact,
   guardStateFor,
   hitFxOf,
   reactionFor,
@@ -600,7 +600,7 @@ export class Entity {
     // knocked into the air, its speed is the shove's: the original's vx stays 0 (`1b`, recorded)
     if (this.sm.def.launch) return 0;
     if (this.airborne) return this.facing * this.vx;
-    if (this.sm.def.stopsOnContact && this.swing.spent) return 0;
+    if (stoppedByContact(this.sm.def, this.swing.spent, this.stateFrames)) return 0;
     return this.facing * (this.approaching ?? groundSpeed(this.sm.def, this.stateFrames));
   }
 

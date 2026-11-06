@@ -81,19 +81,9 @@ Read move by move against the original (`docs/rom.md`, Freeza). `?scene=debug&p1
 
 | move | input | left out |
 |---|---|---|
-| `a4` double_leg_kick | ground: R + B | — |
-| `9d` throw | ground: → + X | — |
-| `a7` ground_wave | ground: ← ↙ ↓ A | — |
 | `a0` sender_a0 | ground: → ← → X | not read: the Senders are out, by the owner's word |
 | `a1` sender_a1 | ground: ↓ ↙ ← X | not read: the Senders are out |
 | `9f` sender_9f | ground: ↓ ↘ → X | not read: the Senders are out |
-| `a9` freeza_slash | ground: ↓ ↙ ← Y | — |
-| `a8` kienzan | ground: → ↓ ↘ A | — |
-| `a5` kishin_ha | ground: → ↓ ↘ Y | — |
-| `ab` death_ball | ground: ← ↙ ↓ ↘ → A | — |
-| `aa` explosive_grab | ground: → ↘ ↓ ↙ ← Y, close | — |
-| `ac` jubaku_ha | ground: ↓ ↙ → A | — |
-| `92`, `93`, `95` | Y far, B far, ↓ + B | compared by the report alone |
 
 Charge and win: from the code, not looked at against a picture `?`; his own reels the same.
 

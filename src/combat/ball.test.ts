@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { nextRadius, type BallDef } from "./ball";
 
@@ -125,6 +125,17 @@ describe("Mr. Buu's Mightiness Bomber", () => {
       const timed = states[name].transitions.filter((t) => [t.when].flat().some((w) => w.startsWith("frames:")));
       expect(timed.length).toBeGreaterThan(0);
       for (const t of timed) expect(t.when).toContain("!spawnEnd");
+    }
+  });
+});
+
+describe("an object's ball", () => {
+  it("names its first frame in the object's first state: nothing before it carries one on, so it would never appear", () => {
+    for (const name of readdirSync("data/spawns")) {
+      const file = `data/spawns/${name}/states.json`;
+      if (!existsSync(file)) continue;
+      const { initial, states } = JSON.parse(readFileSync(file, "utf8")) as { initial: string; states: Record<string, { ball?: BallDef | BallDef[] }> };
+      for (const ball of [states[initial].ball ?? []].flat()) expect(ball.from ?? ball.pulse, `${name}: ${initial}`).toBeDefined();
     }
   });
 });

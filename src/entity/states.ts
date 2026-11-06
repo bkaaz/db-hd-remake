@@ -534,8 +534,11 @@ export interface StateDef {
    * original picks by player, whose colours they are (Gohan's `ae`, `$20:B3DE`).
    */
   paletteRun?: { plain: string[]; alt: string[] };
-  /** Its ground speed ends with its blow's contact: a run that stops where it lands (Flaming Headbutt, `$10:BC30`). */
-  stopsOnContact?: boolean;
+  /**
+   * Its ground speed ends with its blow's contact: a run that stops where it lands (Flaming Headbutt, `$10:BC30`).
+   * A number is the first frame it may: a blow's box is out early in ours (`bugs.md`), before the steps the original takes first.
+   */
+  stopsOnContact?: boolean | number;
   /** The speeds he comes in with are kept, for a `resumesFlight` later in the move (fields `0x80`, `0x82`). */
   savesFlight?: boolean;
   /** He goes on at the speeds a `savesFlight` kept: Evil Energy, when it lets him fall (`$10:B73F`). */
@@ -1171,6 +1174,11 @@ export const pressIn = (when: string | string[], input?: InputSnapshot): string 
  * from rescuing someone mid-knockdown or standing a floored fighter up.
  */
 /** Forward speed on the ground `frame` frames into a state: its `velAt`, else its `vel`. */
+export function stoppedByContact(def: StateDef, spent: boolean, frame: number): boolean {
+  const stop = def.stopsOnContact;
+  return !!stop && spent && (stop === true || frame >= stop);
+}
+
 export function groundSpeed(def: StateDef, frame: number): number {
   let speed = def.vel?.[0] ?? 0;
   for (const [at, vx] of def.velAt ?? []) if (frame >= at) speed = vx;

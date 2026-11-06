@@ -331,5 +331,27 @@
       }
     },
     "tiles": 128
+  },
+  {
+    "name": "freeza_6_02",
+    "type": 6,
+    "anim": 2,
+    "hits": true,
+    "palette": 41,
+    "loads": [
+      {
+        "resource": 67,
+        "vram": 26624
+      }
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0
+        ],
+        "dur": 4,
+        "loop": true
+      }
+    }
   }
 ]

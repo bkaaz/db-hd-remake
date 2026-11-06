@@ -1146,8 +1146,9 @@ Handlers from `$20:C687`. **Shooting Kick** (`aa`, `$20:C758`): vx 1 to frame 28
 
 ### Freeza
 
-Objects from `$0F:CFC4`. His landing plays no `0c`, from a jump or a move (`$0F:9FC2` skips it for character 6); lying down after a bounce still does (`$10:AF6A`).
+Objects from `$0F:CFC4`. **His ki blast** is his own: `6/02`, vx 4, gone at 40 (`$0F:CFC4`), `a/02` where it hits; every other fighter's is `a/03`, vx 3. His landing plays no `0c`, from a jump or a move (`$0F:9FC2` skips it for character 6); lying down after a bounce still does (`$10:AF6A`).
 **Double Leg Kick** (`a4`, `$10:B61D`): vx 1 and behind on step 0, stands on step 6, on frame 32 (`$10:B67E`) (opponent ± 8 − x) / 32 whole px, turned to him.
+**↓ + B** (`95`, `$10:B1B0`) and **↓ ↘ → X** (`9f`, `$10:B4A3`): vx 4 from frame 21 and frame 4. Stopped by contact; missing, `95` runs to the script's end (60 px), `9f` stops 4 frames on (16 px). **→ ← → X** (`a0`): vx 2 from 20 to 38 (36 px), stopped by contact.
 **His throw** (`9d`, `9e`): the opponent is in `30` from `9d`'s first frame, standing where he was in the drawing he had; held at the table from `9e`. Field `0x27` bit 0 from `9e`'s frame 1 (`$10:B27F`), and on **Explosive Grab** (`aa`, `$10:B804`).
 **Evil Energy** (`a6`, `$10:B733`) hangs, and at the script's end goes on at fields `0x80`, `0x82`, the speeds it came in with, in `05` from frame 56 (`$0F:B1EC`). `6/0d` 18 frames; `6/0e` moves itself 2 forward and 2 down a frame and is gone at his step 3 (`$0F:D274`); `6/13`, at y `C0` or more (`$0F:D414`), becomes `6/0f` at y `C8` and puts out `6/10` in another slot: both strike, 32, and stay. `6/0f` is the ring and a pillar, `6/10` a pillar after 20 frames.
 **Ground Wave** (`a7`): `6/08` runs through a hit pause, goes when he leaves `a7` or `cd`, and at y `C8` becomes `6/09`, at vx 3 along the floor (`$0F:D106`), for good.

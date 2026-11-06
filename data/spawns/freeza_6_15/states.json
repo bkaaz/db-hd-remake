@@ -15,7 +15,8 @@
         ],
         "start": 2,
         "grow": 1,
-        "max": 16
+        "max": 16,
+        "from": 0
       },
       "endsWithMove": [
         "ac",

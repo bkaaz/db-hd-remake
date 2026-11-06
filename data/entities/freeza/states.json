@@ -1317,10 +1317,6 @@
         [
           21,
           4
-        ],
-        [
-          23,
-          0
         ]
       ],
       "hitSound": "hit_09",
@@ -1332,7 +1328,8 @@
           "when": "animEnd",
           "to": "crouch"
         }
-      ]
+      ],
+      "stopsOnContact": 23
     },
     "meteor_fall": {
       "anim": "m05_2",
@@ -1433,9 +1430,9 @@
       ],
       "turn": false,
       "fires": {
-        "spawn": "ki_blast",
+        "spawn": "freeza_6_02",
         "at": [
-          40,
+          32,
           -56
         ]
       },
@@ -2539,6 +2536,10 @@
         [
           20,
           2
+        ],
+        [
+          38,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -2550,7 +2551,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "stopsOnContact": 22
     },
     "sender_a1": {
       "anim": "ma1",
@@ -2636,6 +2638,10 @@
         [
           4,
           4
+        ],
+        [
+          8,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -2647,7 +2653,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "stopsOnContact": 6
     },
     "flaming_headbutt": {
       "anim": "maf",
@@ -3928,7 +3935,8 @@
             -7
           ],
           "ahead": true,
-          "stillCamera": true
+          "stillCamera": true,
+          "quiet": true
         },
         "caught": true
       },

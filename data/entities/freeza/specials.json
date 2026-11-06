@@ -4,7 +4,8 @@
     "attack_b",
     "crouch_b",
     "land",
-    "intro"
+    "intro",
+    "ki_fire"
   ],
   "entries": [
     {
@@ -331,6 +332,10 @@
         [
           20,
           2
+        ],
+        [
+          38,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -342,7 +347,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "stopsOnContact": 22
     },
     "sender_a1": {
       "anim": "ma1",
@@ -428,6 +434,10 @@
         [
           4,
           4
+        ],
+        [
+          8,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -439,7 +449,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "stopsOnContact": 6
     },
     "flaming_headbutt": {
       "anim": "maf",
@@ -1387,10 +1398,6 @@
         [
           21,
           4
-        ],
-        [
-          23,
-          0
         ]
       ],
       "hitSound": "hit_09",
@@ -1402,7 +1409,8 @@
           "when": "animEnd",
           "to": "crouch"
         }
-      ]
+      ],
+      "stopsOnContact": 23
     },
     "move_9e": {
       "anim": "m9e",
@@ -1804,7 +1812,8 @@
             -7
           ],
           "ahead": true,
-          "stillCamera": true
+          "stillCamera": true,
+          "quiet": true
         },
         "caught": true
       },
@@ -2204,6 +2213,27 @@
           "run5"
         ]
       ],
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "ki_fire": {
+      "anim": "m9b_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "fires": {
+        "spawn": "freeza_6_02",
+        "at": [
+          32,
+          -56
+        ]
+      },
       "transitions": [
         {
           "when": "animEnd",

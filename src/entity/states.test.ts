@@ -8,6 +8,7 @@ import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
   hitFxOf,
+  stoppedByContact,
   spawnsNamed,
   groundSpeed,
   guardStateFor,
@@ -1465,6 +1466,21 @@ describe("a state that costs ki", () => {
     // listed after it — must still be allowed to fire.
     sm.update({ ...SPECIAL, attack: true }, { ...QUIET, ki: 0 });
     expect(sm.current).toBe("punch");
+  });
+});
+
+describe("stoppedByContact", () => {
+  it("stops at once on `true`, and only with the blow spent", () => {
+    expect(stoppedByContact({ stopsOnContact: true } as StateDef, true, 1)).toBe(true);
+    expect(stoppedByContact({ stopsOnContact: true } as StateDef, false, 99)).toBe(false);
+    expect(stoppedByContact({} as StateDef, true, 99)).toBe(false);
+  });
+
+  it("with a number, not before that frame of the state", () => {
+    const def = { stopsOnContact: 23 } as StateDef;
+    expect(stoppedByContact(def, true, 22)).toBe(false);
+    expect(stoppedByContact(def, true, 23)).toBe(true);
+    expect(stoppedByContact(def, false, 23)).toBe(false);
   });
 });
 

@@ -20,6 +20,14 @@ because a number would only need translating back.
 
 ---
 
+## Some throws may cry out once too often `?`
+
+*Sound, Vegeta, Gotenks, Buu, Mr. Buu.* Freeza's throw had a voice at the launch that `$0F:B321` does not play: the reaction's own sound, which `launch.quiet` skips. These four lack `quiet`, and a quick search of their recordings found no sound on the frame they let go; Goku, Gohan, Piccolo and Cell have one there. Not compared one by one.
+
+## Jubaku Ha has one frame with no ball and no dome
+
+*Cosmetic, Freeza.* The shot is gone on the frame it hits and the scene's light is drawn from the next; in the recording the slot's last frame is followed at once by the opponent's `37`.
+
 ## Flaming Headbutt does not dip as he leans back
 
 *Cosmetic, Freeza.* `$10:BBCB` and `$10:BBED` move his drawing 2 px a frame down from frame 41 and up from 46 (field `0x10`, `$10:BB55`), and nothing resets it before the script's end. Ours has no drawing offset by frame; the logs' `sy` do not show this field, so it was not measured.

@@ -214,7 +214,8 @@ export class Projectiles {
         foe.sound(bolt.attackSounds.hit);
       }
       if ((result && !bolt.outlivesHit) || floored || stranded || orphaned || bolt.expired) {
-        if (result && bolt.ballNow > 0) this.fading.push({ owner, x: bolt.x, y: bolt.y, radius: bolt.ballNow });
+        // the scene it opens draws on the same circle at once: no ball left to fade (`$0F:A417`)
+        if (result && !opened && bolt.ballNow > 0) this.fading.push({ owner, x: bolt.x, y: bolt.y, radius: bolt.ballNow });
         const why = result ? "hit" : floored ? "floored" : stranded ? "strayed" : orphaned ? "orphaned" : "expired";
         logEvent(`bolt ${name} gone (${why}) at x ${Math.round(bolt.x)}, screen x ${Math.round(bolt.x - view.x)}`);
         bolt.view.destroy({ children: true });
