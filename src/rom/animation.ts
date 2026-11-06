@@ -81,6 +81,7 @@ export function toAnim(ops: ScriptOp[], boxesOf: (drawing: number) => Box[] = ()
     const step: Step = { frame: frameId(current, look), dur };
     const boxes = placeBoxes(boxesOf(current), look);
     if (boxes.length) step.boxes = boxes;
+    if (op.op === "hold") step.hold = true;
     if (sfx.length) step.sfx = sfx;
     if (voice !== undefined) step.voice = voice;
     if (spawns.length) step.spawns = spawns;

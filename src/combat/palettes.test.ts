@@ -76,6 +76,13 @@ describe("markedVariant", () => {
     expect([0, 1, 16, 17, 45, 46].map((f) => markedVariant(marks, f, false, has))).toEqual([undefined, "glow", "glow", "run5", "run5", undefined]);
   });
 
+  it("follows the lighting where a variant has it, and stays by day where it has not", () => {
+    const lit = (v: string) => ["evening_glow", "evening_glow_alt"].includes(v);
+    expect(markedVariant(marks, 1, false, lit, "evening")).toBe("evening_glow");
+    expect(markedVariant(marks, 1, true, lit, "evening")).toBe("evening_glow_alt");
+    expect(markedVariant(marks, 17, false, lit, "evening")).toBe("run5");
+  });
+
   it("takes the alternate colours only where a variant has them", () => {
     expect([markedVariant(marks, 1, true, has), markedVariant(marks, 17, true, has)]).toEqual(["glow_alt", "run5"]);
   });

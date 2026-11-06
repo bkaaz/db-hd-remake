@@ -71,7 +71,7 @@ import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
-import { altPalettes, ARENAS, exportArena, glowPalettes, lightingPalettes, runPalettes, winPalettes } from "../src/rom/arena.ts";
+import { altPalettes, ARENAS, exportArena, glowPalettes, introPalettes, lightingPalettes, runPalettes, winPalettes } from "../src/rom/arena.ts";
 import { drawHud, exportHud } from "../src/rom/hud.ts";
 
 if (!existsSync(ROM_PATH)) {
@@ -124,7 +124,7 @@ function writeStates(name: string, t: FighterTables): void {
         gravity: his.gravity,
         grabRange: commandContext(rom, t.character).grab,
         closeRange: { attack: closeLines(rom, t.character).y, smash: closeLines(rom, t.character).b },
-        palettes: [...Object.keys(litOf(t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE)],
+        palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE)],
         burn: Object.keys(FIRE),
       },
       null,
@@ -492,7 +492,7 @@ if (command === "tiles") {
 } else if (command === "export" && T !== GOKU) {
   // his lightings and the fire; the shared spawns, the arenas and the HUD stay Goku's export
   const lit = litOf(T);
-  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lit, ...colourSets(name, T.palette, lit) } });
+  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...lit, ...introPalettes(rom, T), ...colourSets(name, T.palette, lit) } });
   for (const note of fighter.notes) console.log(`  ${note}`);
   write(`assets/sheets/${name}.png`, `data/entities/${name}`, fighter);
   for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {

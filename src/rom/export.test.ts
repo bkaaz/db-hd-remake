@@ -2,6 +2,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { exportSpawns } from "./export";
+import { draftedObjects } from "./draftObjects";
+import { tablesOf } from "./fighterStates";
+import { ownObjects } from "./ownObjects";
 import { readResource } from "./resource";
 
 // Recorded on 2026-10-29: the ki blast alternated two frames every 2 frames
@@ -32,6 +35,14 @@ describe.skipIf(!existsSync(ROM_PATH))("objects, on the cartridge", () => {
     expect(steps.map((s) => s.dur)).toEqual([52, ...Array<number>(14).fill(4)]);
     expect([crackle.frames["14"].w, crackle.frames["14"].h]).toEqual([1, 1]);
     expect(crackle.frames["0"].w).toBeGreaterThan(1);
+  });
+
+  it("draws Vegetto's Big Bang flash upside down, up from where it is put, as his handler sets it", () => {
+    const t = tablesOf(rom, "vegetto");
+    const flash = draftedObjects("vegetto").filter((o) => o.name === "vegetto_4_02");
+    const spawns = ownObjects(rom, t, flash, []);
+    const { frames } = exportSpawns(rom, { ...t, objects: { loads: [], palettes: {}, spawns } }).vegetto_4_02;
+    expect(frames["0"].anchor[1]).toBe(16);
   });
 
   it("exports the charged Kamehameha's three beam heads growing with the charge, and a base that comes in, loops and goes out without hitting", () => {

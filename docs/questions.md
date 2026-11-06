@@ -28,8 +28,8 @@ Not compared by this tool: how anything looks, sounds and voices, blocked blows,
 2. **Goten and Trunks splitting (win):** in which light did you look, and as which player? Is it the
    final colour, the flash or the moment of change? By day the palettes match the original.
 
-3. **The ultimates' scenes** (Galactic Juggle, Aerial Assault, Jubaku Ha, Candy
-   Beam; Mr. Buu's two are done): they now seize, play their parts and throw, but the opponent plays one pose in place, without the
+3. **The ultimates' scenes** (Aerial Assault, Jubaku Ha, Candy
+   Beam; Mr. Buu's two and Galactic Juggle are done): they now seize, play their parts and throw, but the opponent plays one pose in place, without the
    original's flight, flashes and sprays, and **their damage is my guess** (70 to 120), save Candy Beam's 100
    from the code. Are they worth doing to the frame now, or after the port?
 
@@ -49,7 +49,7 @@ Not compared by this tool: how anything looks, sounds and voices, blocked blows,
 Fixed: Shooting Kick, Far Smash and low Smash's movement, low blows' return to the crouch, Aerial
 Kick (117 frames, as the original), Geri Combo's hold and throw, Kakusan's three, Final Kamehameha's
 ending, his objects from a recording (Big Bang's ball, the flashes of low Y and X).
-Galactic Juggle's scene when it lands is approximate (below). Left: Kakusan's balls land closer together than the original's; Elbow Dash lands 3 frames early.
+Second pass, 2026-11-06: Shooting Kick closes on the opponent from afar, his throw strikes twice (34 damage, a shot and an explosion), low B slides as the original, Elbow Dash raises dust, the intro's palette and sound, and Galactic Juggle's whole scene from the cartridge (127 damage). Left: `docs/bugs.md`, under his moves.
 
 ### Piccolo
 

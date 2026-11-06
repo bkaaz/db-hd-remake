@@ -77,10 +77,13 @@ export class Throws {
  * frame its state's `throwsFoe` names ($0F:B321) — Galactic Gunfire's on the
  * body it pinned. He faces the thrower's way, thrown backwards.
  */
-export function throwFoe(thrower: Entity, other: Entity): void {
+export function throwFoe(thrower: Entity, other: Entity, effect: (name: string, x: number, y: number) => unknown): void {
   const t = thrower.throwsFoe;
   if (!t || thrower.stateFrame - 1 !== t.frame) return;
-  other.facing = thrower.facing;
+  other.facing = t.ahead ? (thrower.facing === 1 ? -1 : 1) : thrower.facing;
   other.hurtBy(t.damage);
   other.release(t.reaction, t.vel);
+  if (!t.fx) return;
+  const { scale, facing } = thrower.placement;
+  effect(t.fx.name, other.x + facing * t.fx.at[0] * scale, other.y + t.fx.at[1] * scale);
 }

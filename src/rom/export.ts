@@ -159,7 +159,8 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
   const drawn = [...new Set(parts.flatMap((p) => p.shows.map((s) => s.frame)))];
   const drawIn = (palette: number): Placed[] =>
     drawn.map((frame) => {
-      const pieces = readLayout(rom, objectFrame(rom, def.type, def.anim, frame)).map((p) => ({ ...p, tile: p.tile + tiles }));
+      const read = readLayout(rom, objectFrame(rom, def.type, def.anim, frame)).map((p) => ({ ...p, tile: p.tile + tiles }));
+      const pieces = def.vflip ? flipLayout(read, false, true) : read;
       // an empty layout is how an object shows nothing for a while (idle's lightning)
       if (pieces.length === 0) return { id: String(frame), ...NOTHING };
       return { id: String(frame), ...drawFrame(vram, pieces, readPalette(rom, palette)) };

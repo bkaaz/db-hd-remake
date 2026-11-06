@@ -161,6 +161,8 @@ nine fighters would each want a copy of it. A grunt *is* his.
   `seize` with no `place` takes him where he stands, with no `launch` keeps him there,
   `hides` stops drawing him from a frame, and `ball` flies in his place and lets him
   out where it ends (`match/ball.ts`). A later state of the scene names it in `sceneOf`.
+  Its `steps` may keep him at an offset from the seizer in the air (`on`), end his flight (`lands`), play his `anim` only as far as its script's hold (`toHold`, a step's `hold` in `animations.json`; `still` on the `seize` keeps him on its first drawing) or sound (`cry` him, `sound` the seizer); a spark may `sound` and `pause` the pair; `dome`, `bars`, `sparks` and `screens` are what the scene draws by frame (`match/sceneLight.ts`, ADR 0076).
+- **`throwsFoe` strikes the opponent wherever he is**, on a frame of a state: `ahead` leaves him facing the thrower, `fx` leaves an effect on him (Vegetto's throw).
 - **`turnsBy` is the state a body plays its turn in**, on finding the opponent behind
   it: idle, walking and the crouch, into `turn_round`. With none it flips on the spot.
 - **`fires.also` is more bolts on the same frame**, each hitting on its own, at its own

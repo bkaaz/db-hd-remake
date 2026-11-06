@@ -11,6 +11,7 @@
  * scripting escape hatch come in later slices.
  */
 
+import type { SceneBar, SceneDome } from "../match/sceneLight";
 import type { SceneBallDef } from "../match/ball";
 import type { Aim } from "./aim";
 import { borrowed, inputsOfErrors, type InputsOf } from "./inputsOf";
@@ -106,16 +107,27 @@ export interface SeizeDef {
   /** Where he is set down from the seizer; none leaves him where he stands. */
   place?: [number, number];
   anim: string;
+  /** He stays on `anim`'s first drawing rather than playing it (a `step`'s `toHold` plays its `anim` as far as the script's hold). */
+  still?: true;
   /**
    * What happens to him on which frames of the scene: another animation, a
    * frame of his own shown, set down `at` from the seizer (x toward the
    * seizer's facing, y from the floor), drifting by `drift` px a frame until
-   * the next says otherwise, hidden or shown — Oyatsu Kosen eating him. With
+   * the next says otherwise, hidden or shown — Oyatsu Kosen eating him; `on` keeps
+   * him at that offset from the seizer, floor or not, until a step says null;
+   * `lands` ends his flight where he is. With
    * `every`, again each `every` frames: an animation of his that goes round (`57`).
    */
-  steps?: { frame: number; anim?: string; show?: number; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; every?: number }[];
+  steps?: { frame: number; anim?: string; show?: number; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; on?: [number, number] | null; lands?: true; every?: number; toHold?: true; cry?: string; sound?: string }[];
   /** A circle of light on him: `start` px on frame `from`, 1 more a frame to `top`, then 1 less, at `at` from his feet (his `5f`, `$0F:A67F`). */
   light?: { from: number; start: number; top: number; at: [number, number] };
+  /** A dome of light on the floor where he is, and bars of it (`match/sceneLight.ts`). */
+  dome?: SceneDome;
+  bars?: SceneBar[];
+  /** Melee sparks left by the seizer on these frames, `at` from him: Galactic Juggle's blows. One may sound, and pause the pair (`$30B2`): the scene's frame waits with them. */
+  sparks?: { frame: number; at: [number, number]; sound?: string; pause?: number }[];
+  /** The screen on these frames: whitened, and back ($37 = 24, 21 and 22). */
+  screens?: { frame: number; cue: "white" | "restore" }[];
   /** What he cries out as he is taken (Volleyball's `4d`). */
   cry?: string;
   /** From this frame he is not drawn, gone into the scene until he is let go. */
@@ -643,7 +655,16 @@ export interface StateDef {
    * costing `damage` less defence, leaving at `vel` facing the thrower's way
    * ($0F:B321): Galactic Gunfire's on the body it pinned.
    */
-  throwsFoe?: { frame: number; damage: number; reaction: string; vel: [number, number] };
+  throwsFoe?: {
+    frame: number;
+    damage: number;
+    reaction: string;
+    vel: [number, number];
+    /** He keeps facing the thrower, x still away from him: as a grab's `launch.ahead`. */
+    ahead?: boolean;
+    /** Left on him as he goes, `at` px from him toward the thrower's facing: Vegetto's shot ($20:CF89). */
+    fx?: { name: string; at: [number, number] };
+  };
   /**
    * Whether this state's attack may lift or floor a body that is already
    * helpless — a **relaunch**. Only `RELAUNCH_LIMIT` of them land in one combo; past
@@ -1356,6 +1377,8 @@ export function effectsNamed(
     if (def.burstsInto) names.add(def.burstsInto);
     if (def.groundFx) names.add(def.groundFx);
     if (def.trail) names.add(def.trail.fx);
+    if (def.throwsFoe?.fx) names.add(def.throwsFoe.fx.name);
+    if (def.seize?.sparks?.length) names.add("hit_spark");
     if (def.seize?.bursts) names.add(def.seize.bursts.fx);
     if (def.seize?.release.fx) names.add(def.seize.release.fx);
     if (def.seize?.finale) names.add(def.seize.finale.fx);

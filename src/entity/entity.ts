@@ -226,6 +226,7 @@ export class Entity {
   private thrownBall: { x: number; y: number; radius: number } | null = null;
   /** The finale's band along the floor at world `y`, kind 4 of `size`; null for none. */
   private floorBand: { y: number; size: number } | null = null;
+  private bars: { x: number; y: number; w: number; h: number }[] = [];
   /** What its state asked of the screen this frame (`StateDef.screen`), until the fighters take it. */
   private screenCues: ScreenCue[] = [];
   /** Effects the animation's steps put out, until the fighters take them. */
@@ -353,6 +354,8 @@ export class Entity {
   private hum = { id: "", left: 0 };
   /** Game frames left of a hit pause; while it lasts nothing about the entity moves. */
   private freezeFrames = 0;
+  private heldStill = false;
+  private heldToScript = false;
   /** Burning, and how far into the fire palettes — counted outside hitstop, as the original's is. */
   private burning = false;
   private burnFrame = 0;
@@ -615,6 +618,11 @@ export class Entity {
     this.sweep = sweep;
   }
 
+  /** Draw a scene's bars of light, world px (`match/sceneLight.ts`); none for none. */
+  showBars(bars: { x: number; y: number; w: number; h: number }[]): void {
+    this.bars = bars;
+  }
+
   showFloorBand(band: { y: number; size: number } | null): void {
     this.floorBand = band;
   }
@@ -753,7 +761,22 @@ export class Entity {
   hold(anim: string): void {
     this.held = true;
     this.previewing = true;
+    this.heldStill = false;
+    this.heldToScript = false;
     if (this.def.animations[anim]) this.setAnim(anim, true);
+  }
+
+  /** Stay on the drawing he shows while held, as a script's hold does. */
+  holdStill(): void {
+    this.heldStill = true;
+  }
+
+  /**
+   * Stop where his script holds. Each fighter's is at its own frame (his `50` at
+   * 260 or 262, his `51` at 28, 32 or 34), and past it a script may run into the next.
+   */
+  holdToScript(): void {
+    this.heldToScript = true;
   }
 
   /**
@@ -1165,7 +1188,7 @@ export class Entity {
     const marks = this.sm?.def.paletteAt;
     const running =
       (run && runVariant(this.altColours ? run.alt : run.plain, this.stateFrames)) ??
-      (marks && markedVariant(marks, this.stateFrames, this.altColours, (v) => this.def.variants.has(v)));
+      (marks && markedVariant(marks, this.stateFrames, this.altColours, (v) => this.def.variants.has(v), this.lighting));
     const variant = running
       ? running
       : this.burning
@@ -1314,7 +1337,7 @@ export class Entity {
     if (this.previewing) {
       // a hold's drawings go step for step with the thrower, who waits out a freeze too
       if (this.freezeFrames > 0) this.freezeFrames--;
-      else this.advanceAnim();
+      else if (!this.heldStill) this.advanceAnim();
       return;
     }
     if (!this.sm) return;
@@ -1540,6 +1563,7 @@ export class Entity {
       const { apex, x, half, floor } = this.sweep;
       this.ballG.poly([apex[0], apex[1], x - half * this.scale, floor, x + half * this.scale, floor]).fill(BALL_COLOUR);
     }
+    for (const b of this.bars) this.ballG.rect(b.x, b.y, b.w, b.h).fill(BALL_COLOUR);
     // kind 4: 2 × size tall, 2 px over the floor (y 0xC6), across the screen and past its sides
     const fb = this.floorBand;
     const { ball: hitBall, pillar } = this.hitLight;
@@ -1635,6 +1659,7 @@ export class Entity {
     if (!this.anim || this.anim.steps.length === 0) return;
     this.remaining -= 1;
     if (this.remaining > 0) return;
+    if (this.heldToScript && this.currentStep()?.hold) return;
     if (staysOnStep(this.sm?.def, this.stepIndex, this.stateFrames)) return;
 
     this.stepIndex += 1;

@@ -183,8 +183,8 @@ export class Fighters {
       this.seizures.update(this.opponent, this.player, world);
       this.finales.update(this.player, this.opponent, world);
       this.finales.update(this.opponent, this.player, world);
-      throwFoe(this.player, this.opponent);
-      throwFoe(this.opponent, this.player);
+      throwFoe(this.player, this.opponent, world.effect);
+      throwFoe(this.opponent, this.player, world.effect);
       this.passShoves(field.shots);
     }
 

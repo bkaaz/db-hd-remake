@@ -21,8 +21,8 @@ describe("toAnim", () => {
     expect(toAnim([show(3, 5), show(2, null), show(1, 6)])?.steps.map((s) => s.frame)).toEqual(["5", "5", "6"]);
   });
 
-  it("gives a hold one frame, and drops a step of none", () => {
-    expect(toAnim([show(0, 9), { op: "hold", drawing: 7 }])?.steps).toEqual([{ frame: "7", dur: 1 }]);
+  it("gives a hold one frame, says it is one, and drops a step of none", () => {
+    expect(toAnim([show(0, 9), { op: "hold", drawing: 7 }])?.steps).toEqual([{ frame: "7", dur: 1, hold: true }]);
   });
 
   it("gives each step its drawing's boxes", () => {

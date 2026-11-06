@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Entity } from "../entity/entity";
 import type { GrabDef } from "../entity/states";
-import { heldAt, Throws } from "./throw";
+import { heldAt, throwFoe, Throws } from "./throw";
 
 /**
  * `Throws` names an `Entity` only as a type, so it runs in Node against two
@@ -161,5 +161,42 @@ describe("Throws", () => {
     const h = Object.assign(held(), { throwable: false });
     new Throws().update(thrower(), h);
     expect(h.hold).not.toHaveBeenCalled();
+  });
+});
+
+describe("throwFoe", () => {
+  const foe = () => ({ x: 372, y: 168, facing: -1, hurtBy: vi.fn(), release: vi.fn() });
+  const by = (over = {}) => ({
+    stateFrame: 62,
+    facing: 1,
+    placement: { scale: 1, facing: 1 },
+    throwsFoe: { frame: 61, damage: 34, reaction: "reel_down", vel: [-6, -1], ahead: true, fx: { name: "burst_m", at: [16, -28] } },
+    ...over,
+  });
+  const run = (t: object, f: object, effect = vi.fn()) => {
+    throwFoe(t as never, f as never, effect);
+    return effect;
+  };
+
+  it("strikes only on its frame", () => {
+    const f = foe();
+    run(by({ stateFrame: 61 }), f);
+    expect(f.release).not.toHaveBeenCalled();
+  });
+
+  it("leaves him facing the thrower when it goes ahead, and turned otherwise", () => {
+    const ahead = foe();
+    run(by(), ahead);
+    expect(ahead.facing).toBe(-1);
+    expect(ahead.release).toHaveBeenCalledWith("reel_down", [-6, -1]);
+    expect(ahead.hurtBy).toHaveBeenCalledWith(34);
+    const behind = foe();
+    run(by({ throwsFoe: { frame: 61, damage: 0, reaction: "reel_down", vel: [-6, -1] } }), behind);
+    expect(behind.facing).toBe(1);
+  });
+
+  it("leaves its effect on him, toward the thrower's facing, as $20:CF89 does", () => {
+    expect(run(by(), foe())).toHaveBeenCalledWith("burst_m", 388, 140);
+    expect(run(by({ placement: { scale: 1, facing: -1 } }), foe())).toHaveBeenCalledWith("burst_m", 356, 140);
   });
 });

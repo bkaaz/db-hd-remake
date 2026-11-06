@@ -1,6 +1,7 @@
 [
   {
     "name": "vegetto_4_02",
+    "vflip": true,
     "type": 4,
     "anim": 2,
     "hits": false,

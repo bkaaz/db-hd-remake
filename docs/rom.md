@@ -331,7 +331,7 @@ and that many bytes of BRR sent to the chip at `$3700` (`$00:DA6F`), until
 a count of 0; a chunk's last block ends it. 75 bytes go a frame (`$067A`),
 so it plays at 8000 samples a second. There are `2e` of them (`00`–`2d`),
 each in the sound test (`line_0d.wav`); a fighter's are the ids his
-scripts' `a1` name (`src/rom/lines.ts`).
+scripts' `a1` name (`src/rom/lines.ts`). A recording's `$2141` shows the stream's bytes for as long as a line goes, so an effect's id asked for meanwhile cannot be told from them: read the handler (`find 22 2e d8 0d`). A lone `36` 5 frames in is the stream's too `?`.
 
 **The Kamehameha's hit lights the defender up** (`dump-vram.lua`,
 `log-palettes.lua`): the burning above, and BG palettes 2–7 turn white for
@@ -1132,6 +1132,17 @@ own page — Goku `0x1xx`, Vegeta `0x2xx` … Buu `0xAxx`. A resource's record n
 A new fighter's tables are `fighterNamed(rom, "vegetto")`; what they
 lack is `objects` — his objects' pictures and timing, read from their
 types' code by the reader to come (`plan.md`).
+
+### Vegetto
+
+Handlers from `$20:C687`. **Shooting Kick** (`aa`, `$20:C758`): vx 1 to frame 28, then on frame 34 (`$20:C1B2`) (opponent's x ± 8 − x) / 32 whole px. **Low B** (`95`) slides at vx 4 from 9, losing 0.5 a frame from 28 until the step at 37.
+**His throw** (`9d`, `$20:CED3`) strikes twice: frame 29 (`$20:CF1F`) 0 damage, move `1b`, vx 1.5, vy −8, no sound, holding him no more on that frame; frame 61 (`$20:CF47`) his voice `30`, 34 damage, stun 4, `1b`, vx 6, vy −1, with `a/17` on him at +16, −28 by the thrower's facing. Field `0x96` is `f0` throughout.
+**Intro** (`3c`, `$20:D90C`): below frame 97 his palette is his own + `0xAE`, black hair: one colour of `0x12E` differs from `0x80`; from 97 his own, and sound `19` every 8th frame. Recorded, he stands from 195 and the scene takes him out of `3c` at 208, 35 frames before its script ends. A lighting moves a whole palette by one amount: evening +2, −2, −8, night −4, −4, 0 in 5 bits.
+**Big Bang** (`af`, also `d4`, `d5`): on frame 7 the handler (`$20:D0D6`) finds the slot of `4/02` and sets bit 7 of its `+4` (`$20:D0DD`): the flash over his hand is drawn upside down, up from its y. Bit 7 of the `b0`'s own attribute byte is not this: it asks for the player's palette (`$01:87A2`). No other fighter's handler does it.
+**Slashdown Kick** (`a8`, `$20:CC0D`): from 16 it dives at vx 5, vy 5; once its blow has connected (field `0x25` bit 7 clear) it stops, re-arms and becomes `a9` (`$20:CC68`). There on 1 gravity off, vx −5, vy −5, each gaining 0.375 a frame to 15; stops on 16; on 20 vx 6.5, vy 6.5 and the second blow; lands into `3b`.
+**Moves `50` and `51`** the opponent plays here are each fighter's own, and hold at their own frame: `50` at 262, Mr. Buu's 260; `51` at 28, Vegetto's 32, Gotenks's 34. Past the hold most `50`s run on into their `51`.
+**Elbow Dash** (`a7`) raises `a/0D` under him while `0x7D` is not 0, on frames with `& 3` = 2.
+**Galactic Juggle** (`b0`, then `b1`, `$20:D28E`, steps by field `f0`, table `$20:D2B0`), frames of `b1`: the opponent `30` at +23, then `51` at +38 from 48. The script's three `a/00` at 52, 60, 84. On 85 (`$20:D38B`) he is thrown as `50`, vy −17, his voice `30`, 0 damage. At 117 (`$20:D3C9`) he is over the mover, at 150 he stands at y 70 and rises 4 a frame, `$37` = `24` (white, to 269); kind 4 from 150: x −12 to −5, bottom y 88; `4/05` draws nothing, rises at vy −4 and goes at frame 120 (`$0F:C4BE`). While it rises (step 3, `$20:D44D`) a countdown from 8 that a pause stops: at 3 `$37` = `21`, `22` (the white off), at 0 `$30B2` = `82`, `$37` = `24`, and `$20:D7B8`: `a/00` at x −8, y − `f1` (`f1` from 0x78, 0x20 more each), sound 09. Frames 159, 168 … 240; on 150 the same with `8A`. Its top rises 2 a frame the countdown runs. The mover jumps on 295, vy −15, is put at y 0 on 312 and falls at gravity 0.5 to 5.5, vx rising 0.125 a frame to 2.875; the opponent is kept at −32, 0 from 313, +16, −64 from 335, +32, 0 from 339. On 341 the mover goes back at vx −1, vy −4, gravity 0.125 to 2.375; the opponent falls at vx 8, vy 16, gravity 0.47 to the floor at 346, lying. Kind 5 there, with sound `2f` (`$20:D669`): radius 1, 4 more a frame to `0x70`, then 8 less (`$20:D674`, `$20:D697`). On 391 kind 4: x ±32 about him, from the floor up 11 a frame to `0xC1`, narrowing from 14 frames in, gone at about 35; and the throw (`$20:D72E`): 127 less defence, stun 10, `1b`, vx 2, vy −11.
 
 ### Gohan
 

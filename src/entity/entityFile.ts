@@ -56,6 +56,8 @@ export interface Step {
    * The cartridge's sound ids its script plays as this step begins — written
    * by the export from `a0`, played through the bank's `rom` match.
    */
+  /** A script's hold: until something outside it ends it. One frame here, unless he is held to it (`Entity.holdToScript`). */
+  hold?: true;
   sfx?: number[];
   /** The spoken line its script starts as this step begins (`a1`), played through the fighter's `line` match. */
   voice?: number;

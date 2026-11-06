@@ -79,6 +79,8 @@ export interface SpawnDef {
   shimmer?: number[];
   /** The palette of its `alt` sheet, for an object in its thrower's colours. */
   alt?: number;
+  /** Upside down: its thrower's handler sets the slot's OAM bit on the frame after the `b0` (Vegetto's `$20:D0DD`). */
+  vflip?: true;
   /** What the move loads into VRAM for this object, in place of the fighter's `loads`. */
   loads?: { resource: number; vram: number }[];
   /** Its tile base, for one the code puts out rather than a `b0` (slot `+3`, × 16). */

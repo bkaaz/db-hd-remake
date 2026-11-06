@@ -1,3 +1,4 @@
+import { barAt, domeRadius, type SceneBar } from "./sceneLight";
 import type { ShakeDef } from "../camera/shake";
 import type { Entity } from "../entity/entity";
 import type { SeizeDef } from "../entity/states";
@@ -59,8 +60,18 @@ interface Seizure {
   ball?: BallScene;
   /** Px a frame he is moved by, toward the seizer's facing and down (`steps`). */
   drift?: [number, number] | null;
+  /** Where he is kept from the seizer, in the air or not (`steps`). */
+  on?: [number, number] | null;
+  /** Thrown once: a step's `lands` holds him again after it. */
+  launched?: boolean;
+  /** Where the dome stands: where he was as it began. */
+  domeX?: number;
+  /** Each bar's x, taken on its first frame: it stays when he leaves. */
+  barsAt: Map<SceneBar, number>;
   /** The scene's frame, which goes on counting through its later states (`sceneOf`). */
   elapsed: number;
+  /** Frames of a spark's pause still to wait. */
+  paused?: number;
 }
 
 /** Where a let-go's explosion goes, over his feet: Oyatsu Kosen's `a/17` at y `C0`, recorded. */
@@ -85,6 +96,11 @@ export class Seizures {
   update(seizer: Entity, other: Entity, world: SeizeWorld): void {
     const def = seizer.seize;
     const s = this.seizing.get(seizer);
+    // a spark's pause holds the scene with the pair: nothing on its frame happens twice ($30B2)
+    if (s?.paused && def) {
+      s.paused--;
+      return;
+    }
     // the state's count is 1 on the frame it is entered: the move's frame is one less
     let frame = seizer.stateFrame - 1;
     if (s) s.elapsed = frame = seizer.state === s.state ? frame : s.elapsed + 1;
@@ -97,6 +113,7 @@ export class Seizures {
       }
       seizer.showThrownBall(null);
       seizer.showFloorBand(null);
+      seizer.showBars([]);
       this.seizing.delete(seizer);
       return;
     }
@@ -104,6 +121,7 @@ export class Seizures {
     if (!s) {
       if (frame < def.at) return;
       other.hold(def.anim);
+      if (def.still) other.holdStill();
       // set down once, beside him, facing him ($20:8A78, $20:8A81)
       if (def.place) {
         other.x = seizer.x + seizer.facing * def.place[0] * seizer.scaleOf;
@@ -111,7 +129,7 @@ export class Seizures {
       }
       other.facing = seizer.facing === 1 ? -1 : 1;
       if (def.cry) other.sound(def.cry);
-      this.seizing.set(seizer, { held: other, state: seizer.state, phase: "held", vx: 0, flight: { y: 0, vy: 0, bounces: [] }, landings: 0, elapsed: frame });
+      this.seizing.set(seizer, { held: other, state: seizer.state, phase: "held", vx: 0, flight: { y: 0, vy: 0, bounces: [] }, landings: 0, elapsed: frame, barsAt: new Map() });
       return;
     }
     const { held } = s;
@@ -123,14 +141,37 @@ export class Seizures {
     }
     if (s.drift && s.phase === "held") {
       held.x += seizer.facing * s.drift[0] * scale;
-      held.y += s.drift[1] * scale;
+      held.y = Math.min(held.floor, held.y + s.drift[1] * scale);
     }
+    if (s.on && s.phase === "held") {
+      held.x = seizer.x + seizer.facing * s.on[0] * scale;
+      held.y = seizer.y + s.on[1] * scale;
+    }
+    for (const c of def.screens ?? []) if (c.frame === frame) world.screen(c.cue);
+    for (const p of def.sparks ?? []) {
+      if (p.frame !== frame) continue;
+      world.effect("hit_spark", seizer.x + seizer.facing * p.at[0] * scale, seizer.y + p.at[1] * scale);
+      if (p.sound) seizer.sound(p.sound);
+      if (p.pause) {
+        seizer.freeze(p.pause);
+        held.freeze(p.pause);
+        s.paused = p.pause;
+      }
+    }
+    if (def.dome) {
+      const radius = domeRadius(def.dome, frame);
+      const start = def.dome.from;
+      if (frame === start) s.domeX = held.x;
+      seizer.showThrownBall(radius > 0 ? { x: s.domeX ?? held.x, y: held.floor, radius } : null);
+    }
+    if (def.bars) seizer.showBars(this.barsOn(s, def.bars, seizer, frame));
     if (def.light) seizer.showThrownBall(lightOn(def.light, frame, held, scale));
     if (def.ball && s.phase !== "done") {
       s.ball ??= new BallScene(def.ball, seizer, held, world);
       s.ball.update(frame);
     }
-    if (s.phase === "held" && def.launch && frame >= def.launch.frame) {
+    if (s.phase === "held" && def.launch && !s.launched && frame >= def.launch.frame) {
+      s.launched = true;
       if (def.launch.from) {
         held.x = seizer.x + seizer.facing * def.launch.from[0] * scale;
         held.y = seizer.y + def.launch.from[1] * scale;
@@ -205,6 +246,9 @@ export class Seizures {
   private playStep(s: Seizure, seizer: Entity, step: NonNullable<SeizeDef["steps"]>[number]): void {
     const { held } = s;
     if (step.anim) held.hold(step.anim);
+    if (step.toHold) held.holdToScript();
+    if (step.cry) held.sound(step.cry);
+    if (step.sound) seizer.sound(step.sound);
     if (step.show !== undefined) held.jumpTo(step.show);
     if (step.at) {
       held.x = seizer.x + seizer.facing * step.at[0] * held.scaleOf;
@@ -212,6 +256,20 @@ export class Seizures {
     }
     if (step.drift !== undefined) s.drift = step.drift;
     if (step.hide !== undefined) held.hide(step.hide);
+    if (step.on !== undefined) s.on = step.on;
+    if (step.lands) s.phase = "held";
+  }
+
+  private barsOn(s: Seizure, bars: SceneBar[], seizer: Entity, frame: number): { x: number; y: number; w: number; h: number }[] {
+    const k = seizer.scaleOf;
+    return bars.flatMap((bar) => {
+      const at = barAt(bar, frame);
+      if (!at) return [];
+      if (!s.barsAt.has(bar)) s.barsAt.set(bar, (bar.on === "held" ? s.held : seizer).x);
+      const x = s.barsAt.get(bar)!;
+      const [a, b] = seizer.facing === 1 ? [at.left, at.right] : [-at.right, -at.left];
+      return [{ x: x + a * k, y: s.held.floor + at.top * k, w: (b - a) * k, h: (at.bottom - at.top) * k }];
+    });
   }
 
   /** The throw's own blow ($0F:B321): he faces the seizer's way, thrown backwards. */

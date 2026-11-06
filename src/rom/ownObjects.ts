@@ -47,6 +47,7 @@ export interface OwnObject {
   ticks?: { at: number; length: number; loop?: true };
   /** Its code plays a way in, a loop and a way out (`SpawnDef.animations`). */
   animations?: SpawnDef["animations"];
+  vflip?: SpawnDef["vflip"];
   /**
    * The moves that put it out on their step rather than cut a part for it:
    * one that never hits and ends with its animation is an effect (Big Bang's
@@ -175,6 +176,7 @@ export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[
       hits: o.hits,
       palette: paletteRecord(rom, o.palette).at,
       ...(o.alt && { alt: paletteRecord(rom, o.alt).at }),
+      ...(o.vflip && { vflip: o.vflip }),
       ...(o.tiles !== undefined && { tiles: o.tiles }),
       ...(o.fades && { shimmer: o.fades.map((id) => paletteRecord(rom, id).at) }),
       ...(o.shimmer && { shimmer: Array.from({ length: o.shimmer }, (_, i) => paletteRecord(rom, o.palette + 1 + i).at) }),

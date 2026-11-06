@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import type { Rgb } from "../entity/palettesFile";
 import type { Rgba } from "../sprites/png";
-import { altPalettes, ARENAS, exportArena, glowPalettes, lightingPalettes } from "./arena";
+import { altPalettes, ARENAS, exportArena, glowPalettes, lightingPalettes, lightingShift, relitRun } from "./arena";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { fighterNamed } from "./roster";
 import { stageRecord } from "./stage";
@@ -72,5 +73,20 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
     const [speed, offset] = sky.scroll;
     expect(128 * speed + offset).toBe(128);
     expect(speed).toBe(0.5);
+  });
+});
+
+describe("relitRun", () => {
+  // colour 0 is transparent; the bright last channel is at its limit, which must not set the shift
+  const day: Rgb[] = [[0, 0, 0], [248, 200, 80], [100, 100, 100], [40, 40, 40], [80, 60, 120]];
+  const lit: Rgb[] = [[9, 9, 9], [248, 184, 16], [116, 84, 36], [56, 24, 0], [96, 44, 56]];
+  const run: Rgb[] = [[0, 0, 0], [88, 96, 120], [100, 100, 100], [40, 40, 40], [80, 60, 120]];
+
+  it("finds the lighting by what most colours moved, so that one at its limit does not count", () => {
+    expect(lightingShift(day, lit)).toEqual([16, -16, -64]);
+  });
+
+  it("changes only the colours the run changes, in that light", () => {
+    expect(relitRun(day, run, lit)).toEqual([[9, 9, 9], [104, 80, 56], [116, 84, 36], [56, 24, 0], [96, 44, 56]]);
   });
 });

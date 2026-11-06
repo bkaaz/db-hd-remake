@@ -10,6 +10,8 @@ import type { Rgba } from "../sprites/png";
 import type { FighterTables } from "./cartridge";
 import { paletteRecord } from "./resource";
 import { BG1, BG2, drawLayer, loadStage, stack } from "./stage";
+import { readPalette } from "./frame";
+import type { Rgb } from "../entity/palettesFile";
 
 /** Each stage id's lighting, picking the fighters' palettes: `0x40` + 16 × character + this ($01:82B5). */
 const LIGHTING = 0x8304;
@@ -69,6 +71,49 @@ const RUNS: Record<number, number[]> = { 3: [0x139, 0x135, 0x137, 0x158, 0x160, 
 /** `run0` … by the record's place in `RUNS`, keyed by character. */
 export function runPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
   return Object.fromEntries((RUNS[t.character] ?? []).map((id, i) => [`run${i}`, paletteRecord(rom, id).at]));
+}
+
+/** How far a move's palette for the screen before the fight is from his own: Vegetto's `3c` is his black hair ($20:D912). */
+const INTRO_RECORD: Record<number, number> = { 4: 0xae };
+
+/** What takes one palette's colours to another's: each channel's commonest difference, so that a colour at its limit does not count. */
+export function lightingShift(day: readonly Rgb[], lit: readonly Rgb[]): Rgb {
+  const commonest = (channel: number): number => {
+    const counts = new Map<number, number>();
+    day.forEach((c, i) => {
+      if (i > 0) counts.set(lit[i][channel] - c[channel], (counts.get(lit[i][channel] - c[channel]) ?? 0) + 1);
+    });
+    return [...counts].sort((a, b) => b[1] - a[1])[0][0];
+  };
+  return [commonest(0), commonest(1), commonest(2)];
+}
+
+/** `lit` with the colours `run` changes from `day`, in `lit`'s light. */
+export function relitRun(day: readonly Rgb[], run: readonly Rgb[], lit: readonly Rgb[]): Rgb[] {
+  const shift = lightingShift(day, lit);
+  const same = (a: Rgb, b: Rgb) => a.every((v, i) => v === b[i]);
+  return lit.map((c, i) => (same(day[i], run[i]) ? c : (run[i].map((v, k) => Math.max(0, Math.min(248, v + shift[k]))) as unknown as Rgb)));
+}
+
+/**
+ * His palettes for the intro in every lighting and in player two's colours:
+ * `run0`, `run0_alt`, `evening_run0` … The original plays it on a screen of its
+ * own, by day ($02:A242); only the day's record is his, as own + 0xAE by evening
+ * is the Kamehameha's beam. Ours plays on the arena, so the rest are worked out.
+ */
+export function introPalettes(rom: Uint8Array, t: FighterTables): Record<string, number | Rgb[]> {
+  const offset = INTRO_RECORD[t.character];
+  if (offset === undefined) return {};
+  const colours = (record: number) => readPalette(rom, paletteRecord(rom, record).at);
+  const out: Record<string, number | Rgb[]> = {};
+  const day = 0x40 + 16 * t.character;
+  for (const [time, own] of lightingRecords(rom, t)) {
+    for (const [side, parts] of [[0, ["run0"]], [1, ["run0", "alt"]]] as const) {
+      const name = named(time, ...parts);
+      out[name] = time === null ? paletteRecord(rom, day + side + offset).at : relitRun(colours(day + side), colours(day + side + offset), colours(own + side));
+    }
+  }
+  return out;
 }
 
 /** How far the winning pose's palette is from the fighter's own (Vegeta's `3e`, $20:9257: field 0x17 + 0x98). */
