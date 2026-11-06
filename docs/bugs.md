@@ -373,9 +373,8 @@ nothing — they disarm themselves every frame.
   `buu_9_15` does (`$0F:DD4D` and the tables after it). Which table is whose is not read yet.
 
 - **Objects that may outlive the original's.** `mr_buu_8_06` (Mr. Buu's X) is up 21 frames against the
-  recording's 15, `cell_7_07` 42 against 29. Both end with the thrower's move as their code says; any
-  timer of their own is not read. `cell_7_02`, `cell_a_22` and `cell_a_23` are in the same
-  position, ending with the move alone.
+  recording's 15. Its code ends it with the thrower's move; any
+  timer of its own is not read. `cell_7_02` is in the same position, ending with the move alone.
 - **Buu's Energy Sphere objects end with the move.** `buu_9_15`, `buu_9_12` and `buu_9_0e` live as long as
   the sphere `9/17`–`19` in the original (`$0F:DFB6`), which is not ported.
 
@@ -389,8 +388,7 @@ nothing — they disarm themselves every frame.
   so it stays about 7 frames more. `Projectiles.update` pauses them all.
 - **`npm run moves -- <fighter> --only <name>` with no such case overwrites `report.txt` with "0 of 0".**
   `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
-- **Some objects fly unseen: their sheets hold no pixel.** They still fly and strike. Cell's `cell_a_21`,
-  `_a_22`, `_a_23` and Buu's `buu_a_20` take tiles from the wrong place, as Kakusan's did: type `a` draws
+- **Some objects fly unseen: their sheets hold no pixel.** They still fly and strike. Buu's `buu_a_20` takes tiles from the wrong place, as Kakusan's did: type `a` draws
   from the shared `0x30`/`0x31` (`npm run rom -- vram logs/objects-<name>.bin`). `buu_9_06`
   and `buu_9_08` are blank too, cause not read; they may be drawn effects, as Energy Field's `mr_buu_8_12` is (`rom.md`), which stays blank on purpose. The list is `DRAWS_NOTHING` in
   `src/rom/objectTiles.test.ts`. A spawn already exported is kept, so `animations.json` has to go first.
@@ -402,9 +400,8 @@ nothing — they disarm themselves every frame.
   `$2A:8B92`'s gate. The low ball's wait is geometry: it strikes once his shove stops at the screen's edge.
 - **Mr. Buu's Energy Field's blow is gone after its first hit.** The original's object stays with its blow disarmed, puts `a/02` out in another slot, and is armed again 60 frames later (`logs/moves/mr_buu/af.orig.txt`, f199 and f259). Ours bursts, as `objectHit` reads it, so a second touch never lands. The circle is the state's and goes on.
 - **Mightiness Bomber: a ball whose thrower is hit while it charges vanishes at once.** Not compared with the original: it may shrink. After a hit the original also has more `a/17` / `a/18` slots, 14 and 20 frames on; ours shows one burst. Not read.
-- **Cell's `cell_7_03` should set the defender burning**, as `objectHit` reads it; ours does not. It is on `NOT_YET` for its explosion too.
-- **The small and middle Kamehameha and Final Flash may whiten the screen and should not `?`.** `kame_s`, `kame_m`, `vegeta_final_flash_s` and `_m` have `hitFlash`, but they become `a/02` and `a/17`, and only `a/18` asks for the white (`$0F:E234`). Measured on Mightiness Bomber's three levels: only the largest whitens. Not measured on the Kamehameha itself; the owner has approved it as it is.
-- **Two 3D moves may stop short from afar, as Mr. Buu's Flying Bomber did.** Their handlers hold the code that measures the distance (`rom.md`), but ours walk at a fixed speed: Cell's Giga Shoulder (`a2`, `$10:C552`), Buu's Matamol (`b6`, `$10:D978`). Not played; `port` does not report it. `npm run moves -- <fighter> --far` shows each.
+- **The small and middle Kamehameha and Final Flash may whiten the screen and should not `?`.** `kame_s`, `kame_m`, `vegeta_final_flash_s` and `_m` have `hitFlash`, but they become `a/02` and `a/17`, and only `a/18` asks for the white (`$0F:E234`). Measured on Mightiness Bomber's three levels: only the largest whitens. Cell's small Chou Kamehameha, recorded: no white in the original, white in ours (`logs/moves/cell/aa.*`), on the shared `kame_s`. The owner has approved Goku's as it is.
+- **A 3D move may stop short from afar, as Mr. Buu's Flying Bomber did.** Its handler holds the code that measures the distance (`rom.md`), but ours walks at a fixed speed: Buu's Matamol (`b6`, `$10:D978`). Not played; `port` does not report it. `npm run moves -- <fighter> --far` shows each.
 - **Sender `a1` and Planet Attack from afar are off by the report**, not looked into (`npm run moves -- mr_buu --far`).
 - **Kakusan's second shot lands 5 frames after the pause in the original, at once in ours.** Near: the opponent reels 72 frames and 90 px there, 50 and 39 here; from afar they agree. The distance stays 22 px through those 5 frames, and fields `0x26`, `0x7A` and `0x7B` of the defender do not explain it (recorded). Gotenks's Renzoku looks the same `?`.
 - **A blow after a connection lands 3 frames early:** Elbow Dash's second, 14 frames after the first where the original's is 17. The state's first frame runs out inside the hit pause, and the blow's box is early too (next entry). Other follow-ups likely share it `?`.
@@ -418,3 +415,5 @@ nothing — they disarm themselves every frame.
 - **Other fighters' ultimates: the final explosion does not cover both fighters (owner, 2026-11-05).** Mr. Buu's Buu Breath now keeps the band on through the white (`lit`, `$0F:F158`). Saiyan Meteor, Galactic Gunfire and the rest to be checked and given the same.
 - **Other fighters' wins and intros may run past a held pose, as Mr. Buu's did.** Their scripts' `hold` steps (`npm run rom -- move 3e`, `3c`) were played through in ours; check each against a recording. `select-vs` opens a round only after 2 more presses, about frame 2225; health goes in after that (`healthAt`).
 - **Mr. Buu's own `82` is not ported** (the handler walks him off the screen, then `8/14`, `8/15`). Not shown: no arena has it yet, and on a floor it is not played (owner).
+
+- **A cornered reel still slides the attacker back in the original, and not in ours.** Bakuretsu Rush near: with the opponent in `16` at the screen's edge, the original's Cell goes back at 1 px a frame for about 12 frames after each blow while his own vx stays 2, and holds a gap of 66 to 74 px; ours walks on to 31 px. `corner.ts` keeps a shove in `16` at the edge (`$0D:CA35`), and its other condition, field `0x25` bit 2, is not read. Every fighter's rush into a corner shares it `?`.

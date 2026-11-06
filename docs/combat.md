@@ -210,6 +210,10 @@ ground (owner, 2026-11-04: off for now, `plan.md`).
 turns the opponent of Flaming Headbutt upside down as he falls and mirrors him every
 few frames (`rom.md`). Ours keeps him one way round, head up, on purpose.
 
+**A body being lifted keeps quiet** (owner, 2026-11-06). The cartridge gives Psychic
+Lift's victim his voice at each of the two bursts and none at the throw (`rom.md`).
+Ours gives him one, at the throw.
+
 ## Where it is going
 
 Once every fighter is ported (the owner, 2026-11-04): close to Budokai 3 and

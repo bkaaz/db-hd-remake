@@ -15,8 +15,10 @@ approved names what to try again.
 
 ## Every fighter
 
-Two changes of Piccolo's pass reach all of them, not yet judged by the owner:
+Changes of two passes reach all of them, not yet judged by the owner:
 
+- A body thrown up by a `high` blow cannot be struck within 16 px of the floor, nor after its bounce (`$2A:8B92`, `combat/hitGate.ts`, Cell's pass).
+- A move that goes on as it came in now keeps the speed it had (`savesFlight`, Cell's pass): Freeza's Evil Energy from a forward jump flies on forward.
 - A scene opened by a shot no longer pauses its thrower (`$0F:C2FC`, commit `9a7a253`): Oyatsu Kosen, Buu Breath, Volleyball and Jubaku Ha move by 8 frames.
 - Every move a button or a command begins brings the mover in front (commit `65c6057`; `rom.md` on the draw order).
 
@@ -89,30 +91,15 @@ Charge and win: from the code, not looked at against a picture `?`; his own reel
 
 ## Cell
 
-Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug&p2=cell`.
+Read move by move against the original (`docs/rom.md`, Cell). `?scene=debug&p1=cell&p2=goku&hp1=80`.
 
 | move | input | left out |
 |---|---|---|
-| `a2` giga_shoulder | ground: R + Y | — |
-| `9d` throw | ground: → + X | m9d's blow, a reaction no type copies |
-| `a0` sender_a0 | ground: → ← → X | — |
-| `9e` kantsu | ground: → ← → A | — |
-| `a8` cell_junior | ground: → ← → B | what its handler decides on a button held or a level `?` |
-| `a1` sender_a1 | ground: ↓ ↙ ← X | — |
-| `9f` sender_9f | ground: ↓ ↘ → X | — |
-| `a4` suki_combo | ground: ↓ ↘ → Y | — |
-| `ab` kamehameha | ground: ← ↙ ↓ ↘ → A | — |
-| `a5` energy_burst | ground: → ↘ ↓ ↙ ← B | what its handler decides on a button held or a level `?` |
-| `a6` psychic_lift | ground: → ↘ ↓ ↙ ← Y | — |
-| `aa` chou_kamehameha | ground: ↓ ↙ → A | written after Gohan's Kamehame-Ha, by hand: its three levels, no spoken line checked `?` |
-| `a7` ki_flame | ground: ← ↙ ↓ ↘ → Y | — |
-| `ac` bakuretsu_rush | ground: → ← → ← → Y | — |
-| `ad` tri_eruption | ground: ↓ ↙ ← ↙ ↓ ↘ → Y | mad's blow, a reaction no type copies; mad_3's blow, a reaction no type copies |
-| `a9` negative_arrow | air: → ↓ Y | — |
-| `9a` attack_x | his own normal | — |
+| `a0` sender_a0 | ground: → ← → X | not read: the Senders are out, by the owner's word |
+| `a1` sender_a1 | ground: ↓ ↙ ← X | not read: the Senders are out |
+| `9f` sender_9f | ground: ↓ ↘ → X | not read: the Senders are out |
 
-Objects, no recording yet (11): frames from the table, 4 frames each `?`, colours `?`: `cell_7_05`, `cell_7_03`, `cell_7_04`, `cell_7_0a`, `cell_7_07`, `cell_7_08`, `cell_7_02`, `cell_a_21`, `cell_a_22`, `cell_a_23`, `cell_7_06`.
-Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_start`, `dash_back`, `dash_back_run`, `dash_fwd`, `dash_fwd_run`, `intro`, `ko_bounce`, `ko_bounce2`, `ko_down`, `ko_fall`, `ko_lie`, `ko_rise`, `win`, `win_2`, `win_air`.
+His own reels: not looked at against a picture `?`.
 
 ## Mr. Buu
 

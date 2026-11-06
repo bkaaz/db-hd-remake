@@ -10,12 +10,17 @@
       ],
       "type": "down",
       "damage": 50,
-      "burstsInto": "burst_s",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a",
+      "outlivesHit": true,
+      "rehit": 16,
       "endsWithMove": [
         "ac"
-      ]
+      ],
+      "sharesBlow": true,
+      "lasts": 14
     }
-  }
+  },
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark"
 }

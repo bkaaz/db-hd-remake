@@ -11,6 +11,8 @@ import { leftMove, movesHeld } from "./thrownIn";
 
 /** No edge holds a bolt back: it is gone once it strays too far (`objectGone`). */
 const ANYWHERE: Bounds = { min: -Infinity, max: Infinity };
+/** How far from the camera's x a `keptOnScreen` bolt may go ($0F:C6D3, $0F:C6ED). */
+const SCREEN_EDGE = { left: 0x10, right: 0xf0 };
 
 /** One bolt in the air, the only body it may hit, and who is owed the news. */
 interface Live {
@@ -180,6 +182,7 @@ export class Projectiles {
         bolt.aimAt(foe.y);
         bolt.update(NO_INPUT, null, ANYWHERE);
       }
+      if (bolt.keptOnScreen) bolt.x = Math.max(view.x + SCREEN_EDGE.left, Math.min(view.x + SCREEN_EDGE.right, bolt.x));
       // the original's object takes its thrower's place every frame (Energy Field, $0F:BBB3)
       if (ride) {
         bolt.x = owner.x + ride.ahead * owner.facing;
@@ -190,6 +193,8 @@ export class Projectiles {
       if (beam) owner.beamReaches(bolt.x);
       const result = halted ? null : landBlow(bolt, foe, impact);
       if (result) halted = true;
+      // one blow between them ($0F:E0D7): the set's others are spent with it, the next set armed afresh
+      if (result && bolt.sharesBlow) for (const other of this.live) if (other !== shot && other.name === name && other.owner === owner) other.bolt.markHit();
       if (result) hits.push({ result, foe });
       // the pause is the whole game's ($30B2): his hand stops too, as a blast of his lasts 65 frames on a hit and 56 without
       const opened = result && !result.blocked && bolt.opens;
@@ -204,7 +209,10 @@ export class Projectiles {
       // down on its floor: its burst where it is, as the original rewrites the slot ($0F:BB05)
       const floored = bolt.burstsAbove !== undefined && bolt.hasLanded;
       const burst = bolt.attackBurst;
-      if (floored && !result && burst && bolt.landsAs.length === 0) impact.effects.spawn(burst, bolt.x, bolt.y);
+      if (floored && !result && burst && bolt.landsAs.length === 0) {
+        impact.effects.spawn(burst, bolt.x, bolt.y + (bolt.burstsBelow ?? 0) * this.scale);
+        if (bolt.burstsBelow !== undefined) foe.sound(bolt.attackSounds.hit);
+      }
       if (floored && !result) {
         for (const next of bolt.landsAs) {
           owner.spawnAdded();

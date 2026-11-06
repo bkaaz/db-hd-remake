@@ -201,6 +201,7 @@ before asking for a new mechanism:
   table by fighter — a `seize` step's `draws` and `atBy`;
 - an object rewritten on the floor as another that strikes — `landsAs`; a scene a shot opens that does not hold its thrower — a `seize`'s `free` (ADR 0078);
 - a run that stops at contact — `stopsOnContact`; a move in the air that lets him go on as he came in — `savesFlight` and `resumesFlight`;
+- a light on the floor ahead of him (`b1` kind 4) — `pillar`, and a set of objects with one blow between them — `sharesBlow` (ADR 0079); an object whose frame is its state — states of its own, its airborne ones moved twice a frame if its code calls `$0F:CBE4` and `$0F:E4EB` both (Cell Junior);
 - an object gone when he leaves his move — `endsWithMove`, `true` or the
   move ids its code tests (ADR 0062).
 

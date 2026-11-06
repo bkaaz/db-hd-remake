@@ -78,6 +78,12 @@ export class Throws {
       other.y = (place?.y ?? other.groundY) - risen * thrower.placement.scale;
     }
     if (grab.turnsAt !== undefined && thrower.stateFrame - 1 >= grab.turnsAt) other.facing = thrower.facing;
+    for (const strike of grab.strikes ?? []) {
+      if (thrower.stateFrame - 1 !== strike.frame) continue;
+      const [dx, dy] = strike.at[other.name] ?? [0, 0];
+      const k = thrower.placement.scale;
+      world?.effect(strike.fx, other.x - other.facing * dx * k, other.y + dy * k);
+    }
     // the state's count is 1 on the frame it is entered, the move's ($44) 0:
     // let go 20 frames after the throw began, as recorded (tools/re/log-throw.lua)
     if (thrower.stateFrame - 1 >= grab.launch.frame) {

@@ -101,6 +101,26 @@ describe("Throws", () => {
     expect([5, 6, 7, 8, 9, 15].map(heightAt)).toEqual([200, 198, 196, 194, 194, 194]);
   });
 
+  it("strikes him on a strike's frame only: the effect on him, by his name, turned, and not a sound", () => {
+    const t = thrower();
+    const h = held();
+    Object.assign(h, { sound: vi.fn() });
+    (t as unknown as { grab: GrabDef }).grab = { ...GRAB, strikes: [{ frame: 5, fx: "burst", at: { goku: [3, -48] } }] };
+    const effect = vi.fn();
+    const world = { effect, flash: vi.fn() };
+    const throws = new Throws();
+    t.stateFrame = 5;
+    throws.update(t, h, world);
+    expect(effect).not.toHaveBeenCalled();
+    t.stateFrame = 6;
+    throws.update(t, h, world);
+    expect(h.sound).not.toHaveBeenCalled();
+    expect(effect).toHaveBeenCalledWith("burst", h.x - h.facing * 3 * 2, h.y - 48 * 2);
+    t.stateFrame = 7;
+    throws.update(t, h, world);
+    expect(effect).toHaveBeenCalledTimes(1);
+  });
+
   it("passes a quiet launch on, so the reaction's own sound stays silent", () => {
     const t = thrower();
     Object.assign(t, { grab: { ...GRAB, launch: { ...GRAB.launch, quiet: true } } });

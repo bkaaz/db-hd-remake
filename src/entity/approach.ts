@@ -12,6 +12,8 @@ export interface Approach {
   at: number;
   short: number;
   over: number;
+  /** The frame the handler stops him, if not the state's end (Giga Shoulder, $10:C52E). */
+  until?: number;
 }
 
 /**

@@ -8,10 +8,12 @@
         0,
         0
       ],
+      "lasts": 27,
       "endsWithMove": [
         "a5",
         "cc"
-      ]
+      ],
+      "rides": true
     }
   }
 }

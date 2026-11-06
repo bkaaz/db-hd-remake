@@ -72,7 +72,7 @@ import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
-import { altPalettes, ARENAS, exportArena, glowPalettes, introPalettes, lightingPalettes, runPalettes, winPalettes } from "../src/rom/arena.ts";
+import { altPalettes, ARENAS, exportArena, flashPalettes, glowPalettes, introPalettes, lightingPalettes, runPalettes, winPalettes } from "../src/rom/arena.ts";
 import { drawHud, exportHud } from "../src/rom/hud.ts";
 
 if (!existsSync(ROM_PATH)) {
@@ -88,7 +88,7 @@ const rom = new Uint8Array(readFileSync(ROM_PATH));
  * colours: his 3e loads none ($20:80D6).
  */
 function litOf(t: FighterTables): Record<string, number> {
-  return { ...lightingPalettes(rom, t), ...glowPalettes(rom, t), ...altPalettes(rom, t), ...winPalettes(rom, t), ...runPalettes(rom, t) };
+  return { ...lightingPalettes(rom, t), ...glowPalettes(rom, t), ...flashPalettes(rom, t), ...altPalettes(rom, t), ...winPalettes(rom, t), ...runPalettes(rom, t) };
 }
 
 function colourSets(name: string, palette: number, variants: Record<string, number>): Record<string, Rgb[]> {

@@ -31,7 +31,7 @@
     "type": 7,
     "anim": 3,
     "hits": true,
-    "palette": 247,
+    "palette": 246,
     "loads": [
       {
         "resource": 76,
@@ -41,7 +41,38 @@
         "resource": 78,
         "vram": 27648
       }
-    ]
+    ],
+    "shimmer": 1,
+    "animations": {
+      "fall": {
+        "frames": [
+          0
+        ],
+        "dur": 1,
+        "loop": true
+      },
+      "touch": {
+        "frames": [
+          1
+        ],
+        "dur": 2,
+        "loop": false
+      },
+      "hop": {
+        "frames": [
+          2
+        ],
+        "dur": 1,
+        "loop": true
+      },
+      "stand": {
+        "frames": [
+          3
+        ],
+        "dur": 2,
+        "loop": false
+      }
+    }
   },
   {
     "name": "cell_7_04",
@@ -58,7 +89,18 @@
         "resource": 78,
         "vram": 27648
       }
-    ]
+    ],
+    "animations": {
+      "play": {
+        "frames": [
+          0,
+          1,
+          2
+        ],
+        "dur": 6,
+        "loop": false
+      }
+    }
   },
   {
     "name": "cell_7_0a",
@@ -98,7 +140,11 @@
         "resource": 2118,
         "vram": 24576
       }
-    ]
+    ],
+    "ticks": {
+      "at": 1034371,
+      "length": 27
+    }
   },
   {
     "name": "cell_7_08",
@@ -111,7 +157,11 @@
         "resource": 2118,
         "vram": 24576
       }
-    ]
+    ],
+    "ticks": {
+      "at": 1034468,
+      "length": 32
+    }
   },
   {
     "name": "cell_7_02",
@@ -138,12 +188,12 @@
     "palette": 34,
     "loads": [
       {
-        "resource": 76,
-        "vram": 26624
+        "resource": 48,
+        "vram": 25856
       },
       {
-        "resource": 78,
-        "vram": 27648
+        "resource": 49,
+        "vram": 29952
       }
     ],
     "animations": {
@@ -288,8 +338,12 @@
     "palette": 34,
     "loads": [
       {
-        "resource": 2142,
-        "vram": 24576
+        "resource": 48,
+        "vram": 25856
+      },
+      {
+        "resource": 49,
+        "vram": 29952
       }
     ],
     "animations": {
@@ -514,8 +568,12 @@
     "palette": 34,
     "loads": [
       {
-        "resource": 2136,
-        "vram": 24576
+        "resource": 48,
+        "vram": 25856
+      },
+      {
+        "resource": 49,
+        "vram": 29952
       }
     ],
     "animations": {

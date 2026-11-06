@@ -2,18 +2,94 @@
   "initial": "fly",
   "states": {
     "fly": {
-      "anim": "play",
+      "anim": "fall",
       "turn": false,
       "airborne": true,
       "launch": [
         -3,
         3
       ],
+      "fallsToFloor": true,
+      "keptOnScreen": true,
       "type": "down",
       "damage": 50,
-      "burstsInto": "burst_s",
+      "burns": true,
+      "burstsInto": "burst_m",
       "hitSound": "burst_0a",
-      "blockSound": "burst_0a"
+      "blockSound": "burst_0a",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "touch"
+        }
+      ]
+    },
+    "touch": {
+      "anim": "touch",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "type": "down",
+      "damage": 50,
+      "burns": true,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "hop"
+        }
+      ]
+    },
+    "hop": {
+      "anim": "hop",
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 4,
+            "vy": -8,
+            "gravity": 0.9375
+          }
+        ]
+      ],
+      "type": "down",
+      "damage": 50,
+      "burns": true,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "stand"
+        }
+      ]
+    },
+    "stand": {
+      "anim": "stand",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "type": "down",
+      "damage": 50,
+      "burns": true,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "transitions": [
+        {
+          "when": "frames:2",
+          "to": "hop"
+        }
+      ]
     }
   }
 }

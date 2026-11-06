@@ -65,8 +65,23 @@ export function glowPalettes(rom: Uint8Array, t: FighterTables): Record<string, 
   return out;
 }
 
+/** How far past his own, in every lighting and for each player, the record his handler flashes him in: Cell's `a5`, `ac` and `ad` ($10:C5EA, $10:C9F1). */
+const FLASH: Record<number, number> = { 7: 0x48 };
+
+/** `flash`, `flash_alt`, `night_flash` … */
+export function flashPalettes(rom: Uint8Array, t: FighterTables): Record<string, number> {
+  const offset = FLASH[t.character];
+  if (offset === undefined) return {};
+  const out: Record<string, number> = {};
+  for (const [time, own] of lightingRecords(rom, t)) {
+    out[named(time, "flash")] = paletteRecord(rom, own + offset).at;
+    out[named(time, "flash", "alt")] = paletteRecord(rom, own + 1 + offset).at;
+  }
+  return out;
+}
+
 /** Palette records a fighter's handler puts him in, as sheets of their own: Gohan's `ae` ($20:B417, $20:B421) and `3c` ($20:A4AA). */
-const RUNS: Record<number, number[]> = { 3: [0x139, 0x135, 0x137, 0x158, 0x160, 0x168], 2: [0x140, 0x141, 0x142, 0x143, 0x144, 0x117], 6: [0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5] };
+const RUNS: Record<number, number[]> = { 3: [0x139, 0x135, 0x137, 0x158, 0x160, 0x168], 2: [0x140, 0x141, 0x142, 0x143, 0x144, 0x117], 6: [0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5], 7: [0x14b, 0x148, 0x149, 0x14a] };
 
 /** Named records beside them: Freeza's Flaming Headbutt, by frame, player two's own in a mirror ($10:BC84). */
 const NAMED_RUNS: Record<number, Record<string, number>> = { 6: { flame0: 0x126, flame1: 0x127, flame0_alt: 0x128, flame1_alt: 0x129 } };
@@ -81,7 +96,10 @@ export function runPalettes(rom: Uint8Array, t: FighterTables): Record<string, n
 const INTRO_RECORD: Record<number, number> = { 4: 0xae, 5: 0xc0 };
 
 /** Which of a fighter's `RUNS` his intro plays, records that name no player: all of Freeza's (`$10:B06C`), Gohan's last (`$20:A4AA`). */
-const ABSOLUTE_INTRO: Record<number, number[]> = { 6: [0, 1, 2, 3, 4, 5], 2: [5] };
+const ABSOLUTE_INTRO: Record<number, number[]> = { 6: [0, 1, 2, 3, 4, 5], 2: [5], 7: [0, 1, 2, 3] };
+
+/** How far past his own the records his intro ends through: Cell's `fade0`, `fade1` ($10:C235, $10:C24F). */
+const INTRO_FADES: Record<number, number[]> = { 7: [0x9c, 0x9e] };
 
 /** What takes one palette's colours to another's: each channel's commonest difference, so that a colour at its limit does not count. */
 export function lightingShift(day: readonly Rgb[], lit: readonly Rgb[]): Rgb {
@@ -117,6 +135,14 @@ export function introPalettes(rom: Uint8Array, t: FighterTables): Record<string,
     if (time === null) continue;
     for (const i of ABSOLUTE_INTRO[t.character] ?? []) {
       out[named(time, `run${i}`)] = relitRun(colours(day), colours(RUNS[t.character][i]), colours(own));
+    }
+  }
+  for (const [i, past] of (INTRO_FADES[t.character] ?? []).entries()) {
+    for (const [time, own] of lightingRecords(rom, t)) {
+      for (const [side, parts] of [[0, [`fade${i}`]], [1, [`fade${i}`, "alt"]]] as const) {
+        const name = named(time, ...parts);
+        out[name] = time === null ? paletteRecord(rom, day + side + past).at : relitRun(colours(day + side), colours(day + side + past), colours(own + side));
+      }
     }
   }
   const offset = INTRO_RECORD[t.character];

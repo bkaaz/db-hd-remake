@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ROM_PATH } from "./cartridge";
-import { heldAnims, heldByTable, heldByWord, heldIn } from "./held";
+import { heldAnims, heldByTable, heldByWord, heldIn, waiting } from "./held";
 import type { ScriptOp } from "./script";
 
 describe("heldIn", () => {
@@ -19,6 +19,22 @@ describe("heldIn", () => {
 
   it("is nothing for a script with no track", () => {
     expect(heldIn([{ op: "show", frames: 4, drawing: 1 }], 0)).toBeNull();
+  });
+});
+
+describe("waiting", () => {
+  it("lengthens the one step the thrower holds on", () => {
+    const anim = { loop: false, steps: [{ frame: "1", dur: 6 }, { frame: "2", dur: 16 }] };
+    expect(waiting(anim, { step: 0, frames: 82 }).steps.map((s) => s.dur)).toEqual([88, 16]);
+  });
+});
+
+describe.skipIf(!existsSync(ROM_PATH))("Psychic Lift's hold", () => {
+  it("waits with the thrower's 82 frames, and says nothing while he rises", () => {
+    const rom = new Uint8Array(readFileSync(ROM_PATH));
+    const { steps } = heldAnims(rom, 0).m30_cell_a6;
+    expect(steps[0].dur).toBe(88);
+    expect(steps.some((s) => s.sfx?.length)).toBe(false);
   });
 });
 

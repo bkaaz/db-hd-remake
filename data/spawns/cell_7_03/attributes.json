@@ -1,3 +1,9 @@
 {
-  "gravity": 0
+  "gravity": 0,
+  "palettes": [
+    "shimmer1"
+  ],
+  "shimmer": [
+    "shimmer1"
+  ]
 }

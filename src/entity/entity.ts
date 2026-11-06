@@ -22,8 +22,10 @@ import { shoveAfter } from "../combat/knockback";
 import { pressedSpeed } from "../combat/push";
 import { shadowFrame, shadowSize } from "./shadow";
 import { trailAt } from "./trail";
+import { pillarAt, type PillarDef } from "../combat/pillar";
+import { outOfReach } from "../combat/hitGate";
 import { moveStep } from "../fx/follow";
-import { hoverOffset } from "./hover";
+import { hoverOffset, quiverOffset } from "./hover";
 import type { ScreenCue } from "../screen";
 import type { FinaleDef } from "../match/finale";
 import { moveOf, type Shoved } from "../combat/corner";
@@ -227,6 +229,7 @@ export class Entity {
   /** The finale's band along the floor at world `y`, kind 4 of `size`; null for none. */
   private floorBand: { y: number; size: number } | null = null;
   private bars: { x: number; y: number; w: number; h: number }[] = [];
+  private pillarRun: { def: PillarDef; t: number } | null = null;
   /** What its state asked of the screen this frame (`StateDef.screen`), until the fighters take it. */
   private screenCues: ScreenCue[] = [];
   /** Effects the animation's steps put out, until the fighters take them. */
@@ -577,7 +580,7 @@ export class Entity {
   }
 
   get invulnerable(): boolean {
-    return this.held || !!this.sm?.def.invulnerable;
+    return this.held || !!this.sm?.def.invulnerable || outOfReach(moveOf(this.animation), Number(this.animation.split("_")[1] ?? 1), (this.groundY - this.y) / this.scale);
   }
 
   /**
@@ -631,6 +634,19 @@ export class Entity {
   }
 
   /** Draw a scene's bars of light, world px (`match/sceneLight.ts`); none for none. */
+  /** The state's light on the floor (`combat/pillar.ts`), kept on him, gone when it says. */
+  private drawPillar(): void {
+    if (!this.pillarRun) return;
+    const shape = pillarAt(this.pillarRun.def, this.pillarRun.t);
+    if (!shape) {
+      this.pillarRun = null;
+      return;
+    }
+    const k = this.scale;
+    const x = this.x + this.facing * this.pillarRun.def.ahead * k;
+    if (shape.half > 0) this.ballG.rect(x - shape.half * k, this.groundY - shape.height * k, 2 * shape.half * k, shape.height * k).fill(BALL_COLOUR);
+  }
+
   showBars(bars: { x: number; y: number; w: number; h: number }[]): void {
     this.bars = bars;
   }
@@ -702,6 +718,18 @@ export class Entity {
   /** A bolt whose ground is this far above its thrower's floor, and bursts on it (`burstsAbove`). */
   get burstsAbove(): number | undefined {
     return this.sm?.def.burstsAbove;
+  }
+
+  get burstsBelow(): number | undefined {
+    return this.sm?.def.burstsBelow;
+  }
+
+  get sharesBlow(): boolean {
+    return !!this.sm?.def.sharesBlow;
+  }
+
+  get keptOnScreen(): boolean {
+    return !!this.sm?.def.keptOnScreen;
   }
 
   /** Whether this body has come down since its state began. */
@@ -1308,6 +1336,8 @@ export class Entity {
   /** `restart` plays its animation from the top even when the state names the one already playing. */
   private enterState(restart = false): void {
     if (!this.sm) return;
+    // what it came in with, before it is stopped ($0F:B1EC: fields 0x80, 0x82)
+    if (this.sm.def.savesFlight) this.savedFlight = [this.vx, this.vy];
     // a special starts stopped, whatever it was started from ($0D:D7A0)
     if (this.sm.startedByCommand) [this.vx, this.vy, this.shove] = [0, 0, 0];
     const sounds = this.quietEntry ? undefined : this.sm.def.sound;
@@ -1358,7 +1388,6 @@ export class Entity {
     this.stateFrames = 0;
     if (!this.sm.def.ifHitAgain) this.hitsAgain = 0;
     this.air = ON_GROUND;
-    if (this.sm.def.savesFlight) this.savedFlight = [this.vx, this.vy];
     if (this.sm.def.resumesFlight) [this.vx, this.vy] = this.savedFlight;
     // the shot takes the ball: the original's beam effect replaces it outright
     if (this.sm.def.fires) this.ballRadius = 0;
@@ -1618,6 +1647,7 @@ export class Entity {
     } else {
       this.y = this.groundY;
       const approach = this.sm.def.approach;
+      if (approach && this.stateFrames === approach.until) this.approaching = null;
       if (approach && this.stateFrames === approach.at && opponentX !== null) {
         this.turnToward(opponentX);
         this.approaching = approachSpeed(approach, (opponentX - this.x) / this.scale);
@@ -1641,6 +1671,9 @@ export class Entity {
     this.ballRadius = nextRadius(this.ballRadius, ball, this.stateFrames);
     this.bandFrames = this.sm.def.band && this.beamHead !== null ? this.bandFrames + 1 : 0;
     for (const [at, c] of this.sm.def.screen ?? []) if (at === this.stateFrames) this.screenCues.push(c);
+    const pillar = this.sm.def.pillar;
+    if (this.pillarRun && !this.clockHeld) this.pillarRun.t++;
+    if (pillar && !this.clockHeld && this.stateFrames === (pillar.from ?? 0)) this.pillarRun = { def: pillar, t: 0 };
     // taken by the fighters with the entry's groundFx; a beat on the first frame replaces it
     if (trailAt(this.sm.def.trail, this.stateFrames)) this.groundFx = this.sm.def.trail!.fx;
     if (this.fading) {
@@ -1655,7 +1688,7 @@ export class Entity {
 
   /** Push the simulation state into the display objects. */
   render(showBoxes: boolean): void {
-    this.sprite.x = this.x;
+    this.sprite.x = this.x + quiverOffset(this.stateFrames, this.sm?.def.quivers) * this.scale;
     const dip = dipAt(this.sm?.def.dips, this.stateFrames);
     this.sprite.y = this.y + ((this.sm?.def.hover ? hoverOffset(this.stateFrames) : 0) + dip) * this.scale;
     const flip = this.heldFlipped ? -1 : 1;
@@ -1671,6 +1704,7 @@ export class Entity {
       this.ballG.poly([apex[0], apex[1], x - half * this.scale, floor, x + half * this.scale, floor]).fill(BALL_COLOUR);
     }
     for (const b of this.bars) this.ballG.rect(b.x, b.y, b.w, b.h).fill(BALL_COLOUR);
+    this.drawPillar();
     // kind 4: 2 × size tall, 2 px over the floor (y 0xC6), across the screen and past its sides
     const fb = this.floorBand;
     const { ball: hitBall, pillar } = this.hitLight;

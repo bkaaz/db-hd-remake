@@ -149,6 +149,7 @@ nine fighters would each want a copy of it. A grunt *is* his.
 - **`hitLight` lights what a state's blow lands on** (`"ball"`, `"pillar"`, ADR 0072), and
   `paletteRun` runs a state through palettes from its frame 1, `plain` or `alt`;
   `paletteAt` holds a palette from a frame on, `[[1, "glow"], [46, null]]`.
+- **`pillar` stands a light on the floor ahead of a state** and runs on through the next ones (ADR 0079); a bolt's `sharesBlow` spends its set's other blows with its own.
 - **A step's `spawns` are what its script puts out as it begins**, once per
   start of the animation, not per loop — written by the export for a move
   that holds the opponent (ADR 0045) and for an object listed with `onStep`

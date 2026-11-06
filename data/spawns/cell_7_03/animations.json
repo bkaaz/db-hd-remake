@@ -1,18 +1,28 @@
 {
-  "play": {
-    "loop": false,
+  "fall": {
+    "loop": true,
     "steps": [
       {
         "frame": "0",
-        "dur": 12
-      },
+        "dur": 1
+      }
+    ]
+  },
+  "touch": {
+    "loop": false,
+    "steps": [
       {
         "frame": "1",
         "dur": 2
-      },
+      }
+    ]
+  },
+  "hop": {
+    "loop": true,
+    "steps": [
       {
         "frame": "2",
-        "dur": 19,
+        "dur": 1,
         "boxes": [
           {
             "type": "hit",
@@ -22,7 +32,12 @@
             "h": 16
           }
         ]
-      },
+      }
+    ]
+  },
+  "stand": {
+    "loop": false,
+    "steps": [
       {
         "frame": "3",
         "dur": 2,
@@ -33,19 +48,6 @@
             "y": -24,
             "w": 32,
             "h": 24
-          }
-        ]
-      },
-      {
-        "frame": "2",
-        "dur": 19,
-        "boxes": [
-          {
-            "type": "hit",
-            "x": -16,
-            "y": -24,
-            "w": 32,
-            "h": 16
           }
         ]
       }

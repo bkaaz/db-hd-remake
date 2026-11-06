@@ -216,6 +216,13 @@
     "file": "3a.wav",
     "rom": 58
   },
+  "eruption_3c": {
+    "label": "Cell's Bakuretsu Rush and Tri Eruption, each set of flames — sound 3c, what player two's 3a is ($0D:D852)",
+    "gain": 0.85,
+    "vary": 0,
+    "file": "3a.wav",
+    "rom": 60
+  },
   "flare_3d": {
     "label": "Vegeta's Ground Flare (a9) — sound 3d",
     "gain": 0.85,

@@ -23,6 +23,7 @@ import type { BallDef } from "../combat/ball";
 import { airProblem, leavesGround, type AirTimeline } from "./air";
 import type { HitLightKind } from "../combat/hitLight";
 import type { PaletteMarks } from "../combat/palettes";
+import type { PillarDef } from "../combat/pillar";
 import { hitAgainProblem, type IfHitAgain } from "./hitAgain";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
@@ -71,6 +72,11 @@ export interface GrabDef {
   caught?: boolean;
   /** From frame `from` he rises a pixel a frame, `px` in all: Cell's Psychic Lift. */
   lift?: { from: number; px: number };
+  /**
+   * While he is held, on these frames of the state: an effect on him at `at[his name]`,
+   * sprite px, x toward where he faces turned round (Psychic Lift, $10:C677; its voice is left out, `combat.md`).
+   */
+  strikes?: { frame: number; fx: string; at: Record<string, [number, number]> }[];
   /** He flashes in his two shock palettes until let go ($20:E552). */
   shocks?: true;
   /** He stays on the step before `step` until `frame`, then hangs upside down from where he is held (field 0x14, $20:DAE1). */
@@ -436,6 +442,14 @@ export interface StateDef {
    * for one that flies on through the floor: Kakusan's low ball, whose code has no floor.
    */
   burstsAbove?: number;
+  /** For a bolt that reaches its `burstsAbove`: its burst this far under it, with its hit sound (Negative Arrow's, `$0F:C7F6`). */
+  burstsBelow?: number;
+  /** Drawn a pixel back every other frame until this frame of the state (Cell's intro, $10:C26B). */
+  quivers?: number;
+  /** For a bolt: its blow is its set's, spent by whichever of them lands first: Bakuretsu Rush's and Tri Eruption's four. */
+  sharesBlow?: boolean;
+  /** For a bolt: held inside the screen's sides, 16 px in, as Cell Junior falls (`$0F:C6C7`). */
+  keptOnScreen?: boolean;
   /** For a bolt that reaches its `burstsAbove`: the bolts it is rewritten as, on the floor, in its place: Evil Energy's two (`$0F:D416`). */
   landsAs?: string[];
   /**
@@ -563,6 +577,8 @@ export interface StateDef {
    * (`combat/band.ts`) — drawn while the head is in the world.
    */
   band?: BandDef;
+  /** A light on the floor, started by this state and running on its own clock through the next ones. */
+  pillar?: PillarDef;
   fires?: {
     spawn: string;
     at: [number, number];
@@ -1464,6 +1480,7 @@ export function effectsNamed(
     if (def.trail) names.add(def.trail.fx);
     if (def.throwsFoe?.fx) names.add(def.throwsFoe.fx.name);
     for (const fx of def.grab?.launch.fx ?? []) names.add(fx.name);
+    for (const strike of def.grab?.strikes ?? []) names.add(strike.fx);
     if (def.seize?.sparks?.length) names.add("hit_spark");
     if (def.seize?.bursts) names.add(def.seize.bursts.fx);
     if (def.seize?.release.fx) names.add(def.seize.release.fx);

@@ -48,10 +48,28 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
       const cries = handlerFacts(rom, handlerAt(rom, c, move), stepStarts(ops).length, c).flatMap((f) =>
         f.who === "opponent" && f.sound !== undefined && f.frame !== null ? [{ frame: f.frame, id: f.sound }] : [],
       );
-      out[name] = withCries(anim, cries);
+      const wait = THROWER_WAITS[thrower]?.[move];
+      out[name] = withCries(wait ? waiting(anim, wait) : anim, QUIET_HOLDS[thrower]?.includes(move) ? [] : cries);
     }
   });
   return out;
+}
+
+/**
+ * A thrower's script that holds until his handler lets go: a track has no step
+ * for it, so the held body waits with him on the step before. Psychic Lift holds
+ * until he has risen 81 px, 82 frames ($10:C661).
+ */
+const THROWER_WAITS: Partial<Record<string, Record<number, { step: number; frames: number }>>> = {
+  cell: { 0xa6: { step: 0, frames: 82 } },
+};
+
+/** Moves whose body stays silent though the handler has him cry out, by the owner's word (`combat.md`). */
+const QUIET_HOLDS: Partial<Record<string, number[]>> = { cell: [0xa6] };
+
+/** `anim` with one step lasting `frames` longer. */
+export function waiting(anim: Anim, wait: { step: number; frames: number }): Anim {
+  return { ...anim, steps: anim.steps.map((step, i) => (i === wait.step ? { ...step, dur: (step.dur ?? 0) + wait.frames } : step)) };
 }
 
 /**

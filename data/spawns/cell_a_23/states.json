@@ -10,12 +10,16 @@
       ],
       "type": "high",
       "damage": 50,
-      "burstsInto": "burst_s",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a",
+      "outlivesHit": true,
       "endsWithMove": [
         "ad"
-      ]
+      ],
+      "sharesBlow": true,
+      "lasts": 32
     }
-  }
+  },
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark"
 }

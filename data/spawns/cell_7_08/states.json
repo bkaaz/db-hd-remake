@@ -7,7 +7,13 @@
       "vel": [
         0,
         0
-      ]
+      ],
+      "lasts": 32,
+      "endsWithMove": [
+        "a5",
+        "cc"
+      ],
+      "rides": true
     }
   }
 }
