@@ -36,6 +36,11 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
         out[name] = heldInOwnMove(rom, own, character);
         continue;
       }
+      const word = WORD_HOLDS[thrower]?.[move];
+      if (word) {
+        out[name] = heldByWord(rom, word, character);
+        continue;
+      }
       const table = HANDLER_HOLDS[thrower]?.[move];
       const anim = table ? heldByTable(rom, table, character) : heldIn(ops, character);
       if (!anim) continue;
@@ -58,6 +63,20 @@ export function heldAnims(rom: Uint8Array, character: number): Record<string, An
 const HANDLER_HOLDS: Partial<Record<string, Record<number, { table: number; frames: number }>>> = {
   gohan: { 0x9d: { table: 0x20a716, frames: 30 } },
 };
+
+/**
+ * Holds that show him in one drawing from a table of a word per character,
+ * written as an object's blow opens the move (Shocking Stunner's `5/0b`: `$2A:9354`,
+ * on `ba`, its script's 112 frames).
+ */
+const WORD_HOLDS: Partial<Record<string, Record<number, { table: number; frames: number }>>> = {
+  piccolo: { 0xba: { table: 0x2a9354, frames: 112 } },
+};
+
+/** The word a table holds for this character, as long as the thrower's move lasts. */
+export function heldByWord(rom: Uint8Array, hold: { table: number; frames: number }, character: number): Anim {
+  return { loop: false, steps: [{ frame: String(wordAt(rom, hold.table + 2 * character)), dur: hold.frames }] };
+}
 
 /**
  * Holds whose table names a drawing per step of the thrower, one table for a

@@ -1921,6 +1921,24 @@ describe("command:<move>", () => {
     return f;
   }
 
+  it("asks a command that follows a blow in the hit pause, the state's clock stopped", () => {
+    const file: StatesFile = {
+      initial: "blow",
+      states: {
+        blow: { anim: "a", transitions: [{ when: ["connected", "command:b4"], to: "counter" }, { when: "animEnd", to: "other" }] },
+        counter: { anim: "a", transitions: [] },
+        other: { anim: "a", transitions: [] },
+      },
+    } as StatesFile;
+    const sm = new StateMachine(file);
+    expect(sm.asksInPause).toBe(true);
+    expect(sm.commandInPause(new Map())).toBeNull();
+    expect(sm.commandInPause(new Map([["b4", "smash"]]))).toBe("counter");
+    expect(sm.pressSpent).toBe("smash");
+    expect(sm.startedByCommand).toBe(true);
+    expect(sm.asksInPause).toBe(false);
+  });
+
   it("fires when its command is met, and spends the button it was pressed with", () => {
     const sm = new StateMachine(special());
     expect(sm.update({ ...NONE, commands: new Map([["a5", "smash"]]) }, QUIET)).toBeNull();
@@ -1932,6 +1950,7 @@ describe("command:<move>", () => {
     const sm = new StateMachine(special());
     sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET);
     expect(sm.startedByCommand).toBe(true);
+    expect(sm.startedByButton).toBe(true);
     sm.update(NONE, { ...QUIET, animEnded: true });
     expect(sm.current).toBe("idle");
     expect(sm.startedByCommand).toBe(false);

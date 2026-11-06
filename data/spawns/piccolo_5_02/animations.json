@@ -4,31 +4,31 @@
     "steps": [
       {
         "frame": "0",
-        "dur": 7
+        "dur": 4
       },
       {
         "frame": "1",
-        "dur": 7
+        "dur": 4
       },
       {
         "frame": "2",
-        "dur": 8
+        "dur": 4
       },
       {
         "frame": "3",
-        "dur": 8
+        "dur": 4
       },
       {
         "frame": "4",
-        "dur": 8
+        "dur": 4
       },
       {
         "frame": "5",
-        "dur": 8
+        "dur": 4
       },
       {
         "frame": "6",
-        "dur": 6
+        "dur": 3
       }
     ]
   }

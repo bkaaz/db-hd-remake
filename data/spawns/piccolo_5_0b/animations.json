@@ -1,6 +1,6 @@
 {
   "play": {
-    "loop": false,
+    "loop": true,
     "steps": [
       {
         "frame": "0",
@@ -99,7 +99,7 @@
       },
       {
         "frame": "8",
-        "dur": 2
+        "dur": 3
       }
     ]
   }

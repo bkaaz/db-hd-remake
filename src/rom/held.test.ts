@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ROM_PATH } from "./cartridge";
-import { heldAnims, heldByTable, heldIn } from "./held";
+import { heldAnims, heldByTable, heldByWord, heldIn } from "./held";
 import type { ScriptOp } from "./script";
 
 describe("heldIn", () => {
@@ -39,6 +39,15 @@ describe.skipIf(!existsSync(ROM_PATH))("heldAnims, on the cartridge", () => {
   it("cries out at each of Vegeta's three blows while he holds him (his handler's 30 at 32, 56, 96)", () => {
     const steps = heldAnims(rom, 0).m30_vegeta_9d.steps;
     expect(steps.flatMap((st, i) => (st.sfx ? [i] : []))).toEqual([2, 4, 6]);
+  });
+});
+
+describe.skipIf(!existsSync(ROM_PATH))("heldByWord, on the cartridge", () => {
+  it("is Shocking Stunner's drawing by character: recorded on Goku, 1a", () => {
+    const rom = new Uint8Array(readFileSync(ROM_PATH));
+    const hold = { table: 0x2a9354, frames: 112 };
+    expect(heldByWord(rom, hold, 0).steps).toEqual([{ frame: "26", dur: 112 }]);
+    expect(heldByWord(rom, hold, 9).steps).toEqual([{ frame: "88", dur: 112 }]);
   });
 });
 

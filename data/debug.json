@@ -7,7 +7,7 @@
       "down 2", "down fwd 2", "fwd 2", "fwd smash", 16,
       "down 2", "down fwd 2", "fwd 2", "fwd smash", 120
     ] } },
-    { "p2": { "does": ["attack 6", "attack 10", "smash", 120] } },
+    { "p2": { "does": [30, "up 3", 60] } },
     { "p2": { "does": ["attack 24"] } },
     { "p2": { "guard": "always", "does": [60] } },
     { "p2": { "does": [90, "back 3", "down back 3", "down 3", "down fwd 3", "fwd 3", "fwd attack 3", 150] } }

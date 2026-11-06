@@ -20,9 +20,17 @@ because a number would only need translating back.
 
 ---
 
+## Gotenks's ghosts look at the opponent's height every frame
+
+*Cosmetic `?`, Gotenks, approved.* They share Yuudoh's code (`$0F:CC45`), which only looks every 4th frame, and so overshoot a little; ours settle sooner. `aim.every` in `gotenks_ghost` would do it. Not played against the original.
+
 ## Regeneration's arm keeps its daylight colours in every light
 
 *Cosmetic, Piccolo, evening and night.* The arm is his own palette (`piccolo_5_09`, record `0x90`), and a spawn has no sheet per lighting, so by evening and night it does not match his body. From the code; only the day was played.
+
+## Piccolo's counters can be entered later than in the original
+
+*Cosmetic, a kinder window.* The original asks in the hit pause alone. Ours also asks in the rest of the blow's state: pressed 5 to 9 frames later than the original allows, it still comes out. From `npm run original` and the same pad in ours, at three distances. Dropping `connected` + `command:` from `StateMachine.update` would close it, and Gotenks's Omaenanka with it.
 
 ## Goku and Gotenks turn after their throw with a move of its own
 

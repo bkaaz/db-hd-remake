@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite } from "pixi.js";
-import { aimSpeed } from "./aim";
+import { aimSpeed, aimsOn } from "./aim";
 import { alsoFired } from "./alsoFired";
 import { staysOnStep } from "./heldStep";
 import { faceOpponent } from "./turning";
@@ -1292,7 +1292,8 @@ export class Entity {
     if (wanted !== this.hum.id) this.hum = { id: wanted, left: 0 };
     this.setAnim(this.sm.def.anim, restart || !!this.sm.def.replays);
     if (!this.sm.def.sameSwing) this.swing.reset();
-    if (this.sm.def.type !== undefined) this.armed = true;
+    // a throw or a scene: the mover is drawn over the body he holds ($20:DF66, $20:E31F)
+    if (this.sm.def.type !== undefined || this.sm.def.grab || this.sm.def.seize) this.armed = true;
     this.behind = this.sm.def.behind ?? false;
     if (this.flipsOnLeaving) this.facing = this.facing === 1 ? -1 : 1;
     this.flipsOnLeaving = !!this.sm.def.flipsOnLeaving;
@@ -1381,7 +1382,7 @@ export class Entity {
   /** A shot with an `aim` answers a body standing at `y`; anything else ignores it. */
   aimAt(y: number): void {
     const aim = this.sm?.def.aim;
-    if (aim && this.stateFrames >= aim.from) this.vy = aimSpeed(aim, (this.y - y) / this.scale);
+    if (aim && aimsOn(aim, this.stateFrames)) this.vy = aimSpeed(aim, (this.y - y) / this.scale);
   }
 
   /** Where a spawn goes once its bolt is gone (`onRelease`), if anywhere. */
@@ -1429,6 +1430,14 @@ export class Entity {
     // ticked below either, so the pause cannot age a press out of existence.
     if (this.freezeFrames > 0) {
       this.freezeFrames--;
+      if (this.sm.asksInPause && this.swing.spent && !this.swing.blocked) {
+        const next = this.sm.commandInPause(commandsMet(this.def.commands, tablesFor(this.airFrames), this.pad));
+        if (next) {
+          if (this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
+          this.enterState(false);
+          this.armed = true;
+        }
+      }
       return;
     }
     if (this.burning) this.burnFrame++;
@@ -1548,6 +1557,8 @@ export class Entity {
     if (this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
     // Back into the same state is its animation played again (a loop's pass).
     if (changed) this.enterState(changed === before);
+    // every move begun by a button arms, a blow in it or not: a throw, a shot (recorded)
+    if (changed && this.sm.startedByButton) this.armed = true;
     this.buffer.tick();
 
     // Velocities are authored in sprite pixels, like box coordinates, and X is

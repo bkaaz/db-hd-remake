@@ -49144,6 +49144,15 @@
       }
     ]
   },
+  "m30_piccolo_ba": {
+    "loop": false,
+    "steps": [
+      {
+        "frame": "29",
+        "dur": 112
+      }
+    ]
+  },
   "m30_piccolo_bf": {
     "loop": false,
     "steps": [

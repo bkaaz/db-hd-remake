@@ -133,7 +133,7 @@ export interface SeizeDef {
   /** Melee sparks left by the seizer on these frames, `at` from him: Galactic Juggle's blows. One may sound, and pause the pair (`$30B2`): the scene's frame waits with them. */
   sparks?: { frame: number; at: [number, number]; sound?: string; pause?: number }[];
   /** The screen on these frames: whitened, and back ($37 = 24, 21 and 22). */
-  screens?: { frame: number; cue: "white" | "restore" }[];
+  screens?: { frame: number; cue: ScreenCue }[];
   /** What he cries out as he is taken (Volleyball's `4d`). */
   cry?: string;
   /** From this frame he is not drawn, gone into the scene until he is let go. */
@@ -503,7 +503,7 @@ export interface StateDef {
    * the moves that get through ($2A:86D1).
    */
   parry?: { to: string; except: Record<string, string[]> };
-  /** For a bolt: its ground is its thrower's floor, not the height it left from, and nothing bursts there (Regeneration's arm). */
+  /** For a bolt: its ground is its thrower's floor, not the height it left from, and nothing bursts there: Regeneration's arm, a shot that comes down to the opponent's height (Yuudoh). */
   fallsToFloor?: boolean;
   /** For a bolt: it bursts where its `lasts` runs out, as it arrives (Aerial Assault's five, $0F:CDFE). */
   burstsAtEnd?: boolean;
@@ -1220,6 +1220,11 @@ export class StateMachine {
    */
   pressSpent: string | null = null;
 
+  /** The state just entered was begun by a button or a command, as a move ≥ `90` is: the dash is not one. */
+  get startedByButton(): boolean {
+    return this.startedByCommand || (this.pressSpent !== null && this.pressSpent !== "dash");
+  }
+
   /**
    * The state just entered was asked for by a command — a special, which the
    * original starts stopped ($0D:F11E → $0D:D7A0: vx, vy and the shove 0).
@@ -1330,6 +1335,30 @@ export class StateMachine {
       return this.take(t, pressIn(t.when, input));
     }
     return null;
+  }
+
+  /**
+   * A command that follows a blow landing, asked in its hit pause as the
+   * cartridge's handlers ask ($20:E06E): the pause stops the state's clock, not
+   * this. `commands` is what the pad has met. The new state's name, or null.
+   */
+  commandInPause(commands: ReadonlyMap<string, string>): string | null {
+    for (const t of this.def.transitions ?? []) {
+      const keys = triggersOf(t.when);
+      const command = keys.find((k) => k.startsWith("command:"));
+      if (!command || !keys.includes("connected")) continue;
+      const button = commands.get(command.slice("command:".length));
+      if (button !== undefined) return this.take(t, button);
+    }
+    return null;
+  }
+
+  /** Whether this state has a command to ask in a hit pause. */
+  get asksInPause(): boolean {
+    return (this.def.transitions ?? []).some((t) => {
+      const keys = triggersOf(t.when);
+      return keys.includes("connected") && keys.some((k) => k.startsWith("command:"));
+    });
   }
 
   private take(t: Transition, press: string | null): string {

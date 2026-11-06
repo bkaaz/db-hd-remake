@@ -11,6 +11,13 @@ export interface Aim {
   above: number;
   within: number;
   speed: number;
+  /** It only looks every so many frames of its own, keeping its vy between: `$74 & 3`, so it overshoots by a little. Every frame if absent. */
+  every?: number;
+}
+
+/** Whether a shot `frame` frames old looks at the opponent's height this frame (1 is the frame it is put out). */
+export function aimsOn(aim: Aim, frame: number): boolean {
+  return frame >= aim.from && (aim.every === undefined || (frame - 1) % aim.every === 0);
 }
 
 /** The vy for a shot `height` px under the opponent's feet (− above them). */

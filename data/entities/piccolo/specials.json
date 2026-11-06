@@ -1713,6 +1713,13 @@
       "transitions": [
         {
           "when": [
+            "connected",
+            "command:ab"
+          ],
+          "to": "high_counter_mid"
+        },
+        {
+          "when": [
             "animEnd",
             "connected"
           ],
@@ -1736,6 +1743,13 @@
       "type": "heavy",
       "damage": 32,
       "transitions": [
+        {
+          "when": [
+            "connected",
+            "command:ab"
+          ],
+          "to": "high_counter_far"
+        },
         {
           "when": "animEnd",
           "to": "move_aa"
@@ -1770,6 +1784,13 @@
       "transitions": [
         {
           "when": [
+            "connected",
+            "command:b4"
+          ],
+          "to": "low_counter_mid"
+        },
+        {
+          "when": [
             "animEnd",
             "connected"
           ],
@@ -1793,6 +1814,13 @@
       "type": "heavy",
       "damage": 32,
       "transitions": [
+        {
+          "when": [
+            "connected",
+            "command:b4"
+          ],
+          "to": "low_counter_far"
+        },
         {
           "when": "animEnd",
           "to": "move_b3"
@@ -2011,8 +2039,8 @@
       "pushless": true,
       "transitions": [
         {
-          "when": "animEnd",
-          "to": "assault_scene_2"
+          "when": "frames:2",
+          "to": "assault_scene_1"
         }
       ],
       "seize": {
@@ -2021,6 +2049,7 @@
         "steps": [
           {
             "frame": 1,
+            "toHold": true,
             "atBy": {
               "goku": [
                 24,
@@ -2100,6 +2129,10 @@
             ]
           },
           {
+            "frame": 50,
+            "show": 3
+          },
+          {
             "frame": 60,
             "drift": [
               2,
@@ -2128,8 +2161,19 @@
             ]
           },
           {
+            "frame": 104,
+            "drift": [
+              0,
+              0.5
+            ]
+          },
+          {
             "frame": 128,
             "drift": null
+          },
+          {
+            "frame": 128,
+            "show": 58
           },
           {
             "frame": 143,
@@ -2193,9 +2237,28 @@
             2.5,
             -7
           ]
-        }
+        },
+        "screens": [
+          {
+            "frame": 144,
+            "cue": "dim"
+          },
+          {
+            "frame": 305,
+            "cue": "white"
+          },
+          {
+            "frame": 305,
+            "cue": "bright"
+          },
+          {
+            "frame": 336,
+            "cue": "restore"
+          }
+        ]
       },
-      "stillCamera": true
+      "stillCamera": true,
+      "holdStep": 0
     },
     "assault_scene_2": {
       "anim": "ma4_2",
@@ -2217,7 +2280,7 @@
           15,
           {
             "vx": 0,
-            "vy": -10,
+            "vy": -9.4,
             "gravity": "own"
           }
         ],
@@ -2810,6 +2873,385 @@
       ],
       "holdStep": 3,
       "transitions": []
+    },
+    "assault_scene_1": {
+      "anim": "ma4",
+      "startsAt": 1,
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "pushless": true,
+      "sceneOf": "assault_scene",
+      "stillCamera": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "assault_scene_2"
+        }
+      ]
+    },
+    "low_counter_mid": {
+      "anim": "mb5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              72,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              72,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              72,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              72,
+              0
+            ]
+          ],
+          "vegetto": [
+            [
+              72,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              72,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              72,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              72,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              72,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              72,
+              0
+            ]
+          ]
+        },
+        "caught": true,
+        "launch": {
+          "frame": 999,
+          "damage": 0,
+          "reaction": "reel_down",
+          "vel": [
+            0,
+            0
+          ],
+          "quiet": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "low_counter"
+        }
+      ]
+    },
+    "low_counter_far": {
+      "anim": "mb6",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              96,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              96,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              96,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              96,
+              0
+            ]
+          ],
+          "vegetto": [
+            [
+              96,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              96,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              96,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              96,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              96,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              96,
+              0
+            ]
+          ]
+        },
+        "caught": true,
+        "launch": {
+          "frame": 999,
+          "damage": 0,
+          "reaction": "reel_down",
+          "vel": [
+            0,
+            0
+          ],
+          "quiet": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "low_counter_mid"
+        }
+      ]
+    },
+    "high_counter_mid": {
+      "anim": "mac",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              72,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              72,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              72,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              72,
+              0
+            ]
+          ],
+          "vegetto": [
+            [
+              72,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              72,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              72,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              72,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              72,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              72,
+              0
+            ]
+          ]
+        },
+        "caught": true,
+        "launch": {
+          "frame": 999,
+          "damage": 0,
+          "reaction": "reel_down",
+          "vel": [
+            0,
+            0
+          ],
+          "quiet": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "high_counter"
+        }
+      ]
+    },
+    "high_counter_far": {
+      "anim": "mad",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "grab": {
+        "at": {
+          "goku": [
+            [
+              96,
+              0
+            ]
+          ],
+          "vegeta": [
+            [
+              96,
+              0
+            ]
+          ],
+          "gohan": [
+            [
+              96,
+              0
+            ]
+          ],
+          "gotenks": [
+            [
+              96,
+              0
+            ]
+          ],
+          "vegetto": [
+            [
+              96,
+              0
+            ]
+          ],
+          "piccolo": [
+            [
+              96,
+              0
+            ]
+          ],
+          "freeza": [
+            [
+              96,
+              0
+            ]
+          ],
+          "cell": [
+            [
+              96,
+              0
+            ]
+          ],
+          "mr_buu": [
+            [
+              96,
+              0
+            ]
+          ],
+          "buu": [
+            [
+              96,
+              0
+            ]
+          ]
+        },
+        "caught": true,
+        "launch": {
+          "frame": 999,
+          "damage": 0,
+          "reaction": "reel_down",
+          "vel": [
+            0,
+            0
+          ],
+          "quiet": true
+        }
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "high_counter_mid"
+        }
+      ]
     }
   }
 }
