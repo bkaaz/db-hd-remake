@@ -16,6 +16,7 @@ const SWITCHES: [Toggle, string][] = [
   ["dummy", "dummy attacks"],
   ["intro", "intro"],
   ["ko", "KO"],
+  ["journeys", "arena change"],
 ];
 
 export class SwitchBar {

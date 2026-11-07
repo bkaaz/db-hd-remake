@@ -213,7 +213,8 @@ sprites, so the original's state is found in its I-RAM. → `rom.md`
 another arena, up, sideways or down. → `arena/ways.ts`, ADR 0083
 
 **Journey** — what a sender plays before the arena changes: he flies off, the
-screen between, he is put down on the new one. → `arena/flight.ts`, ADR 0084
+screen between, he is put down on the new one. → `arena/flight.ts`, ADR 0084; off
+behind the debug scene's "arena change" switch
 
 **Shake** — the backdrop jolting up and down while the fighters stay put:
 `shake` on a state, one of the original's four patterns. → `camera/shake.ts`

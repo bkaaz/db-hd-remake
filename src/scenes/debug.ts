@@ -150,7 +150,9 @@ export class DebugScene implements Scene {
       [...new Set([...defs.flatMap((d) => effectsNamed(d.states, d.animations)), ...projectiles.effectsNeeded(), "ready", "ko", "double_ko"])],
       SPRITE_SCALE,
     );
-    const opens = travel ? travel.opens.bind(travel) : undefined;
+    // the switch is read as each blow lands: off, every sender's way is closed
+    const toggles = ctx.keyboard.toggles;
+    const opens = travel ? (...a: Parameters<Travel["opens"]>) => toggles.get("journeys") && travel.opens(...a) : undefined;
     const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles, opens });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);

@@ -156,10 +156,11 @@ const BUTTON_KEYS: Record<string, keyof Buttons | undefined> = {
 
 const TOGGLE_KEYS: Record<string, Toggle | undefined> = {
   b: "boxes",
-  r: "readout",
+  o: "readout",
   t: "dummy",
   i: "intro",
   k: "ko",
+  j: "journeys",
   l: "recording",
 };
 
