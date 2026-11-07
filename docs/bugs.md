@@ -24,10 +24,6 @@ because a number would only need translating back.
 
 *Cosmetic, seen on Gohan's intro.* His dust stays bright white by night beside a body in that lighting's colours. An object in its thrower's palette follows the lighting (`lit`, ADR 0087); this one is drawn in record `0x117` (`gohan_intro_a`), and whether the original lights such an object by arena is not checked.
 
-## Goten's and Trunks's first fade keeps the day's colours
-
-*Cosmetic, Gotenks's win, evening and night.* The first fade's record by evening, `0x13B` (own + `0xC9`, `$20:B903`), and by night and in the ruins are no ROM address our reader follows `?`: the objects show the day's `shimmer1` for those 2 frames. His own runs are relit (`introPalettes`, `rom/arena.ts`).
-
 ## The original jumps where it should start Galactic Gunfire
 
 *Annoying, the tools.* `npm run moves -- vegeta --only ae --close` plays a jump and an air move in the original, at health 80; ours seizes. The original reads commands on the jump's 2 frames on the floor alone, so ↓ Y has to follow ↑ within them (`input/command.ts`, `TAKEOFF_GRACE`); the case's pad holds ↑ for 3. No recording of the move to compare with until a case presses it that fast.

@@ -16,8 +16,8 @@ import { drawFrame, flipLayout, readLayout, readPalette, type Drawing, type Piec
 import { PLAIN, parseFrameId, type Look } from "./look";
 import { shadowFrame } from "../entity/shadow";
 import { objectFrame } from "./object";
-import { objectVram, paletteRecord, resourceStream } from "./resource";
-import { lightingShifts } from "./arena";
+import { objectVram, resourceStream } from "./resource";
+import { lightingShifts, litPalette } from "./arena";
 import { withIntroLight } from "./introLight";
 import { heldAnims } from "./held";
 import { moveParts } from "./parts";
@@ -159,28 +159,20 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
     shows: a.frames.map((frame, i) => ({ frame, dur: a.durs[i] })),
   }));
   const drawn = [...new Set(parts.flatMap((p) => p.shows.map((s) => s.frame)))];
-  const drawIn = (palette: number): Placed[] =>
+  const drawIn = (palette: number | Rgb[]): Placed[] =>
     drawn.map((frame) => {
       const read = readLayout(rom, objectFrame(rom, def.type, def.anim, frame)).map((p) => ({ ...p, tile: p.tile + tiles }));
       const pieces = def.vflip ? flipLayout(read, false, true) : read;
       // an empty layout is how an object shows nothing for a while (idle's lightning)
       if (pieces.length === 0) return { id: String(frame), ...NOTHING };
-      const drawn = drawFrame(vram, pieces, readPalette(rom, palette));
+      const drawn = drawFrame(vram, pieces, typeof palette === "number" ? readPalette(rom, palette) : palette);
       return { id: String(frame), ...(def.introLight ? withIntroLight(drawn) : drawn) };
     });
   const { sheet, frames } = packSheet(drawIn(colours));
   // the same pictures in each palette of its run pack the same way: frame for frame
   const alt: Record<string, Rgba> = def.alt === undefined ? {} : { alt: packSheet(drawIn(def.alt)).sheet };
   const variants = Object.fromEntries((def.shimmer ?? []).map((palette, i) => [`shimmer${i + 1}`, packSheet(drawIn(palette)).sheet]));
-  const notes: string[] = [];
-  for (const [name, record] of Object.entries(litRecords(rom, t, def))) {
-    try {
-      variants[name] = packSheet(drawIn(paletteRecord(rom, record).at)).sheet;
-    } catch (e) {
-      // Goten's and Trunks's first fade by evening, 0x13B: a palette the ROM does not hold `?`
-      notes.push(`${name} left out, the day's stands in: record 0x${record.toString(16)}, ${(e as Error).message}`);
-    }
-  }
+  for (const [name, palette] of Object.entries(litRecords(rom, t, def))) variants[name] = packSheet(drawIn(palette)).sheet;
   const animations: Record<string, Anim> = {};
   for (const part of parts) {
     animations[part.name] = {
@@ -192,18 +184,18 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
       }),
     };
   }
-  return { sheet, frames, animations, notes, ...((Object.keys(variants).length || def.alt !== undefined) && { variants: { ...variants, ...alt } }) };
+  return { sheet, frames, animations, notes: [], ...((Object.keys(variants).length || def.alt !== undefined) && { variants: { ...variants, ...alt } }) };
 }
 
-/** An object in its thrower's colours, in every other lighting: each variant's record (`SpawnDef.lit`). */
-function litRecords(rom: Uint8Array, t: FighterTables, def: SpawnDef): Record<string, number> {
+/** An object in its thrower's colours, in every other lighting: each variant's palette (`SpawnDef.lit`). */
+function litRecords(rom: Uint8Array, t: FighterTables, def: SpawnDef): Record<string, number | Rgb[]> {
   if (!def.lit) return {};
   const { palette, alt, fades = [] } = def.lit;
-  const out: Record<string, number> = {};
+  const out: Record<string, number | Rgb[]> = {};
   for (const [time, shift] of Object.entries(lightingShifts(rom, t))) {
-    out[time] = palette + shift;
-    if (alt !== undefined) out[`${time}_alt`] = alt + shift;
-    fades.forEach((fade, i) => (out[`${time}_shimmer${i + 1}`] = fade + shift));
+    out[time] = litPalette(rom, t, palette, shift);
+    if (alt !== undefined) out[`${time}_alt`] = litPalette(rom, t, alt, shift);
+    fades.forEach((fade, i) => (out[`${time}_shimmer${i + 1}`] = litPalette(rom, t, fade, shift)));
   }
   return out;
 }

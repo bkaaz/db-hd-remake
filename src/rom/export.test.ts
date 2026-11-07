@@ -53,13 +53,13 @@ describe.skipIf(!existsSync(ROM_PATH))("objects, on the cartridge", () => {
     expect(Buffer.compare(Buffer.from(variants!.night.data), Buffer.from(sheet.data))).not.toBe(0);
   });
 
-  it("leaves out a lighting's record the ROM does not hold, with a note: Goten's first fade by evening", () => {
+  it("relights the day's colours where the lighting's record is no ROM address: Goten's first fade by evening", () => {
     const t = tablesOf(rom, "gotenks");
     const goten = ownObjects(rom, t, OWN_OBJECTS.gotenks!.filter((o) => o.name === "gotenks_goten"), []);
-    const { variants, notes } = exportSpawns(rom, { ...t, objects: { loads: [], palettes: {}, spawns: goten } }).gotenks_goten;
-    expect(Object.keys(variants ?? {})).toContain("evening_shimmer2");
-    expect(Object.keys(variants ?? {})).not.toContain("evening_shimmer1");
-    expect(notes.some((n) => n.startsWith("evening_shimmer1 left out"))).toBe(true);
+    const { variants } = exportSpawns(rom, { ...t, objects: { loads: [], palettes: {}, spawns: goten } }).gotenks_goten;
+    const [day, evening] = [variants!.shimmer1, variants!.evening_shimmer1];
+    expect(evening).toBeDefined();
+    expect(Buffer.compare(Buffer.from(evening.data), Buffer.from(day.data))).not.toBe(0);
   });
 
   it("exports the charged Kamehameha's three beam heads growing with the charge, and a base that comes in, loops and goes out without hitting", () => {

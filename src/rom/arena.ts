@@ -59,6 +59,22 @@ export function lightingShifts(rom: Uint8Array, t: FighterTables): Record<string
   return Object.fromEntries(records.flatMap(([time, own]) => (time === null ? [] : [[time, own - base]])));
 }
 
+/**
+ * A palette loaded as his own + k (`record` by day), in the lighting `shift`
+ * records on: the ROM's record where it holds one, else the day's colours
+ * relit — Goten's first fade by evening would be 0x13B, no ROM address.
+ */
+export function litPalette(rom: Uint8Array, t: FighterTables, record: number, shift: number): number | Rgb[] {
+  const colours = (id: number) => readPalette(rom, paletteRecord(rom, id).at);
+  try {
+    colours(record + shift);
+    return paletteRecord(rom, record + shift).at;
+  } catch {
+    const base = lightingRecords(rom, t).find(([time]) => time === null)![1];
+    return relitRun(colours(base), colours(record), colours(base + shift));
+  }
+}
+
 /** A variant's name: its lighting's, then what it adds (`night_glow`), or the addition alone. */
 const named = (time: string | null, ...parts: string[]) => [time, ...parts].filter(Boolean).join("_");
 
