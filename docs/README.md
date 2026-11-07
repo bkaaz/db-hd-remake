@@ -12,8 +12,8 @@ collect what we want to build **before** writing gameplay code.
   the combat system is ours.
 - [`combat.md`](./combat.md) — the fight we are building toward, and why each
   part is there. The shape, not a schedule.
-- [`assets.md`](./assets.md) — where graphics/audio come from and how much can be
-  automated (research findings).
+- Where the pictures and sounds come from: the player's ROM, read at runtime —
+  [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md).
 - [`entity-editor.md`](./entity-editor.md) — the Entity Editor: its tabs, the
   MUGEN mapping, why it is ours rather than someone else's, and the phases it
   was built in (history, not a schedule).

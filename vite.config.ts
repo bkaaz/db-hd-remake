@@ -11,10 +11,8 @@ export default defineConfig({
   // relative, so dist/web plays from wherever it is hosted, a subpath included
   base: "./",
   build: {
-    // Vite empties its outDir on every build, so the game gets a subdirectory of
-    // its own: `dist/` is everything that leaves the repo, and `dist/assets/`
-    // holds the packs `npm run pack` writes. Point this back at `dist` and the
-    // next build deletes them.
+    // Vite empties its outDir on every build: the game's is a subdirectory of
+    // `dist/`, which is everything that leaves the repo.
     outDir: "dist/web",
     rollupOptions: {
       input: {

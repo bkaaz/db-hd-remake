@@ -208,7 +208,8 @@ when it works.
 - **Rendering:** PixiJS v8 (WebGL 2D) — game runtime only
 - **Editor:** plain Canvas 2D + TS (no PixiJS)
 - **Build/dev server:** Vite · **Package manager:** npm
-- **Assets:** real ripped HD sprite sheets, supplied by the owner (BYOA, below)
+- **Assets:** none in the repo or the build — every picture and sound is read
+  from the player's own ROM in the browser (ADR 0090)
 
 ## Commands
 
@@ -308,7 +309,6 @@ npm run moves -- vegetto
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md
-npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ```
 
 ## Structure
@@ -351,7 +351,6 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── chains.ts                 #   print the cancel graph with its arithmetic
 │   ├── which.ts                  #   read the fl30 shorthand
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
-│   ├── pack.ts                   #   zip the assets for backup / handover
 ├── .claude/skills/               # procedures loaded on demand (port-move)
 ├── tools/re/                     # Mesen 2 Lua scripts that record the original
 │                                 #   into logs/ (docs/rom.md); runs/ the scenarios
@@ -364,13 +363,12 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ├── data/arenas/<name>/           # arena.json: how an arena's layers scroll
 ├── data/hud/hud.json             # where the original's HUD puts what
 ├── data/audio/sounds.json        # the game's sound bank, one entry per id
-├── raw/                          # BYOA, gitignored: rom/ the cartridge (ROM_PATH
+├── raw/                          # gitignored: rom/ the owner's cartridge (ROM_PATH
 │                                 #   in .env.local points at it), states/ the
 │                                 #   save states npm run original plays from
 ├── preview/                      # gitignored: images drawn for a person to look
 │                                 #   at (npm run sheet). Nothing reads them back
-├── dist/                         # what leaves the repo: web/ is the build,
-│                                 #   assets/ is what npm run pack writes
+├── dist/web/                     # the build: plays from any static host, given a ROM
 ├── docs/                         # design notes & decisions (read before building)
 ├── vite.config.ts
 └── tsconfig.json
@@ -379,9 +377,9 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 The directory says *what a file is about*, not whether it runs in the browser.
 Two properties the tree no longer shows, and both still hold:
 
-- **PixiJS appears in exactly three files** — `main.ts`, `entity/entity.ts` and
-  `entity/entityDef.ts`. Everything else is plain TypeScript, which is what lets
-  Vitest run it in Node.
+- **PixiJS stays in the files that put things on screen** (`grep -rl
+  'from "pixi.js"' src`); the rules, the readers and the sound chip are plain
+  TypeScript, which is what lets Vitest run them in Node.
 - **Some files never reach the browser**: `sprites/png.ts` and the readers of
   `rom/` that only
   report exist for the CLI in `scripts/`. They live in `src/` beside the domain

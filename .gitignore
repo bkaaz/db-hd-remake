@@ -9,13 +9,12 @@ dist/
 # settings (granted permissions) are not.
 .claude/settings.local.json
 
-# BYOA: copyrighted source assets stay out of the repo (see docs/assets.md).
-# Our authored data lives in data/ (committed); only code and data/ are.
+# Nothing of the original enters git: the game reads the player's own ROM
+# (ADR 0090), and only code and data/ are committed.
 #
-#   assets/    what the game reads — one image per entity, plus the cut sfx
-#   raw/       what those were made from: the uncut capture, the untouched rip
+#   raw/       the cartridge (raw/rom/, ROM_PATH in .env.local) and the save
+#              states npm run original plays from (raw/states/)
 #   preview/   images a script rendered for a person to look at, never read back
-assets/
 raw/
 preview/
 

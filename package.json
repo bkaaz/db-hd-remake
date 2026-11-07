@@ -11,7 +11,6 @@
     "blows": "tsx scripts/blows.ts",
     "chains": "tsx scripts/chains.ts",
     "sheet": "tsx scripts/sheet.ts",
-    "pack": "tsx scripts/pack.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",

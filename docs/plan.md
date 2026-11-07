@@ -42,9 +42,8 @@ the ROM once and the browser keeps it (`cartridge/remembered.ts`).
 
 1. **Names in the editor** — aliases for the frames and animations it shows;
    it reads them from the ROM and edits no sprite.
-2. **What is left goes:** `assets/` in `.gitignore`, `npm run pack`,
-   `assets.md`; `CLAUDE.md` read through for what still assumes files. Read
-   again for what the hand-built Goku left behind: this file's sections written
+2. **What is left goes:** `CLAUDE.md` read through for what still assumes
+   files. Read again for what the hand-built Goku left behind: this file's sections written
    against his sheet (*G. Crouch*, *The moveset*), `descriptions.json` and the
    shorthand that reads it (`notation.ts`, `npm run which`), `input/motion.ts`,
    which no entity uses any more.

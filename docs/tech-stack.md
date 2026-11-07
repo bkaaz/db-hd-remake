@@ -9,7 +9,7 @@
 | Editor          | Canvas 2D     | `tools/entity-editor/` is plain Canvas 2D + TS — drawing overlays on an image is native Canvas work. |
 | Build / dev     | Vite          | Fast dev server + bundler; a dev-only plugin serves the editor's `/api/*`. |
 | Package manager | npm           | Default. |
-| Art             | Ripped HD sprites | Real sprite sheets supplied by the owner under BYOA (see [`assets.md`](./assets.md)); no placeholders anymore. |
+| Art and sound   | The player's ROM | Drawn and played from the cartridge in the browser ([ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md)); nothing of the original in the repo or the build. |
 | Tests           | Vitest        | `npm test`. For PixiJS-free logic, in Node — `*.test.ts` beside the source. Visual/feel checks stay manual. |
 
 ## Why PixiJS (not Phaser / raw Canvas)
