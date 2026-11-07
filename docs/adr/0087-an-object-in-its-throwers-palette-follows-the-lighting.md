@@ -1,6 +1,6 @@
 # 0087 — An object in its thrower's palette follows the lighting
 
-**Status:** accepted 2026-11-07 · extends 0026
+**Status:** accepted 2026-11-07 · extends 0026 · its record the ROM lacks superseded the same day by 0088
 
 An object the original draws in its thrower's OBJ palette — Earth Stab's leg,
 Regeneration's arm, Goten and Trunks, Goku's hair in his win — takes his
