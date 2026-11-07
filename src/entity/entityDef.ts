@@ -2,6 +2,8 @@ import { Rectangle, Texture } from "pixi.js";
 import type { Sounds } from "../audio/sounds";
 import type { StatesFile } from "./states";
 import type { CommandDef } from "../input/command";
+import { cartridge } from "../cartridge/romFile";
+import { fighterSheet } from "../cartridge/romSheets";
 import {
   DEFAULT_ATTRIBUTES,
   type Anim,
@@ -95,6 +97,18 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
 }
 
 async function loadSheet(name: string): Promise<Texture> {
+  // POC: a fighter's plain sheet comes from the cartridge, not from assets/
+  const drawn = fighterSheet(await cartridge(), name);
+  if (drawn) {
+    const canvas = document.createElement("canvas");
+    canvas.width = drawn.width;
+    canvas.height = drawn.height;
+    canvas.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(drawn.data), drawn.width, drawn.height), 0, 0);
+    const sheet = Texture.from(canvas);
+    sheet.source.scaleMode = "nearest";
+    console.log(`sheet ${name}: drawn from the ROM`);
+    return sheet;
+  }
   const img = new Image();
   img.src = `/api/sheet?name=${encodeURIComponent(name)}`;
   await img.decode();

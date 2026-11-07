@@ -2,7 +2,8 @@
 
 **Status:** accepted 2026-11-03 · supersedes the last "Rejected" line of
 [0024](./0024-a-scripts-sounds-ride-on-its-steps.md), whose premise — "the
-sound test plays its number as the id" — was wrong; the rest of 0024 stands
+sound test plays its number as the id" — was wrong; the rest of 0024 stands ·
+where the files come from superseded 2026-11-07 by 0090
 
 A script recording the original's sound test (`tools/re/record-sound-test.lua`)
 logs every id the game asks for and the frame of every press; `npm run

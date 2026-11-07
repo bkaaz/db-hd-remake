@@ -30,6 +30,39 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 ---
 
+## Now: the cartridge as the game's one dependency
+
+[ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md). The
+proof of concept is on branch `poc-rom-runtime`: fighters' plain sheets drawn
+in the browser (`src/cartridge/`), the cartridge's sound driver on our chip
+(`src/apu/`). Each slice ends with the game reading one more thing from the
+ROM and nothing of it from `assets/`.
+
+1. **Fighters whole.** Every variant sheet (lightings, alternate colours, fire,
+   shock, colour sets) and every spawn's sheet drawn from the ROM; the palette
+   helpers `scripts/rom.ts` builds them from move into `src/`. *Done when:*
+   the game opens nothing under `assets/sheets/`.
+2. **Arenas, the bands and the HUD.** *Done when:* nothing under
+   `assets/arenas/` or `assets/hud/` is opened.
+3. **Sound through the chip.** Effects asked of the driver instead of played
+   from files; fighters' voices uploaded where the game puts them
+   (`$00:98EC`); spoken lines streamed as BRR; the DSP's real interpolation
+   table in place of `gauss.ts`. *Done when:* nothing under `assets/audio/`
+   is opened, and the sound test's recordings are only a test's reference.
+4. **A static build.** The game fetches `data/` through the dev server's
+   `/api/*`; a hosted page has no server. *Done when:* `dist/web` on any
+   static server plays, given a ROM.
+5. **The ROM remembered** in the browser (IndexedDB), so a player picks it
+   once.
+6. **The editor reads the ROM** — no sprite editing, names (aliases) for what
+   it shows.
+7. **What is left goes:** `goku_old`, `assets/`, the PNG half of `npm run rom
+   -- export`, `npm run pack`; `assets.md` and `CLAUDE.md` rewritten.
+8. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
+   translation's patch) is checked. The clean Japanese dump and any PAL one
+   need their hashes, and the readers run against each — an address that
+   moved is a table per dump.
+
 ## Now: reading the cartridge by script
 
 The owner, 2026-10-30: more than any one move, the tools — every structure

@@ -1,5 +1,10 @@
 # Assets — strategy & sourcing
 
+> **Being replaced** (2026-11-07, [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md)):
+> the game is moving to reading every picture and sound from the player's ROM
+> at runtime; what follows describes `assets/` as it stands until
+> `plan.md`'s slices retire it.
+
 How we get the graphics/audio for the remake, and how much of it can be
 automated. Based on research done 2026-08-07.
 

@@ -19,3 +19,9 @@ Severity in plain words — *cosmetic*, *annoying*, *breaks play*, *loses work* 
 because a number would only need translating back.
 
 ---
+
+**The select screen offers no fighter** (*breaks play*, 2026-11-07). The
+select scene, the default without `?scene=debug`, says "No fighters to choose
+from.": a slot is offered only when its entity has an animation named
+`idle` (`src/scenes/select.ts`), and the cartridge's fighters name theirs
+after the move (`m…`); only `goku_old` has one, and he is not on the grid.

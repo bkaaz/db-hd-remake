@@ -1,4 +1,4 @@
-import type { Plugin, ViteDevServer } from "vite";
+import { loadEnv, type Plugin, type ViteDevServer } from "vite";
 import type { PalettesFile } from "../../src/entity/palettesFile";
 import type { EntityFile } from "../../src/entity/entityFile";
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -130,6 +130,21 @@ export function entityEditorServer(): Plugin {
           sendJson(res, 200, { sheets: files.filter((f) => IMAGE_RE.test(f)).sort() });
         } catch {
           sendJson(res, 200, { sheets: [] });
+        }
+      });
+
+      // POC (rom at runtime): the cartridge from ROM_PATH in .env.local, so a
+      // developer is never asked for it; 404 without one, and the game asks.
+      const romPath = loadEnv(server.config.mode, root, "ROM_").ROM_PATH;
+      server.middlewares.use("/api/rom", async (_req, res) => {
+        if (!romPath) return sendJson(res, 404, { error: "ROM_PATH not set in .env.local" });
+        try {
+          const buf = await fs.readFile(path.resolve(root, romPath));
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/octet-stream");
+          res.end(buf);
+        } catch {
+          sendJson(res, 404, { error: `cannot read ${romPath}` });
         }
       });
 
