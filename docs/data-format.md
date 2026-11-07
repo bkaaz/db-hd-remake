@@ -149,6 +149,7 @@ nine fighters would each want a copy of it. A grunt *is* his.
 - **`hitLight` lights what a state's blow lands on** (`"ball"`, `"pillar"`, ADR 0072), and
   `paletteRun` runs a state through palettes from its frame 1, `plain` or `alt`;
   `paletteAt` holds a palette from a frame on, `[[1, "glow"], [46, null]]`.
+- **`fires.atBy`** places a bolt by the button of the command that began the move, **a `with`'s `around`** keeps a companion that far from its bolt, unmirrored (ADR 0080). **A `grab`'s `cries`** are the frames he cries out on; **a seize's `release.whenLands`** puts him in another state as he lands, **a step's `onBy`** is its `on` by his name. **`floorBurst` and `floorSound`** are what a bolt leaves on its floor where they are not its blow's. **`soundsAt`** plays sounds on frames of a state, for a handler's that no script holds; **`muted`** keeps a state's script silent, **`fromTop`** plays its animation from the top though the state before played the same.
 - **`pillar` stands a light on the floor ahead of a state** and runs on through the next ones (ADR 0079); a bolt's `sharesBlow` spends its set's other blows with its own.
 - **A step's `spawns` are what its script puts out as it begins**, once per
   start of the animation, not per loop — written by the export for a move

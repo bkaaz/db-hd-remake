@@ -55,7 +55,8 @@ export function readCommands(rom: Uint8Array, character: number): Command[] {
       for (let p = at; word(p) !== 0 && words.length < 16; p += 2) words.push(word(p));
       commands.push({
         move: rom[row + 5],
-        where,
+        // a table too long for its area runs on into the next: Buu's Disk Tackle, the air's first row, asks for the ground
+        where: where === "air" && rom[row] & 1 ? "ground" : where,
         conditions: [...rom.subarray(row, row + 3)],
         cost: rom[row + 3],
         opponentMove: rom[row + 6] || null,

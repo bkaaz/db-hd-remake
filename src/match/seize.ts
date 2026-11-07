@@ -139,6 +139,8 @@ export class Seizures {
     }
     const { held } = s;
     const scale = held.scaleOf;
+    const landing = def.release.whenLands;
+    if (s.phase === "done" && landing && held.state === landing.from) held.release(landing.to, landing.vel);
     if (def.hides !== undefined && frame === def.hides) held.hide(true);
     for (const step of def.steps ?? []) {
       const due = step.every ? frame >= step.frame && (frame - step.frame) % step.every === 0 : frame === step.frame;
@@ -267,7 +269,7 @@ export class Seizures {
     }
     if (step.drift !== undefined) s.drift = step.drift;
     if (step.hide !== undefined) held.hide(step.hide);
-    if (step.on !== undefined) s.on = step.on;
+    if (step.on !== undefined) s.on = step.onBy?.[held.name] ?? step.on;
     if (step.lands) s.phase = "held";
   }
 

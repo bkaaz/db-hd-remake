@@ -20,6 +20,7 @@ Changes of two passes reach all of them, not yet judged by the owner:
 - A body thrown up by a `high` blow cannot be struck within 16 px of the floor, nor after its bounce (`$2A:8B92`, `combat/hitGate.ts`, Cell's pass).
 - A move that goes on as it came in now keeps the speed it had (`savesFlight`, Cell's pass): Freeza's Evil Energy from a forward jump flies on forward.
 - A scene opened by a shot no longer pauses its thrower (`$0F:C2FC`, commit `9a7a253`): Oyatsu Kosen, Buu Breath, Volleyball and Jubaku Ha move by 8 frames.
+- An object that ends with its thrower's move does so only in its state that says so (ADR 0080): Freeza's Jubaku Ha flies on once it has moved.
 - Every move a button or a command begins brings the mover in front (commit `65c6057`; `rom.md` on the draw order).
 
 ## Gotenks
@@ -114,34 +115,10 @@ Goku's states on code of his own, not read: `charge`, `charge_end`, `charge_star
 
 ## Buu
 
-Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug&p2=buu`.
+Read move by move and approved by the owner (2026-11-07); what the port left is in `bugs.md`. `?scene=debug&p2=buu`.
 
 | move | input | left out |
 |---|---|---|
-| `b6` matamol | ground: R + Y | — |
-| `a8` extension_punch | ground: → + Y | — |
-| `9d` throw | ground: → + X | — |
-| `a0` sender_a0 | ground: → ← → X | — |
-| `b5` kantsu | ground: → ← → A | — |
-| `a1` sender_a1 | ground: ↓ ↙ ← X | — |
-| `b0` earth_stab_again | ground: ↓ ↙ ← A | ground: ↓ ↙ ← B | ground: ↓ ↙ ← Y | what its handler decides on a button held or a level `?` |
-| `af` earth_stab | ground: ↓ ↙ ← A | ground: ↓ ↙ ← B | ground: ↓ ↙ ← Y | what its handler decides on a button held or a level `?` |
-| `9f` sender_9f | ground: ↓ ↘ → X | — |
-| `b1` whip | ground: ↓ ↘ → Y | — |
-| `b7` putty_uppercut | ground: ← → ↓ ↑ Y | mb7's blow, a reaction no type copies |
-| `b3` buu_burn | ground: ← ↙ ↓ ↘ → A | — |
-| `b4` energy_sphere | ground: ↓ ↙ → A | what its handler decides on a button held or a level `?` |
-| `b2` disk_tackle | air: ← ↙ ↓ ↘ → Y | — |
-| `d2` slashdown_blast | air: → ↓ B | — |
-| `d1` horizontal_blast | air: → ↓ Y | — |
-| `a9` floater | air: → ↘ ↓ ↙ ← Y | — |
-| `90` attack_y_close | his own normal | — |
-| `92` attack_y | his own normal | — |
-| `93` attack_b | his own normal | — |
-| `94` crouch_y | his own normal | — |
-| `97` jump_b | his own normal | — |
-| `98` jump_fwd_y | his own normal | — |
+| `a0`, `a1`, `9f` Senders | → ← → X, ↓ ↙ ← X, ↓ ↘ → X | out, by his word |
 
-Objects, no recording yet (7): frames from the table, 4 frames each `?`, colours `?`: `buu_9_09`, `buu_9_06`, `buu_9_04`, `buu_9_15`, `buu_9_12`, `buu_9_0e`, `buu_a_20`.
-Objects with nothing to draw from their table, so left out: `09/17`, `09/16`, `09/18`, `09/13`, `09/14`, `09/19`, `09/0f`, `09/10`, `09/11`.
-Goku's states on code of his own, not read: `charge_start`, `dash_back`, `dash_back_end`, `dash_back_run`, `dash_fwd`, `dash_fwd_end`, `dash_fwd_run`, `intro`, `ko_bounce`, `ko_bounce2`, `ko_down`, `ko_fall`, `ko_lie`, `ko_rise`, `reel_trip`, `trip_fall`, `trip_land`, `win`, `win_2`.
+Not compared by picture: intro, win, dash, his reels, Extension Punch, Whip, Matamol. Earth Stab's third stab: from the code only.

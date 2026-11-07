@@ -9,6 +9,11 @@ export function hoverOffset(frame: number): number {
   return n < 6 ? 0 - n : n - 12;
 }
 
+/** A state's `soundsAt` due on its frame. */
+export function soundsOn(soundsAt: [number, string][] | undefined, frame: number): string[] {
+  return (soundsAt ?? []).filter(([at]) => at === frame).map(([, id]) => id);
+}
+
 /** A pixel back every other frame until `until` (Cell's intro, $10:C26B), 0 with no `until`. */
 export function quiverOffset(frame: number, until: number | undefined): number {
   return until !== undefined && frame < until && frame % 2 === 1 ? -1 : 0;

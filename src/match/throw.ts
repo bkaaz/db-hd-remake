@@ -84,6 +84,7 @@ export class Throws {
       const k = thrower.placement.scale;
       world?.effect(strike.fx, other.x - other.facing * dx * k, other.y + dy * k);
     }
+    if (grab.cries?.includes(thrower.stateFrame - 1)) other.sound("voice_hurt");
     // the state's count is 1 on the frame it is entered, the move's ($44) 0:
     // let go 20 frames after the throw began, as recorded (tools/re/log-throw.lua)
     if (thrower.stateFrame - 1 >= grab.launch.frame) {

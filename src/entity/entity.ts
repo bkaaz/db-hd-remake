@@ -25,7 +25,7 @@ import { trailAt } from "./trail";
 import { pillarAt, type PillarDef } from "../combat/pillar";
 import { outOfReach } from "../combat/hitGate";
 import { moveStep } from "../fx/follow";
-import { hoverOffset, quiverOffset } from "./hover";
+import { hoverOffset, quiverOffset, soundsOn } from "./hover";
 import type { ScreenCue } from "../screen";
 import type { FinaleDef } from "../match/finale";
 import { moveOf, type Shoved } from "../combat/corner";
@@ -742,6 +742,11 @@ export class Entity {
     return this.sm?.def.landsAs ?? [];
   }
 
+  /** What a bolt leaves on its floor, where it is not its blow's. */
+  get onFloor(): { burst?: string; sound?: string } {
+    return { burst: this.sm?.def.floorBurst, sound: this.sm?.def.floorSound };
+  }
+
   /** A bolt whose ground is its thrower's floor (`fallsToFloor`). */
   get fallsToFloor(): boolean {
     return !!this.sm?.def.fallsToFloor;
@@ -930,7 +935,7 @@ export class Entity {
     y: number;
     facing: 1 | -1;
     size: number;
-    with: { spawn: string; x: number; y: number }[];
+    with: { spawn: string; x: number; y: number; around?: [number, number] }[];
     also: { x: number; y: number; spawn: string; state?: string }[];
     /** Whether the thrower draws its band to this one — the state has a `band`. */
     beam: boolean;
@@ -946,10 +951,10 @@ export class Entity {
     return {
       spawn: fires.spawn,
       state: fires.state,
-      ...placed(fires.at),
+      ...placed(fires.atBy?.[this.sm?.commandPress ?? ""] ?? fires.at),
       facing: this.facing,
       size,
-      with: (fires.with ?? []).map((w) => ({ spawn: w.spawn, ...placed(w.at) })),
+      with: (fires.with ?? []).map((w) => ({ spawn: w.spawn, ...placed(w.at ?? fires.at), around: w.around })),
       also: alsoFired(fires, placed),
       beam: this.sm?.def.band !== undefined,
     };
@@ -1615,7 +1620,7 @@ export class Entity {
     // it cannot start a second one before the buffer has expired.
     if (this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
     // Back into the same state is its animation played again (a loop's pass).
-    if (changed) this.enterState(changed === before);
+    if (changed) this.enterState(changed === before || !!this.sm.def.fromTop);
     // every move begun by a button arms, a blow in it or not: a throw, a shot (recorded)
     if (changed && this.sm.startedByButton) this.armed = true;
     this.buffer.tick();
@@ -1681,6 +1686,7 @@ export class Entity {
       const { band, frames, gone } = this.fading;
       if (bandHeights(band, frames, gone).head === 0) this.fading = null;
     }
+    if (!this.clockHeld) for (const id of soundsOn(this.sm?.def.soundsAt, this.stateFrames)) this.audio?.play(id);
     if (!this.clockHeld) this.stateFrames++;
 
     if (!this.clockHeld) this.advanceAnim();
@@ -1822,7 +1828,7 @@ export class Entity {
   private stepBegins(): void {
     this.applyFrame();
     const step = this.currentStep();
-    for (const id of step?.sfx ?? []) this.audio?.playRom(id);
+    if (!this.sm?.def.muted) for (const id of step?.sfx ?? []) this.audio?.playRom(id);
     if (step?.voice !== undefined) this.audio?.playLine(step.voice);
     // placed now, while the facing is the step's; the fighters spawn them
     if (this.spawnedSteps.has(this.stepIndex)) return;

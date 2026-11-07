@@ -1,0 +1,17 @@
+{
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "rides": true,
+      "endsWithMove": [
+        "0c"
+      ]
+    }
+  }
+}

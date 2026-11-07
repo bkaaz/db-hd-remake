@@ -56,6 +56,39 @@ describe("Seizures, a scene that hides him", () => {
     }
   }
 
+  it("puts him in another state as he lands, once let go: Putty Uppercut's (`whenLands`)", () => {
+    const s = seizer();
+    (s as unknown as { seize: SeizeDef }).seize = { ...def, release: { ...def.release, whenLands: { from: "tumble_bounce", to: "down_bounce", vel: [0, -3] } } };
+    const h = held();
+    const release = h.release as ReturnType<typeof vi.fn>;
+    const seizures = new Seizures();
+    for (let frame = 1; frame <= 6; frame++) {
+      s.stateFrame = frame;
+      seizures.update(s, h, world);
+    }
+    expect(release).toHaveBeenCalledTimes(1);
+    (h as unknown as { state: string }).state = "tumble_bounce";
+    s.stateFrame = 7;
+    seizures.update(s, h, world);
+    expect(release).toHaveBeenLastCalledWith("down_bounce", [0, -3]);
+  });
+
+  it("keeps him at a step's `onBy` for his name, its `on` for anyone else", () => {
+    const steps = [{ frame: 1, on: [32, -63] as [number, number], onBy: { vegetto: [24, -55] as [number, number] } }];
+    for (const [name, x] of [["goku", 132], ["vegetto", 124]] as const) {
+      const s = seizer();
+      (s as unknown as { seize: SeizeDef }).seize = { ...def, hides: undefined, steps };
+      const h = held();
+      (h as unknown as { name: string }).name = name;
+      const seizures = new Seizures();
+      for (let frame = 1; frame <= 3; frame++) {
+        s.stateFrame = frame;
+        seizures.update(s, h, world);
+      }
+      expect(h.x).toBe(x);
+    }
+  });
+
   it("takes him where he stands, crying out, and hides him on its frame", () => {
     const h = held();
     play(seizer(), h, 2);

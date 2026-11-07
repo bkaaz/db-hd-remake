@@ -7,6 +7,7 @@ import { landBlow, type BlowContext, type BlowResult } from "./blow";
 import { objectGone } from "../camera/camera";
 import { logEvent } from "../log";
 import { nextRadius } from "../combat/ball";
+import { keepAround } from "./around";
 import { leftMove, movesHeld } from "./thrownIn";
 
 /** No edge holds a bolt back: it is gone once it strays too far (`objectGone`). */
@@ -28,6 +29,8 @@ interface Live {
   owner: Entity;
   /** What came out beside it (`fires.with`): drawn and moved, never hitting, gone with it. */
   companions: Entity[];
+  /** Of those, the ones that keep their place beside it (`around`). */
+  kept: Map<Entity, [number, number]>;
   /** Whether the owner draws a band to it — only this bolt may say where its head is. */
   beam: boolean;
   /** `rides`: where it stays on its owner, forward of him and down from him, in game px. */
@@ -116,7 +119,7 @@ export class Projectiles {
       y: number;
       facing: 1 | -1;
       size: number;
-      with: { spawn: string; x: number; y: number }[];
+      with: { spawn: string; x: number; y: number; around?: [number, number] }[];
       beam: boolean;
     },
     owner: Entity,
@@ -148,18 +151,20 @@ export class Projectiles {
     bolt.x = from.x;
     bolt.y = from.y;
     this.world.addChild(bolt.view);
+    const kept = new Map<Entity, [number, number]>();
     const companions = from.with.flatMap((w) => {
       const companion = this.defs.get(w.spawn);
       if (!companion) return [];
       const e = new Entity(companion, this.scale, owner.sounds);
-      e.facing = from.facing;
+      e.facing = w.around ? 1 : from.facing;
       e.groundY = e.y = w.y;
       e.x = w.x;
+      if (w.around) kept.set(e, w.around);
       this.world.addChild(e.view);
       return [e];
     });
     const ride = bolt.rides ? { ahead: (bolt.x - owner.x) * from.facing, down: bolt.y - owner.y } : null;
-    this.live.push({ name: from.spawn, bolt, foe, owner, companions, beam: from.beam, ride, thrownIn: bolt.endsWithMove ? movesHeld(bolt.endsWithMove, owner.animation) : null });
+    this.live.push({ name: from.spawn, bolt, foe, owner, companions, kept, beam: from.beam, ride, thrownIn: bolt.endsWithMove ? movesHeld(bolt.endsWithMove, owner.animation) : null });
     logEvent(`bolt ${from.spawn} out at x ${Math.round(bolt.x)}`);
   }
 
@@ -177,7 +182,7 @@ export class Projectiles {
     let halted = paused;
     // oldest first, as the original's slots: of Kakusan's three, the first to be put out strikes first
     for (const shot of [...this.live]) {
-      const { name, bolt, foe, owner, companions, beam, ride, thrownIn } = shot;
+      const { name, bolt, foe, owner, companions, kept, beam, ride, thrownIn } = shot;
       if (!paused || bolt.throughPause) {
         bolt.aimAt(foe.y);
         bolt.update(NO_INPUT, null, ANYWHERE);
@@ -189,6 +194,7 @@ export class Projectiles {
         bolt.y = bolt.groundY = owner.y + ride.down;
       }
       if (!paused) for (const c of companions) c.update(NO_INPUT, null, ANYWHERE);
+      for (const [c, around] of kept) keepAround(c, bolt, around, this.scale);
       // the thrower draws the band to it, if its state has one (combat/band.ts)
       if (beam) owner.beamReaches(bolt.x);
       const result = halted ? null : landBlow(bolt, foe, impact);
@@ -205,13 +211,14 @@ export class Projectiles {
       // strayed too far from the screen's middle, off a side or the top ($0F:B47D)
       const stranded = objectGone(bolt.x, bolt.y, view);
       // and is gone the moment he leaves the move that put it out ($0F:BB51)
-      const orphaned = thrownIn !== null && leftMove(thrownIn, owner.animation);
+      const orphaned = thrownIn !== null && bolt.endsWithMove !== undefined && leftMove(thrownIn, owner.animation);
       // down on its floor: its burst where it is, as the original rewrites the slot ($0F:BB05)
       const floored = bolt.burstsAbove !== undefined && bolt.hasLanded;
       const burst = bolt.attackBurst;
       if (floored && !result && burst && bolt.landsAs.length === 0) {
-        impact.effects.spawn(burst, bolt.x, bolt.y + (bolt.burstsBelow ?? 0) * this.scale);
-        if (bolt.burstsBelow !== undefined) foe.sound(bolt.attackSounds.hit);
+        impact.effects.spawn(bolt.onFloor.burst ?? burst, bolt.x, bolt.y + (bolt.burstsBelow ?? 0) * this.scale);
+        if (bolt.onFloor.sound) foe.sound(bolt.onFloor.sound);
+        else if (bolt.burstsBelow !== undefined) foe.sound(bolt.attackSounds.hit);
       }
       if (floored && !result) {
         for (const next of bolt.landsAs) {

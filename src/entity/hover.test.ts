@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { hoverOffset, quiverOffset } from "./hover";
+import { hoverOffset, quiverOffset, soundsOn } from "./hover";
+
+describe("soundsOn", () => {
+  it("gives what is due on its frame and nothing between", () => {
+    const at: [number, string][] = [[8, "swing"], [8, "voice"], [12, "swing"]];
+    expect(soundsOn(at, 8)).toEqual(["swing", "voice"]);
+    expect(soundsOn(at, 9)).toEqual([]);
+    expect(soundsOn(undefined, 8)).toEqual([]);
+  });
+});
 
 describe("hoverOffset", () => {
   it("rises a pixel every 4 frames to 6 up, then sinks back, 48 frames round", () => {

@@ -8,7 +8,10 @@
         0,
         0
       ],
-      "lasts": 22
+      "lasts": 22,
+      "endsWithMove": [
+        "b3"
+      ]
     }
   }
 }

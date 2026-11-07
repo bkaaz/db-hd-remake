@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { arrow, buttonName, commandsFile, readCommands } from "./commands";
+import { fighterNamed } from "./roster";
 
 describe("buttonName", () => {
   it("names the button, and a direction only when the command wants it held", () => {
@@ -34,6 +35,11 @@ describe.skipIf(!existsSync(ROM_PATH))("readCommands, on the cartridge", () => {
   it("reads the Kamehameha on A and Double Kick as → held with B", () => {
     expect(input(0xab)).toBe("← ↙ ↓ ↘ → A");
     expect(input(0xa2)).toBe("→ + B");
+  });
+
+  it("goes by a row's own condition past the end of its area: Buu's Disk Tackle is on the ground", () => {
+    const rows = readCommands(rom, fighterNamed(rom, "buu").character).filter((c) => c.move === 0xb2);
+    expect(rows.map((c) => c.where)).toEqual(["ground"]);
   });
 
   it("finds Slash Down Kick in the air and nowhere else", () => {

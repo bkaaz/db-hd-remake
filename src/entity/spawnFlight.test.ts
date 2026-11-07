@@ -5,8 +5,8 @@ import { DEFAULT_ATTRIBUTES } from "./entityFile";
 import type { StatesFile } from "./states";
 
 const dir = (name: string) => `data/spawns/${name}`;
-/** Its code adds to its vy every frame: Regeneration's arm ($0F:CBE4). */
-const FALLS = new Set(["piccolo_5_09"]);
+/** Its code adds to its vy every frame: Regeneration's arm ($0F:CBE4), Putty Uppercut's piece of him ($0F:DAFD). */
+const FALLS = new Set(["piccolo_5_09", "buu_9_01"]);
 const launched = readdirSync("data/spawns").flatMap((name) => {
   if (FALLS.has(name)) return [];
   if (!existsSync(`${dir(name)}/states.json`)) return [];

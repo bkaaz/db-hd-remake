@@ -1983,6 +1983,18 @@ describe("command:<move>", () => {
     expect(sm.pressSpent).toBe("smash");
   });
 
+  it("remembers the command's button through the states after it, until the next command", () => {
+    const sm = new StateMachine(special());
+    expect(sm.commandPress).toBeNull();
+    sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET);
+    expect(sm.commandPress).toBe("smash");
+    sm.update(NONE, { ...QUIET, animEnded: true });
+    expect(sm.current).toBe("idle");
+    expect(sm.commandPress).toBe("smash");
+    sm.update({ ...NONE, commands: new Map([["a4", "blast"]]) }, QUIET);
+    expect(sm.commandPress).toBe("blast");
+  });
+
   it("says a special was started by its command, and nothing else was", () => {
     const sm = new StateMachine(special());
     sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET);

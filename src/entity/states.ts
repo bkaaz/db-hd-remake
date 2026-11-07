@@ -77,6 +77,8 @@ export interface GrabDef {
    * sprite px, x toward where he faces turned round (Psychic Lift, $10:C677; its voice is left out, `combat.md`).
    */
   strikes?: { frame: number; fx: string; at: Record<string, [number, number]> }[];
+  /** On these frames of the state he cries out: Buu's throw, `$0D:D82E` on the opponent ($10:D36F). */
+  cries?: number[];
   /** He flashes in his two shock palettes until let go ($20:E552). */
   shocks?: true;
   /** He stays on the step before `step` until `frame`, then hangs upside down from where he is held (field 0x14, $20:DAE1). */
@@ -110,6 +112,13 @@ export interface GrabDef {
   };
 }
 
+/** Let go, on reaching `from` he is put in `to` instead: Putty Uppercut's handler throws him again as he lands ($10:DC22). */
+export interface SeizeLanding {
+  from: string;
+  to: string;
+  vel: [number, number];
+}
+
 /**
  * A scene played on the opponent (`match/seize.ts`): taken on frame `at`,
  * set down at `place` (sprite px, dx toward the seizer's facing), playing
@@ -136,7 +145,7 @@ export interface SeizeDef {
    * `lands` ends his flight where he is. With
    * `every`, again each `every` frames: an animation of his that goes round (`57`).
    */
-  steps?: { frame: number; anim?: string; show?: number; draws?: Record<string, string>; atBy?: Record<string, [number, number]>; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; on?: [number, number] | null; lands?: true; every?: number; toHold?: true; cry?: string; sound?: string }[];
+  steps?: { frame: number; anim?: string; show?: number; draws?: Record<string, string>; atBy?: Record<string, [number, number]>; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; on?: [number, number] | null; onBy?: Record<string, [number, number]>; lands?: true; every?: number; toHold?: true; cry?: string; sound?: string }[];
   /** A circle of light on him: `start` px on frame `from`, 1 more a frame to `top`, then 1 less, at `at` from his feet (his `5f`, `$0F:A67F`). */
   light?: { from: number; start: number; top: number; at: [number, number]; flickers?: true };
   /** A dome of light on the floor where he is, and bars of it (`match/sceneLight.ts`). */
@@ -154,7 +163,7 @@ export interface SeizeDef {
   launch?: { frame: number; vel: [number, number]; from?: [number, number]; quiet?: boolean };
   bounces?: number[];
   /** `frame`: when he is let go; with a `ball`, when it says. */
-  release: { frame?: number; damage: number; reaction: string; vel: [number, number]; burns?: boolean; fx?: string; fxAbove?: number; flash?: number; ahead?: boolean };
+  release: { frame?: number; damage: number; reaction: string; vel: [number, number]; whenLands?: SeizeLanding; burns?: boolean; fx?: string; fxAbove?: number; flash?: number; ahead?: boolean };
   /** What flies in his place; he comes out where it ends (`match/ball.ts`). */
   ball?: SceneBallDef;
   /** Effects put out on him every `every` frames from `from` to `to`, `at` from where he is ($20:8F8D). */
@@ -582,6 +591,8 @@ export interface StateDef {
   fires?: {
     spawn: string;
     at: [number, number];
+    /** In place of `at`, by the button of the command that began the move: Earth Stab's distance ($10:D5F6, field `0x30`). */
+    atBy?: Record<string, [number, number]>;
     /**
      * How big the thing comes out at no charge and at full charge. It multiplies
      * the drawing and the boxes placed through it — a bigger bolt reaches
@@ -604,7 +615,13 @@ export interface StateDef {
      * Spawns put out beside it that never hit and are gone when it is — the
      * Kamehameha's base at the hands, which lives as long as the beam's head.
      */
-    with?: { spawn: string; at: [number, number] }[];
+    with?: {
+      spawn: string;
+      /** Where it comes out, as `at`; absent, where the bolt does. */
+      at?: [number, number];
+      /** Kept this far from the bolt every frame, in px not mirrored by facing and never flipped (Energy Sphere's sparks, $0F:DF1D). */
+      around?: [number, number];
+    }[];
     /** More bolts on the same frame, each hitting on its own, its own spawn or this one's: Kakusan's three. */
     also?: { at: [number, number]; spawn?: string; state?: string }[];
   };
@@ -616,8 +633,17 @@ export interface StateDef {
   holdStep?: number;
   /** Let go of that step on this frame of the state, for a hold that ends: Psychic Lift's rise. */
   holdFrames?: number;
+  /** Its animation from the top though the state before played the same one: a script that goes round ($10:D155). */
+  fromTop?: boolean;
+  /** The script's sounds stay silent here: Buu's charge says its line once, though its script goes round (recorded). */
+  muted?: boolean;
   /** Drawn bobbing where he stands, as the pose above the arena is (`entity/hover.ts`). */
   hover?: boolean;
+  /** Sounds on these frames of the state: what a handler plays by the frame, in no script ($10:D9DE). */
+  soundsAt?: [number, string][];
+  /** On reaching its floor, in place of its blow's burst and sound: `a/20`'s `a/02` and `08` (`$0F:E2B0`). */
+  floorBurst?: string;
+  floorSound?: string;
   /** Arriving here, a KO's half speed is over before he lies done — Goku's last landing ($10:B022), not Vegeta's. */
   fullSpeed?: boolean;
   /**
@@ -1276,6 +1302,9 @@ export class StateMachine {
    */
   startedByCommand = false;
 
+  /** The button of the last command taken: it stays through the states the move goes on in. */
+  commandPress: string | null = null;
+
   /**
    * Frames this state has run. Only used by the cancel windows, and counted
    * here rather than in the entity so the rule can be tested without a renderer.
@@ -1409,6 +1438,7 @@ export class StateMachine {
   private take(t: Transition, press: string | null): string {
     this.enter(t.to);
     this.startedByCommand = triggersOf(t.when).some((k) => k.startsWith("command:"));
+    if (this.startedByCommand) this.commandPress = press;
     this.pressSpent = press;
     return this.current;
   }

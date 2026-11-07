@@ -202,6 +202,7 @@ before asking for a new mechanism:
 - an object rewritten on the floor as another that strikes — `landsAs`; a scene a shot opens that does not hold its thrower — a `seize`'s `free` (ADR 0078);
 - a run that stops at contact — `stopsOnContact`; a move in the air that lets him go on as he came in — `savesFlight` and `resumesFlight`;
 - a light on the floor ahead of him (`b1` kind 4) — `pillar`, and a set of objects with one blow between them — `sharesBlow` (ADR 0079); an object whose frame is its state — states of its own, its airborne ones moved twice a frame if its code calls `$0F:CBE4` and `$0F:E4EB` both (Cell Junior);
+- a command's button naming a bolt's place — `fires.atBy`; sparks that keep their place beside a bolt — a `with`'s `around`; a state that gives a handler's sound on a frame — `soundsAt`; a script that goes round with its line said once — `fromTop` and `muted` (ADR 0080);
 - an object gone when he leaves his move — `endsWithMove`, `true` or the
   move ids its code tests (ADR 0062).
 

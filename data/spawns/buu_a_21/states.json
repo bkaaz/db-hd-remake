@@ -1,0 +1,127 @@
+{
+  "initial": "wait_a",
+  "states": {
+    "wait_a": {
+      "anim": "play",
+      "turn": false,
+      "burstsAbove": 0,
+      "transitions": [
+        {
+          "when": "frames:40",
+          "to": "fly_a"
+        }
+      ],
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ]
+    },
+    "fly_a": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        3,
+        -3
+      ],
+      "type": "down",
+      "damage": 34,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "outlivesHit": true
+    },
+    "wait_b": {
+      "anim": "play",
+      "turn": false,
+      "burstsAbove": 0,
+      "transitions": [
+        {
+          "when": "frames:40",
+          "to": "fly_b"
+        }
+      ],
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ]
+    },
+    "fly_b": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        -3,
+        3
+      ],
+      "type": "down",
+      "damage": 34,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "outlivesHit": true
+    },
+    "wait_c": {
+      "anim": "play",
+      "turn": false,
+      "burstsAbove": 0,
+      "transitions": [
+        {
+          "when": "frames:40",
+          "to": "fly_c"
+        }
+      ],
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ]
+    },
+    "fly_c": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        -3,
+        -3
+      ],
+      "type": "down",
+      "damage": 34,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "outlivesHit": true
+    },
+    "wait_d": {
+      "anim": "play",
+      "turn": false,
+      "burstsAbove": 0,
+      "transitions": [
+        {
+          "when": "frames:40",
+          "to": "fly_d"
+        }
+      ],
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ]
+    },
+    "fly_d": {
+      "anim": "play",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        3,
+        3
+      ],
+      "type": "down",
+      "damage": 34,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "outlivesHit": true
+    }
+  },
+  "hitFx": "hit_spark",
+  "guardFx": "guard_spark"
+}

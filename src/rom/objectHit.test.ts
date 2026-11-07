@@ -8,8 +8,7 @@ const FIGHTERS = ["vegetto", "piccolo", "freeza", "cell", "mr_buu", "buu", "gote
 /** Drafted with the same explosion for all, and not put right yet: `docs/bugs.md`. Delete as each is. */
 const NOT_YET = new Set([
   "freeza_6_15",
-  "buu_a_20", "buu_9_08",
-]);
+  ]);
 
 describe("hitFields", () => {
   it("an object that stays plays on, with a melee blow's spark and sounds", () => {

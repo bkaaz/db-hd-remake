@@ -1,0 +1,13 @@
+{
+  "initial": "fly",
+  "states": {
+    "fly": {
+      "anim": "play",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ]
+    }
+  }
+}

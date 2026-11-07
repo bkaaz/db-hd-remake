@@ -1176,6 +1176,23 @@ Handlers from `$10:C0CA`, objects from `$0F:C5CB`. His move-loaded tiles are `0x
 **Intro** (`3c`, `$10:C1D6`): records `148` on 1, `149` on 64, `14A` on 68, `14B` on 72, own + `9C` on 100, own + `9E` on 104, own on 108; field `0E` is 0 or −1 by `$74 & 1` while the step is under 8. No charge sound.
 **Win** (`3e`, `$10:C28D`): from 57 to 120 his drawing rises a quarter pixel a frame from −8, then bobs a pixel every 4 frames of `$74` 7 up, 14 down, 14 up …; holds at 272.
 
+### Buu
+
+Handlers from `$10:D0FF`, objects from `$0F:D9FA`. A move's `$30,X` holds the sequence of the command row it read last (`$0D:EE31`). His command table overruns the ground's area: Disk Tackle's row, condition ground, is the first of the air's.
+**Throw** (`9d`, `$10:D307`): on frame 1 he stands at the opponent's x and y and holds him there; the opponent's voice `30` on 6, 18, 30. At the script's end `$0F:B321` (58, `1b`, 2.5, −7) and himself `1a` from frame 0, back at 2, −8.
+**Matamol** (`b6`, `$10:D8EB`): behind on step 0; on frame 30 (opponent ± 8 − x) / 32 whole px, turned to him, until step 19 at 62.
+**Earth Stab** (`af`, `b0`, `$10:D5B7`): `af` is `b0` from its first frame. On 14 `9/08` stands at x + 32 + 32 × (`$30` − `1D`), so 32 by Y, 64 by B, 96 by A, on his floor, tiles `08`, palette 4 or 5 (his own), sound `08`. Step 2 holds until the spike clears `F1`, 24 frames (`$0F:DCE2`, table `$0F:DCEE`). Then, with fewer than three out and `b0`'s command met on that frame, step 1 at frame 14 again; else the hold is let go.
+**Kantsu** (`b5`): `9/09`, 80 frames, frames 0, 1 by `$74 & 4`; it costs 5.
+**Buu Burn** (`b3`): `9/04` at 3, −3, 80 frames, palettes `105`, `107`, `108`, `109` frame by frame while `$74 & 4`. Beside it `9/06` (no box): tile base 0, his drawing's tile set `a46`, 22 frames from table `$0F:DBF1`, while he is in `b3`, `f4`, `f5`; it outlives a hit of `9/04`.
+**Energy Sphere** (`b4`, `$10:D6A5`): `F0` is set for good once A is off. On 28 and 40 with `F0` set: frame 52, counter `10`; else all his slots are cleared and the next stage's `b0`s fire. Balls `9/17`–`19`: blows 50, 65, 80, drawn effect kind 2 by `$0F:B6B2` at radius `E`, `16`, `26` + 1, 2, 2, 1 by `$74 & 3`, gone if he leaves `b4` while vx is 0. From 61 to 75 the handler sets the ball at x, y by table `$10:D7B4`; on 76 vx ±4. Sparks `9/0e`–`16` stand at a fixed offset from slot 0 unflipped, frames by tables `$0F:DD4D` … `$0F:DF9D`, frame 0 of some empty as a delay; gone when slot 0 is no ball.
+**Disk Tackle** (`b2`, `$10:D845`): vx 6 on 8, 0 on 36; a connecting blow from 8 to 35 sets `1a` at frame 8, vx −1, vy −8.
+**Slashdown and Horizontal Blast** (`d2`, `d1`, `$10:DF85`): hang 40 frames, then `05` with `80`, `82`. `a/20` flies at 3, 3, gone at 53; at y `C8` sound `08`, y `C0`, `a/02` (`$0F:E2B0`). A hit makes it `a/01`.
+**Floater** (`a9`, `$10:D46C`): hangs and bobs (`$0D:C40A`, by character at `$0D:C3D3`) until a button. Frame 6 with no direction, 22 at the walk's speed with one, turned to him; sound `21` when `$74 & 3F` is 0. A button's air move starts at vx ±4 by the pad, vy `82` / 4.
+**Putty Uppercut** (`b7`, `b8`, `$10:D9A1`, `$10:DA49`): a blow from step 2 to 5 on an unguarded body: `b8`, the opponent `59` in drawing by character (`$10:DB0E`), held by step (`$10:DB18`) at +64, −16; +48, −16; +32, −63 (Vegetto +24, −55). On 48 four `a/21` around him, on 88 flying at ±3 (`$10:DD2B`). On 94 `$37` = `16`, `$0F:B321` (100, `20`, 1.5, −10), burning. On 100 `9/01`, a piece of him, at 0.5, −8, gravity `0x78`, its V and H flipped every 8 by `$74`; on his floor it crawls to him and within 24 px is gone and sets his frame to `E9` (`$0F:DB3E`). As the opponent lands `$0F:B321` again (0, `1b`, no speed), sound `3a`, and kind 6 at his x: a column from y `C7`, top up 8 a frame to the camera + 32, half width `20` from then 1 less a frame. At 1 it is off and the move ends.
+**Charge** (`0c`, `$10:D155`): the glow on frame 1, the shout once though the script goes round, sound `17`; each pass starts at frame 0 of the script, and the first end puts out `9/00`, a ring of dots from his tile set, on him, frames 0 to 4 at 4.
+**Intro** (`3c`): no handler, no palette, no sound but his line; the script's 155 frames.
+**Win** (`3e`, `$10:D1C1`): back to frame 7 at the script's end.
+
 ### Piccolo
 
 Handlers from `$20:D96E`. **Sonic Kick** (`9e`, `$20:DC1B`): goes behind on step 0, stands still, on frame 36 (`$20:C1B2`) (opponent − 8) / 32 px a frame, turned to him, to the script's end.

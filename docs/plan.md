@@ -195,8 +195,7 @@ allow, without asking, and he tries them move by move afterwards —
 1. **Each fighter's own recording** (`port-review.md` names his objects), through
    `OWN_OBJECTS`, in place of the drafted ones.
 2. **The owner's pass, move by move**, deleting from `port-review.md`.
-3. **Buu is the next fighter** (owner, 2026-11-06), read move by move as Cell was, the owner's pass after it.
-4. **Then the engine's bugs, once, together** (`bugs.md`), and his word on `port-review.md`, Every fighter.
+3. **Then the engine's bugs, once, together** (`bugs.md`), and his word on `port-review.md`, Every fighter.
 
 ## After the port: the common part
 

@@ -42,6 +42,7 @@ function held(): Entity {
     hold: vi.fn(),
     release: vi.fn(),
     hurtBy: vi.fn(),
+    sound: vi.fn(),
   } as unknown as Entity;
 }
 
@@ -55,6 +56,22 @@ describe("heldAt", () => {
 });
 
 describe("Throws", () => {
+  it("makes him cry out on a grab's `cries` alone, not on the frames between", () => {
+    const t = thrower();
+    (t as unknown as { grab: GrabDef }).grab = { ...GRAB, cries: [6] };
+    const h = held();
+    const throws = new Throws();
+    t.stateFrame = 6;
+    throws.update(t, h);
+    expect(h.sound).not.toHaveBeenCalled();
+    t.stateFrame = 7;
+    throws.update(t, h);
+    expect(h.sound).toHaveBeenCalledWith("voice_hurt");
+    t.stateFrame = 8;
+    throws.update(t, h);
+    expect(h.sound).toHaveBeenCalledTimes(1);
+  });
+
   it("takes hold as the throw begins: his animation for this thrower and move, facing the thrower, at the first step", () => {
     const t = thrower();
     const h = held();

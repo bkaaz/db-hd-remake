@@ -167,7 +167,7 @@
     },
     {
       "move": "b2",
-      "where": "air",
+      "where": "ground",
       "words": [
         "4002",
         "0100",

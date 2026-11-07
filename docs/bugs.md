@@ -20,9 +20,29 @@ because a number would only need translating back.
 
 ---
 
+## What Buu's pass left
+
+*Cosmetic, Buu, approved.* Energy Sphere's sparks start over as the ball is let go, and its largest ball may strike later than the original's, at the edge of reach `?`. Floater's air blow starts at vy 0, not field `0x82` / 4. Buu Burn's `9/04` steps its palettes frame by frame in the original, on one run in ours. Putty Uppercut's piece of him does not flip in the air, and the column starts on Goku's landing frame, not each fighter's own `?`. Disk Tackle's blow lands 6 px closer than the original's (a box only touching, below `?`).
+
+## Some handlers' own sounds on a frame are not played `?`
+
+*Sound, approved fighters.* What a handler plays by the frame is in no script, so the export leaves it out; Buu's Putty Uppercut's swing was one (`soundsAt`). `port` also names, as the handler's own: Gohan's `9d` and `9e` `32`, Gotenks's `9d` and `9e` `32`, Piccolo's `9d` `32`, Cell's `9d` `30`, Vegeta's `b2` `2c`. Not played or listened to one by one.
+
+## A re-armed blow on a step's first frame takes the step before's record
+
+*Cosmetic, Buu's crouching Y, others `?`.* Its second blow lands at frame 20 in the original with the record of the step before (`light`, stun 1, recorded): the reel goes on in `15`. Ours lands it with `m94_2`'s, `heavy`, so `16`, 17 frames after the first where the original's is 15. `hits.test.ts` holds a state to its part's record. Buu's close Y is worked round with `rehit` and no blow on its later parts; if its first blow misses, the third cannot land as it may in the original.
+
+## A fighter lands from `1a` through two frames of `3b` that the original skips
+
+*Cosmetic, every fighter.* `$0F:A1E0` sets `3b` and in the same call reads the directions, which set `00`. Ours plays `land`, 2 frames. Seen on Buu's throw and Disk Tackle.
+
+## A command in the air after jumping over the opponent reads otherwise `?`
+
+*Annoying `?`, Buu, others `?`.* `→ ↘ ↓ ↙ ← Y` from a forward jump that has passed over Goku is Horizontal Blast in the original and Floater in ours; from where he has not passed it, Floater in both (`npm run moves -- buu`, `a9 air` and `--close`). Face is `00` in both logs. Not read.
+
 ## Some throws may cry out once too often `?`
 
-*Sound, Vegeta, Gotenks, Buu, Mr. Buu.* Freeza's throw had a voice at the launch that `$0F:B321` does not play: the reaction's own sound, which `launch.quiet` skips. These four lack `quiet`, and a quick search of their recordings found no sound on the frame they let go; Goku, Gohan, Piccolo and Cell have one there. Not compared one by one.
+*Sound, Vegeta, Gotenks, Mr. Buu.* Freeza's throw had a voice at the launch that `$0F:B321` does not play: the reaction's own sound, which `launch.quiet` skips. These three lack `quiet`, and a quick search of their recordings found no sound on the frame they let go; Goku, Gohan, Piccolo and Cell have one there. Not compared one by one.
 
 ## An object keeps its colours on an evening or night arena `?`
 
@@ -368,15 +388,9 @@ to a window that is not focused, so `held.right` is never cleared.
 Fix is a `blur` listener that clears every held direction. Attack buttons need
 nothing — they disarm themselves every frame.
 
-- **Buu's `buu_9_12` and `buu_9_0e`: guessed timing.** Their `animations` say frames 0 to n at 4 each,
-  from the draft; the code holds each frame for what a table says and has an empty frame last, as
-  `buu_9_15` does (`$0F:DD4D` and the tables after it). Which table is whose is not read yet.
-
 - **Objects that may outlive the original's.** `mr_buu_8_06` (Mr. Buu's X) is up 21 frames against the
   recording's 15. Its code ends it with the thrower's move; any
   timer of its own is not read. `cell_7_02` is in the same position, ending with the move alone.
-- **Buu's Energy Sphere objects end with the move.** `buu_9_15`, `buu_9_12` and `buu_9_0e` live as long as
-  the sphere `9/17`–`19` in the original (`$0F:DFB6`), which is not ported.
 
 - **14 objects leave the wrong thing when they land.** The draft gave every object the same small
   explosion; `$2A:8E31` says most of these stay and leave a melee blow's spark, and some explode bigger.
@@ -388,9 +402,7 @@ nothing — they disarm themselves every frame.
   so it stays about 7 frames more. `Projectiles.update` pauses them all.
 - **`npm run moves -- <fighter> --only <name>` with no such case overwrites `report.txt` with "0 of 0".**
   `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
-- **Some objects fly unseen: their sheets hold no pixel.** They still fly and strike. Buu's `buu_a_20` takes tiles from the wrong place, as Kakusan's did: type `a` draws
-  from the shared `0x30`/`0x31` (`npm run rom -- vram logs/objects-<name>.bin`). `buu_9_06`
-  and `buu_9_08` are blank too, cause not read; they may be drawn effects, as Energy Field's `mr_buu_8_12` is (`rom.md`), which stays blank on purpose. The list is `DRAWS_NOTHING` in
+- **Some objects fly unseen: their sheets hold no pixel.** They still fly and strike. They may be drawn effects, as Energy Field's `mr_buu_8_12` is (`rom.md`), which stays blank on purpose. The list is `DRAWS_NOTHING` in
   `src/rom/objectTiles.test.ts`. A spawn already exported is kept, so `animations.json` has to go first.
 - **Kakusan's three land too close together from near.** The original's come 14 and 23 frames apart and
   the opponent goes 90 px over its reel; ours land one straight after the other's pause and he goes 39 px
@@ -401,7 +413,7 @@ nothing — they disarm themselves every frame.
 - **Mr. Buu's Energy Field's blow is gone after its first hit.** The original's object stays with its blow disarmed, puts `a/02` out in another slot, and is armed again 60 frames later (`logs/moves/mr_buu/af.orig.txt`, f199 and f259). Ours bursts, as `objectHit` reads it, so a second touch never lands. The circle is the state's and goes on.
 - **Mightiness Bomber: a ball whose thrower is hit while it charges vanishes at once.** Not compared with the original: it may shrink. After a hit the original also has more `a/17` / `a/18` slots, 14 and 20 frames on; ours shows one burst. Not read.
 - **The small and middle Kamehameha and Final Flash may whiten the screen and should not `?`.** `kame_s`, `kame_m`, `vegeta_final_flash_s` and `_m` have `hitFlash`, but they become `a/02` and `a/17`, and only `a/18` asks for the white (`$0F:E234`). Measured on Mightiness Bomber's three levels: only the largest whitens. Cell's small Chou Kamehameha, recorded: no white in the original, white in ours (`logs/moves/cell/aa.*`), on the shared `kame_s`. The owner has approved Goku's as it is.
-- **A 3D move may stop short from afar, as Mr. Buu's Flying Bomber did.** Its handler holds the code that measures the distance (`rom.md`), but ours walks at a fixed speed: Buu's Matamol (`b6`, `$10:D978`). Not played; `port` does not report it. `npm run moves -- <fighter> --far` shows each.
+- **A 3D move may stop short from afar, as Mr. Buu's Flying Bomber did.** Its handler holds the code that measures the distance (`rom.md`), but ours may walk at a fixed speed. `port` does not report it. `npm run moves -- <fighter> --far` shows each.
 - **Sender `a1` and Planet Attack from afar are off by the report**, not looked into (`npm run moves -- mr_buu --far`).
 - **Kakusan's second shot lands 5 frames after the pause in the original, at once in ours.** Near: the opponent reels 72 frames and 90 px there, 50 and 39 here; from afar they agree. The distance stays 22 px through those 5 frames, and fields `0x26`, `0x7A` and `0x7B` of the defender do not explain it (recorded). Gotenks's Renzoku looks the same `?`.
 - **A blow after a connection lands 3 frames early:** Elbow Dash's second, 14 frames after the first where the original's is 17. The state's first frame runs out inside the hit pause, and the blow's box is early too (next entry). Other follow-ups likely share it `?`.

@@ -5,7 +5,9 @@
     "attack_b",
     "crouch_y",
     "jump_b",
-    "jump_fwd_y"
+    "jump_fwd_y",
+    "charge_start",
+    "intro"
   ],
   "entries": [
     {
@@ -214,6 +216,18 @@
       ],
       "when": "command:a9",
       "to": "floater"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "crouch_down",
+        "crouch",
+        "stand_up"
+      ],
+      "when": "command:b2",
+      "to": "disk_tackle"
     }
   ],
   "states": {
@@ -236,15 +250,17 @@
       ],
       "velAt": [
         [
-          31,
-          1
-        ],
-        [
-          64,
+          63,
           0
         ]
       ],
-      "behind": true
+      "behind": true,
+      "approach": {
+        "at": 30,
+        "short": 8,
+        "over": 32,
+        "until": 62
+      }
     },
     "extension_punch": {
       "anim": "ma8",
@@ -255,15 +271,15 @@
       ],
       "velAt": [
         [
-          1,
+          2,
           2
         ],
         [
-          12,
+          13,
           1.33203125
         ],
         [
-          18,
+          19,
           0
         ]
       ],
@@ -357,8 +373,14 @@
             -2.5,
             -7
           ],
-          "ahead": true
-        }
+          "ahead": true,
+          "quiet": true
+        },
+        "cries": [
+          6,
+          18,
+          30
+        ]
       },
       "transitions": [
         {
@@ -440,32 +462,6 @@
         }
       ]
     },
-    "earth_stab_again": {
-      "anim": "mb0",
-      "turn": false,
-      "vel": [
-        0,
-        0
-      ],
-      "transitions": [
-        {
-          "when": "command:b0",
-          "to": "earth_stab_again"
-        },
-        {
-          "when": "animEnd",
-          "to": "idle"
-        }
-      ],
-      "fires": {
-        "spawn": "buu_9_08",
-        "at": [
-          32,
-          0
-        ],
-        "state": "fly"
-      }
-    },
     "earth_stab": {
       "anim": "maf",
       "turn": false,
@@ -476,31 +472,9 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "earth_stab_2"
+          "to": "earth_stab_1"
         }
       ]
-    },
-    "earth_stab_2": {
-      "anim": "maf_2",
-      "turn": false,
-      "vel": [
-        0,
-        0
-      ],
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "idle"
-        }
-      ],
-      "fires": {
-        "spawn": "buu_9_08",
-        "at": [
-          32,
-          0
-        ],
-        "state": "fly"
-      }
     },
     "sender_9f": {
       "anim": "m9f",
@@ -559,7 +533,13 @@
       "damage": 0,
       "catches": true,
       "hitSound": "hit_09",
-      "blockSound": "block_17"
+      "blockSound": "block_17",
+      "soundsAt": [
+        [
+          8,
+          "swing_07"
+        ]
+      ]
     },
     "buu_burn": {
       "anim": "mb3",
@@ -590,13 +570,14 @@
           -72
         ],
         "state": "fly",
-        "with": [
+        "also": [
           {
-            "spawn": "buu_9_06",
             "at": [
               0,
               0
-            ]
+            ],
+            "spawn": "buu_9_06",
+            "state": "fly"
           }
         ]
       },
@@ -630,14 +611,44 @@
         0
       ],
       "fires": {
-        "spawn": "buu_9_15",
+        "spawn": "buu_9_17",
         "at": [
-          16,
-          0
+          -8,
+          -112
         ],
-        "state": "fly"
+        "state": "charge",
+        "with": [
+          {
+            "spawn": "buu_9_15",
+            "around": [
+              16,
+              0
+            ]
+          },
+          {
+            "spawn": "buu_9_16",
+            "around": [
+              -16,
+              2
+            ]
+          }
+        ]
       },
       "transitions": [
+        {
+          "when": [
+            "animEnd",
+            "!held:blast"
+          ],
+          "to": "energy_sphere_go_s"
+        },
+        {
+          "when": [
+            "animEnd",
+            "released:blast"
+          ],
+          "to": "energy_sphere_go_s"
+        },
         {
           "when": "animEnd",
           "to": "energy_sphere_3"
@@ -652,14 +663,51 @@
         0
       ],
       "fires": {
-        "spawn": "buu_9_12",
+        "spawn": "buu_9_18",
         "at": [
-          22,
-          -11
+          -8,
+          -112
         ],
-        "state": "fly"
+        "state": "charge",
+        "with": [
+          {
+            "spawn": "buu_9_12",
+            "around": [
+              22,
+              -11
+            ]
+          },
+          {
+            "spawn": "buu_9_13",
+            "around": [
+              14,
+              15
+            ]
+          },
+          {
+            "spawn": "buu_9_14",
+            "around": [
+              -25,
+              -4
+            ]
+          }
+        ]
       },
       "transitions": [
+        {
+          "when": [
+            "animEnd",
+            "!held:blast"
+          ],
+          "to": "energy_sphere_go_m"
+        },
+        {
+          "when": [
+            "animEnd",
+            "released:blast"
+          ],
+          "to": "energy_sphere_go_m"
+        },
         {
           "when": "animEnd",
           "to": "energy_sphere_4"
@@ -674,58 +722,65 @@
         0
       ],
       "fires": {
-        "spawn": "buu_9_0e",
+        "spawn": "buu_9_19",
         "at": [
-          -16,
-          -42
+          -8,
+          -112
         ],
-        "state": "fly"
+        "state": "charge",
+        "with": [
+          {
+            "spawn": "buu_9_0e",
+            "around": [
+              -16,
+              -42
+            ]
+          },
+          {
+            "spawn": "buu_9_0f",
+            "around": [
+              25,
+              -35
+            ]
+          },
+          {
+            "spawn": "buu_9_10",
+            "around": [
+              5,
+              32
+            ]
+          },
+          {
+            "spawn": "buu_9_11",
+            "around": [
+              -44,
+              -3
+            ]
+          }
+        ]
       },
       "transitions": [
         {
           "when": "animEnd",
-          "to": "energy_sphere_5"
-        }
-      ]
-    },
-    "energy_sphere_5": {
-      "anim": "mb4_5",
-      "turn": false,
-      "vel": [
-        0,
-        0
-      ],
-      "transitions": [
-        {
-          "when": "animEnd",
-          "to": "idle"
+          "to": "energy_sphere_go_l"
         }
       ]
     },
     "disk_tackle": {
       "anim": "mb2",
       "turn": false,
-      "airborne": true,
-      "air": [
+      "vel": [
+        0,
+        0
+      ],
+      "velAt": [
         [
-          0,
-          {
-            "vx": 0,
-            "vy": 0,
-            "gravity": 0
-          }
+          9,
+          6
         ],
         [
-          8,
-          {
-            "vx": 6
-          }
-        ],
-        [
-          36,
-          {
-            "vx": 0
-          }
+          37,
+          0
         ]
       ],
       "hitSound": "hit_09",
@@ -735,17 +790,14 @@
       "transitions": [
         {
           "when": "connected",
-          "to": "idle"
-        },
-        {
-          "when": "landed",
-          "to": "land"
+          "to": "disk_spring"
         },
         {
           "when": "animEnd",
-          "to": "jump_fall_attacked"
+          "to": "idle"
         }
-      ]
+      ],
+      "catches": true
     },
     "slashdown_blast": {
       "anim": "md2",
@@ -763,14 +815,11 @@
       ],
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
           "to": "slashdown_blast_2"
         }
-      ]
+      ],
+      "savesFlight": true
     },
     "slashdown_blast_2": {
       "anim": "md2_2",
@@ -786,13 +835,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
           "to": "slashdown_blast_3"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "slashdown_blast_3": {
@@ -809,13 +864,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
           "to": "slashdown_blast_4"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "slashdown_blast_4": {
@@ -832,13 +893,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
-          "to": "jump_fall_attacked"
+          "to": "slashdown_blast_fall"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "horizontal_blast": {
@@ -857,14 +924,11 @@
       ],
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
           "to": "horizontal_blast_2"
         }
-      ]
+      ],
+      "savesFlight": true
     },
     "horizontal_blast_2": {
       "anim": "md1_2",
@@ -880,13 +944,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
           "to": "horizontal_blast_3"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "horizontal_blast_3": {
@@ -903,13 +973,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
           "to": "horizontal_blast_4"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "horizontal_blast_4": {
@@ -926,13 +1002,19 @@
       },
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
-          "to": "jump_fall_attacked"
+          "to": "horizontal_blast_fall"
         }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
       ]
     },
     "floater": {
@@ -951,27 +1033,8 @@
       ],
       "transitions": [
         {
-          "when": "landed",
-          "to": "land"
-        },
-        {
           "when": "animEnd",
-          "to": "floater_2"
-        }
-      ]
-    },
-    "floater_2": {
-      "anim": "ma9_2",
-      "turn": false,
-      "airborne": true,
-      "transitions": [
-        {
-          "when": "landed",
-          "to": "land"
-        },
-        {
-          "when": "animEnd",
-          "to": "jump_fall_attacked"
+          "to": "floater_still"
         }
       ]
     },
@@ -991,7 +1054,8 @@
           "when": "animEnd",
           "to": "attack_y_close_2"
         }
-      ]
+      ],
+      "rehit": 5
     },
     "attack_y_close_2": {
       "anim": "m90_2",
@@ -1000,10 +1064,6 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "light",
-      "damage": 20,
       "transitions": [
         {
           "when": "animEnd",
@@ -1018,10 +1078,6 @@
         0,
         0
       ],
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "heavy",
-      "damage": 20,
       "transitions": [
         {
           "when": "animEnd",
@@ -1253,14 +1309,14 @@
         -2,
         -8
       ],
-      "startsAt": 21,
       "holdStep": 6,
       "transitions": [
         {
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "pushless": true
     },
     "candy_scene": {
       "anim": "mb8",
@@ -1278,7 +1334,77 @@
       ],
       "seize": {
         "at": 0,
-        "anim": "m59",
+        "anim": "none",
+        "still": true,
+        "steps": [
+          {
+            "frame": 1,
+            "draws": {
+              "goku": "26",
+              "vegeta": "36",
+              "gohan": "38",
+              "gotenks": "37",
+              "vegetto": "29",
+              "piccolo": "29",
+              "freeza": "29",
+              "cell": "29",
+              "mr_buu": "31",
+              "buu": "43"
+            },
+            "on": [
+              64,
+              -16
+            ]
+          },
+          {
+            "frame": 4,
+            "on": [
+              48,
+              -16
+            ]
+          },
+          {
+            "frame": 8,
+            "on": [
+              32,
+              -63
+            ],
+            "onBy": {
+              "vegetto": [
+                24,
+                -55
+              ]
+            }
+          },
+          {
+            "frame": 94,
+            "on": null
+          },
+          {
+            "frame": 145,
+            "sound": "sfx_3a"
+          }
+        ],
+        "bars": [
+          {
+            "from": 145,
+            "until": 199,
+            "on": "held",
+            "x": [
+              -32,
+              32
+            ],
+            "bottom": 0,
+            "start": 1,
+            "rise": 8,
+            "tallest": 168,
+            "narrows": {
+              "at": 22,
+              "by": 1,
+              "least": 0
+            }
+          }
+        ],
         "release": {
           "frame": 94,
           "damage": 100,
@@ -1286,9 +1412,20 @@
           "vel": [
             1.5,
             -10
-          ]
+          ],
+          "burns": true,
+          "flash": 16,
+          "whenLands": {
+            "from": "tumble_bounce",
+            "to": "down_bounce",
+            "vel": [
+              0,
+              -3.25
+            ]
+          }
         }
-      }
+      },
+      "sound": "sfx_08"
     },
     "candy_scene_2": {
       "anim": "mb8_2",
@@ -1298,13 +1435,44 @@
         0
       ],
       "invulnerable": true,
+      "sceneOf": "candy_scene",
       "transitions": [
         {
           "when": "animEnd",
           "to": "candy_scene_3"
         }
       ],
-      "sceneOf": "candy_scene"
+      "fires": {
+        "spawn": "buu_a_21",
+        "at": [
+          16,
+          -40
+        ],
+        "state": "wait_a",
+        "also": [
+          {
+            "at": [
+              -32,
+              -40
+            ],
+            "state": "wait_b"
+          },
+          {
+            "at": [
+              0,
+              -64
+            ],
+            "state": "wait_c"
+          },
+          {
+            "at": [
+              0,
+              -16
+            ],
+            "state": "wait_d"
+          }
+        ]
+      }
     },
     "candy_scene_3": {
       "anim": "mb8_3",
@@ -1314,13 +1482,691 @@
         0
       ],
       "invulnerable": true,
+      "sceneOf": "candy_scene",
+      "fires": {
+        "spawn": "buu_9_01",
+        "at": [
+          32,
+          -80
+        ],
+        "state": "rise"
+      },
       "transitions": [
         {
-          "when": "frames:112",
+          "when": "frames:74",
+          "to": "candy_scene_4"
+        }
+      ]
+    },
+    "earth_stab_1": {
+      "anim": "maf_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "holdStep": 0,
+      "sound": "sfx_08",
+      "fires": {
+        "spawn": "buu_9_08",
+        "at": [
+          32,
+          0
+        ],
+        "atBy": {
+          "attack": [
+            32,
+            0
+          ],
+          "smash": [
+            64,
+            0
+          ],
+          "blast": [
+            96,
+            0
+          ]
+        },
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:24",
+            "command:b0"
+          ],
+          "to": "earth_stab_2"
+        },
+        {
+          "when": "frames:24",
+          "to": "earth_stab_end"
+        }
+      ]
+    },
+    "earth_stab_2": {
+      "anim": "maf_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "holdStep": 0,
+      "sound": "sfx_08",
+      "fires": {
+        "spawn": "buu_9_08",
+        "at": [
+          32,
+          0
+        ],
+        "atBy": {
+          "attack": [
+            32,
+            0
+          ],
+          "smash": [
+            64,
+            0
+          ],
+          "blast": [
+            96,
+            0
+          ]
+        },
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": [
+            "frames:24",
+            "command:b0"
+          ],
+          "to": "earth_stab_3"
+        },
+        {
+          "when": "frames:24",
+          "to": "earth_stab_end"
+        }
+      ]
+    },
+    "earth_stab_3": {
+      "anim": "maf_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "holdStep": 0,
+      "sound": "sfx_08",
+      "fires": {
+        "spawn": "buu_9_08",
+        "at": [
+          32,
+          0
+        ],
+        "atBy": {
+          "attack": [
+            32,
+            0
+          ],
+          "smash": [
+            64,
+            0
+          ],
+          "blast": [
+            96,
+            0
+          ]
+        },
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "frames:24",
+          "to": "earth_stab_end"
+        }
+      ]
+    },
+    "earth_stab_end": {
+      "anim": "maf_2",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "startsAt": 1,
+      "transitions": [
+        {
+          "when": "animEnd",
           "to": "idle"
         }
+      ]
+    },
+    "energy_sphere_go_s": {
+      "anim": "mb4_5",
+      "turn": false,
+      "vel": [
+        0,
+        0
       ],
-      "sceneOf": "candy_scene"
+      "fires": {
+        "spawn": "buu_9_17",
+        "at": [
+          -8,
+          -112
+        ],
+        "state": "wait",
+        "with": [
+          {
+            "spawn": "buu_9_15",
+            "around": [
+              16,
+              0
+            ]
+          },
+          {
+            "spawn": "buu_9_16",
+            "around": [
+              -16,
+              2
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_sphere_go_m": {
+      "anim": "mb4_5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "buu_9_18",
+        "at": [
+          -8,
+          -112
+        ],
+        "state": "wait",
+        "with": [
+          {
+            "spawn": "buu_9_12",
+            "around": [
+              22,
+              -11
+            ]
+          },
+          {
+            "spawn": "buu_9_13",
+            "around": [
+              14,
+              15
+            ]
+          },
+          {
+            "spawn": "buu_9_14",
+            "around": [
+              -25,
+              -4
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "energy_sphere_go_l": {
+      "anim": "mb4_5",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "fires": {
+        "spawn": "buu_9_19",
+        "at": [
+          -8,
+          -112
+        ],
+        "state": "wait",
+        "with": [
+          {
+            "spawn": "buu_9_0e",
+            "around": [
+              -16,
+              -42
+            ]
+          },
+          {
+            "spawn": "buu_9_0f",
+            "around": [
+              25,
+              -35
+            ]
+          },
+          {
+            "spawn": "buu_9_10",
+            "around": [
+              5,
+              32
+            ]
+          },
+          {
+            "spawn": "buu_9_11",
+            "around": [
+              -44,
+              -3
+            ]
+          }
+        ]
+      },
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "disk_spring": {
+      "anim": "m1a",
+      "airborne": true,
+      "turn": false,
+      "launch": [
+        -1,
+        -8
+      ],
+      "startsAt": 8,
+      "holdStep": 6,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "slashdown_blast_fall": {
+      "anim": "m05_2",
+      "turn": false,
+      "airborne": true,
+      "resumesFlight": true,
+      "holdStep": 0,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "horizontal_blast_fall": {
+      "anim": "m05_2",
+      "turn": false,
+      "airborne": true,
+      "resumesFlight": true,
+      "holdStep": 0,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "floater_still": {
+      "anim": "ma9_2",
+      "turn": true,
+      "airborne": true,
+      "hover": true,
+      "holdStep": 0,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "pressed:attack",
+          "to": "jump_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "jump_b"
+        },
+        {
+          "when": "held:fwd",
+          "to": "floater_fwd"
+        },
+        {
+          "when": "held:back",
+          "to": "floater_back"
+        }
+      ],
+      "fromTop": true,
+      "loopSound": "sfx_21",
+      "loopEvery": 64
+    },
+    "floater_fwd": {
+      "anim": "ma9_2",
+      "turn": true,
+      "airborne": true,
+      "hover": true,
+      "holdStep": 1,
+      "air": [
+        [
+          16,
+          {
+            "vx": 1.75,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "pressed:attack",
+          "to": "floater_y_fwd"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "floater_b_fwd"
+        },
+        {
+          "when": "!held:fwd",
+          "to": "floater_still"
+        }
+      ],
+      "startsAt": 16,
+      "loopSound": "sfx_21",
+      "loopEvery": 64
+    },
+    "floater_back": {
+      "anim": "ma9_2",
+      "turn": true,
+      "airborne": true,
+      "hover": true,
+      "holdStep": 1,
+      "air": [
+        [
+          16,
+          {
+            "vx": -1.85,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "pressed:attack",
+          "to": "floater_y_back"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "floater_b_back"
+        },
+        {
+          "when": "!held:back",
+          "to": "floater_still"
+        }
+      ],
+      "startsAt": 16,
+      "loopSound": "sfx_21",
+      "loopEvery": 64
+    },
+    "floater_y_fwd": {
+      "anim": "m96",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 26,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 4,
+            "vy": 0
+          }
+        ]
+      ]
+    },
+    "floater_y_back": {
+      "anim": "m96",
+      "airborne": true,
+      "turn": false,
+      "type": "long",
+      "damage": 26,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_fall_attacked"
+        }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": -4,
+            "vy": 0
+          }
+        ]
+      ]
+    },
+    "floater_b_fwd": {
+      "anim": "m97",
+      "turn": false,
+      "airborne": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "long",
+      "damage": 18,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_b_2"
+        }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": 4,
+            "vy": 0
+          }
+        ]
+      ]
+    },
+    "floater_b_back": {
+      "anim": "m97",
+      "turn": false,
+      "airborne": true,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "long",
+      "damage": 18,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "land"
+        },
+        {
+          "when": "animEnd",
+          "to": "jump_b_2"
+        }
+      ],
+      "air": [
+        [
+          0,
+          {
+            "vx": -4,
+            "vy": 0
+          }
+        ]
+      ]
+    },
+    "candy_scene_4": {
+      "anim": "mb8_3",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "invulnerable": true,
+      "sceneOf": "candy_scene",
+      "startsAt": 133,
+      "holdStep": 6,
+      "transitions": [
+        {
+          "when": "frames:158",
+          "to": "idle"
+        }
+      ]
+    },
+    "charge_start": {
+      "anim": "m0c",
+      "vel": [
+        0,
+        0
+      ],
+      "heal": {
+        "every": 2,
+        "turn": 13,
+        "gain": 5
+      },
+      "loopSound": "block_17",
+      "loopEvery": 8,
+      "glow": 2,
+      "transitions": [
+        {
+          "when": "!held:attack",
+          "to": "idle"
+        },
+        {
+          "when": "!held:smash",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "charge_first"
+        }
+      ]
+    },
+    "charge_first": {
+      "anim": "m0c",
+      "vel": [
+        0,
+        0
+      ],
+      "heal": {
+        "every": 2,
+        "turn": 13,
+        "gain": 5
+      },
+      "loopSound": "block_17",
+      "loopEvery": 8,
+      "glow": 0,
+      "muted": true,
+      "fires": {
+        "spawn": "buu_9_00",
+        "at": [
+          0,
+          0
+        ],
+        "state": "fly"
+      },
+      "transitions": [
+        {
+          "when": "!held:attack",
+          "to": "idle"
+        },
+        {
+          "when": "!held:smash",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "charge"
+        }
+      ],
+      "fromTop": true
+    },
+    "charge": {
+      "anim": "m0c",
+      "vel": [
+        0,
+        0
+      ],
+      "heal": {
+        "every": 2,
+        "turn": 13,
+        "gain": 5
+      },
+      "loopSound": "block_17",
+      "loopEvery": 8,
+      "glow": 0,
+      "muted": true,
+      "transitions": [
+        {
+          "when": "!held:attack",
+          "to": "idle"
+        },
+        {
+          "when": "!held:smash",
+          "to": "idle"
+        },
+        {
+          "when": "animEnd",
+          "to": "charge"
+        }
+      ],
+      "fromTop": true
+    },
+    "intro": {
+      "anim": "m3c",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
     }
   }
 }

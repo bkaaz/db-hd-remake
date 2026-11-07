@@ -1,0 +1,41 @@
+{
+  "initial": "rise",
+  "states": {
+    "rise": {
+      "anim": "rise",
+      "turn": false,
+      "airborne": true,
+      "launch": [
+        0.5,
+        -8
+      ],
+      "fallsToFloor": true,
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "fall"
+        }
+      ]
+    },
+    "fall": {
+      "anim": "fall",
+      "turn": false,
+      "airborne": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "crawl"
+        }
+      ]
+    },
+    "crawl": {
+      "anim": "crawl",
+      "turn": false,
+      "vel": [
+        -1,
+        0
+      ],
+      "lasts": 40
+    }
+  }
+}

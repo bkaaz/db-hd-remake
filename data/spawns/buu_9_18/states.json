@@ -1,0 +1,141 @@
+{
+  "initial": "charge",
+  "states": {
+    "charge": {
+      "anim": "play",
+      "turn": false,
+      "type": "down",
+      "damage": 65,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "burns": true,
+      "ball": {
+        "at": [
+          0,
+          0
+        ],
+        "from": 0,
+        "pulse": [
+          23,
+          24,
+          24,
+          23
+        ]
+      },
+      "vel": [
+        0,
+        0
+      ],
+      "lasts": 13,
+      "endsWithMove": [
+        "b4"
+      ]
+    },
+    "wait": {
+      "anim": "play",
+      "turn": false,
+      "type": "down",
+      "damage": 65,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "burns": true,
+      "ball": {
+        "at": [
+          0,
+          0
+        ],
+        "from": 0,
+        "pulse": [
+          23,
+          24,
+          24,
+          23
+        ]
+      },
+      "endsWithMove": [
+        "b4"
+      ],
+      "transitions": [
+        {
+          "when": "frames:9",
+          "to": "dive"
+        }
+      ],
+      "airborne": true,
+      "launch": [
+        0,
+        0
+      ],
+      "fallsToFloor": true
+    },
+    "dive": {
+      "anim": "play",
+      "turn": false,
+      "type": "down",
+      "damage": 65,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "burns": true,
+      "ball": {
+        "at": [
+          0,
+          0
+        ],
+        "from": 0,
+        "pulse": [
+          23,
+          24,
+          24,
+          23
+        ]
+      },
+      "endsWithMove": [
+        "b4"
+      ],
+      "transitions": [
+        {
+          "when": "frames:15",
+          "to": "fly"
+        }
+      ],
+      "airborne": true,
+      "launch": [
+        4.5,
+        4.5
+      ],
+      "fallsToFloor": true
+    },
+    "fly": {
+      "anim": "play",
+      "turn": false,
+      "type": "down",
+      "damage": 65,
+      "burstsInto": "burst_m",
+      "hitSound": "burst_0a",
+      "blockSound": "burst_0a",
+      "burns": true,
+      "ball": {
+        "at": [
+          0,
+          0
+        ],
+        "from": 0,
+        "pulse": [
+          23,
+          24,
+          24,
+          23
+        ]
+      },
+      "airborne": true,
+      "launch": [
+        4,
+        0
+      ],
+      "fallsToFloor": true
+    }
+  }
+}
