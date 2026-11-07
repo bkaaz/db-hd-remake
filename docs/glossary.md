@@ -145,6 +145,9 @@ simply stops lifting. → `combat.md` §1, §4
 defender is still in hitstun. Nothing is interrupted; the sum is
 `recovery + next start-up ≤ hitstun`. → `combat.md` (Chaining)
 
+**Lit** (an object) — drawn in its thrower's palette, so in his colours in every
+lighting and as player two: a sheet each. → `SpawnDef.lit`, ADR 0087
+
 **Motion input** — a **sequence** of directions completed inside a window, where
 a `held:` trigger is one frame. Written the genre's way and always relative to
 facing: **qcf** ↓↘→ (quarter circle forward), **qcb** ↓↙←, **dp** →↓↘ (dragon

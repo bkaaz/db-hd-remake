@@ -70,7 +70,7 @@ export class Effects {
     fx.x = x;
     fx.y = y;
     // drawn in its owner's OBJ palette, so in his colours (Gohan's intro: palette 0 or 1)
-    if (owner) fx.alt = owner.entity.alt;
+    if (owner) fx.dressAs(owner.entity);
     this.world.addChild(fx.view);
     const by = def.attributes.follows;
     const rides = by && owner ? { ...owner, by, since: { play: owner.entity.animationPlay, move: moveOf(owner.entity.animation) } } : undefined;

@@ -4,7 +4,7 @@ import { GOKU, ROM_PATH } from "./cartridge";
 import { exportSpawns } from "./export";
 import { draftedObjects } from "./draftObjects";
 import { tablesOf } from "./fighterStates";
-import { ownObjects } from "./ownObjects";
+import { OWN_OBJECTS, ownObjects } from "./ownObjects";
 import { readResource } from "./resource";
 
 // Recorded on 2026-10-29: the ki blast alternated two frames every 2 frames
@@ -43,6 +43,23 @@ describe.skipIf(!existsSync(ROM_PATH))("objects, on the cartridge", () => {
     const spawns = ownObjects(rom, t, flash, []);
     const { frames } = exportSpawns(rom, { ...t, objects: { loads: [], palettes: {}, spawns } }).vegetto_4_02;
     expect(frames["0"].anchor[1]).toBe(16);
+  });
+
+  it("draws an object in its thrower's palette once per lighting, as his own moves: Earth Stab's leg", () => {
+    const t = tablesOf(rom, "buu");
+    const leg = draftedObjects("buu").filter((o) => o.name === "buu_9_08");
+    const { sheet, variants } = exportSpawns(rom, { ...t, objects: { loads: [], palettes: {}, spawns: ownObjects(rom, t, leg, []) } }).buu_9_08;
+    expect(Object.keys(variants ?? {})).toEqual(["evening", "evening_alt", "night", "night_alt", "embers", "embers_alt", "alt"]);
+    expect(Buffer.compare(Buffer.from(variants!.night.data), Buffer.from(sheet.data))).not.toBe(0);
+  });
+
+  it("leaves out a lighting's record the ROM does not hold, with a note: Goten's first fade by evening", () => {
+    const t = tablesOf(rom, "gotenks");
+    const goten = ownObjects(rom, t, OWN_OBJECTS.gotenks!.filter((o) => o.name === "gotenks_goten"), []);
+    const { variants, notes } = exportSpawns(rom, { ...t, objects: { loads: [], palettes: {}, spawns: goten } }).gotenks_goten;
+    expect(Object.keys(variants ?? {})).toContain("evening_shimmer2");
+    expect(Object.keys(variants ?? {})).not.toContain("evening_shimmer1");
+    expect(notes.some((n) => n.startsWith("evening_shimmer1 left out"))).toBe(true);
   });
 
   it("exports the charged Kamehameha's three beam heads growing with the charge, and a base that comes in, loops and goes out without hitting", () => {

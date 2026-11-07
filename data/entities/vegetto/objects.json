@@ -30,7 +30,8 @@
         "loop": false
       }
     },
-    "alt": 129
+    "alt": 129,
+    "lit": true
   },
   {
     "name": "vegetto_4_04",
@@ -82,6 +83,7 @@
         "loop": false
       }
     },
-    "alt": 129
+    "alt": 129,
+    "lit": true
   }
 ]

@@ -1,5 +1,11 @@
 {
   "palettes": [
+    "evening",
+    "evening_alt",
+    "night",
+    "night_alt",
+    "embers",
+    "embers_alt",
     "alt"
   ]
 }

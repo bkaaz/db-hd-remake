@@ -88,6 +88,9 @@ first.
   `$6C00`, P2 `$7C00`); the object's own code loads its palette record
   (`$01:84EF`, a run stepped every 4 frames — `rom.md`). Not the
   resource's record palette: that matched once by chance.
+  One drawn in **his own** palette (record = his own, or own + k loaded
+  from field `0x17`) is `lit` in `objects.json`, with `alt`: it then follows
+  the lighting and player two's colours (ADR 0087).
 - **Tile base 0 and no load**: the object draws from its thrower's own
   sprite — the whole tile set of the drawing up as it is put out, which
   holds tiles his drawing never shows (Vegeta's sprays). `objectTiles.ts`

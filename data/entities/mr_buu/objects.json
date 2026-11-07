@@ -72,6 +72,7 @@
     "anim": 4,
     "hits": true,
     "palette": 192,
+    "lit": true,
     "loads": [
       {
         "resource": 66,
@@ -96,6 +97,7 @@
     "anim": 8,
     "hits": true,
     "palette": 192,
+    "lit": true,
     "loads": [
       {
         "resource": 2365,
@@ -109,6 +111,7 @@
     "anim": 9,
     "hits": true,
     "palette": 192,
+    "lit": true,
     "loads": [
       {
         "resource": 2367,
@@ -252,6 +255,7 @@
     "anim": 22,
     "hits": false,
     "palette": 192,
+    "lit": true,
     "loads": [
       {
         "resource": 66,

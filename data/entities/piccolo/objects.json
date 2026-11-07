@@ -220,6 +220,7 @@
       }
     ],
     "alt": 145,
+    "lit": true,
     "animations": {
       "fall": {
         "frames": [

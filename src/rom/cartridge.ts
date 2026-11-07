@@ -79,6 +79,12 @@ export interface SpawnDef {
   shimmer?: number[];
   /** The palette of its `alt` sheet, for an object in its thrower's colours. */
   alt?: number;
+  /**
+   * The records, not addresses, of a palette its code loads as its thrower's
+   * own + k (field 0x17): drawn again in each lighting, k past his own there,
+   * as `night`, `night_alt`, `night_shimmer1` (`rom/arena.ts`, `lightingShifts`).
+   */
+  lit?: { palette: number; alt?: number; fades?: number[] };
   /** Upside down: its thrower's handler sets the slot's OAM bit on the frame after the `b0` (Vegetto's `$20:D0DD`). */
   vflip?: true;
   /** What the move loads into VRAM for this object, in place of the fighter's `loads`. */
@@ -186,7 +192,7 @@ export const GOKU: FighterTables = {
       // resource 0x51, which 3e's handler loads at $6C00, b0 +80; OBJ palette
       // 0, which holds 0x27B161 (logs/objects-goku.bin). `steps` is never
       // played: it rides by step (`follows`)
-      { name: "goku_hair_win", type: 0x0, anim: 0x07, steps: [37, 8, 12, 12], loop: false, hits: false, palette: 0x27b161, onStep: [0x3e] },
+      { name: "goku_hair_win", type: 0x0, anim: 0x07, steps: [37, 8, 12, 12], loop: false, hits: false, palette: 0x27b161, onStep: [0x3e], lit: { palette: 0x170 } },
       // idle's lightning ($0F:B862): a step every 4 frames through $0F:B8B2 —
       // 13 of frame 14, an empty layout, then 0–13; tiles resource 0x47 at
       // $6800 (b0 +80), OBJ palette 0 holding 0x27B161 (logs/objects-goku.bin)

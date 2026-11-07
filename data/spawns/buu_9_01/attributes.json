@@ -1,3 +1,12 @@
 {
-  "gravity": 0.46875
+  "gravity": 0.46875,
+  "palettes": [
+    "evening",
+    "evening_alt",
+    "night",
+    "night_alt",
+    "embers",
+    "embers_alt",
+    "alt"
+  ]
 }

@@ -593,6 +593,7 @@ function write(sheetPath: string, dir: string, e: Exported): void {
  * sheet each beside its own, named in its `attributes.json` (`shimmer`).
  */
 function writeSpawn(spawn: string, e: Exported): void {
+  for (const note of e.notes) console.log(`  ${spawn}: ${note}`);
   write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);
   const variants = Object.entries(e.variants ?? {});
   for (const [variant, sheet] of variants) writeFileSync(`assets/sheets/spawns/${spawn}@${variant}.png`, encodePng(sheet));
@@ -601,7 +602,8 @@ function writeSpawn(spawn: string, e: Exported): void {
   // beside what is there by hand (Big Bang's gravity 0)
   const at = `data/spawns/${spawn}/attributes.json`;
   const kept = existsSync(at) ? JSON.parse(readFileSync(at, "utf8")) : {};
-  const shimmer = names.filter((n) => n.startsWith("shimmer"));
+  // a shimmer taken off by hand stays off: Goten's and Trunks's fades are their state's `paletteAt`
+  const shimmer = !kept.palettes || kept.shimmer ? names.filter((n) => n.startsWith("shimmer")) : [];
   writeFileSync(at, JSON.stringify({ ...kept, palettes: names, ...(shimmer.length && { shimmer }) }, null, 2) + "\n");
 }
 

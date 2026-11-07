@@ -47,6 +47,18 @@ function lightingRecords(rom: Uint8Array, t: FighterTables): [string | null, num
   );
 }
 
+/**
+ * How many records past the one he is exported in each lighting puts his own
+ * palette — and with it a palette loaded as his own + k (field 0x17), an
+ * object's in his colours (Earth Stab's leg, Goten and Trunks).
+ */
+export function lightingShifts(rom: Uint8Array, t: FighterTables): Record<string, number> {
+  const records = lightingRecords(rom, t);
+  const base = records.find(([time]) => time === null)?.[1];
+  if (base === undefined) throw new Error("no lighting gives the palette he is exported in");
+  return Object.fromEntries(records.flatMap(([time, own]) => (time === null ? [] : [[time, own - base]])));
+}
+
 /** A variant's name: its lighting's, then what it adds (`night_glow`), or the addition alone. */
 const named = (time: string | null, ...parts: string[]) => [time, ...parts].filter(Boolean).join("_");
 

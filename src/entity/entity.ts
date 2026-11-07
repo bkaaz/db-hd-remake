@@ -1301,6 +1301,15 @@ export class Entity {
   }
 
   /**
+   * Drawn as what put it out is: his alternate colours and his lighting, where
+   * it has a sheet for them — an object in its thrower's OBJ palette.
+   */
+  dressAs(owner: Entity): void {
+    this.alt = owner.altColours;
+    this.light(owner.lighting ?? OWN_COLOURS);
+  }
+
+  /**
    * Draw the current frame from the fire palette burning is on, or else in
    * the arena's light — burning over, the original reloads the fighter's own
    * palette for the stage (field `0x17`).

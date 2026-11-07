@@ -16,7 +16,8 @@ import { drawFrame, flipLayout, readLayout, readPalette, type Drawing, type Piec
 import { PLAIN, parseFrameId, type Look } from "./look";
 import { shadowFrame } from "../entity/shadow";
 import { objectFrame } from "./object";
-import { objectVram, resourceStream } from "./resource";
+import { objectVram, paletteRecord, resourceStream } from "./resource";
+import { lightingShifts } from "./arena";
 import { heldAnims } from "./held";
 import { moveParts } from "./parts";
 import { readScript } from "./script";
@@ -169,6 +170,15 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
   // the same pictures in each palette of its run pack the same way: frame for frame
   const alt: Record<string, Rgba> = def.alt === undefined ? {} : { alt: packSheet(drawIn(def.alt)).sheet };
   const variants = Object.fromEntries((def.shimmer ?? []).map((palette, i) => [`shimmer${i + 1}`, packSheet(drawIn(palette)).sheet]));
+  const notes: string[] = [];
+  for (const [name, record] of Object.entries(litRecords(rom, t, def))) {
+    try {
+      variants[name] = packSheet(drawIn(paletteRecord(rom, record).at)).sheet;
+    } catch (e) {
+      // Goten's and Trunks's first fade by evening, 0x13B: a palette the ROM does not hold `?`
+      notes.push(`${name} left out, the day's stands in: record 0x${record.toString(16)}, ${(e as Error).message}`);
+    }
+  }
   const animations: Record<string, Anim> = {};
   for (const part of parts) {
     animations[part.name] = {
@@ -180,5 +190,18 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
       }),
     };
   }
-  return { sheet, frames, animations, notes: [], ...((def.shimmer?.length || def.alt !== undefined) && { variants: { ...variants, ...alt } }) };
+  return { sheet, frames, animations, notes, ...((Object.keys(variants).length || def.alt !== undefined) && { variants: { ...variants, ...alt } }) };
+}
+
+/** An object in its thrower's colours, in every other lighting: each variant's record (`SpawnDef.lit`). */
+function litRecords(rom: Uint8Array, t: FighterTables, def: SpawnDef): Record<string, number> {
+  if (!def.lit) return {};
+  const { palette, alt, fades = [] } = def.lit;
+  const out: Record<string, number> = {};
+  for (const [time, shift] of Object.entries(lightingShifts(rom, t))) {
+    out[time] = palette + shift;
+    if (alt !== undefined) out[`${time}_alt`] = alt + shift;
+    fades.forEach((fade, i) => (out[`${time}_shimmer${i + 1}`] = fade + shift));
+  }
+  return out;
 }

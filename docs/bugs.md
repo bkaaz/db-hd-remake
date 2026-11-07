@@ -20,41 +20,17 @@ because a number would only need translating back.
 
 ---
 
-## Buu's leg coming out of the ground is in the wrong palette
-
-*Cosmetic, Buu, evening and night (owner, 2026-11-07).* Earth Stab's `buu_9_08` is drawn in his own palette (OBJ palette 4 or 5), so in the original it follows the lighting as his body does; ours has a day sheet alone. By day it is right. Seen on `raw/states/fight-buu.mss`, a night arena.
-
 ## Mr. Buu's Oyatsu Kosen has errors and was never checked
 
 *Annoying `?`, Mr. Buu (owner, 2026-11-06).* Oyatsu Kosen, hold ↓ for 3 seconds, then ↑ + B. Which errors he did not say: ask him before fixing. For later. Its objects, and Buu Breath's, leave no spark, but their sound is a guess: `burst_0a` stayed on them; the recordings' sounds on that frame were not read apart. Buu's damage in it is the old guess, 80.
 
-## An object keeps its colours on an evening or night arena `?`
+## An object in a palette of its own keeps its colours on an evening or night arena `?`
 
-*Cosmetic, seen on Gohan's intro.* His dust stays bright white by night beside a body in that lighting's colours. Not checked whether the original lights objects by arena, or for how many objects it shows.
+*Cosmetic, seen on Gohan's intro.* His dust stays bright white by night beside a body in that lighting's colours. An object in its thrower's palette follows the lighting (`lit`, ADR 0087); this one is drawn in record `0x117` (`gohan_intro_a`), and whether the original lights such an object by arena is not checked.
 
-## Regeneration's arm keeps its daylight colours in every light
+## Goten's and Trunks's first fade and his intro's runs keep the day's colours
 
-*Cosmetic, Piccolo, evening and night.* The arm is his own palette (`piccolo_5_09`, record `0x90`), and a spawn has no sheet per lighting, so by evening and night it does not match his body. From the code; only the day was played.
-
-## Goten and Trunks keep their daylight colours in every light
-
-*Annoying, Gotenks, his win (`3e`), evening and night.* The handler loads field `0x17` + `0xE8`,
-`0xF0`, `0xF8` (`$20:B903`), so the records follow the lighting: `0x15A`, `0x162`, `0x16A` by
-evening, `0x15C`, `0x164`, `0x16C` by night. `fades` and `palette` in `ownObjects.ts` name the
-day's alone, and `gotenks_goten` has no sheet for another light. His intro's `run0` and `run1`
-are own + `0xC9` and + `0xC5` (`$20:B96C`), fixed the same way; by evening + `0xC9` is `0x13B`,
-which our reader cannot follow `?`. From the code: no evening state of the original was played.
-
-## Goku's hair in his winning pose has its daylight colours in every light
-
-`goku`, his winning pose (`3e`) by evening or night · noticed 2026-11-03
-· cosmetic
-
-`goku_hair_win` is drawn in palette `0x27B161` alone. `3e`'s handler loads
-record own + `0x130` into the hair's palette (`$20:80EF`, `$01:84EF`):
-`0x170`/`0x171` are `0x27B161`, but `0x172`/`0x173` are `0x27B1E1`, so in
-the lightings whose own record is `0x42`/`0x43` the hair should be in
-other colours. Saiyan Meteor's `goku_hair_normal` may share it `?`.
+*Cosmetic, Gotenks, evening and night.* Their win follows the lighting now (`lit`, ADR 0087), but the first fade's record by evening, `0x13B` (own + `0xC9`, `$20:B903`), and by night and in the ruins are no ROM address our reader follows `?`: the day's stands in for those frames. His intro's `run0` and `run1` are own + `0xC9` and + `0xC5` (`$20:B96C`) and are exported for the day alone, the same way. From the code: no evening state of the original was played.
 
 ## Gotenks's discharges are blended into what is behind them
 

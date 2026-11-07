@@ -134,6 +134,7 @@ export class Projectiles {
     }
     // it sounds on its thrower's side, as the original plays it by the thrower
     const bolt = new Entity(def, this.scale, owner.sounds);
+    bolt.dressAs(owner);
     // Bigger, not faster. `size` multiplies the drawing and the boxes placed
     // through it; the world scale that turns px-per-frame into movement is the
     // scene's, or a fully charged bolt would cross the stage in half the time.
@@ -156,6 +157,7 @@ export class Projectiles {
       const companion = this.defs.get(w.spawn);
       if (!companion) return [];
       const e = new Entity(companion, this.scale, owner.sounds);
+      e.dressAs(owner);
       e.facing = w.around ? 1 : from.facing;
       e.groundY = e.y = w.y;
       e.x = w.x;

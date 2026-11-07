@@ -114,6 +114,7 @@
       }
     ],
     "alt": 209,
+    "lit": true,
     "tiles": 128,
     "ticks": {
       "at": 1039598,
@@ -701,6 +702,7 @@
     "hits": false,
     "palette": 208,
     "alt": 209,
+    "lit": true,
     "loads": [
       {
         "resource": 68,
