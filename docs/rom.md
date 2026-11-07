@@ -704,6 +704,12 @@ The stand-up (`04`, `$0F:9F4E`) calls `$0F:9EB1` alone: commands and
 buttons, no turn, charge, guard or dash. Others call it too — the landing
 `3b`, the dash `0a`/`0b`, a block from frame 4 (`0d`, `0f`), lying `1f`
 while `f0` is 0, the air reel `1a` once landed, a jump in the air.
+**A run that ends by the opponent** — `LDA $0020,Y / SEC / SBC $20,X`, its
+absolute value compared with a distance — is in two handlers alone, Gotenks's
+`a8` (`$20:BCB8`, 80 px) and `b4` (`$20:C336`); `$0D:C4A9` is the close line
+(`$0D:C4A1`) and `$2A:B630` the same shape in the engine. `npm run dis -- find
+b9 20 00 38 f5 20 10 04 49 ff ff 1a c9` lists them.
+
 **The hop** (`$0D:FE5D`, before the dash in `$0D:FA2C` / `$0D:FAA5`): a
 direction held on the last 5 frames of `$6010`'s history, and gone down twice
 in the 12 (`$6002`) before them in `$63D0`'s, starts move `08`, or `09`

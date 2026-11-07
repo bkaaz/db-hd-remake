@@ -28,14 +28,6 @@ because a number would only need translating back.
 
 *Cosmetic, Gotenks, evening and night.* Their win follows the lighting now (`lit`, ADR 0087), but the first fade's record by evening, `0x13B` (own + `0xC9`, `$20:B903`), and by night and in the ruins are no ROM address our reader follows `?`: the day's stands in for those frames. His intro's `run0` and `run1` are own + `0xC9` and + `0xC5` (`$20:B96C`) and are exported for the day alone, the same way. From the code: no evening state of the original was played.
 
-## A drafted run does not stop by the opponent, and flies at the wrong speed
-
-*Breaks play, drafted fighters `?`.* A handler may end a run under a distance and
-keep the speed of the jump after it in `$F0` / `$F2` (Gotenks's `a8`, `$20:BC95`;
-`b4`, `$20:C313`). The reader sees neither: the draft runs the whole step, carries
-the run's speed into the air, and misses a landing's slide. Gotenks is corrected by
-hand; to check on each fighter's run: the report's "vel" after a "jumps to move frame".
-
 ## The original jumps where it should start Galactic Gunfire
 
 *Annoying, the tools.* `npm run moves -- vegeta --only ae --close` plays a jump and an air move in the original, at health 80; ours seizes. The original reads commands on the jump's 2 frames on the floor alone, so ↓ Y has to follow ↑ within them (`input/command.ts`, `TAKEOFF_GRACE`); the case's pad holds ↑ for 3. No recording of the move to compare with until a case presses it that fast.
