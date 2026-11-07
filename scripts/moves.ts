@@ -55,6 +55,7 @@ const needs: Record<string, CommandNeeds> = Object.fromEntries(
 /** What `$2A:8692` asks by fighter and move: the moves that wait for a blow. */
 const PARRYING: Record<string, string[]> = { piccolo: ["b7"], vegetto: ["b0"] };
 const cases = (flags.includes("--far") ? farCases(commands, needs) : flags.includes("--close") ? closeCases(commands, needs) : flags.includes("--parry") ? parryCases(commands, PARRYING[fighter] ?? []) : flags.includes("--held") ? heldCases(commands) : moveCases(commands, needs)).filter((c) => !only || only.some((o) => c.name === o || c.name.startsWith(`${o} `)));
+if (only && cases.length === 0) throw new Error(`--only ${only.join(",")}: no such case; names are c.name, as moveCases gives them (y, aa)`);
 const fileOf = (c: MoveCase) => c.name.replace(/ /g, "-");
 
 /** His face from Goku's at the roster's corner, for player one's cursor: `back` is right on this screen. */

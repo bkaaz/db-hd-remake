@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
-import { moveParts, ownJumps } from "./parts";
+import { moveParts, ownFacts } from "./parts";
 import { fighterNamed } from "./roster";
 
 describe.skipIf(!existsSync(ROM_PATH))("moveParts, on the cartridge", () => {
@@ -34,19 +34,27 @@ describe.skipIf(!existsSync(ROM_PATH))("moveParts, on the cartridge", () => {
   });
 });
 
-describe("ownJumps", () => {
+describe("ownFacts", () => {
   const set = { frame: 0, what: "sets move", move: 0x1a };
   const jump = { frame: 0, what: "jumps to frame", to: 21 };
 
   it("drops a jump made after setting another move: that move's frame", () => {
-    expect(ownJumps([set, jump])).toEqual([set]);
+    expect(ownFacts([set, jump])).toEqual([set]);
   });
 
-  it("keeps a jump on another branch, or after the opponent's move is set", () => {
+  it("drops a speed set after it, on a branch inside its own: that move's speed", () => {
+    const ran = { ...set, frame: null, when: ["once the script has run out"] };
+    const vx = { frame: null, what: "sets vx", vx: 1.5, when: [...ran.when, "facing left"] };
+    expect(ownFacts([ran, vx])).toEqual([ran]);
+  });
+
+  it("keeps a jump on another branch, a speed set before, or after the opponent's move is set", () => {
     const landed = { ...jump, when: ["once it has landed"] };
-    expect(ownJumps([set, landed])).toEqual([set, landed]);
+    expect(ownFacts([set, landed])).toEqual([set, landed]);
+    const before = { frame: 0, what: "sets vx", vx: 2 };
+    expect(ownFacts([before, set])).toEqual([before, set]);
     const theirs = { ...set, who: "opponent" as const };
-    expect(ownJumps([theirs, jump])).toEqual([theirs, jump]);
+    expect(ownFacts([theirs, jump])).toEqual([theirs, jump]);
   });
 });
 

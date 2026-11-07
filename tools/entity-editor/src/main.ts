@@ -63,7 +63,9 @@ const rail = byId("rail");
 const railToggle = byId("rail-toggle");
 const openLabel = byId("open-entity");
 const zoomLabel = byId("zoom-label");
-const statusEl = byId("status");
+// what the editor holds, redrawn by every render; a message stays until the next one
+const summaryEl = byId("status-summary");
+const messageEl = byId("status-message");
 const modeFrameBtn = byId("mode-frame");
 const modeAnchorBtn = byId("mode-anchor");
 const bgEnabled = byId<HTMLInputElement>("bg-enabled");
@@ -146,8 +148,8 @@ bgApplyBtn.addEventListener("click", async () => {
       `cannot undo it — the un-keyed original exists only in your asset pack.`,
   );
   if (!ok) return;
-  statusEl.textContent = "Keying…";
-  statusEl.textContent = (await applyKeyToSheet()).message;
+  messageEl.textContent = "Keying…";
+  messageEl.textContent = (await applyKeyToSheet()).message;
 });
 
 detectAllBtn.addEventListener("click", () => {
@@ -192,8 +194,8 @@ byId("stop").addEventListener("click", () => preview.stop());
 // active tab to know what a click would do.
 function wireSave(id: string, save: () => Promise<{ message: string }>): void {
   byId(id).addEventListener("click", async () => {
-    statusEl.textContent = "Saving…";
-    statusEl.textContent = (await save()).message;
+    messageEl.textContent = "Saving…";
+    messageEl.textContent = (await save()).message;
     render();
   });
 }
@@ -282,15 +284,15 @@ function openEntity(ref: EntityRef): void {
     try {
       if (await hydrateFromRepo()) {
         rebuildKeyed();
-        statusEl.textContent = `Opened ${ref.name}.`;
+        messageEl.textContent = `Opened ${ref.name}.`;
       } else {
         // Nothing on disk to compare against, so the empty entity is the
         // baseline: the first frame drawn then counts as an unsaved change.
         markEntitySaved();
-        statusEl.textContent = `Opened ${ref.name} (no data on disk yet).`;
+        messageEl.textContent = `Opened ${ref.name} (no data on disk yet).`;
       }
     } catch {
-      statusEl.textContent = `Opened ${ref.name}.`;
+      messageEl.textContent = `Opened ${ref.name}.`;
     }
     // The sounds panel is not redrawn by the normal change notification — that
     // would throw away a half-typed field on every unrelated edit. A different
@@ -299,7 +301,7 @@ function openEntity(ref: EntityRef): void {
     emitChange();
   };
   img.onerror = () => {
-    statusEl.textContent =
+    messageEl.textContent =
       ref.kind === "spawn"
         ? `No sheet assets/sheets/spawns/${ref.name}.png — run npm run fx.`
         : `No sheet assets/sheets/${ref.name}.png.`;
@@ -334,7 +336,7 @@ function render(): void {
     ? `rgb(${state.bgColor[0]}, ${state.bgColor[1]}, ${state.bgColor[2]})`
     : "transparent";
   zoomLabel.textContent = `${Math.round(state.scale * 100)}%`;
-  statusEl.textContent = state.image
+  summaryEl.textContent = state.image
     ? `${state.image.width}x${state.image.height}px · ${state.frames.length} frames · ${state.anims.length} anims · mode: ${state.mode}`
     : "Load a sprite sheet to begin.";
 }
@@ -417,7 +419,7 @@ void loadEntityList(openEntity).then(() => {
   const wanted = new URL(location.href).searchParams.get("entity");
   const ref = (wanted ? findEntity(wanted) : null) ?? firstEntity();
   if (ref) openEntity(ref);
-  else if (wanted) statusEl.textContent = `No entity called "${wanted}".`;
+  else if (wanted) messageEl.textContent = `No entity called "${wanted}".`;
 });
 
 railToggle.addEventListener("click", () => {

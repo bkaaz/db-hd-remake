@@ -94,19 +94,6 @@ keep the speed of the jump after it in `$F0` / `$F2` (Gotenks's `a8`, `$20:BC95`
 the run's speed into the air, and misses a landing's slide. Gotenks is corrected by
 hand; to check on each fighter's run: the report's "vel" after a "jumps to move frame".
 
-## The port report gives a move speeds that belong to the move it leaves for
-
-*Cosmetic — the report only.* `npm run rom -- port a9 --fighter gohan` prints
-`speed: vel 0, 0: 1.5` for `ma9`, but that vx is set after the handler's move
-`1a` (`$20:A994`), so Gohan hangs still through `a9`. `ownJumps`
-(`src/rom/parts.ts`) drops the frame jump of that shape; speeds still count.
-
----
-
-## `npm run moves -- <fighter> --only <name>` with no such case overwrites the report
-
-*Annoying, the tool.* It writes "0 of 0" into `report.txt`; `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
-
 ## `npm run anim` only knows how far a move reaches sideways
 
 `src/sprites/boxes.ts:110` · noticed 2026-08-23 · annoying
@@ -131,25 +118,6 @@ and read which step is starred.
 Worth deciding with the fix: whether `--active N` is enough, or whether reach
 should be measured as distance from the anchor in both axes — the second would
 have got all three right without a flag.
-
-## Save never tells you it saved
-
-`tools/entity-editor/src/main.ts:192` · noticed 2026-08-22 · annoying
-
-`wireSave` puts the result in the status bar and then calls `render()`, which
-sets `statusEl.textContent` unconditionally from the sheet's dimensions and
-counts (`main.ts:336`). The message is overwritten in the same tick, so
-"Saved data/entities/goku_old/frames.json" never appears — the bar just snaps back to
-`720x2304px · 180 frames · …`. An error message from a failed save is lost the
-same way, which is the half that matters.
-
-To see it: press Save on the Sprites tab and watch the status bar.
-
-Not fixed here because the ordering is not the whole question: `render()` owns
-that element, so either it learns to leave a transient message alone or the
-message belongs somewhere that is not the status bar. The new "Apply to sheet"
-button sidesteps it by not calling `render()` — nothing in the editor's state
-changed, only the disk — which works but is a second convention, not a fix.
 
 ## Re-running npm run anim throws away every box that was adjusted by hand
 
@@ -234,26 +202,6 @@ furthest. Left alone for now because it wants a rule about which band, and one
 crouching attack is not enough evidence to choose it. Meanwhile the number is a
 placeholder like every other hit box, and the report says when it looks wrong.
 
-## Keying starts off on a sheet that is already partly transparent
-
-`tools/entity-editor/src/main.ts:213` · noticed 2026-08-21 · annoying
-
-Loading a sheet asks whether the image contains *any* transparency and answers it
-for all 180 frames: if yes, `bgKeyEnabled` starts false. That is the right answer
-for a fully keyed sheet, which every fighter's now is — and the wrong one the
-moment new poses are appended to `goku_old.png` on the rip's background colour, since
-the control that would key them starts switched off.
-
-To see it: append anything opaque to `assets/sheets/goku_old.png` and load it — the
-"transparent" checkbox is clear and the new rows keep their background.
-
-Nothing is lost and there is a one-click way out: the eyedropper sets
-`bgKeyEnabled = true` unconditionally (`sheetView.ts:88`), so picking the
-background colour turns keying back on, and `rebuildKeyed` only ever touches
-pixels with `a > 0` — the already-transparent ones are left alone. The fix, if
-one is wanted, is to drop the all-or-nothing question at load and let the eyedropper
-be the whole interface.
-
 ## A press dies on the frame the move ends
 
 `src/input/buffer.ts` · noticed 2026-08-16 · annoying
@@ -278,14 +226,3 @@ The fix that makes a buffer feel like its number is to let the state entered on
 a frame evaluate its own transitions that same frame. That touches "at most one
 transition per frame" in `states.ts`, which is deliberate, so it wants deciding
 rather than doing.
-
-## A held direction sticks after the window loses focus
-
-`src/input/keyboard.ts` · noticed 2026-08-14 · annoying
-
-Hold `→`, switch tab or click away, come back: Goku keeps walking right and
-nothing stops him but tapping the key again. The browser delivers no `keyup`
-to a window that is not focused, so `held.right` is never cleared.
-
-Fix is a `blur` listener that clears every held direction. Attack buttons need
-nothing — they disarm themselves every frame.

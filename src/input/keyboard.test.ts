@@ -6,8 +6,24 @@ import { Keyboard, keyFor } from "./keyboard";
 function fakeWindow() {
   const listeners: Record<string, (e: Partial<KeyboardEvent>) => void> = {};
   const target = { addEventListener: (type: string, listen: (e: Partial<KeyboardEvent>) => void) => (listeners[type] = listen) };
-  return { target: target as unknown as Window, press: (key: string) => listeners.keydown({ key, repeat: false }) };
+  return {
+    target: target as unknown as Window,
+    press: (key: string) => listeners.keydown({ key, repeat: false }),
+    blur: () => listeners.blur({}),
+  };
 }
+
+describe("Keyboard", () => {
+  it("lets go of what was held when the window loses focus", () => {
+    const { target, press, blur } = fakeWindow();
+    const keyboard = new Keyboard(new Toggles(null), target);
+    press("ArrowRight");
+    press("a");
+    blur();
+    const input = keyboard.frame();
+    expect([input.right, input.holding.attack]).toEqual([false, false]);
+  });
+});
 
 describe("keyFor", () => {
   it("names the key that really flips each switch", () => {

@@ -8,7 +8,7 @@ import { handlerAt, type HandlerFact } from "./handler";
 import { holdOffsets } from "./hold";
 import { ROSTER } from "./roster";
 import { groundReaction, hitRecords, objectRecord, recordAt, type HitRecord } from "./hits";
-import { moveParts } from "./parts";
+import { moveParts, ownFacts } from "./parts";
 
 /**
  * Everything the cartridge says about one move, laid out per part of its
@@ -190,7 +190,7 @@ function launchOf(facts: HandlerFact[]): { launch?: PortReport["launch"] } {
  * one at the script's end has a frame.
  */
 function speedsOf(facts: readonly HandlerFact[], stepFrame: readonly number[]): { frame: number; vx: number }[] {
-  return facts
+  return ownFacts(facts)
     .flatMap((f) => {
       const frame = f.frame ?? f.from ?? (f.step === undefined ? undefined : stepFrame[f.step]);
       if (frame === undefined) return [];

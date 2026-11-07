@@ -124,20 +124,29 @@ function stepLoopCuts(ops: ScriptOp[], facts: HandlerFact[]): number[] {
  */
 function byStep(ops: ScriptOp[], facts: HandlerFact[]): { step?: number; to?: number }[] {
   const starts = stepStarts(ops);
-  return ownJumps(facts).map((f) =>
+  return ownFacts(facts).map((f) =>
     f.step === undefined && (f.frame ?? f.from) !== undefined && f.frame !== undefined && f.to !== undefined
       ? { step: starts.filter((start) => start <= (f.frame ?? f.from)!).length - 1, to: f.to }
       : f,
   );
 }
 
-/** Without a jump made after setting another move: its frame is that move's (Gohan's `a9` into `1a` at 21, `$20:A994`). */
-export function ownJumps(facts: HandlerFact[]): HandlerFact[] {
-  const place = (f: HandlerFact) => [f.frame, f.step, ...(f.when ?? [])].join("|");
-  const left = new Set<string>();
+/**
+ * Without a jump made after setting another move on that branch, or a speed set on
+ * it or one inside it (a speed by facing): they are that move's (Gohan's `a9` into
+ * `1a` at 21, vx 1.5, `$20:A994`). A jump on a branch of its own is kept.
+ */
+export function ownFacts(facts: readonly HandlerFact[]): HandlerFact[] {
+  const sets: HandlerFact[] = [];
+  const at = (set: HandlerFact, f: HandlerFact) => set.frame === f.frame && set.step === f.step;
+  const same = (set: HandlerFact, f: HandlerFact) => at(set, f) && (set.when ?? []).join("|") === (f.when ?? []).join("|");
+  const inside = (set: HandlerFact, f: HandlerFact) => at(set, f) && (set.when ?? []).every((w, i) => f.when?.[i] === w);
   return facts.filter((f) => {
-    if (f.move !== undefined && f.who !== "opponent") left.add(place(f));
-    return f.to === undefined || !left.has(place(f));
+    if (f.who === "opponent") return true;
+    if (f.move !== undefined) sets.push(f);
+    if (f.to !== undefined) return !sets.some((set) => same(set, f));
+    if (f.vx !== undefined || f.vy !== undefined) return !sets.some((set) => inside(set, f));
+    return true;
   });
 }
 

@@ -70,6 +70,8 @@ export class Keyboard {
   ) {
     target.addEventListener("keydown", (e) => this.press(e));
     target.addEventListener("keyup", (e) => this.release(e));
+    // a window that is not focused gets no keyup: what was down would stay down
+    target.addEventListener("blur", () => this.releaseAll());
   }
 
   /**
@@ -131,12 +133,18 @@ export class Keyboard {
     const button = BUTTON_KEYS[e.key.toLowerCase()];
     if (button) this.down[button] = false;
   }
+
+  private releaseAll(): void {
+    for (const direction of DIRECTIONS) this.held[direction] = false;
+    for (const button of BUTTONS) this.down[button] = false;
+  }
 }
 
 type Directions = Pick<WorldInput, "left" | "right" | "up" | "down">;
 type Buttons = Pick<WorldInput, "attack" | "guard" | "smash" | "blast" | "strike" | "dash">;
 
 const BUTTONS = ["attack", "guard", "smash", "blast", "strike", "dash"] as const;
+const DIRECTIONS = ["left", "right", "up", "down"] as const;
 
 const DIRECTION_KEYS: Record<string, keyof Directions | undefined> = {
   ArrowLeft: "left",
