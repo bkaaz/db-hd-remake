@@ -1,10 +1,10 @@
 /**
  * The shape of an arena on disk, and the only declaration of it: written by
  * `npm run rom -- export`, read by the game. `data/arenas/<name>/arena.json`
- * says how its layers move; each layer's picture, one per lighting, is
- * `assets/arenas/<name>/<layer>@<time>.png`, as large as the world. A layer
- * with `numbered` also has `<layer>-numbers@<time>.png`, each pixel's colour
- * number in red; each of `cycles` has `cycle<i>@<time>.png`, a row per step.
+ * says how its layers move; each layer's picture, one per lighting, is drawn
+ * from the ROM (`rom/arena.ts`, `arenaPictures`), as large as the world. A
+ * layer with `numbered` also has `<layer>-numbers`, each pixel's colour number
+ * in red; each of `cycles` has `cycle<i>`, a row per step.
  *
  * Pure, so the export and the game import the same thing.
  */

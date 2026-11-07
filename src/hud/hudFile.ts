@@ -2,8 +2,8 @@
  * The shape of the original's HUD on disk, and the only declaration of it:
  * written by `npm run rom -- export` (`src/rom/hud.ts`), read by the game.
  * `data/hud/hud.json` says where each part goes and which tiles draw it;
- * `assets/hud/hud.png` holds the pictures — the band on top, then a row of
- * tiles for each part, tile n at x = 8n, in that part's colours.
+ * the picture drawn from the ROM holds the band on top, then a row of tiles
+ * for each part, tile n at x = 8n, in that part's colours.
  *
  * Cells are counted in tiles from the screen's top left; a part's cells run
  * rightward from `at`, one per player.

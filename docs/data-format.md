@@ -56,13 +56,12 @@ game only ever reads. `npm run rom -- export` writes whole entities into
 `data/spawns/`; those are entities too and every tab works on them.
 
 An arena is not an entity: `data/arenas/<name>/arena.json` says how its
-layers scroll, and `npm run rom -- export` writes it whole, with its
-pictures in `assets/arenas/<name>/`. Its shape: `src/arena/arenaFile.ts`.
-The HUD is the same kind of thing: `data/hud/hud.json` and
-`assets/hud/hud.png`, written whole by the export, shape in
-`src/hud/hudFile.ts`. A sideways journey's bands are one picture of every screen,
-`assets/arenas/journey/bands@screens.png`, served as an arena's layer though no
-arena has it (`src/arena/bands.ts`, ADR 0085).
+layers scroll, and `npm run rom -- export` writes it whole; its pictures the
+browser draws from the ROM (ADR 0090). Its shape: `src/arena/arenaFile.ts`.
+The HUD is the same kind of thing: `data/hud/hud.json`, written whole by the
+export, shape in `src/hud/hudFile.ts`. A sideways journey's bands are one
+picture of every screen, drawn from the ROM too (`src/arena/bands.ts`, ADR
+0085).
 
 ## Decisions the shape does not explain
 

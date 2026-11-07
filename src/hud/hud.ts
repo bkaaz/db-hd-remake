@@ -1,6 +1,9 @@
 import { Container, Rectangle, Sprite, Texture } from "pixi.js";
 import { barColour, barTiles, digits, stepShown } from "./health";
 import type { Cell, HudFile } from "./hudFile";
+import { cartridge } from "../cartridge/romFile";
+import { hudImage } from "../cartridge/romBackdrops";
+import { toCanvas } from "../cartridge/canvas";
 
 /** What the HUD reads off the fight each game frame: each side's health and name. */
 export interface HudFighter {
@@ -11,8 +14,7 @@ export interface HudFighter {
 /**
  * The original's HUD in the game's screen: its band, and the cells the
  * fight rewrites — each side's health as a number and a bar, and its name
- * (`rom.md`, The HUD). Read from `data/hud/` and `assets/hud/`, written by
- * `npm run rom -- export`.
+ * (`rom.md`, The HUD). Placed by `data/hud/hud.json`, drawn from the ROM.
  */
 export class Hud {
   private readonly view = new Container();
@@ -53,10 +55,8 @@ export class Hud {
     const res = await fetch("/api/hud");
     if (!res.ok) return "no HUD — run `npm run rom -- export`";
     const file = (await res.json()) as HudFile;
-    const img = new Image();
-    img.src = "/api/hud?image";
-    await img.decode();
-    const sheet = Texture.from(img);
+    // its tiles are drawn from the cartridge (ADR 0090); hud.json says where each goes
+    const sheet = Texture.from(toCanvas(hudImage(await cartridge())));
     sheet.source.scaleMode = "nearest";
     return new Hud(parent, file, sheet, fighters);
   }

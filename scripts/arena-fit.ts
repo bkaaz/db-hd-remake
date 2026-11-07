@@ -11,14 +11,15 @@ import { readFileSync } from "node:fs";
 import { fitArena } from "../src/rom/arenaFit.ts";
 import { decodePng } from "../src/sprites/png.ts";
 import type { ArenaFile } from "../src/arena/arenaFile.ts";
+import { ROM_PATH } from "../src/rom/cartridge.ts";
+import { arenaImages } from "../src/cartridge/romBackdrops.ts";
 
 const [name, time, ...shots] = process.argv.slice(2);
 if (!name || !time || !shots.length) throw new Error("npm run arena-fit -- <arena> <time> <screenshot.png …>");
 const file = JSON.parse(readFileSync(`data/arenas/${name}/arena.json`, "utf8")) as ArenaFile;
-const layers = file.layers.map(({ name: layer, scroll }) => ({
-  scroll,
-  image: decodePng(readFileSync(`assets/arenas/${name}/${layer}@${time}.png`)),
-}));
+const pictures = arenaImages(new Uint8Array(readFileSync(ROM_PATH)), name, time);
+if (!pictures) throw new Error(`the cartridge holds no arena "${name}"`);
+const layers = file.layers.map(({ name: layer, scroll }) => ({ scroll, image: pictures[layer] }));
 for (const shot of shots) {
   const { x, y, share } = fitArena(layers, decodePng(readFileSync(shot)));
   console.log(`${shot}: camera x ${x}, arena ${y} px down, ${(share * 100).toFixed(1)}% agree`);

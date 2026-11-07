@@ -1,7 +1,10 @@
 import { Rectangle, Sprite, Texture, type Container } from "pixi.js";
-import { BAND_SCREEN, BANDS } from "./bands";
+import { BAND_SCREEN } from "./bands";
+import { cartridge } from "../cartridge/romFile";
+import { bandsImage } from "../cartridge/romBackdrops";
+import { toCanvas } from "../cartridge/canvas";
 
-/** The journey's bands on screen: one screen of the exported picture at a time, over the hidden arena. */
+/** The journey's bands on screen: one screen of the picture at a time, over the hidden arena. */
 export class BandsView {
   private sprite: Sprite | null = null;
   private readonly screens: Texture[];
@@ -14,16 +17,9 @@ export class BandsView {
     );
   }
 
-  /** Null where the export has not drawn them: the journey then crosses a black screen. */
-  static async load(): Promise<BandsView | null> {
-    const img = new Image();
-    img.src = `/api/arena?name=${BANDS.arena}&layer=${BANDS.layer}&time=${BANDS.time}`;
-    try {
-      await img.decode();
-    } catch {
-      return null;
-    }
-    const sheet = Texture.from(img);
+  /** Every screen of them, drawn from the cartridge (ADR 0090). */
+  static async load(): Promise<BandsView> {
+    const sheet = Texture.from(toCanvas(bandsImage(await cartridge())));
     sheet.source.scaleMode = "nearest";
     return new BandsView(sheet);
   }

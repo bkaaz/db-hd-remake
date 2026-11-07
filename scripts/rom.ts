@@ -25,8 +25,7 @@
  *   npm run rom -- export            where every drawing sits on the sheet the browser
  *                                    draws: data/entities/goku/frames.json (frame n = drawing n),
  *                                    every move into its animations.json as m00…mff;
- *                                    each arena into assets/arenas/ and data/arenas/,
- *                                    the HUD into assets/hud/ and data/hud/
+ *                                    each arena into data/arenas/, the HUD into data/hud/
  *
  * Ids are hex, as the fighter's RAM holds them: the drawing is field 0x0a
  * (src/rom/cartridge.ts), and its tile set comes from the cartridge's table.
@@ -71,8 +70,6 @@ import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
-import { bandsPicture } from "../src/rom/bands.ts";
-import { BANDS } from "../src/arena/bands.ts";
 import { altPalettes, ARENAS, exportArena, flashPalettes, glowPalettes, introPalettes, lightingPalettes, runPalettes, winPalettes } from "../src/rom/arena.ts";
 import { drawHud, exportHud } from "../src/rom/hud.ts";
 
@@ -550,22 +547,15 @@ if (command === "tiles") {
     console.log(`${name}: ${Object.keys(spawn.frames).length} frames`);
   }
   for (const [name, source] of Object.entries(ARENAS)) {
-    const { file, images } = exportArena(rom, source);
-    mkdirSync(`assets/arenas/${name}`, { recursive: true });
+    // its pictures the browser draws (ADR 0090); arena.json says how they scroll
+    const { file } = exportArena(rom, source);
     mkdirSync(`data/arenas/${name}`, { recursive: true });
-    for (const [image, rgba] of Object.entries(images)) writeFileSync(`assets/arenas/${name}/${image}.png`, encodePng(rgba));
     writeFileSync(`data/arenas/${name}/arena.json`, JSON.stringify(file, null, 2) + "\n");
     console.log(`${name}: ${file.layers.length} layers × ${file.times.length} lightings`);
   }
-  // the journey's bands, every screen of them: a backdrop of no arena (src/arena/bands.ts)
-  mkdirSync(`assets/arenas/${BANDS.arena}`, { recursive: true });
-  writeFileSync(`assets/arenas/${BANDS.arena}/${BANDS.layer}@${BANDS.time}.png`, encodePng(bandsPicture(rom)));
-  console.log("journey: its bands");
-  // every fighter's name, by his place in the roster ($00:C511)
+  // every fighter's name, by his place in the roster ($00:C511); the picture the browser draws
   const hud = exportHud(rom, Object.fromEntries(ROSTER.map((fighter, character) => [fighter, character])));
-  mkdirSync("assets/hud", { recursive: true });
   mkdirSync("data/hud", { recursive: true });
-  writeFileSync("assets/hud/hud.png", encodePng(hud.image));
   writeFileSync("data/hud/hud.json", JSON.stringify(hud.file, null, 2) + "\n");
   console.log(`hud: names for ${Object.keys(hud.file.names).join(", ")}`);
 } else {

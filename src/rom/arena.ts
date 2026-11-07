@@ -354,25 +354,38 @@ function holds(numbers: Rgba, palettes: number[]): boolean {
   return false;
 }
 
-/** Each layer in each lighting, with what the cycling palettes repaint. That they add up to the stage is `arena.test.ts`'s to check. */
-export function exportArena(rom: Uint8Array, source: ArenaSource): ExportedArena {
+/**
+ * An arena's pictures in one lighting, by name: each layer, the numbers of a
+ * layer whose palette cycles (`<layer>-numbers`), and each cycle's steps
+ * (`cycle<i>`) — what the browser draws and `exportArena` writes.
+ */
+export function arenaPictures(rom: Uint8Array, source: ArenaSource, time: string): Record<string, Rgba> {
+  const id = source.ids[time];
+  if (id === undefined) throw new Error(`no lighting "${time}"`);
   const images: Record<string, Rgba> = {};
   const cycles = source.cycles ?? [];
   const palettes = cycles.map((c) => c.palette);
-  const numbered = new Set<string>();
-  for (const [time, id] of Object.entries(source.ids)) {
-    const stage = loadStage(rom, id);
-    for (const { name, draw } of source.layers) {
-      images[`${name}@${time}`] = stack(...draw.map(([map, part]) => drawLayer(stage, map, part)));
-      const numbers = stack(...draw.map(([map, part]) => numberLayer(stage, map, part)));
-      if (!holds(numbers, palettes)) continue;
-      numbered.add(name);
-      images[`${name}-numbers@${time}`] = numbers;
-    }
-    cycles.forEach((c, i) => {
-      images[`cycle${i}@${time}`] = cycleSteps(rom, c.at[time], c.steps);
-    });
+  const stage = loadStage(rom, id);
+  for (const { name, draw } of source.layers) {
+    images[name] = stack(...draw.map(([map, part]) => drawLayer(stage, map, part)));
+    const numbers = stack(...draw.map(([map, part]) => numberLayer(stage, map, part)));
+    if (holds(numbers, palettes)) images[`${name}-numbers`] = numbers;
   }
+  cycles.forEach((c, i) => (images[`cycle${i}`] = cycleSteps(rom, c.at[time], c.steps)));
+  return images;
+}
+
+/** Each layer in each lighting, with what the cycling palettes repaint. That they add up to the stage is `arena.test.ts`'s to check. */
+export function exportArena(rom: Uint8Array, source: ArenaSource): ExportedArena {
+  const images: Record<string, Rgba> = {};
+  const numbered = new Set<string>();
+  for (const time of Object.keys(source.ids)) {
+    for (const [image, rgba] of Object.entries(arenaPictures(rom, source, time))) {
+      images[`${image}@${time}`] = rgba;
+      if (image.endsWith("-numbers")) numbered.add(image.slice(0, -"-numbers".length));
+    }
+  }
+  const cycles = source.cycles ?? [];
   return {
     file: {
       times: Object.keys(source.ids),

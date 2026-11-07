@@ -372,10 +372,6 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ├── data/hud/hud.json             # where the original's HUD puts what
 ├── data/audio/sounds.json        # the game's sound bank, one entry per id
 ├── assets/                       # BYOA, gitignored — EXACTLY what the game reads
-│   ├── sheets/                   #   one image per entity, transparency in the
-│   │                             #   file; spawns/ the objects' (going: ADR 0090)
-│   ├── arenas/<name>/            #   each layer of an arena, once per lighting
-│   ├── hud/hud.png               #   the HUD's band and its parts' tiles
 │   └── audio/sfx/                #   the original's sound test, one file per
 │                                 #   id: 05.wav, goku_31.wav, line_0d.wav
 ├── raw/                          # BYOA, gitignored — what those were made from

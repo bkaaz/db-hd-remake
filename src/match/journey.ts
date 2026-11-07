@@ -50,7 +50,7 @@ export class Journey {
     const { sent } = this.go;
     const frame = this.plan[this.at++];
     if (!frame) {
-      this.go.bands?.show(backdrop, null);
+      this.go.bands.show(backdrop, null);
       stage.blank(false);
       stage.change(this.go.backdrop(backdrop));
       fighters.light(this.go.time);
@@ -62,7 +62,7 @@ export class Journey {
     stage.blank(frame.blank);
     // with the old arena gone a shadow has no arena's light: not the ruins' red, from the bands on
     fighters.plainShadows(frame.blank);
-    this.go.bands?.show(backdrop, frame.blank && this.bands ? this.bands.next() : null);
+    this.go.bands.show(backdrop, frame.blank && this.bands ? this.bands.next() : null);
     sent.attacker.hide(frame.blank);
     sent.defender.hide(frame.defender === null);
     if (frame.defender) {

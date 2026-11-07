@@ -2,6 +2,9 @@ import { Container, Sprite, Texture } from "pixi.js";
 import type { Backdrop } from "../stage";
 import type { ArenaFile } from "./arenaFile";
 import { CycledLayer } from "./cycledLayer";
+import { cartridge } from "../cartridge/romFile";
+import { arenaImages } from "../cartridge/romBackdrops";
+import { toCanvas } from "../cartridge/canvas";
 
 /** An arena read from disk, in one lighting: each layer's picture and how it scrolls. */
 export interface LoadedArena {
@@ -22,27 +25,24 @@ export async function loadArena(name: string, time: string | null): Promise<Load
   const file = (await res.json()) as ArenaFile;
   const lighting = time ?? file.times[0];
   if (!file.times.includes(lighting)) return `arena "${name}" has no time "${lighting}" — try ${file.times.join(", ")}`;
-  const image = (layer: string) => picture(`/api/arena?name=${encodeURIComponent(name)}&layer=${layer}&time=${lighting}`);
-  const cycles = await Promise.all((file.cycles ?? []).map(async (cycle, i) => ({ cycle, steps: await image(`cycle${i}`) })));
-  const layers = await Promise.all(
-    file.layers.map(async (layer) => {
-      if (layer.numbered) {
-        const cycled = new CycledLayer(await image(layer.name), await image(`${layer.name}-numbers`), cycles);
-        return { texture: cycled.texture, scroll: layer.scroll, cycled };
-      }
-      const texture = Texture.from(await image(layer.name));
-      texture.source.scaleMode = "nearest";
-      return { texture, scroll: layer.scroll };
-    }),
-  );
+  // its pictures are drawn from the cartridge (ADR 0090); arena.json says how they scroll
+  const pictures = arenaImages(await cartridge(), name, lighting);
+  if (!pictures) return `the cartridge holds no arena "${name}"`;
+  const image = (layer: string) => {
+    if (!pictures[layer]) throw new Error(`arena "${name}" draws no "${layer}" — run \`npm run rom -- export\``);
+    return pictures[layer];
+  };
+  const cycles = (file.cycles ?? []).map((cycle, i) => ({ cycle, steps: image(`cycle${i}`) }));
+  const layers = file.layers.map((layer) => {
+    if (layer.numbered) {
+      const cycled = new CycledLayer(image(layer.name), image(`${layer.name}-numbers`), cycles);
+      return { texture: cycled.texture, scroll: layer.scroll, cycled };
+    }
+    const texture = Texture.from(toCanvas(image(layer.name)));
+    texture.source.scaleMode = "nearest";
+    return { texture, scroll: layer.scroll };
+  });
   return { time: lighting, times: file.times, layers };
-}
-
-async function picture(url: string): Promise<HTMLImageElement> {
-  const img = new Image();
-  img.src = url;
-  await img.decode();
-  return img;
 }
 
 /** An arena on screen: its layers back to front, each scrolling at its own speed. */

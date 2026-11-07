@@ -54,9 +54,8 @@ the readers know. In development, `ROM_PATH` in `.env.local` points at it and
 the page asks nothing. Why, and what was rejected:
 [ADR 0090](./docs/adr/0090-the-cartridge-is-the-games-one-dependency.md).
 
-The move to it is under way (`docs/plan.md`): until it is done, the arenas, the
-HUD and the sounds are still read from `assets/` (gitignored) —
-[`docs/assets.md`](./docs/assets.md).
+The move to it is under way (`docs/plan.md`): until it is done, the sounds are
+still read from `assets/` (gitignored) — [`docs/assets.md`](./docs/assets.md).
 
 ## Entity editor
 

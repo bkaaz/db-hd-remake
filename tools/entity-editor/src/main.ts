@@ -35,6 +35,7 @@ import {
 } from "./exporter";
 import { cartridge } from "../../../src/cartridge/romFile";
 import { drawFighter, drawSpawnLook } from "../../../src/cartridge/romSheets";
+import { toCanvas } from "../../../src/cartridge/canvas";
 
 function byId<T extends HTMLElement>(id: string): T {
   const node = document.getElementById(id);
@@ -111,12 +112,7 @@ wireSave("save-animations", saveAnimations);
 async function drawnSheet(entity: EntityFileIn): Promise<HTMLCanvasElement | null> {
   const rom = await cartridge();
   const drawn = entity.look ? drawSpawnLook(rom, entity.look) : drawFighter(rom, entity.name, entity.palettes);
-  if (!drawn) return null;
-  const canvas = document.createElement("canvas");
-  canvas.width = drawn.sheet.width;
-  canvas.height = drawn.sheet.height;
-  canvas.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(drawn.sheet.data), drawn.sheet.width, drawn.sheet.height), 0, 0);
-  return canvas;
+  return drawn ? toCanvas(drawn.sheet) : null;
 }
 
 /**

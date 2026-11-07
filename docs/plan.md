@@ -33,33 +33,31 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 ## Now: the cartridge as the game's one dependency
 
 [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md), on
-branch `poc-rom-runtime`. Every fighter's sheet, each palette of it and every
-object are drawn in the browser (`src/cartridge/`); the cartridge's sound
-driver runs on our chip (`src/apu/`) but the game does not play it yet. Each
-slice ends with the game reading one more thing from the ROM and nothing of it
-from `assets/`.
+branch `poc-rom-runtime`. Every fighter's sheet, each palette of it, every
+object, every arena, the bands and the HUD are drawn in the browser
+(`src/cartridge/`); the cartridge's sound driver runs on our chip
+(`src/apu/`) but the game does not play it yet. Each slice ends with the game
+reading one more thing from the ROM and nothing of it from `assets/`.
 
-1. **Arenas, the bands and the HUD.** *Done when:* nothing under
-   `assets/arenas/` or `assets/hud/` is opened.
-2. **Sound through the chip.** Effects asked of the driver instead of played
+1. **Sound through the chip.** Effects asked of the driver instead of played
    from files; fighters' voices uploaded where the game puts them
    (`$00:98EC`); spoken lines streamed as BRR; the DSP's real interpolation
    table in place of `gauss.ts`. *Done when:* nothing under `assets/audio/`
    is opened, and the sound test's recordings are only a test's reference.
-3. **A static build.** The game fetches `data/` through the dev server's
+2. **A static build.** The game fetches `data/` through the dev server's
    `/api/*`; a hosted page has no server. *Done when:* `dist/web` on any
    static server plays, given a ROM.
-4. **The ROM remembered** in the browser (IndexedDB), so a player picks it
+3. **The ROM remembered** in the browser (IndexedDB), so a player picks it
    once.
-5. **Names in the editor** — aliases for the frames and animations it shows;
+4. **Names in the editor** — aliases for the frames and animations it shows;
    it reads them from the ROM and edits no sprite.
-6. **What is left goes:** `assets/`, the PNG half of `npm run rom
+5. **What is left goes:** `assets/`, the PNG half of `npm run rom
    -- export`, `npm run pack`; `assets.md` and `CLAUDE.md` rewritten. Read
    again for what the hand-built Goku left behind: this file's sections written
    against his sheet (*G. Crouch*, *The moveset*), `descriptions.json` and the
    shorthand that reads it (`notation.ts`, `npm run which`), `input/motion.ts`,
    which no entity uses any more.
-7. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
+6. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
    translation's patch) is checked. The clean Japanese dump and any PAL one
    need their hashes, and the readers run against each — an address that
    moved is a table per dump.

@@ -15,8 +15,8 @@ export interface Departure {
   /** Its backdrop, made when the arena is shown. */
   backdrop: (parent: Container) => ArenaBackdrop;
   time: string;
-  /** The screen of bands a sideways journey crosses; null leaves it black. */
-  bands: BandsView | null;
+  /** The screen of bands a sideways journey crosses. */
+  bands: BandsView;
   at: { attacker: number; defender: number };
 }
 
@@ -31,7 +31,7 @@ export class Travel {
   private constructor(
     private here: string,
     private readonly arenas: Map<string, LoadedArena>,
-    private readonly bands: BandsView | null,
+    private readonly bands: BandsView,
   ) {}
 
   /** None on the grid, or on an arena no way leads from. */
@@ -85,6 +85,6 @@ export class Travel {
   /** Every arena it loaded, let go — after the backdrop showing one of them. */
   destroy(): void {
     for (const arena of this.arenas.values()) for (const { texture } of arena.layers) texture.destroy(true);
-    this.bands?.destroy();
+    this.bands.destroy();
   }
 }

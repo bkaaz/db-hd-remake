@@ -4,6 +4,7 @@ import type { StatesFile } from "./states";
 import type { CommandDef } from "../input/command";
 import { cartridge } from "../cartridge/romFile";
 import { drawFighter, drawSpawnLook, type Drawn } from "../cartridge/romSheets";
+import { toCanvas } from "../cartridge/canvas";
 import type { Rgba } from "../sprites/png";
 import {
   DEFAULT_ATTRIBUTES,
@@ -107,11 +108,7 @@ async function drawnFrom(data: EntityFile): Promise<Drawn> {
 }
 
 function texture(image: Rgba): Texture {
-  const canvas = document.createElement("canvas");
-  canvas.width = image.width;
-  canvas.height = image.height;
-  canvas.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(image.data), image.width, image.height), 0, 0);
-  const sheet = Texture.from(canvas);
+  const sheet = Texture.from(toCanvas(image));
   sheet.source.scaleMode = "nearest";
   return sheet;
 }
