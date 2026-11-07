@@ -526,7 +526,7 @@ flat. What each shows is read off that drawing:
 | 0 | 0, 1, 2 | 1 | `D7` | the tournament's gate and court (天下一武道会 on the roof) |
 | 1 | 3, 4, 5 | 2, vertical | `E9` | the sky over the clouds, a lookout far off |
 | 2 | 6, 7, 8 | 7, vertical | `FF` | a planet's map from above, clouds — not drawn whole |
-| 3 | 9, 10, 11 | 1 | `D7` | a domed palace — Kami's Lookout `?` |
+| 3 | 9, 10, 11 | 1 | `D7` | a domed palace — Kami's Lookout `?`; ours `palace` |
 | 4 | 12 (lighting `6`) | 1 | `D7` | burning ruins |
 | 5 | 13, 14, 15 | 1 | `D7` | rocky plains |
 | 6 | 16 (lighting `4`) | 2, vertical | `E9` | a crater with violet lightning |
@@ -555,6 +555,26 @@ arena 0 at night). Each arena's set-up by number:
 (rows 0–11) high priority, the rest low. So, back to front: BG2's low
 tiles, BG1, the roof. The fighters are drawn over the bushes and the sky;
 over the roof too `?` (their OAM priority is not read). The roof carries 天下一武道会: arena 0 is the tournament.
+
+**The other arenas' layers**, by handler (`$00:BCB5`, by stage id), x the camera's whole-pixel x, 0–255; set-up by arena `$00:B867`: 3, 4, 5, 7 as arena 0's:
+
+| arena | handler | BG1 | BG2 |
+|---|---|---|---|
+| 3 | `$00:BE6B` | x | x / 4 + 96 |
+| 4, 5, 7 | `$00:BEAA` | x | x / 2 + 64 above screen line 159, 2x from there |
+| 6 | `$00:BD73` | x | x / 2 + 64 |
+
+`$00:BEAA` writes `$7E2814`, the count of BG2's middle HDMA block, as `80`: 128 lines rather than 64, so the sky and its rocks stay at half speed all the way down and only the silhouettes (BG2 rows 23–27) go double, wrapping round the 512-px map. `$00:BFD7` rewrites BG1's count only, so that line is the screen's, not the world's. Tiles: all low priority but those silhouettes, high, so in front of BG1. BG2's sky on 6 and 7 fills only columns 8–55, what x / 2 + 64 can show. Fighters' sprites are nearly all OAM priority 3 in the snapshots, so in front of every layer `?`.
+
+**An arena's palettes step by themselves** (`$00:C15F`, by stage id `$00:C182`, not while `$30B0` bit 7 is set); none on 0 and 3. Each writes 16 colours to one BG palette in the colour buffer (`$00:B2F9`), from a table of 32-byte steps:
+
+| arena | palette | steps at | steps | held, frames | starts at (`$00:B6CF`) |
+|---|---|---|---|---|---|
+| 4 | 4, 5, 6 | `$0A:C5C7` | 16 | 4, on `$74` | 0, 8, 12 |
+| 5 | 4 | `$9D:8080`, `8500`, `8980`, by lighting | 32 | 16 | — |
+| 6, 7 | 2, 3, 4 | `$9D:8E40` | 16 | `$00:C41F`[step] + 1 | 0, 4, 10 |
+| 6 | 5, 6 | `$9D:9040` | 14 | 4, on `$0577` `?` | 0, 5 |
+| 6, 7 | 7 | `$9D:9200` | 8 | 6 | 0 |
 
 **The shake is `$E3`** (`$0D:C558`): bit 15 on, bits 8–11 a pattern, the low
 byte frames. Each frame it counts down and adds `$0D:C593`[pattern][frames

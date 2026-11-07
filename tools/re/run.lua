@@ -7,6 +7,8 @@ do
   local P = { 0x100, 0x200 } -- the fighter blocks in SA-1 I-RAM; fields: src/rom/cartridge.ts
   local HEALTH, X = 0x60, 0x20
   local IRAM = emu.memType.sa1InternalRam
+  local WRAM = emu.memType.snesWorkRam
+  local STAGE = 0x054e
   local SNES = emu.cpuType.snes
   local START, LAST = 0x000000, 0xffffff
 
@@ -60,6 +62,8 @@ do
   function RUN.frame()
     if not loaded then return false end
     shoot()
+    -- written every frame: the arena's screen writes it too, and the round reads it as it opens
+    if RUN.stage >= 0 then emu.write(STAGE, RUN.stage, WRAM) end
     if exec then
       emu.removeMemoryCallback(exec, emu.callbackType.exec, START, LAST, SNES)
       exec = nil

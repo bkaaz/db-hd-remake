@@ -313,6 +313,9 @@ npm run original -- volleyball-hit
                   # the original played from a terminal, no window: a scenario
                   # of tools/re/runs/ from its save state in raw/states/, into
                   # logs/run-<name>.txt in record-fight.lua's format (ADR 0074)
+npm run arena-fit -- palace day logs/run-stage-palace-f1800.png
+                  # an arena against pictures of the original's screen: the
+                  # camera that explains each, and how much of it agrees
 npm run moves -- vegetto
                   # every move of a fighter played in the original and in ours, and
                   # what differs, into logs/moves/ (ADR 0075); --only a,b, --report;

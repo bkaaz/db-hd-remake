@@ -25,6 +25,6 @@ describe("padFrames", () => {
 describe("runTable", () => {
   it("writes the Lua table run.lua reads, health only where the scenario sets it", () => {
     const lua = runTable({ state: "a", frames: 1, hp1: 80, shots: [1], p1: { does: ["attack"] } }, { state: "/s.mss", out: "/o.txt", shots: "/r" });
-    expect(lua).toBe(`RUN = { state = "/s.mss", out = "/o.txt", shotsAt = "/r", shots = {[1]=true}, frames = 1, free = false, healthAt = 1, saveAt = 0, saveTo = "", health = {[1]=80}, pads = { {{64,0,0}}, {{0,0,0}} } }\n`);
+    expect(lua).toBe(`RUN = { state = "/s.mss", out = "/o.txt", shotsAt = "/r", shots = {[1]=true}, frames = 1, free = false, healthAt = 1, saveAt = 0, saveTo = "", stage = -1, health = {[1]=80}, pads = { {{64,0,0}}, {{0,0,0}} } }\n`);
   });
 });

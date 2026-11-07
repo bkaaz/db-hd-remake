@@ -9,7 +9,7 @@ import type { ArenaFile } from "../arena/arenaFile";
 import type { Rgba } from "../sprites/png";
 import type { FighterTables } from "./cartridge";
 import { paletteRecord } from "./resource";
-import { BG1, BG2, drawLayer, loadStage, stack } from "./stage";
+import { BG1, BG2, drawLayer, loadStage, stack, type LayerPart } from "./stage";
 import { readPalette } from "./frame";
 import type { Rgb } from "../entity/palettesFile";
 
@@ -194,20 +194,48 @@ export function altPalettes(rom: Uint8Array, t: FighterTables): Record<string, n
   return out;
 }
 
+/** One picture of an arena: how it scrolls (`arena/arenaFile.ts`) and what it is drawn from, back to front. */
+interface LayerSource {
+  name: string;
+  scroll: [number, number];
+  draw: [map: number, part?: LayerPart][];
+}
+
 interface ArenaSource {
   /** The stage id of each lighting, in the order `times` lists them. */
   ids: Record<string, number>;
-  /**
-   * BG1's tile rows above this scroll apart — the middle HDMA block ends on
-   * world row 95 — at `camera x / 2 + 64` ($00:BCD9). Its top block, at the
-   * camera's speed, lies under the HUD and is drawn with the sky.
-   */
-  skyRows: number;
+  layers: LayerSource[];
 }
 
-/** Arena 0: the tournament (`rom.md`, A stage id). */
+/** BG1's tile rows above this scroll apart on the tournament: the middle HDMA block ends on world row 95 (`rom.md`). */
+const TOURNAMENT_SKY: [number, number] = [0, 12];
+const TOURNAMENT_REST: [number, number] = [12, 32];
+
+/** What each arena's handler scrolls apart (`rom.md`, A stage id and The other arenas' layers). */
 export const ARENAS: Record<string, ArenaSource> = {
-  tournament: { ids: { day: 0, evening: 1, night: 2 }, skyRows: 12 },
+  tournament: {
+    ids: { day: 0, evening: 1, night: 2 },
+    layers: [
+      { name: "sky", scroll: [0.5, 64], draw: [[BG1, { rows: TOURNAMENT_SKY }]] },
+      {
+        name: "court",
+        scroll: [1, 0],
+        draw: [
+          [BG2, { priority: "low" }],
+          [BG1, { priority: "low", rows: TOURNAMENT_REST }],
+          [BG2, { priority: "high" }],
+          [BG1, { priority: "high", rows: TOURNAMENT_REST }],
+        ],
+      },
+    ],
+  },
+  palace: {
+    ids: { day: 9, evening: 10, night: 11 },
+    layers: [
+      { name: "sky", scroll: [0.25, 96], draw: [[BG2]] },
+      { name: "palace", scroll: [1, 0], draw: [[BG1]] },
+    ],
+  },
 };
 
 export interface ExportedArena {
@@ -216,35 +244,19 @@ export interface ExportedArena {
   images: Record<string, Rgba>;
 }
 
-/**
- * Two layers: the sky, BG1 above `skyRows`, behind everything; and the rest
- * in mode 1's order — BG2's low tiles, BG1's, BG2's high. That the sky can go
- * first rests on BG2 having no low tiles beside it, which is checked.
- */
+/** Each layer in each lighting. That they add up to the stage is `arena.test.ts`'s to check. */
 export function exportArena(rom: Uint8Array, source: ArenaSource): ExportedArena {
   const images: Record<string, Rgba> = {};
-  const above: [number, number] = [0, source.skyRows];
-  const below: [number, number] = [source.skyRows, 32];
   for (const [time, id] of Object.entries(source.ids)) {
     const stage = loadStage(rom, id);
-    if (drawLayer(stage, BG2, { priority: "low", rows: above }).data.some((v, i) => i % 4 === 3 && v > 0)) {
-      throw new Error(`stage ${id}: BG2 has low tiles beside the sky, which would then cover them`);
+    for (const { name, draw } of source.layers) {
+      images[`${name}@${time}`] = stack(...draw.map(([map, part]) => drawLayer(stage, map, part)));
     }
-    images[`sky@${time}`] = drawLayer(stage, BG1, { rows: above });
-    images[`court@${time}`] = stack(
-      drawLayer(stage, BG2, { priority: "low" }),
-      drawLayer(stage, BG1, { priority: "low", rows: below }),
-      drawLayer(stage, BG2, { priority: "high" }),
-      drawLayer(stage, BG1, { priority: "high", rows: below }),
-    );
   }
   return {
     file: {
       times: Object.keys(source.ids),
-      layers: [
-        { name: "sky", scroll: [0.5, 64] },
-        { name: "court", scroll: [1, 0] },
-      ],
+      layers: source.layers.map(({ name, scroll }) => ({ name, scroll })),
     },
     images,
   };

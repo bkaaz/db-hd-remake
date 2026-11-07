@@ -30,6 +30,12 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 ---
 
+## Now: the missing arenas
+
+The owner, 2026-11-07: the arenas that are still missing come next, ahead of the engine's bugs; **the flying ones not for now**. What the cartridge has: `rom.md`, the table of arenas and stages; `npm run rom -- stage` draws them all. What the game has: `ARENAS` in `src/rom/arena.ts`, `data/arenas/`.
+
+One arena at a time, each handed over before the next (owner, 2026-11-07); `rom.md` holds their layers and palette steps. Next: 5 (rocky plains), then 7 (dark sky, rocks and water), which bring in the palettes that step by themselves: a layer as colour numbers plus palettes over time, repainted by plain TypeScript (his word, 2026-11-07), and BG2's silhouettes at double speed, wrapping. Then 4 (burning ruins), whose lighting `6` gives every fighter new sheets. Flying, waiting, with 6 among them by his word: 1 (sky over the clouds), 2 (a planet from above), 6 (crater with violet lightning).
+
 ## Now: reading the cartridge by script
 
 The owner, 2026-10-30: more than any one move, the tools — every structure

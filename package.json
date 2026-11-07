@@ -21,6 +21,7 @@
     "typecheck": "tsc --noEmit",
     "which": "tsx scripts/which.ts",
     "rom": "tsx scripts/rom.ts",
+    "arena-fit": "tsx scripts/arena-fit.ts",
     "original": "tsx scripts/original.ts",
     "moves": "tsx scripts/moves.ts",
     "dis": "tsx scripts/dis.ts",

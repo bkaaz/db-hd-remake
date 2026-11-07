@@ -5,7 +5,7 @@ import type { Rgba } from "../sprites/png";
 import { altPalettes, ARENAS, exportArena, glowPalettes, introPalettes, lightingPalettes, lightingShift, relitRun } from "./arena";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { fighterNamed } from "./roster";
-import { stageRecord } from "./stage";
+import { drawStage, loadStage, stack, stageRecord } from "./stage";
 
 /** Whether any pixel in rows [from, to) is drawn. */
 function drawn(img: Rgba, from: number, to: number): boolean {
@@ -21,9 +21,32 @@ function at(img: Rgba, x: number, y: number): number[] {
   return [...img.data.subarray(i, i + 4)];
 }
 
+/** `$0560` as a round opens (`$00:B877`). */
+const START_X = 128;
+
 describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
   const tournament = exportArena(rom, ARENAS.tournament);
+
+  it.each(Object.entries(ARENAS))("%s: its layers, lined up at the camera's start, are the whole stage in every lighting", (_, source) => {
+    const { images, file } = exportArena(rom, source);
+    for (const layer of file.layers) expect(layer.scroll[0] * START_X + layer.scroll[1]).toBe(START_X);
+    for (const [time, id] of Object.entries(source.ids)) {
+      const layered = stack(...file.layers.map((layer) => images[`${layer.name}@${time}`]));
+      expect(Buffer.compare(layered.data, drawStage(loadStage(rom, id)).data)).toBe(0);
+    }
+  });
+
+  it("takes the palace from stage ids 9, 10, 11, its sky and far domes at a quarter of the camera's speed ($00:BE6B)", () => {
+    expect([9, 10, 11].map((id) => stageRecord(rom, id).arena)).toEqual([3, 3, 3]);
+    const palace = exportArena(rom, ARENAS.palace);
+    expect(palace.file.layers).toEqual([
+      { name: "sky", scroll: [0.25, 96] },
+      { name: "palace", scroll: [1, 0] },
+    ]);
+    expect(drawn(palace.images["palace@day"], 224, 256)).toBe(false);
+    expect(at(palace.images["sky@day"], 10, 10)[3]).toBe(255);
+  });
 
   it("takes the tournament from stage ids 0, 1, 2 — one arena, three lightings", () => {
     expect([0, 1, 2].map((id) => stageRecord(rom, id).arena)).toEqual([0, 0, 0]);

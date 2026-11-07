@@ -22,6 +22,8 @@ export interface Scenario {
   saveTo?: string;
   /** Frames to keep a picture of the screen from, `logs/run-<name>-f<frame>.png`. */
   shots?: number[];
+  /** The stage id the round opens on, whatever the arena screen chose (`$054E`, `rom.md`). */
+  stage?: number;
 }
 
 /** One frame of a pad: `$4219` and `$4218` less left and right, and `dir` + fwd, − back. */
@@ -60,5 +62,5 @@ export function runTable(s: Scenario, paths: { state: string; out: string; shots
   };
   const health = [s.hp1 !== undefined ? `[1]=${s.hp1}` : "", s.hp2 !== undefined ? `[2]=${s.hp2}` : ""].filter(Boolean).join(",");
   const shots = (s.shots ?? []).map((f) => `[${f}]=true`).join(",");
-  return `RUN = { state = ${JSON.stringify(paths.state)}, out = ${JSON.stringify(paths.out)}, shotsAt = ${JSON.stringify(paths.shots)}, shots = {${shots}}, frames = ${s.frames}, free = ${s.free === true}, healthAt = ${s.healthAt ?? 1}, saveAt = ${s.saveAt ?? 0}, saveTo = ${JSON.stringify(s.saveTo ?? "")}, health = {${health}}, pads = { ${pad(s.p1)}, ${pad(s.p2)} } }\n`;
+  return `RUN = { state = ${JSON.stringify(paths.state)}, out = ${JSON.stringify(paths.out)}, shotsAt = ${JSON.stringify(paths.shots)}, shots = {${shots}}, frames = ${s.frames}, free = ${s.free === true}, healthAt = ${s.healthAt ?? 1}, saveAt = ${s.saveAt ?? 0}, saveTo = ${JSON.stringify(s.saveTo ?? "")}, stage = ${s.stage ?? -1}, health = {${health}}, pads = { ${pad(s.p1)}, ${pad(s.p2)} } }\n`;
 }

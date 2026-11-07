@@ -1,0 +1,7 @@
+{
+  "state": "gotenks-select",
+  "frames": 2100,
+  "stage": 9,
+  "shots": [1420, 1600, 1800, 2000],
+  "p1": { "does": [30, "blast 4", 60, "blast 4", 60, "blast 4", 60, "blast 4", 600, "blast 4", 80, "blast 4"] }
+}
