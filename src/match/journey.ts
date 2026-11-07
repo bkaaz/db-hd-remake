@@ -42,6 +42,8 @@ export class Journey {
     this.plan = flightPlan(way, towardLeft, { x: defender.x - camera.x, y: defender.y - camera.y });
     this.bands = way === "side" ? new BandClock(towardLeft) : null;
     defender.forceState(FLYING[way]);
+    // between two arenas a shadow has no arena's light: not the ruins' red
+    world.fighters.plainShadows(true);
   }
 
   /** One frame of it; false on the frame they are put down, when the fight goes on. */
@@ -54,6 +56,7 @@ export class Journey {
       stage.blank(false);
       stage.change(this.go.backdrop(backdrop));
       fighters.light(this.go.time);
+      fighters.plainShadows(false);
       fighters.arrive(sent, this.go.at);
       camera.centreOn(fighters.player.x, fighters.opponent?.x ?? fighters.player.x);
       return false;

@@ -144,6 +144,11 @@ export class Fighters {
       .map((f) => f.name);
   }
 
+  /** Both shadows in their own colours, or back in the arena's: between two arenas, by the owner's word. */
+  plainShadows(on: boolean): void {
+    for (const f of this.both()) f.plainShadow = on;
+  }
+
   /** True while a hit pause holds either body — everything else must hold too. */
   get frozen(): boolean {
     return this.player.frozen || !!this.opponent?.frozen;

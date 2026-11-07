@@ -1774,6 +1774,9 @@ export class Entity {
     }
   }
 
+  /** A journey's: his shadow in his own colours whatever the arena's light (owner, 2026-11-07). */
+  plainShadow = false;
+
   private renderShadow(): void {
     const step = this.currentStep();
     const size = step && this.def.frames.get(step.frame)?.shadow ? shadowSize(this.y / this.scale) : null;
@@ -1781,7 +1784,7 @@ export class Entity {
     const ft = id === null ? undefined : this.def.frames.get(id);
     this.shadow.visible = ft !== undefined;
     if (!ft || id === null) return;
-    const variant = this.shownVariant ? this.def.variants.get(this.shownVariant)?.get(id) : undefined;
+    const variant = this.shownVariant && !this.plainShadow ? this.def.variants.get(this.shownVariant)?.get(id) : undefined;
     this.shadow.texture = variant ?? ft.tex;
     this.shadow.anchor.set(ft.anchor[0] / ft.w, ft.anchor[1] / ft.h);
     this.shadow.scale.set(this.scale);
