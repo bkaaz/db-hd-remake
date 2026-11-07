@@ -1,0 +1,43 @@
+{
+  "times": [
+    "embers"
+  ],
+  "layers": [
+    {
+      "name": "sky",
+      "scroll": [
+        0.5,
+        64
+      ],
+      "numbered": true
+    },
+    {
+      "name": "ruins",
+      "scroll": [
+        1,
+        0
+      ],
+      "numbered": true
+    }
+  ],
+  "cycles": [
+    {
+      "palette": 4,
+      "steps": 16,
+      "start": 0,
+      "hold": 4
+    },
+    {
+      "palette": 5,
+      "steps": 16,
+      "start": 8,
+      "hold": 4
+    },
+    {
+      "palette": 6,
+      "steps": 16,
+      "start": 12,
+      "hold": 4
+    }
+  ]
+}

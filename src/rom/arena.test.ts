@@ -118,6 +118,37 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
     });
   });
 
+  describe("the ruins", () => {
+    const ruins = exportArena(rom, ARENAS.ruins);
+
+    it("come from stage id 12 alone, in a lighting of their own, the silhouettes left out on purpose", () => {
+      expect(stageRecord(rom, 12).arena).toBe(4);
+      expect(ruins.file.times).toEqual(["embers"]);
+      expect(ruins.file.layers.map((l) => [l.name, l.scroll])).toEqual([
+        ["sky", [0.5, 64]],
+        ["ruins", [1, 0]],
+      ]);
+    });
+
+    it("step the fire's three palettes from one table at their own places, each its 4 frames", () => {
+      expect(ruins.file.cycles!.map((c) => [c.palette, c.start, c.steps, c.hold])).toEqual([[4, 0, 16, 4], [5, 8, 16, 4], [6, 12, 16, 4]]);
+    });
+
+    it("start on the step that is the stage's own palette, its colours loaded from 48 on ($00:B6D2)", () => {
+      const stage = loadStage(rom, 12);
+      for (let colour = 1; colour < 16; colour++) {
+        const [r, g, b] = at(ruins.images["cycle0@embers"], colour, 0);
+        expect([r, g, b]).toEqual(stage.colours[4 * 16 + colour]);
+      }
+    });
+
+    it("draw no silhouette, and repaint both layers they keep", () => {
+      expect(Object.keys(ruins.images).filter((n) => n.startsWith("front"))).toEqual([]);
+      expect(drawn(ruins.images["sky@embers"], 160, 256)).toBe(false);
+      expect(ruins.file.layers.filter((l) => l.numbered).map((l) => l.name)).toEqual(["sky", "ruins"]);
+    });
+  });
+
   it("gives an arena with nothing stepping no cycles and no pictures of numbers", () => {
     const { file, images } = exportArena(rom, ARENAS.palace);
     expect(file.cycles).toBeUndefined();
@@ -152,17 +183,22 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
     expect(at(night, 256, 180)).not.toEqual(at(day, 256, 180));
   });
 
-  it("gives Goku the palettes the original loads by evening and by night, the day's being his sheet's own", () => {
-    expect(lightingPalettes(rom, GOKU)).toEqual({ evening: 0xb0040, night: 0xb0080 });
+  it("gives Goku the palettes the original loads in each lighting, the day's being his sheet's own", () => {
+    expect(lightingPalettes(rom, GOKU)).toEqual({ evening: 0xb0040, night: 0xb0080, embers: 0xb00c0 });
+  });
+
+  it("has Goku's hand-written attributes name a sheet for every lighting, or he plays it in his own colours", () => {
+    const { palettes } = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8")) as { palettes: string[] };
+    expect(palettes).toEqual(expect.arrayContaining([...Object.keys(lightingPalettes(rom, GOKU)), ...Object.keys(altPalettes(rom, GOKU))]));
   });
 
   it("gives Vegeta a glow 8 records on, and Goku none: his point back at his own colours", () => {
     expect(glowPalettes(rom, GOKU)).toEqual({});
-    expect(glowPalettes(rom, fighterNamed(rom, "vegeta"))).toEqual({ glow: 0xb0300, evening_glow: 0xb0340, night_glow: 0xb0380 });
+    expect(glowPalettes(rom, fighterNamed(rom, "vegeta"))).toEqual({ glow: 0xb0300, evening_glow: 0xb0340, night_glow: 0xb0380, embers_glow: 0xb03c0 });
   });
 
   it("gives player two facing himself the next record, in every lighting ($01:82F2)", () => {
-    expect(altPalettes(rom, GOKU)).toEqual({ alt: 0xb0020, evening_alt: 0xb0060, night_alt: 0xb00a0 });
+    expect(altPalettes(rom, GOKU)).toEqual({ alt: 0xb0020, evening_alt: 0xb0060, night_alt: 0xb00a0, embers_alt: 0xb00e0 });
     expect(altPalettes(rom, fighterNamed(rom, "vegeta")).glow_alt).toBe(0xb0320);
   });
 
@@ -179,8 +215,8 @@ describe.skipIf(!existsSync(ROM_PATH))("Freeza's intro on an arena", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
   const palettes = introPalettes(rom, fighterNamed(rom, "freeza"));
 
-  it("has every record of his intro by evening and by night, in player one's colours for both, as its records are absolute", () => {
-    const names = ["evening", "night"].flatMap((time) => [0, 1, 2, 3, 4, 5].map((i) => `${time}_run${i}`));
+  it("has every record of his intro in every other lighting, in player one's colours for both, as its records are absolute", () => {
+    const names = ["evening", "night", "embers"].flatMap((time) => [0, 1, 2, 3, 4, 5].map((i) => `${time}_run${i}`));
     expect(Object.keys(palettes).sort()).toEqual(names.sort());
   });
 
@@ -192,9 +228,9 @@ describe.skipIf(!existsSync(ROM_PATH))("Freeza's intro on an arena", () => {
 });
 
 describe.skipIf(!existsSync(ROM_PATH))("Gohan's intro on an arena", () => {
-  it("has the one record it plays by evening and by night", () => {
+  it("has the one record it plays in every other lighting", () => {
     const rom = new Uint8Array(readFileSync(ROM_PATH));
-    expect(Object.keys(introPalettes(rom, fighterNamed(rom, "gohan"))).sort()).toEqual(["evening_run5", "night_run5"]);
+    expect(Object.keys(introPalettes(rom, fighterNamed(rom, "gohan"))).sort()).toEqual(["embers_run5", "evening_run5", "night_run5"]);
   });
 });
 

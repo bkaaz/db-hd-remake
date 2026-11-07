@@ -277,6 +277,20 @@ export const ARENAS: Record<string, ArenaSource> = {
       { palette: 7, steps: 8, start: 0, hold: 6, at: { night: 0x9d9200 } },
     ],
   },
+  ruins: {
+    // the one stage of lighting 6: `fire` is already the palette a burning body is on
+    ids: { embers: 12 },
+    layers: [
+      { name: "sky", scroll: [0.5, 64], draw: [[BG2, { rows: FAR_ROWS }]] },
+      { name: "ruins", scroll: [1, 0], draw: [[BG1]] },
+    ],
+    leftOut: [[BG2, { rows: FRONT_ROWS }]],
+    cycles: [
+      { palette: 4, steps: 16, start: 0, hold: 4, at: { embers: 0x0ac5c7 } },
+      { palette: 5, steps: 16, start: 8, hold: 4, at: { embers: 0x0ac5c7 } },
+      { palette: 6, steps: 16, start: 12, hold: 4, at: { embers: 0x0ac5c7 } },
+    ],
+  },
 };
 
 export interface ExportedArena {

@@ -38,7 +38,6 @@ export interface ArenaLayer {
    * How it scrolls sideways with the camera: its own scroll is
    * `camera x × speed + offset`. The world itself is `[1, 0]`; a sky farther
    * away moves slower, and the offset lines it up where the screen starts.
-   * It wraps round its picture's width, as a BG wraps round its map.
    */
   scroll: [speed: number, offset: number];
   /** It holds colours of a palette in `cycles`. */

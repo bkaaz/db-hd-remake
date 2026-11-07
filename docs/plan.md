@@ -34,7 +34,7 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 The owner, 2026-11-07: the arenas that are still missing come next, ahead of the engine's bugs; **the flying ones not for now**. What the cartridge has: `rom.md`, the table of arenas and stages; `npm run rom -- stage` draws them all. What the game has: `ARENAS` in `src/rom/arena.ts`, `data/arenas/`.
 
-One arena at a time, each handed over before the next (owner, 2026-11-07); `rom.md` holds their layers and palette steps. Next: 4 (burning ruins), whose lighting `6` gives every fighter new sheets. Flying, waiting, with 6 among them by his word: 1 (sky over the clouds), 2 (a planet from above), 6 (crater with violet lightning).
+One arena at a time, each handed over before the next (owner, 2026-11-07). Left: his word on the ruins, the last on the floor. Flying, waiting, with 6 among them by his word: 1 (sky over the clouds), 2 (a planet from above), 6 (crater with violet lightning).
 
 ## Now: reading the cartridge by script
 

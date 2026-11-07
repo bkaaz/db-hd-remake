@@ -45,25 +45,21 @@ async function picture(url: string): Promise<HTMLImageElement> {
   return img;
 }
 
-/** An arena on screen: its layers back to front, each scrolling at its own speed and wrapping as a BG does. */
+/** An arena on screen: its layers back to front, each scrolling at its own speed. */
 export class ArenaBackdrop implements Backdrop {
   readonly whitens = true;
-  private readonly layers: { sprites: [Sprite, Sprite]; width: number; scroll: [number, number]; cycled?: CycledLayer }[];
+  private readonly layers: { sprite: Sprite; scroll: [number, number]; cycled?: CycledLayer }[];
 
   constructor(parent: Container, arena: LoadedArena) {
     this.layers = arena.layers.map(({ texture, scroll, cycled }) => {
-      const sprites: [Sprite, Sprite] = [new Sprite(texture), new Sprite(texture)];
-      parent.addChild(...sprites);
-      return { sprites, width: texture.width, scroll, cycled };
+      const sprite = new Sprite(texture);
+      parent.addChild(sprite);
+      return { sprite, scroll, cycled };
     });
   }
 
   scroll(x: number, y: number): void {
-    for (const { sprites: [sprite, wrapped], width, scroll: [speed, offset] } of this.layers) {
-      const left = ((Math.floor(x * speed) + offset) % width + width) % width;
-      sprite.position.set(-left, -y);
-      wrapped.position.set(width - left, -y);
-    }
+    for (const { sprite, scroll: [speed, offset] } of this.layers) sprite.position.set(-(Math.floor(x * speed) + offset), -y);
   }
 
   tick(): void {
@@ -71,9 +67,6 @@ export class ArenaBackdrop implements Backdrop {
   }
 
   destroy(): void {
-    for (const { sprites: [sprite, wrapped] } of this.layers) {
-      wrapped.destroy();
-      sprite.destroy({ texture: true, textureSource: true });
-    }
+    for (const { sprite } of this.layers) sprite.destroy({ texture: true, textureSource: true });
   }
 }

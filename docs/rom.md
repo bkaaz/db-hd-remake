@@ -527,7 +527,7 @@ flat. What each shows is read off that drawing:
 | 1 | 3, 4, 5 | 2, vertical | `E9` | the sky over the clouds, a lookout far off |
 | 2 | 6, 7, 8 | 7, vertical | `FF` | a planet's map from above, clouds — not drawn whole |
 | 3 | 9, 10, 11 | 1 | `D7` | a domed palace — Kami's Lookout `?`; ours `palace` |
-| 4 | 12 (lighting `6`) | 1 | `D7` | burning ruins |
+| 4 | 12 (lighting `6`, ours `embers`) | 1 | `D7` | burning ruins; ours `ruins`, its silhouettes left out on purpose (`combat.md`) |
 | 5 | 13, 14, 15 | 1 | `D7` | rocky plains; ours `plains`, its silhouettes left out on purpose (`combat.md`) |
 | 6 | 16 (lighting `4`) | 2, vertical | `E9` | a crater with violet lightning |
 | 7 | 17 (lighting `4`) | 1 | `D7` | a dark sky, rocks and water; ours `shore`, its silhouettes left out on purpose (`combat.md`) |

@@ -1,6 +1,6 @@
 # 0081 — A layer repainted from palettes that step by themselves
 
-**Status:** accepted 2026-11-07 · builds on 0031
+**Status:** accepted 2026-11-07 · builds on 0031 · its wrapping superseded by 0082, 2026-11-07
 
 An arena's clouds, fire and lightning are BG palettes the cartridge rewrites on
 timers of its own, through hit pauses too (`rom.md`). A layer holding such
