@@ -146,6 +146,10 @@ const name = named >= 0 ? argv[named + 1] : "goku";
 const T = named >= 0 ? tablesOf(rom, name) : GOKU;
 if (named >= 0) argv.splice(named, 2);
 const [command, ...args] = argv;
+// Goku is the template, written by his own path: through another fighter's he loses his spawns
+if (named >= 0 && name === "goku" && ["export", "states", "draft"].includes(command)) {
+  throw new Error(`goku's ${command} is npm run rom -- ${command}, without --fighter`);
+}
 
 if (command === "tiles") {
   let ok = 0;

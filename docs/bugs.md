@@ -19,7 +19,3 @@ Severity in plain words — *cosmetic*, *annoying*, *breaks play*, *loses work* 
 because a number would only need translating back.
 
 ---
-
-## `npm run rom -- export --fighter goku` writes Goku as another fighter
-
-*Loses work, the tools.* It takes the path for the generated fighters: `goku/animations.json` loses his spawns and changes shape, and his sheets in `assets/` are rewritten. Goku is exported by `npm run rom -- export` alone; nothing refuses the other.
