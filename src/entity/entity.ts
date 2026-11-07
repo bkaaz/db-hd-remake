@@ -1437,6 +1437,13 @@ export class Entity {
     this.view.visible = !hidden;
   }
 
+  /** No speed left of what moved him: put down on another arena, he starts from rest. */
+  still(): void {
+    this.vx = 0;
+    this.vy = 0;
+    this.shove = 0;
+  }
+
   /** A state with `toCentre` goes on toward `x`, the screen's middle, until it arrives. */
   centreOn(x: number): void {
     const to = this.sm?.def.toCentre;

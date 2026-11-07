@@ -69,6 +69,11 @@ export interface FightersStatus {
  * the HUD, the keyboard or the stage. Every future rule of combat will want to
  * move in here, and it only stays readable while that stays true.
  */
+/** How far over the floor he falls from at the end of a sideways journey: recorded, y 196. */
+const SIDE_DROP = 4;
+/** How far over the screen's top each drops in from, up or down ($01:8D6B: y −8 and −32). */
+const FROM_ABOVE = { attacker: 0x20, defender: 8 };
+
 /** A sending blow that landed, and on whom. */
 export interface Sent {
   way: Way;
@@ -349,13 +354,25 @@ export class Fighters {
   }
 
   /**
-   * The two put down on another arena: the attacker standing where his run in
-   * ends, the defender falling where the blow carried him, facing each other.
+   * The two put down on another arena, facing each other: sideways the attacker
+   * stands where his run in ends and the defender falls from where he hung;
+   * up or down both drop in from over the screen, `top` its world y — ours, as
+   * the original's way up ends in the air (`combat.md`).
    */
-  arrive({ attacker, defender }: Sent, at: { attacker: number; defender: number }): void {
+  arrive({ attacker, defender, way }: Sent, at: { attacker: number; defender: number }, top: number): void {
     attacker.x = at.attacker;
     defender.x = at.defender;
-    attacker.forceState("idle");
+    for (const fighter of [attacker, defender]) fighter.hide(false);
+    defender.forceState("down_fall");
+    for (const fighter of [attacker, defender]) fighter.still();
+    if (way === "side") {
+      attacker.forceState("idle");
+      defender.y = defender.groundY - SIDE_DROP;
+    } else {
+      attacker.forceState("jump_fall");
+      attacker.y = top - FROM_ABOVE.attacker;
+      defender.y = top - FROM_ABOVE.defender;
+    }
     attacker.turnToward(defender.x);
     defender.turnToward(attacker.x);
   }

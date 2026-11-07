@@ -2279,6 +2279,24 @@
         }
       ]
     },
+    "sent_up": {
+      "anim": "m21",
+      "turn": false,
+      "invulnerable": true,
+      "transitions": []
+    },
+    "sent_side": {
+      "anim": "m23",
+      "turn": false,
+      "invulnerable": true,
+      "transitions": []
+    },
+    "sent_down": {
+      "anim": "m25",
+      "turn": false,
+      "invulnerable": true,
+      "transitions": []
+    },
     "ko_rise": {
       "anim": "m1c",
       "rank": 4,

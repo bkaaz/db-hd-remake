@@ -1,6 +1,6 @@
 # 0083 — A sender changes the arena in place
 
-**Status:** accepted 2026-11-07
+**Status:** accepted 2026-11-07 · its cut superseded by 0084, 2026-11-07
 
 A state's `sends` names the way its blow takes the fight; the owner's graph in
 `src/arena/ways.ts` says where that leads from each arena. The blow decides as

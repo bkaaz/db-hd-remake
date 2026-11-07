@@ -33,7 +33,8 @@ function shoot(layers: FitLayer[], x: number, y: number): Rgba {
   return { width: SCREEN, height: HEIGHT, data };
 }
 
-describe("fitArena", () => {
+// every camera tried over a whole screen: seconds, more than the default allows beside the other suites
+describe("fitArena", { timeout: 30_000 }, () => {
   const layers: FitLayer[] = [
     { scroll: [0.25, 96], image: noise(1) },
     { scroll: [1, 0], image: noise(2, 100) },

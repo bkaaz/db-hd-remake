@@ -6,19 +6,21 @@ import { arrival, LINKED, wayFrom, type Way } from "./ways";
 import type { Entity } from "../entity/entity";
 import { WORLD } from "../stage";
 
-/** What a journey changes, and who carries it out: the scene's. */
-export interface Journey {
-  /** The new arena's backdrop, in its lighting. */
-  backdrop: ArenaBackdrop;
-  time: string;
+/** A journey about to start: who was sent, which way, and the arena at its end. */
+export interface Departure {
   sent: Sent;
+  /** The attacker's facing: sideways, the way the defender goes. */
+  facesLeft: boolean;
+  /** Its backdrop, made when the arena is shown. */
+  backdrop: (parent: Container) => ArenaBackdrop;
+  time: string;
   at: { attacker: number; defender: number };
 }
 
 /**
  * The fight sent from arena to arena by a blow (`arena/ways.ts`). Every arena a
  * way can lead to is loaded with the scene, so a journey never waits on a fetch;
- * the change itself waits out the blow's pause, as the original's screen does.
+ * it starts once the blow's pause is over, and `match/journey.ts` plays it.
  */
 export class Travel {
   private pending: { sent: Sent; to: string; facesLeft: boolean } | null = null;
@@ -58,15 +60,15 @@ export class Travel {
     if (to) this.pending = { sent, to, facesLeft: sent.attacker.facing < 0 };
   }
 
-  /** One frame: the journey to make now, once the pause is over. */
-  step(frozen: boolean, parent: Container): Journey | null {
+  /** One frame: the journey to start now, once the pause is over. */
+  step(frozen: boolean): Departure | null {
     if (!this.pending || frozen) return null;
     const { sent, to, facesLeft } = this.pending;
     this.pending = null;
     const arena = this.arenas.get(to)!;
     logEvent(`arena ${this.here} -> ${to} (${sent.way})`);
     this.here = to;
-    return { backdrop: new ArenaBackdrop(parent, arena, true), time: arena.time, sent, at: arrival(facesLeft) };
+    return { sent, facesLeft, backdrop: (parent) => new ArenaBackdrop(parent, arena, true), time: arena.time, at: arrival(facesLeft) };
   }
 
   /** Every arena it loaded, let go — after the backdrop showing one of them. */

@@ -17,6 +17,7 @@ import { Shake } from "../camera/shake";
 import { Stage } from "../stage";
 import { ArenaBackdrop, loadArena } from "../arena/arena";
 import { Travel } from "../arena/travel";
+import { Journey } from "../match/journey";
 import { GridBackdrop } from "../arena/grid";
 import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
@@ -92,6 +93,8 @@ export class DebugScene implements Scene {
   private frame = 0;
   /** Once the round is done: X fights it again, which this says. */
   private again: Notice | null = null;
+  /** A sender's journey under way: the fight waits for it. */
+  private journeying: Journey | null = null;
 
   static async create(
     ctx: SceneContext,
@@ -229,6 +232,12 @@ export class DebugScene implements Scene {
     if (again) return again;
     // a KO's half speed: an odd frame only draws ($0E:821C)
     if (this.round.skips(this.frame++)) return this.nextMode(keyboard);
+    // a journey moves only those it carries
+    if (this.journeying) {
+      if (!this.journeying.step()) this.journeying = null;
+      this.effects.update(false, this.camera.screen);
+      return this.nextMode(keyboard);
+    }
     // under the announcement only the announcement moves
     if (this.round.holds) {
       this.round.step(this.fighters.bodies, true, true);
@@ -262,7 +271,7 @@ export class DebugScene implements Scene {
     this.fighters.keepInView(this.camera);
     if (keyboard.takeRefill()) this.fighters.refill();
     this.fighters.exchangeBlows();
-    this.journey();
+    this.depart();
     if (this.opening.over) this.round.step(this.fighters.bodies, keyboard.toggles.get("ko"), this.fighters.quiet);
     else this.opening.step(this.fighters.bodies);
     this.stage.flash(this.fighters.takeFlash());
@@ -315,20 +324,13 @@ export class DebugScene implements Scene {
     this.effects.render();
   }
 
-  /**
-   * A sending blow's journey, once its pause is over: a cut to the other arena,
-   * the two placed where the original puts them, both in its lighting.
-   */
-  private journey(): void {
+  /** A sending blow's journey, begun once its pause is over (`match/journey.ts`). */
+  private depart(): void {
     const sent = this.fighters.takeSent();
     if (!this.travel) return;
     if (sent) this.travel.sent(sent);
-    const go = this.travel.step(this.fighters.frozen, this.view.backdrop);
-    if (!go) return;
-    this.stage.change(go.backdrop);
-    this.fighters.light(go.time);
-    this.fighters.arrive(go.sent, go.at);
-    this.camera.centreOn(this.fighters.player.x, this.fighters.opponent?.x ?? this.fighters.player.x);
+    const go = this.travel.step(this.fighters.frozen);
+    if (go) this.journeying = new Journey(go, { stage: this.stage, camera: this.camera, fighters: this.fighters, backdrop: this.view.backdrop });
   }
 
   destroy(): void {

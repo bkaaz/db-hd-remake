@@ -33,11 +33,11 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 ## Now: the senders
 
 The owner, 2026-11-07: the blows that send the opponent to another arena, by his
-graph (`combat.md`, Where the fight happens). The change of arena is in, with a
-cut. Next: the flight between the two — the screen of blue curved bands the
-defender crosses, his `23` (`21`, `25` the other ways), the attacker's `45` run
-in, the defender's landing and get-up (`rom.md`, Where a blow sends him;
-`tools/re/runs/sender-a0*.json`). Then whether the flying arenas (1, 2, 6) come.
+graph (`combat.md`, Where the fight happens). The change of arena and the
+journey are in (ADR 0084); the screen between is black. Next: the original's
+blue curved bands there — colour windows `$01:8E6D` builds every frame
+(`rom.md`, The journey's screens): their tables recorded from WRAM, ours drawn
+from them. Then whether the flying arenas (1, 2, 6) come.
 
 ## Now: reading the cartridge by script
 

@@ -36,6 +36,8 @@ export class Stage {
   /** Under the flash: the art faded down, as the original fades BG palettes 2–7 (`screen.ts`). */
   private readonly dark = new Graphics().rect(0, 0, VIEW.width, VIEW.height).fill(0x000000);
   private screen: Screen = LIT;
+  /** Nothing of the arena shown: a journey's screen between two arenas. */
+  private blanked = false;
 
   constructor(
     layer: Container,
@@ -55,6 +57,12 @@ export class Stage {
   change(backdrop: Backdrop): void {
     this.backdrop.destroy();
     this.backdrop = backdrop;
+  }
+
+  /** The arena hidden behind black, or shown again. */
+  blank(on: boolean): void {
+    this.blanked = on;
+    if (on) this.dark.alpha = 1;
   }
 
   /** A horizontal position as a fraction across the world — 0.5 is the middle. */
@@ -77,7 +85,7 @@ export class Stage {
     this.backdrop.tick();
     this.screen = tick(this.screen);
     this.white.visible = this.flashLeft > 0 || this.screen.white;
-    this.dark.alpha = 1 - this.screen.level / 16;
+    this.dark.alpha = this.blanked ? 1 : 1 - this.screen.level / 16;
     if (this.flashLeft > 0) this.flashLeft--;
   }
 

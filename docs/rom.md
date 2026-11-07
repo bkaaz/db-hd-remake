@@ -1022,6 +1022,8 @@ instead.
 
 `06` is closed instead while `$1B15` is set `?`. Recorded (`tools/re/runs/sender-a0.json`): the defender is `23` for 156 frames, through a screen of blue curved bands, the attacker `45` for 143; on the new arena the defender lands at 320 and slides to 330, then gets up (`1b`, `1f`), the attacker running in to x 193; no health lost. Facing left (P2's): the plains, the defender at 192 → 179, the attacker in from 512 to 312.
 
+**The journey's screens** (`$37`, recorded for `a0`): `45` the defender flies off the old arena at 8 px a frame (`$01:8A0E`, field `0x02`), the old stage still shown; `C6`, `C7` load the new one (`$00:B667` with `$0550`); `48` the screen of blue curved bands (`$01:8962`: `$2130` = `10`, `$0514` / `$0516` stepped by `$1600` & 3, `$01:8E6D` building them, `$2125` / `$212B` toggled every frame — colour windows, not a BG `?`), about 72 frames; `4A`, `4B` the new arena, the defender flying in at 8 a frame to x `41` or `C0` (`$01:8BB3`), held 40 frames by field `0xF0`, then vy 4 and down. Recorded `9f` from the tournament: the defender `21` for 134 frames, then both arrive from below in the sky, `44` / `74`, and fly (`60`). Up and down (`4C`, `$01:8CA4`, `$01:8D17`) fly by y instead, to `-C0` or `1C0`, and arrive at y `140` / `1A0` (vy −15) or `-8` / `-20`, as `1b` and `05`.
+
 Light is move `15` (`13` when field `0x97`
 bit 0 is set), heavy `16` (`14`); `$0D:D7BA` turns them into `17`/`18`
 `?`. Hitstun is that move's script — light 14 frames, heavy 26 — not a

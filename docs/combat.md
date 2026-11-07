@@ -211,7 +211,8 @@ ground (owner, 2026-11-04: off for now, `plan.md`).
 sideways (→ ← → X) goes round the floors — plains, tournament, ruins, shore —
 the way the attacker faces; down (↓ ↙ ← X) leads from the palace to the
 tournament or the plains, by the half he stood in. Every other way is closed,
-and the blow is only its knockdown. A lighting goes along where the arena has it.
+and the blow is only its knockdown. A lighting goes along where the arena has it. Up or down, both drop in from over the
+screen (owner, 2026-11-07): the cartridge's way up ends in a fight in the air.
 
 **A body in flight keeps one way round** (owner, 2026-11-06). The cartridge
 turns the opponent of Flaming Headbutt upside down as he falls and mirrors him every

@@ -1,0 +1,6 @@
+{
+  "state": "fight-goku",
+  "frames": 520,
+  "shots": [130, 170, 210, 250, 290, 330],
+  "p1": { "does": ["fwd 50", 10, "down 3", "down fwd 3", "fwd 3", "strike 3"] }
+}
