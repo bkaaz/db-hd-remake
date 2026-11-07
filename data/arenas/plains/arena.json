@@ -1,0 +1,32 @@
+{
+  "times": [
+    "day",
+    "evening",
+    "night"
+  ],
+  "layers": [
+    {
+      "name": "sky",
+      "scroll": [
+        0.5,
+        64
+      ],
+      "numbered": true
+    },
+    {
+      "name": "plains",
+      "scroll": [
+        1,
+        0
+      ]
+    }
+  ],
+  "cycles": [
+    {
+      "palette": 4,
+      "steps": 32,
+      "start": 16,
+      "hold": 16
+    }
+  ]
+}

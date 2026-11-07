@@ -214,6 +214,10 @@ few frames (`rom.md`). Ours keeps him one way round, head up, on purpose.
 Lift's victim his voice at each of the two bursts and none at the throw (`rom.md`).
 Ours gives him one, at the throw.
 
+**The plains have no black rocks in front** (owner, 2026-11-07). The cartridge
+draws silhouettes over arena 5's foreground at double speed (`rom.md`). Ours
+leaves them out, on that arena.
+
 ## Where it is going
 
 Once every fighter is ported (the owner, 2026-11-04): close to Budokai 3 and

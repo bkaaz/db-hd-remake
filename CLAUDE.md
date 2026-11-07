@@ -361,6 +361,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── hud/                      #   the original's HUD: hudFile.ts, health.ts, hud.ts
 │   ├── arena/                    #   arenaFile.ts: an arena's shape on disk
 │   │                             #   arena.ts, grid.ts: what stands behind a fight
+│   │                             #   cycles.ts, cycledLayer.ts: its palettes stepping
 │   └── rom/                      #   cartridge.ts: where things are in the ROM
 │                                 #   decompress.ts, frame.ts: tiles → a drawing
 │                                 #   disasm.ts, opcodes.ts: reading 65816 code

@@ -36,6 +36,8 @@ export class GridBackdrop implements Backdrop {
     this.g.position.set(-x, -y);
   }
 
+  tick(): void {}
+
   destroy(): void {
     this.g.destroy();
   }

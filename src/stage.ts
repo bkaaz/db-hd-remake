@@ -14,6 +14,8 @@ export interface Backdrop {
   readonly whitens: boolean;
   /** Place it for the screen standing at `x`, `y` in the world — each layer at its own speed. */
   scroll(x: number, y: number): void;
+  /** One game frame, through a hit pause too: what the backdrop does by itself. */
+  tick(): void;
   destroy(): void;
 }
 
@@ -66,6 +68,7 @@ export class Stage {
 
   /** One game frame of the flash and the fade. */
   tick(): void {
+    this.backdrop.tick();
     this.screen = tick(this.screen);
     this.white.visible = this.flashLeft > 0 || this.screen.white;
     this.dark.alpha = 1 - this.screen.level / 16;

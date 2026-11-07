@@ -5,7 +5,7 @@ import type { Rgba } from "../sprites/png";
 import { altPalettes, ARENAS, exportArena, glowPalettes, introPalettes, lightingPalettes, lightingShift, relitRun } from "./arena";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { fighterNamed } from "./roster";
-import { drawStage, loadStage, stack, stageRecord } from "./stage";
+import { drawLayer, drawStage, loadStage, stack, stageRecord } from "./stage";
 
 /** Whether any pixel in rows [from, to) is drawn. */
 function drawn(img: Rgba, from: number, to: number): boolean {
@@ -32,8 +32,10 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
     const { images, file } = exportArena(rom, source);
     for (const layer of file.layers) expect(layer.scroll[0] * START_X + layer.scroll[1]).toBe(START_X);
     for (const [time, id] of Object.entries(source.ids)) {
-      const layered = stack(...file.layers.map((layer) => images[`${layer.name}@${time}`]));
-      expect(Buffer.compare(layered.data, drawStage(loadStage(rom, id)).data)).toBe(0);
+      const stage = loadStage(rom, id);
+      const leftOut = (source.leftOut ?? []).map(([map, part]) => drawLayer(stage, map, part));
+      const layered = stack(...file.layers.map((layer) => images[`${layer.name}@${time}`]), ...leftOut);
+      expect(Buffer.compare(layered.data, drawStage(stage).data)).toBe(0);
     }
   });
 
@@ -46,6 +48,49 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
     ]);
     expect(drawn(palace.images["palace@day"], 224, 256)).toBe(false);
     expect(at(palace.images["sky@day"], 10, 10)[3]).toBe(255);
+  });
+
+  describe("the plains", () => {
+    const plains = exportArena(rom, ARENAS.plains);
+
+    it("come from stage ids 13, 14, 15: a half-speed sky and the plains, the silhouettes left out on purpose", () => {
+      expect([13, 14, 15].map((id) => stageRecord(rom, id).arena)).toEqual([5, 5, 5]);
+      expect(plains.file.layers.map((l) => [l.name, l.scroll])).toEqual([
+        ["sky", [0.5, 64]],
+        ["plains", [1, 0]],
+      ]);
+    });
+
+    it("draw no silhouette: below BG2's sky there is nothing but the plains", () => {
+      expect(drawn(plains.images["sky@day"], 160, 256)).toBe(false);
+      expect(Object.keys(plains.images).filter((n) => n.startsWith("front"))).toEqual([]);
+    });
+
+    it("mark only the sky as holding the palette that steps", () => {
+      expect(plains.file.layers.filter((l) => l.numbered).map((l) => l.name)).toEqual(["sky"]);
+      expect(Object.keys(plains.images)).toContain("sky-numbers@night");
+      expect(Object.keys(plains.images)).not.toContain("plains-numbers@day");
+    });
+
+    it("start on the step that is the day's own palette, so that nothing jumps", () => {
+      const stage = loadStage(rom, ARENAS.plains.ids.day);
+      const { start } = plains.file.cycles![0];
+      for (let colour = 1; colour < 16; colour++) {
+        const [r, g, b] = at(plains.images["cycle0@day"], colour, start);
+        expect([r, g, b]).toEqual(stage.colours[4 * 16 + colour]);
+      }
+    });
+
+    it("take each lighting's steps from its own table", () => {
+      const reds = (time: string) => at(plains.images[`cycle0@${time}`], 1, 0)[0];
+      expect(new Set(["day", "evening", "night"].map(reds)).size).toBe(3);
+    });
+  });
+
+  it("gives an arena with nothing stepping no cycles and no pictures of numbers", () => {
+    const { file, images } = exportArena(rom, ARENAS.palace);
+    expect(file.cycles).toBeUndefined();
+    expect(Object.keys(images).filter((n) => n.includes("numbers") || n.startsWith("cycle"))).toEqual([]);
   });
 
   it("takes the tournament from stage ids 0, 1, 2 — one arena, three lightings", () => {

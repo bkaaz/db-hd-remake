@@ -24,6 +24,10 @@ because a number would only need translating back.
 
 *Cosmetic, every arena.* `npm run arena-fit`: the original's screen shows the arena 1 px higher than ours from the same camera, on the palace at every shot and on the tournament at one of two. The SNES draws a BG's row 1 on its first line, which would be this; a sprite's offset from its OAM y was not compared, so whether the fighters stand a pixel off is not known.
 
+## An arena's palettes go on stepping where the original's stop `?`
+
+*Cosmetic `?`.* `$00:C15F` does nothing while `$30B0` bit 7 is set, which screen state `24` sets `?` (`rom.md`). Ours steps every frame. Not compared on a move that asks for it.
+
 ## What Buu's pass left
 
 *Cosmetic, Buu, approved.* Energy Sphere's sparks start over as the ball is let go, and its largest ball may strike later than the original's, at the edge of reach `?`. Floater's air blow starts at vy 0, not field `0x82` / 4. Buu Burn's `9/04` steps its palettes frame by frame in the original, on one run in ours. Putty Uppercut's piece of him does not flip in the air, and the column starts on Goku's landing frame, not each fighter's own `?`. Disk Tackle's blow lands 6 px closer than the original's (a box only touching, below `?`).

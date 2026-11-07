@@ -5,11 +5,11 @@
  * read by hand (`rom.md`, How a stage's layers scroll) and written here.
  */
 
-import type { ArenaFile } from "../arena/arenaFile";
+import type { ArenaFile, PaletteCycle } from "../arena/arenaFile";
 import type { Rgba } from "../sprites/png";
-import type { FighterTables } from "./cartridge";
+import { toFile, type FighterTables } from "./cartridge";
 import { paletteRecord } from "./resource";
-import { BG1, BG2, drawLayer, loadStage, stack, type LayerPart } from "./stage";
+import { BG1, BG2, drawLayer, loadStage, numberLayer, stack, type LayerPart } from "./stage";
 import { readPalette } from "./frame";
 import type { Rgb } from "../entity/palettesFile";
 
@@ -201,15 +201,27 @@ interface LayerSource {
   draw: [map: number, part?: LayerPart][];
 }
 
+/** A palette stepping by itself (`rom.md`, An arena's palettes step by themselves): where its steps are, by lighting. */
+interface CycleSource extends PaletteCycle {
+  at: Record<string, number>;
+}
+
 interface ArenaSource {
   /** The stage id of each lighting, in the order `times` lists them. */
   ids: Record<string, number>;
   layers: LayerSource[];
+  cycles?: CycleSource[];
+  /** What the stage has and ours leaves out on purpose (`combat.md`, Where the fight happens), over all the layers. */
+  leftOut?: LayerSource["draw"];
 }
 
 /** BG1's tile rows above this scroll apart on the tournament: the middle HDMA block ends on world row 95 (`rom.md`). */
 const TOURNAMENT_SKY: [number, number] = [0, 12];
 const TOURNAMENT_REST: [number, number] = [12, 32];
+
+/** BG2's tile rows `$00:BEAA` keeps at half speed; the silhouettes below go double (`rom.md`). */
+const FAR_ROWS: [number, number] = [0, 20];
+const FRONT_ROWS: [number, number] = [20, 32];
 
 /** What each arena's handler scrolls apart (`rom.md`, A stage id and The other arenas' layers). */
 export const ARENAS: Record<string, ArenaSource> = {
@@ -236,6 +248,18 @@ export const ARENAS: Record<string, ArenaSource> = {
       { name: "palace", scroll: [1, 0], draw: [[BG1]] },
     ],
   },
+  plains: {
+    ids: { day: 13, evening: 14, night: 15 },
+    layers: [
+      { name: "sky", scroll: [0.5, 64], draw: [[BG2, { rows: FAR_ROWS }]] },
+      { name: "plains", scroll: [1, 0], draw: [[BG1]] },
+    ],
+    leftOut: [[BG2, { rows: FRONT_ROWS }]],
+    cycles: [
+      // $0576 is whatever it was left at (recorded: 158): 16 is the step the day's own palette is
+      { palette: 4, steps: 32, start: 16, hold: 16, at: { day: 0x9d8080, evening: 0x9d8500, night: 0x9d8980 } },
+    ],
+  },
 };
 
 export interface ExportedArena {
@@ -244,19 +268,50 @@ export interface ExportedArena {
   images: Record<string, Rgba>;
 }
 
-/** Each layer in each lighting. That they add up to the stage is `arena.test.ts`'s to check. */
+/** 16 colours a row, a row per step, at their place in the ROM. */
+function cycleSteps(rom: Uint8Array, at: number, steps: number): Rgba {
+  const from = toFile(at);
+  if (from === null) throw new Error(`palette steps at ${at.toString(16)} are not in ROM`);
+  const data = new Uint8Array(16 * steps * 4);
+  for (let i = 0; i < 16 * steps; i++) {
+    const c = rom[from + 2 * i] | (rom[from + 2 * i + 1] << 8);
+    data.set([(c & 31) << 3, ((c >> 5) & 31) << 3, ((c >> 10) & 31) << 3, 255], i * 4);
+  }
+  return { width: 16, height: steps, data };
+}
+
+/** Whether a picture of colour numbers holds any colour of these palettes. */
+function holds(numbers: Rgba, palettes: number[]): boolean {
+  for (let i = 0; i < numbers.data.length; i += 4) {
+    if (numbers.data[i + 3] && palettes.includes(numbers.data[i] >> 4)) return true;
+  }
+  return false;
+}
+
+/** Each layer in each lighting, with what the cycling palettes repaint. That they add up to the stage is `arena.test.ts`'s to check. */
 export function exportArena(rom: Uint8Array, source: ArenaSource): ExportedArena {
   const images: Record<string, Rgba> = {};
+  const cycles = source.cycles ?? [];
+  const palettes = cycles.map((c) => c.palette);
+  const numbered = new Set<string>();
   for (const [time, id] of Object.entries(source.ids)) {
     const stage = loadStage(rom, id);
     for (const { name, draw } of source.layers) {
       images[`${name}@${time}`] = stack(...draw.map(([map, part]) => drawLayer(stage, map, part)));
+      const numbers = stack(...draw.map(([map, part]) => numberLayer(stage, map, part)));
+      if (!holds(numbers, palettes)) continue;
+      numbered.add(name);
+      images[`${name}-numbers@${time}`] = numbers;
     }
+    cycles.forEach((c, i) => {
+      images[`cycle${i}@${time}`] = cycleSteps(rom, c.at[time], c.steps);
+    });
   }
   return {
     file: {
       times: Object.keys(source.ids),
-      layers: source.layers.map(({ name, scroll }) => ({ name, scroll })),
+      layers: source.layers.map(({ name, scroll }) => ({ name, scroll, ...(numbered.has(name) && { numbered: true }) })),
+      ...(cycles.length > 0 && { cycles: cycles.map(({ palette, steps, start, hold }) => ({ palette, steps, start, hold })) }),
     },
     images,
   };

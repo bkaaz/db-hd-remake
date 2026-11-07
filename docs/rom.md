@@ -528,7 +528,7 @@ flat. What each shows is read off that drawing:
 | 2 | 6, 7, 8 | 7, vertical | `FF` | a planet's map from above, clouds — not drawn whole |
 | 3 | 9, 10, 11 | 1 | `D7` | a domed palace — Kami's Lookout `?`; ours `palace` |
 | 4 | 12 (lighting `6`) | 1 | `D7` | burning ruins |
-| 5 | 13, 14, 15 | 1 | `D7` | rocky plains |
+| 5 | 13, 14, 15 | 1 | `D7` | rocky plains; ours `plains`, its silhouettes left out on purpose (`combat.md`) |
 | 6 | 16 (lighting `4`) | 2, vertical | `E9` | a crater with violet lightning |
 | 7 | 17 (lighting `4`) | 1 | `D7` | a dark sky, rocks and water |
 
@@ -571,7 +571,7 @@ over the roof too `?` (their OAM priority is not read). The roof carries 天下�
 | arena | palette | steps at | steps | held, frames | starts at (`$00:B6CF`) |
 |---|---|---|---|---|---|
 | 4 | 4, 5, 6 | `$0A:C5C7` | 16 | 4, on `$74` | 0, 8, 12 |
-| 5 | 4 | `$9D:8080`, `8500`, `8980`, by lighting | 32 | 16 | — |
+| 5 | 4, BG2's clouds | `$9D:8080`, `8500`, `8980`, by lighting | 32 | 16, hit pauses too | not set: what it was left at |
 | 6, 7 | 2, 3, 4 | `$9D:8E40` | 16 | `$00:C41F`[step] + 1 | 0, 4, 10 |
 | 6 | 5, 6 | `$9D:9040` | 14 | 4, on `$0577` `?` | 0, 5 |
 | 6, 7 | 7 | `$9D:9200` | 8 | 6 | 0 |

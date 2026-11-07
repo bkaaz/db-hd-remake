@@ -83,6 +83,15 @@ export const BG2 = 0x4800;
  * of each palette clear.
  */
 export function drawLayer(stage: LoadedStage, map: number, part: LayerPart = {}): Rgba {
+  return paintLayer(stage, map, part, (colour) => stage.colours[colour]);
+}
+
+/** The same with each pixel's colour number in red: what a palette stepping by itself repaints (`arena/cycles.ts`). */
+export function numberLayer(stage: LoadedStage, map: number, part: LayerPart = {}): Rgba {
+  return paintLayer(stage, map, part, (colour) => [colour, 0, 0]);
+}
+
+function paintLayer(stage: LoadedStage, map: number, part: LayerPart, paint: (colour: number) => [number, number, number]): Rgba {
   const [firstRow, endRow] = part.rows ?? [0, 32];
   const cols = stage.record.wide ? 64 : 32;
   const width = cols * 8;
@@ -103,7 +112,7 @@ export function drawLayer(stage: LoadedStage, map: number, part: LayerPart = {})
         for (let x = 0; x < 8; x++) {
           const index = tilePixel(stage.vram, tile, hflip ? 7 - x : x, vflip ? 7 - y : y);
           if (index === 0) continue;
-          const [r, g, b] = stage.colours[16 * palette + index];
+          const [r, g, b] = paint(16 * palette + index);
           data.set([r, g, b, 255], ((ty * 8 + y) * width + tx * 8 + x) * 4);
         }
       }
