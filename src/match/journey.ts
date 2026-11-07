@@ -1,5 +1,6 @@
 import type { Departure } from "../arena/travel";
 import { flightPlan, type FlightFrame } from "../arena/flight";
+import { BandClock } from "../arena/bands";
 import type { Way } from "../arena/ways";
 import type { Camera } from "../camera/camera";
 import type { Stage } from "../stage";
@@ -22,12 +23,14 @@ export interface JourneyWorld {
  * A sender's journey played out (`arena/flight.ts`): the fight stands still
  * while the defender flies off, the old arena goes, he flies in and hangs, and
  * both are put down on the new one. The attacker keeps his pose until he
- * goes with the old arena. The screen between is blank for now: the
- * original's bands are still to come (`plan.md`).
+ * goes with the old arena. Between the two, sideways, the bands (`arena/bands.ts`);
+ * up and down, black.
  */
 export class Journey {
   private readonly plan: FlightFrame[];
   private at = 0;
+  /** Sideways only: up and down the original shows no bands ($01:8962 asks for `$37` 45–49). */
+  private readonly bands: BandClock | null;
 
   constructor(
     private readonly go: Departure,
@@ -37,6 +40,7 @@ export class Journey {
     const { defender, way } = go.sent;
     const towardLeft = way === "side" && go.facesLeft;
     this.plan = flightPlan(way, towardLeft, { x: defender.x - camera.x, y: defender.y - camera.y });
+    this.bands = way === "side" ? new BandClock(towardLeft) : null;
     defender.forceState(FLYING[way]);
   }
 
@@ -46,6 +50,7 @@ export class Journey {
     const { sent } = this.go;
     const frame = this.plan[this.at++];
     if (!frame) {
+      this.go.bands?.show(backdrop, null);
       stage.blank(false);
       stage.change(this.go.backdrop(backdrop));
       fighters.light(this.go.time);
@@ -54,6 +59,7 @@ export class Journey {
       return false;
     }
     stage.blank(frame.blank);
+    this.go.bands?.show(backdrop, frame.blank && this.bands ? this.bands.next() : null);
     sent.attacker.hide(frame.blank);
     sent.defender.hide(frame.defender === null);
     if (frame.defender) {

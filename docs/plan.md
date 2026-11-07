@@ -33,11 +33,9 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 ## Now: the senders
 
 The owner, 2026-11-07: the blows that send the opponent to another arena, by his
-graph (`combat.md`, Where the fight happens). The change of arena and the
-journey are in (ADR 0084); the screen between is black. Next: the original's
-blue curved bands there — colour windows `$01:8E6D` builds every frame
-(`rom.md`, The journey's screens): their tables recorded from WRAM, ours drawn
-from them. Then whether the flying arenas (1, 2, 6) come.
+graph (`combat.md`, Where the fight happens). The change of arena, the journey
+and its bands are in (ADR 0083–0085). Left: whether the flying arenas (1, 2, 6)
+come, his word.
 
 ## Now: reading the cartridge by script
 

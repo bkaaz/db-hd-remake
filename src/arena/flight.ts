@@ -9,7 +9,7 @@ import type { Way } from "./ways";
 /** One frame of the journey. A position is on the screen, in px; null hides him. */
 export interface FlightFrame {
   defender: { x: number; y: number } | null;
-  /** The arena is not shown: the original's screen of bands, blank in ours for now. */
+  /** The arena is not shown: sideways the screen of bands is (`arena/bands.ts`), up and down black. */
   blank: boolean;
 }
 

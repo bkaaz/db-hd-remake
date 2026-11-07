@@ -59,7 +59,9 @@ layers scroll, and `npm run rom -- export` writes it whole, with its
 pictures in `assets/arenas/<name>/`. Its shape: `src/arena/arenaFile.ts`.
 The HUD is the same kind of thing: `data/hud/hud.json` and
 `assets/hud/hud.png`, written whole by the export, shape in
-`src/hud/hudFile.ts`.
+`src/hud/hudFile.ts`. A sideways journey's bands are one picture of every screen,
+`assets/arenas/journey/bands@screens.png`, served as an arena's layer though no
+arena has it (`src/arena/bands.ts`, ADR 0085).
 
 ## Decisions the shape does not explain
 

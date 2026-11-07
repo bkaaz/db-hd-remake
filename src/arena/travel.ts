@@ -2,6 +2,7 @@ import type { Container } from "pixi.js";
 import { logEvent } from "../log";
 import type { Sent } from "../match/fighters";
 import { ArenaBackdrop, loadArena, type LoadedArena } from "./arena";
+import { BandsView } from "./bandsView";
 import { arrival, LINKED, wayFrom, type Way } from "./ways";
 import type { Entity } from "../entity/entity";
 import { WORLD } from "../stage";
@@ -14,6 +15,8 @@ export interface Departure {
   /** Its backdrop, made when the arena is shown. */
   backdrop: (parent: Container) => ArenaBackdrop;
   time: string;
+  /** The screen of bands a sideways journey crosses; null leaves it black. */
+  bands: BandsView | null;
   at: { attacker: number; defender: number };
 }
 
@@ -28,6 +31,7 @@ export class Travel {
   private constructor(
     private here: string,
     private readonly arenas: Map<string, LoadedArena>,
+    private readonly bands: BandsView | null,
   ) {}
 
   /** None on the grid, or on an arena no way leads from. */
@@ -40,7 +44,7 @@ export class Travel {
       if (typeof arena === "string") arena = await loadArena(name, null);
       if (typeof arena !== "string") arenas.set(name, arena);
     }
-    return new Travel(here, arenas);
+    return new Travel(here, arenas, await BandsView.load());
   }
 
   /** Where a blow sending him that way would take the fight now, if anywhere it can go. */
@@ -68,11 +72,19 @@ export class Travel {
     const arena = this.arenas.get(to)!;
     logEvent(`arena ${this.here} -> ${to} (${sent.way})`);
     this.here = to;
-    return { sent, facesLeft, backdrop: (parent) => new ArenaBackdrop(parent, arena, true), time: arena.time, at: arrival(facesLeft) };
+    return {
+      sent,
+      facesLeft,
+      backdrop: (parent) => new ArenaBackdrop(parent, arena, true),
+      time: arena.time,
+      at: arrival(facesLeft),
+      bands: this.bands,
+    };
   }
 
   /** Every arena it loaded, let go — after the backdrop showing one of them. */
   destroy(): void {
     for (const arena of this.arenas.values()) for (const { texture } of arena.layers) texture.destroy(true);
+    this.bands?.destroy();
   }
 }
