@@ -3171,6 +3171,7 @@
     },
     "oyatsu_kosen_2": {
       "anim": "ma5_2",
+      "sound": "sfx_1b",
       "turn": false,
       "vel": [
         0,
@@ -3463,6 +3464,8 @@
           0
         ],
         "anim": "m5f",
+        "flashes": 96,
+        "cry": "voice_hurt",
         "steps": [
           {
             "frame": 135,
@@ -3532,6 +3535,7 @@
     },
     "oyatsu_scene_2": {
       "anim": "ma6_2",
+      "sound": "sfx_49",
       "turn": false,
       "vel": [
         0,
@@ -4000,6 +4004,36 @@
     },
     "oyatsu_scene_3": {
       "anim": "ma6_2",
+      "soundsAt": [
+        [
+          24,
+          "sfx_4a"
+        ],
+        [
+          32,
+          "sfx_4a"
+        ],
+        [
+          40,
+          "sfx_4a"
+        ],
+        [
+          48,
+          "sfx_4a"
+        ],
+        [
+          56,
+          "sfx_4a"
+        ],
+        [
+          64,
+          "sfx_4a"
+        ],
+        [
+          80,
+          "sfx_4b"
+        ]
+      ],
       "startsAt": 1,
       "turn": false,
       "vel": [

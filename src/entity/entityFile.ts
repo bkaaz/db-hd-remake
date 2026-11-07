@@ -140,6 +140,8 @@ export interface Attributes {
   shimmer?: string[];
   /** The two palettes a body held by Shocking Stunner flashes in (`SHOCK`, `$20:E552`). */
   shock?: string[];
+  /** The two a body in his `5f` flashes in, Oyatsu Kosen's (`CANDY`, `$0F:A92F`). */
+  candy?: string[];
   /**
    * For an effect: whether each one is shown mirrored at random, as the
    * generated sparks are; an effect taken from the cartridge is not.

@@ -179,6 +179,9 @@ const BOX_COLORS: Record<string, number> = {
   push: 0x4b9bff,
 };
 
+/** A held body's pairs of flashing palettes (`attributes.shock`, `attributes.candy`). */
+type Flashing = "shock" | "candy";
+
 export class Entity {
   /** World x of the anchor, in screen px. */
   x = 0;
@@ -372,8 +375,8 @@ export class Entity {
   private cameraKept = false;
   /** The drawing a scene holds him in, over his animation's (`showDrawing`). */
   private heldDrawing: string | null = null;
-  /** Frames into a held body's flashing (`grab.shocks`); null when it is not. */
-  private shocked: number | null = null;
+  /** A held body's flashing (`grab.shocks`, `seize.flashes`): its pair, and frames into it; null when it is not. */
+  private flashing: { kind: Flashing; frame: number } | null = null;
   private burnFrame = 0;
   /** Frames into an object's life, for its palette run (`shimmer`). */
   private shimmerFrame = 0;
@@ -1024,7 +1027,12 @@ export class Entity {
 
   /** Flash in the opponent's two palettes, or stop: Shocking Stunner's hold ($20:E552). */
   shock(on: boolean): void {
-    this.shocked = on ? (this.shocked ?? -1) + 1 : null;
+    this.flash(on ? "shock" : null);
+  }
+
+  /** A frame more of flashing in one of his pairs of palettes, or stop: called each frame it lasts. */
+  flash(kind: Flashing | null): void {
+    this.flashing = kind ? { kind, frame: this.flashing?.kind === kind ? this.flashing.frame + 1 : 0 } : null;
     this.showVariant();
   }
 
@@ -1326,8 +1334,8 @@ export class Entity {
       (marks && markedVariant(marks, this.stateFrames, this.altColours, (v) => this.def.variants.has(v), this.lighting));
     const variant = running
       ? running
-      : this.shocked !== null
-      ? (shockVariant(this.def.attributes.shock ?? [], this.shocked) ?? this.lighting)
+      : this.flashing !== null
+      ? (shockVariant(this.def.attributes[this.flashing.kind] ?? [], this.flashing.frame) ?? this.lighting)
       : this.burning
       ? (burnVariant(this.def.attributes.burn, this.burnFrame) ?? this.lighting)
       : shimmer

@@ -20,10 +20,6 @@ because a number would only need translating back.
 
 ---
 
-## Mr. Buu's Oyatsu Kosen has errors and was never checked
-
-*Annoying `?`, Mr. Buu (owner, 2026-11-06).* Oyatsu Kosen, hold ↓ for 3 seconds, then ↑ + B. Which errors he did not say: ask him before fixing. For later. Its objects, and Buu Breath's, leave no spark, but their sound is a guess: `burst_0a` stayed on them; the recordings' sounds on that frame were not read apart. Buu's damage in it is the old guess, 80.
-
 ## An object in a palette of its own keeps its colours on an evening or night arena `?`
 
 *Cosmetic, seen on Gohan's intro.* His dust stays bright white by night beside a body in that lighting's colours. An object in its thrower's palette follows the lighting (`lit`, ADR 0087); this one is drawn in record `0x117` (`gohan_intro_a`), and whether the original lights such an object by arena is not checked.
@@ -43,6 +39,10 @@ hand; to check on each fighter's run: the report's "vel" after a "jumps to move 
 ## The original jumps where it should start Galactic Gunfire
 
 *Annoying, the tools.* `npm run moves -- vegeta --only ae --close` (and `npm run original` with ↑ 1 ↓ 2 Y) plays a jump and an air move in the original, at health 80; ours seizes. Which of the pad's timing, the distance or a condition the command table holds is not read, so the move has no recording to compare with.
+
+## `npm run rom -- export --fighter goku` writes Goku as another fighter
+
+*Loses work, the tools.* It takes the path for the generated fighters: `goku/animations.json` loses his spawns and changes shape, and his sheets in `assets/` are rewritten. Goku is exported by `npm run rom -- export` alone; nothing refuses the other.
 
 ## A press dies on the frame the move ends
 

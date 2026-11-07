@@ -35,7 +35,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { paletteRecord } from "../src/rom/resource.ts";
-import { FIRE, GOKU, SHOCK, ROM_PATH, scriptAt, tileResourceOf, type FighterTables } from "../src/rom/cartridge.ts";
+import { CANDY, FIRE, GOKU, SHOCK, ROM_PATH, scriptAt, tileResourceOf, type FighterTables } from "../src/rom/cartridge.ts";
 import { fighterTables, ROSTER, type FighterName } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
@@ -127,9 +127,10 @@ function writeStates(name: string, t: FighterTables): void {
         gravity: his.gravity,
         grabRange: commandContext(rom, t.character).grab,
         closeRange: { attack: closeLines(rom, t.character).y, smash: closeLines(rom, t.character).b },
-        palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE), ...Object.keys(SHOCK)],
+        palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE), ...Object.keys(SHOCK), ...Object.keys(CANDY)],
         burn: Object.keys(FIRE),
         shock: Object.keys(SHOCK),
+        candy: Object.keys(CANDY),
       },
       null,
       2,
@@ -569,7 +570,7 @@ if (command === "tiles") {
 /** Writes the sheet and the two sections the export owns; states stay hand-written. */
 /** The shock's two palette records, at their addresses: the same for every fighter. */
 function shockPalettes(rom: Uint8Array): Record<string, number> {
-  return Object.fromEntries(Object.entries(SHOCK).map(([name, record]) => [name, paletteRecord(rom, record).at]));
+  return Object.fromEntries(Object.entries({ ...SHOCK, ...CANDY }).map(([name, record]) => [name, paletteRecord(rom, record).at]));
 }
 
 /** A fighter's voice and lines, on the sound test's files (`npm run sound-test`); his other sounds kept. */

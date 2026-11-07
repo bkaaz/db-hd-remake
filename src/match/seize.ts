@@ -142,6 +142,7 @@ export class Seizures {
     const landing = def.release.whenLands;
     if (s.phase === "done" && landing && held.state === landing.from) held.release(landing.to, landing.vel);
     if (def.hides !== undefined && frame === def.hides) held.hide(true);
+    if (def.flashes !== undefined) held.flash(s.phase === "held" && frame < def.flashes ? "candy" : null);
     for (const step of def.steps ?? []) {
       const due = step.every ? frame >= step.frame && (frame - step.frame) % step.every === 0 : frame === step.frame;
       if (due) this.playStep(s, seizer, step);

@@ -109,6 +109,21 @@ describe("Seizures, a scene that hides him", () => {
   });
 });
 
+describe("Seizures, a scene that flashes him: his 5f, Oyatsu Kosen's ($0F:A92F)", () => {
+  it("flashes him in his candy palettes until its frame, then stops", () => {
+    const def: SeizeDef = { at: 0, anim: "m5f", flashes: 3, release: { frame: 9, damage: 80, reaction: "reel_down", vel: [2.5, -7] } };
+    const seizer = { takeFreeScene: () => null, seize: def, state: "scene", stateFrame: 1, x: 100, y: 200, facing: 1, scaleOf: 1 } as unknown as Entity & { stateFrame: number };
+    const flash = vi.fn();
+    const held = { x: 300, y: 200, facing: -1, scaleOf: 1, floor: 200, hold: vi.fn(), hide: vi.fn(), sound: vi.fn(), flash } as unknown as Entity;
+    const seizures = new Seizures();
+    for (let frame = 1; frame <= 5; frame++) {
+      seizer.stateFrame = frame;
+      seizures.update(seizer, held, {} as SeizeWorld);
+    }
+    expect(flash.mock.calls.map(([kind]) => kind)).toEqual(["candy", "candy", null, null]);
+  });
+});
+
 describe("Seizures, a scene that throws him and takes him back", () => {
   const def: SeizeDef = {
     at: 0,

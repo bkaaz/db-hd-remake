@@ -112,6 +112,8 @@ const KAME_LOADS = [{ resource: 0x32, vram: 0x6c00 }];
 /** The fire a beam leaves on whoever it hits, the same for every fighter: 15 palettes of 32 bytes from $95:C78E (docs/rom.md). */
 /** Palette records `0x113`, `0x114`: a body held by Shocking Stunner, flashing ($20:E552); filled in by `recordsOf`. */
 export const SHOCK = { shock0: 0x113, shock1: 0x114 };
+/** Palette records `0x115`, `0x116`: a body in his `5f` flashing, every 4 frames for its first 96 — Oyatsu Kosen's beam ($0F:A92F, table $0F:A950). */
+export const CANDY = { candy0: 0x115, candy1: 0x116 };
 export const FIRE = Object.fromEntries(Array.from({ length: 15 }, (_, n) => [`fire${n}`, 0x2ac78e + 32 * n]));
 
 /**
