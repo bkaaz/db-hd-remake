@@ -4594,7 +4594,7 @@
       "fires": {
         "spawn": "gotenks_goten",
         "at": [
-          -7,
+          -8,
           0
         ],
         "state": "fly",
