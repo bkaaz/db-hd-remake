@@ -22,7 +22,7 @@
  * — a frozen entity does not tick this — but the rest of the attack's animation
  * is not, so the window has to outlast the frames left after the hit. The jab
  * has eight of them, and at eight the press expired on the very frame it would
- * have been spent (`docs/bugs.md`), which is how a buffer ends up feeling like
+ * have been spent, which is how a buffer ends up feeling like
  * no buffer at all.
  */
 export const BUFFER_FRAMES = 12;

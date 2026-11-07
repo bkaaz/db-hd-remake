@@ -4,7 +4,7 @@
  * intro stands in. Ours plays the intro on the arena, so an object in those
  * palettes is drawn with it baked in, by the screen row it would stand on —
  * his discharges (`gotenks_discharge`), solid where ours had them added to
- * the arena (bugs.md, 2026-11-07).
+ * the arena (2026-11-07).
  */
 
 import type { Drawing } from "./frame";

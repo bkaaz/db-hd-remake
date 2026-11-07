@@ -193,7 +193,9 @@ for the last fighter from the cartridge; nothing here starts before that.
 5. **The generator stops overwriting** a blow's type.
 
 Then the mechanics, the order provisional: first the press our buffer loses on the
-frame a move ends (`bugs.md`), then ki, cancels and combos, vanish, the
+frame a move ends — the state entered on a frame reads its input only on the
+next, as `states.ts` allows one transition a frame, so the window's last frame
+is never usable — then ki, cancels and combos, vanish, the
 aura (`combat.md`). `npm run chains` has to hold for each fighter, not only one.
 
 ## Next: Vanish
