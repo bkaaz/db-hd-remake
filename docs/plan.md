@@ -178,16 +178,6 @@ recording; which moves repeat or hold is listed by hand in
 
 > **One exchange is complete.** Everything below multiplies it.
 
-## Now: the rest of the roster
-
-The owner, 2026-11-04: every fighter over as far as a script and the code
-allow, without asking, and he tries them move by move afterwards —
-[`port-review.md`](./port-review.md) is that list.
-
-1. **Each fighter's own recording** (`port-review.md` names his objects), through
-   `OWN_OBJECTS`, in place of the drafted ones.
-2. **The owner's pass, move by move**, deleting from `port-review.md`.
-
 ## After the port: the common part
 
 [ADR 0069](./adr/0069-the-common-part-waits-for-the-end-of-the-port.md). Waits
