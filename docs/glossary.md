@@ -93,6 +93,9 @@ position, speed and box; the view scales them all at once.
 blocked only in a state marked `guarding`: the stance and its blockstun.
 → `combat.md` (The buttons)
 
+**Hop** — a direction tapped and then held: a low jump, the original's `08` / `09`.
+→ `input/hop.ts`, `combat.md` (Movement)
+
 **Hit type** — what a blow does to whoever it hits (`flinch`, `stagger`,
 `knockback`, `launch`, `slam`) — every number of it but the damage, which is
 the blow's own; written

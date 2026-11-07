@@ -219,6 +219,14 @@
           "to": "ki"
         },
         {
+          "when": "hop:fwd",
+          "to": "hop_fwd"
+        },
+        {
+          "when": "hop:back",
+          "to": "hop_back"
+        },
+        {
           "when": [
             "held:fwd",
             "pressed:dash"
@@ -359,6 +367,14 @@
           "to": "ki"
         },
         {
+          "when": "hop:fwd",
+          "to": "hop_fwd"
+        },
+        {
+          "when": "hop:back",
+          "to": "hop_back"
+        },
+        {
           "when": [
             "held:fwd",
             "pressed:dash"
@@ -493,6 +509,14 @@
         {
           "when": "pressed:blast",
           "to": "ki"
+        },
+        {
+          "when": "hop:fwd",
+          "to": "hop_fwd"
+        },
+        {
+          "when": "hop:back",
+          "to": "hop_back"
         },
         {
           "when": [
@@ -2489,6 +2513,72 @@
         }
       ],
       "loopUntil": 208
+    },
+    "hop_fwd": {
+      "anim": "m08",
+      "turn": false,
+      "air": [
+        [
+          3,
+          {
+            "vx": 3.375,
+            "vy": -6.640625
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "pressed:attack"
+          ],
+          "to": "jump_fwd_y"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:smash"
+          ],
+          "to": "jump_fwd_b"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
+    },
+    "hop_back": {
+      "anim": "m09",
+      "turn": false,
+      "air": [
+        [
+          3,
+          {
+            "vx": -2.625,
+            "vy": -6.640625
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": [
+            "frames:2",
+            "pressed:attack"
+          ],
+          "to": "jump_fwd_y"
+        },
+        {
+          "when": [
+            "frames:2",
+            "pressed:smash"
+          ],
+          "to": "jump_fwd_b"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ]
     },
     "shooting_kick": {
       "anim": "maa",

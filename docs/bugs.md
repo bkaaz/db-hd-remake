@@ -38,7 +38,7 @@ hand; to check on each fighter's run: the report's "vel" after a "jumps to move 
 
 ## The original jumps where it should start Galactic Gunfire
 
-*Annoying, the tools.* `npm run moves -- vegeta --only ae --close` (and `npm run original` with ↑ 1 ↓ 2 Y) plays a jump and an air move in the original, at health 80; ours seizes. Which of the pad's timing, the distance or a condition the command table holds is not read, so the move has no recording to compare with.
+*Annoying, the tools.* `npm run moves -- vegeta --only ae --close` plays a jump and an air move in the original, at health 80; ours seizes. The original reads commands on the jump's 2 frames on the floor alone, so ↓ Y has to follow ↑ within them (`input/command.ts`, `TAKEOFF_GRACE`); the case's pad holds ↑ for 3. No recording of the move to compare with until a case presses it that fast.
 
 ## `npm run rom -- export --fighter goku` writes Goku as another fighter
 

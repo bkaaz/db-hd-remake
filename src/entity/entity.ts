@@ -35,6 +35,7 @@ import { approachSpeed, rushing, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { commandsMet, padFrame, PadHistory, tablesFor } from "../input/command";
+import { hopAsked } from "../input/hop";
 import { pressedNames, stickLine } from "../input/padLine";
 import { InputHistory, MOTION_NAMES } from "../input/history";
 import { Motions, type MotionName } from "../input/motion";
@@ -1619,6 +1620,7 @@ export class Entity {
         hcfu: this.motions.has("hcfu"),
         fbf: this.motions.has("fbf"),
         commands: (this.met = commandsMet(this.def.commands, tablesFor(this.airFrames), this.pad)),
+        hop: hopAsked(this.pad),
         holding: input.holding,
       },
       {

@@ -193,8 +193,11 @@ is `invulnerable`.
 
 The walk is a bob — the sheet has no walking legs — so the fighter really moves
 by **dashing**: a slow dash that is free and a fast one that costs ki. Neither
-is built. The dash will decide how the corner and spacing play, and a double
-tap is new logic in `input/buffer.ts`, not just an animation.
+is built. The dash will decide how the corner and spacing play.
+
+**The hop** is the original's and every fighter has it (owner, 2026-11-07):
+forward or back tapped, then pressed again within 9 frames and held for 6, a
+low jump of his own speeds that can attack as a jump does (`input/hop.ts`).
 
 ## Where the fight happens
 

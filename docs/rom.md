@@ -704,6 +704,12 @@ The stand-up (`04`, `$0F:9F4E`) calls `$0F:9EB1` alone: commands and
 buttons, no turn, charge, guard or dash. Others call it too — the landing
 `3b`, the dash `0a`/`0b`, a block from frame 4 (`0d`, `0f`), lying `1f`
 while `f0` is 0, the air reel `1a` once landed, a jump in the air.
+**The hop** (`$0D:FE5D`, before the dash in `$0D:FA2C` / `$0D:FAA5`): a
+direction held on the last 5 frames of `$6010`'s history, and gone down twice
+in the 12 (`$6002`) before them in `$63D0`'s, starts move `08`, or `09`
+backward — vy the attribute word `0x1B`, vx 1.5 × `0D` / `0F` (`$0D:FA8B`,
+`$0D:FAFA`, through `$0D:FCC0`), the jump's handler `$0F:9F60`. Not while
+`$0552` is set.
 `$0D:F9BD` with no direction held sets idle (`00`; the crouch's `03` stands
 up, `04`), so a block (`0d`, `0f`, `$0F:A081`) is over at frame 4 unless
 something is held. The landing (`$0F:A451`) reads the directions only
