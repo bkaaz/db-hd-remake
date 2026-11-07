@@ -32,28 +32,6 @@ because a number would only need translating back.
 
 *Cosmetic, Gotenks, evening and night.* Their win follows the lighting now (`lit`, ADR 0087), but the first fade's record by evening, `0x13B` (own + `0xC9`, `$20:B903`), and by night and in the ruins are no ROM address our reader follows `?`: the day's stands in for those frames. His intro's `run0` and `run1` are own + `0xC9` and + `0xC5` (`$20:B96C`) and are exported for the day alone, the same way. From the code: no evening state of the original was played.
 
-## Other fighters' ultimates: the final explosion does not cover both fighters
-
-*Cosmetic, Goku's Saiyan Meteor, Vegeta's Galactic Gunfire, others `?` (owner, 2026-11-05, 2026-11-07).* The thrower stays in his own colours through the white. Mr. Buu's Buu Breath keeps the band on through it (`lit`, `$0F:F158`); the rest is not checked.
-
-## Saiyan Meteor turns the opponent round after the explosion
-
-`goku`, Saiyan Meteor (`ad`) landed · noticed by the owner 2026-11-01 ·
-annoying
-
-After the ball explodes the opponent ends up facing the wrong way, for
-no reason seen yet. Where the turn happens — the `seize` release, the
-reaction it lets him go into, or the landing after — is not known `?`;
-a recording (`L`) of the move landing would say.
-
-## The body Vegeta throws in his ultimate is not in front of him
-
-`vegeta`, "meteor" — Galactic Gunfire (`ae`/`af`) `?` · noticed by the
-owner 2026-11-03 · cosmetic `?`
-
-The body he throws should be in front of Vegeta (owner). Whether "in front"
-is drawn over him or placed ahead of him is not yet asked `?`.
-
 ## A drafted run does not stop by the opponent, and flies at the wrong speed
 
 *Breaks play, drafted fighters `?`.* A handler may end a run under a distance and
@@ -61,6 +39,10 @@ keep the speed of the jump after it in `$F0` / `$F2` (Gotenks's `a8`, `$20:BC95`
 `b4`, `$20:C313`). The reader sees neither: the draft runs the whole step, carries
 the run's speed into the air, and misses a landing's slide. Gotenks is corrected by
 hand; to check on each fighter's run: the report's "vel" after a "jumps to move frame".
+
+## The original jumps where it should start Galactic Gunfire
+
+*Annoying, the tools.* `npm run moves -- vegeta --only ae --close` (and `npm run original` with ↑ 1 ↓ 2 Y) plays a jump and an air move in the original, at health 80; ours seizes. Which of the pad's timing, the distance or a condition the command table holds is not read, so the move has no recording to compare with.
 
 ## A press dies on the frame the move ends
 

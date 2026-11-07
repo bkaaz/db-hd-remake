@@ -1271,6 +1271,7 @@
           }
         ]
       ],
+      "behind": true,
       "grab": {
         "at": {
           "goku": [
@@ -2727,7 +2728,8 @@
         ],
         "sounds": {
           "white": "explosion_2c"
-        }
+        },
+        "lit": true
       },
       "transitions": [
         {

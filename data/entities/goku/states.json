@@ -2181,7 +2181,8 @@
             "thrown": "blast_0b",
             "landed": "explosion_2c",
             "white": "explosion_2c"
-          }
+          },
+          "lit": true
         }
       },
       "damage": 0,
