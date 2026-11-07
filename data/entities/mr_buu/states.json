@@ -3558,13 +3558,16 @@
         "cry": "voice_hurt",
         "steps": [
           {
+            "frame": 1,
+            "toHold": true
+          },
+          {
             "frame": 135,
             "at": [
               80,
               -40
             ],
-            "show": 97,
-            "toHold": true
+            "show": 97
           },
           {
             "frame": 219,
@@ -3590,7 +3593,8 @@
           "at": [
             0,
             -40
-          ]
+          ],
+          "sound": "charge_25"
         },
         "launch": {
           "frame": 324,

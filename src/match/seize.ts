@@ -66,6 +66,8 @@ interface Seizure {
   launched?: boolean;
   /** Where the dome stands: where he was as it began. */
   domeX?: number;
+  /** Where the light stands: where he was as it lit, as its effect's slot keeps it ($30CA) when he rises into the candy. */
+  lightAt?: { x: number; y: number };
   /** Each bar's x, taken on its first frame: it stays when he leaves. */
   barsAt: Map<SceneBar, number>;
   /** The scene's frame, which goes on counting through its later states (`sceneOf`). */
@@ -173,7 +175,13 @@ export class Seizures {
       seizer.showThrownBall(radius > 0 ? { x: s.domeX ?? held.x, y: held.floor, radius } : null);
     }
     if (def.bars) seizer.showBars(this.barsOn(s, def.bars, seizer, frame));
-    if (def.light) seizer.showThrownBall(s.phase === "done" ? null : lightOn(def.light, frame, held, scale));
+    if (def.light) {
+      if (frame === def.light.from) {
+        s.lightAt = { x: held.x, y: held.y };
+        if (def.light.sound) held.sound(def.light.sound);
+      }
+      seizer.showThrownBall(s.phase === "done" ? null : lightOn(def.light, frame, s.lightAt ?? held, scale));
+    }
     if (def.ball && s.phase !== "done") {
       s.ball ??= new BallScene(def.ball, seizer, held, world);
       s.ball.update(frame);

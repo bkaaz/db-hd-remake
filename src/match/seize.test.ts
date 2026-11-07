@@ -122,6 +122,28 @@ describe("Seizures, a scene that flashes him: his 5f, Oyatsu Kosen's ($0F:A92F)"
     }
     expect(flash.mock.calls.map(([kind]) => kind)).toEqual(["candy", "candy", null, null]);
   });
+
+  it("lights where he stood and keeps it there as he rises into the candy, sounding once on his side", () => {
+    const def: SeizeDef = {
+      at: 0,
+      anim: "m5f",
+      light: { from: 2, start: 9, top: 47, at: [0, -40], sound: "charge_25" },
+      steps: [{ frame: 3, at: [80, -40] }],
+      release: { frame: 9, damage: 80, reaction: "reel_down", vel: [2.5, -7] },
+    };
+    const showThrownBall = vi.fn();
+    const seizer = { takeFreeScene: () => null, seize: def, state: "scene", stateFrame: 1, x: 100, y: 200, facing: 1, scaleOf: 1, showThrownBall } as unknown as Entity & { stateFrame: number };
+    const held = { x: 180, y: 200, facing: -1, scaleOf: 1, floor: 200, hold: vi.fn(), hide: vi.fn(), sound: vi.fn() } as unknown as Entity;
+    const seizures = new Seizures();
+    for (let frame = 1; frame <= 5; frame++) {
+      seizer.stateFrame = frame;
+      seizures.update(seizer, held, {} as SeizeWorld);
+    }
+    expect(held.y).toBe(160);
+    expect(showThrownBall.mock.calls.filter(([b]) => b).map(([b]) => b.y)).toEqual([160, 160, 160]);
+    expect(held.sound).toHaveBeenCalledTimes(1);
+    expect(held.sound).toHaveBeenCalledWith("charge_25");
+  });
 });
 
 describe("Seizures, a scene that throws him and takes him back", () => {

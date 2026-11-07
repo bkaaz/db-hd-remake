@@ -149,8 +149,11 @@ export interface SeizeDef {
   steps?: { frame: number; anim?: string; show?: number; draws?: Record<string, string>; atBy?: Record<string, [number, number]>; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; on?: [number, number] | null; onBy?: Record<string, [number, number]>; lands?: true; every?: number; toHold?: true; cry?: string; sound?: string }[];
   /** He flashes in his `candy` palettes until this frame: his `5f`'s first 96 ($0F:A92F), Oyatsu Kosen. */
   flashes?: number;
-  /** A circle of light on him: `start` px on frame `from`, 1 more a frame to `top`, then 1 less, at `at` from his feet (his `5f`, `$0F:A67F`). */
-  light?: { from: number; start: number; top: number; at: [number, number]; flickers?: true };
+  /**
+   * A circle of light on him: `start` px on frame `from`, 1 more a frame to `top`, then 1 less, at `at` from where
+   * his feet were then (his `5f`, `$0F:A67F`); `sound` on his side as it lights (25, the charging ball's).
+   */
+  light?: { from: number; start: number; top: number; at: [number, number]; flickers?: true; sound?: string };
   /** A dome of light on the floor where he is, and bars of it (`match/sceneLight.ts`). */
   dome?: SceneDome;
   bars?: SceneBar[];
