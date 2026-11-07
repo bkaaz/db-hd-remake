@@ -30,13 +30,6 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 ---
 
-## Now: the senders
-
-The owner, 2026-11-07: the blows that send the opponent to another arena, by his
-graph (`combat.md`, Where the fight happens). The change of arena, the journey
-and its bands are in (ADR 0083–0085). The flying arenas (1, 2, 6) do not come:
-the owner, 2026-11-07, after an estimate (`combat.md`).
-
 ## Now: reading the cartridge by script
 
 The owner, 2026-10-30: more than any one move, the tools — every structure
@@ -194,7 +187,6 @@ allow, without asking, and he tries them move by move afterwards —
 1. **Each fighter's own recording** (`port-review.md` names his objects), through
    `OWN_OBJECTS`, in place of the drafted ones.
 2. **The owner's pass, move by move**, deleting from `port-review.md`.
-3. **Then the engine's bugs, once, together** (`bugs.md`), and his word on `port-review.md`, Every fighter.
 
 ## After the port: the common part
 
@@ -210,7 +202,8 @@ for the last fighter from the cartridge; nothing here starts before that.
 4. **Freeze the port:** its flat states and hit types kept as they are.
 5. **The generator stops overwriting** a blow's type.
 
-Then the mechanics, the order provisional: ki, cancels and combos, vanish, the
+Then the mechanics, the order provisional: first the press our buffer loses on the
+frame a move ends (`bugs.md`), then ki, cancels and combos, vanish, the
 aura (`combat.md`). `npm run chains` has to hold for each fighter, not only one.
 
 ## Next: Vanish

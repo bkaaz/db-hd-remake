@@ -24,93 +24,17 @@ because a number would only need translating back.
 
 *Cosmetic, Buu (owner, 2026-11-07).* In the attack where his leg comes up out of the ground, the leg is not in the right colours. Which move that is, and which palette it should have, not looked into yet `?`.
 
-## An arena may lie a pixel lower under the fighters than the original's `?`
+## Mr. Buu's Oyatsu Kosen has errors and was never checked
 
-*Cosmetic, every arena.* `npm run arena-fit`: the original's screen shows the arena 1 px higher than ours from the same camera, on the palace at every shot and on the tournament at one of two. The SNES draws a BG's row 1 on its first line, which would be this; a sprite's offset from its OAM y was not compared, so whether the fighters stand a pixel off is not known.
-
-## An arena's palettes go on stepping where the original's stop `?`
-
-*Cosmetic `?`.* `$00:C15F` does nothing while `$30B0` bit 7 is set, which screen state `24` sets `?` (`rom.md`). Ours steps every frame. Not compared on a move that asks for it.
-
-## What Buu's pass left
-
-*Cosmetic, Buu, approved.* Energy Sphere's sparks start over as the ball is let go, and its largest ball may strike later than the original's, at the edge of reach `?`. Floater's air blow starts at vy 0, not field `0x82` / 4. Buu Burn's `9/04` steps its palettes frame by frame in the original, on one run in ours. Putty Uppercut's piece of him does not flip in the air, and the column starts on Goku's landing frame, not each fighter's own `?`. Disk Tackle's blow lands 6 px closer than the original's (a box only touching, below `?`).
-
-## Some handlers' own sounds on a frame are not played `?`
-
-*Sound, approved fighters.* What a handler plays by the frame is in no script, so the export leaves it out; Buu's Putty Uppercut's swing was one (`soundsAt`). `port` also names, as the handler's own: Gohan's `9d` and `9e` `32`, Gotenks's `9d` and `9e` `32`, Piccolo's `9d` `32`, Cell's `9d` `30`, Vegeta's `b2` `2c`. Not played or listened to one by one.
-
-## A re-armed blow on a step's first frame takes the step before's record
-
-*Cosmetic, Buu's crouching Y, others `?`.* Its second blow lands at frame 20 in the original with the record of the step before (`light`, stun 1, recorded): the reel goes on in `15`. Ours lands it with `m94_2`'s, `heavy`, so `16`, 17 frames after the first where the original's is 15. `hits.test.ts` holds a state to its part's record. Buu's close Y is worked round with `rehit` and no blow on its later parts; if its first blow misses, the third cannot land as it may in the original.
-
-## A fighter lands from `1a` through two frames of `3b` that the original skips
-
-*Cosmetic, every fighter.* `$0F:A1E0` sets `3b` and in the same call reads the directions, which set `00`. Ours plays `land`, 2 frames. Seen on Buu's throw and Disk Tackle.
-
-## A command in the air after jumping over the opponent reads otherwise `?`
-
-*Annoying `?`, Buu, others `?`.* `→ ↘ ↓ ↙ ← Y` from a forward jump that has passed over Goku is Horizontal Blast in the original and Floater in ours; from where he has not passed it, Floater in both (`npm run moves -- buu`, `a9 air` and `--close`). Face is `00` in both logs. Not read.
-
-## Some throws may cry out once too often `?`
-
-*Sound, Vegeta, Gotenks, Mr. Buu.* Freeza's throw had a voice at the launch that `$0F:B321` does not play: the reaction's own sound, which `launch.quiet` skips. These three lack `quiet`, and a quick search of their recordings found no sound on the frame they let go; Goku, Gohan, Piccolo and Cell have one there. Not compared one by one.
+*Annoying `?`, Mr. Buu (owner, 2026-11-06).* Oyatsu Kosen, hold ↓ for 3 seconds, then ↑ + B. Which errors he did not say: ask him before fixing. For later. Its objects, and Buu Breath's, leave no spark, but their sound is a guess: `burst_0a` stayed on them; the recordings' sounds on that frame were not read apart. Buu's damage in it is the old guess, 80.
 
 ## An object keeps its colours on an evening or night arena `?`
 
 *Cosmetic, seen on Gohan's intro.* His dust stays bright white by night beside a body in that lighting's colours. Not checked whether the original lights objects by arena, or for how many objects it shows.
 
-## Gohan shows an odd colour for a moment as he gets up and turns `?`
-
-*The owner's impression, unsure.* Not reproduced: played after a throw and when jumped over, as player one by day and player two by night, every frame is in his own palette, and the handlers `$0F:A35E` and `$0F:A499` load none. Not played: mirror match, evening, after a burn or a shock, B + Y held (the charge's glow). The original's get-up not recorded.
-
-## Kishin Ha's spark sits higher than the original's
-
-*Cosmetic, Freeza.* It lands a frame early (a blow's box, below), on the object's first box where the original's is on its second; the spark is about 10 px over the original's. Not looked into further.
-
-## The Kienzan looks at the opponent's height on its own frames
-
-*Cosmetic, Freeza.* `$0F:D07D` asks when the game's count `$74 & 7` is 0, so its first look falls anywhere in its first 8 frames; ours fixes it at 9.
-
-## Mr. Buu's Oyatsu Kosen has errors and was never checked
-
-*Annoying `?`, Mr. Buu (owner, 2026-11-06).* Oyatsu Kosen, hold ↓ for 3 seconds, then ↑ + B. Which errors he did not say: ask him before fixing. For later.
-
-## Gotenks's ghosts look at the opponent's height every frame
-
-*Cosmetic `?`, Gotenks, approved.* They share Yuudoh's code (`$0F:CC45`), which only looks every 4th frame, and so overshoot a little; ours settle sooner. `aim.every` in `gotenks_ghost` would do it. Not played against the original.
-
 ## Regeneration's arm keeps its daylight colours in every light
 
 *Cosmetic, Piccolo, evening and night.* The arm is his own palette (`piccolo_5_09`, record `0x90`), and a spawn has no sheet per lighting, so by evening and night it does not match his body. From the code; only the day was played.
-
-## Piccolo's counters can be entered later than in the original
-
-*Cosmetic, a kinder window.* The original asks in the hit pause alone. Ours also asks in the rest of the blow's state: pressed 5 to 9 frames later than the original allows, it still comes out. From `npm run original` and the same pad in ours, at three distances. Dropping `connected` + `command:` from `StateMachine.update` would close it, and Gotenks's Omaenanka with it.
-
-## Goku and Gotenks turn after their throw with a move of its own
-
-*Cosmetic, approved fighters.* Field `0x27` bit 1 at their throw's end (`$20:820B`, `$20:BC08`): the next move's start flips them, with no `41` (`$01:85BF`; recorded: Goku's). Ours plays `turn_round`, 6 frames. Piccolo has it (`flipsOnLeaving`).
-
-## The camera rises where the original's stays
-
-*Cosmetic `?`, a few moves.* `$0F:A72B`, `$0F:EC84`, `$20:9BD4` and `$20:D2E3` set field `0x27` bit 0, which stops the camera following vertically; ours rises there. Piccolo's throw has it (`stillCamera`). Which moves they are is not read.
-
-## Vegetto's Galactic Juggle is a parry too
-
-*Annoying `?`, Vegetto.* `$2A:8692` names `04b0` beside Piccolo's `05b7`: a blow touching his `b0` should turn into `b1`, as Regeneration does (ADR 0077). Ours plays it by connecting only. He is approved, so it is not changed.
-
-## A hit box only touching a hurt box lands in the original
-
-*Cosmetic.* `$2A:89D0` counts an edge on an edge from one side. Low Mystic's third reach from where a round opens touches Goku's body exactly: it lands in the original and misses here (`npm run moves -- piccolo --far`). For every fighter, so not changed. The same routine asks `$44` ≥ 2 (`$2A:8155`): a move's first two frames cannot land, ours can.
-
-## Gotenks's discharges are blended into what is behind them
-
-*Annoying, Gotenks, his intro (`3f`).* `gotenks_discharge` has `adds`, so it is added to
-the arena and to his body and comes out as a pale smear. The original's is solid and always
-in front of him: each pixel is its own colour plus the fixed colour of its row, never what
-lies under it (OBJ palettes 4-7 take the colour math; `$2131`'s source there is the fixed
-colour, which is also the intro's blue gradient). To see it: intro switch on, `?p2=gotenks`.
 
 ## Goten and Trunks keep their daylight colours in every light
 
@@ -120,49 +44,6 @@ evening, `0x15C`, `0x164`, `0x16C` by night. `fades` and `palette` in `ownObject
 day's alone, and `gotenks_goten` has no sheet for another light. His intro's `run0` and `run1`
 are own + `0xC9` and + `0xC5` (`$20:B96C`), fixed the same way; by evening + `0xC9` is `0x13B`,
 which our reader cannot follow `?`. From the code: no evening state of the original was played.
-
-## Moves that go behind the opponent are drawn over him
-
-*Annoying, a few.* A handler's `$0D:D8D5` puts the mover behind. Left without `behind`: Mr. Buu's throw (`behindAt`, as Piccolo's), and by hand Goku's Saiyan Meteor and Vegeta's Galactic Gunfire. The last may be the entry below on
-the body he throws `?`. `npm run rom -- port <move>` says "goes behind the opponent".
-
-## A drafted run does not stop by the opponent, and flies at the wrong speed
-
-*Breaks play, drafted fighters `?`.* A handler may end a run under a distance and
-keep the speed of the jump after it in `$F0` / `$F2` (Gotenks's `a8`, `$20:BC95`;
-`b4`, `$20:C313`). The reader sees neither: the draft runs the whole step, carries
-the run's speed into the air, and misses a landing's slide. Gotenks is corrected by
-hand; to check on each fighter's run: the report's "vel" after a "jumps to move frame".
-
-## The reels have a second pose we never show
-
-*Cosmetic, every fighter.* A heavy or light blow picks its reel by the defender's
-field `0x97` bit 0 (`$0D:D382`, `$0D:D356`): in `logs/fight-6.txt` Rushing Suki
-Combo's blows go `16`, `14`, `16`, `14` on a standing body, by how high the spark
-is. Ours always plays `m16` and `m15`. What sets the bit is not read.
-
-## A block pauses two frames too few
-
-*Cosmetic.* The original's `$30B2` reads `8a` on a blocked blow and `88` on this
-hit (`logs/fight-3.txt`: Rushing Uppercut and Bukuuh Kyaku), 10 frames against 8;
-ours pauses a block as long as the hit type says.
-
-## The port report gives a move speeds that belong to the move it leaves for
-
-*Cosmetic — the report only.* `npm run rom -- port a9 --fighter gohan` prints
-`speed: vel 0, 0: 1.5` for `ma9`, but that vx is set after the handler's move
-`1a` (`$20:A994`), so Gohan hangs still through `a9`. `ownJumps`
-(`src/rom/parts.ts`) drops the frame jump of that shape; speeds still count.
-
----
-
-## The body Vegeta throws in his ultimate is not in front of him
-
-`vegeta`, "meteor" — Galactic Gunfire (`ae`/`af`) `?` · noticed by the
-owner 2026-11-03 · cosmetic `?`
-
-The body he throws should be in front of Vegeta (owner). Whether "in front"
-is drawn over him or placed ahead of him is not yet asked `?`.
 
 ## Goku's hair in his winning pose has its daylight colours in every light
 
@@ -175,15 +56,17 @@ record own + `0x130` into the hair's palette (`$20:80EF`, `$01:84EF`):
 the lightings whose own record is `0x42`/`0x43` the hair should be in
 other colours. Saiyan Meteor's `goku_hair_normal` may share it `?`.
 
-## The KO's blow says both voices
+## Gotenks's discharges are blended into what is behind them
 
-`goku`, `vegeta`, a blow that empties health with the KO switch on ·
-noticed 2026-11-03 · cosmetic
+*Annoying, Gotenks, his intro (`3f`).* `gotenks_discharge` has `adds`, so it is added to
+the arena and to his body and comes out as a pale smear. The original's is solid and always
+in front of him: each pixel is its own colour plus the fixed colour of its row, never what
+lies under it (OBJ palettes 4-7 take the colour math; `$2131`'s source there is the fixed
+colour, which is also the intro's blue gradient). To see it: intro switch on, `?p2=gotenks`.
 
-The blow enters its reaction first — and its `voice_hurt` — and the round
-forces the KO after the blows, with `voice_ko`, in the same frame: both
-voices start together. The original skips the reaction at zero health
-(`$0D:D0D0`) and says only the KO's.
+## Other fighters' ultimates: the final explosion does not cover both fighters
+
+*Cosmetic, Goku's Saiyan Meteor, Vegeta's Galactic Gunfire, others `?` (owner, 2026-11-05, 2026-11-07).* The thrower stays in his own colours through the white. Mr. Buu's Buu Breath keeps the band on through it (`lit`, `$0F:F158`); the rest is not checked.
 
 ## Saiyan Meteor turns the opponent round after the explosion
 
@@ -195,27 +78,34 @@ no reason seen yet. Where the turn happens — the `seize` release, the
 reaction it lets him go into, or the landing after — is not known `?`;
 a recording (`L`) of the move landing would say.
 
-## A charge does not take over a punch begun a frame before
+## The body Vegeta throws in his ultimate is not in front of him
 
-`goku`, A then S a frame apart · noticed 2026-10-30 · annoying
+`vegeta`, "meteor" — Galactic Gunfire (`ae`/`af`) `?` · noticed by the
+owner 2026-11-03 · cosmetic `?`
 
-In the original, Y pressed a frame before B starts the far Y (`92`) for one
-frame, and the charge takes over (`tools/re/log-charge.lua`). Ours plays the
-punch and no charge: only idle and walking look for A + S. Whether the
-normals' handler checks for Y + B all through or only at their start is not
-read.
+The body he throws should be in front of Vegeta (owner). Whether "in front"
+is drawn over him or placed ahead of him is not yet asked `?`.
 
-## Goku's black-haired drawings are missing part of the hair
+## A drafted run does not stop by the opponent, and flies at the wrong speed
 
-`assets/sheets/goku.png`, drawings `26`–`2a` and `2f`–`34` · noticed 2026-10-28 · cosmetic
+*Breaks play, drafted fighters `?`.* A handler may end a run under a distance and
+keep the speed of the jump after it in `$F0` / `$F2` (Gotenks's `a8`, `$20:BC95`;
+`b4`, `$20:C313`). The reader sees neither: the draft runs the whole step, carries
+the run's speed into the air, and misses a landing's slide. Gotenks is corrected by
+hand; to check on each fighter's run: the report's "vel" after a "jumps to move frame".
 
-The hair is cut flat at the top and some strands look too thin. These are the
-transformation drawings, and every script that shows them (moves `3c`, `3e`)
-issues a `b0` just before — which spawns an object that draws the rest of
-the hair, from resource `0x51` in the palette at `0x27B161` (confirmed against
-a VRAM snapshot, `rom.md`). The overlay is exported now, as the spawn
-`goku_hair`; nothing plays it yet (`plan.md`).
-To see it: `npm run rom -- frame 29`. The work to fix it is in `plan.md`.
+## The port report gives a move speeds that belong to the move it leaves for
+
+*Cosmetic — the report only.* `npm run rom -- port a9 --fighter gohan` prints
+`speed: vel 0, 0: 1.5` for `ma9`, but that vx is set after the handler's move
+`1a` (`$20:A994`), so Gohan hangs still through `a9`. `ownJumps`
+(`src/rom/parts.ts`) drops the frame jump of that shape; speeds still count.
+
+---
+
+## `npm run moves -- <fighter> --only <name>` with no such case overwrites the report
+
+*Annoying, the tool.* It writes "0 of 0" into `report.txt`; `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
 
 ## `npm run anim` only knows how far a move reaches sideways
 
@@ -399,48 +289,3 @@ to a window that is not focused, so `held.right` is never cleared.
 
 Fix is a `blur` listener that clears every held direction. Attack buttons need
 nothing — they disarm themselves every frame.
-
-- **Objects that may outlive the original's.** `mr_buu_8_06` (Mr. Buu's X) is up 21 frames against the
-  recording's 15. Its code ends it with the thrower's move; any
-  timer of its own is not read. `cell_7_02` is in the same position, ending with the move alone.
-
-- **14 objects leave the wrong thing when they land.** The draft gave every object the same small
-  explosion; `$2A:8E31` says most of these stay and leave a melee blow's spark, and some explode bigger.
-  The list is `NOT_YET` in `src/rom/objectHit.test.ts`, and it tells which is which. Vegeta's own
-  `vegeta_energy_field`, `_energy_dash`, `_ground_flare` and `_jumping_bomb` stay, but sound like an
-  explosion and name no spark, so they leave `spark_1`: not compared with the original yet.
-- **Mr. Buu's Y stands longer after landing.** Its object counts through the hit pause in the original
-  (`8/08` does not test `$30B2`) and is gone 15 frames out; ours stops with every bolt during a pause,
-  so it stays about 7 frames more. `Projectiles.update` pauses them all.
-- **`npm run moves -- <fighter> --only <name>` with no such case overwrites `report.txt` with "0 of 0".**
-  `--report` writes it again. Names are `c.name` as `moveCases` gives them: `y`, `aa`.
-- **Some objects fly unseen: their sheets hold no pixel.** They still fly and strike. They may be drawn effects, as Energy Field's `mr_buu_8_12` is (`rom.md`), which stays blank on purpose. The list is `DRAWS_NOTHING` in
-  `src/rom/objectTiles.test.ts`. A spawn already exported is kept, so `animations.json` has to go first.
-- **Kakusan's three land too close together from near.** The original's come 14 and 23 frames apart and
-  the opponent goes 90 px over its reel; ours land one straight after the other's pause and he goes 39 px
-  (`logs/moves/mr_buu/ab.*`). From afar it agrees (`--far`). Why is not read: the middle ball sits 1 px into
-  his body for five frames after the first pause before it strikes, at the same gap and on the same frame of
-  its own (ball and box confirmed by `$2A:8D63`'s mean). His `$7A`, `$26` and `$96` stay clear, so it is not
-  `$2A:8B92`'s gate. The low ball's wait is geometry: it strikes once his shove stops at the screen's edge.
-- **Mr. Buu's Energy Field's blow is gone after its first hit.** The original's object stays with its blow disarmed, puts `a/02` out in another slot, and is armed again 60 frames later (`logs/moves/mr_buu/af.orig.txt`, f199 and f259). Ours bursts, as `objectHit` reads it, so a second touch never lands. The circle is the state's and goes on.
-- **Mightiness Bomber: a ball whose thrower is hit while it charges vanishes at once.** Not compared with the original: it may shrink. After a hit the original also has more `a/17` / `a/18` slots, 14 and 20 frames on; ours shows one burst. Not read.
-- **The small and middle Kamehameha and Final Flash may whiten the screen and should not `?`.** `kame_s`, `kame_m`, `vegeta_final_flash_s` and `_m` have `hitFlash`, but they become `a/02` and `a/17`, and only `a/18` asks for the white (`$0F:E234`). Measured on Mightiness Bomber's three levels: only the largest whitens. Cell's small Chou Kamehameha, recorded: no white in the original, white in ours (`logs/moves/cell/aa.*`), on the shared `kame_s`. The owner has approved Goku's as it is.
-- **A 3D move may stop short from afar, as Mr. Buu's Flying Bomber did.** Its handler holds the code that measures the distance (`rom.md`), but ours may walk at a fixed speed. `port` does not report it. `npm run moves -- <fighter> --far` shows each.
-- **Sender `a1` and Planet Attack from afar are off by the report**, not looked into (`npm run moves -- mr_buu --far`).
-- **Kakusan's second shot lands 5 frames after the pause in the original, at once in ours.** Near: the opponent reels 72 frames and 90 px there, 50 and 39 here; from afar they agree. The distance stays 22 px through those 5 frames, and fields `0x26`, `0x7A` and `0x7B` of the defender do not explain it (recorded). Gotenks's Renzoku looks the same `?`.
-- **A blow after a connection lands 3 frames early:** Elbow Dash's second, 14 frames after the first where the original's is 17. The state's first frame runs out inside the hit pause, and the blow's box is early too (next entry). Other follow-ups likely share it `?`.
-- **Low B from close: the two bodies part the other way.** The blow lands 3 frames early (below), so Vegetto is 4 px further along when Goku falls on him, and turns round where the original's stands up.
-- **A blow's box is out a frame early in ours, and gone a frame early.** A state's step has advanced by the time `landBlow` looks: Flying Bomber's box, the original's script frames 50 to 57, is 49 to 56 here. A blow reached only on its last frame misses: Flying Bomber from about 168 px, where the original just lands. For every fighter; not changed, it would move every blow by a frame.
-- **Mr. Buu's Tornado Hip lands one blow from afar where the original lands two.** Its first lands at 67 px in the original and at 29 px here (`logs/moves/mr_buu/a4-far.*`), a round later. Touching edges did not change it; the box out a frame early, above, is the likely cause, not confirmed.
-- **`npm run moves` cuts the defender's stretch at his first idle.** Goku's Double Kick (`a2`) lands two blows in both games, with a moment of idle between them in the original's, so its report reads `≠` on a second reel the original also has.
-- **Bodies push apart in the air in ours, on landing in the original.** Mr. Buu's Y and B in the air: the original's bodies overlap all the way down and part by 20 px on the frame he lands, ours part before he lands (`y-air`, `b-air`; `$2A:8B1A` compares their heights, not read). Their final gap differs by 1 to 3 px. For every fighter.
-- **Other fighters' charges may be Goku's too.** Mr. Buu's was: the wrong palette (`$0F:A072`, the glow, is called from only some handlers), Goku's sound and pose, none of his steam. By character the sound is `46` for 8, `17` for 9 and `19` for the rest (`$0F:A02E`). Check each, with his objects (`npm run rom -- spawns`, move `0c`).
-- **Oyatsu Kosen's and Buu Breath's objects leave no spark, but their sound is a guess.** `burst_0a` stayed on them; the recordings' sounds on that frame were not read apart. Buu's damage in Oyatsu Kosen is the old guess, 80.
-- **Other fighters' ultimates: the final explosion does not cover both fighters (owner, 2026-11-05).** Mr. Buu's Buu Breath now keeps the band on through the white (`lit`, `$0F:F158`). Saiyan Meteor, Galactic Gunfire and the rest to be checked and given the same.
-- **Other fighters' wins and intros may run past a held pose, as Mr. Buu's did.** Their scripts' `hold` steps (`npm run rom -- move 3e`, `3c`) were played through in ours; check each against a recording. `select-vs` opens a round only after 2 more presses, about frame 2225; health goes in after that (`healthAt`).
-- **Mr. Buu's own `82` is not ported** (the handler walks him off the screen, then `8/14`, `8/15`). Not shown: no arena has it yet, and on a floor it is not played (owner).
-
-- **A cornered reel still slides the attacker back in the original, and not in ours.** Bakuretsu Rush near: with the opponent in `16` at the screen's edge, the original's Cell goes back at 1 px a frame for about 12 frames after each blow while his own vx stays 2, and holds a gap of 66 to 74 px; ours walks on to 31 px. `corner.ts` keeps a shove in `16` at the edge (`$0D:CA35`), and its other condition, field `0x25` bit 2, is not read. Every fighter's rush into a corner shares it `?`.
-
-- **What Cell's pass left unread or unported.** Blows of `mad`, `mad_3` (Tri Eruption) and `m9d` (his throw), whose reaction no hit type copies; Energy Burst's blow at arm's length, not compared. `$2A:8B92` for the rest: no hit on a special's frame 0, and field `0x7A`'s count, whose writer is unread. Field `0x27` bit 5 on `ac`, `ad`, `aa` and `$8A`'s bits on Energy Burst's step 3: what they do `?`. `cell_7_02` shows its second frame by his step, ours by a fixed 7 frames, one frame off on Ki Flame or X `?`. Grab range and his reels: not looked at against a picture.
-- **`npm run moves` starts "near" some 6 px further than the original's.** The gap at Cell's first blow differs by that, so a blow at the edge of reach can differ for no other reason: Suki Combo's fourth near, Bakuretsu Rush's chain from afar (there ours connects every blow, the original only the first; the gap as the cause is not confirmed).

@@ -5,7 +5,7 @@ import { hitFields, objectHit } from "./objectHit";
 
 const FIGHTERS = ["vegetto", "piccolo", "freeza", "cell", "mr_buu", "buu", "gotenks"];
 
-/** Drafted with the same explosion for all, and not put right yet: `docs/bugs.md`. Delete as each is. */
+/** Drafted with the same explosion for all, left so (owner, 2026-11-07). Delete as each is put right. */
 const NOT_YET = new Set([
   "freeza_6_15",
   ]);

@@ -6,7 +6,7 @@ import { drawingAtSpawn, spawnerLoads } from "./objectTiles";
 import { fighterNamed } from "./roster";
 import type { ScriptOp } from "./script";
 
-/** Their sheets hold no pixel, so they fly unseen: `docs/bugs.md`. Delete as each is put right; Mr. Buu's `8` stay, their picture is a circle (`rom.md`). */
+/** Their sheets hold no pixel, so they fly unseen, left so (owner, 2026-11-07). Delete as each is put right; Mr. Buu's `8` stay, their picture is a circle (`rom.md`). */
 const DRAWS_NOTHING = new Set(["buu_9_17", "buu_9_18", "buu_9_19", "freeza_6_15", "mr_buu_8_0f", "mr_buu_8_10", "mr_buu_8_11", "mr_buu_8_12"]);
 
 const spawn = (anim: number): ScriptOp => ({ op: "spawn", counter: 0, type: 1, anim, tiles: 0, palette: 0, dx: 0, dy: 0, timer: 0, vx: 0, vy: 0 });

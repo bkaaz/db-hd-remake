@@ -243,7 +243,7 @@ export function afterInput(runs: Stretch[], before: string[]): Stretch[] {
   return runs.slice(from, end < 0 ? undefined : end);
 }
 
-/** The reels' second poses, which ours does not pick yet (docs/bugs.md): the same reel, not a difference. */
+/** The reels' second poses, which ours does not pick (left out, owner 2026-11-07): the same reel, not a difference. */
 const SAME_REEL: Record<string, string> = { "13": "15", "14": "16", "17": "18" };
 
 /** Two fighters' stretches, merged by move so that a part cut differently does not read as a difference. */

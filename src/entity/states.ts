@@ -565,7 +565,7 @@ export interface StateDef {
   paletteRun?: { plain: string[]; alt: string[] };
   /**
    * Its ground speed ends with its blow's contact: a run that stops where it lands (Flaming Headbutt, `$10:BC30`).
-   * A number is the first frame it may: a blow's box is out early in ours (`bugs.md`), before the steps the original takes first.
+   * A number is the first frame it may: a blow's box is out a frame early in ours (kept so, owner 2026-11-07), before the steps the original takes first.
    */
   stopsOnContact?: boolean | number;
   /** `[frame, px]`: his drawing is that far down from that frame on, what a handler adds to field `0x10` (Flaming Headbutt, `$10:BBCB`). */

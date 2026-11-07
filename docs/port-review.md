@@ -13,16 +13,6 @@ After any change to a reader or the cutter: `npm run rom -- export --all`, then
 `npm run rom -- states --all`, then `git diff data/`. A diff on a fighter already
 approved names what to try again.
 
-## Every fighter
-
-Changes of two passes reach all of them, not yet judged by the owner:
-
-- A body thrown up by a `high` blow cannot be struck within 16 px of the floor, nor after its bounce (`$2A:8B92`, `combat/hitGate.ts`, Cell's pass).
-- A move that goes on as it came in now keeps the speed it had (`savesFlight`, Cell's pass): Freeza's Evil Energy from a forward jump flies on forward.
-- A scene opened by a shot no longer pauses its thrower (`$0F:C2FC`, commit `9a7a253`): Oyatsu Kosen, Buu Breath, Volleyball and Jubaku Ha move by 8 frames.
-- An object that ends with its thrower's move does so only in its state that says so (ADR 0080): Freeza's Jubaku Ha flies on once it has moved.
-- Every move a button or a command begins brings the mover in front (commit `65c6057`; `rom.md` on the draw order).
-
 ## Gotenks
 
 Drafted by script (`npm run rom -- draft`), not read move by move. `?scene=debug&p2=gotenks`.
