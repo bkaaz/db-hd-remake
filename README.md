@@ -50,8 +50,8 @@ lines instead of six hundred.
 
 This repo ships **only our code + data** — no copyrighted game art or sound.
 The game reads the original's pictures and sounds from **your own dump of the
-cartridge**, in the browser: the page asks for the file and checks it is a dump
-the readers know. In development, `ROM_PATH` in `.env.local` points at it and
+cartridge**, in the browser: the page asks for the file once, checks it is a
+dump the readers know, and keeps it in that browser (IndexedDB) for next time. In development, `ROM_PATH` in `.env.local` points at it and
 the page asks nothing. Why, and what was rejected:
 [ADR 0090](./docs/adr/0090-the-cartridge-is-the-games-one-dependency.md).
 

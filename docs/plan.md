@@ -37,19 +37,18 @@ branch `poc-rom-runtime`. Every fighter's sheet, each palette of it, every
 object, every arena, the bands and the HUD are drawn in the browser
 (`src/cartridge/`), and every effect, voice and spoken line is the
 cartridge's sound driver playing it on our chip (`src/apu/`). `npm run
-build` leaves `dist/web`, which plays from any static host, given a ROM.
+build` leaves `dist/web`, which plays from any static host: the player picks
+the ROM once and the browser keeps it (`cartridge/remembered.ts`).
 
-1. **The ROM remembered** in the browser (IndexedDB), so a player picks it
-   once.
-2. **Names in the editor** — aliases for the frames and animations it shows;
+1. **Names in the editor** — aliases for the frames and animations it shows;
    it reads them from the ROM and edits no sprite.
-3. **What is left goes:** `assets/` in `.gitignore`, `npm run pack`,
+2. **What is left goes:** `assets/` in `.gitignore`, `npm run pack`,
    `assets.md`; `CLAUDE.md` read through for what still assumes files. Read
    again for what the hand-built Goku left behind: this file's sections written
    against his sheet (*G. Crouch*, *The moveset*), `descriptions.json` and the
    shorthand that reads it (`notation.ts`, `npm run which`), `input/motion.ts`,
    which no entity uses any more.
-4. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
+3. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
    translation's patch) is checked. The clean Japanese dump and any PAL one
    need their hashes, and the readers run against each — an address that
    moved is a table per dump.
