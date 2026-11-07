@@ -16,7 +16,7 @@ import { CameraNotes } from "../camera/note";
 import { Shake } from "../camera/shake";
 import { Stage } from "../stage";
 import { ArenaBackdrop, loadArena } from "../arena/arena";
-import { OWN_COLOURS } from "../arena/arenaFile";
+import { Travel } from "../arena/travel";
 import { GridBackdrop } from "../arena/grid";
 import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
@@ -84,6 +84,8 @@ export class DebugScene implements Scene {
     private waiting: { awake: () => boolean; prompt: Notice } | null,
     /** Asks the player something in the screen's middle, until taken down. */
     private readonly prompt: (text: string) => Notice,
+    /** Where a blow may send the fight; null on the grid. */
+    private readonly travel: Travel | null,
   ) {}
 
   /** Frames since the scene began: half speed skips the odd ones. */
@@ -129,6 +131,7 @@ export class DebugScene implements Scene {
     // Before anything is put on screen, so a missing arena leaves nothing behind.
     const arena = req.arena ? await loadArena(req.arena, req.time ?? null) : null;
     if (typeof arena === "string") return arena;
+    const travel = await Travel.load(req.arena ?? null, arena?.time ?? null);
 
     // First on screen, so the notices below are drawn over the game's screen.
     const view = new GameView(ctx.app);
@@ -144,7 +147,8 @@ export class DebugScene implements Scene {
       [...new Set([...defs.flatMap((d) => effectsNamed(d.states, d.animations)), ...projectiles.effectsNeeded(), "ready", "ko", "double_ko"])],
       SPRITE_SCALE,
     );
-    const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles });
+    const opens = travel ? travel.opens.bind(travel) : undefined;
+    const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles, opens });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
@@ -154,7 +158,7 @@ export class DebugScene implements Scene {
       fighter.alt = pal === "2";
       fighter.colourSet(isColourSet(pal) ? pal : null);
     }
-    if (arena && arena.time !== OWN_COLOURS) {
+    if (arena) {
       for (const name of new Set(fighters.light(arena.time))) {
         notices.push(showMessage(ctx.page.notices, `${name}: no sheet for "${arena.time}" — in its own colours`, true));
       }
@@ -205,6 +209,7 @@ export class DebugScene implements Scene {
       // only an intro has anything to lose: without one nothing sounds before a key
       opening.over || ctx.audio.awake ? null : { awake: () => ctx.audio.awake, prompt: showPrompt(ctx.page.notices, "press any key") },
       (text) => showPrompt(ctx.page.notices, text),
+      travel,
     );
   }
 
@@ -257,6 +262,7 @@ export class DebugScene implements Scene {
     this.fighters.keepInView(this.camera);
     if (keyboard.takeRefill()) this.fighters.refill();
     this.fighters.exchangeBlows();
+    this.journey();
     if (this.opening.over) this.round.step(this.fighters.bodies, keyboard.toggles.get("ko"), this.fighters.quiet);
     else this.opening.step(this.fighters.bodies);
     this.stage.flash(this.fighters.takeFlash());
@@ -309,8 +315,25 @@ export class DebugScene implements Scene {
     this.effects.render();
   }
 
+  /**
+   * A sending blow's journey, once its pause is over: a cut to the other arena,
+   * the two placed where the original puts them, both in its lighting.
+   */
+  private journey(): void {
+    const sent = this.fighters.takeSent();
+    if (!this.travel) return;
+    if (sent) this.travel.sent(sent);
+    const go = this.travel.step(this.fighters.frozen, this.view.backdrop);
+    if (!go) return;
+    this.stage.change(go.backdrop);
+    this.fighters.light(go.time);
+    this.fighters.arrive(go.sent, go.at);
+    this.camera.centreOn(this.fighters.player.x, this.fighters.opponent?.x ?? this.fighters.player.x);
+  }
+
   destroy(): void {
     this.stage.destroy();
+    this.travel?.destroy();
     this.fighters.destroy();
     this.effects.destroy();
     this.hud?.destroy();

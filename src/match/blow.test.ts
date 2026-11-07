@@ -113,6 +113,38 @@ describe("landBlow", () => {
     expect(landBlow(beam, guard, context())?.flash).toBe(0);
   });
 
+  describe("a blow that sends him to another arena", () => {
+    const sender = () => body("hit", { attackSends: "side" } as Partial<Entity>);
+    const open = (): BlowContext => ({ ...context(), opens: () => true });
+
+    it("costs him nothing and says where, when a way lies open", () => {
+      const defender = body("hurt", { health: 400 } as Partial<Entity>);
+      const result = landBlow(sender(), defender, open());
+      expect(result?.sends).toBe("side");
+      expect(defender.hurtBy).not.toHaveBeenCalled();
+      expect(defender.gotHit).toHaveBeenCalled();
+    });
+
+    it("is only its blow where the way is closed", () => {
+      const defender = body("hurt", { health: 400 } as Partial<Entity>);
+      const result = landBlow(sender(), defender, { ...context(), opens: () => false });
+      expect(result?.sends).toBeUndefined();
+      expect(defender.hurtBy).toHaveBeenCalled();
+    });
+
+    it("is the KO and no journey when it empties his health", () => {
+      const defender = body("hurt", { health: 7 } as Partial<Entity>);
+      const result = landBlow(sender(), defender, open());
+      expect(result?.sends).toBeUndefined();
+      expect(defender.hurtBy).toHaveBeenCalled();
+    });
+
+    it("sends nobody it is blocked by", () => {
+      const result = landBlow(sender(), body("hurt", { guarding: true, health: 400 } as Partial<Entity>), open());
+      expect(result?.sends).toBeUndefined();
+    });
+  });
+
   it("puts a projectile's burst at the middle of the overlap, in place of its spark", () => {
     const bolt = body("hit", { attackBurst: "burst_l" } as Partial<Entity>);
     const ctx = context();

@@ -478,6 +478,7 @@
       ]
     },
     "sender_a0": {
+      "sends": "side",
       "anim": "ma0",
       "turn": false,
       "vel": [
@@ -496,6 +497,7 @@
       ]
     },
     "sender_a1": {
+      "sends": "down",
       "anim": "ma1",
       "turn": false,
       "vel": [
@@ -612,6 +614,7 @@
       ]
     },
     "sender_9f": {
+      "sends": "up",
       "anim": "m9f",
       "turn": false,
       "vel": [

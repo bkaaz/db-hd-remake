@@ -6,6 +6,8 @@ import { faceOpponent } from "./turning";
 import { applyAir, fall, ON_GROUND, type AirSetting } from "./air";
 import { hitAgain } from "./hitAgain";
 import type { ShakeDef } from "../camera/shake";
+import { OWN_COLOURS } from "../arena/arenaFile";
+import type { Way } from "../arena/ways";
 import { healFrame } from "../combat/heal";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement, type WorldRect } from "../combat/hit";
@@ -1063,6 +1065,11 @@ export class Entity {
     return this.sm?.def.hitFlash ?? 0;
   }
 
+  /** Which way this entity's current attack sends whoever it lands on, if anywhere. */
+  get attackSends(): Way | undefined {
+    return this.sm?.def.sends;
+  }
+
   /** The launches this entity's current attack gives the reactions it sends into. */
   get attackLaunches(): Record<string, [number | null, number | null]> | undefined {
     return this.sm?.def.launches;
@@ -1287,8 +1294,8 @@ export class Entity {
    * no sheet in that palette.
    */
   light(time: string): boolean {
-    if (!this.def.variants.has(time)) return false;
-    this.lighting = time;
+    if (time !== OWN_COLOURS && !this.def.variants.has(time)) return false;
+    this.lighting = time === OWN_COLOURS ? null : time;
     this.showVariant();
     return true;
   }

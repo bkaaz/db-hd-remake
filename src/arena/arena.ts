@@ -1,4 +1,4 @@
-import { Sprite, Texture, type Container } from "pixi.js";
+import { Container, Sprite, Texture } from "pixi.js";
 import type { Backdrop } from "../stage";
 import type { ArenaFile } from "./arenaFile";
 import { CycledLayer } from "./cycledLayer";
@@ -49,11 +49,19 @@ async function picture(url: string): Promise<HTMLImageElement> {
 export class ArenaBackdrop implements Backdrop {
   readonly whitens = true;
   private readonly layers: { sprite: Sprite; scroll: [number, number]; cycled?: CycledLayer }[];
+  /** Under whatever its parent holds already: the flash and the fade stay over an arena that comes later. */
+  private readonly root = new Container();
 
-  constructor(parent: Container, arena: LoadedArena) {
+  /** @param shared its pictures belong to someone else (`arena/travel.ts`), who lets them go */
+  constructor(
+    parent: Container,
+    arena: LoadedArena,
+    private readonly shared = false,
+  ) {
+    parent.addChildAt(this.root, 0);
     this.layers = arena.layers.map(({ texture, scroll, cycled }) => {
       const sprite = new Sprite(texture);
-      parent.addChild(sprite);
+      this.root.addChild(sprite);
       return { sprite, scroll, cycled };
     });
   }
@@ -67,6 +75,7 @@ export class ArenaBackdrop implements Backdrop {
   }
 
   destroy(): void {
-    for (const { sprite } of this.layers) sprite.destroy({ texture: true, textureSource: true });
+    for (const { sprite } of this.layers) sprite.destroy(this.shared ? {} : { texture: true, textureSource: true });
+    this.root.destroy();
   }
 }

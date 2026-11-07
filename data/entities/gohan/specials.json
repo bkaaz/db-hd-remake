@@ -1507,6 +1507,7 @@
       "sound": "sfx_3a"
     },
     "sender_9f": {
+      "sends": "up",
       "anim": "m9f",
       "vel": [
         0,
@@ -1525,6 +1526,7 @@
       ]
     },
     "sender_a0": {
+      "sends": "side",
       "anim": "ma0",
       "vel": [
         0,
@@ -1543,6 +1545,7 @@
       ]
     },
     "sender_a1": {
+      "sends": "down",
       "anim": "ma1",
       "vel": [
         0,

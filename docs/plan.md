@@ -30,11 +30,14 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 ---
 
-## Now: the missing arenas
+## Now: the senders
 
-The owner, 2026-11-07: the arenas that are still missing come next, ahead of the engine's bugs; **the flying ones not for now**. What the cartridge has: `rom.md`, the table of arenas and stages; `npm run rom -- stage` draws them all. What the game has: `ARENAS` in `src/rom/arena.ts`, `data/arenas/`.
-
-One arena at a time, each handed over before the next (owner, 2026-11-07). Left: his word on the ruins, the last on the floor. Flying, waiting, with 6 among them by his word: 1 (sky over the clouds), 2 (a planet from above), 6 (crater with violet lightning).
+The owner, 2026-11-07: the blows that send the opponent to another arena, by his
+graph (`combat.md`, Where the fight happens). The change of arena is in, with a
+cut. Next: the flight between the two — the screen of blue curved bands the
+defender crosses, his `23` (`21`, `25` the other ways), the attacker's `45` run
+in, the defender's landing and get-up (`rom.md`, Where a blow sends him;
+`tools/re/runs/sender-a0*.json`). Then whether the flying arenas (1, 2, 6) come.
 
 ## Now: reading the cartridge by script
 
@@ -178,14 +181,6 @@ still differs from the original:
    `npm run rom -- todo --fighter goku` lists.
 2. **The rest of the objects** — moves cut at a spawn lose their loop
    (dizzy, `m26`–`m3a`).
-3. **The blows that change the arena — last of Goku's moves** (owner,
-   2026-10-31). `9f`, `a0`, `a1` (X specials) send the opponent to another
-   part of the arena, a flight shown between the two (`rom.md`, Which
-   reaction: byte 2); both fighters play them as the closed way's knockdown
-   (`sender_*`) until then. Needs the other arenas, their parts and the flight;
-   never the way up into the fight above the arena (`combat.md`, Where the
-   fight happens).
-
 *Open:* idle holds each pose 12 frames in its script but 13–14 in a
 recording; which moves repeat or hold is listed by hand in
 `src/rom/animation.ts` rather than read from the move handlers.

@@ -10,6 +10,7 @@ import { VIEW } from "../view";
 import type { EntityDef } from "../entity/entityDef";
 import type { Effects } from "../fx/effects";
 import type { Stage } from "../stage";
+import type { Way } from "../arena/ways";
 import { landBlow, type BlowContext } from "./blow";
 import { parries } from "./parry";
 import type { Projectiles } from "./projectiles";
@@ -44,6 +45,8 @@ export interface FightersSetup {
   effects: Effects;
   /** The bolts in the air. They belong here: a bolt is one fighter hitting the other. */
   projectiles: Projectiles;
+  /** Whether a sending blow has somewhere to send him — see `BlowContext.opens`. */
+  opens?: BlowContext["opens"];
 }
 
 /** What the HUD and the status line need to know about the pair. */
@@ -66,6 +69,13 @@ export interface FightersStatus {
  * the HUD, the keyboard or the stage. Every future rule of combat will want to
  * move in here, and it only stays readable while that stays true.
  */
+/** A sending blow that landed, and on whom. */
+export interface Sent {
+  way: Way;
+  attacker: Entity;
+  defender: Entity;
+}
+
 export class Fighters {
   /** The longest white screen any blow landed this frame asked for. */
   private flash = 0;
@@ -82,6 +92,8 @@ export class Fighters {
   private readonly throws = new Throws();
   private readonly seizures = new Seizures();
   private readonly finales = new Finales();
+  /** A blow that sends the defender to another arena landed: for `takeSent`. */
+  private sent: Sent | null = null;
   /** What a scene asked of the screen this frame, for `takeScreen`. */
   private readonly screenCues: ScreenCue[] = [];
   /** The camera as the last frame left it: where a scene's bursts may fall. */
@@ -96,8 +108,8 @@ export class Fighters {
    */
   private inFront: Entity;
 
-  constructor({ world, p1, p2, scale, audio, effects, projectiles }: FightersSetup) {
-    this.impact = { effects };
+  constructor({ world, p1, p2, scale, audio, effects, projectiles, opens }: FightersSetup) {
+    this.impact = { effects, opens };
     this.projectiles = projectiles;
     // a side each, so that one's sound never cuts the other's (src/audio/playback.ts)
     this.player = new Entity(p1, scale, audio.side("p1", p1.sounds));
@@ -311,6 +323,7 @@ export class Fighters {
       }
       const result = landBlow(a, d, this.impact);
       if (result) this.flash = Math.max(this.flash, result.flash);
+      if (result?.sends) this.sent = { way: result.sends, attacker: a, defender: d };
       this.recorder.blow(result, from, to, gap, named);
     }
   }
@@ -326,6 +339,25 @@ export class Fighters {
   /** What the fighters' states and scenes asked of the screen this frame, in order — taken once. */
   takeScreen(): ScreenCue[] {
     return [...this.both().flatMap((f) => f.takeScreen()), ...this.screenCues.splice(0)];
+  }
+
+  /** The sending blow landed this frame, or null — taken once. */
+  takeSent(): Sent | null {
+    const sent = this.sent;
+    this.sent = null;
+    return sent;
+  }
+
+  /**
+   * The two put down on another arena: the attacker standing where his run in
+   * ends, the defender falling where the blow carried him, facing each other.
+   */
+  arrive({ attacker, defender }: Sent, at: { attacker: number; defender: number }): void {
+    attacker.x = at.attacker;
+    defender.x = at.defender;
+    attacker.forceState("idle");
+    attacker.turnToward(defender.x);
+    defender.turnToward(attacker.x);
   }
 
   takeFlash(): number {

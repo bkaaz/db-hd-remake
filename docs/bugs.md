@@ -20,6 +20,10 @@ because a number would only need translating back.
 
 ---
 
+## Buu's leg coming out of the ground is in the wrong palette
+
+*Cosmetic, Buu (owner, 2026-11-07).* In the attack where his leg comes up out of the ground, the leg is not in the right colours. Which move that is, and which palette it should have, not looked into yet `?`.
+
 ## An arena may lie a pixel lower under the fighters than the original's `?`
 
 *Cosmetic, every arena.* `npm run arena-fit`: the original's screen shows the arena 1 px higher than ours from the same camera, on the palace at every shot and on the tournament at one of two. The SNES draws a BG's row 1 on its first line, which would be this; a sprite's offset from its OAM y was not compared, so whether the fighters stand a pixel off is not known.

@@ -206,6 +206,13 @@ and there will be none (owner, 2026-11-03). Its winner's pose, `82`, is
 one of two the winner strikes at random; not Gohan's, which does not fit on the
 ground (owner, 2026-11-04: off for now, `plan.md`).
 
+**A sender's ways are ours, built on the cartridge's** (owner, 2026-11-07;
+`src/arena/ways.ts`). Up (↓ ↘ → X) leads from every floor to Kami's palace;
+sideways (→ ← → X) goes round the floors — plains, tournament, ruins, shore —
+the way the attacker faces; down (↓ ↙ ← X) leads from the palace to the
+tournament or the plains, by the half he stood in. Every other way is closed,
+and the blow is only its knockdown. A lighting goes along where the arena has it.
+
 **A body in flight keeps one way round** (owner, 2026-11-06). The cartridge
 turns the opponent of Flaming Headbutt upside down as he falls and mirrors him every
 few frames (`rom.md`). Ours keeps him one way round, head up, on purpose.

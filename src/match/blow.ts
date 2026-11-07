@@ -1,6 +1,7 @@
 import { contact, impactPoint } from "../combat/hit";
 import type { Entity } from "../entity/entity";
 import type { Effects } from "../fx/effects";
+import type { Way } from "../arena/ways";
 
 /**
  * What happened, for whoever wants to say so out loud — the recording, and one
@@ -17,11 +18,15 @@ export interface BlowResult {
   took: string;
   /** Frames of white screen it asks for (`hitFlash`); none when blocked. */
   flash: number;
+  /** The way it sends him to another arena (`sends`), when one lies there and it is not the KO. */
+  sends?: Way;
 }
 
 /** What a landing blow needs besides the two bodies: a spark. Its noise is the defender's. */
 export interface BlowContext {
   effects: Effects;
+  /** Whether a blow that `sends` him that way has an arena to send him to (`arena/travel.ts`); none on the grid. */
+  opens?: (way: Way, attacker: Entity, defender: Entity) => boolean;
 }
 
 /**
@@ -35,7 +40,7 @@ export interface BlowContext {
 export function landBlow(
   attacker: Entity,
   defender: Entity,
-  { effects }: BlowContext,
+  { effects, opens }: BlowContext,
 ): BlowResult | null {
   if (!attacker.canHit) return null;
   // a box in a drawing is not a blow: the original only arms one when a move asks,
@@ -83,6 +88,10 @@ export function landBlow(
   // What the blow was worth, after the combo it lands in has scaled it — the
   // number the defender actually lost, which is the only one worth reporting.
   let dealt = 0;
+  // one that sends him away costs nothing, as the original's journey does (recorded) —
+  // unless it would empty his health, which is the KO and no journey ($0D:D687)
+  const way = blocked ? undefined : attacker.attackSends;
+  const away = way !== undefined && defender.health > attacker.attackDamage && (opens?.(way, attacker, defender) ?? false);
   if (!blocked) {
     // The reaction goes first, and the order matters: both scalings read how
     // many blows have landed *before* this one, and `hurtBy` is what adds this
@@ -95,7 +104,7 @@ export function landBlow(
       burns: attacker.attackBurns,
       launches: attacker.attackLaunches,
     });
-    dealt = defender.hurtBy(attacker.attackDamage);
+    if (!away) dealt = defender.hurtBy(attacker.attackDamage);
   }
   // A projectile that bursts does so at the middle of the overlap, a spark at
   // the deepest point of the blow — see impactPoint. Neither is where the
@@ -119,5 +128,5 @@ export function landBlow(
   else if (!attacker.travels) attacker.freeze(stop);
   if (!blocked) defender.shoveBeforePause();
   defender.freeze(stop);
-  return { attack, damage: dealt, blocked, took, flash: blocked ? 0 : attacker.attackFlash };
+  return { attack, damage: dealt, blocked, took, flash: blocked ? 0 : attacker.attackFlash, ...(away && { sends: way }) };
 }

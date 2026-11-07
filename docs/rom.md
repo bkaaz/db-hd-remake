@@ -1007,7 +1007,22 @@ defender turned), `$0502` / `$0500` are set, and the defender takes move
 `21`, `23` or `25`. Closed — or in the modes `$1A02` / `$30B0` say
 (`$30B0` bit `40`; `48` when `$1B15` is clear and `$1A02` is neither 0 nor 2) — a knockdown, `1b`,
 with knockback `12`, `05` or `04`; above the arena (`$0552`) `$D5C0`
-instead. Light is move `15` (`13` when field `0x97`
+instead.
+
+**Where a blow sends him** (`$0D:E158`, by `$DD`, 0 in a fight, `$00:CB31`): the stage id it gives goes to `$0550`, carry set for a closed way. With `$DD` 0 it reads `$054E`, and only the day's ids have ways; every other stage is closed `?` (not played). "Faces left" is the attacker's field `0x12` bit 6; recorded: Goku facing right on the tournament, `a0` → the ruins. Direction 1 is the only one along the ground:
+
+| from | 0 (`9f`) | 1 (`a0`) | 2 (`a1`) |
+|---|---|---|---|
+| tournament `00` | right half `06`, left `03` | faces left `0d`, else `0c` | closed |
+| ruins `0c` | right half `06`, left `03` | faces left `00`, else `0d` | closed |
+| plains `0d` | right half `03`, left `06` | faces left `0c`, else `00` | closed |
+| palace `09` | closed | faces left `03`, else `06` | closed |
+| sky `03` | `09` | `06` | right half `00`, left `0d` |
+| planet `06` | `09` | `03` | right half `0c`, left `00` |
+
+`06` is closed instead while `$1B15` is set `?`. Recorded (`tools/re/runs/sender-a0.json`): the defender is `23` for 156 frames, through a screen of blue curved bands, the attacker `45` for 143; on the new arena the defender lands at 320 and slides to 330, then gets up (`1b`, `1f`), the attacker running in to x 193; no health lost. Facing left (P2's): the plains, the defender at 192 → 179, the attacker in from 512 to 312.
+
+Light is move `15` (`13` when field `0x97`
 bit 0 is set), heavy `16` (`14`); `$0D:D7BA` turns them into `17`/`18`
 `?`. Hitstun is that move's script — light 14 frames, heavy 26 — not a
 number in the record.

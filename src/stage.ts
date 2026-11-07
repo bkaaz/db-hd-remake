@@ -39,7 +39,7 @@ export class Stage {
 
   constructor(
     layer: Container,
-    private readonly backdrop: Backdrop,
+    private backdrop: Backdrop,
   ) {
     this.white.visible = false;
     this.dark.alpha = 0;
@@ -49,6 +49,12 @@ export class Stage {
   /** The screen's place in the world, and how far a shake pushes the backdrop's scroll. */
   scroll(x: number, y: number, shake: number): void {
     this.backdrop.scroll(x, y + shake);
+  }
+
+  /** Another backdrop in this one's place, under the flash: the fight sent to another arena. */
+  change(backdrop: Backdrop): void {
+    this.backdrop.destroy();
+    this.backdrop = backdrop;
   }
 
   /** A horizontal position as a fraction across the world — 0.5 is the middle. */

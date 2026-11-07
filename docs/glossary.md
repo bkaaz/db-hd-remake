@@ -209,6 +209,9 @@ button ends it at any depth. A tree, derived from `states.json` like any chain.
 **SA-1** — the cartridge's second 65816; it runs the fight and unpacks the
 sprites, so the original's state is found in its I-RAM. → `rom.md`
 
+**Sender** — a blow (`9f`, `a0`, `a1`) whose state `sends` the opponent to
+another arena, up, sideways or down. → `arena/ways.ts`, ADR 0083
+
 **Shake** — the backdrop jolting up and down while the fighters stay put:
 `shake` on a state, one of the original's four patterns. → `camera/shake.ts`
 

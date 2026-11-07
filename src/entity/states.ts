@@ -28,6 +28,7 @@ import { hitAgainProblem, type IfHitAgain } from "./hitAgain";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
 import type { HealDef } from "../combat/heal";
+import { WAYS, type Way } from "../arena/ways";
 import { SHAKE_PATTERNS, type ShakeDef } from "../camera/shake";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
 import { missWindow, type AnimSteps } from "../combat/swing";
@@ -438,6 +439,11 @@ export interface StateDef {
   burns?: boolean;
   /** Frames the whole screen goes white when this state's blow lands — the Kamehameha's 16. */
   hitFlash?: number;
+  /**
+   * This state's blow sends the opponent to another arena that way, where one
+   * lies (`arena/ways.ts`); where none does, he only takes its reaction.
+   */
+  sends?: Way;
   /**
    * What this state's blow turns into where it lands — an effect put at the
    * middle of the boxes' overlap in place of its `hitFx` (ADR 0044): the
@@ -1602,6 +1608,7 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     } else if (!anim) {
       errors.push(`${where}: unknown animation "${def.anim}"`);
     }
+    if (def.sends !== undefined && !WAYS.includes(def.sends)) errors.push(`${where}: "sends" is one of ${WAYS.join(", ")}`);
 
     // A step with no hurt box is a hole in the fighter: for those frames it
     // cannot be hit at all, and nothing on screen says so.
