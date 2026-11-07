@@ -2,55 +2,49 @@
   "voice_hurt": {
     "gain": 0.85,
     "vary": 0.05,
-    "file": "piccolo_30.wav",
-    "rom": 48
+    "rom": 48,
+    "fighter": "piccolo"
   },
   "voice_ko": {
     "gain": 0.85,
     "vary": 0,
-    "file": "piccolo_31.wav",
-    "rom": 49
+    "rom": 49,
+    "fighter": "piccolo"
   },
   "voice_shout": {
     "gain": 0.85,
     "vary": 0.04,
-    "file": "piccolo_32.wav",
-    "rom": 50
+    "rom": 50,
+    "fighter": "piccolo"
   },
   "line_1b": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_1b.wav",
     "line": 27
   },
   "line_1d": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_1d.wav",
     "line": 29
   },
   "line_1e": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_1e.wav",
     "line": 30
   },
   "line_1f": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_1f.wav",
     "line": 31
   },
   "line_20": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_20.wav",
     "line": 32
   },
   "line_2c": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_2c.wav",
     "line": 44
   }
 }

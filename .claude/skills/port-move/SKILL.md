@@ -168,8 +168,8 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   the table's last row first (ADR 0060).
 - no swing `sound`: the export put the script's sounds on the animation's
   steps (`sfx`), and they play through the bank entry whose `rom` is that
-  id — every effect of the original has one, on its file of the sound test
-  (`docs/audio-capture.md`). A state's `sound` is only for what no script
+  id — every effect of the original has one, played by the cartridge's
+  driver (ADR 0092). A state's `sound` is only for what no script
   plays (a landing). An object's code may play its own
   (`npm run rom -- code <type> <anim>`: "plays sound 19"): give its state
   that id's bank name. A fighter's voices are `voice_hurt` (`30`),

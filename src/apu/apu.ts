@@ -23,33 +23,60 @@ export class Apu {
   readonly output = new Uint8Array(4);
   private dspAddr = 0;
   private timers = [0, 1, 2].map(() => ({ on: false, target: 0, count: 0, out: 0, stage: 0 }));
-  private budget = 0;
+  private cycles = 0;
+  private made = 0;
+  private readonly pending: number[] = [];
 
   constructor() {
     this.cpu = new Spc700({ read: (a) => this.read(a), write: (a, v) => this.write(a, v) });
   }
 
-  /** The uploads, in the order the game sends them; the driver starts where the last one says. */
-  load(uploads: ApuUpload[]): void {
+  /** The uploads, in the order the game sends them; the driver starts at `start`, by default where the last one says. */
+  load(uploads: ApuUpload[], start = uploads[uploads.length - 1].start): void {
     for (const u of uploads) for (const b of u.blocks) for (let i = 0; i < b.bytes.length; i++) this.ram[(b.at + i) & 0xffff] = b.bytes[i];
-    this.cpu.pc = uploads[uploads.length - 1].start;
+    this.cpu.pc = start;
   }
 
   /** `count` stereo samples at 32 kHz, interleaved left, right. */
   render(count: number): Int16Array {
-    const out = new Int16Array(count * 2);
-    for (let n = 0; n < count; n++) {
-      this.budget += CYCLES_PER_SAMPLE;
-      while (this.budget > 0) {
-        const c = this.cpu.step();
-        this.tick(c);
-        this.budget -= c;
-      }
-      const [l, r] = this.dsp.sample();
-      out[2 * n] = l;
-      out[2 * n + 1] = r;
+    while (this.pending.length < 2 * count) this.step();
+    return Int16Array.from(this.pending.splice(0, 2 * count));
+  }
+
+  /** Every sample made so far and not yet taken, interleaved. */
+  take(): Int16Array {
+    return Int16Array.from(this.pending.splice(0));
+  }
+
+  /** Samples made so far, taken or not: the chip's clock, in samples. */
+  get time(): number {
+    return this.made;
+  }
+
+  /**
+   * Run until `done` holds — the game waiting on a port — or give up after
+   * `cycles`, as its waits do. The chip's time passes all the while.
+   */
+  until(done: () => boolean, cycles = 20000): boolean {
+    for (let spent = 0; spent < cycles; ) {
+      if (done()) return true;
+      spent += this.step();
     }
-    return out;
+    return done();
+  }
+
+  /** One instruction, and a DSP sample for every 32 cycles. */
+  private step(): number {
+    const c = this.cpu.step();
+    this.tick(c);
+    this.cycles += c;
+    while (this.cycles >= CYCLES_PER_SAMPLE) {
+      this.cycles -= CYCLES_PER_SAMPLE;
+      const [l, r] = this.dsp.sample();
+      this.pending.push(l, r);
+      this.made++;
+    }
+    return c;
   }
 
   private tick(cycles: number): void {

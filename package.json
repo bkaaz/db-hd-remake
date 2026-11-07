@@ -21,8 +21,7 @@
     "arena-fit": "tsx scripts/arena-fit.ts",
     "original": "tsx scripts/original.ts",
     "moves": "tsx scripts/moves.ts",
-    "dis": "tsx scripts/dis.ts",
-    "sound-test": "tsx scripts/sound-test.ts"
+    "dis": "tsx scripts/dis.ts"
   },
   "dependencies": {
     "pixi.js": "^8.6.6"

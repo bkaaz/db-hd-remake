@@ -1,317 +1,272 @@
 {
-  "_comment": "The game's sound bank: every effect of the original, one entry per cartridge id (`rom`) — what its scripts and code ask for — and its file, that id's entry of the original's sound test (`npm run sound-test`, assets/audio/sfx/<id>.wav). A name is what it is and its id, `sfx_<id>` while nobody has said what plays it; `label` is for a person and the editor's picker. Every gain is one number: the files keep the levels the game plays them at. Voices are not here — they belong to a fighter, in data/entities/<name>/sounds.json.",
+  "_comment": "The game's sound bank: every effect of the original, one entry per cartridge id (`rom`) — what its scripts and code ask for — played as the cartridge's own sound driver plays it, on our emulated sound chip (src/apu/, ADR 0092). A name is what it is and its id, `sfx_<id>` while nobody has said what plays it; `label` is for a person and the editor's picker. Every gain is one number: the driver plays each at the level the game does. Voices are not here — they belong to a fighter, in data/entities/<name>/sounds.json.",
   "sfx_01": {
     "label": "sound 01, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "01.wav",
     "rom": 1
   },
   "sfx_02": {
     "label": "sound 02, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "02.wav",
     "rom": 2
   },
   "sfx_03": {
     "label": "sound 03, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "03.wav",
     "rom": 3
   },
   "confirm_04": {
     "label": "a menu confirming a choice, a character among them (owner) — sound 04",
     "gain": 0.85,
     "vary": 0,
-    "file": "04.wav",
     "rom": 4
   },
   "swing_05": {
     "label": "Side Slash's step into the depth — sound 05",
     "gain": 0.85,
     "vary": 0.12,
-    "file": "05.wav",
     "rom": 5
   },
   "swing_06": {
     "label": "a punch's swing — sound 06",
     "gain": 0.85,
     "vary": 0.12,
-    "file": "06.wav",
     "rom": 6
   },
   "swing_07": {
     "label": "a kick's swing — sound 07",
     "gain": 0.85,
     "vary": 0.12,
-    "file": "07.wav",
     "rom": 7
   },
   "sfx_08": {
     "label": "sound 08, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "08.wav",
     "rom": 8
   },
   "hit_09": {
     "label": "a melee blow landing — sound 09",
     "gain": 0.85,
-    "file": "09.wav",
     "rom": 9
   },
   "burst_0a": {
     "label": "a ki bolt going off — sound 0a",
     "gain": 0.85,
     "vary": 0.08,
-    "file": "0a.wav",
     "rom": 10
   },
   "blast_0b": {
     "label": "a ki bolt being fired — sound 0b",
     "gain": 0.85,
     "vary": 0.06,
-    "file": "0b.wav",
     "rom": 11
   },
   "land_0c": {
     "label": "landing after a jump — sound 0c",
     "gain": 0.85,
     "vary": 0.1,
-    "file": "0c.wav",
     "rom": 12
   },
   "land_0d": {
     "label": "a knocked-down body hitting the floor — sound 0d",
     "gain": 0.85,
     "vary": 0.1,
-    "file": "0d.wav",
     "rom": 13
   },
   "block_17": {
     "label": "a blocked blow — sound 17",
     "gain": 0.85,
     "vary": 0.06,
-    "file": "17.wav",
     "rom": 23
   },
   "charge_19": {
     "label": "charging ki — asked for every 8 frames, each copy cutting the last: its first 8 frames, over and over — sound 19",
     "gain": 0.85,
     "vary": 0,
-    "file": "19.wav",
     "rom": 25
   },
   "sfx_1b": {
     "label": "sound 1b, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "1b.wav",
     "rom": 27
   },
   "sfx_1d": {
     "label": "sound 1d, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "1d.wav",
     "rom": 29
   },
   "sfx_1f": {
     "label": "sound 1f, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "1f.wav",
     "rom": 31
   },
   "sfx_21": {
     "label": "sound 21, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "21.wav",
     "rom": 33
   },
   "sfx_23": {
     "label": "sound 23, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "23.wav",
     "rom": 35
   },
   "charge_25": {
     "label": "charging a beam — the kamehameha's; played once and cut off by the shot, never looped — sound 25",
     "gain": 0.85,
     "vary": 0,
-    "file": "25.wav",
     "rom": 37
   },
   "cursor_27": {
     "label": "the sound test's cursor moving — sound 27",
     "gain": 0.85,
     "vary": 0,
-    "file": "27.wav",
     "rom": 39
   },
   "sfx_28": {
     "label": "sound 28, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "28.wav",
     "rom": 40
   },
   "teleport_29": {
     "label": "a teleport, as he vanishes — sound 29",
     "gain": 0.85,
     "vary": 0,
-    "file": "29.wav",
     "rom": 41
   },
   "sfx_2b": {
     "label": "sound 2b, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "2b.wav",
     "rom": 43
   },
   "explosion_2c": {
     "label": "Saiyan Meteor's explosion as the ball hits the ground — sound 2c",
     "gain": 0.85,
     "vary": 0,
-    "file": "2c.wav",
     "rom": 44
   },
   "ball_2d": {
     "label": "Saiyan Meteor's ball charging at the fist — sound 2d",
     "gain": 0.85,
     "vary": 0,
-    "file": "2d.wav",
     "rom": 45
   },
   "ball_2f": {
     "label": "Saiyan Meteor's big ball over the head — sound 2f",
     "gain": 0.85,
     "vary": 0,
-    "file": "2f.wav",
     "rom": 47
   },
   "meteor_38": {
     "label": "Saiyan Meteor before the throw — sound 38",
     "gain": 0.85,
     "vary": 0,
-    "file": "38.wav",
     "rom": 56
   },
   "sfx_39": {
     "label": "sound 39, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "39.wav",
     "rom": 57
   },
   "sfx_3a": {
     "label": "sound 3a, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "3a.wav",
     "rom": 58
   },
   "eruption_3c": {
-    "label": "Cell's Bakuretsu Rush and Tri Eruption, each set of flames — sound 3c, what player two's 3a is ($0D:D852)",
+    "label": "Cell's Bakuretsu Rush and Tri Eruption, each set of flames — sound 3c, which sounds as player two's 3a does ($0D:D852)",
     "gain": 0.85,
     "vary": 0,
-    "file": "3a.wav",
     "rom": 60
   },
   "flare_3d": {
     "label": "Vegeta's Ground Flare (a9) — sound 3d",
     "gain": 0.85,
     "vary": 0,
-    "file": "3d.wav",
     "rom": 61
   },
   "sfx_3f": {
     "label": "sound 3f, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "3f.wav",
     "rom": 63
   },
   "sfx_40": {
     "label": "sound 40, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "40.wav",
     "rom": 64
   },
   "sfx_41": {
     "label": "sound 41, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "41.wav",
     "rom": 65
   },
   "sfx_44": {
     "label": "sound 44, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "44.wav",
     "rom": 68
   },
   "sfx_46": {
     "label": "sound 46, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "46.wav",
     "rom": 70
   },
   "sfx_48": {
     "label": "sound 48, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "48.wav",
     "rom": 72
   },
   "sfx_49": {
     "label": "sound 49, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "49.wav",
     "rom": 73
   },
   "sfx_4a": {
     "label": "sound 4a, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "4a.wav",
     "rom": 74
   },
   "sfx_4b": {
     "label": "sound 4b, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "4b.wav",
     "rom": 75
   },
   "sfx_4c": {
     "label": "sound 4c, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "4c.wav",
     "rom": 76
   },
   "sfx_4d": {
     "label": "sound 4d, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "4d.wav",
     "rom": 77
   },
   "sfx_4f": {
     "label": "sound 4f, what plays it not named yet",
     "gain": 0.85,
     "vary": 0,
-    "file": "4f.wav",
     "rom": 79
   }
 }

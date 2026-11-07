@@ -1,41 +1,17 @@
-import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { decodeWav } from "../audio/wav";
-import { ROM_PATH } from "./cartridge";
-import { likeness, resample } from "../audio/compare";
-import { VOICE_RATE, voiceSamples, voiceSounds } from "./voice";
-
-const clip = (n: string) => `assets/audio/sfx/${n}.wav`;
-
-describe.skipIf(!existsSync(ROM_PATH))("a fighter's voice from the cartridge", () => {
-  const rom = new Uint8Array(readFileSync(ROM_PATH));
-  const goku = voiceSamples(rom, 0);
-
-  it.skipIf(!existsSync(clip("goku_32")) || !existsSync(clip("goku_30")))("is what the sound test's recording of Goku's plays", () => {
-    for (const [ours, name] of [[goku.shout, "goku_32"], [goku.hurt, "goku_30"]] as const) {
-      const theirs = decodeWav(readFileSync(clip(name)));
-      expect(likeness(ours, resample(theirs.samples, theirs.sampleRate, VOICE_RATE))).toBeGreaterThan(0.85);
-    }
-  });
-
-  it("reads each fighter's own samples by his character: Vegeta's are not Goku's", () => {
-    const vegeta = voiceSamples(rom, 1);
-    expect(vegeta.shout.length).toBeGreaterThan(0);
-    expect(vegeta.shout.length).not.toBe(goku.shout.length);
-  });
-});
+import { voiceSounds } from "./voice";
 
 describe("voiceSounds", () => {
   it("writes the voice and the lines again, and keeps what names neither a cartridge id nor a line", () => {
     const sounds = {
-      voice_hurt: { gain: 0.6, file: "042.wav", rom: 0x30 },
-      voice_kame: { gain: 0.6, file: "080.wav", line: 0 },
-      grunt: { gain: 0.5, file: "099.wav" },
+      voice_hurt: { gain: 0.6, rom: 0x30 },
+      voice_kame: { gain: 0.6, line: 0 },
+      grunt: { gain: 0.5 },
     };
     const out = voiceSounds(sounds, "goku", [0]);
     expect(Object.keys(out).sort()).toEqual(["grunt", "line_00", "voice_hurt", "voice_ko", "voice_shout"]);
-    expect(out.voice_hurt).toMatchObject({ file: "goku_30.wav", rom: 0x30 });
-    expect(out.voice_ko).toMatchObject({ file: "goku_31.wav", rom: 0x31 });
-    expect(out.line_00).toMatchObject({ file: "line_00.wav", line: 0 });
+    expect(out.voice_hurt).toEqual(expect.objectContaining({ rom: 0x30, fighter: "goku" }));
+    expect(out.voice_ko).toEqual(expect.objectContaining({ rom: 0x31, fighter: "goku" }));
+    expect(out.line_00).toEqual(expect.objectContaining({ line: 0 }));
   });
 });

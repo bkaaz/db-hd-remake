@@ -2,37 +2,34 @@
   "voice_hurt": {
     "gain": 0.85,
     "vary": 0.05,
-    "file": "gohan_30.wav",
-    "rom": 48
+    "rom": 48,
+    "fighter": "gohan"
   },
   "voice_ko": {
     "gain": 0.85,
     "vary": 0,
-    "file": "gohan_31.wav",
-    "rom": 49
+    "rom": 49,
+    "fighter": "gohan"
   },
   "voice_shout": {
     "gain": 0.85,
     "vary": 0.04,
-    "file": "gohan_32.wav",
-    "rom": 50
+    "rom": 50,
+    "fighter": "gohan"
   },
   "line_04": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_04.wav",
     "line": 4
   },
   "line_05": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_05.wav",
     "line": 5
   },
   "line_2c": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_2c.wav",
     "line": 44
   }
 }

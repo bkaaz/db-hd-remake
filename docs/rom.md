@@ -398,7 +398,7 @@ ki blast's — `0a` and `30` on the defender's side, other voices, so the
 shot sounds on. The explosion object (`$0F:E1A9`) asks for no sound; the
 original plays nothing when Goku jumps, as far as the code shows.
 
-**The sound test's number is not an id**: its list (`tools/re/record-sound-test.lua`, 2026-11-03) runs every effect once by id — `01`–`0d`, then every other id from `17` (`17`, `19`, … `29`, `2b`–`2d`, `2f`), `38`–`3a`, `3d`, `3f`–`41`, `44`, `46`, `48`–`4d`, `4f`; the ids between are player two's, shifted (`$0D:D852`) — then each fighter's three voices, the blow taken (`30`), the **KO (`31`)** and the shout (`32`), in the order goku, gohan, gotenks, vegeta, vegetto, cell, piccolo, mr_buu, buu, freeza, then every spoken line `00`–`2d`, and wraps to its first entry. `npm run sound-test` cuts a recording of it into one file per entry, named by what the game asked for, into `assets/audio/sfx/` (`audio-capture.md`) — every bank entry is its id's file. A melee hit plays
+**The sound test's number is not an id**: its list (recorded 2026-11-03) runs every effect once by id — `01`–`0d`, then every other id from `17` (`17`, `19`, … `29`, `2b`–`2d`, `2f`), `38`–`3a`, `3d`, `3f`–`41`, `44`, `46`, `48`–`4d`, `4f`; the ids between are player two's, shifted (`$0D:D852`) — then each fighter's three voices, the blow taken (`30`), the **KO (`31`)** and the shout (`32`), in the order goku, gohan, gotenks, vegeta, vegetto, cell, piccolo, mr_buu, buu, freeza, then every spoken line `00`–`2d`, and wraps to its first entry. The driver plays every one of them as the recording does (`src/apu/`, ADR 0092). A melee hit plays
 `09` (`$0D:D1B7`) and the defender's own `30`; a projectile's, `0a` and `30`
 (`$0D:D1E6`). The export puts each script's `a0` on the animation step it
 begins (`sfx`); `"rom"` in a `sounds.json` is the id an entry is. What
@@ -417,7 +417,7 @@ plays each, where it is known:
 | `17` | a blocked melee blow (`$0D:CF55`) | `block_17` |
 | `19` | charging ki, every 8 frames (`$0F:A044`); Vegeta's Energy Field's object, ticks 1, 4 … 25 (`$0F:BBAC`) | `charge_19` |
 | `25` | charging the Kamehameha (`aa`'s script) | `charge_25` |
-| `27` | the sound test's cursor, on every → (`record-sound-test.lua`'s log) | `cursor_27` |
+| `27` | the sound test's cursor, on every → (recorded) | `cursor_27` |
 | `29` | a teleport's script, as he vanishes | `teleport_29` |
 | `2c` | Saiyan Meteor's explosion, every 64th frame while white (`$0F:F2A0`) | `explosion_2c`, ours as the ball hits the ground |
 | `2d` / `2f` | Saiyan Meteor's ball at the fist (`ae`'s script, 200) / over the head (306) | `ball_2d` / `ball_2f` |
@@ -430,12 +430,13 @@ plays each, where it is known:
 **A fighter's voice is two samples** the chip is given as a fight loads
 (`$00:98EC`): by character × 9 at `$00:DD48`, a pointer to player one's
 sample directory (8 bytes for `$1A78`), player two's (`$1A88`), and the
-samples (for `$4000`, player two's `$5600`) — each a byte count and an
-address, then the bytes. The first is the cry of a blow taken (`30`), the
-second the shout (`32`), both at pitch `03F6`. Goku's are `$15:8000`.
-`src/rom/voice.ts` reads them, by which `npm run sound-test` tells whose
-voices its recording holds; the KO (`31`) is not among them, and is
-streamed `?` — the sound test holds it (`goku_31.wav`).
+samples — each a byte count and an address, then the bytes; `$00:D980`
+sends every block of the samples to `$4000` (player two's `$5600`) whatever
+address it carries. The first is the cry of a blow taken (`30`), the second
+the shout (`32`), both at pitch `03F6`. Goku's are `$15:8000`.
+`src/rom/apuUpload.ts` reads the uploads (`voiceUploads`). The KO (`31`) is
+the driver's too: rendered with his voice loaded it is each fighter's KO of
+the sound test, length and all — from the same two samples `?`.
 
 **Charging ki refills health** (`$0F:A020`): every 2 frames of the game's
 count `$74` the dial (field `0x66`) steps 1; at 12 it goes back to 0 and
@@ -1221,7 +1222,7 @@ Handlers from `$10:C0CA`, objects from `$0F:C5CB`. His move-loaded tiles are `0x
 **`7/04`** stays at his y − 47, x ∓ 3, 3 frames of 6, gone. **`7/05`** is gone at 80, its frame by `$74 & 4`.
 **`$2A:8B92`**, the gate before a blow: no hit on a move `90`–`F9` on its frame 0; a body in `1e` cannot be struck from its step 2 (the bounce), nor at y `B8` or more. `7A` counts down for any other move, read no further `?`. Called at `$2A:8167`, `81CE`, `8233`, `8298`, for fighters' boxes `?`. Before it `$2A:8155` asks `$44` ≥ 2: a move's first two frames cannot land.
 **Kind 4 at `$30BA`** (`$2A:A78D`, one per player): word 0 on, `2` left, `4` middle y, `6` right, `A` half the height; the drawn top stops at y `1E`, under the HUD. `$10:CD44` puts its middle at `C8` − half, so it stands on the floor.
-**Bakuretsu Rush** (`ac`, `$10:C929`), **Tri Eruption** (`ad`, `$10:CB1A`): own + `0x48` on 18 and 30, record `14B` on 22, own on 34; field `0x96` `70` to 42. `ac`: vx 2 from 42, dust every 4th from 42 to 164, re-arms on 58, 74 … 138, stops and re-arms on 164, shake pattern 2 for 32 on 167. On 167 its pillar at +38 (field `F2` half width, 1 more a frame to 16, half height 8 more a frame to `78`), shown on odd counts of `F0`, 16 frames; the script holds on 170, then the width comes down 1 a frame and it is gone 32 frames in, then the script goes on. `a/22` goes when `$44` is past `AA`. `ad`: the same pillar from 59, not flickering, its height coming down 8 a half a frame: gone at 31, then the next at +70 and +102, each with its set of four `a/23` 32 px further on (recorded: the `b0`s name the same place), at the release of the last. A hit spends the set: of four over one body one strikes (recorded). A set is up 32 frames. Each set plays `3c`, in both players' scripts, which is `3a` shifted for player two (`$0D:D852`), so the same sound `?`; `a/23` struck sounds `0a` (recorded, `13` on player two), not a melee blow's `09`, though it stays.
+**Bakuretsu Rush** (`ac`, `$10:C929`), **Tri Eruption** (`ad`, `$10:CB1A`): own + `0x48` on 18 and 30, record `14B` on 22, own on 34; field `0x96` `70` to 42. `ac`: vx 2 from 42, dust every 4th from 42 to 164, re-arms on 58, 74 … 138, stops and re-arms on 164, shake pattern 2 for 32 on 167. On 167 its pillar at +38 (field `F2` half width, 1 more a frame to 16, half height 8 more a frame to `78`), shown on odd counts of `F0`, 16 frames; the script holds on 170, then the width comes down 1 a frame and it is gone 32 frames in, then the script goes on. `a/22` goes when `$44` is past `AA`. `ad`: the same pillar from 59, not flickering, its height coming down 8 a half a frame: gone at 31, then the next at +70 and +102, each with its set of four `a/23` 32 px further on (recorded: the `b0`s name the same place), at the release of the last. A hit spends the set: of four over one body one strikes (recorded). A set is up 32 frames. Each set plays `3c`, in both players' scripts, which is `3a` shifted for player two (`$0D:D852`): the driver plays the two alike; `a/23` struck sounds `0a` (recorded, `13` on player two), not a melee blow's `09`, though it stays.
 **Intro** (`3c`, `$10:C1D6`): records `148` on 1, `149` on 64, `14A` on 68, `14B` on 72, own + `9C` on 100, own + `9E` on 104, own on 108; field `0E` is 0 or −1 by `$74 & 1` while the step is under 8. No charge sound.
 **Win** (`3e`, `$10:C28D`): from 57 to 120 his drawing rises a quarter pixel a frame from −8, then bobs a pixel every 4 frames of `$74` 7 up, 14 down, 14 up …; holds at 272.
 

@@ -566,7 +566,7 @@ if (command === "tiles") {
 /** Writes the sheet and the two sections the export owns; states stay hand-written. */
 /** The shock's two palette records, at their addresses: the same for every fighter. */
 
-/** A fighter's voice and lines, on the sound test's files (`npm run sound-test`); his other sounds kept. */
+/** A fighter's voice and lines, played by the cartridge's driver with his samples (ADR 0092); his other sounds kept. */
 function writeVoice(t: FighterTables, fighter: string): void {
   const ids = spokenLines(rom, t);
   const path = `data/entities/${fighter}/sounds.json`;

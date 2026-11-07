@@ -35,29 +35,23 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md), on
 branch `poc-rom-runtime`. Every fighter's sheet, each palette of it, every
 object, every arena, the bands and the HUD are drawn in the browser
-(`src/cartridge/`); the cartridge's sound driver runs on our chip
-(`src/apu/`) but the game does not play it yet. Each slice ends with the game
-reading one more thing from the ROM and nothing of it from `assets/`.
+(`src/cartridge/`), and every effect, voice and spoken line is the
+cartridge's sound driver playing it on our chip (`src/apu/`).
 
-1. **Sound through the chip.** Effects asked of the driver instead of played
-   from files; fighters' voices uploaded where the game puts them
-   (`$00:98EC`); spoken lines streamed as BRR; the DSP's real interpolation
-   table in place of `gauss.ts`. *Done when:* nothing under `assets/audio/`
-   is opened, and the sound test's recordings are only a test's reference.
-2. **A static build.** The game fetches `data/` through the dev server's
+1. **A static build.** The game fetches `data/` through the dev server's
    `/api/*`; a hosted page has no server. *Done when:* `dist/web` on any
    static server plays, given a ROM.
-3. **The ROM remembered** in the browser (IndexedDB), so a player picks it
+2. **The ROM remembered** in the browser (IndexedDB), so a player picks it
    once.
-4. **Names in the editor** — aliases for the frames and animations it shows;
+3. **Names in the editor** — aliases for the frames and animations it shows;
    it reads them from the ROM and edits no sprite.
-5. **What is left goes:** `assets/`, the PNG half of `npm run rom
-   -- export`, `npm run pack`; `assets.md` and `CLAUDE.md` rewritten. Read
+4. **What is left goes:** `assets/` in `.gitignore`, `npm run pack`,
+   `assets.md`; `CLAUDE.md` read through for what still assumes files. Read
    again for what the hand-built Goku left behind: this file's sections written
    against his sheet (*G. Crouch*, *The moveset*), `descriptions.json` and the
    shorthand that reads it (`notation.ts`, `npm run which`), `input/motion.ts`,
    which no entity uses any more.
-6. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
+5. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
    translation's patch) is checked. The clean Japanese dump and any PAL one
    need their hashes, and the readers run against each — an address that
    moved is a table per dump.
@@ -82,7 +76,7 @@ built from the report alone.
 | a blow's record, an object's record | `hits.ts` |
 | a handler's frames (pinned or bounded), speeds, re-arms, sounds, moves set, by-step jumps, the spawn counter; a routine's arguments in A, Y and the scratch bytes and its answer in the carry; shared code by character; tests on fields in words; what is done to the opponent; the throw's launch and hold | `handler.ts`, `cpu.ts`, `flow.ts`, `tests.ts`, `routines.ts`, `hold.ts` |
 | a command's directions and button; the close lines | `commands.ts`, `buttons.ts` |
-| stages, arenas, the HUD, lightings, sound samples | `stage.ts`, `arena.ts`, `hud.ts`, `brr.ts` |
+| stages, arenas, the HUD, lightings, the sound driver's uploads | `stage.ts`, `arena.ts`, `hud.ts`, `apuUpload.ts` |
 | a command's conditions, cost and the opponent's move (bytes 0–3, 6) | `conditions.ts`, `commands.ts` |
 | an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
 | a fighter's attributes (defence, walk, jump, gravity) | **by hand** (`attributes.json`) |
@@ -384,10 +378,10 @@ Concrete questions already worth asking, so the review does not have to
 rediscover them:
 
 - **The synth spec.** No sound has `kind`/`freq`/`decay` any more — each is
-  its file of the sound test (ADR 0055). Does the synth half of `sounds.ts`
-  and `playback.ts` go too?
-- **`/api/sfx` lives in the entity-editor plugin**, like `/api/sheet` — correct
-  by precedent, but the plugin's name has stopped describing what it serves.
+  the cartridge's, played by its driver (ADR 0092). Does the synth half of
+  `sounds.ts` and `playback.ts` go too?
+- **The entity-editor plugin serves the game too** (`/api/rom`, `/api/arena`,
+  `/api/hud`) — its name has stopped describing what it serves.
 - **The input buffer** rode along in the same batch and has not been looked at
   since the day it was written.
 
@@ -509,11 +503,13 @@ queue.
 - **What follows the hit types** (`combat.md`, *Open*): a `stun` type, a hit
   type for ki blasts — the projectile and how it is taken — and whatever
   punishes a string thrown at nothing.
-- **What is left of the sounds.** Every sound is its id's file of the
-  sound test (`audio-capture.md`). Left: a name for each `sfx_<id>` once
-  what plays it is known (`rom.md`, The sounds); the KO (`voice_ko`) for
-  when there is a KO; and Freeza's shout (`freeza_32.wav`), which came out
-  0.05 s long and quiet — by ear against the sound test.
+- **What is left of the sounds.** Every sound is the cartridge's driver
+  playing its id (ADR 0092). Left: a name for each `sfx_<id>` once what plays
+  it is known (`rom.md`, The sounds); the KO (`voice_ko`) for when there is a
+  KO; Freeza's shout (`32`), a blip 0.05 s long and quiet in the driver as in
+  the sound test — the original's own, or asked for another way `?`; and the
+  music, which the driver plays too (uploads `10`–`17`), once the sounds run
+  live on the chip rather than rendered once.
 - **The rest of what spends ki.** The ki blast pays for itself as of
   2026-08-24 (`cost` on the state, checked before the transition fires), so the
   machinery is there and used. Vanish and the fast dash are the two that still

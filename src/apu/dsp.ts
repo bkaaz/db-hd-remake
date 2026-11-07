@@ -3,8 +3,7 @@
  * an envelope and a volume, plus noise, pitch modulation and the echo. One
  * call to `sample()` is one 32 kHz stereo frame. Per sample, not per cycle:
  * what a register write changes is heard from the next sample. Arithmetic
- * after fullsnes; the interpolation is a computed Gaussian close to the
- * chip's table, not the table itself (`gauss.ts`).
+ * after fullsnes; the interpolation's weights are the chip's (`gauss.ts`).
  */
 
 import { GAUSS } from "./gauss";
@@ -161,10 +160,11 @@ export class Dsp {
       if (filter === 1) s += p1 + (-p1 >> 4);
       else if (filter === 2) s += 2 * p1 + ((-3 * p1) >> 5) - p2 + (p2 >> 4);
       else if (filter === 3) s += 2 * p1 + ((-13 * p1) >> 6) - p2 + ((3 * p2) >> 4);
-      s = (clamp16(s) << 17) >> 17; // 15 bits, wrapping as the chip does
-      v.buf[3 + n] = s;
+      // kept doubled, wrapping at 16 bits; the filters read it halved
+      const kept = (clamp16(s) << 17) >> 16;
+      v.buf[3 + n] = kept;
       v.p2 = p1;
-      v.p1 = s;
+      v.p1 = kept >> 1;
     }
     if (header & 1) {
       this.regs[0x7c] |= 1 << i;
@@ -188,8 +188,9 @@ export class Dsp {
     let out = (GAUSS[255 - f] * s[idx - 3]) >> 11;
     out += (GAUSS[511 - f] * s[idx - 2]) >> 11;
     out += (GAUSS[256 + f] * s[idx - 1]) >> 11;
+    out = (out << 16) >> 16; // the first three wrap at 16 bits, as the chip's sum does
     out += (GAUSS[f] * s[idx]) >> 11;
-    return clamp16(out * 2);
+    return clamp16(out) & ~1;
   }
 
   private advance(v: Voice, i: number, pitch: number): void {

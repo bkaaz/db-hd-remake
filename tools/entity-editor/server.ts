@@ -16,7 +16,6 @@ const ENTITIES_DIR = path.join("data", "entities");
 const SPAWNS_DIR = path.join("data", "spawns");
 /** Where a gameplay recording lands. Gitignored; dev-only. */
 const LOG_FILE = path.join("logs", "session.log");
-const SFX_DIR = path.join("assets", "audio", "sfx");
 const SOUND_BANK = path.join("data", "audio", "sounds.json");
 const ROSTER = path.join("data", "roster.json");
 const DEBUG_MODES = path.join("data", "debug.json");
@@ -104,24 +103,6 @@ export function entityEditorServer(): Plugin {
           res.end(buf);
         } catch {
           sendJson(res, 404, { error: `no ${path.relative(root, file)}` });
-        }
-      });
-
-      // Stream one cut sound effect (used by the game). The clips are game
-      // audio and gitignored like the sheets, so they cannot simply be served
-      // as static files from the repo.
-      server.middlewares.use("/api/sfx", async (req, res) => {
-        const url = new URL(req.url ?? "", "http://localhost");
-        const file = sanitizeName(path.basename(url.searchParams.get("file") ?? "", ".wav"));
-        if (!file) return sendJson(res, 400, { error: "file required" });
-        try {
-          const buf = await fs.readFile(path.join(root, SFX_DIR, `${file}.wav`));
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "audio/wav");
-          res.end(buf);
-        } catch {
-          res.statusCode = 404;
-          res.end();
         }
       });
 

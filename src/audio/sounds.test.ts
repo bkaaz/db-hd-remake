@@ -76,24 +76,19 @@ describe("validateSounds", () => {
   });
 });
 
-describe("a sound backed by a sample", () => {
-  it("accepts a file alongside the spec that stands in for it", () => {
-    expect(validateSounds({ hit: { ...ok, file: "007.wav" } })).toEqual([]);
+describe("a sound the cartridge plays", () => {
+  it("accepts a cartridge id alongside the spec that stands in for it", () => {
+    expect(validateSounds({ hit: { ...ok, rom: 0x09 } })).toEqual([]);
   });
 
-  it("accepts a sample with no synth spec at all — a voice has no stand-in", () => {
-    expect(validateSounds({ voice_hurt: { gain: 0.6, file: "042.wav" } })).toEqual([]);
+  it("accepts one with no synth spec at all — a voice has no stand-in", () => {
+    expect(validateSounds({ voice_hurt: { gain: 0.6, rom: 0x30 } })).toEqual([]);
   });
 
   it("still demands a spec from a sound with no sample to fall back on", () => {
     expect(validateSounds({ hit: { gain: 0.5 } })).toHaveLength(3);
   });
 
-  it("rejects something that is not a wav", () => {
-    expect(validateSounds({ hit: { ...ok, file: "007" } })).toContain(
-      'sound "hit": "file" must be the name of a .wav in assets/audio/sfx',
-    );
-  });
 });
 
 describe("rateFor", () => {
@@ -163,7 +158,7 @@ describe("soundForLine", () => {
 
 describe("romIds", () => {
   it("names the ids a bank answers, the first bank winning", () => {
-    const ids = romIds({ land_0c: { file: "0c.wav", gain: 1, rom: 0x0c } }, { voice_shout: { file: "x.wav", gain: 1, rom: 0x32 }, other: { file: "y.wav", gain: 1, rom: 0x0c } });
+    const ids = romIds({ land_0c: { gain: 1, rom: 0x0c } }, { voice_shout: { gain: 1, rom: 0x32 }, other: { gain: 1, rom: 0x0c } });
     expect([...ids]).toEqual([[0x0c, "land_0c"], [0x32, "voice_shout"]]);
   });
 });

@@ -305,10 +305,6 @@ npm run moves -- vegetto
                   # --parry with the opponent's blow coming at a parrying move;
                   # --held a blast command with its button held, for its levels;
                   # --objects records his objects. Needs Playwright (PLAYWRIGHT=dir)
-npm run sound-test
-                  # the original's sound test, recorded by
-                  # tools/re/record-sound-test.lua, cut into one file per
-                  # entry named by id (05.wav, goku_31.wav, line_0d.wav)
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md
@@ -332,14 +328,12 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── input/                    #   buffer.ts: the input buffer
 │   ├── audio/                    #   playback.ts: Web Audio, the browser half
 │   │                             #   sounds.ts: the shapes, pure
-│   │                             #   soundTest.ts + wav.ts: cutting the sound
-│   │                             #     test's recording (build-time)
-│   │                             #   brr.ts + compare.ts: whose voice is whose (build-time)
 │   ├── sprites/                  #   png.ts: minimal PNG read/write (no dependency)
 │   ├── fx/                       #   what an effect does once it is out
 │   ├── cartridge/                #   the player's ROM, and what the browser
 │   │                             #     draws from it (ADR 0090)
-│   ├── apu/                      #   the sound chip, running the ROM's driver
+│   ├── apu/                      #   the sound chip, running the ROM's driver:
+│   │                             #     every effect, voice and spoken line
 │   ├── camera/                   #   camera.ts, push.ts, shake.ts: the original's
 │   ├── hud/                      #   the original's HUD: hudFile.ts, health.ts, hud.ts
 │   ├── arena/                    #   arenaFile.ts: an arena's shape on disk
@@ -358,7 +352,6 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   ├── which.ts                  #   read the fl30 shorthand
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
 │   ├── pack.ts                   #   zip the assets for backup / handover
-│   └── sound-test.ts             #   the sound test's recording, one file per id
 ├── .claude/skills/               # procedures loaded on demand (port-move)
 ├── tools/re/                     # Mesen 2 Lua scripts that record the original
 │                                 #   into logs/ (docs/rom.md); runs/ the scenarios
@@ -371,13 +364,9 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ├── data/arenas/<name>/           # arena.json: how an arena's layers scroll
 ├── data/hud/hud.json             # where the original's HUD puts what
 ├── data/audio/sounds.json        # the game's sound bank, one entry per id
-├── assets/                       # BYOA, gitignored — EXACTLY what the game reads
-│   └── audio/sfx/                #   the original's sound test, one file per
-│                                 #   id: 05.wav, goku_31.wav, line_0d.wav
-├── raw/                          # BYOA, gitignored — what those were made from
-│                                 #   and cannot be regenerated (the recordings,
-│                                 #   untouched rips, the ROM, states/ the save
-│                                 #   states of a fight). npm run pack -- --raw
+├── raw/                          # BYOA, gitignored: rom/ the cartridge (ROM_PATH
+│                                 #   in .env.local points at it), states/ the
+│                                 #   save states npm run original plays from
 ├── preview/                      # gitignored: images drawn for a person to look
 │                                 #   at (npm run sheet). Nothing reads them back
 ├── dist/                         # what leaves the repo: web/ is the build,
@@ -393,8 +382,8 @@ Two properties the tree no longer shows, and both still hold:
 - **PixiJS appears in exactly three files** — `main.ts`, `entity/entity.ts` and
   `entity/entityDef.ts`. Everything else is plain TypeScript, which is what lets
   Vitest run it in Node.
-- **Some files never reach the browser**: `audio/soundTest.ts`, `audio/wav.ts`,
-  `sprites/png.ts` and the readers of `rom/` that only
+- **Some files never reach the browser**: `sprites/png.ts` and the readers of
+  `rom/` that only
   report exist for the CLI in `scripts/`. They live in `src/` beside the domain
   they belong to. The part of `rom/` that draws is shared: the export writes
   with it and the browser draws with it (ADR 0090).

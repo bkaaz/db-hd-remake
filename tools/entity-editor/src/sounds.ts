@@ -138,13 +138,6 @@ class SoundPanel {
     box.append(number("decay (s)", spec.decay, 0.01, (v) => (spec.decay = v)));
     box.append(number("gain", spec.gain, 0.01, (v) => (spec.gain = v ?? 0)));
     box.append(number("vary", spec.vary, 0.01, (v) => (spec.vary = v)));
-    // Changing the file invalidates the decoded sample the player is holding.
-    box.append(
-      text("file (.wav in assets/audio/sfx)", spec.file ?? "", (v) => {
-        spec.file = v || undefined;
-        this.refresh();
-      }),
-    );
 
     const play = el("button", { className: "tab", textContent: `▶ ${id}` });
     play.addEventListener("click", () => this.audio.play(id));

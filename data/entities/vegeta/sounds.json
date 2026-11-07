@@ -3,49 +3,44 @@
   "voice_hurt": {
     "gain": 0.85,
     "vary": 0.05,
-    "file": "vegeta_30.wav",
-    "rom": 48
+    "rom": 48,
+    "fighter": "vegeta"
   },
   "voice_ko": {
     "gain": 0.85,
     "vary": 0,
-    "file": "vegeta_31.wav",
-    "rom": 49
+    "rom": 49,
+    "fighter": "vegeta"
   },
   "voice_shout": {
     "gain": 0.85,
     "vary": 0.04,
-    "file": "vegeta_32.wav",
-    "rom": 50
+    "rom": 50,
+    "fighter": "vegeta"
   },
   "line_0d": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_0d.wav",
     "line": 13
   },
   "line_0e": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_0e.wav",
     "line": 14
   },
   "line_0f": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_0f.wav",
     "line": 15
   },
   "line_10": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_10.wav",
     "line": 16
   },
   "line_2c": {
     "gain": 0.85,
     "vary": 0.03,
-    "file": "line_2c.wav",
     "line": 44
   }
 }

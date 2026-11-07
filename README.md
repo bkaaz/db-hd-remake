@@ -54,8 +54,9 @@ the readers know. In development, `ROM_PATH` in `.env.local` points at it and
 the page asks nothing. Why, and what was rejected:
 [ADR 0090](./docs/adr/0090-the-cartridge-is-the-games-one-dependency.md).
 
-The move to it is under way (`docs/plan.md`): until it is done, the sounds are
-still read from `assets/` (gitignored) — [`docs/assets.md`](./docs/assets.md).
+Every picture is drawn from it, and every sound is the cartridge's own sound
+driver playing it on an emulated SNES sound chip
+([ADR 0092](./docs/adr/0092-every-sound-is-the-drivers-rendered-once.md)).
 
 ## Entity editor
 
@@ -82,22 +83,22 @@ sounds and cancel graph. An entity is a **directory of section files** —
 
 ## Credits
 
-This project would not be practical without the people who ripped the game's
-graphics and published them. The sheets it reads are theirs, not ours.
+- **The SNES sound chip's interpolation table** is rebuilt from the formula of
+  [ares](https://github.com/ares-emulator/ares) (ISC licence, © 2004-2025 ares
+  team, Near et al) — `src/apu/gauss.ts`.
+- **The chip's arithmetic** — the SPC700's flags, BRR, the envelopes, the
+  echo — follows nocash's *fullsnes*.
+- **The Goku rip** from
+  [The Spriters Resource](https://www.spriters-resource.com/snes/dragonballzhyperdimension/asset/45315/)
+  carried the project until the cartridge was read; nothing uses it any more.
 
-- **Goku** — ripped by contributors to
-  [The Spriters Resource](https://www.spriters-resource.com/snes/dragonballzhyperdimension/asset/45315/).
-  Everything appended below the original rip's last row is the author's own.
-
-This list is the whole of it. A sheet that enters the project adds a line here,
-naming whoever ripped it and where it came from; a sheet that stops being used
-loses its line.
+A source that enters the project adds a line here.
 
 ## Legal
 
 This is a non-commercial fan project. _Dragon Ball Z_ and _Hyper Dimension_ are
 properties of their respective owners (Bandai / Bird Studio / Toei / Nintendo).
-No original game assets are distributed in this repository — not the sprites, not
-the audio, and not in any encoding. What is here is the code and the data we
-wrote ourselves, which is coordinates into an image the repository does not
-carry.
+No original game assets are distributed in this repository or in its build — not
+the sprites, not the audio, and not in any encoding. What is here is the code and
+the data we wrote ourselves; every picture and sound is drawn from the player's
+own cartridge, in the browser, at runtime.

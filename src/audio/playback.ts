@@ -12,7 +12,11 @@
  */
 
 import { withVoices } from "./bank";
-import { pitchFor, rateFor, soundForLine, soundForRom, type Sounds } from "./sounds";
+import { pitchFor, rateFor, sampleKey, soundForLine, soundForRom, type Sounds } from "./sounds";
+import { cartridge } from "../cartridge/romFile";
+import { renderEffect } from "../apu/effect";
+import { renderLine } from "../apu/line";
+import { ROSTER, type FighterName } from "../rom/roster";
 
 /** What a fighter, or anything it throws, plays its sounds through. */
 export interface SoundPlayer {
@@ -30,9 +34,9 @@ export interface SoundPlayer {
 export class Audio implements SoundPlayer {
   private ctx: AudioContext | null = null;
   private noise: AudioBuffer | null = null;
-  /** Decoded samples by file name, empty until the context exists. */
+  /** Rendered samples by `sampleKey`, empty until the context exists. */
   private readonly samples = new Map<string, AudioBuffer>();
-  /** Every file a map played from names, and those already asked for. */
+  /** Every sample a map played from names, and those already asked for. */
   private readonly wanted = new Set<string>();
   private readonly requested = new Set<string>();
   /** The copy of each sound still playing, by side and id, for the next to stop. */
@@ -100,7 +104,8 @@ export class Audio implements SoundPlayer {
     // A real sample beats the placeholder — but only once it has arrived. Until
     // then, and if it never does, the synth spec is what plays: the game is
     // audible from the first frame either way.
-    const sample = spec.file ? this.samples.get(spec.file) : undefined;
+    const key = sampleKey(spec);
+    const sample = key ? this.samples.get(key) : undefined;
     if (sample) {
       const src = ctx.createBufferSource();
       src.buffer = sample;
@@ -181,36 +186,46 @@ export class Audio implements SoundPlayer {
     return this.ctx;
   }
 
-  /** Note the files `sounds` plays, and load the new ones if there is a context. */
+  /** Note the samples `sounds` plays, and render the new ones if there is a context. */
   private want(sounds: Sounds): void {
-    for (const spec of Object.values(sounds)) if (spec.file) this.wanted.add(spec.file);
+    for (const spec of Object.values(sounds)) {
+      const key = sampleKey(spec);
+      if (key) this.wanted.add(key);
+    }
     if (this.ctx) void this.loadSamples(this.ctx);
   }
 
-  /** Fetch and decode every wanted sample not yet asked for, each once. */
+  /** Render every wanted sample not yet asked for, each once. */
   private async loadSamples(ctx: AudioContext): Promise<void> {
-    const files = [...this.wanted].filter((f) => !this.requested.has(f));
-    if (files.length === 0) return;
-    for (const f of files) this.requested.add(f);
-
-    await Promise.all(
-      files.map(async (file) => {
-        try {
-          const res = await fetch(`/api/sfx?file=${encodeURIComponent(file)}`);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          this.samples.set(file, await ctx.decodeAudioData(await res.arrayBuffer()));
-        } catch (err) {
-          // Loudly, once: a wrong path otherwise means the placeholder stands in
-          // for a sample forever and nobody notices which is playing.
-          console.error(`[sounds] ${file}: ${err instanceof Error ? err.message : String(err)}`);
-        }
-      }),
-    );
+    const keys = [...this.wanted].filter((f) => !this.requested.has(f));
+    if (keys.length === 0) return;
+    for (const f of keys) this.requested.add(f);
+    await this.render(ctx, keys);
 
     // One line a load, because "I cannot hear it" needs to be answerable
     // without a debugger: a sound with no synth spec behind it is silent when
     // its sample is missing, and that is indistinguishable from never firing.
     console.info(`[sounds] ${this.samples.size}/${this.requested.size} sample(s) loaded`);
+  }
+
+  /**
+   * The cartridge's driver playing each effect, voice and line, one at a time
+   * and letting the page breathe between them: tens of milliseconds each, on
+   * the main thread.
+   */
+  private async render(ctx: AudioContext, keys: string[]): Promise<void> {
+    if (keys.length === 0) return;
+    const rom = await cartridge();
+    for (const key of keys) {
+      const [kind, id, fighter] = key.split(":");
+      const { rate, left, right } =
+        kind === "line" ? renderLine(rom, Number(id)) : renderEffect(rom, Number(id), fighter === undefined ? undefined : ROSTER.indexOf(fighter as FighterName));
+      const buffer = ctx.createBuffer(2, Math.max(1, left.length), rate);
+      buffer.copyToChannel(left as Float32Array<ArrayBuffer>, 0);
+      buffer.copyToChannel(right as Float32Array<ArrayBuffer>, 1);
+      this.samples.set(key, buffer);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
   }
 
   /** One second of white noise, made once and reused by every impact. */

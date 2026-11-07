@@ -1,10 +1,11 @@
 /**
  * Sound definitions: what a noise *is*, without playing it.
  *
- * A sound is a file of the original's sound test, by its cartridge id
- * (`file`, `rom`). The synth spec (`kind`, `freq`, `decay`) is what a sound
- * with no file can be made of instead — kept so a sound can exist before its
- * sample does, without a single state changing when the sample arrives.
+ * A sound is the cartridge's: an effect or a voice by its id (`rom`), a
+ * spoken line by its id (`line`), played by the cartridge's own driver
+ * (ADR 0092). The synth spec (`kind`, `freq`, `decay`) is what a sound with
+ * neither can be made of instead, and what plays until the driver's has
+ * been rendered.
  *
  * Pure: no Web Audio, no DOM. `src/audio/playback.ts` turns a spec into actual sound.
  */
@@ -15,9 +16,9 @@ export interface SoundSpec {
    * `noise` — filtered white noise: impacts, whiffs, anything percussive.
    * `tone` — a falling sine: the thin metallic ring of a blocked blow.
    *
-   * Optional only when there is a `file`: some sounds — a voice above all —
-   * have no honest synthesised stand-in, and inventing one is worse than
-   * staying silent until the sample arrives.
+   * Optional when the cartridge plays it (`rom`, `line`): a voice above all
+   * has no honest synthesised stand-in, and inventing one is worse than
+   * staying silent until it has been rendered.
    */
   kind?: "noise" | "tone";
   /** Centre frequency in Hz. Lower reads as heavier. Synth only. */
@@ -32,14 +33,6 @@ export interface SoundSpec {
    */
   vary?: number;
   /**
-   * A real sample: the name of a `.wav` in `assets/audio/sfx`, the original's
-   * sound test cut one file per id (`npm run sound-test`). Takes precedence
-   * over the synth spec once it has loaded —
-   * the spec stays as the fallback, so the game is audible from the first frame
-   * and stays audible if a file is missing.
-   */
-  file?: string;
-  /**
    * What this sounds like, in words — "swing, leg — heavier".
    *
    * Ids in the bank are numbered rather than descriptive, because at three
@@ -50,9 +43,12 @@ export interface SoundSpec {
   label?: string;
   /**
    * The cartridge's id for this sound, the one its scripts play (`a0`, and
-   * an animation step's `sfx`) — and the name of its file. One sound per id.
+   * an animation step's `sfx`). One sound per id, played by the cartridge's
+   * driver (`apu/effect.ts`, ADR 0092).
    */
   rom?: number;
+  /** Whose voice the driver is given to play `rom` with: a cry, a KO, a shout. */
+  fighter?: string;
   /** The spoken line this is, by `a1`'s id ($00:DB98) — a fighter's own voice. */
   line?: number;
 }
@@ -69,6 +65,13 @@ export function romIds(...banks: Sounds[]): Map<number, string> {
   const ids = new Map<number, string>();
   for (const bank of banks) for (const [name, spec] of Object.entries(bank)) if (spec.rom !== undefined && !ids.has(spec.rom)) ids.set(spec.rom, name);
   return ids;
+}
+
+/** What a sound's sample is kept under: the cartridge's line or id the driver renders, and whose voice. */
+export function sampleKey(spec: SoundSpec): string | undefined {
+  if (spec.line !== undefined) return `line:${spec.line}`;
+  if (spec.rom === undefined) return undefined;
+  return spec.fighter ? `rom:${spec.rom}:${spec.fighter}` : `rom:${spec.rom}`;
 }
 
 /** The sound matched to a cartridge id, or undefined while nobody has matched it. */
@@ -99,9 +102,9 @@ export function validateSounds(sounds: Sounds | undefined): string[] {
     // errors about `_comment` on every boot is how a real problem gets ignored.
     if (id.startsWith("_")) continue;
     const where = `sound "${id}"`;
-    // A sound is a synth spec, a sample, or both. Only a sound with nothing to
-    // play back has to describe how to make one.
-    if (s.file === undefined || s.kind !== undefined) {
+    // A sound is the cartridge's, a synth spec, or both. Only a sound the
+    // cartridge does not play has to describe how to make one.
+    if ((s.rom === undefined && s.line === undefined) || s.kind !== undefined) {
       if (s.kind !== "noise" && s.kind !== "tone") {
         errors.push(`${where}: "kind" must be "noise" or "tone"`);
       }
@@ -115,11 +118,6 @@ export function validateSounds(sounds: Sounds | undefined): string[] {
     if (!(s.gain > 0) || s.gain > 1) errors.push(`${where}: "gain" must be above 0 and at most 1`);
     if (s.vary !== undefined && (s.vary < 0 || s.vary >= 1)) {
       errors.push(`${where}: "vary" must be at least 0 and below 1`);
-    }
-    // The synth spec stays valid even with a sample attached: it is what plays
-    // until the file has loaded, and if the file is missing it is all there is.
-    if (s.file !== undefined && (typeof s.file !== "string" || !s.file.endsWith(".wav"))) {
-      errors.push(`${where}: "file" must be the name of a .wav in assets/audio/sfx`);
     }
     if (s.rom !== undefined) {
       const other = byRom.get(s.rom);

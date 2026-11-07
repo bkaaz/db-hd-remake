@@ -134,9 +134,10 @@ nine fighters would each want a copy of it. A grunt *is* his.
   makes two files safe — nobody has to remember which wins, because winning is
   not on offer. `soundIdCollisions()` reports it at load.
 - **A bank name is what it is and the cartridge's id** — `hit_09`,
-  `land_0c`; `sfx_<id>` while nobody has said what plays it. Its `file` is
-  that id's file of the sound test (`<id>.wav`, `audio-capture.md`) and its
-  `rom` the id. One entry per id, so two names for one sound cannot happen.
+  `land_0c`; `sfx_<id>` while nobody has said what plays it. Its `rom` is the
+  id, which the cartridge's driver plays (ADR 0092); a fighter's voice adds
+  `fighter`, whose samples it is played with, and a spoken line is a `line`.
+  One entry per id, so two names for one sound cannot happen.
 - **A reaction naming a `sound` is how a fighter gets a voice** — and that id
   resolves in the fighter's own file rather than the bank, the only kind that
   does.

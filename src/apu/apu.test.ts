@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { ROM_PATH } from "../rom/cartridge";
 import { apuUpload } from "../rom/apuUpload";
 import { Apu, SAMPLE_RATE } from "./apu";
+import { renderEffect } from "./effect";
+import { renderLine } from "./line";
 
 /** A program at $0200 run for `steps` instructions. */
 function run(program: number[], steps: number): Apu {
@@ -43,5 +45,33 @@ describe.skipIf(!existsSync(ROM_PATH))("the cartridge's sound driver", () => {
     expect(peak(apu.render(SAMPLE_RATE / 2))).toBe(0);
     apu.input[1] = 0x09;
     expect(peak(apu.render(SAMPLE_RATE / 2))).toBeGreaterThan(4000);
+  });
+});
+
+// An effect rendered as the game hears it: the lengths are the sound test's
+// recordings of them (2026-11-03), which were cut with a little to spare.
+describe.skipIf(!existsSync(ROM_PATH))("an effect rendered from the driver", () => {
+  const rom = new Uint8Array(readFileSync(ROM_PATH));
+  const seconds = (id: number) => renderEffect(rom, id).left.length / SAMPLE_RATE;
+
+  it("lasts as the sound test's recording does: the hit 09 0.75 s, 38 3.91 s", () => {
+    expect(Math.abs(seconds(0x09) - 0.75)).toBeLessThan(0.15);
+    expect(Math.abs(seconds(0x38) - 3.91)).toBeLessThan(0.15);
+  });
+
+  it("starts on its first sound, not on the silence before it", () => {
+    const { left, right } = renderEffect(rom, 0x09);
+    expect(Math.abs(left[0]) + Math.abs(right[0])).toBeGreaterThan(0);
+  });
+});
+
+// A spoken line streamed to the driver as the game streams it: Final Flash's
+// (0d) lasts as the sound test's recording does.
+describe.skipIf(!existsSync(ROM_PATH))("a line streamed to the driver", () => {
+  const rom = new Uint8Array(readFileSync(ROM_PATH));
+
+  it("plays Final Flash's line 0d for as long as the sound test does, 0.86 s", () => {
+    const { left } = renderLine(rom, 0x0d);
+    expect(Math.abs(left.length / SAMPLE_RATE - 0.86)).toBeLessThan(0.1);
   });
 });
