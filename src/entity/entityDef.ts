@@ -3,7 +3,8 @@ import type { Sounds } from "../audio/sounds";
 import type { StatesFile } from "./states";
 import type { CommandDef } from "../input/command";
 import { cartridge } from "../cartridge/romFile";
-import { fighterSheet } from "../cartridge/romSheets";
+import { drawFighter, drawSpawnLook, type Drawn } from "../cartridge/romSheets";
+import type { Rgba } from "../sprites/png";
 import {
   DEFAULT_ATTRIBUTES,
   type Anim,
@@ -59,7 +60,8 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = ((await res.json()) as { entity: EntityFile }).entity;
 
-  const sheet = await loadSheet(data.sheet);
+  const drawn = await drawnFrom(data);
+  const sheet = texture(drawn.sheet);
 
   const frames = new Map<string, FrameTex>();
   for (const [id, f] of Object.entries(data.frames ?? {})) {
@@ -76,7 +78,7 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
   // the same rectangles on a sheet drawn in another palette (npm run rom -- export)
   const variants = new Map<string, Map<string, Texture>>();
   for (const name of attributes.palettes) {
-    const variant = await loadSheet(data.sheet.replace(/(\.png)$/, `@${name}$1`));
+    const variant = texture(drawn.variant(name));
     const cut = new Map<string, Texture>();
     for (const [id, f] of Object.entries(data.frames ?? {})) {
       cut.set(id, new Texture({ source: variant.source, frame: new Rectangle(f.x, f.y, f.w, f.h) }));
@@ -96,23 +98,20 @@ export async function loadEntityDef(name: string): Promise<EntityDef> {
   };
 }
 
-async function loadSheet(name: string): Promise<Texture> {
-  // POC: a fighter's plain sheet comes from the cartridge, not from assets/
-  const drawn = fighterSheet(await cartridge(), name);
-  if (drawn) {
-    const canvas = document.createElement("canvas");
-    canvas.width = drawn.width;
-    canvas.height = drawn.height;
-    canvas.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(drawn.data), drawn.width, drawn.height), 0, 0);
-    const sheet = Texture.from(canvas);
-    sheet.source.scaleMode = "nearest";
-    console.log(`sheet ${name}: drawn from the ROM`);
-    return sheet;
-  }
-  const img = new Image();
-  img.src = `/api/sheet?name=${encodeURIComponent(name)}`;
-  await img.decode();
-  const sheet = Texture.from(img);
+/** A fighter's or a spawn's pictures, drawn from the cartridge (ADR 0090). */
+async function drawnFrom(data: EntityFile): Promise<Drawn> {
+  if (data.look) return drawSpawnLook(await cartridge(), data.look);
+  const drawn = drawFighter(await cartridge(), data.name, data.palettes);
+  if (!drawn) throw new Error(`${data.name}: neither a fighter of the cartridge nor a spawn with a look.json`);
+  return drawn;
+}
+
+function texture(image: Rgba): Texture {
+  const canvas = document.createElement("canvas");
+  canvas.width = image.width;
+  canvas.height = image.height;
+  canvas.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(image.data), image.width, image.height), 0, 0);
+  const sheet = Texture.from(canvas);
   sheet.source.scaleMode = "nearest";
   return sheet;
 }

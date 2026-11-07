@@ -1,0 +1,21 @@
+{
+  "fighter": "gohan",
+  "type": 2,
+  "anim": 5,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "tiles": 0,
+  "palette": 722688,
+  "loads": [
+    {
+      "resource": 800,
+      "vram": 24576
+    }
+  ]
+}

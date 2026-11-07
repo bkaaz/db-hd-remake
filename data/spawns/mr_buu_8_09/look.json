@@ -1,0 +1,19 @@
+{
+  "fighter": "mr_buu",
+  "type": 8,
+  "anim": 9,
+  "frames": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "tiles": 0,
+  "palette": 727664,
+  "loads": [
+    {
+      "resource": 2367,
+      "vram": 24576
+    }
+  ]
+}

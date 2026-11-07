@@ -75,6 +75,27 @@ export function readPalette(rom: Uint8Array, at: number): [number, number, numbe
   return out;
 }
 
+/**
+ * A palette whose colour `i` is `[i, 0, 0]`: a drawing made with it holds each
+ * pixel's colour index in its red channel, and `paint` colours it in any
+ * palette afterwards — the same picture, drawn once.
+ */
+export const INDEXED: [number, number, number][] = Array.from({ length: 16 }, (_, i) => [i, 0, 0]);
+
+/** An `INDEXED` picture in `palette`'s colours; transparent stays transparent. */
+export function paint(indexed: { width: number; height: number; data: Uint8Array }, palette: readonly (readonly [number, number, number])[]) {
+  const data = new Uint8Array(indexed.data.length);
+  for (let i = 0; i < data.length; i += 4) {
+    if (indexed.data[i + 3] === 0) continue;
+    const c = palette[indexed.data[i]];
+    data[i] = c[0];
+    data[i + 1] = c[1];
+    data[i + 2] = c[2];
+    data[i + 3] = 255;
+  }
+  return { width: indexed.width, height: indexed.height, data };
+}
+
 /** Colour index of one pixel of 4bpp tile n: planes 0/1 then 2/3, 32 bytes. */
 export function tilePixel(tiles: Uint8Array, n: number, x: number, y: number): number {
   const t = 32 * n;

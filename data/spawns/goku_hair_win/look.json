@@ -1,0 +1,26 @@
+{
+  "fighter": "goku",
+  "type": 0,
+  "anim": 7,
+  "frames": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "tiles": 128,
+  "palette": 2601313,
+  "loads": [
+    {
+      "resource": 49,
+      "vram": 29952
+    },
+    {
+      "resource": 81,
+      "vram": 27648
+    }
+  ],
+  "lit": {
+    "palette": 368
+  }
+}

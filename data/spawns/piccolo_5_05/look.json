@@ -1,0 +1,24 @@
+{
+  "fighter": "piccolo",
+  "type": 5,
+  "anim": 5,
+  "frames": [
+    0,
+    1
+  ],
+  "tiles": 128,
+  "palette": 2610009,
+  "loads": [
+    {
+      "resource": 65,
+      "vram": 26624
+    }
+  ],
+  "alt": 2611017,
+  "shimmer": [
+    2610041,
+    2610073,
+    2610105,
+    2610137
+  ]
+}

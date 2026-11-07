@@ -1,0 +1,27 @@
+{
+  "fighter": "vegeta",
+  "type": 1,
+  "anim": 14,
+  "frames": [
+    0,
+    1
+  ],
+  "tiles": 128,
+  "palette": 2604324,
+  "loads": [
+    {
+      "resource": 72,
+      "vram": 26624
+    },
+    {
+      "resource": 79,
+      "vram": 27648
+    }
+  ],
+  "shimmer": [
+    2604356,
+    2604388,
+    2604420,
+    2604452
+  ]
+}

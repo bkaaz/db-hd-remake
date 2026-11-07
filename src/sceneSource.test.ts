@@ -11,7 +11,7 @@ describe("firstRequest", () => {
   });
 
   it("lets an address that says anything win over the remembered one", () => {
-    expect(firstRequest(at("?scene=debug&p1=goku_old"), vegeta).request).toMatchObject({ p1: "goku_old", p2: "goku_old", mode: 0 });
+    expect(firstRequest(at("?scene=debug&p1=cell"), vegeta).request).toMatchObject({ p1: "cell", p2: "cell", mode: 0 });
   });
 
   it("starts at the default with nothing remembered", () => {

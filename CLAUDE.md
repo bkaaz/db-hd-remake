@@ -158,37 +158,22 @@ collision resolution) is written free of PixiJS so it can be tested in Node.
 
 ## Authoring content: compute it, don't reason about it
 
-There will be many entities and hundreds of animations, so the split is fixed:
-
-- **Anything derivable from the data is computed by a script**, never worked out
-  by hand or by eye. Hurt boxes, an attack's active frame, default timings all
-  come from the sprite rectangles — deterministic, identical every time, and
-  free of context. Never pull `frames.json` into context to do arithmetic.
-- **What each sprite is gets written down**, in
-  `data/entities/<name>/descriptions.json` — groups of frames per move, plus a
-  line per frame, with `?` marking a guess. Render `npm run sheet` and look at
-  the sprites rather than inventing descriptions. Describe the range you are
-  working on, not the whole sheet.
-- **Never guess which pose is which** when it matters and the catalogue is
-  silent — ask. A wrong frame is a silent, expensive mistake.
-- **Order and timing are not derivable from a sheet.** It holds poses, not a
-  recording; a frame often appears twice in one animation (guard → strike →
-  guard). That knowledge comes from the owner and lives in `animations.json`.
-- **What you produce is a skeleton the owner then adjusts** in the editor. Being
-  roughly right and clearly labelling the guesses beats being slow. Always
-  separate what was *computed* from what was *guessed* when reporting.
+- **Anything derivable is computed by a script**, never worked out by hand or
+  by eye. A fighter's drawings, frames, animations, boxes and objects come out
+  of the cartridge (`npm run rom -- export`, ADR 0017, ADR 0090) —
+  deterministic, identical every time. Never pull `frames.json` into context to
+  do arithmetic.
+- **Never guess which pose is which** when it matters: render `npm run sheet`
+  and look, or ask. A wrong frame is a silent, expensive mistake.
+- **Separate what was *computed* from what was *guessed*** when reporting, and
+  mark a guess `?`.
 - **Do not block on approval** for this kind of work — the owner verifies on
   their own schedule.
 
-Procedure, flags and pitfalls: the **`add-animation` skill**
-(`.claude/skills/add-animation/`), loaded on demand so it costs nothing in
-sessions that are about something else. A move of the cartridge's `goku` is
-ported with the **`port-move` skill** instead.
+A move of the cartridge's fighters is ported with the **`port-move` skill**.
 
-**Effects are generated, not ripped** (`npm run fx`): no hit spark exists to rip,
-and the rules that keep generated pixel art from looking bolted onto 1996
-sprites are narrow and easy to break. Read the **`add-effect` skill**
-(`.claude/skills/add-effect/`) before touching anything that draws an effect.
+**Effects are the cartridge's** like every other picture — a spark, a burst, a
+beam's head are its objects, drawn from the ROM (ADR 0090).
 
 ## Writing code: it has to be readable by a person
 
@@ -234,8 +219,6 @@ npm run editor    # entity editor (5174)   — normally already running
 npm run build     # typecheck + production build
 npm run typecheck # typecheck only
 npm test          # Vitest, run once (npm run test:watch to keep it running)
-npm run anim -- <entity> <anim> --frames 1,2,3 --kind attack|loop|hurt
-                  # build an animation with derived boxes/timing (--list, --dry-run)
 npm run which -- <entity> fl30 la187
                   # what a blow in the shorthand points at: hit type, the
                   # move holding that frame, the animations that play it
@@ -246,8 +229,6 @@ npm run chains -- <entity>
                   # link has — the instrument for tuning frame data
 npm run sheet -- <entity> --frames 0-30
                   # labelled contact sheet into preview/ (gitignored)
-npm run fx        # generate the effect entities (sheet + frames + animations)
-                  # from src/fx/generate.ts — no ripped hit spark (--dry-run)
 npm run rom -- frame 4a
                   # a drawing read straight from the cartridge, into
                   # preview/ (frames: draw all, tiles: every tile set;
@@ -354,9 +335,11 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │   │                             #   soundTest.ts + wav.ts: cutting the sound
 │   │                             #     test's recording (build-time)
 │   │                             #   brr.ts + compare.ts: whose voice is whose (build-time)
-│   ├── sprites/                  #   boxes.ts: derive boxes/timing from sprites
-│   │                             #   png.ts: minimal PNG read/write (no dependency)
-│   ├── fx/                       #   generate.ts: draws the effect pixel art
+│   ├── sprites/                  #   png.ts: minimal PNG read/write (no dependency)
+│   ├── fx/                       #   what an effect does once it is out
+│   ├── cartridge/                #   the player's ROM, and what the browser
+│   │                             #     draws from it (ADR 0090)
+│   ├── apu/                      #   the sound chip, running the ROM's driver
 │   ├── camera/                   #   camera.ts, push.ts, shake.ts: the original's
 │   ├── hud/                      #   the original's HUD: hudFile.ts, health.ts, hud.ts
 │   ├── arena/                    #   arenaFile.ts: an arena's shape on disk
@@ -370,15 +353,13 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 │                                 #   hud.ts: the HUD; roster.ts: every fighter
 ├── scripts/                      # CLI entry points ONLY — one per npm run command;
 │   │                             #   nothing in the repo imports from here
-│   ├── anim.ts                   #   build an animation from a frame list
 │   ├── blows.ts                  #   print every blow with its numbers
 │   ├── chains.ts                 #   print the cancel graph with its arithmetic
 │   ├── which.ts                  #   read the fl30 shorthand
 │   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
-│   ├── fx.ts                     #   write the generated effects out
 │   ├── pack.ts                   #   zip the assets for backup / handover
 │   └── sound-test.ts             #   the sound test's recording, one file per id
-├── .claude/skills/               # procedures loaded on demand (add-animation)
+├── .claude/skills/               # procedures loaded on demand (port-move)
 ├── tools/re/                     # Mesen 2 Lua scripts that record the original
 │                                 #   into logs/ (docs/rom.md); runs/ the scenarios
 │                                 #   npm run original plays
@@ -392,7 +373,7 @@ npm run pack      # zip assets/ into dist/assets/ (--raw adds raw/, --dry-run)
 ├── data/audio/sounds.json        # the game's sound bank, one entry per id
 ├── assets/                       # BYOA, gitignored — EXACTLY what the game reads
 │   ├── sheets/                   #   one image per entity, transparency in the
-│   │                             #   file; spawns/ holds what npm run fx writes
+│   │                             #   file; spawns/ the objects' (going: ADR 0090)
 │   ├── arenas/<name>/            #   each layer of an arena, once per lighting
 │   ├── hud/hud.png               #   the HUD's band and its parts' tiles
 │   └── audio/sfx/                #   the original's sound test, one file per
@@ -417,9 +398,10 @@ Two properties the tree no longer shows, and both still hold:
   `entity/entityDef.ts`. Everything else is plain TypeScript, which is what lets
   Vitest run it in Node.
 - **Some files never reach the browser**: `audio/soundTest.ts`, `audio/wav.ts`,
-  `sprites/png.ts`, `sprites/boxes.ts`, `fx/generate.ts` and `rom/` exist for the CLI in
-  `scripts/`. They live in `src/` beside the domain they belong to; nothing the
-  game imports reaches them.
+  `sprites/png.ts` and the readers of `rom/` that only
+  report exist for the CLI in `scripts/`. They live in `src/` beside the domain
+  they belong to. The part of `rom/` that draws is shared: the export writes
+  with it and the browser draws with it (ADR 0090).
 
 ## Data and assets
 
@@ -432,30 +414,26 @@ Two properties the tree no longer shows, and both still hold:
   assembles them for `GET /api/entity`; the editor saves **one section at a
   time** via `POST /api/section` (the active tab decides which). Format:
   `docs/data-format.md`.
-- **BYOA (Bring Your Own Assets):** copyrighted images/audio are gitignored and
-  must **never** enter git history. Only code and `data/` are committed. The
-  source pack is **not downloadable anywhere** — the owner keeps it; the old
-  sheet is hand-extended and matches no public rip, so **never re-flow
-  `goku_old.png`**, only append at the bottom (`frames.json` is coordinates into
-  it). `goku.png` is the opposite: written whole by `npm run rom -- export` from
-  the cartridge, so it is regenerated, never edited. See `docs/assets.md`.
+- **The player's ROM is the one dependency** (ADR 0090): the browser draws
+  every picture and will play every sound from it; `ROM_PATH` in `.env.local`
+  stands in for the player's file in development. Copyrighted images and audio
+  must **never** enter git history — only code and `data/` are committed.
+  `assets/` is what is still read from files while `plan.md`'s slices retire
+  it.
 
 ## Current status
 
-The **Entity Editor** authors sprites and animations (framing, background
-color-key, auto-detection, anchors, timed steps, hit/hurt/push boxes), auditions
-the game's sound bank, and draws the cancel graph read-only; the **game** loads
+The **Entity Editor** shows each entity's sheet as the ROM draws it, edits
+animations (timed steps, hit/hurt/push boxes), auditions the game's sound bank,
+and draws the cancel graph read-only; the **game** loads
 an entity and runs it as a **state machine** from `states.json`.
 
-Two Gokus: **`goku`**, read out of the owner's cartridge (`docs/rom.md`, ADR
-0016–0018) — the original's drawings, animation scripts, boxes and ki blast,
-with states written after the original's moves — plays by default;
-**`goku_old`**, the hand-built one (`?p1=goku_old`), keeps everything below,
-which is what will be brought over to the new one later. goku_old walks, jumps
-in three variants, pushes the opponent, crouches, blocks, and attacks with
-Light / Medium / Heavy from standing, crouching and the air. A blow names how it is taken — flinch,
+Every fighter is read out of the owner's cartridge (`docs/rom.md`, ADR
+0016–0018) — the original's drawings, animation scripts, boxes and objects,
+with states written after the original's moves — and drawn from the ROM in the
+browser (ADR 0090). The hand-built `goku_old` is gone; git keeps him. A blow names how it is taken — flinch,
 stagger, knockdown, or a juggle if it catches a falling body — pauses the game on
-contact, pushes the defender back, costs health, leaves a generated spark where
+contact, pushes the defender back, costs health, leaves a spark where
 the boxes met and makes a noise. Damage and hitstun both decay through a combo,
 and a budget of two re-launches closes the uppercut loop.
 

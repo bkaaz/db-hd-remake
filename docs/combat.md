@@ -22,8 +22,8 @@ well against the CPU, and the reverse is not true.
 | **Strike** | `D` | the original's X — only the cartridge's `goku` uses it so far |
 | **Dash** | `C` | with forward or back, the original's dash (its L/R) — `goku` only |
 
-The table above is `goku_old`'s. The cartridge's `goku` plays the original's
-own moves for now (`plan.md`): A, S, D and X are its Y, B, X and A, with no
+The table above is ours, and no fighter plays it yet: the cartridge's fighters
+play the original's own moves for now (`plan.md`): A, S, D and X are its Y, B, X and A, with no
 strings between them, until it is reworked to these rules. Holding A and S
 together charges, as the original's Y + B does — and, as the original's,
 the charge refills **health**, the one pool the original has; our ki meter
@@ -39,8 +39,8 @@ A → A → A → A
 S   S   S   S      (and S alone, from neutral)
 ```
 
-What each place holds is `npm run chains -- goku_old`; it also lists the moves with
-no place yet. Crouching has its own shorter rush; the air has one attack and
+What each place holds will be `npm run chains`' to list once a fighter plays
+it. Crouching has its own shorter rush; the air has one attack and
 one smash. There is no depth to step into, so down is **crouch**, and up is
 **jump**.
 

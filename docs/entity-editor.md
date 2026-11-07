@@ -32,7 +32,7 @@ built, and states stayed text ([ADR 0013](./adr/0013-states-stay-hand-authored.m
 
 | Tab | Purpose |
 |---|---|
-| **Sprites** | load a sheet, key the background, auto-detect, frames + anchors |
+| **Sprites** | the sheet as the ROM draws it, with the export's frames and anchors — read-only ([ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md)) |
 | **Animations** | timed steps, the hit/hurt/push box layer, preview |
 | **Combos** | the chain graph — a node per attack at its hit frame, an edge per cancel labelled with the button and the frames of margin; hover to dim what it does not touch. Read-only: authoring stays in text ([ADR 0013](./adr/0013-states-stay-hand-authored.md)) |
 

@@ -24,4 +24,4 @@ because a number would only need translating back.
 select scene, the default without `?scene=debug`, says "No fighters to choose
 from.": a slot is offered only when its entity has an animation named
 `idle` (`src/scenes/select.ts`), and the cartridge's fighters name theirs
-after the move (`m…`); only `goku_old` has one, and he is not on the grid.
+after the move (`m…`), and none of them has one.

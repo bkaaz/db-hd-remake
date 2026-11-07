@@ -18,8 +18,6 @@ import type { StatesFile } from "../../../src/entity/states";
 
 export type { Box, BoxType };
 
-export type EditorMode = "frame" | "anchor" | "bg" | "detect";
-
 /**
  * A frame as the editor holds it: the file's rectangle plus the id it is keyed
  * by on disk. The editor works in a list and the file is a map, so the id has to
@@ -50,7 +48,8 @@ export interface AnimDef {
 }
 
 export interface EditorState {
-  image: HTMLImageElement | null;
+  /** The sheet as the ROM draws it (`src/cartridge/romSheets.ts`). */
+  image: HTMLCanvasElement | null;
   entityName: string;
   frames: FrameDef[];
   anims: AnimDef[];
@@ -78,18 +77,6 @@ export interface EditorState {
   selectedAnimName: string | null;
   /** Sheet-view zoom factor. */
   scale: number;
-  mode: EditorMode;
-  /** Background color to key out to transparency, or null for none. */
-  bgColor: [number, number, number] | null;
-  /** Per-channel tolerance for the background color match (0 = exact). */
-  bgTolerance: number;
-  /** Whether background color-keying is applied. */
-  bgKeyEnabled: boolean;
-  /** Auto-detection: max transparent gap (px) to still merge fragments. */
-  detectGap: number;
-  /** Auto-detection: minimum side (px); a frame narrower OR shorter than this is
-   * dropped by "detect all" (kills 1px slivers). Magic click ignores it. */
-  detectMinSide: number;
   /** Index of the selected animation step (for box editing). */
   selectedStepIndex: number | null;
   /** Index of the selected box within the selected step. */
@@ -110,12 +97,6 @@ export const state: EditorState = {
   selectedFrameId: null,
   selectedAnimName: null,
   scale: 2,
-  mode: "frame",
-  bgColor: null,
-  bgTolerance: 0,
-  bgKeyEnabled: false,
-  detectGap: 2,
-  detectMinSide: 4,
   selectedStepIndex: null,
   selectedBoxIndex: null,
   boxType: "hurt",
@@ -152,23 +133,7 @@ export function selectedStep(): StepDef | null {
   return anim.steps[i];
 }
 
-// --- frame mutations -----------------------------------------------------
-
-let frameCounter = 0;
-
-/**
- * Frame ids are plain decimal numbers ("0", "1", …) — they are positions on the
- * sheet, and a `frame_` prefix only added noise. Kept as strings because that is
- * what JSON object keys are; JS serialises integer-like keys in numeric order,
- * so frames.json always comes out sorted.
- */
-export function nextFrameId(): string {
-  let id: string;
-  do {
-    id = String(frameCounter++);
-  } while (state.frames.some((f) => f.id === id));
-  return id;
-}
+// --- frames ------------------------------------------------------------------
 
 const asNumber = (id: string): number => {
   const n = Number(id);
@@ -176,71 +141,8 @@ const asNumber = (id: string): number => {
 };
 
 /** Keep the frame list in numeric order, which is the order on the sheet. */
-export function sortFrames(): void {
+function sortFrames(): void {
   state.frames.sort((a, b) => asNumber(a.id) - asNumber(b.id) || a.id.localeCompare(b.id));
-}
-
-/** Clear all frames and animations, and reset numbering to 0. */
-export function clearAll(): void {
-  state.frames = [];
-  state.anims = [];
-  state.selectedFrameId = null;
-  state.selectedAnimName = null;
-  state.selectedStepIndex = null;
-  state.selectedBoxIndex = null;
-  frameCounter = 0;
-}
-
-/** Create a frame from a detected rect, with a default bottom-center anchor. */
-export function addFrameFromRect(r: {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}): FrameDef {
-  const frame: FrameDef = {
-    id: nextFrameId(),
-    x: r.x,
-    y: r.y,
-    w: r.w,
-    h: r.h,
-    anchor: [Math.round(r.w / 2), r.h],
-  };
-  state.frames.push(frame);
-  return frame;
-}
-
-export function deleteFrame(id: string): void {
-  state.frames = state.frames.filter((f) => f.id !== id);
-  // Drop any animation steps that referenced the removed frame.
-  for (const a of state.anims) a.steps = a.steps.filter((s) => s.frame !== id);
-  if (state.selectedFrameId === id) state.selectedFrameId = null;
-}
-
-/**
- * Renumber a frame. If the number is already taken the two frames **swap** —
- * renumbering is how an ordering mistake gets fixed, and refusing would just
- * force a dance through a temporary number. Animation steps follow both ways.
- */
-export function renameFrame(oldId: string, newId: string): boolean {
-  if (!newId || newId === oldId) return !!newId;
-  const frame = state.frames.find((f) => f.id === oldId);
-  if (!frame) return false;
-
-  const occupant = state.frames.find((f) => f.id === newId);
-  frame.id = newId;
-  if (occupant) occupant.id = oldId;
-
-  for (const a of state.anims) {
-    for (const s of a.steps) {
-      if (s.frame === oldId) s.frame = newId;
-      else if (occupant && s.frame === newId) s.frame = oldId;
-    }
-  }
-  if (state.selectedFrameId === oldId) state.selectedFrameId = newId;
-  else if (occupant && state.selectedFrameId === newId) state.selectedFrameId = oldId;
-  sortFrames();
-  return true;
 }
 
 // --- animation mutations -------------------------------------------------
@@ -299,9 +201,6 @@ export function loadEntity(json: EntityFileIn): void {
     })),
   }));
   sortFrames();
-  // New frames must never reuse a number that an animation might still name,
-  // so keep counting above the highest one on disk.
-  frameCounter = state.frames.reduce((max, f) => Math.max(max, asNumber(f.id) + 1), 0);
   state.states = json.states ?? null;
   state.baseHitstun = json.attributes?.hitstun ?? 12;
   state.sounds = json.sounds ?? null;

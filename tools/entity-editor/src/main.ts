@@ -2,9 +2,6 @@ import {
   state,
   emitChange,
   onChange,
-  deleteFrame,
-  addFrameFromRect,
-  clearAll,
   loadEntity,
   type EntityFileIn,
 } from "./store";
@@ -18,7 +15,6 @@ import {
   currentEntity,
   findEntity,
   firstEntity,
-  imageUrlFor,
   loadEntityList,
   modifiedSections,
   renderEntityRail,
@@ -33,15 +29,12 @@ import {
 } from "./sounds";
 import {
   animationsModified,
-  applyKeyToSheet,
   entitySoundsModified,
-  framesModified,
   markEntitySaved,
   saveAnimations,
-  saveFrames,
 } from "./exporter";
-import { setImage, pickColorAt, rebuildKeyed } from "./imageProcess";
-import { detectAll } from "./detect";
+import { cartridge } from "../../../src/cartridge/romFile";
+import { drawFighter, drawSpawnLook } from "../../../src/cartridge/romSheets";
 
 function byId<T extends HTMLElement>(id: string): T {
   const node = document.getElementById(id);
@@ -66,17 +59,6 @@ const zoomLabel = byId("zoom-label");
 // what the editor holds, redrawn by every render; a message stays until the next one
 const summaryEl = byId("status-summary");
 const messageEl = byId("status-message");
-const modeFrameBtn = byId("mode-frame");
-const modeAnchorBtn = byId("mode-anchor");
-const bgEnabled = byId<HTMLInputElement>("bg-enabled");
-const bgSwatch = byId("bg-swatch");
-const bgTol = byId<HTMLInputElement>("bg-tol");
-const bgPickBtn = byId("bg-pick");
-const bgApplyBtn = byId<HTMLButtonElement>("bg-apply");
-const detectAllBtn = byId("detect-all");
-const detectClickBtn = byId("detect-click");
-const detectGap = byId<HTMLInputElement>("detect-gap");
-const detectMin = byId<HTMLInputElement>("detect-min");
 
 /**
  * What is open and which tab is showing, kept in the URL so a reload lands
@@ -101,88 +83,12 @@ const preview = new Preview(previewCanvas);
 const boxEditor = new BoxEditor(boxCanvas);
 
 
-modeFrameBtn.addEventListener("click", () => {
-  state.mode = "frame";
-  emitChange();
-});
-modeAnchorBtn.addEventListener("click", () => {
-  state.mode = "anchor";
-  emitChange();
-});
-
 byId("zoom-in").addEventListener("click", () => {
   state.scale = Math.min(8, state.scale * 2);
   emitChange();
 });
 byId("zoom-out").addEventListener("click", () => {
   state.scale = Math.max(0.25, state.scale / 2);
-  emitChange();
-});
-
-bgEnabled.addEventListener("change", () => {
-  state.bgKeyEnabled = bgEnabled.checked;
-  rebuildKeyed();
-  emitChange();
-});
-bgTol.addEventListener("change", () => {
-  const v = parseInt(bgTol.value, 10);
-  state.bgTolerance = Number.isFinite(v) && v >= 0 ? v : 0;
-  rebuildKeyed();
-  emitChange();
-});
-bgPickBtn.addEventListener("click", () => {
-  if (state.image) {
-    state.mode = "bg";
-    emitChange();
-  }
-});
-
-// The one editor action that destroys pixels, so it asks first and says what it
-// costs. Deliberately not part of saving frames: the rest of a session can be
-// redone from disk, and this cannot.
-bgApplyBtn.addEventListener("click", async () => {
-  if (!state.image || !state.bgKeyEnabled || !state.bgColor) return;
-  const ok = confirm(
-    `Write the keyed image over assets/sheets/${state.entityName}.png?\n\n` +
-      `The background becomes transparent in the source file itself. The editor ` +
-      `cannot undo it — the un-keyed original exists only in your asset pack.`,
-  );
-  if (!ok) return;
-  messageEl.textContent = "Keying…";
-  messageEl.textContent = (await applyKeyToSheet()).message;
-});
-
-detectAllBtn.addEventListener("click", () => {
-  if (!state.image) return;
-  const rects = detectAll({ gap: state.detectGap, minSide: state.detectMinSide });
-  // Skip rects that exactly match an existing frame, so repeats don't duplicate.
-  const seen = new Set(state.frames.map((f) => `${f.x},${f.y},${f.w},${f.h}`));
-  for (const r of rects) {
-    const key = `${r.x},${r.y},${r.w},${r.h}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    addFrameFromRect(r);
-  }
-  emitChange();
-});
-detectClickBtn.addEventListener("click", () => {
-  if (state.image) {
-    state.mode = "detect";
-    emitChange();
-  }
-});
-byId("frames-clear").addEventListener("click", () => {
-  clearAll();
-  emitChange();
-});
-detectGap.addEventListener("change", () => {
-  const v = parseInt(detectGap.value, 10);
-  state.detectGap = Number.isFinite(v) && v >= 0 ? v : 0;
-  emitChange();
-});
-detectMin.addEventListener("change", () => {
-  const v = parseInt(detectMin.value, 10);
-  state.detectMinSide = Number.isFinite(v) && v >= 1 ? v : 1;
   emitChange();
 });
 
@@ -199,64 +105,34 @@ function wireSave(id: string, save: () => Promise<{ message: string }>): void {
     render();
   });
 }
-wireSave("save-frames", saveFrames);
 wireSave("save-animations", saveAnimations);
 
-// Delete key removes the selected frame (only when not typing in a field).
-window.addEventListener("keydown", (e) => {
-  if (
-    (e.key === "Delete" || e.key === "Backspace") &&
-    state.selectedFrameId &&
-    document.activeElement === document.body
-  ) {
-    deleteFrame(state.selectedFrameId);
-    emitChange();
-  }
-});
-
-/**
- * Apply a freshly-loaded image as the current sheet. A new sheet invalidates
- * existing frames/animations (they reference the previous sheet's coordinates),
- * so we start fresh, then auto-key the background.
- */
-function applyNewImage(img: HTMLImageElement, fileName: string): void {
-  state.frames = [];
-  state.anims = [];
-  state.states = null;
-  state.sectionMtimes = {};
-  state.selectedFrameId = null;
-  state.selectedAnimName = null;
-  state.mode = "frame";
-
-  state.image = img;
-  state.entityName = fileName.replace(/\.[^.]+$/, "") || "entity";
-
-  const hasAlpha = setImage(img);
-  if (hasAlpha) {
-    state.bgKeyEnabled = false;
-    state.bgColor = null;
-  } else {
-    pickColorAt(0, 0);
-    state.bgTolerance = 0;
-    state.bgKeyEnabled = true;
-  }
-  rebuildKeyed();
+/** The sheet as the ROM draws it, for an entity the cartridge holds: a fighter or a spawn with its `look.json`. */
+async function drawnSheet(entity: EntityFileIn): Promise<HTMLCanvasElement | null> {
+  const rom = await cartridge();
+  const drawn = entity.look ? drawSpawnLook(rom, entity.look) : drawFighter(rom, entity.name, entity.palettes);
+  if (!drawn) return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = drawn.sheet.width;
+  canvas.height = drawn.sheet.height;
+  canvas.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(drawn.sheet.data), drawn.sheet.width, drawn.sheet.height), 0, 0);
+  return canvas;
 }
 
 /**
  * Pull the entity's section files from the repo into editor state, remembering
  * each section's mtime so a later save can tell it would overwrite a newer file.
  */
-async function hydrateFromRepo(): Promise<boolean> {
-  const res = await fetch(`/api/entity?name=${encodeURIComponent(state.entityName)}`);
-  if (!res.ok) return false;
+async function hydrateFromRepo(name: string): Promise<EntityFileIn | null> {
+  const res = await fetch(`/api/entity?name=${encodeURIComponent(name)}`);
+  if (!res.ok) return null;
   const data = (await res.json()) as { entity: EntityFileIn; mtimes?: Record<string, number> };
   loadEntity(data.entity);
   state.sectionMtimes = data.mtimes ?? {};
   // "Modified" means changed since this entity was opened, not "differs from
   // an empty editor" — so the baseline is taken here, at the moment it arrives.
   markEntitySaved();
-  return true;
+  return data.entity;
 }
 
 /**
@@ -276,37 +152,29 @@ function openEntity(ref: EntityRef): void {
     if (!ok) return;
   }
 
-  const img = new Image();
-  img.onload = async () => {
-    applyNewImage(img, `${ref.name}.png`);
-    setCurrentEntity(ref);
-    rememberInUrl();
+  state.selectedFrameId = null;
+  state.selectedAnimName = null;
+  state.image = null;
+  setCurrentEntity(ref);
+  rememberInUrl();
+  void (async () => {
     try {
-      if (await hydrateFromRepo()) {
-        rebuildKeyed();
-        messageEl.textContent = `Opened ${ref.name}.`;
-      } else {
-        // Nothing on disk to compare against, so the empty entity is the
-        // baseline: the first frame drawn then counts as an unsaved change.
-        markEntitySaved();
-        messageEl.textContent = `Opened ${ref.name} (no data on disk yet).`;
-      }
-    } catch {
-      messageEl.textContent = `Opened ${ref.name}.`;
+      const entity = await hydrateFromRepo(ref.name);
+      state.image = entity ? await drawnSheet(entity) : null;
+      messageEl.textContent = !entity
+        ? `No data for ${ref.name}.`
+        : state.image
+          ? `Opened ${ref.name}.`
+          : `${ref.name} is not drawn from the ROM: it has no look.json.`;
+    } catch (e) {
+      messageEl.textContent = `Could not open ${ref.name} — ${String(e)}`;
     }
     // The sounds panel is not redrawn by the normal change notification — that
     // would throw away a half-typed field on every unrelated edit. A different
     // entity is the one moment it has to catch up.
     renderEntitySounds(entitySoundsPanel);
     emitChange();
-  };
-  img.onerror = () => {
-    messageEl.textContent =
-      ref.kind === "spawn"
-        ? `No sheet assets/sheets/spawns/${ref.name}.png — run npm run fx.`
-        : `No sheet assets/sheets/${ref.name}.png.`;
-  };
-  img.src = imageUrlFor(ref);
+  })();
 }
 
 
@@ -323,22 +191,10 @@ function render(): void {
   openLabel.textContent = currentEntity()?.name ?? "nothing open";
   boxEditor.redraw();
 
-  modeFrameBtn.classList.toggle("active", state.mode === "frame");
-  modeAnchorBtn.classList.toggle("active", state.mode === "anchor");
-  bgPickBtn.classList.toggle("active", state.mode === "bg");
-  detectClickBtn.classList.toggle("active", state.mode === "detect");
-  detectGap.value = String(state.detectGap);
-  detectMin.value = String(state.detectMinSide);
-  bgEnabled.checked = state.bgKeyEnabled;
-  bgTol.value = String(state.bgTolerance);
-  bgApplyBtn.disabled = !(state.image && state.bgKeyEnabled && state.bgColor);
-  bgSwatch.style.background = state.bgColor
-    ? `rgb(${state.bgColor[0]}, ${state.bgColor[1]}, ${state.bgColor[2]})`
-    : "transparent";
   zoomLabel.textContent = `${Math.round(state.scale * 100)}%`;
   summaryEl.textContent = state.image
-    ? `${state.image.width}x${state.image.height}px · ${state.frames.length} frames · ${state.anims.length} anims · mode: ${state.mode}`
-    : "Load a sprite sheet to begin.";
+    ? `${state.image.width}x${state.image.height}px · ${state.frames.length} frames · ${state.anims.length} anims`
+    : "Pick an entity to open.";
 }
 
 /**
@@ -384,7 +240,6 @@ function setTab(name: string): void {
  * forgotten — it is the other half of moving the button.
  */
 const MODIFIED: Record<string, () => boolean> = {
-  sprites: framesModified,
   animations: animationsModified,
   sounds: entitySoundsModified,
   "global-sounds": globalSoundsModified,

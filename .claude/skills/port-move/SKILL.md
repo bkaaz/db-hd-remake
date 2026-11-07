@@ -161,7 +161,7 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   `stand_up` (`$0F:9EB1`; and wherever else the original allows it): a
   command is `"command:<move>"` — its input is the cartridge's, from
   `commands.json` (`npm run rom -- commands`, ADR 0050). Never a
-  `motion:`: those are `goku_old`'s. Then `npm run rom -- entries`: no
+  `motion:`: those are shapes of ours, not the cartridge's. Then `npm run rom -- entries`: no
   stand, walk or crouch state may be listed (`entries.test.ts` holds it).
   Where an entry goes is not yours to pick: `entries --order` (and
   `states --fighter`) puts the command entries in the cartridge's order,

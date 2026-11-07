@@ -1,9 +1,8 @@
 /**
  * Lay drawings out on one sheet, in the shape `frames.json` describes.
  *
- * Unlike the hand-built `goku_old.png`, this sheet is a build product: it is
- * rewritten whole from the cartridge every time, so rows are packed afresh
- * and nothing depends on where a drawing landed last time.
+ * Drawn whole from the cartridge every time, so rows are packed afresh and
+ * nothing depends on where a drawing landed last time.
  */
 
 import type { FrameDef } from "../entity/entityFile";

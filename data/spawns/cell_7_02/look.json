@@ -1,0 +1,21 @@
+{
+  "fighter": "cell",
+  "type": 7,
+  "anim": 2,
+  "frames": [
+    0,
+    1
+  ],
+  "tiles": 128,
+  "palette": 2797715,
+  "loads": [
+    {
+      "resource": 76,
+      "vram": 26624
+    },
+    {
+      "resource": 78,
+      "vram": 27648
+    }
+  ]
+}

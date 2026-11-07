@@ -1,28 +1,17 @@
 import { isModified, markSaved } from "./saved";
 import { state } from "./store";
-import type { Anim, FrameDef, Step } from "../../../src/entity/entityFile";
-import { getSource } from "./imageProcess";
+import type { Anim, Step } from "../../../src/entity/entityFile";
 
 /**
  * Turning editor state into the on-disk section files (docs/data-format.md) and
- * writing them through the dev-server plugin. Frames reference rects straight
- * into the loaded sheet, so no repacking happens and there is no second image to
- * keep in step with this one.
+ * writing them through the dev-server plugin. Frames are the export's and the
+ * sheet the ROM's (ADR 0090), so neither is written here.
  *
  * Each section is saved from the panel that owns it, and `saved.ts` decides
  * which of them still differ from disk.
  */
 
 // The three shapes this writes are the file's own — see src/entity/entityFile.ts.
-
-/** The `frames` section: id -> rect + anchor. */
-export function buildFrames(): Record<string, FrameDef> {
-  const frames: Record<string, FrameDef> = {};
-  for (const f of state.frames) {
-    frames[f.id] = { x: f.x, y: f.y, w: f.w, h: f.h, anchor: f.anchor };
-  }
-  return frames;
-}
 
 /** The `animations` section: name -> { loop, steps }. */
 export function buildAnimations(): Record<string, Anim> {
@@ -41,20 +30,6 @@ export function buildAnimations(): Record<string, Anim> {
     };
   }
   return animations;
-}
-
-/** The whole entity (used for the Export-JSON fallback download). */
-export function getKeyedSheetDataURL(): string | null {
-  const source = getSource();
-  if (!source) return null;
-  const c = document.createElement("canvas");
-  c.width = source.width;
-  c.height = source.height;
-  const ctx = c.getContext("2d");
-  if (!ctx) return null;
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(source, 0, 0);
-  return c.toDataURL("image/png");
 }
 
 /**
@@ -114,57 +89,17 @@ async function saveSection(
  * "differs from the empty editor".
  */
 export function markEntitySaved(): void {
-  markSaved("frames", buildFrames());
   markSaved("animations", buildAnimations());
   markSaved("sounds", state.sounds ?? {});
 }
 
 /** True when a section holds edits that are not on disk yet. */
-export function framesModified(): boolean {
-  return isModified("frames", buildFrames());
-}
-
 export function animationsModified(): boolean {
   return isModified("animations", buildAnimations());
 }
 
 export function entitySoundsModified(): boolean {
   return isModified("sounds", state.sounds ?? {});
-}
-
-/**
- * Burn the current colour key into the source sheet, in place.
- *
- * Its own action rather than part of saving frames, and deliberately so:
- * everything else the editor writes can be rebuilt from what is on disk, and
- * this cannot. Applied once per sheet, it makes the background transparent in
- * the file itself, so nothing downstream has to re-derive it from settings that
- * are not stored anywhere. Keying an already-keyed sheet is a no-op, since only
- * pixels with `a > 0` are ever touched.
- */
-export async function applyKeyToSheet(): Promise<{ ok: boolean; message: string }> {
-  const png = getKeyedSheetDataURL();
-  if (!png) return { ok: false, message: "No sheet loaded." };
-  try {
-    const res = await fetch("/api/sheet", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: state.entityName, pngBase64: png }),
-    });
-    const resp = (await res.json()) as { error?: string; bytes?: number };
-    if (!res.ok) return { ok: false, message: resp.error ?? "write failed" };
-    return {
-      ok: true,
-      message: `Keyed assets/sheets/${state.entityName}.png in place (${resp.bytes} bytes).`,
-    };
-  } catch (e) {
-    return { ok: false, message: `No editor server (run npm run editor) — ${String(e)}` };
-  }
-}
-
-/** Save the `frames` section. The sheet it indexes into is never rewritten here. */
-export function saveFrames(): Promise<{ ok: boolean; message: string }> {
-  return saveSection("frames", buildFrames());
 }
 
 /** Save the `animations` section. */

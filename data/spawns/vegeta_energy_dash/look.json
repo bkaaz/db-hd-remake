@@ -1,0 +1,19 @@
+{
+  "fighter": "vegeta",
+  "type": 1,
+  "anim": 9,
+  "frames": [
+    3,
+    0,
+    1,
+    2
+  ],
+  "tiles": 0,
+  "palette": 2604324,
+  "loads": [
+    {
+      "resource": 601,
+      "vram": 24576
+    }
+  ]
+}

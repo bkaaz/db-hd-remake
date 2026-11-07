@@ -40,19 +40,20 @@ load it.
 
 | section | written by |
 |---|---|
-| `frames.json` | the editor, Sprites tab |
-| `animations.json` | the editor, Animations tab — **and** `npm run anim`; for `goku`, `npm run rom -- export` writes it whole ([ADR 0017](./adr/0017-the-cartridges-animations-are-named-by-move-id.md)) |
+| `frames.json` | `npm run rom -- export`, whole: where each drawing sits on the sheet the browser draws ([ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md)) |
+| `animations.json` | `npm run rom -- export` writes it whole; the editor's Animations tab edits it ([ADR 0017](./adr/0017-the-cartridges-animations-are-named-by-move-id.md)) |
 | `states.json` | **by hand**; the editor's States tab is a read-only view. Another fighter's is written whole by `npm run rom -- states --fighter <name>`, or all of them by `states --all`; a test fails when one is out of date ([ADR 0038](./adr/0038-a-fighters-own-specials-are-merged-into-the-template.md)) |
 | `specials.json` | by hand, first drafted by `npm run rom -- draft --fighter <name>` ([ADR 0070](./adr/0070-the-rest-of-the-roster-is-drafted-from-the-reports.md)) — another fighter's own specials, merged into his `states.json` by that command; shape in `src/rom/specials.ts` |
 | `objects.json` | `npm run rom -- draft` — his objects with no recording yet, as `npm run rom -- export` draws them; shape `OwnObject`, `src/rom/ownObjects.ts` |
 | `sounds.json` | the editor, Sounds tab; a fighter's voice from the cartridge (the entries with a `rom` or a `line`) by `npm run rom -- export`, which keeps the rest |
 | `attributes.json` | by hand |
+| `look.json` | a spawn's only: `npm run rom -- export` — what the browser draws its pictures from, with the ROM ([ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md)); shape `SpawnLook`, `src/rom/spawnLook.ts` |
 | `palettes.json` | by hand — colour sets of our own, as rules over his palette, which `npm run rom -- export` draws in every lighting ([ADR 0063](./adr/0063-a-colour-set-of-ours-is-a-rule-over-his-palette.md)); shape in `src/entity/palettesFile.ts` |
 
 The editor saves **one section per Save**, chosen by the active tab, so a script
 and a tab can work on different sections without overwriting each other. The
-game only ever reads. `npm run fx` writes whole entities into `data/spawns/`;
-those are entities too and every tab works on them.
+game only ever reads. `npm run rom -- export` writes whole entities into
+`data/spawns/`; those are entities too and every tab works on them.
 
 An arena is not an entity: `data/arenas/<name>/arena.json` says how its
 layers scroll, and `npm run rom -- export` writes it whole, with its
@@ -100,10 +101,10 @@ prints every blow of an entity side by side. `states.json` keeps the short form,
 back; the engine, the validator and `npm run chains` read it spelled out
 (`withHitTypes` in `src/combat/hitTypes.ts`). What two blows of one type may
 differ in — `cancelBy`, the sounds, the spark — stays on the state. A state
-that names no spark leaves the file's `hitFx`, and the engine's `spark_1`
-when the file names none either; a blocked blow leaves the file's `guardFx`
-when it names one. `goku` leaves the cartridge's `hit_spark` and
-`guard_spark`, `goku_old` ours.
+that names no spark leaves the file's `hitFx`, and the cartridge's
+`hit_spark` when the file names none either; a blocked blow leaves the file's
+`guardFx` when it names one. Every fighter names `hit_spark` and
+`guard_spark`.
 
 Blocking is decided at the moment of contact rather than by standing in a guard
 state, so the stance is the last thing that still knows the defender was low:

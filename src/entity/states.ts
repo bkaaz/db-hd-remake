@@ -707,7 +707,7 @@ export interface StateDef {
   /**
    * Effect entity spawned where this state's attack connects. Same idea as
    * `onHit` and `hitstop`: the blow decides how it is taken, how long the game
-   * stops, and what the impact looks like. Defaults to the engine's `spark_1`.
+   * stops, and what the impact looks like. Defaults to the cartridge's `hit_spark`.
    */
   hitFx?: string;
   /**
@@ -811,7 +811,7 @@ export interface StatesFile {
   onGuard?: string;
   /**
    * The spark this entity's blows leave when their state names none — the
-   * cartridge's fighters all leave the original's, `goku_old` ours. Absent:
+   * cartridge's fighters all leave the original's. Absent:
    * `DEFAULT_HIT_FX`.
    */
   hitFx?: string;
@@ -1500,7 +1500,7 @@ export interface AnimInfo {
 }
 
 /** The spark a blow leaves when neither its state nor its file names one. */
-export const DEFAULT_HIT_FX = "spark_1";
+export const DEFAULT_HIT_FX = "hit_spark";
 
 /**
  * The spark a blow of this state leaves: its own, else the file's, else

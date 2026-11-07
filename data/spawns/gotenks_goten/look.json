@@ -1,0 +1,31 @@
+{
+  "fighter": "gotenks",
+  "type": 3,
+  "anim": 12,
+  "frames": [
+    0
+  ],
+  "tiles": 0,
+  "palette": 724336,
+  "loads": [
+    {
+      "resource": 1078,
+      "vram": 24576
+    }
+  ],
+  "alt": 724336,
+  "shimmer": [
+    724240,
+    724272,
+    724304
+  ],
+  "lit": {
+    "palette": 360,
+    "alt": 361,
+    "fades": [
+      313,
+      344,
+      352
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "fighter": "buu",
+  "type": 9,
+  "anim": 6,
+  "frames": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "tiles": 0,
+  "palette": 2612910,
+  "loads": [
+    {
+      "resource": 2630,
+      "vram": 24576
+    }
+  ]
+}

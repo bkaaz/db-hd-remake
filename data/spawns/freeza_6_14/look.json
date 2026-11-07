@@ -1,0 +1,18 @@
+{
+  "fighter": "freeza",
+  "type": 6,
+  "anim": 20,
+  "frames": [
+    0,
+    1,
+    2
+  ],
+  "tiles": 0,
+  "palette": 2600600,
+  "loads": [
+    {
+      "resource": 1849,
+      "vram": 24576
+    }
+  ]
+}

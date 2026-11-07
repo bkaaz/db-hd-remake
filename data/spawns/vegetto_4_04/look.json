@@ -1,0 +1,26 @@
+{
+  "fighter": "vegetto",
+  "type": 4,
+  "anim": 4,
+  "frames": [
+    0,
+    1
+  ],
+  "tiles": 128,
+  "palette": 2809372,
+  "loads": [
+    {
+      "resource": 75,
+      "vram": 26624
+    },
+    {
+      "resource": 82,
+      "vram": 27648
+    }
+  ],
+  "shimmer": [
+    2809404,
+    2809436,
+    2809468
+  ]
+}

@@ -8,8 +8,6 @@ import {
   addAnim,
   renameAnim,
   removeAnim,
-  renameFrame,
-  deleteFrame,
   type BoxType,
 } from "./store";
 import { validateStates } from "../../../src/entity/states";
@@ -69,21 +67,6 @@ export function renderFrames(container: HTMLElement): void {
     return;
   }
 
-  // Frame ids are numbers; typing another renumbers, swapping with whichever
-  // frame already holds it — renumbering is how an ordering mistake gets fixed.
-  const number = el("input", {
-    className: "num",
-    type: "number",
-    min: "0",
-    step: "1",
-    value: frame.id,
-    title: "Frame number — type another to renumber (swaps if taken)",
-  });
-  number.addEventListener("change", () => {
-    if (!renameFrame(frame.id, number.value.trim())) number.value = frame.id;
-    emitChange();
-  });
-
   const addBtn = el("button", {
     textContent: "＋anim",
     title: "Append as a step to the selected animation",
@@ -96,19 +79,8 @@ export function renderFrames(container: HTMLElement): void {
     }
   });
 
-  const delBtn = el("button", { className: "danger", textContent: "Delete" });
-  delBtn.addEventListener("click", () => {
-    deleteFrame(frame.id);
-    emitChange();
-  });
-
   container.append(
-    el("div", { className: "row" }, [
-      el("span", { className: "dims", textContent: "number" }),
-      number,
-      addBtn,
-      delBtn,
-    ]),
+    el("div", { className: "row" }, [el("span", { className: "dims", textContent: `frame ${frame.id}` }), addBtn]),
     el("p", {
       className: "dims",
       textContent: `${frame.w}x${frame.h} at ${frame.x},${frame.y} · anchor ${frame.anchor[0]},${frame.anchor[1]}`,

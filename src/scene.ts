@@ -81,7 +81,6 @@ export interface SceneContext {
   keyboard: Keyboard;
 }
 
-// The cartridge's `goku` (docs/plan.md); the hand-built one is `?p1=goku_old`.
 const DEFAULT_FIGHTER = "goku";
 
 /**

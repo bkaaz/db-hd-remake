@@ -4,8 +4,8 @@
  * from `commands.json`, written by `npm run rom -- commands`, and are read
  * back in time over a history of the pad, one entry a game frame.
  *
- * Separate from `motion.ts`, which stays `goku_old`'s: that one recognises
- * shapes we chose; this one has no shapes of its own, only the original's
+ * Separate from `motion.ts`, which recognises shapes we choose (no entity
+ * uses one yet); this one has no shapes of its own, only the original's
  * words and windows (ADR 0050). Not here: the refusal of a `0008` / `1000`
  * command while guarding or after a blow has gone (`$0D:F1B4`) — the
  * states say where a move may come from.

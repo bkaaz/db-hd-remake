@@ -32,33 +32,34 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 ## Now: the cartridge as the game's one dependency
 
-[ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md). The
-proof of concept is on branch `poc-rom-runtime`: fighters' plain sheets drawn
-in the browser (`src/cartridge/`), the cartridge's sound driver on our chip
-(`src/apu/`). Each slice ends with the game reading one more thing from the
-ROM and nothing of it from `assets/`.
+[ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md), on
+branch `poc-rom-runtime`. Every fighter's sheet, each palette of it and every
+object are drawn in the browser (`src/cartridge/`); the cartridge's sound
+driver runs on our chip (`src/apu/`) but the game does not play it yet. Each
+slice ends with the game reading one more thing from the ROM and nothing of it
+from `assets/`.
 
-1. **Fighters whole.** Every variant sheet (lightings, alternate colours, fire,
-   shock, colour sets) and every spawn's sheet drawn from the ROM; the palette
-   helpers `scripts/rom.ts` builds them from move into `src/`. *Done when:*
-   the game opens nothing under `assets/sheets/`.
-2. **Arenas, the bands and the HUD.** *Done when:* nothing under
+1. **Arenas, the bands and the HUD.** *Done when:* nothing under
    `assets/arenas/` or `assets/hud/` is opened.
-3. **Sound through the chip.** Effects asked of the driver instead of played
+2. **Sound through the chip.** Effects asked of the driver instead of played
    from files; fighters' voices uploaded where the game puts them
    (`$00:98EC`); spoken lines streamed as BRR; the DSP's real interpolation
    table in place of `gauss.ts`. *Done when:* nothing under `assets/audio/`
    is opened, and the sound test's recordings are only a test's reference.
-4. **A static build.** The game fetches `data/` through the dev server's
+3. **A static build.** The game fetches `data/` through the dev server's
    `/api/*`; a hosted page has no server. *Done when:* `dist/web` on any
    static server plays, given a ROM.
-5. **The ROM remembered** in the browser (IndexedDB), so a player picks it
+4. **The ROM remembered** in the browser (IndexedDB), so a player picks it
    once.
-6. **The editor reads the ROM** — no sprite editing, names (aliases) for what
-   it shows.
-7. **What is left goes:** `goku_old`, `assets/`, the PNG half of `npm run rom
-   -- export`, `npm run pack`; `assets.md` and `CLAUDE.md` rewritten.
-8. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
+5. **Names in the editor** — aliases for the frames and animations it shows;
+   it reads them from the ROM and edits no sprite.
+6. **What is left goes:** `assets/`, the PNG half of `npm run rom
+   -- export`, `npm run pack`; `assets.md` and `CLAUDE.md` rewritten. Read
+   again for what the hand-built Goku left behind: this file's sections written
+   against his sheet (*G. Crouch*, *The moveset*), `descriptions.json` and the
+   shorthand that reads it (`notation.ts`, `npm run which`), `input/motion.ts`,
+   which no entity uses any more.
+7. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
    translation's patch) is checked. The clean Japanese dump and any PAL one
    need their hashes, and the readers run against each — an address that
    moved is a table per dump.
@@ -133,10 +134,8 @@ reads the code, the emulator only confirms.
 A move id gives its drawings and how long each is held, statically:
 `npm run rom -- move 92`.
 
-The hand-built fighter is `goku_old` now (`?p1=goku_old`); `goku` is the
-cartridge's — drawings, animations and boxes written by `npm run rom -- export`,
-states by hand after the original's moves — and plays by default. `goku_old`
-stays: what we built that the original lacks will be brought over later.
+`goku` is the cartridge's — drawings, animations and boxes written by `npm run
+rom -- export`, states by hand after the original's moves.
 
 Every move is an animation now, `m00`…`mff` (ADR 0017), written by the export.
 
@@ -160,7 +159,7 @@ takes an investigation instead of a procedure. In this order:
    air (`1a`) and the knockdown are built; crouching (`17`/`18`), dizzy
    (`1d`), and the
    choice between them as `$0D:D29C` makes it. The reactions brought from
-   goku_old (`hurt_air`, `launched`, `blown` …) still land straight into
+   the hand-built Goku (`hurt_air`, `launched`, `blown` …) still land straight into
    `downed`.
 
 ### Next: around the arena
@@ -528,9 +527,8 @@ queue.
      muzzle flash (frames 132-133) have to appear on entering a state and be
      taken away when it is left — today an effect plays its animation out and
      nothing can end it early. This is the `attachment` ADR 0007 named.
-     The sphere is generated (`npm run fx`) and is the one effect allowed real
-     alpha rather than dither: the original's is colour-math transparency, and
-     a 100 px dithered ball reads as confetti.
+     The sphere is the cartridge's object (`kame_sphere`); the original
+     draws it with colour-math transparency.
   2. **The beam.** A band from the hands to the bolt's head, so its length
      changes every frame. Tiled from a one-column sprite, never a stretched
      one — a stretched pixel stops being square. It needs the owner's position

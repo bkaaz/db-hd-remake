@@ -1,14 +1,11 @@
-import { animationsModified, entitySoundsModified, framesModified } from "./exporter";
+import { animationsModified, entitySoundsModified } from "./exporter";
 
 /**
  * The rail of things that can be opened: fighters and spawns.
  *
  * Both are entities and every tab works on either — a spawn is an entity is the
- * whole reason the editor needs nothing new to author one (ADR 0007). The two
- * groups are not decoration: they decide **where the image
- * comes from**. A fighter is cut from a ripped sheet at the top of
- * `assets/sheets/`; a spawn's sheet is written by `npm run fx` into `spawns/`
- * beneath it, and is the only picture of it there is.
+ * whole reason the editor needs nothing new to author one (ADR 0007). Both are
+ * drawn from the ROM: a fighter by name, a spawn from its `look.json`.
  */
 
 export type EntityKind = "fighter" | "spawn";
@@ -16,12 +13,6 @@ export type EntityKind = "fighter" | "spawn";
 export interface EntityRef {
   kind: EntityKind;
   name: string;
-}
-
-/** Where the picture of an entity lives, which is what the two groups encode. */
-export function imageUrlFor(ref: EntityRef): string {
-  const rel = ref.kind === "spawn" ? `spawns/${ref.name}.png` : `${ref.name}.png`;
-  return `/api/sheet?name=${encodeURIComponent(rel)}`;
 }
 
 let groups: { fighters: string[]; spawns: string[] } = { fighters: [], spawns: [] };
@@ -51,7 +42,7 @@ export function currentEntity(): EntityRef | null {
   return current;
 }
 
-/** Look a name up rather than assume its kind — `?entity=spark_1` is a spawn. */
+/** Look a name up rather than assume its kind — `?entity=ki_blast` is a spawn. */
 export function findEntity(name: string): EntityRef | null {
   if (groups.fighters.includes(name)) return { kind: "fighter", name };
   if (groups.spawns.includes(name)) return { kind: "spawn", name };
@@ -69,7 +60,6 @@ export function firstEntity(): EntityRef | null {
 /** Which entity sections hold edits that are not on disk, by name. */
 export function modifiedSections(): string[] {
   return [
-    framesModified() && "frames",
     animationsModified() && "animations",
     entitySoundsModified() && "sounds",
   ].filter((s): s is string => typeof s === "string");

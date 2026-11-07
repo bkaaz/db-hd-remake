@@ -22,8 +22,8 @@
  *   npm run rom -- recorded --fighter x  his objects.json's palettes from logs/objects-x.*
  *                                    (--frames: its frames too, --dry-run)
  *   … --fighter vegetto              any reading command above, for another fighter
- *   npm run rom -- export            every drawing into assets/sheets/goku.png and
- *                                    data/entities/goku/frames.json (frame n = drawing n),
+ *   npm run rom -- export            where every drawing sits on the sheet the browser
+ *                                    draws: data/entities/goku/frames.json (frame n = drawing n),
  *                                    every move into its animations.json as m00…mff;
  *                                    each arena into assets/arenas/ and data/arenas/,
  *                                    the HUD into assets/hud/ and data/hud/
@@ -34,8 +34,7 @@
 
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { paletteRecord } from "../src/rom/resource.ts";
-import { CANDY, FIRE, GOKU, SHOCK, ROM_PATH, scriptAt, tileResourceOf, type FighterTables } from "../src/rom/cartridge.ts";
+import { CANDY, FIRE, GOKU, SHOCK, ROM_PATH, scriptAt, tileResourceOf, type FighterTables, type SpawnDef } from "../src/rom/cartridge.ts";
 import { fighterTables, ROSTER, type FighterName } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
@@ -94,8 +93,14 @@ function litOf(t: FighterTables): Record<string, number> {
 }
 
 function colourSets(name: string, palette: number, variants: Record<string, number>): Record<string, Rgb[]> {
+  const sets = setsOf(name);
+  return sets ? setsOver(rom, palette, variants, sets) : {};
+}
+
+/** His colour sets of our own, if he has any (`palettes.json`). */
+function setsOf(name: string): PalettesFile | undefined {
   const path = `data/entities/${name}/palettes.json`;
-  return existsSync(path) ? setsOver(rom, palette, variants, JSON.parse(readFileSync(path, "utf8")) as PalettesFile) : {};
+  return existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as PalettesFile) : undefined;
 }
 /** His `states.json` and `attributes.json`, written whole, and what became of the template on the way. */
 function writeStates(name: string, t: FighterTables): void {
@@ -499,14 +504,11 @@ if (command === "tiles") {
 } else if (command === "states" && T !== GOKU) {
   writeStates(name, T);
 } else if (command === "export" && T !== GOKU) {
-  // his lightings and the fire; the shared spawns, the arenas and the HUD stay Goku's export
-  const lit = litOf(T);
-  const fighter = exportFighter(rom, { ...T, variants: { ...FIRE, ...shockPalettes(rom), ...lit, ...introPalettes(rom, T), ...colourSets(name, T.palette, lit) } });
+  // his frames and animations; the browser draws his sheets (ADR 0090), the shared
+  // spawns, the arenas and the HUD stay Goku's export
+  const fighter = exportFighter(rom, { ...T, variants: {} });
   for (const note of fighter.notes) console.log(`  ${note}`);
-  write(`assets/sheets/${name}.png`, `data/entities/${name}`, fighter);
-  for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
-    writeFileSync(`assets/sheets/${name}@${variant}.png`, encodePng(sheet));
-  }
+  write(`data/entities/${name}`, fighter);
   console.log(`${name}: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
   // his own objects: tiles and palette from code, timing from his recording (ADR 0036)
   const own = [...(OWN_OBJECTS[name as FighterName] ?? []), ...draftedObjects(name)];
@@ -524,23 +526,23 @@ if (command === "tiles") {
     const { recorded, missed } = inRecording(own.filter((o) => !kept.includes(o)), lives);
     if (missed.length > 0) throw new Error(`not in ${recording}: ${missed.map((o) => o.name).join(", ")}`);
     const spawns = ownObjects(rom, T, recorded, lives);
-    for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }))) {
+    for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns } }, name))) {
       writeSpawn(spawn, e);
       const def = recorded.find((o) => o.name === spawn);
       const timed = def?.ticks || def?.animations ? "timed by its code" : `shown as ${recording} shows them`;
       console.log(`${spawn}: ${Object.keys(e.frames).length} frames, ${timed}`);
     }
+    // a kept one's look is written again all the same, its frames in the order its animations show them
+    const asShown = kept.map((o) => ({ ...o, ticks: undefined, animations: animationsOf(o.name) }));
+    for (const [spawn, e] of Object.entries(exportSpawns(rom, { ...T, objects: { loads: [], palettes: {}, spawns: ownObjects(rom, T, asShown, []) } }, name))) {
+      writeLook(spawn, e);
+    }
   }
   writeVoice(T, name);
 } else if (command === "export") {
-  // the fire's palettes and each arena lighting's, drawn as sheets of their own (ADR 0026)
-  const lit = { ...lightingPalettes(rom, GOKU), ...glowPalettes(rom, GOKU), ...altPalettes(rom, GOKU) };
-  const fighter = exportFighter(rom, { ...GOKU, variants: { ...GOKU.variants, ...shockPalettes(rom), ...lit, ...colourSets("goku", GOKU.palette, lit) } });
+  const fighter = exportFighter(rom, { ...GOKU, variants: {} });
   for (const note of fighter.notes) console.log(`  ${note}`);
-  write("assets/sheets/goku.png", "data/entities/goku", fighter);
-  for (const [variant, sheet] of Object.entries(fighter.variants ?? {})) {
-    writeFileSync(`assets/sheets/goku@${variant}.png`, encodePng(sheet));
-  }
+  write("data/entities/goku", fighter);
   console.log(`goku: ${Object.keys(fighter.frames).length} frames, ${Object.keys(fighter.animations).length} animations`);
   writeVoice(GOKU, "goku");
   for (const [name, spawn] of Object.entries(exportSpawns(rom, GOKU))) {
@@ -573,9 +575,6 @@ if (command === "tiles") {
 
 /** Writes the sheet and the two sections the export owns; states stay hand-written. */
 /** The shock's two palette records, at their addresses: the same for every fighter. */
-function shockPalettes(rom: Uint8Array): Record<string, number> {
-  return Object.fromEntries(Object.entries({ ...SHOCK, ...CANDY }).map(([name, record]) => [name, paletteRecord(rom, record).at]));
-}
 
 /** A fighter's voice and lines, on the sound test's files (`npm run sound-test`); his other sounds kept. */
 function writeVoice(t: FighterTables, fighter: string): void {
@@ -586,23 +585,35 @@ function writeVoice(t: FighterTables, fighter: string): void {
   console.log(`${fighter}: voice 30 31 32, lines ${ids.map(lineName).join(" ")}; ${path}`);
 }
 
-function write(sheetPath: string, dir: string, e: Exported): void {
+/** An entity's frames and animations; its pictures the browser draws from the ROM (ADR 0090). */
+function write(dir: string, e: Exported): void {
   mkdirSync(dir, { recursive: true });
-  writeFileSync(sheetPath, encodePng(e.sheet));
   writeFileSync(`${dir}/frames.json`, JSON.stringify(e.frames, null, 2) + "\n");
   writeFileSync(`${dir}/animations.json`, JSON.stringify(e.animations, null, 2) + "\n");
 }
 
+/** A spawn's animations as `SpawnDef.animations` gives them: the frames each shows and how long. */
+function animationsOf(spawn: string): SpawnDef["animations"] {
+  const anims = JSON.parse(readFileSync(`data/spawns/${spawn}/animations.json`, "utf8")) as Record<string, { loop?: boolean; steps: { frame: string; dur: number }[] }>;
+  return Object.fromEntries(
+    Object.entries(anims).map(([n, a]) => [n, { frames: a.steps.map((st) => Number(st.frame)), dur: a.steps.map((st) => st.dur), loop: !!a.loop }]),
+  );
+}
+
+/** What the browser draws a spawn's pictures from (`src/rom/spawnLook.ts`). */
+function writeLook(spawn: string, e: Exported): void {
+  if (e.look) writeFileSync(`data/spawns/${spawn}/look.json`, JSON.stringify(e.look, null, 2) + "\n");
+}
+
 /**
- * A spawn as `write` leaves it, and the palettes its code steps through: a
- * sheet each beside its own, named in its `attributes.json` (`shimmer`).
+ * A spawn as `write` leaves it, its look, and the palettes its code steps
+ * through, named in its `attributes.json` (`shimmer`).
  */
 function writeSpawn(spawn: string, e: Exported): void {
   for (const note of e.notes) console.log(`  ${spawn}: ${note}`);
-  write(`assets/sheets/spawns/${spawn}.png`, `data/spawns/${spawn}`, e);
-  const variants = Object.entries(e.variants ?? {});
-  for (const [variant, sheet] of variants) writeFileSync(`assets/sheets/spawns/${spawn}@${variant}.png`, encodePng(sheet));
-  const names = variants.map(([variant]) => variant);
+  write(`data/spawns/${spawn}`, e);
+  writeLook(spawn, e);
+  const names = Object.keys(e.variants ?? {});
   if (!names.length) return;
   // beside what is there by hand (Big Bang's gravity 0)
   const at = `data/spawns/${spawn}/attributes.json`;

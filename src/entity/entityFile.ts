@@ -3,12 +3,8 @@
  *
  * `data/entities/<name>/` is a directory of section files that four different
  * programs read and write: the game, the entity editor, the dev-server plugin
- * that assembles them, and the CLI scripts. Each of them used to declare the
- * shape again — five copies of `Box`, three of `Step`, two whole entity files —
- * and they had already drifted. `DerivedBox` in `sprites/boxes.ts` could not
- * express a push box, so `npm run anim` would have dropped one silently; the
- * editor's `attributes` named one field out of seven and repeated its default as
- * a literal.
+ * that assembles them, and the CLI scripts. One declaration, because copies of
+ * it in each had already drifted apart.
  *
  * Nothing here touches PixiJS, so the editor can import it — that is the whole
  * reason it is not in `entityDef.ts`, which owns the *loaded* form: the same
@@ -22,6 +18,8 @@ import type { Sounds } from "../audio/sounds";
 import type { CommandsFile } from "../input/command";
 import type { CloseButton, StatesFile } from "./states";
 import type { FollowBy } from "../fx/follow";
+import type { PalettesFile } from "./palettesFile";
+import type { SpawnLook } from "../rom/spawnLook";
 
 /** What a box does when it overlaps: strike, be struck, or keep bodies apart. */
 export type BoxType = "hit" | "hurt" | "push";
@@ -205,8 +203,6 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
  */
 export interface EntityFile {
   name: string;
-  /** Path under `assets/sheets/`, which the server resolves — `spawns/` and all. */
-  sheet: string;
   frames?: Record<string, FrameDef>;
   animations?: Record<string, Anim>;
   /** Section file `sounds.json`, absent until authored. */
@@ -216,4 +212,8 @@ export interface EntityFile {
   attributes?: Partial<Attributes>;
   /** Section file `commands.json`, the cartridge fighters' only (`npm run rom -- commands`). */
   commands?: CommandsFile;
+  /** Section file `palettes.json`: a fighter's colour sets of our own. */
+  palettes?: PalettesFile;
+  /** Section file `look.json`: what a spawn's pictures are drawn from (`rom/spawnLook.ts`). */
+  look?: SpawnLook;
 }

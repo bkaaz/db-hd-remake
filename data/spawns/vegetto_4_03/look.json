@@ -1,0 +1,22 @@
+{
+  "fighter": "vegetto",
+  "type": 4,
+  "anim": 3,
+  "frames": [
+    0,
+    1
+  ],
+  "tiles": 128,
+  "palette": 724656,
+  "loads": [
+    {
+      "resource": 75,
+      "vram": 26624
+    }
+  ],
+  "alt": 724688,
+  "lit": {
+    "palette": 128,
+    "alt": 129
+  }
+}

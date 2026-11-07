@@ -13,7 +13,11 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { encodePng, decodePng, type Rgba } from "../src/sprites/png.ts";
+import { encodePng, type Rgba } from "../src/sprites/png.ts";
+import { ROM_PATH } from "../src/rom/cartridge.ts";
+import type { SpawnLook } from "../src/rom/spawnLook.ts";
+import type { PalettesFile } from "../src/entity/palettesFile.ts";
+import { drawFighter, drawSpawnLook } from "../src/cartridge/romSheets.ts";
 import type { FrameDef } from "../src/entity/entityFile.ts";
 
 /** 3x5 pixel digits — enough to label a frame, nothing more. */
@@ -139,18 +143,17 @@ async function main(): Promise<void> {
   }
 
   const root = process.cwd();
-  // A spawn is an entity and is looked at the same way; only its directory and
-  // the sheet beside it differ, exactly as /api/entity resolves them.
+  // A spawn is an entity and is looked at the same way; only its directory
+  // differs, exactly as /api/entity resolves it. Both are drawn from the ROM.
   const spawn = await fs
     .access(path.join(root, "data", "spawns", entity))
     .then(() => true)
     .catch(() => false);
   const dir = spawn ? path.join("data", "spawns") : path.join("data", "entities");
-  const image = spawn ? path.join("spawns", `${entity}.png`) : `${entity}.png`;
   const frames = JSON.parse(
     await fs.readFile(path.join(root, dir, entity, "frames.json"), "utf8"),
   ) as Record<string, FrameDef>;
-  const source = decodePng(await fs.readFile(path.join(root, "assets", "sheets", image)));
+  const source = await drawnSheet(path.join(root, dir, entity), entity);
 
   const ids = parseFrames(spec).filter((id) => {
     if (frames[id]) return true;
@@ -198,3 +201,14 @@ async function main(): Promise<void> {
 }
 
 void main();
+
+/** The entity's sheet as the browser draws it: a fighter by name, a spawn from its look.json. */
+async function drawnSheet(dir: string, entity: string): Promise<Rgba> {
+  const rom = new Uint8Array(await fs.readFile(ROM_PATH));
+  const json = async <T>(file: string): Promise<T | undefined> =>
+    fs.readFile(path.join(dir, file), "utf8").then((t) => JSON.parse(t) as T, () => undefined);
+  const look = await json<SpawnLook>("look.json");
+  const drawn = look ? drawSpawnLook(rom, look) : drawFighter(rom, entity, await json<PalettesFile>("palettes.json"));
+  if (!drawn) throw new Error(`${entity} is not drawn from the ROM`);
+  return drawn.sheet;
+}

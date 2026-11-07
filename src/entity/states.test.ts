@@ -1,10 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { chainLinks, framesOf } from "../combat/chains";
-import { startupOf } from "../combat/swing";
-import { withHitTypes } from "../combat/hitTypes";
-import { BUFFER_FRAMES } from "../input/buffer";
 import {
   effectsNamed,
   hitFxOf,
@@ -460,7 +456,7 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
-  it.each(["goku_old", "goku", "vegeta"])("keeps the entity we ship, %s, valid", (entity) => {
+  it.each(["goku", "vegeta"])("keeps the entity we ship, %s, valid", (entity) => {
     // The point of the validator: catch a typo in hand-authored data. Checking
     // the committed states against the committed animations is what makes that
     // guarantee real — warnings are allowed (data is still being authored),
@@ -472,183 +468,6 @@ describe("validateStates", () => {
     const states = read<StatesFile>("states.json");
     const anims = read<Record<string, AnimInfo>>("animations.json");
     expect(validateStates(states, anims).errors).toEqual([]);
-  });
-});
-
-describe("the arithmetic of a blow, against the data we ship", () => {
-  /**
-   * Three sums, each of which was a bug before it was a test: can the next link
-   * still **reach**, is the victim still **helpless** when it arrives, and does
-   * landing a blow leave you acting **first**. All of them are properties of the
-   * committed data, so they are checked here rather than by playing.
-   *
-   * The failure the first one exists to prevent, found by playing: the middle of
-   * the kick string forced `hurt_heavy`, whose knockback is 62 sprite px,
-   * against a longest reach in the whole game of 44. The third blow could not
-   * connect — not badly tuned, arithmetically impossible.
-   *
-   * So for every chain transition, measure what the blow does to the distance
-   * between the two fighters and compare it with how far the next one reaches.
-   * The margin is crude, because it ignores where they were standing and how
-   * wide the defender is, but the number it catches is not a near miss.
-   */
-  const read = <T>(file: string): T =>
-    JSON.parse(
-      readFileSync(fileURLToPath(new URL(`../../data/entities/goku_old/${file}`, import.meta.url)), "utf8"),
-    ) as T;
-
-  interface Step {
-    dur: number;
-    boxes?: { type: string; x: number; w: number }[];
-  }
-  const anims = read<Record<string, { steps: Step[] }>>("animations.json");
-  const states = withHitTypes(read<StatesFile>("states.json")).states;
-  const attributes = read<{ hitstun: number }>("attributes.json");
-
-  /**
-   * How long a blow holds its victim — the blow's own number, or the fighter's
-   * default. **Not the reaction animation's length**: that is exactly the
-   * coupling `hitstun` exists to break, and reading it here would put it back.
-   */
-  const hitstun = (attack: string): number => states[attack].hitstun ?? attributes.hitstun;
-
-  const frames = (anim: string): number => framesOf(anims[anim]);
-  const reach = (anim: string): number =>
-    Math.max(
-      0,
-      ...(anims[anim]?.steps ?? []).flatMap((s) =>
-        (s.boxes ?? []).filter((b) => b.type === "hit").map((b) => b.x + b.w),
-      ),
-    );
-
-  /**
-   * Every cancel in the file, with its arithmetic already done — by the same
-   * function `npm run chains` prints, so the two cannot drift apart by a frame
-   * and leave nobody knowing which one is lying.
-   */
-  const chains = chainLinks({ initial: "idle", states }, anims, attributes.hitstun);
-  const links = chains.map((l) => [l.from, l.to] as const);
-
-  it("finds the chains that exist, so this suite cannot pass by testing nothing", () => {
-    expect(links.length).toBeGreaterThan(0);
-  });
-
-  it.each(links)("%s can still be followed by %s", (from, to) => {
-    const attack = states[from];
-    const reaction = states[attack.onHit ?? ""];
-    // A reaction that launches is a knockdown: the chain is over either way.
-    if (!reaction?.vel) return;
-
-    // Knockback is velocity times how long the reaction lasts, and what decides
-    // that is now the blow's hitstun rather than the pose — so tuning how long
-    // a fighter is held also moves them, which is worth remembering when the
-    // curves of §3 arrive.
-    const knockback = Math.abs(reaction.vel[0]) * hitstun(from);
-    const advance = (attack.vel?.[0] ?? 0) * frames(attack.anim);
-    expect(knockback - advance).toBeLessThan(reach(states[to].anim));
-  });
-
-  /**
-   * Distance is only half of it, and the recording found the other half: the
-   * defender has to still be *helpless* when the next blow arrives, not merely
-   * within range of it.
-   *
-   * From the blow landing, both fighters freeze for the same hit pause, so it
-   * cancels out of both sides of the sum. What is left is the **worst case**,
-   * because the player picks when to press: the latest frame the cancel may
-   * fire, plus the next attack's start-up, against the hitstun this blow gave.
-   * `cancelBy` is that latest frame; without one it is the end of the animation,
-   * which is how a string can look like it chains while the defender stands up
-   * between blows (`combat.md`, 2026-08-16).
-   *
-   * And it is measured **at the link's own depth in the chain**, because scaling
-   * shortens each successive hitstun — a string that holds at its opener can
-   * still fall apart at its third link, which is exactly what happened.
-   */
-  const startup = (anim: string): number => startupOf(anims[anim]);
-
-  it.each(chains)("$from still has $to helpless when the next blow lands", (link) => {
-    if (link.launcher) return; // a knockdown: helplessness is not the question
-    expect(link.margin).toBeGreaterThanOrEqual(0);
-  });
-
-  /**
-   * The third arithmetic, and the one a recording found: **landing a blow must
-   * not leave you acting second.** Hitstun against the attacker's own recovery,
-   * with the hit pause cancelling out of both sides as always.
-   *
-   * There are two ways to be safe and only requiring the first would be wrong.
-   * Either you recover first, or you have put them further away than anything in
-   * the game can reach — a heavy that pushes 62 px cannot be punished at that
-   * distance whatever the frame count says.
-   *
-   * A launcher is exempt: its reaction has no `vel` because the victim is in the
-   * air, and being minus against somebody still falling means nothing.
-   *
-   * **An airborne attack is exempt too**, and for a matching reason on the other
-   * side of the blow: its state ends on `landed`, so the frames left in its
-   * animation are not its recovery — the ground is. `hop_lunge` holds its
-   * descending frame for as long as the arc needs and would read as minus one
-   * here while never playing that long. Whatever replaces this check for air
-   * attacks has to know the arc, which this file cannot.
-   */
-  const advantage = (attack: string): number =>
-    // The `- 1` is measured, not derived: collision is resolved after both
-    // fighters have advanced, so the frame a blow lands on is already spent for
-    // the attacker and not yet for the defender. A recording of the jab put it
-    // at +3 where the sum without it says +4.
-    hitstun(attack) - (frames(states[attack].anim) - startup(states[attack].anim)) - 1;
-
-  /** The longest any attack reaches, which is what "out of range" has to beat. */
-  const longestReach = Math.max(
-    ...Object.values(states)
-      .filter((d) => d.onHit)
-      .map((d) => reach(d.anim)),
-  );
-
-  const grounded = Object.entries(states)
-    .filter(
-      ([, d]) =>
-        d.onHit !== undefined && states[d.onHit]?.vel !== undefined && d.airborne !== true,
-    )
-    .map(([name]) => name);
-
-  it("finds the blows that keep the victim on the ground", () => {
-    expect(grounded.length).toBeGreaterThan(0);
-  });
-
-  it("keeps the jab's advantage reachable — the buffer outlasts its recovery", () => {
-    /**
-     * The other half of frame advantage, and the half a recording found: being
-     * plus is worthless if the press cannot survive to the frame it is spent on.
-     *
-     * The jab is the case that matters, because it is the only blow whose plus
-     * is used by **linking** — waiting out your own recovery — rather than by
-     * cancelling out of it. Hitstop is free (a frozen entity does not age the
-     * buffer); the animation frames left after the hit are not.
-     */
-    const left = frames("punch") - startup("punch");
-    expect(BUFFER_FRAMES).toBeGreaterThan(left);
-  });
-
-  // A rush that stops on its third blow is punishable, accepted by the owner
-  // 2026-09-29: the hit type sets the hitstun, and nothing may hold it longer.
-  const mayBePunished = new Set(["kick_high_rush"]);
-
-  const judged = grounded.filter((n) => !mayBePunished.has(n));
-
-  it.each(judged)("%s does not leave its owner punishable", (name) => {
-    const reaction = states[states[name].onHit ?? ""];
-    const knockback = Math.abs(reaction?.vel?.[0] ?? 0) * hitstun(name);
-    // Phrased as a sentence so a failure names the numbers instead of saying
-    // "expected false to be true".
-    const verdict =
-      advantage(name) >= 0
-        ? "recovers first"
-        : knockback > longestReach
-          ? "pushes them out of range"
-          : `punishable: ${advantage(name)} frames, pushed only ${knockback.toFixed(0)} px`;
-    expect(verdict).not.toMatch(/^punishable/);
   });
 });
 
@@ -1532,21 +1351,21 @@ describe("effectsNamed", () => {
   const file = (states: StatesFile["states"]): StatesFile => ({ initial: "idle", states });
 
   it("always includes the default, since a state without hitFx still sparks", () => {
-    expect(effectsNamed(file({ idle: { anim: "idle" } }))).toEqual(["spark_1"]);
+    expect(effectsNamed(file({ idle: { anim: "idle" } }))).toEqual(["hit_spark"]);
   });
 
   it("collects every effect the states name, without repeating one", () => {
     const states = file({
-      punch: { anim: "punch", hitFx: "spark_1" },
+      punch: { anim: "punch", hitFx: "hit_spark" },
       smash: { anim: "smash", hitFx: "spark_2" },
       kick: { anim: "kick", hitFx: "spark_2" },
       downed: { anim: "downed", groundFx: "dust" },
     });
-    expect(effectsNamed(states).sort()).toEqual(["dust", "spark_1", "spark_2"]);
+    expect(effectsNamed(states).sort()).toEqual(["dust", "hit_spark", "spark_2"]);
   });
 
   it("survives an entity with no states at all", () => {
-    expect(effectsNamed(null)).toEqual(["spark_1"]);
+    expect(effectsNamed(null)).toEqual(["hit_spark"]);
   });
 
   it("takes the file's own default in place of the engine's", () => {
@@ -1556,14 +1375,14 @@ describe("effectsNamed", () => {
 
   it("loads what an animation's steps put out themselves", () => {
     const anims = { mae: { steps: [{}, { spawns: [{ name: "hit_spark" }] }] } };
-    expect(effectsNamed(file({ idle: { anim: "idle" } }), anims).sort()).toEqual(["hit_spark", "spark_1"]);
+    expect(effectsNamed(file({ idle: { anim: "idle" } }), anims).sort()).toEqual(["hit_spark"]);
   });
 
   it("loads what a scene puts out on the opponent", () => {
     const seize = { at: 1, place: [40, 0] as [number, number], anim: "m47", launch: { frame: 274, vel: [3, -8] as [number, number] }, bounces: [],
       release: { frame: 530, damage: 118, reaction: "reel_down", vel: [0, -4] as [number, number] },
       bursts: { fx: "burst_s", from: 276, to: 304, every: 4, at: [0, -28] as [number, number] } };
-    expect(effectsNamed(file({ idle: { anim: "idle", seize } })).sort()).toEqual(["burst_s", "spark_1"]);
+    expect(effectsNamed(file({ idle: { anim: "idle", seize } })).sort()).toEqual(["burst_s", "hit_spark"]);
   });
 
   it("loads the file's guard spark too", () => {
@@ -1578,15 +1397,15 @@ describe("hitFxOf", () => {
   it("prefers the state's spark, then the file's, then the engine's", () => {
     expect(hitFxOf({ anim: "punch", hitFx: "spark_2" }, file("hit_spark"))).toBe("spark_2");
     expect(hitFxOf({ anim: "punch" }, file("hit_spark"))).toBe("hit_spark");
-    expect(hitFxOf({ anim: "punch" }, file())).toBe("spark_1");
-    expect(hitFxOf(undefined, null)).toBe("spark_1");
+    expect(hitFxOf({ anim: "punch" }, file())).toBe("hit_spark");
+    expect(hitFxOf(undefined, null)).toBe("hit_spark");
   });
 
   it("takes the file's guard spark for a blocked blow, over the state's own", () => {
     const guarded = { ...file("hit_spark"), guardFx: "guard_spark" };
     expect(hitFxOf({ anim: "punch", hitFx: "spark_2" }, guarded, true)).toBe("guard_spark");
     expect(hitFxOf({ anim: "punch" }, guarded)).toBe("hit_spark");
-    // no guard spark named: blocked looks as landed, which keeps goku_old as he was
+    // no guard spark named: blocked looks as landed
     expect(hitFxOf({ anim: "punch", hitFx: "spark_2" }, file("hit_spark"), true)).toBe("spark_2");
   });
 });

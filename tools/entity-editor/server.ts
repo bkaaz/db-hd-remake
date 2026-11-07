@@ -7,19 +7,11 @@ import path from "node:path";
 
 /**
  * Dev-server plugin backing the repo-integrated entity editor. Adds endpoints so
- * the browser tool (and the game) can list and read sheets from
- * `assets/sheets/`, and read/write our entity JSON in `data/entities/`.
- * Dev-only (`apply: "serve"`); never part of a build.
- *
- * Every entity has exactly one image and it is a sheet: a fighter's is authored,
- * a spawn's is written by `npm run fx` into `spawns/` beneath it. Nothing here
- * derives a second copy of one — the transparency lives in the file.
- *
- * BYOA: source sheets are gitignored; only data/entities/*.json are committed.
- * See docs/assets.md.
+ * the browser tool (and the game) can read and write our entity JSON in
+ * `data/entities/`, and hands over the ROM every picture is drawn from (ADR
+ * 0090). Dev-only (`apply: "serve"`); never part of a build.
  */
 
-const SHEETS_DIR = path.join("assets", "sheets");
 const ENTITIES_DIR = path.join("data", "entities");
 const SPAWNS_DIR = path.join("data", "spawns");
 /** Where a gameplay recording lands. Gitignored; dev-only. */
@@ -32,41 +24,9 @@ const ARENA_DATA = path.join("data", "arenas");
 const ARENA_IMAGES = path.join("assets", "arenas");
 const HUD_DATA = path.join("data", "hud", "hud.json");
 const HUD_IMAGE = path.join("assets", "hud", "hud.png");
-const IMAGE_RE = /\.(png|gif|bmp|jpe?g)$/i;
-
-/**
- * Resolve a sheet name to a file, allowing the one subdirectory that exists and
- * nothing else. `spawns/` has to be reachable because a spawn's picture lives
- * there, and an explicit allowlist is the way to say that without loosening the
- * basename that keeps a name from walking out of `assets/sheets/`.
- */
-function sheetPath(root: string, name: string): string | null {
-  const parts = name.split("/");
-  if (parts.length > 2) return null;
-  if (parts.length === 2 && parts[0] !== "spawns") return null;
-  const base = path.basename(parts[parts.length - 1]);
-  if (!base || !IMAGE_RE.test(base)) return null;
-  return path.join(root, SHEETS_DIR, ...parts.slice(0, -1), base);
-}
 
 function sanitizeName(name: string): string {
   return name.replace(/[^a-z0-9_-]/gi, "").slice(0, 64);
-}
-
-function mimeFor(file: string): string {
-  switch (path.extname(file).toLowerCase()) {
-    case ".png":
-      return "image/png";
-    case ".gif":
-      return "image/gif";
-    case ".bmp":
-      return "image/bmp";
-    case ".jpg":
-    case ".jpeg":
-      return "image/jpeg";
-    default:
-      return "application/octet-stream";
-  }
 }
 
 function sendJson(res: ServerResponse, code: number, data: unknown): void {
@@ -81,39 +41,6 @@ async function readBody(req: IncomingMessage): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-/**
- * Overwrite a source sheet with the editor's colour-keyed image.
- *
- * Refuses to create a file that is not already there: this exists to burn
- * transparency into an existing sheet, so a name that does not resolve is a
- * typo rather than a new fighter. The old pixels are gone afterwards — the
- * un-keyed original lives only in the owner's asset pack (docs/assets.md).
- */
-async function writeSheet(
-  req: IncomingMessage,
-  res: ServerResponse,
-  root: string,
-): Promise<void> {
-  try {
-    const body = JSON.parse(await readBody(req)) as { name?: string; pngBase64?: string };
-    const name = sanitizeName(body.name ?? "");
-    if (!name || !body.pngBase64) {
-      return sendJson(res, 400, { error: "name and pngBase64 required" });
-    }
-    const file = path.join(root, SHEETS_DIR, `${name}.png`);
-    try {
-      await fs.access(file);
-    } catch {
-      return sendJson(res, 404, { error: `No sheet assets/sheets/${name}.png to overwrite` });
-    }
-    const buf = Buffer.from(body.pngBase64.split(",").pop() ?? "", "base64");
-    await fs.writeFile(file, buf);
-    sendJson(res, 200, { ok: true, bytes: buf.length });
-  } catch (err) {
-    sendJson(res, 500, { error: String(err) });
-  }
-}
-
 export function entityEditorServer(): Plugin {
   return {
     name: "entity-editor-server",
@@ -121,20 +48,8 @@ export function entityEditorServer(): Plugin {
     configureServer(server: ViteDevServer) {
       const root = server.config.root;
 
-      // List the fighters' sheets. `spawns/` is a directory, so it fails the
-      // extension test and stays out of the list — which is what the dropdown
-      // wants: a generated effect is not something you open to cut frames from.
-      server.middlewares.use("/api/sheets", async (_req, res) => {
-        try {
-          const files = await fs.readdir(path.join(root, SHEETS_DIR));
-          sendJson(res, 200, { sheets: files.filter((f) => IMAGE_RE.test(f)).sort() });
-        } catch {
-          sendJson(res, 200, { sheets: [] });
-        }
-      });
-
-      // POC (rom at runtime): the cartridge from ROM_PATH in .env.local, so a
-      // developer is never asked for it; 404 without one, and the game asks.
+      // The cartridge from ROM_PATH in .env.local, so a developer is never
+      // asked for it (ADR 0090); 404 without one, and the page asks.
       const romPath = loadEnv(server.config.mode, root, "ROM_").ROM_PATH;
       server.middlewares.use("/api/rom", async (_req, res) => {
         if (!romPath) return sendJson(res, 404, { error: "ROM_PATH not set in .env.local" });
@@ -148,31 +63,9 @@ export function entityEditorServer(): Plugin {
         }
       });
 
-      // Stream a source sheet image by filename, or overwrite one with the
-      // editor's keyed version. The write is in place and deliberate: the key is
-      // applied once and *becomes* the source, instead of being re-derived on
-      // every load from settings that are stored nowhere.
-      server.middlewares.use("/api/sheet", async (req, res) => {
-        if (req.method === "POST") return writeSheet(req, res, root);
-        const url = new URL(req.url ?? "", "http://localhost");
-        const name = url.searchParams.get("name");
-        if (!name) return sendJson(res, 400, { error: "name required" });
-        const file = sheetPath(root, name);
-        if (!file) return sendJson(res, 400, { error: "bad sheet name" });
-        try {
-          const buf = await fs.readFile(file);
-          res.statusCode = 200;
-          res.setHeader("Content-Type", mimeFor(file));
-          res.end(buf);
-        } catch {
-          res.statusCode = 404;
-          res.end();
-        }
-      });
-
       // An arena (used by the game): its arena.json, or with `layer` and
       // `time` one of its pictures. Both written by `npm run rom -- export`;
-      // the pictures are the cartridge's and gitignored, like the sheets.
+      // the pictures are the cartridge's and gitignored.
       server.middlewares.use("/api/arena", async (req, res) => {
         const url = new URL(req.url ?? "", "http://localhost");
         const name = sanitizeName(url.searchParams.get("name") ?? "");
@@ -287,10 +180,8 @@ export function entityEditorServer(): Plugin {
         }
       });
 
-      // Everything the editor can open. Two groups because they are read from
-      // two directories and, more usefully, because the group decides where the
-      // picture comes from: a fighter has a ripped sheet, a spawn has only the
-      // sheet its generator wrote, under `spawns/`.
+      // Everything the editor can open, in two groups because they are read
+      // from two directories.
       server.middlewares.use("/api/entities", async (_req, res) => {
         const names = async (dir: string): Promise<string[]> => {
           try {
@@ -315,7 +206,7 @@ export function entityEditorServer(): Plugin {
       });
 
       // Read an entity by assembling every section file in its directory:
-      // data/entities/<name>/<section>.json -> { name, sheet, <section>: ... }.
+      // data/entities/<name>/<section>.json -> { name, <section>: ... }.
       server.middlewares.use("/api/entity", async (req, res) => {
         if (req.method !== "GET") {
           return sendJson(res, 405, { error: "method not allowed" });
@@ -340,17 +231,11 @@ export function entityEditorServer(): Plugin {
           }
         }
 
-        // The caller is told where the picture is rather than working it out,
-        // which is the only thing that still separates a fighter from a spawn
-        // once both are one transparent sheet.
-        // Only the two fields the server invents can be checked: the sections
-        // are whatever .json files are in the directory, so their names come
-        // from the filesystem rather than from a type.
-        const entity: Pick<EntityFile, "name" | "sheet"> & Record<string, unknown> = {
+        // Only the field the server invents can be checked: the sections are
+        // whatever .json files are in the directory, so their names come from
+        // the filesystem rather than from a type.
+        const entity: Pick<EntityFile, "name"> & Record<string, unknown> = {
           name,
-          sheet: dir.startsWith(path.join(root, SPAWNS_DIR))
-            ? path.posix.join("spawns", `${name}.png`)
-            : `${name}.png`,
           frames: {},
           animations: {},
         };

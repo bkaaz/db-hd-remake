@@ -1,7 +1,4 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { HIT_TYPES } from "../combat/hitTypes";
 import { isAmbiguous, readToken, type NotationData, type Reading } from "./notation";
 
 const DATA: NotationData = {
@@ -74,21 +71,3 @@ describe("isAmbiguous", () => {
   });
 });
 
-describe("goku's data", () => {
-  const goku = (file: string) =>
-    JSON.parse(
-      readFileSync(fileURLToPath(new URL(`../../data/entities/goku_old/${file}`, import.meta.url)), "utf8"),
-    );
-
-  it("reads kb39 as both kicks drawn from frame 39, for the owner to choose", () => {
-    const r = readToken("kb39", {
-      groups: goku("descriptions.json").groups,
-      animations: goku("animations.json"),
-      states: goku("states.json").states,
-      types: HIT_TYPES,
-    }) as Reading;
-    expect(r.type).toBe("knockback");
-    expect(r.animations.map((a) => a.name).sort()).toEqual(["kick_high", "kick_high_hold"]);
-    expect(isAmbiguous(r)).toBe(true);
-  });
-});

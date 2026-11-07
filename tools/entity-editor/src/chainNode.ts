@@ -1,5 +1,4 @@
 import { state } from "./store";
-import { getSource } from "./imageProcess";
 
 /**
  * The picture on a node.
@@ -20,11 +19,7 @@ export function hitFrameOf(anim: string): HTMLCanvasElement | null {
   const steps = state.anims.find((a) => a.name === anim)?.steps ?? [];
   const step = steps.find((s) => s.boxes.some((b) => b.type === "hit")) ?? steps[0];
   const frame = state.frames.find((f) => f.id === step?.frame);
-  // The keyed canvas, the same source the sheet view and the preview use. On a
-  // sheet whose transparency is already in the file this is the file; on one
-  // still carrying a background it is the keyed version, so the pose sits on the
-  // node's own background either way.
-  const sheet = getSource();
+  const sheet = state.image;
   if (!frame || !sheet) return null;
 
   const scale = Math.min(SHOT / frame.w, SHOT / frame.h, 2);

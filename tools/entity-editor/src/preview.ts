@@ -1,5 +1,4 @@
 import { state, selectedAnim } from "./store";
-import { getSource } from "./imageProcess";
 import { BOX_COLORS } from "./boxEditor";
 
 /**
@@ -108,7 +107,7 @@ export class Preview {
     const s = this.scale;
     const dx = canvas.width / 2 - frame.anchor[0] * s;
     const dy = baseY - frame.anchor[1] * s;
-    const source = getSource() ?? state.image;
+    const source = state.image;
     ctx.drawImage(
       source,
       frame.x,

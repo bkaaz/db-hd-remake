@@ -1,0 +1,23 @@
+{
+  "fighter": "piccolo",
+  "type": 5,
+  "anim": 9,
+  "frames": [
+    0,
+    1,
+    2
+  ],
+  "tiles": 128,
+  "palette": 725232,
+  "loads": [
+    {
+      "resource": 65,
+      "vram": 26624
+    }
+  ],
+  "alt": 725264,
+  "lit": {
+    "palette": 144,
+    "alt": 145
+  }
+}

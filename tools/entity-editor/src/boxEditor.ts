@@ -1,5 +1,4 @@
 import { state, emitChange, selectedStep, type Box, type FrameDef } from "./store";
-import { getSource } from "./imageProcess";
 
 export const BOX_COLORS: Record<string, string> = {
   hit: "#ff3b3b",
@@ -114,7 +113,7 @@ export class BoxEditor {
 
     const c = this.context();
     if (!c || !c.step) return;
-    const src = getSource();
+    const src = state.image;
     const s = this.scale;
 
     if (src && c.frame) {

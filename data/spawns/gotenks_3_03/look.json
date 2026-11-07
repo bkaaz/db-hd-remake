@@ -1,0 +1,25 @@
+{
+  "fighter": "gotenks",
+  "type": 3,
+  "anim": 3,
+  "frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "tiles": 128,
+  "palette": 2609079,
+  "loads": [
+    {
+      "resource": 64,
+      "vram": 26624
+    },
+    {
+      "resource": 73,
+      "vram": 27392
+    }
+  ]
+}
