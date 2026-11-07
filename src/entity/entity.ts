@@ -411,7 +411,6 @@ export class Entity {
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
     this.sprite.scale.set(scale);
-    if (def.attributes.adds) this.sprite.blendMode = "add";
     this.ballG.blendMode = "add";
     this.bandG.blendMode = "add";
     this.view.addChild(this.shadow, this.sprite, this.bandG, this.ballG, this.boxG);

@@ -32,14 +32,6 @@ because a number would only need translating back.
 
 *Cosmetic, Gotenks, evening and night.* Their win follows the lighting now (`lit`, ADR 0087), but the first fade's record by evening, `0x13B` (own + `0xC9`, `$20:B903`), and by night and in the ruins are no ROM address our reader follows `?`: the day's stands in for those frames. His intro's `run0` and `run1` are own + `0xC9` and + `0xC5` (`$20:B96C`) and are exported for the day alone, the same way. From the code: no evening state of the original was played.
 
-## Gotenks's discharges are blended into what is behind them
-
-*Annoying, Gotenks, his intro (`3f`).* `gotenks_discharge` has `adds`, so it is added to
-the arena and to his body and comes out as a pale smear. The original's is solid and always
-in front of him: each pixel is its own colour plus the fixed colour of its row, never what
-lies under it (OBJ palettes 4-7 take the colour math; `$2131`'s source there is the fixed
-colour, which is also the intro's blue gradient). To see it: intro switch on, `?p2=gotenks`.
-
 ## Other fighters' ultimates: the final explosion does not cover both fighters
 
 *Cosmetic, Goku's Saiyan Meteor, Vegeta's Galactic Gunfire, others `?` (owner, 2026-11-05, 2026-11-07).* The thrower stays in his own colours through the white. Mr. Buu's Buu Breath keeps the band on through it (`lit`, `$0F:F158`); the rest is not checked.
