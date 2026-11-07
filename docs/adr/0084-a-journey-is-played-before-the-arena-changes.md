@@ -1,6 +1,6 @@
 # 0084 — A journey is played before the arena changes
 
-**Status:** accepted 2026-11-07 · supersedes the cut in 0083
+**Status:** accepted 2026-11-07 · supersedes the cut in 0083 · its arrival up superseded by 0086, 2026-11-07
 
 Once a sending blow's pause is over the fight stands still and a journey plays:
 the defender flies off at 8 px a frame, the arena goes, sideways he flies back

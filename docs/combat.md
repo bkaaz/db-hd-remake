@@ -202,7 +202,9 @@ tap is new logic in `input/buffer.ts`, not just an animation.
 blows that send the opponent to another part of the arena (Goku's `9f`,
 `a0`, `a1`) are wanted, with the flight between the two — but not the ones
 that send him up, into a fight in the air: there is no fight in the air,
-and there will be none (owner, 2026-11-03). Its winner's pose, `82`, is
+and there will be none (owner, 2026-11-03; again 2026-11-07, after an estimate
+of what the original's flying arenas and moves would take: the arenas 1, 2 and 6
+stay out). Its winner's pose, `82`, is
 one of two the winner strikes at random; not Gohan's, which does not fit on the
 ground (owner, 2026-11-04: off for now, `plan.md`).
 
@@ -211,8 +213,8 @@ ground (owner, 2026-11-04: off for now, `plan.md`).
 sideways (→ ← → X) goes round the floors — plains, tournament, ruins, shore —
 the way the attacker faces; down (↓ ↙ ← X) leads from the palace to the
 tournament or the plains, by the half he stood in. Every other way is closed,
-and the blow is only its knockdown. A lighting goes along where the arena has it. Up or down, both drop in from over the
-screen (owner, 2026-11-07): the cartridge's way up ends in a fight in the air.
+and the blow is only its knockdown. A lighting goes along where the arena has it. Sent up, both come in from below the new
+floor; sent down, from above (owner, 2026-11-07; ADR 0086).
 
 **A body in flight keeps one way round** (owner, 2026-11-06). The cartridge
 turns the opponent of Flaming Headbutt upside down as he falls and mirrors him every

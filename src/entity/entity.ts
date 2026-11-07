@@ -1437,10 +1437,10 @@ export class Entity {
     this.view.visible = !hidden;
   }
 
-  /** No speed left of what moved him: put down on another arena, he starts from rest. */
-  still(): void {
+  /** No speed left of what moved him, put down on another arena: only `vy`, if he comes in moving up or down. */
+  still(vy = 0): void {
     this.vx = 0;
-    this.vy = 0;
+    this.vy = vy;
     this.shove = 0;
   }
 
@@ -1651,7 +1651,8 @@ export class Entity {
       this.x += (this.pressed && opponent?.airborne ? pressedSpeed({ x: this.x, vx: flying }, { x: opponent.x, vx: opponent.groundVx }) : flying) * this.scale;
       this.y += this.vy * this.scale;
       this.vy = fall({ ...air, vx, vy: this.vy }, this.gravity);
-      if (this.y >= this.groundY) {
+      // a body still rising is not landing: a journey up brings him in from below the floor ($01:8D46)
+      if (this.y >= this.groundY && this.vy >= 0) {
         this.y = this.groundY;
         // Only the fall stops. Touching the ground does not delete horizontal
         // speed — a body skidding at 4.5 px a frame is still skidding — and

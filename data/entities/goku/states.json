@@ -3534,6 +3534,23 @@
         }
       ]
     },
+    "rise_in": {
+      "anim": "m1b",
+      "rank": 3,
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "down_fall"
+        },
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ]
+    },
     "sent_up": {
       "anim": "m21",
       "turn": false,

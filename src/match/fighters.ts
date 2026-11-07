@@ -71,8 +71,16 @@ export interface FightersStatus {
  */
 /** How far over the floor he falls from at the end of a sideways journey: recorded, y 196. */
 const SIDE_DROP = 4;
-/** How far over the screen's top each drops in from, up or down ($01:8D6B: y −8 and −32). */
-const FROM_ABOVE = { attacker: 0x20, defender: 8 };
+/**
+ * Where each comes in from on a floor's arena, in world y, and how fast
+ * ($01:8D46, $01:8D80 with `$0552` clear): up, from below it at −15, the
+ * defender knocked down (`1b`) and the attacker jumping (`05`, ours his fall);
+ * down, from above it, the attacker thrown up first at −8.
+ */
+const ARRIVAL = {
+  up: { defender: { y: 0x140, vy: -15 }, attacker: { y: 0x1a0, vy: -15 } },
+  down: { defender: { y: -8, vy: 0 }, attacker: { y: -0x20, vy: -8 } },
+};
 
 /** A sending blow that landed, and on whom. */
 export interface Sent {
@@ -354,24 +362,30 @@ export class Fighters {
   }
 
   /**
-   * The two put down on another arena, facing each other: sideways the attacker
-   * stands where his run in ends and the defender falls from where he hung;
-   * up or down both drop in from over the screen, `top` its world y — ours, as
-   * the original's way up ends in the air (`combat.md`).
+   * The two put down on another arena, facing each other. Sideways the attacker
+   * stands where his run in ends and the defender falls from where he hung; up,
+   * both come in from below the floor, thrown up; down, both drop in from above
+   * (`ARRIVAL`).
    */
-  arrive({ attacker, defender, way }: Sent, at: { attacker: number; defender: number }, top: number): void {
+  arrive({ attacker, defender, way }: Sent, at: { attacker: number; defender: number }): void {
     attacker.x = at.attacker;
     defender.x = at.defender;
     for (const fighter of [attacker, defender]) fighter.hide(false);
-    defender.forceState("down_fall");
-    for (const fighter of [attacker, defender]) fighter.still();
     if (way === "side") {
+      defender.forceState("down_fall");
+      defender.still();
       attacker.forceState("idle");
+      attacker.still();
       defender.y = defender.groundY - SIDE_DROP;
     } else {
+      const { defender: d, attacker: a } = ARRIVAL[way];
+      // knocked down as he rises, with no cry: he gave it when the blow landed
+      defender.forceState(way === "up" ? "rise_in" : "down_fall");
       attacker.forceState("jump_fall");
-      attacker.y = top - FROM_ABOVE.attacker;
-      defender.y = top - FROM_ABOVE.defender;
+      defender.still(d.vy);
+      attacker.still(a.vy);
+      defender.y = d.y;
+      attacker.y = a.y;
     }
     attacker.turnToward(defender.x);
     defender.turnToward(attacker.x);

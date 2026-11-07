@@ -54,7 +54,7 @@ export class Journey {
       stage.blank(false);
       stage.change(this.go.backdrop(backdrop));
       fighters.light(this.go.time);
-      fighters.arrive(sent, this.go.at, camera.y);
+      fighters.arrive(sent, this.go.at);
       camera.centreOn(fighters.player.x, fighters.opponent?.x ?? fighters.player.x);
       return false;
     }

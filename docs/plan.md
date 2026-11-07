@@ -34,8 +34,8 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 The owner, 2026-11-07: the blows that send the opponent to another arena, by his
 graph (`combat.md`, Where the fight happens). The change of arena, the journey
-and its bands are in (ADR 0083–0085). Left: whether the flying arenas (1, 2, 6)
-come, his word.
+and its bands are in (ADR 0083–0085). The flying arenas (1, 2, 6) do not come:
+the owner, 2026-11-07, after an estimate (`combat.md`).
 
 ## Now: reading the cartridge by script
 
