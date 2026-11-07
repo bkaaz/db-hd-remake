@@ -2245,7 +2245,7 @@
       ],
       "transitions": [
         {
-          "when": "frames:170",
+          "when": "frames:96",
           "to": "idle"
         }
       ]

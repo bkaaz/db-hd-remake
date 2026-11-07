@@ -55,6 +55,16 @@ describe("Opening", () => {
     expect(o.over).toBe(false);
   });
 
+  it("puts READY up as soon as both have left their intro, standing or not: Gotenks's discharges play under it", () => {
+    const { w, shown } = world();
+    const [a, b] = [fighter(), fighter()];
+    const o = new Opening(w, [a, b], true);
+    a.state = "idle";
+    b.state = "intro_2";
+    o.step([a, b]);
+    expect(shown).toEqual(["ready"]);
+  });
+
   it("drops READY in, sounds READY and FIGHT!, and is over when it is gone", () => {
     const { w, heights, played } = world();
     const o = new Opening(w, [fighter(undefined)], true);

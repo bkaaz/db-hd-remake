@@ -6,6 +6,9 @@ import type { Contender, Placard, RoundWorld } from "./round";
  * on a screen of its own before the fight (`3c`, $02:A242; ADR 0073) — and
  * once both stand, READY drops in and turns into FIGHT!, and the fight is on
  * (docs/rom.md, `3c`, the fighter's intro). Until then nobody's buttons count.
+ * "Stand" is leaving the intro's first state: what follows it plays under
+ * READY — Gotenks's discharges (`3f`), which the original loops until the
+ * fight (owner, 2026-11-07).
  *
  * Apart from `Round`, which owns the end: the two share nothing but the
  * screen they write on.
@@ -46,7 +49,7 @@ export class Opening {
 
   /** Once a frame, before the fight is on. */
   step(fighters: Contender[]): void {
-    if (this.phase === "intro" && fighters.every((f) => f.standing)) this.phase = "ready";
+    if (this.phase === "intro" && fighters.every((f) => f.state !== f.roundStates?.intro)) this.phase = "ready";
     if (this.phase !== "ready") return;
     if (!this.placard) this.placard = this.world.announce("ready");
     this.placard.at(readyY(this.ticks));
