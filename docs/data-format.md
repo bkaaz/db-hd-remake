@@ -29,8 +29,9 @@ data/entities/goku/
                      npm run rom -- commands, never by hand
 ```
 
-The dev-server plugin assembles them into one object for `GET /api/entity`, and
-that object is `EntityFile`. Nothing on disk holds it whole.
+The game assembles them into one object (`readEntity`, `src/data/files.ts`),
+the editor through the dev-server plugin's `GET /api/entity`, and that object
+is `EntityFile`. Nothing on disk holds it whole.
 
 Sections are optional: an entity is authored one at a time and the editor opens
 half-built ones, so the game defaults what is missing rather than refusing to

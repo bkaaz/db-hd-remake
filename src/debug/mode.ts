@@ -18,6 +18,7 @@
  */
 
 import type { Script } from "./dummy";
+import { readData } from "../data/files";
 
 /** Where a fighter starts, as a fraction of the world: 0 its left wall, 1 its right. */
 export interface Placement {
@@ -79,15 +80,9 @@ export function countOf(file: unknown): number {
   return Array.isArray(modes) ? modes.length : 0;
 }
 
-/**
- * Read `data/debug.json` and pick a mode from it. Served by the dev plugin, and
- * read on every scene build so that editing a mode costs a reload rather than a
- * restart of a dev server that has been up for days.
- */
+/** Read `data/debug.json` and pick a mode from it. */
 export async function loadMode(index: number): Promise<{ mode: DebugMode; count: number } | string> {
-  const file = await fetch("/api/debug")
-    .then((res) => (res.ok ? res.json() : null))
-    .catch(() => null);
+  const file = await readData<unknown>("debug.json");
   const mode = modeAt(file, index);
   return typeof mode === "string" ? mode : { mode, count: countOf(file) };
 }

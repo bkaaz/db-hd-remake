@@ -1,5 +1,5 @@
 /**
- * POC: the player's cartridge, the game's one dependency. In development the
+ * The player's cartridge, the game's one dependency (ADR 0090). In development the
  * dev server hands it over from ROM_PATH; otherwise the player picks the file.
  * Either way it must be a dump we know, or nothing we read from it means
  * anything.
@@ -18,7 +18,9 @@ export function cartridge(): Promise<Uint8Array> {
   return pending;
 }
 
+/** The dev server's, from ROM_PATH; a hosted page has no server to ask. */
 async function fromServer(): Promise<Uint8Array | null> {
+  if (!import.meta.env.DEV) return null;
   const res = await fetch("/api/rom").catch(() => null);
   return res?.ok ? new Uint8Array(await res.arrayBuffer()) : null;
 }

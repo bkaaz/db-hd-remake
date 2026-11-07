@@ -1,4 +1,5 @@
 import type { DebugRequest, SceneRequest } from "../scene";
+import { arenaList, colourSets, dataDirs, readData } from "../data/files";
 import { picker, segmented, type Choice } from "./controls";
 import type { Page } from "./page";
 import { SCALES, type ScaleChoice } from "./scale";
@@ -61,12 +62,11 @@ export class SetupBar {
   }
 
   private async load(): Promise<void> {
-    const json = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
-    const [entities, arenas, debug] = await Promise.all([json("/api/entities"), json("/api/arenas"), json("/api/debug")]);
-    this.fighters = (entities as { fighters?: string[] }).fighters ?? [];
-    this.colourSets = (entities as { colourSets?: Record<string, string[]> }).colourSets ?? {};
-    this.arenas = (arenas as { arenas?: Arena[] }).arenas ?? [];
-    this.modes = (debug as { modes?: unknown[] }).modes?.length ?? 1;
+    const [sets, arenas, debug] = await Promise.all([colourSets(), arenaList(), readData<{ modes?: unknown[] }>("debug.json")]);
+    this.fighters = dataDirs("entities");
+    this.colourSets = sets;
+    this.arenas = arenas;
+    this.modes = debug?.modes?.length ?? 1;
     this.render();
   }
 

@@ -8,6 +8,8 @@ export default defineConfig({
   server: {
     open: true,
   },
+  // relative, so dist/web plays from wherever it is hosted, a subpath included
+  base: "./",
   build: {
     // Vite empties its outDir on every build, so the game gets a subdirectory of
     // its own: `dist/` is everything that leaves the repo, and `dist/assets/`

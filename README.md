@@ -32,6 +32,7 @@ TypeScript · PixiJS v8 · Vite · Vitest
 npm install
 echo 'ROM_PATH=path/to/your.sfc' > .env.local   # optional: else the page asks
 npm run dev
+npm run build            # dist/web: plays from any static host, given a ROM
 ```
 
 Then open the URL Vite prints (it opens the browser automatically). Two fighters

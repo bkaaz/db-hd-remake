@@ -17,10 +17,6 @@ const SPAWNS_DIR = path.join("data", "spawns");
 /** Where a gameplay recording lands. Gitignored; dev-only. */
 const LOG_FILE = path.join("logs", "session.log");
 const SOUND_BANK = path.join("data", "audio", "sounds.json");
-const ROSTER = path.join("data", "roster.json");
-const DEBUG_MODES = path.join("data", "debug.json");
-const ARENA_DATA = path.join("data", "arenas");
-const HUD_DATA = path.join("data", "hud", "hud.json");
 
 function sanitizeName(name: string): string {
   return name.replace(/[^a-z0-9_-]/gi, "").slice(0, 64);
@@ -60,52 +56,6 @@ export function entityEditorServer(): Plugin {
         }
       });
 
-      // An arena's arena.json (used by the game), written by `npm run rom --
-      // export`; its pictures the browser draws from the ROM (ADR 0090).
-      server.middlewares.use("/api/arena", async (req, res) => {
-        const url = new URL(req.url ?? "", "http://localhost");
-        const name = sanitizeName(url.searchParams.get("name") ?? "");
-        if (!name) return sendJson(res, 400, { error: "name required" });
-        const file = path.join(root, ARENA_DATA, name, "arena.json");
-        try {
-          const buf = await fs.readFile(file);
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.end(buf);
-        } catch {
-          sendJson(res, 404, { error: `no ${path.relative(root, file)}` });
-        }
-      });
-
-      // Every arena and its lightings, for the debug scene's panel to offer.
-      server.middlewares.use("/api/arenas", async (_req, res) => {
-        const arenas: { name: string; times: string[] }[] = [];
-        try {
-          for (const e of await fs.readdir(path.join(root, ARENA_DATA), { withFileTypes: true })) {
-            if (!e.isDirectory()) continue;
-            const file = JSON.parse(await fs.readFile(path.join(root, ARENA_DATA, e.name, "arena.json"), "utf8")) as { times?: string[] };
-            arenas.push({ name: e.name, times: file.times ?? [] });
-          }
-        } catch {
-          // no arenas directory: the grid is the only backdrop
-        }
-        sendJson(res, 200, { arenas: arenas.sort((a, b) => a.name.localeCompare(b.name)) });
-      });
-
-      // The original's HUD (used by the game): hud.json, written by `npm run
-      // rom -- export`; its picture the browser draws from the ROM.
-      server.middlewares.use("/api/hud", async (_req, res) => {
-        const file = path.join(root, HUD_DATA);
-        try {
-          const buf = await fs.readFile(file);
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.end(buf);
-        } catch {
-          sendJson(res, 404, { error: `no ${path.relative(root, file)}` });
-        }
-      });
-
       // The game's sound bank. Unlike an entity section this belongs to no
       // fighter, so it is read on its own rather than assembled from a
       // directory — a voice has an owner and a punch does not (ADR 0011).
@@ -130,26 +80,6 @@ export function entityEditorServer(): Plugin {
           sendJson(res, 200, JSON.parse(await fs.readFile(file, "utf8")) as unknown);
         } catch {
           sendJson(res, 404, { error: "no sound bank" });
-        }
-      });
-
-      // The character select's grid. Belongs to no entity, like the sound bank.
-      server.middlewares.use("/api/roster", async (_req, res) => {
-        try {
-          sendJson(res, 200, JSON.parse(await fs.readFile(path.join(root, ROSTER), "utf8")));
-        } catch {
-          sendJson(res, 404, { error: "no roster" });
-        }
-      });
-
-      // The debug scene's setups. Read on every scene build rather than
-      // bundled, which is the whole point: editing a mode costs a reload, not a
-      // restart of a dev server that has been up for days.
-      server.middlewares.use("/api/debug", async (_req, res) => {
-        try {
-          sendJson(res, 200, JSON.parse(await fs.readFile(path.join(root, DEBUG_MODES), "utf8")));
-        } catch {
-          sendJson(res, 404, { error: "no debug modes" });
         }
       });
 

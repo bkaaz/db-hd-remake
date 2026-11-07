@@ -4,6 +4,7 @@ import type { Cell, HudFile } from "./hudFile";
 import { cartridge } from "../cartridge/romFile";
 import { hudImage } from "../cartridge/romBackdrops";
 import { toCanvas } from "../cartridge/canvas";
+import { readData } from "../data/files";
 
 /** What the HUD reads off the fight each game frame: each side's health and name. */
 export interface HudFighter {
@@ -52,9 +53,8 @@ export class Hud {
 
   /** Read the HUD, or say why there is none. */
   static async load(parent: Container, fighters: [HudFighter, HudFighter | null]): Promise<Hud | string> {
-    const res = await fetch("/api/hud");
-    if (!res.ok) return "no HUD — run `npm run rom -- export`";
-    const file = (await res.json()) as HudFile;
+    const file = await readData<HudFile>("hud/hud.json");
+    if (!file) return "no HUD — run `npm run rom -- export`";
     // its tiles are drawn from the cartridge (ADR 0090); hud.json says where each goes
     const sheet = Texture.from(toCanvas(hudImage(await cartridge())));
     sheet.source.scaleMode = "nearest";

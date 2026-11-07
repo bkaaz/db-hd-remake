@@ -110,6 +110,7 @@ async function flush(): Promise<void> {
 }
 
 async function send(lines: string[], reset: boolean): Promise<void> {
+  if (!import.meta.env.DEV) return; // the recording is the dev server's file
   try {
     await fetch("/api/log", {
       method: "POST",

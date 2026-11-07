@@ -395,9 +395,11 @@ Two properties the tree no longer shows, and both still hold:
   animations + states) and **`Entity`** is one live instance in the world; two
   Gokus are two entities sharing one `EntityDef`.
 - An entity is a **directory of section files** (`frames.json`,
-  `animations.json`, `states.json`, …), not one blob. The dev-server plugin
-  assembles them for `GET /api/entity`; the editor saves **one section at a
-  time** via `POST /api/section` (the active tab decides which). Format:
+  `animations.json`, `states.json`, …), not one blob. The game reads them
+  through Vite's glob (`src/data/files.ts`), so a static build plays with no
+  server (ADR 0093); the editor reads them through the dev-server plugin's
+  `GET /api/entity` and saves **one section at a time** via `POST
+  /api/section` (the active tab decides which). Format:
   `docs/data-format.md`.
 - **The player's ROM is the one dependency** (ADR 0090): the browser draws
   every picture and will play every sound from it; `ROM_PATH` in `.env.local`

@@ -5,6 +5,7 @@ import { CycledLayer } from "./cycledLayer";
 import { cartridge } from "../cartridge/romFile";
 import { arenaImages } from "../cartridge/romBackdrops";
 import { toCanvas } from "../cartridge/canvas";
+import { readData } from "../data/files";
 
 /** An arena read from disk, in one lighting: each layer's picture and how it scrolls. */
 export interface LoadedArena {
@@ -20,9 +21,8 @@ export interface LoadedArena {
  * is said, not replaced by another (ADR 0008).
  */
 export async function loadArena(name: string, time: string | null): Promise<LoadedArena | string> {
-  const res = await fetch(`/api/arena?name=${encodeURIComponent(name)}`);
-  if (!res.ok) return `no arena "${name}" — run \`npm run rom -- export\``;
-  const file = (await res.json()) as ArenaFile;
+  const file = await readData<ArenaFile>(`arenas/${name}/arena.json`);
+  if (!file) return `no arena "${name}" — run \`npm run rom -- export\``;
   const lighting = time ?? file.times[0];
   if (!file.times.includes(lighting)) return `arena "${name}" has no time "${lighting}" — try ${file.times.join(", ")}`;
   // its pictures are drawn from the cartridge (ADR 0090); arena.json says how they scroll

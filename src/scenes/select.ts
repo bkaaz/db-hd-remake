@@ -1,6 +1,7 @@
 import { Container, Graphics, Text, type Application } from "pixi.js";
 import { Entity, NO_INPUT, type WorldInput } from "../entity/entity";
 import { loadEntityDef } from "../entity/entityDef";
+import { dataDirs, readData } from "../data/files";
 import type { Keyboard } from "../input/keyboard";
 import type { Scene, SceneContext, SceneRequest } from "../scene";
 
@@ -190,9 +191,8 @@ export class SelectScene implements Scene {
 
 async function fetchGrid(): Promise<(string | null)[][] | string> {
   try {
-    const res = await fetch("/api/roster");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = (await res.json()) as { grid?: (string | null)[][] };
+    const data = await readData<{ grid?: (string | null)[][] }>("roster.json");
+    if (!data) return "there is no data/roster.json";
     if (!Array.isArray(data.grid)) return "data/roster.json has no grid";
     return data.grid;
   } catch (e) {
@@ -200,13 +200,7 @@ async function fetchGrid(): Promise<(string | null)[][] | string> {
   }
 }
 
-/** What is actually on disk decides what can be picked. */
+/** What is actually in data/ decides what can be picked. */
 async function fetchFighters(): Promise<string[]> {
-  try {
-    const res = await fetch("/api/entities");
-    if (!res.ok) return [];
-    return ((await res.json()) as { fighters?: string[] }).fighters ?? [];
-  } catch {
-    return [];
-  }
+  return dataDirs("entities");
 }

@@ -3,6 +3,7 @@ import type { Sounds } from "../audio/sounds";
 import type { StatesFile } from "./states";
 import type { CommandDef } from "../input/command";
 import { cartridge } from "../cartridge/romFile";
+import { readEntity } from "../data/files";
 import { drawFighter, drawSpawnLook, type Drawn } from "../cartridge/romSheets";
 import { toCanvas } from "../cartridge/canvas";
 import type { Rgba } from "../sprites/png";
@@ -55,11 +56,10 @@ export interface EntityDef {
   variants: Map<string, Map<string, Texture>>;
 }
 
-/** Fetch an entity plus its sheet and build per-frame textures. */
+/** Read an entity, draw its sheet from the ROM, and build per-frame textures. */
 export async function loadEntityDef(name: string): Promise<EntityDef> {
-  const res = await fetch(`/api/entity?name=${name}`);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = ((await res.json()) as { entity: EntityFile }).entity;
+  const data = await readEntity(name);
+  if (!data) throw new Error(`no entity "${name}" in data/`);
 
   const drawn = await drawnFrom(data);
   const sheet = texture(drawn.sheet);
