@@ -223,6 +223,9 @@ const TOURNAMENT_REST: [number, number] = [12, 32];
 const FAR_ROWS: [number, number] = [0, 20];
 const FRONT_ROWS: [number, number] = [20, 32];
 
+/** How long the storm's palettes stand on each of their steps: `$00:C41F`[step] + 1. */
+const STORM_HOLD = [2, 2, 2, 2, 2, 2, 4, 24, 12, 12, 12, 12, 12, 12, 12, 180];
+
 /** What each arena's handler scrolls apart (`rom.md`, A stage id and The other arenas' layers). */
 export const ARENAS: Record<string, ArenaSource> = {
   tournament: {
@@ -258,6 +261,20 @@ export const ARENAS: Record<string, ArenaSource> = {
     cycles: [
       // $0576 is whatever it was left at (recorded: 158): 16 is the step the day's own palette is
       { palette: 4, steps: 32, start: 16, hold: 16, at: { day: 0x9d8080, evening: 0x9d8500, night: 0x9d8980 } },
+    ],
+  },
+  shore: {
+    ids: { night: 17 },
+    layers: [
+      { name: "sky", scroll: [0.5, 64], draw: [[BG2, { rows: FAR_ROWS }]] },
+      { name: "shore", scroll: [1, 0], draw: [[BG1]] },
+    ],
+    leftOut: [[BG2, { rows: FRONT_ROWS }]],
+    cycles: [
+      { palette: 2, steps: 16, start: 0, hold: STORM_HOLD, at: { night: 0x9d8e40 } },
+      { palette: 3, steps: 16, start: 4, hold: STORM_HOLD, at: { night: 0x9d8e40 } },
+      { palette: 4, steps: 16, start: 10, hold: STORM_HOLD, at: { night: 0x9d8e40 } },
+      { palette: 7, steps: 8, start: 0, hold: 6, at: { night: 0x9d9200 } },
     ],
   },
 };

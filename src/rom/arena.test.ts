@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Rgb } from "../entity/palettesFile";
 import type { Rgba } from "../sprites/png";
 import { altPalettes, ARENAS, exportArena, glowPalettes, introPalettes, lightingPalettes, lightingShift, relitRun } from "./arena";
-import { GOKU, ROM_PATH } from "./cartridge";
+import { GOKU, ROM_PATH, toFile } from "./cartridge";
 import { fighterNamed } from "./roster";
 import { drawLayer, drawStage, loadStage, stack, stageRecord } from "./stage";
 
@@ -84,6 +84,37 @@ describe.skipIf(!existsSync(ROM_PATH))("arenas, on the cartridge", () => {
     it("take each lighting's steps from its own table", () => {
       const reds = (time: string) => at(plains.images[`cycle0@${time}`], 1, 0)[0];
       expect(new Set(["day", "evening", "night"].map(reds)).size).toBe(3);
+    });
+  });
+
+  describe("the shore", () => {
+    const shore = exportArena(rom, ARENAS.shore);
+
+    it("comes from stage id 17 alone, in the night's lighting, the silhouettes left out on purpose", () => {
+      expect(stageRecord(rom, 17).arena).toBe(7);
+      expect(shore.file.times).toEqual(["night"]);
+      expect(shore.file.layers.map((l) => [l.name, l.scroll])).toEqual([
+        ["sky", [0.5, 64]],
+        ["shore", [1, 0]],
+      ]);
+      // the fighters' palette record: the same lighting as the night of the arenas that have three
+      expect(lightingPalettes(rom, GOKU).night).toBe(0xb0080);
+    });
+
+    it("has its far rocks in the half-speed sky, and no silhouette below it", () => {
+      expect(drawn(shore.images["sky@night"], 96, 152)).toBe(true);
+      expect(drawn(shore.images["sky@night"], 160, 256)).toBe(false);
+      expect(Object.keys(shore.images).filter((n) => n.startsWith("front"))).toEqual([]);
+    });
+
+    it("steps palettes 2, 3 and 4 from one table at their own places, and 7 from another", () => {
+      expect(shore.file.cycles!.map((c) => [c.palette, c.start, c.steps])).toEqual([[2, 0, 16], [3, 4, 16], [4, 10, 16], [7, 0, 8]]);
+      expect(shore.images["cycle0@night"].data).toEqual(shore.images["cycle2@night"].data);
+    });
+
+    it("holds the steps by the cartridge's table ($00:C41F)", () => {
+      const table = [...rom.subarray(toFile(0x00c41f)!, toFile(0x00c41f)! + 16)];
+      expect(shore.file.cycles![0].hold).toEqual(table.map((t) => t + 1));
     });
   });
 

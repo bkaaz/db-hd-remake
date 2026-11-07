@@ -5,7 +5,7 @@ import { CycledLayer } from "./cycledLayer";
 
 /** An arena read from disk, in one lighting: each layer's picture and how it scrolls. */
 export interface LoadedArena {
-  /** The lighting it was read in, and all it has — the first is the fighters' own colours. */
+  /** The lighting it was read in, and all it has. */
   time: string;
   times: string[];
   layers: { texture: Texture; scroll: [number, number]; cycled?: CycledLayer }[];

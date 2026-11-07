@@ -16,6 +16,7 @@ import { CameraNotes } from "../camera/note";
 import { Shake } from "../camera/shake";
 import { Stage } from "../stage";
 import { ArenaBackdrop, loadArena } from "../arena/arena";
+import { OWN_COLOURS } from "../arena/arenaFile";
 import { GridBackdrop } from "../arena/grid";
 import { GameView, VIEW } from "../view";
 import { describes, tickLog } from "../log";
@@ -153,7 +154,7 @@ export class DebugScene implements Scene {
       fighter.alt = pal === "2";
       fighter.colourSet(isColourSet(pal) ? pal : null);
     }
-    if (arena && arena.time !== arena.times[0]) {
+    if (arena && arena.time !== OWN_COLOURS) {
       for (const name of new Set(fighters.light(arena.time))) {
         notices.push(showMessage(ctx.page.notices, `${name}: no sheet for "${arena.time}" — in its own colours`, true));
       }

@@ -9,6 +9,9 @@
  * Pure, so the export and the game import the same thing.
  */
 
+/** The lighting a fighter's own sheet is drawn in: any other asks for a sheet of its own. */
+export const OWN_COLOURS = "day";
+
 export interface ArenaFile {
   /** The lightings it comes in, the first being the default — `day`, `evening`, `night`. */
   times: string[];

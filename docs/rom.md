@@ -530,7 +530,7 @@ flat. What each shows is read off that drawing:
 | 4 | 12 (lighting `6`) | 1 | `D7` | burning ruins |
 | 5 | 13, 14, 15 | 1 | `D7` | rocky plains; ours `plains`, its silhouettes left out on purpose (`combat.md`) |
 | 6 | 16 (lighting `4`) | 2, vertical | `E9` | a crater with violet lightning |
-| 7 | 17 (lighting `4`) | 1 | `D7` | a dark sky, rocks and water |
+| 7 | 17 (lighting `4`) | 1 | `D7` | a dark sky, rocks and water; ours `shore`, its silhouettes left out on purpose (`combat.md`) |
 
 **How a stage's layers scroll.** Every stage gets the same HDMA
 ($00:B783): channel 2 writes BG1HOFS and channel 3 BG2HOFS, indirectly,
