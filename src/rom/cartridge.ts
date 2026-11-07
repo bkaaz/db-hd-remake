@@ -85,6 +85,8 @@ export interface SpawnDef {
    * as `night`, `night_alt`, `night_shimmer1` (`rom/arena.ts`, `lightingShifts`).
    */
   lit?: { palette: number; alt?: number; fades?: number[] };
+  /** Drawn with the intro screen's blue added by row, as OBJ palettes 4–7 are there (`rom/introLight.ts`). */
+  introLight?: true;
   /** Upside down: its thrower's handler sets the slot's OAM bit on the frame after the `b0` (Vegetto's `$20:D0DD`). */
   vflip?: true;
   /** What the move loads into VRAM for this object, in place of the fighter's `loads`. */

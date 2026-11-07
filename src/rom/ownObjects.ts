@@ -30,6 +30,8 @@ export interface OwnObject {
   alt?: number;
   /** Its records are its thrower's own + k (field 0x17), so they follow the arena's lighting (`SpawnDef.lit`). */
   lit?: true;
+  /** Drawn with the intro screen's blue added (`SpawnDef.introLight`). */
+  introLight?: true;
   /** How many records after `palette` its code steps through, one every 4 frames ($01:84EF, `$0F:BA7F`). */
   shimmer?: number;
   /** Records its palette passes through as it comes out, for its `paletteAt` to name (`shimmer1` …). */
@@ -77,7 +79,7 @@ export const OWN_OBJECTS: Partial<Record<FighterName, OwnObject[]>> = {
     { name: "gotenks_ghost", type: 0x3, anim: 0x6, hits: true, palette: 0x23, loads: [{ resource: 0x40, vram: 0x6800 }, { resource: 0x4a, vram: 0x6b00 }] },
     // 3f, his intro after 3c: discharges on him, 36 frames in every 84 ($0F:C129, a frame every 4),
     // in his own colours: the intro's OBJ palette 4 is 0x70, what a fight puts there is not
-    { name: "gotenks_discharge", type: 0x3, anim: 0xb, hits: false, palette: 0x70, lit: true, alt: 0x71, loads: VOLLEYBALL, tiles: 0x80, onStep: [0x3f],
+    { name: "gotenks_discharge", type: 0x3, anim: 0xb, hits: false, palette: 0x70, lit: true, introLight: true, alt: 0x71, loads: VOLLEYBALL, tiles: 0x80, onStep: [0x3f],
       animations: { play: { frames: [...Array(12).fill(9), 0, 1, 2, 3, 4, 5, 6, 7, 8], dur: 4, loop: true } } },
     // 3e, his win: Goten and Trunks come out of him while his own drawing is empty, each drawn
     // from his sprite's tiles, flying apart (script: b0 at -7 and -10). OBJ palette 4 goes 0x139,
@@ -179,6 +181,7 @@ export function ownObjects(rom: Uint8Array, t: FighterTables, wanted: OwnObject[
       palette: paletteRecord(rom, o.palette).at,
       ...(o.alt && { alt: paletteRecord(rom, o.alt).at }),
       ...(o.lit && { lit: { palette: o.palette, alt: o.alt, fades: o.fades } }),
+      ...(o.introLight && { introLight: true }),
       ...(o.vflip && { vflip: o.vflip }),
       ...(o.tiles !== undefined && { tiles: o.tiles }),
       ...(o.fades && { shimmer: o.fades.map((id) => paletteRecord(rom, id).at) }),

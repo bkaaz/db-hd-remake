@@ -108,7 +108,13 @@ export function runPalettes(rom: Uint8Array, t: FighterTables): Record<string, n
 const INTRO_RECORD: Record<number, number> = { 4: 0xae, 5: 0xc0 };
 
 /** Which of a fighter's `RUNS` his intro plays, records that name no player: all of Freeza's (`$10:B06C`), Gohan's last (`$20:A4AA`). */
-const ABSOLUTE_INTRO: Record<number, number[]> = { 6: [0, 1, 2, 3, 4, 5], 2: [5], 7: [0, 1, 2, 3] };
+const ABSOLUTE_INTRO: Record<number, number[]> = { 6: [0, 1, 2, 3, 4, 5], 2: [5], 7: [0, 1, 2, 3], 3: [0, 1, 2] };
+/**
+ * Runs whose records are his own + k (field 0x17), so a lighting moves them as
+ * far as it moves him: Gotenks's win, `run3`–`run5` ($20:B903). His intro's
+ * (own + 0xC9 …) would be 0x13B by evening, no ROM address: `ABSOLUTE_INTRO`.
+ */
+const OWN_RUNS: Record<number, number[]> = { 3: [3, 4, 5] };
 
 /** How far past his own the records his intro ends through: Cell's `fade0`, `fade1` ($10:C235, $10:C24F). */
 const INTRO_FADES: Record<number, number[]> = { 7: [0x9c, 0x9e] };
@@ -148,6 +154,7 @@ export function introPalettes(rom: Uint8Array, t: FighterTables): Record<string,
     for (const i of ABSOLUTE_INTRO[t.character] ?? []) {
       out[named(time, `run${i}`)] = relitRun(colours(day), colours(RUNS[t.character][i]), colours(own));
     }
+    for (const i of OWN_RUNS[t.character] ?? []) out[named(time, `run${i}`)] = paletteRecord(rom, RUNS[t.character][i] + own - day).at;
   }
   for (const [i, past] of (INTRO_FADES[t.character] ?? []).entries()) {
     for (const [time, own] of lightingRecords(rom, t)) {

@@ -24,9 +24,9 @@ because a number would only need translating back.
 
 *Cosmetic, seen on Gohan's intro.* His dust stays bright white by night beside a body in that lighting's colours. An object in its thrower's palette follows the lighting (`lit`, ADR 0087); this one is drawn in record `0x117` (`gohan_intro_a`), and whether the original lights such an object by arena is not checked.
 
-## Goten's and Trunks's first fade and his intro's runs keep the day's colours
+## Goten's and Trunks's first fade keeps the day's colours
 
-*Cosmetic, Gotenks, evening and night.* Their win follows the lighting now (`lit`, ADR 0087), but the first fade's record by evening, `0x13B` (own + `0xC9`, `$20:B903`), and by night and in the ruins are no ROM address our reader follows `?`: the day's stands in for those frames. His intro's `run0` and `run1` are own + `0xC9` and + `0xC5` (`$20:B96C`) and are exported for the day alone, the same way. From the code: no evening state of the original was played.
+*Cosmetic, Gotenks's win, evening and night.* The first fade's record by evening, `0x13B` (own + `0xC9`, `$20:B903`), and by night and in the ruins are no ROM address our reader follows `?`: the objects show the day's `shimmer1` for those 2 frames. His own runs are relit (`introPalettes`, `rom/arena.ts`).
 
 ## The original jumps where it should start Galactic Gunfire
 

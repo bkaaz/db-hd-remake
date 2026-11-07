@@ -18,6 +18,7 @@ import { shadowFrame } from "../entity/shadow";
 import { objectFrame } from "./object";
 import { objectVram, paletteRecord, resourceStream } from "./resource";
 import { lightingShifts } from "./arena";
+import { withIntroLight } from "./introLight";
 import { heldAnims } from "./held";
 import { moveParts } from "./parts";
 import { readScript } from "./script";
@@ -164,7 +165,8 @@ export function exportSpawn(rom: Uint8Array, t: FighterTables, def: SpawnDef, ti
       const pieces = def.vflip ? flipLayout(read, false, true) : read;
       // an empty layout is how an object shows nothing for a while (idle's lightning)
       if (pieces.length === 0) return { id: String(frame), ...NOTHING };
-      return { id: String(frame), ...drawFrame(vram, pieces, readPalette(rom, palette)) };
+      const drawn = drawFrame(vram, pieces, readPalette(rom, palette));
+      return { id: String(frame), ...(def.introLight ? withIntroLight(drawn) : drawn) };
     });
   const { sheet, frames } = packSheet(drawIn(colours));
   // the same pictures in each palette of its run pack the same way: frame for frame
