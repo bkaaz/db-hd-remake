@@ -1,5 +1,6 @@
 import type { Application } from "pixi.js";
 import type { Audio } from "./audio/playback";
+import type { Music } from "./audio/music";
 import type { Sounds } from "./audio/sounds";
 import type { Keyboard } from "./input/keyboard";
 import type { Page } from "./ui/page";
@@ -78,6 +79,7 @@ export interface SceneContext {
   page: Page;
   bank: Sounds;
   audio: Audio;
+  music: Music;
   keyboard: Keyboard;
 }
 

@@ -33,24 +33,32 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 ## Now: the cartridge as the game's one dependency
 
 [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md), on
-branch `poc-rom-runtime`. Every fighter's sheet, each palette of it, every
+`main`. Every fighter's sheet, each palette of it, every
 object, every arena, the bands and the HUD are drawn in the browser
 (`src/cartridge/`), and every effect, voice and spoken line is the
 cartridge's sound driver playing it on our chip (`src/apu/`). `npm run
 build` leaves `dist/web`, which plays from any static host: the player picks
 the ROM once and the browser keeps it (`cartridge/remembered.ts`).
 
-1. **Names in the editor** — aliases for the frames and animations it shows;
-   it reads them from the ROM and edits no sprite.
-2. **What is left goes:** `CLAUDE.md` read through for what still assumes
+1. **What is left goes:** `CLAUDE.md` read through for what still assumes
    files. Read again for what the hand-built Goku left behind: this file's sections written
    against his sheet (*G. Crouch*, *The moveset*), `descriptions.json` and the
    shorthand that reads it (`notation.ts`, `npm run which`), `input/motion.ts`,
    which no entity uses any more.
-3. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
+2. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
    translation's patch) is checked. The clean Japanese dump and any PAL one
    need their hashes, and the readers run against each — an address that
    moved is a table per dump.
+3. **Loading the ROM without a stall** (owner, 2026-11-07): the game
+   visibly lags at the start, while the browser draws and renders what it
+   needs from the cartridge. Measure first where the time goes; then a
+   loading screen, or a different approach (drawing on demand, a worker).
+   *Done when:* the start shows progress or plays at once, never a freeze.
+4. **The effects on the same chip as the music** (ADR 0094): every effect,
+   voice and line asked for on its ports as the game asks, the driver
+   mixing them with the song; the rendered buffers of ADR 0092 go.
+5. **Settings** (owner, 2026-11-08): a place for what the player sets,
+   the music's level first — fixed at 30% of the effects' until then.
 
 ## Now: reading the cartridge by script
 
@@ -503,9 +511,7 @@ queue.
   playing its id (ADR 0092). Left: a name for each `sfx_<id>` once what plays
   it is known (`rom.md`, The sounds); the KO (`voice_ko`) for when there is a
   KO; Freeza's shout (`32`), a blip 0.05 s long and quiet in the driver as in
-  the sound test — the original's own, or asked for another way `?`; and the
-  music, which the driver plays too (uploads `10`–`17`), once the sounds run
-  live on the chip rather than rendered once.
+  the sound test — the original's own, or asked for another way `?`.
 - **The rest of what spends ki.** The ki blast pays for itself as of
   2026-08-24 (`cost` on the state, checked before the transition fires), so the
   machinery is there and used. Vanish and the fast dash are the two that still

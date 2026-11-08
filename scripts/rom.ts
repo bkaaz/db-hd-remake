@@ -14,6 +14,9 @@
  *                                    the first resource
  *   npm run rom -- stage [id …]      a stage's two background layers, flat, into
  *                                    preview/ — every stage when no id is given
+ *   npm run rom -- music [id …] [--seconds 60]
+ *                                    a fight's song as the driver plays it, into
+ *                                    preview/ as a WAV — every song when no id is given
  *   npm run rom -- roster            every fighter: drawings, resources, palette, boxes
  *   npm run rom -- states --all      every generated fighter's states.json, written again
  *   npm run rom -- draft --fighter x a first specials.json, objects.json and spawn states from the reports
@@ -56,6 +59,8 @@ import { correctObjects, paletteIdAt, recordedKinds } from "../src/rom/recordedO
 import { lineName, spokenLines } from "../src/rom/lines.ts";
 import { voiceSounds } from "../src/rom/voice.ts";
 import { romIds, type Sounds } from "../src/audio/sounds.ts";
+import { encodeWav } from "../src/audio/wav.ts";
+import { renderSong, songIds } from "../src/apu/music.ts";
 import { moveOf, todo } from "../src/rom/todo.ts";
 import { handlerAt, sameHandler } from "../src/rom/handler.ts";
 import { readAttributes } from "../src/rom/attributes.ts";
@@ -420,6 +425,16 @@ if (command === "tiles") {
   mkdirSync("preview", { recursive: true });
   writeFileSync("preview/rom-hud.png", encodePng(scaled(drawHud(rom), 3)));
   console.log("wrote preview/rom-hud.png");
+} else if (command === "music") {
+  mkdirSync("preview", { recursive: true });
+  const at = args.indexOf("--seconds");
+  const seconds = at >= 0 ? Number(args[at + 1]) : 60;
+  const ids = args.filter((a, i) => /^[0-9a-f]+$/i.test(a) && args[i - 1] !== "--seconds").map((a) => parseInt(a, 16));
+  for (const id of ids.length > 0 ? ids : songIds(rom)) {
+    const file = `preview/music-${hex(id)}.wav`;
+    writeFileSync(file, encodeWav(renderSong(rom, id, seconds)));
+    console.log(`wrote ${file} (${seconds} s)`);
+  }
 } else if (command === "commands") {
   // the sequences as the engine matches them (src/input/command.ts, ADR 0050)
   const file = commandsFile(rom, T.character);

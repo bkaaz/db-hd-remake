@@ -39,7 +39,7 @@ describe("modeAt", () => {
     expect(modeAt({ modes: [{ p1: { at: -0.2 } }] }, 0)).toContain("between 0 and 1");
   });
 
-  it("counts the modes, which is what M wraps around", () => {
+  it("counts the modes, which is what N wraps around", () => {
     expect(countOf(file)).toBe(2);
     // No file is no modes, so stepping has nothing to step to.
     expect(countOf(null)).toBe(0);

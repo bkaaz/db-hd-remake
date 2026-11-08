@@ -1,8 +1,12 @@
 import type { DebugRequest, SceneRequest } from "../scene";
 import { arenaList, colourSets, dataDirs, readData } from "../data/files";
-import { picker, segmented, type Choice } from "./controls";
+import { field, line, picker, segmented, type Choice } from "./controls";
 import type { Page } from "./page";
 import { SCALES, type ScaleChoice } from "./scale";
+import { cartridge } from "../cartridge/romFile";
+import { fightSongIds } from "../apu/music";
+import type { Music } from "../audio/music";
+import { readSongPick } from "../match/song";
 
 /**
  * The picks that set a scene up, each where it belongs: over the game's
@@ -37,11 +41,14 @@ export class SetupBar {
   private colourSets: Record<string, string[]> = {};
   private arenas: Arena[] = [];
   private modes = 1;
+  /** The songs a fight plays, as the original's pre-fight choice offers them. */
+  private songs: number[] = [];
 
   constructor(
     request: SceneRequest,
     private readonly go: (request: SceneRequest) => void,
     private readonly page: Page,
+    private readonly music: Music,
   ) {
     this.request = request;
     this.show(request);
@@ -62,6 +69,11 @@ export class SetupBar {
   }
 
   private async load(): Promise<void> {
+    // the songs on their own: a player still picking his ROM keeps the rest of the bar
+    void cartridge().then((rom) => {
+      this.songs = fightSongIds(rom);
+      this.render();
+    });
     const [sets, arenas, debug] = await Promise.all([colourSets(), arenaList(), readData<{ modes?: unknown[] }>("debug.json")]);
     this.fighters = dataDirs("entities");
     this.colourSets = sets;
@@ -84,6 +96,9 @@ export class SetupBar {
       const arenas: Choice[] = [["", "grid"], ...this.arenas.map((a): Choice => [a.name, a.name])];
       arenaLine.append(field("arena", picker(r.arena ?? "", arenas, (v) => this.go({ ...without(r, "arena", "time"), ...(v && { arena: v }) }))));
       if (arena) arenaLine.append(field("time", segmented(r.time ?? arena.times[0] ?? "", arena.times.map((t): Choice => [t, t]), (time) => change({ time }))));
+      // the page's pick, not the scene's: a new one is heard at once and rebuilds nothing
+      const songs: Choice[] = [["none", "none"], ["random", "random"], ...this.songs.map((s): Choice => [String(s), String(s)])];
+      arenaLine.append(field("music", picker(String(this.music.pick), songs, (v) => (this.music.pick = readSongPick(v)))));
 
       const fighters: Choice[] = this.fighters.map((f) => [f, f]);
       const healths: Choice[] = HEALTHS.map((h) => [String(h), String(h)]);
@@ -113,23 +128,6 @@ export class SetupBar {
       this.render();
     });
   }
-}
-
-function line(...children: HTMLElement[]): HTMLElement {
-  const element = document.createElement("div");
-  element.className = "line";
-  element.append(...children);
-  return element;
-}
-
-function field(label: string, control: HTMLElement): HTMLElement {
-  const element = document.createElement("span");
-  element.className = "field";
-  const name = document.createElement("span");
-  name.className = "lbl";
-  name.textContent = label;
-  element.append(name, control);
-  return element;
 }
 
 function noticeLine(text: string): HTMLElement {

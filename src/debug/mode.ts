@@ -74,7 +74,7 @@ function check(mode: DebugMode, index: number): DebugMode | string {
   return mode;
 }
 
-/** How many modes the file holds — what `M` needs in order to wrap around. */
+/** How many modes the file holds — what `N` needs in order to wrap around. */
 export function countOf(file: unknown): number {
   const modes = (file as DebugModes | null)?.modes;
   return Array.isArray(modes) ? modes.length : 0;

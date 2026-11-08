@@ -251,6 +251,10 @@ as an uppercut's launch. → `combat.md` (The buttons)
 **Smash** — the Burst Limit button that ends a rush. Not a flag: a smash may or
 may not carry `relaunch`. → `combat.md` (The buttons)
 
+**Song** — one of the cartridge's pieces of music, by its number (`01`–`09`
+a fight's); played by the chip running live. → `rom.md` (A fight's song),
+[ADR 0094](./adr/0094-the-music-is-the-chip-running-live.md)
+
 **Spawn** — anything a state brings into the world: a hit spark, an aura, a ki
 blast. Not a kind of object — it is an ordinary `Entity`, authored in
 `data/spawns/<name>/`, and *effect*, *attachment* and *projectile* are words for

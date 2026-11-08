@@ -175,7 +175,8 @@ export class Audio implements SoundPlayer {
     return !ctx || ctx.state === "running";
   }
 
-  private context(): AudioContext | null {
+  /** The page's one audio context, made on first use; null where there is none. */
+  context(): AudioContext | null {
     if (this.ctx) return this.ctx;
     try {
       this.ctx = new AudioContext();

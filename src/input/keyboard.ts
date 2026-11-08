@@ -26,7 +26,7 @@ import type { Toggle, Toggles } from "../debug/toggles";
  */
 export class Keyboard {
   /**
-   * Step to the next debug mode, pressed with M.
+   * Step to the next debug mode, pressed with N.
    *
    * An edge rather than a toggle, and taken by the scene rather than read: it
    * asks for a rebuild, and a request that stayed true for a second frame would
@@ -35,7 +35,7 @@ export class Keyboard {
   private modeAsked = false;
   /**
    * Fill both fighters' health and ki, pressed with Space — a debug key, and
-   * the reason it is an edge like M: it is asked for, not held.
+   * the reason it is an edge like N: it is asked for, not held.
    *
    * Trying a move that costs ki otherwise means holding A+Z for twenty seconds
    * first, and what is being looked at is never the charging.
@@ -91,7 +91,7 @@ export class Keyboard {
     return input;
   }
 
-  /** True once per press of M. Taking it spends it, like an attack button. */
+  /** True once per press of N. Taking it spends it, like an attack button. */
   takeModeStep(): boolean {
     const asked = this.modeAsked;
     this.modeAsked = false;
@@ -120,7 +120,7 @@ export class Keyboard {
       return;
     }
     if (key === " ") this.kiAsked = !e.repeat;
-    else if (key === "m") this.modeAsked = !e.repeat;
+    else if (key === "n") this.modeAsked = !e.repeat;
     else if (TOGGLE_KEYS[key]) this.toggles.flip(TOGGLE_KEYS[key]);
   }
 
@@ -186,7 +186,7 @@ export function keySheet(): [key: string, does: string][] {
     ["↓", "crouch"],
     ...BUTTONS.map((b): [string, string] => [button(b), b]),
     [`${button("attack")}+${button("guard")}`, "charge ki"],
-    ["M", "next debug mode"],
+    ["N", "next debug mode"],
     ["Space", "refill health and ki"],
   ];
 }

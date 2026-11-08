@@ -40,7 +40,7 @@ describe("what a recording says it is of", () => {
   });
 
   it("notes a change of situation instead of leaving the file lying", () => {
-    // Stepping to another mode with M rebuilds the scene while the recording
+    // Stepping to another mode with N rebuilds the scene while the recording
     // runs on. Silence there would make every line after it describe something
     // the header does not.
     const out = capture();

@@ -20,6 +20,18 @@ because a number would only need translating back.
 
 ---
 
+**The KO comes late, sometimes long after the knockdown** (*annoying*,
+2026-11-08, owner). Player two knocked out: before KO is announced player
+one can move for a while — rightly, for a moment — but sometimes for far
+too long, and the KO waits with it. Which knockdowns do it is not known
+yet `?`; a recording (`L`) of one would say what the round waits on
+(`match/round.ts`).
+
+**Cell's downward sender misses shorter fighters** (*breaks play*,
+2026-11-08, owner). Cell's sender that sends the opponent down does not
+hit a fighter shorter than he is. Whether its box is too high or the
+opponent's hurt box too low is not known yet `?`.
+
 **The select screen offers no fighter** (*breaks play*, 2026-11-07). The
 select scene, the default without `?scene=debug`, says "No fighters to choose
 from.": a slot is offered only when its entity has an animation named

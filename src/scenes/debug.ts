@@ -1,4 +1,5 @@
 import { soundIdCollisions, validateSounds } from "../audio/sounds";
+import type { Music } from "../audio/music";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
@@ -87,6 +88,8 @@ export class DebugScene implements Scene {
     private readonly prompt: (text: string) => Notice,
     /** Where a blow may send the fight; null on the grid. */
     private readonly travel: Travel | null,
+    /** The fight's song, from the scene's start to its end. */
+    private readonly music: Music,
   ) {}
 
   /** Frames since the scene began: half speed skips the odd ones. */
@@ -95,6 +98,11 @@ export class DebugScene implements Scene {
   private again: Notice | null = null;
   /** A sender's journey under way: the fight waits for it. */
   private journeying: Journey | null = null;
+  /**
+   * Whether the song was asked for: on the first frame, not as the scene is
+   * built — a scene built and thrown away must not stop the next one's.
+   */
+  private playing = false;
 
   static async create(
     ctx: SceneContext,
@@ -215,14 +223,19 @@ export class DebugScene implements Scene {
       opening.over || ctx.audio.awake ? null : { awake: () => ctx.audio.awake, prompt: showPrompt(ctx.page.notices, "press any key") },
       (text) => showPrompt(ctx.page.notices, text),
       travel,
+      ctx.music,
     );
   }
 
   /** One game frame, in the order the parts of it have to happen. */
   step(keyboard: Keyboard): SceneRequest | null {
+    if (!this.playing) {
+      this.playing = true;
+      this.music.fight();
+    }
     if (this.waiting) {
       // the key that wakes it is for waking only: Space would refill the
-      // health a mode or the address set, M leave the mode
+      // health a mode or the address set, N leave the mode
       keyboard.takeRefill();
       keyboard.takeModeStep();
       if (!this.waiting.awake()) return null;
@@ -306,7 +319,7 @@ export class DebugScene implements Scene {
   }
 
   /**
-   * `M` steps to the next mode by asking to be rebuilt, which is the machinery
+   * `N` steps to the next mode by asking to be rebuilt, which is the machinery
    * the character select already uses — so the address bar always says which
    * setup is running and can be copied straight into a bug report. Everything
    * reloads with it: health, positions and the timeline all start over, which
@@ -336,6 +349,7 @@ export class DebugScene implements Scene {
   }
 
   destroy(): void {
+    if (this.playing) this.music.stop();
     this.stage.destroy();
     this.travel?.destroy();
     this.fighters.destroy();

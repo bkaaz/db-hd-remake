@@ -51,6 +51,25 @@ export function pill(key: string, label: string, on: boolean, flip: () => void):
   return button;
 }
 
+/** A row of the bar above the game's screen. */
+export function line(...children: HTMLElement[]): HTMLElement {
+  const element = document.createElement("div");
+  element.className = "line";
+  element.append(...children);
+  return element;
+}
+
+/** A control under its label. */
+export function field(label: string, control: HTMLElement): HTMLElement {
+  const element = document.createElement("span");
+  element.className = "field";
+  const name = document.createElement("span");
+  name.className = "lbl";
+  name.textContent = label;
+  element.append(name, control);
+  return element;
+}
+
 /** A click that hands the focus back, as every control here does. */
 function onClick(button: HTMLButtonElement, act: () => void): void {
   button.addEventListener("click", () => {

@@ -438,6 +438,27 @@ the shout (`32`), both at pitch `03F6`. Goku's are `$15:8000`.
 the driver's too: rendered with his voice loaded it is each fighter's KO of
 the sound test, length and all — from the same two samples `?`.
 
+**A song is loaded** by its number: first its samples, upload `02` or `04`
+by song at `$00:98D6` (`$00:98C4`; `02` is the one boot sends), then the
+song itself, its upload by song at `$00:DCA8` (`$00:DE0A`): songs `01`–`14`
+are uploads `10`–`23`. Then `1` is queued for port 0 (`$00:DE5A`, a queue
+of four at `$c7`, beside the effects' `$cb` for port 1) and `$00:DDC3`
+sends it (`$00:D8AF`): the driver plays the song (`src/apu/music.ts`,
+`npm run rom -- music`). The sound test's music (`$00:D150`) steps `$19a4`
+with ← and → and loads it at `$00:D19C`.
+
+**A fight's song** is chosen as the fight starts (`$0E:817D`), never by
+the arena:
+
+| when | song |
+|---|---|
+| `$1A02` = 0 (the story `?`) | by `$1B28` at `$0E:81C3` (`00 07 03 03 04 08 03 06 02 01 09 04 05 03 08 05` …, its length not read) |
+| otherwise, by the pre-fight choice `$1AD7` | `1`–`9`: that song; `0a`: none loaded (off `?`); `0` — and whenever `$1B15` is set — a random one: the game's random byte `$62` (`$00:9720`: × 5 + `0x11`) & `0F`, less 8 from 9, plus 1, so `1`–`9`, `2`–`8` twice as often |
+
+The choice (`$02:B883`) steps `$1AD7` through `0`–`0a` with ← and →,
+wrapping at its `CMP #$000B` (`$02:B8AA`, read by `fightSongIds`), and
+plays `03` on each.
+
 **Charging ki refills health** (`$0F:A020`): every 2 frames of the game's
 count `$74` the dial (field `0x66`) steps 1; at 12 it goes back to 0 and
 the health gains 5, up to field `0x62` — +5 every 26 frames, the dial

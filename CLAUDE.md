@@ -98,7 +98,7 @@ default ports:
 | What | URL |
 |---|---|
 | Game | http://localhost:5173 |
-| Entity editor | http://localhost:5174/tools/entity-editor/ |
+| Entity editor | http://localhost:5173/tools/entity-editor/ |
 
 - **Do not start, restart or kill them, and do not spawn background processes**
   for them. If a port is unreachable or behaves oddly, **say so and ask** — do
@@ -216,7 +216,7 @@ when it works.
 ```bash
 npm install       # install dependencies
 npm run dev       # game dev server (5173) — normally already running
-npm run editor    # entity editor (5174)   — normally already running
+npm run editor    # entity editor alone (5174); the game's server serves it too
 npm run build     # typecheck + production build
 npm run typecheck # typecheck only
 npm test          # Vitest, run once (npm run test:watch to keep it running)
@@ -288,6 +288,9 @@ npm run rom -- grab 9d
                   # where each opponent is held, the launch
 npm run rom -- hud
                   # the original's HUD as its loader leaves it, into preview/
+npm run rom -- music 1 --seconds 60
+                  # a fight's song as the driver plays it, a WAV into
+                  # preview/; with no id every song
 npm run rom -- stage 0
                   # a stage's background layers, flat, into preview/; with
                   # no id every stage and rom-stages.png, all on one sheet

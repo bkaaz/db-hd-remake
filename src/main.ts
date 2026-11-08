@@ -2,6 +2,7 @@ import { Application } from "pixi.js";
 import { readData } from "./data/files";
 import type { Sounds } from "./audio/sounds";
 import { Audio } from "./audio/playback";
+import { Music } from "./audio/music";
 import { Toggles } from "./debug/toggles";
 import { Keyboard } from "./input/keyboard";
 import { startRecording, stopRecording } from "./log";
@@ -43,7 +44,8 @@ async function boot(): Promise<void> {
   const bank = (await readData<Sounds>("audio/sounds.json")) ?? {};
   const audio = new Audio(bank);
   audio.start();
-  const ctx: SceneContext = { app, page, bank, audio, keyboard };
+  const music = new Music(audio, localStorage);
+  const ctx: SceneContext = { app, page, bank, audio, music, keyboard };
 
   /** Null while a scene is being loaded: the crank turns, nothing happens. */
   let scene: Scene | null = null;
@@ -83,7 +85,7 @@ async function boot(): Promise<void> {
   // What the address asked for is remembered now, so it can go: an old link
   // left in the bar would undo every pick made since on the next reload.
   history.replaceState(null, "", location.pathname);
-  const setup = new SetupBar(first.request, go, page);
+  const setup = new SetupBar(first.request, go, page, music);
   new SwitchBar(page, toggles);
   if (first.notice) setup.say(first.notice);
   go(first.request);

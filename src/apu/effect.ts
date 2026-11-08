@@ -5,13 +5,13 @@
  * the driver's own mixing of sounds that overlap is not kept (ADR 0092).
  */
 
-import { apuUpload, voiceUploads } from "../rom/apuUpload";
+import { apuUpload, voiceUploads, type ApuUpload } from "../rom/apuUpload";
 import { Apu, SAMPLE_RATE } from "./apu";
 
 /** The uploads the game sends at boot (`$00:9237`): the driver, its tables, the music's samples and the effects'. */
 const BOOT = [0, 1, 2, 3];
 /** What the driver takes to set itself up before it hears the game. */
-const WARM_UP = SAMPLE_RATE / 2;
+export const WARM_UP = SAMPLE_RATE / 2;
 /** Silence this long after the sound began ends it. */
 const QUIET = SAMPLE_RATE / 4;
 /** Longer than anything the sound test plays: past it a sound is cut. */
@@ -23,10 +23,15 @@ export interface Rendered {
   right: Float32Array;
 }
 
+/** What the game sends the chip at boot. */
+export function bootUploads(rom: Uint8Array): ApuUpload[] {
+  return BOOT.map((i) => apuUpload(rom, i));
+}
+
 /** The chip as a fight finds it: booted, with player one's `voice` if given, and set up. */
 export function bootedApu(rom: Uint8Array, voice?: number): Apu {
   const apu = new Apu();
-  const boot = BOOT.map((i) => apuUpload(rom, i));
+  const boot = bootUploads(rom);
   apu.load([...boot, ...(voice === undefined ? [] : voiceUploads(rom, voice, 0))], boot[boot.length - 1].start);
   apu.render(WARM_UP);
   return apu;
