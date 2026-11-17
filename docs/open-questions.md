@@ -41,7 +41,7 @@ leaving it cost, and when does that bill arrive.**
   its length is building a fight, which moves into `FightScene`. Fixing it before
   that means fixing it twice.
 - **Q15 — How a scene *changes* to the next one.** What a scene is, and how one
-  is entered, is settled ([ADR 0008](./adr/0008-a-scene-is-what-its-parameters-say.md));
+  is entered, is settled ([ADR 0008](./adr/0008-a-scene-is-built-from-a-request.md));
   what a scene says when it wants to be replaced is not. Deliberately left until
   there are two screens to move between, which is the first moment the answer
   can be judged rather than guessed.

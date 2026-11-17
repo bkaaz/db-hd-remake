@@ -176,7 +176,7 @@ behind and swaps sides; against a projectile it lands behind the shooter.
 Being backed against the wall is meant to be dangerous, but escapable.
 **Knockback that cannot be spent on the defender is spent on the
 attacker**: a shove into the screen's edge passes to the other fighter,
-reversed (`combat/corner.ts`, the original's `$0D:C8F0`, ADR 0059) — except
+reversed (`combat/corner.ts`, the original's `$0D:C8F0`, ADR 0081) — except
 from the standing reels, which the original keeps at the wall too. The same
 principle `push.ts` uses when one body is pinned.
 
@@ -226,6 +226,9 @@ in `adr/` (0003, 0013, 0014, 0019, 0035).
   effect rides its owner by `follows`.
 - **Holding the opponent.** `grab`, `seize`, `finale`, `frees` and `throwsFoe`
   move the other body from the holder's state (ADR 0035).
+- **A parry** is the defender's own move: a state with `parry` turns an armed
+  blow whose hit box touches his back on the striker, unless the striker's move
+  is on his fighter's list (`match/parry.ts`, read by `src/rom/parry.ts`).
 
 ## Movement
 
@@ -255,7 +258,7 @@ sideways (→ ← → X) goes round the floors — plains, tournament, ruins, sh
 the way the attacker faces; down (↓ ↙ ← X) leads from the palace to the
 tournament or the plains, by the half he stood in. Every other way is closed,
 and the blow is only its knockdown. A lighting goes along where the arena has it. Sent up, both come in from below the new
-floor; sent down, from above (owner, 2026-11-07; ADR 0086). The debug scene's
+floor; sent down, from above (owner, 2026-11-07; ADR 0081). The debug scene's
 "arena change" switch (`J`) closes every way while it is off.
 
 **A body in flight keeps one way round** (owner, 2026-11-06). The cartridge

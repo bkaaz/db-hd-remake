@@ -3,7 +3,7 @@
  * intro, the KO, a sender's journeys and the recording — in one place, so that a key and the panel's switch
  * are two ways of flipping the same value and each sees what the other did.
  * All but the recording are remembered across a reload; it never is, or every
- * reload would start one unasked (owner, ADR 0040).
+ * reload would start one unasked (owner, ADR 0008).
  */
 
 export type Toggle = "boxes" | "readout" | "dummy" | "intro" | "ko" | "journeys" | "recording";

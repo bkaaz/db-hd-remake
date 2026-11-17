@@ -20,7 +20,7 @@ how long a drawing is held. → `combat.md` §1
 
 **Arena** — what a fight stands in front of: the original's stage art, as
 layers scrolling at their own speeds, in a lighting. Not the `Stage`, which is
-the playfield's numbers. → `data/arenas/`, ADR 0031
+the playfield's numbers. → `data/arenas/`, ADR 0081
 
 **Blown** — the reaction that sends a body away backward in a low flight, into
 a bounce (`blown_bounce`); what the rush's last smash does. → `combat.md` (The
@@ -87,7 +87,7 @@ and minus can be correct when the blow also pushes them out of range.
 
 **Game pixel** — one pixel of the original's screen: the unit of every
 position, speed and box; the view scales them all at once.
-→ `src/view.ts`, ADR 0029
+→ `src/view.ts`, ADR 0041
 
 **Guard** — a button and the stance it holds (`guard`, `guard_low`). A blow is
 blocked only in a state marked `guarding`: the stance and its blockstun.
@@ -113,7 +113,7 @@ bar that moves below 150, the names. Ours is HTML around the screen
 
 **Intro** — a fighter's `3c`, played on the arena before the fight with the
 debug scene's intro switch on, both at once, then READY and FIGHT!.
-→ `src/match/opening.ts`, `rom.md` (`3c`, the fighter's intro), ADR 0067
+→ `src/match/opening.ts`, `rom.md` (`3c`, the fighter's intro), ADR 0064
 
 **Hitstun** — how long the **defender** is helpless after a blow, counted in
 frames and set by the blow's hit type, not by the length of the reaction
@@ -182,7 +182,7 @@ drawn while he charges; Goku has none. → `rom.md`, `src/rom/arena.ts`
 what another state's inputs would: the landing, a block, the dash. → ADR 0013
 
 **Push band** — the screen's outer 64 px: a fighter in it, moving toward that
-edge, scrolls the camera; nobody else does. → `src/camera/push.ts`, ADR 0030
+edge, scrolls the camera; nobody else does. → `src/camera/push.ts`, ADR 0081
 
 **Rank** — how badly a reaction has taken control away: flinch 1, stagger 2,
 knockdown 3, on the floor 4, and 0 for a fighter who is their own. A blow never
@@ -216,10 +216,10 @@ button ends it at any depth. A tree, derived from `states.json` like any chain.
 sprites, so the original's state is found in its I-RAM. → `rom.md`
 
 **Sender** — a blow (`9f`, `a0`, `a1`) whose state `sends` the opponent to
-another arena, up, sideways or down. → `arena/ways.ts`, ADR 0083
+another arena, up, sideways or down. → `arena/ways.ts`, ADR 0081
 
 **Journey** — what a sender plays before the arena changes: he flies off, the
-screen between, he is put down on the new one. → `arena/flight.ts`, ADR 0084; off
+screen between, he is put down on the new one. → `arena/flight.ts`, ADR 0081; off
 behind the debug scene's "arena change" switch
 
 **Shake** — the backdrop jolting up and down while the fighters stay put:

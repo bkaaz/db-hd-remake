@@ -56,7 +56,7 @@ async function boot(): Promise<void> {
 
   function go(request: SceneRequest): void {
     // Remembered rather than written into the address: a reload lands where
-    // you were, and the address stays short (ADR 0040).
+    // you were, and the address stays short (ADR 0008).
     localStorage.setItem(REMEMBERED, queryFor(request));
     setup.show(request);
     scene?.destroy();

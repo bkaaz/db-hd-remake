@@ -3,7 +3,7 @@ import { Container, Graphics, type Application } from "pixi.js";
 /**
  * The game's screen: the original's size, in the game's pixels. Everything a
  * player sees is drawn into it and nothing outside knows the window's size —
- * which is what keeps changing the size one edit here (ADR 0029).
+ * which is what keeps changing the size one edit here (ADR 0041).
  */
 export const VIEW = { width: 256, height: 224 };
 

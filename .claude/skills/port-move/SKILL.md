@@ -196,7 +196,7 @@ before asking for a new mechanism:
   `$0D:F9BD`) — `inputsOf` idle, `only: "buttons"` without the directions
   (ADR 0013; `npm run rom -- entries` counts it);
 - a move that waits for a blow, with the list of what gets through — `parry`
-  (ADR 0077); `npm run moves -- <f> --parry` plays it, `--held` a button's levels;
+  (`combat.md`); `npm run moves -- <f> --parry` plays it, `--held` a button's levels;
 - a stay-on-hit object that strikes again — `outlivesHit`, `rehit`; one no pause
   holds — `throughPause`; several by one scene, each out, hovering and home — a
   state each with `launch`, `frames:` and `burstsAtEnd`;

@@ -25,3 +25,5 @@ and the stance names its own block. How each of these plays: `combat.md`.
 - **Defence subtracted by hand when copying a blow**, or **after scaling** — it
   belongs to whoever is hit, and a late blow of a long combo would drop to nothing.
 - **A guard state to stand in** — it would compete with walking back for one input.
+- **A parry as a reaction of the defender** — it is his own move, with its own
+  frames and boxes, so it is a state that waits for a blow.

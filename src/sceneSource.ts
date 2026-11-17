@@ -2,7 +2,7 @@ import { requestFromUrl, type SceneRequest } from "./scene";
 
 /**
  * Where the first scene's request comes from: a URL that says anything wins,
- * otherwise the browser remembers the last one (ADR 0040). What is kept is
+ * otherwise the browser remembers the last one (ADR 0008). What is kept is
  * the request's own query string (`queryFor`), so the URL's vocabulary and
  * its checks are the only ones — a remembered request is read exactly as a
  * typed one.

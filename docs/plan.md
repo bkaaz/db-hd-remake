@@ -190,9 +190,9 @@ takes an investigation instead of a procedure. In this order:
 
 The camera, its shake and arena 0 are the original's (`rom.md`, The
 camera); every size one value to change, not a hunt (owner, 2026-10-30) —
-the game's screen is `src/view.ts` (ADR 0029) and its scale the page's
+the game's screen is `src/view.ts` (ADR 0041) and its scale the page's
 (`src/ui/scale.ts`, ADR 0041), the camera
-and its shake `src/camera/` (ADR 0030), arenas `src/arena/` (ADR 0031). *Open:* whether its 64-px push
+and its shake `src/camera/` (ADR 0081), arenas `src/arena/` (ADR 0081). *Open:* whether its 64-px push
 band grows with a wider screen — decided when the screen is widened.
 
 1. **The red bars below the HUD's band** while charging — not read.
@@ -354,7 +354,7 @@ so adding a fighter is adding a directory and their slot was reserved from the
 start. The cost of that is a typo looking exactly like "not built yet", which
 the slot showing its own name makes visible enough.
 
-**How a scene is chosen is settled** ([ADR 0008](./adr/0008-a-scene-is-what-its-parameters-say.md)): every scene is
+**How a scene is chosen is settled** ([ADR 0008](./adr/0008-a-scene-is-built-from-a-request.md)): every scene is
 built from a small serialisable parameter object, never from what the previous
 scene left behind, and the URL supplies it —
 `?scene=debug&p1=goku&p2=goku`. An unknown parameter is a loud error, not a

@@ -62,7 +62,7 @@ browser draws from the ROM (ADR 0090). Its shape: `src/arena/arenaFile.ts`.
 The HUD is the same kind of thing: `data/hud/hud.json`, written whole by the
 export, shape in `src/hud/hudFile.ts`. A sideways journey's bands are one
 picture of every screen, drawn from the ROM too (`src/arena/bands.ts`, ADR
-0085).
+0081).
 
 ## Decisions the shape does not explain
 
@@ -168,8 +168,8 @@ nine fighters would each want a copy of it. A grunt *is* his.
   `hides` stops drawing him from a frame, and `ball` flies in his place and lets him
   out where it ends (`match/ball.ts`). A later state of the scene names it in `sceneOf`.
   Its `steps` may keep him at an offset from the seizer in the air (`on`), end his flight (`lands`), play his `anim` only as far as its script's hold (`toHold`, a step's `hold` in `animations.json`; `still` on the `seize` keeps him on its first drawing) or sound (`cry` him, `sound` the seizer); a spark may `sound` and `pause` the pair; `dome`, `bars`, `sparks` and `screens` are what the scene draws by frame (`match/sceneLight.ts`, ADR 0035).
-- **`sends`** (`up`, `side`, `down`) makes a state's blow take the fight to another arena that way, where one lies (`arena/ways.ts`, ADR 0083); where none does, it is only its reaction.
-- **`parry` makes a state wait for a blow** (ADR 0077): a blow whose hit box touches this state's is turned on the striker, who is held, and the state goes to `to`; `except` names by his fighter the moves that get through. A `seize` step's `draws` and `atBy` give the drawing and the offset by the held body's fighter. A `release` with `ahead` leaves him facing the seizer: a blow taken, not a throw. `launch.quiet` skips his cry.
+- **`sends`** (`up`, `side`, `down`) makes a state's blow take the fight to another arena that way, where one lies (`arena/ways.ts`, ADR 0081); where none does, it is only its reaction.
+- **`parry` makes a state wait for a blow** (`combat.md`): a blow whose hit box touches this state's is turned on the striker, who is held, and the state goes to `to`; `except` names by his fighter the moves that get through. A `seize` step's `draws` and `atBy` give the drawing and the offset by the held body's fighter. A `release` with `ahead` leaves him facing the seizer: a blow taken, not a throw. `launch.quiet` skips his cry.
 - **A `grab`'s `shocks`** flashes the held body in `attributes.shock`, four frames each (Shocking Stunner). A state after a grab with a `caught` grab of its own keeps him held, with no idle between.
 - **A `grab`'s `flips`** keeps the held body on the step before `step` until `frame`, then draws it upside down. **`stillCamera`** keeps the camera from following vertically while he is in the state; on a grab's `launch`, until the thrown body lands.
 - **`flipsOnLeaving`**: he flips as he leaves the state, with no `turnsBy`.
