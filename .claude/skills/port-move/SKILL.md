@@ -26,7 +26,7 @@ fighter up to date; `fighterStates.test.ts` fails until it is run.
 `npm run rom -- export --fighter <name>`, `commands`, then `draft --fighter
 <name>` (ADR 0038) and `export` again for its objects, then `states`. His names
 go in `src/rom/moveNames.ts` first. What the draft left out is printed one line
-a move: it goes into `docs/port-review.md`. Correct `specials.json` by hand from
+a move: say it when handing the moves over. Correct `specials.json` by hand from
 there, never `--force` once it has been corrected.
 
 ## How a fighter is ported: in batches (owner, 2026-11-02)

@@ -1,5 +1,5 @@
 /**
- * Read Goku out of the owner's cartridge (ADR 0016).
+ * Read Goku out of the owner's cartridge (ADR 0090).
  *
  *   npm run rom -- tiles             every resource goku's drawings use: where, whether it unpacks
  *   npm run rom -- frame 4a          drawing 4a, into preview/

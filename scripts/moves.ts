@@ -208,7 +208,7 @@ async function playOurs(): Promise<void> {
     lines.push(...route.request().postDataJSON().lines);
     await route.fulfill({ status: 200, body: "{}" });
   });
-  // the game reads debug.json through Vite's glob (ADR 0093): in dev, a module of its own
+  // the game reads debug.json through Vite's glob (ADR 0090): in dev, a module of its own
   await page.route("**/data/debug.json?*", (route: { fulfill(o: object): Promise<void> }) =>
     route.fulfill({ contentType: "text/javascript", body: `export default ${JSON.stringify({ modes: [{}, {}, {}, {}, {}, mode] })};` }),
   );

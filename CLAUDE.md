@@ -67,10 +67,7 @@ The project owner wants to go **slowly and deliberately**:
 - **The queue is `docs/plan.md`, and finished items are DELETED from it** — in
   the same change that finishes them, not later. It is the *only* file that
   lists work to do; the reasoning goes to `docs/adr/`, the timing is in git.
-  `roadmap.md` and `entity-editor.md` describe the arc and the history and must
-  never grow a to-do list again. A queue that only shrinks cannot drift.
-  `docs/port-review.md` is its one exception, by the owner's word (2026-11-04):
-  the moves of the port he has still to try, deleted as he approves them.
+  No other doc grows a to-do list. A queue that only shrinks cannot drift.
 - **Write bugs down in `docs/bugs.md` the moment you notice one** — no need to
   ask, and no need to fix it there and then. Noticing and fixing are separate
   acts: a fix smuggled into unrelated work is a fix nobody reviewed. Mention the
@@ -80,7 +77,7 @@ The project owner wants to go **slowly and deliberately**:
   place that says what is next.
 - **The cartridge's logic is read from its code first** (`npm run dis`,
   starting from `rom.md`'s "Where to start a search"); a Mesen recording only
-  confirms a reading or answers what the code search could not (ADR 0022).
+  confirms a reading or answers what the code search could not (ADR 0090).
 - **What the cartridge reveals goes into `docs/rom.md` as soon as it is
   confirmed** — an address, a table's layout, what a field means, a guess
   marked `?`. It is a map, not a diary: no dates, no how-it-was-found (that is
@@ -118,7 +115,7 @@ already running: load a scene by its URL and let the game's own dummy play, then
 read `logs/session.log` or take a screenshot. It still cannot judge timing or feel
 from a synthetic keypress — seconds of latency — so a move is played by the dummy,
 never by keys, and how a thing feels stays with the owner. **The original is played
-the same way**: `npm run original` (ADR 0074). Check a move yourself before handing
+the same way**: `npm run original` (ADR 0090). Check a move yourself before handing
 it over rather than asking the owner to record it.
 
 After a change, run typecheck/build **and `npm test`**, then say what you checked
@@ -263,7 +260,7 @@ npm run rom -- states --all
                   # goku's states; a test fails until it is run
 npm run rom -- draft --fighter cell
                   # a first specials.json and his objects from the reports
-                  # (ADR 0070); --force writes it again
+                  # (ADR 0038); --force writes it again
 npm run rom -- export --all
                   # goku and every fighter with states, exported again;
                   # then git diff data/ says what a reader's change moved
@@ -284,7 +281,7 @@ npm run rom -- todo --fighter vegeta
 npm run rom -- entries --fighter vegeta
                   # the states whose move reads commands ($0F:9EB1)
                   # but lack an entry for some of his; --order puts
-                  # the entries in the cartridge's order (ADR 0060)
+                  # the entries in the cartridge's order (ADR 0038)
 npm run rom -- spawns --fighter vegeta
                   # every move that puts out an object, and how it is
                   # asked for — what to record (ADR 0036)
@@ -302,13 +299,13 @@ npm run rom -- stage 0
 npm run original -- volleyball-hit
                   # the original played from a terminal, no window: a scenario
                   # of tools/re/runs/ from its save state in raw/states/, into
-                  # logs/run-<name>.txt in record-fight.lua's format (ADR 0074)
+                  # logs/run-<name>.txt in record-fight.lua's format (ADR 0090)
 npm run arena-fit -- palace day logs/run-stage-palace-f1800.png
                   # an arena against pictures of the original's screen: the
                   # camera that explains each, and how much of it agrees
 npm run moves -- vegetto
                   # every move of a fighter played in the original and in ours, and
-                  # what differs, into logs/moves/ (ADR 0075); --only a,b, --report;
+                  # what differs, into logs/moves/ (ADR 0090); --only a,b, --report;
                   # --far plays his commands with room for a shot to fly;
                   # --close from arm's length, for what a blow that lands opens;
                   # --parry with the opponent's blow coming at a parrying move;
@@ -403,7 +400,7 @@ Two properties the tree no longer shows, and both still hold:
 - An entity is a **directory of section files** (`frames.json`,
   `animations.json`, `states.json`, …), not one blob. The game reads them
   through Vite's glob (`src/data/files.ts`), so a static build plays with no
-  server (ADR 0093); the editor reads them through the dev-server plugin's
+  server (ADR 0090); the editor reads them through the dev-server plugin's
   `GET /api/entity` and saves **one section at a time** via `POST
   /api/section` (the active tab decides which). Format:
   `docs/data-format.md`.
@@ -422,7 +419,7 @@ and draws the cancel graph read-only; the **game** loads
 an entity and runs it as a **state machine** from `states.json`.
 
 Every fighter is read out of the owner's cartridge (`docs/rom.md`, ADR
-0016–0018) — the original's drawings, animation scripts, boxes and objects,
+0090–0018) — the original's drawings, animation scripts, boxes and objects,
 with states written after the original's moves — and drawn from the ROM in the
 browser (ADR 0090). The hand-built `goku_old` is gone; git keeps him. A blow names how it is taken — flinch,
 stagger, knockdown, or a juggle if it catches a falling body — pauses the game on

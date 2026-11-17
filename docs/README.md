@@ -1,34 +1,17 @@
 # Docs
 
-Design notes and decisions for the DBZ: Hyper Dimension remake. This is where we
-collect what we want to build **before** writing gameplay code.
+- [`plan.md`](./plan.md) — **the queue**, and the only one. Start here for
+  "what's next".
+- [`bugs.md`](./bugs.md) — what is known to be broken. Not a queue.
+- [`combat.md`](./combat.md) — the fight: what we want, and how the engine
+  plays a blow today.
+- [`data-format.md`](./data-format.md) — where an entity's files live and who
+  writes them.
+- [`entity-editor.md`](./entity-editor.md) — the editor and its tabs.
+- [`rom.md`](./rom.md) — the map of the cartridge.
+- [`glossary.md`](./glossary.md) — the words this project uses.
+- [`adr/`](./adr/) — the decisions that shape the engine, its data and its
+  tools, with what was rejected.
 
-## Index
-
-- [`plan.md`](./plan.md) — **the queue.** Start here for "what's next". It is
-  the only file that lists work to do, and finished items are deleted from it.
-- [`game-overview.md`](./game-overview.md) — what the original game is, what we
-  know for sure, and what still needs confirming. Context, not requirements:
-  the combat system is ours.
-- [`combat.md`](./combat.md) — the fight we are building toward, and why each
-  part is there. The shape, not a schedule.
-- Where the pictures and sounds come from: the player's ROM, read at runtime —
-  [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md).
-- [`entity-editor.md`](./entity-editor.md) — the Entity Editor: its tabs, the
-  MUGEN mapping, why it is ours rather than someone else's, and the phases it
-  was built in (history, not a schedule).
-- [`data-format.md`](./data-format.md) — where an entity's sections live and who
-  may write them. The shape itself is `src/entity/entityFile.ts`.
-- [`tech-stack.md`](./tech-stack.md) — technology choices and why.
-- [`roadmap.md`](./roadmap.md) — the wider arc, from setup toward a playable
-  prototype. No work items; those are in `plan.md`.
-- [`bugs.md`](./bugs.md) — what is known to be broken. Not a queue; write an
-  entry the moment you notice one, delete it when it is fixed.
-- [`open-questions.md`](./open-questions.md) — decisions we still owe answers to.
-- [`adr/`](./adr/) — architecture decisions already made, one per file.
-
-## Ground rule
-
-We **don't guess**. Anything about the original game that we aren't certain of
-is marked **(TBC — to be confirmed)** rather than invented. Facts get confirmed
-before they drive implementation.
+Anything about the original we are not sure of is marked `?` rather than
+invented.

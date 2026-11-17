@@ -14,7 +14,7 @@ import type { SpecialsFile } from "./specials";
  * move, as states — its parts in a chain, each part's blow, speeds and jumps,
  * its cost and where it is asked for. A skeleton to correct, not a port: what
  * a handler decides (a charge's levels, a counter, a hit told from a block)
- * stays behind, and each such gap is in `notes` for `port-review.md`.
+ * stays behind, and each such gap is in `notes`, said when the moves are handed over.
  */
 
 export interface Draft {

@@ -291,3 +291,5 @@ pay in health today. None of it is settled in detail; what comes first:
   rush.
 - The CPU, and whether a second human ever plays — the second decides how
   forgiving the scaling has to be, which is tuning, not structure.
+- What a first playable game is: which fighters, arenas and modes, and whether
+  a story mode or local two players come first.

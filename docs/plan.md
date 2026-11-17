@@ -1,9 +1,7 @@
 # Plan — the work queue
 
 **This is the only queue in the repo.** What is next lives here and nowhere
-else. [`roadmap.md`](./roadmap.md) describes the wider arc,
-[`entity-editor.md`](./entity-editor.md) records how the editor got here, and
-neither lists work to do.
+else.
 
 **Finished items are deleted from this file**, in the same change that finishes
 them. The file only ever shrinks, so it cannot drift: a stale line is simply a
@@ -569,8 +567,7 @@ queue.
   carries a stun value that empties a gauge into a dizzy, and some chip on
   guard (`rom.md`, Hit data).
 - **A KO.** Health floors at zero and nothing happens there — no defeat state,
-  no round. `Entity.defeated` is there and unused. Round rules belong to Stage 3
-  in `roadmap.md`.
+  no round. `Entity.defeated` is there and unused. Round rules come with a second player.
 - **Walk speeds out of `states.json`** and into attributes, with the rest of the
   tunable numbers.
 - **Chip damage and a guard break.** Blocking exists and costs nothing, which is
@@ -583,4 +580,6 @@ queue.
   a different game from one that does not. `MOTIONS` says which exist.
 - **A remapping screen.** All four attack buttons are wired to the ZSNES
   defaults; nothing lets a player change them.
-- **Round rules and a second player** belong to Stage 3 in `roadmap.md`.
+- **Round rules and a second player.**
+- **How a scene says it wants to be replaced** — left until there are two
+  screens to move between (menus), when the answer can be judged.
