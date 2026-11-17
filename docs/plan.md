@@ -30,6 +30,30 @@ air, blows can be blocked, health comes off, and it all makes a noise.
 
 ---
 
+## First: a clean foundation, before any new work
+
+The approach changed several times on the way here — the last time to reading
+the ROM in the browser (ADR 0090) — and each change can have left something
+behind. Nothing new starts until the project is tidy and everything in it
+works. The order after this one: the common part (*After the port*), then the
+mechanics; what is still to come from the cartridge (menus and the like) waits
+until the mechanics have changed. The sections below are not reordered yet:
+that is part of the review.
+
+1. **Review, changing nothing.** Area by area, each a list for the owner:
+   `bugs.md`; leftovers in the code and the scripts; the ADRs (unmarked
+   supersessions, decisions about what no longer exists); the living docs;
+   this file itself (finished or stale sections).
+2. **The scope, with the owner.** Each item: fix, skip, or later. Not
+   everything is worth fixing; what is agreed goes into this section as a
+   line.
+3. **The fixes**, one small change each, verified and reviewed.
+
+*Done when:* the agreed items are gone from this section and `bugs.md`, and
+the next section here is the common part.
+
+---
+
 ## Now: the cartridge as the game's one dependency
 
 [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md), on
