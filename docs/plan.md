@@ -1,585 +1,90 @@
 # Plan — the work queue
 
 **This is the only queue in the repo.** What is next lives here and nowhere
-else.
-
-**Finished items are deleted from this file**, in the same change that finishes
-them. The file only ever shrinks, so it cannot drift: a stale line is simply a
-line somebody forgot to remove. What a finished item leaves behind:
-
-| | where |
-|---|---|
-| **why** it was done that way | `adr/` — one file per decision |
-| **when** | git history |
-| **what** the format now is | `data-format.md` and friends |
-
-**Detail decays with distance.** The next items are broken into slices with a
-*done when*; later ones are one line. Detail written for work three weeks out is
-detail that gets rewritten before it is read.
-
-**The order is the point.** A–D build **one complete exchange** — a hit that
-costs something, has weight and is visible — before any move is multiplied.
-Four buttons × three stances is twelve attacks, and re-tuning how a hit feels
-afterwards would mean redoing all of them. **A–J are done**: a blow names how it
-is taken, pushes the defender back, pauses the game on contact and leaves a
-spark where the boxes met, all four attack buttons are wired, an uppercut puts
-a fighter on the floor, there are attacks from standing, crouching and the
-air, blows can be blocked, health comes off, and it all makes a noise.
+else, and **a finished item is deleted** in the change that finishes it: the
+reasoning goes to `adr/`, the timing is in git. The next items have a *done
+when*; later ones are a line.
 
 ---
 
 ## First: a clean foundation, before any new work
 
-The approach changed several times on the way here — the last time to reading
-the ROM in the browser (ADR 0090) — and each change can have left something
-behind. Nothing new starts until the project is tidy and everything in it
-works. The order after this one: the common part (*After the port*), then the
-mechanics; what is still to come from the cartridge (menus and the like) waits
-until the mechanics have changed. The sections below are not reordered yet:
-that is part of the review.
+The approach changed several times — the last to reading the ROM in the
+browser (ADR 0090) — and nothing new starts until the project is tidy and all of
+it works. Reviewed with the owner area by area; what is agreed and left:
 
-1. **Review, changing nothing.** Area by area, each a list for the owner:
-   `bugs.md`; leftovers in the code and the scripts; the ADRs (unmarked
-   supersessions, decisions about what no longer exists); the living docs;
-   this file itself (finished or stale sections).
-2. **The scope, with the owner.** Each item: fix, skip, or later. Not
-   everything is worth fixing; what is agreed goes into this section as a
-   line.
-3. **The fixes**, one small change each, verified and reviewed.
+1. **The living docs, trimmed to their one job:** `data-format.md` (where files
+   live and who writes them, not field by field), `entity-editor.md` (the editor
+   today, not its history), `glossary.md` (a line a term), `combat.md` (what still
+   describes the hand-built Goku).
+2. **What the hand-built Goku left in the code:** `input/motion.ts` and its wiring
+   (no entity asks by `motion:`); the synth half of `audio/sounds.ts` and
+   `playback.ts` (every sound is the cartridge's, ADR 0092); `npm run which`,
+   which fails without `descriptions.json` — mended to point without one.
+3. **`CLAUDE.md`**, last: the rules about docs as they now are.
 
-Agreed so far: from `bugs.md`, the late KO and Cell's downward sender wait for
-the mechanics. From the code: exports used only in their own file stay as
-they are (`knip` lists them).
+Waiting for the mechanics, from `bugs.md`: the late KO and Cell's downward
+sender. Exports used only in their own file stay as they are.
 
-*Done when:* the agreed items are gone from this section and `bugs.md`, and
-the next section here is the common part.
+*Done when:* this section is empty, and the next one is the common part.
 
----
+## Then: the common part
 
-## Now: the cartridge as the game's one dependency
-
-[ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md), on
-`main`. Every fighter's sheet, each palette of it, every
-object, every arena, the bands and the HUD are drawn in the browser
-(`src/cartridge/`), and every effect, voice and spoken line is the
-cartridge's sound driver playing it on our chip (`src/apu/`). `npm run
-build` leaves `dist/web`, which plays from any static host: the player picks
-the ROM once and the browser keeps it (`cartridge/remembered.ts`).
-
-1. **What is left goes:** `CLAUDE.md` read through for what still assumes
-   files. Read again for what the hand-built Goku left behind: this file's sections written
-   against his sheet (*G. Crouch*, *The moveset*), `descriptions.json` and the
-   shorthand that reads it (`notation.ts`, `npm run which`), `input/motion.ts`,
-   which no entity uses any more.
-2. **Other dumps of the cartridge.** Only the owner's (Japanese, a fan
-   translation's patch) is checked. The clean Japanese dump and any PAL one
-   need their hashes, and the readers run against each — an address that
-   moved is a table per dump.
-3. **Loading the ROM without a stall** (owner, 2026-11-07): the game
-   visibly lags at the start, while the browser draws and renders what it
-   needs from the cartridge. Measure first where the time goes; then a
-   loading screen, or a different approach (drawing on demand, a worker).
-   *Done when:* the start shows progress or plays at once, never a freeze.
-4. **The effects on the same chip as the music** (ADR 0092): every effect,
-   voice and line asked for on its ports as the game asks, the driver
-   mixing them with the song; the rendered buffers of ADR 0092 go.
-5. **Settings** (owner, 2026-11-08): a place for what the player sets,
-   the music's level first — fixed at 30% of the effects' until then.
-
-## Now: reading the cartridge by script
-
-The owner, 2026-10-30: more than any one move, the tools — every structure
-or routine read by hand becomes a reader in `src/rom/` with ROM-gated
-tests, shown by `npm run rom -- port`, so the next move and the next
-character are a script run, not disassembly read again. A question the
-code can answer is never asked. The moves already verified against the
-emulator (the Kamehameha, the knockdown, charging, Quadruple Kick, the ki
-blast) are each reader's test; the throw (`9d`, `rom.md`) is the exam:
-built from the report alone.
-
-**What `rom.md` holds, and who reads it** (inventory, 2026-10-30):
-
-| fact | read by |
-|---|---|
-| scripts' steps, sounds, lines, spawns and their counters, offsets, flips, effects (`b1`), `c0`, `90`, the opponent's track (`80`) | `script.ts`, the export |
-| boxes, drawings, tiles, palettes, resources | `collision.ts`, `frame.ts`, `resource.ts` |
-| a blow's record, an object's record | `hits.ts` |
-| a handler's frames (pinned or bounded), speeds, re-arms, sounds, moves set, by-step jumps, the spawn counter; a routine's arguments in A, Y and the scratch bytes and its answer in the carry; shared code by character; tests on fields in words; what is done to the opponent; the throw's launch and hold | `handler.ts`, `cpu.ts`, `flow.ts`, `tests.ts`, `routines.ts`, `hold.ts` |
-| a command's directions and button; the close lines | `commands.ts`, `buttons.ts` |
-| stages, arenas, the HUD, lightings, the sound driver's uploads | `stage.ts`, `arena.ts`, `hud.ts`, `apuUpload.ts` |
-| a command's conditions, cost and the opponent's move (bytes 0–3, 6) | `conditions.ts`, `commands.ts` |
-| an object type's timing, life, speed, what it becomes on a hit, burning, copies | **by hand** (`objects` in `cartridge.ts`) |
-| a fighter's attributes (defence, walk, jump, gravity) | **by hand** (`attributes.json`) |
-| knockback by reaction (`$0D:D68A`), which reaction (`$0D:D29C`) | **partly** (`hits.ts` names the reaction) |
-| the roster: which entry is which fighter, his tables | `roster.ts` |
-| the sound driver, HDMA, the camera, the shake, burning's palettes | recordings or one-off — stays prose |
-
-The roster is read (`src/rom/roster.ts`, `npm run rom -- roster`; any
-reading command takes `--fighter <name>`).
-
-**Readers paused, measured first** (owner, 2026-10-31): the report reads a
-move; it does not translate one — a special's own logic still goes into
-states and the engine by hand. Whether the readers pay off is measured on a
-second fighter before any more are built — Vegeta, done 2026-10-31
-(`export` / `states --fighter`): the shared moves come over by script,
-specials and objects do not. The throw (`9d`) followed from the report
-(`npm run rom -- grab 9d`, ADR 0035) — but for the stun gauge, which this
-engine does not have. In order:
-
-1. **Objects from a recording** (ADR 0036; shared objects are named by what
-   they are, ADR 0036 — a fighter's own colours for one, a variant of its
-   sheet, still to make: Vegeta's ki blast is in Goku's). The owner records a fighter's
-   attacks once (`tools/re/record-objects.lua`, the list from
-   `npm run rom -- spawns`); `npm run rom -- objects` turns the recording
-   into spawns: frames and how long each is held, loop, life, speed, what it
-   becomes on a hit. Its tiles and palette come from code: a move's
-   handler loads its resource (`$01:84B3`, in `port` as "loads resource 4f
-   at $6c00"), the object's code its palette (`$01:84EF`); a snapshot only for a
-   shared object's colours (`vramMatch.ts`), taken a frame late — OAM shows
-   an object the frame after its slot does. The code reader
-   (`npm run rom -- code`) checks it. A fighter's own objects are named in
-   `src/rom/ownObjects.ts` and nothing else is written by hand: `export
-   --fighter` draws and times them; Vegeta's `ad` (Big Bang) fires its ball
-   (`specials.json`, ADR 0038), and his `ac` its Final Flash. Still to do: Goku's from a recording of his own. *Done when:* Vegeta's ki blast and
-   one special fire from his recording, and Goku's spawns come out of his
-   with no hand-written `objects` in `cartridge.ts`.
-
-## Now: Goku from the cartridge
-
-Everything below waits while this runs — the owner paused combat work on
-2026-10-28 to try it. Why and how: [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md);
-what is known so far: [`rom.md`](./rom.md). The tile format is done
-(`src/rom/decompress.ts`), and so is every drawing: `npm run rom -- frames`.
-The owner prefers static analysis to recordings (2026-10-28): `npm run dis`
-reads the code, the emulator only confirms.
-
-A move id gives its drawings and how long each is held, statically:
-`npm run rom -- move 92`.
-
-`goku` is the cartridge's — drawings, animations and boxes written by `npm run
-rom -- export`, states by hand after the original's moves.
-
-Every move is an animation now, `m00`…`mff` (ADR 0017), written by the export.
-
-`goku` plays (owner, 2026-10-29): walk, crouch and stand up, three jumps,
-dash, four blows, guard, reactions, and the ki blast as a spawn (ADR 0017).
-Its states are by hand in `data/entities/goku/states.json`; the original's
-buttons are A S D X + C (`combat.md`, The buttons).
-
-### First: porting a move without help
-
-The goal (owner, 2026-10-29): Claude ports a whole move from the cartridge
-— poses, blows, sounds, movement, input — on its own, faithfully; changing
-how the fight plays comes after. Quadruple Kick showed where porting still
-takes an investigation instead of a procedure. In this order:
-
-1. **Objects without a recording** — an object's timing is in its type's
-   code (`rom.md`); the Kamehameha's were read from it by hand and written
-   into `objects.spawns` with the addresses. What is left: a reader like
-   `handler.ts` for the usual animator, so the port report says it.
-2. **The original's reactions** — light, heavy, the long reel, in the
-   air (`1a`) and the knockdown are built; crouching (`17`/`18`), dizzy
-   (`1d`), and the
-   choice between them as `$0D:D29C` makes it. The reactions brought from
-   the hand-built Goku (`hurt_air`, `launched`, `blown` …) still land straight into
-   `downed`.
-
-### Next: around the arena
-
-The camera, its shake and arena 0 are the original's (`rom.md`, The
-camera); every size one value to change, not a hunt (owner, 2026-10-30) —
-the game's screen is `src/view.ts` (ADR 0041) and its scale the page's
-(`src/ui/scale.ts`, ADR 0041), the camera
-and its shake `src/camera/` (ADR 0081), arenas `src/arena/` (ADR 0081). *Open:* whether its 64-px push
-band grows with a wider screen — decided when the screen is widened.
-
-1. **The red bars below the HUD's band** while charging — not read.
-
-### Next: the Kamehameha, as the original's
-
-The owner's test of the porting (2026-10-29): the **charged** one, `aa`
-(↓ ↙ → + A) — the ball grows in the hands while A is held, and the beam's
-size depends on how long. The one flying up (`ab`) waits. What the
-cartridge does is in `rom.md` (`b0`'s counter, `b1`'s drawn effects):
-
-Built: the charge, the ball, the three beams with their base and band
-(ADR 0014), the explosion each head becomes, the pose held after it, the
-base's way in and out, the band thinning away, the victim's fire (ADR 0063)
-and Goku's line. What
-still differs from the original:
-
-- the beam ends with the move in the original ($0F:E5FC), long after it has
-  left the screen; with no stage or camera that showed it vanishing in mid
-  air, so Goku holds the firing pose (`holdStep`) until the head hits or
-  leaves the field (owner, 2026-10-29), and the recovery after it (8 frames
-  of drawing `00`) is skipped;
-- the white screen whitens an arena as the original does, not the debug
-  grid (`Backdrop.whitens`); a player setting for its strength is worth
-  considering (owner, 2026-10-29);
-- a big explosion that knocks its victim down sets the game's `$37` to `16`
-  (`rom.md`) — what that does is not read.
-
-### Then: the rest of Goku
-
-1. **The rest of the specials** — every move of Goku's command table
-   (`rom.md`, The buttons); what is left is what
-   `npm run rom -- todo --fighter goku` lists.
-2. **The rest of the objects** — moves cut at a spawn lose their loop
-   (dizzy, `m26`–`m3a`).
-*Open:* idle holds each pose 12 frames in its script but 13–14 in a
-recording; which moves repeat or hold is listed by hand in
-`src/rom/animation.ts` rather than read from the move handlers.
-
-> **One exchange is complete.** Everything below multiplies it.
-
-## After the port: the common part
-
-[ADR 0038](./adr/0038-a-fighters-states-are-generated.md). Waits
-for the last fighter from the cartridge; nothing here starts before that.
+[ADR 0038](./adr/0038-a-fighters-states-are-generated.md), before the first change
+of mechanics.
 
 1. **The template out of Goku:** a file of its own, his specials into his
-   `specials.json`, and he is generated like the rest. Any difference from his
-   hand-written file is a mistake in one or the other. Mark ADR 0038. *Done
-   when:* `goku/states.json` comes out of the command and the test covers him.
+   `specials.json`, and he is generated like the rest. *Done when:*
+   `goku/states.json` comes out of the command and the test covers him.
 2. **Named groups in `entries`** in place of the lists of states, by script.
 3. **Rules of the game out of `attributes.json`** (`comboLimits`).
 4. **Freeze the port:** its flat states and hit types kept as they are.
 5. **The generator stops overwriting** a blow's type.
 6. **Whose `animations.json` is** — open. The export writes it whole, so an
    animation edited in the editor or added for a mechanic is gone at the next
-   export. What comes from the cartridge and what is ours is settled with the
-   owner before the mechanics touch an animation.
+   export. Settled with the owner before the mechanics touch an animation.
 
-Then the mechanics, the order provisional: first the press our buffer loses on the
-frame a move ends — the state entered on a frame reads its input only on the
-next, as `states.ts` allows one transition a frame, so the window's last frame
-is never usable — then ki, cancels and combos, vanish, the
-aura (`combat.md`). `npm run chains` has to hold for each fighter, not only one.
+## Then: the mechanics
 
-## Next: Vanish
+The order is provisional; `combat.md` says what each is. `npm run chains` has to
+hold for every fighter, not only one.
 
-Settled 2026-09-26, described in [`combat.md`](./combat.md) §5.
+1. **The press lost as a move ends:** a state entered on a frame reads its input
+   only on the next, so a window's last frame is never usable.
+2. **Ki** for the cartridge's fighters, who pay in health today, and what spends
+   it.
+3. **Cancels and combos:** the rush (`combat.md`, The buttons), strings joined
+   up, what punishes a string thrown at nothing.
+4. **Vanish** (`combat.md` §5). *Done when:* a recording shows a vanish out of
+   blockstun, and a tap without ki blocks.
+5. **Launch scaling:** each lift raises less, so a juggle ends by the body
+   falling out of it (`Combo.lifts`).
+6. **The aura.**
+7. **The hit types:** one set (the original's beside our five), `stun`, a type
+   for ki blasts; chip damage and a guard break.
 
-1. **Vanish.** Guard tapped just before a blow lands teleports behind the
-   attacker, for ki — from neutral, guard, blockstun and the air, never from a
-   reaction or one's own attack. The window is a number of frames, and the
-   pure part (was the tap early enough) ships with its tests. *Done when:* a
-   recording shows a vanish out of blockstun, and a tap without ki blocks.
-   Corner and projectile cases are settled in `combat.md` §5.
+## Later: the rest of the cartridge, and the game around the fight
 
-## First: what chains into what, derived — never written down
-
-A chain is a **conclusion from `states.json`**, so it is computed, never
-maintained by hand: a markdown table of links would be wrong within a day, and
-twenty fighters would mean twenty of them.
-
-`npm test` already refuses a link whose arithmetic does not work
-(`states.test.ts`). What is missing is the *picture* — how much margin each link
-has — which is the instrument for choosing the numbers in the item below, rather
-than guessing them and waiting for a recording.
-
-**One derivation, three consumers**, and the boundary matters more than any of
-them: the graph is derived by a pure module in `src/combat/`, which the test, the
-CLI and later the editor all import. `scripts/chains.ts` only prints.
-
-| consumer | what it shows | when |
-|---|---|---|
-| **`npm run chains`** | every link: window, start-up, worst case, hitstun at that depth, margin | **done** 2026-08-16 |
-| **editor** | the same, as a **graph** — columns by depth, edges labelled with the button and the margin | **done** 2026-08-16, read-only |
-| **in-game move list** | rows a player can read — `A → Z → Z`, names and sprites, **never** a frame number and never the word `cancelBy`. Not a graph: players read strings as sequences, and a node-link diagram would be showing them our data model | when a screen exists to put it on — there is no pause menu and no title yet |
-
-**The line that must hold:** a chain never becomes a file. It stays a *view* of
-the states, or we have two sources of truth about the same thing. Different
-fighters get different chains for free, because the graph comes out of their own
-`states.json`.
-
-The CLI, the shared module and the editor's graph all landed 2026-08-16
-(`src/combat/chains.ts`, `tools/entity-editor/src/chainGraph.ts`), and
-`states.test.ts` asserts on the same numbers both of them show. What is left is
-the player's move list — and editing timings from the graph, which the editor
-can already do for other sections and which nobody has needed yet.
-
-*Done when:* a string can be tuned from the graph without opening the JSON.
-
-## Then: launch scaling, the last of the three
-
-Damage and hitstun scaling both landed 2026-08-16 (`src/combat/scaling.ts`): a
-long combo is worth visibly less than a short one, and a ground loop now ends
-because the defender recovers first. **Launch is the one left** — each successive
-lift raises less, so the body falls out of a juggle instead of being refused a
-hit. Until it exists the relaunch limit does that job alone, which is why it reads
-as a wall rather than as a net under the curve.
-
-It hangs off `Combo.lifts`, which already counts re-launches on the defender and
-resets when they get control back. No new state should be needed; if the curve
-wants some, that is the signal to stop and ask why. The one thing to look at
-first is *what* it scales: `launch` is an impulse applied on entering a reaction
-(`entity.ts`), not a per-frame velocity like `vel`, so the curve multiplies the
-`vy` a state asks for — and whether it should touch `vx` with it is open.
-
-*Done when:* a juggle ends because the body fell out of it rather than because a
-blow was refused.
-
-## Now: code the owner can read, before there is more of it
-
-The owner is reading this codebase for the first time, and `main.ts` was where
-that stalled — 344 lines doing seven things. It is 120 now, and the body of the
-fixed-step loop is four named calls.
-
-**The reason this is worth finishing, and not just leaving as tidied:** the
-fight is the only screen that exists today, so the loop body *is* the fight. A
-title menu and a character select are coming, and at that point the loop cannot
-be about fighting at all.
-
-**Watch `match/fighters.ts`.** It is the one real new abstraction — the pair of
-bodies and everything pairwise between them — and every future rule of combat
-will want to move in. Its boundary is *the two fighters and nothing else*: no
-HUD, no keyboard, no stage. It lives in `match/` rather than `combat/` because
-it has to know `Entity` and therefore PixiJS, while `combat/` stays pure and
-unit-tested.
-
-**The fight is a scene** as of 2026-08-15, and so is the character select, which
-is the first real transition the `Scene` interface has carried. `main.ts` is
-boot, the clock and one switch that turns a request into a scene. The `?anim=`
-preview was deleted rather than converted: the editor previews animations, and
-the scene's only remaining job was proving the interface with a second
-implementation — which the select now does for real.
-
-The roster gets its own file, `data/roster.json`, laid out as the grid rather
-than a list: the arrangement is authored, not alphabetical. It names the whole
-intended roster; **what exists in `data/entities/` decides what is selectable**,
-so adding a fighter is adding a directory and their slot was reserved from the
-start. The cost of that is a typo looking exactly like "not built yet", which
-the slot showing its own name makes visible enough.
-
-**How a scene is chosen is settled** ([ADR 0008](./adr/0008-a-scene-is-built-from-a-request.md)): every scene is
-built from a small serialisable parameter object, never from what the previous
-scene left behind, and the URL supplies it —
-`?scene=debug&p1=goku&p2=goku`. An unknown parameter is a loud error, not a
-quiet fallback. The line that used to sit here — "convenience presets go in
-`package.json`, not into a committed dev-state file" — was overruled on
-2026-08-16 and is now the opposite: the debug scene's setups live in a committed
-file, because restarting a dev server that has been up for days costs more than
-a page reload (same ADR).
-
-*Open:* how a scene *changes* to the next one — whether `step()` returns the
-successor or that wants an event. Decide when the second scene exists, not
-before. Two implementations are the point — one interface with one implementation
-is a guess.
-
-*Not yet, deliberately:* `TitleScene`, `SelectScene`, any transition machinery,
-and an `EntityDef` cache. The cache earns its place when character select needs
-the same fighters the match does; today nothing loads twice.
-
-*Done when:* `main.ts` is boot plus the crank, and adding a scene does not touch
-it beyond the first one.
-
-## Queued: nothing checks that a `sound` or `hitFx` id exists
-
-Found while splitting the sound bank, where twenty-one references were renamed
-with only a count to verify them, and again while moving the spawns out of
-`data/entities/` — both times the safety net was care rather than a check. The
-state validator already proves every `anim` reference resolves; `sound`,
-`hitSound`, `blockSound` and `hitFx` deserve the same. It is what would make the
-next rename safe instead of nerve-racking.
-
-*Done when:* an unknown `sound` or `hitFx` id is reported at load, the same way
-an unknown animation is.
-
-## Queued: a read-only `npm run check-sheet`
-
-The sheet is hand-edited now, and a drawing session can leave pixels that are
-off-palette or partly transparent without anything saying so — 32 of them
-survived at the belt of frames 187/188 and were found by half an hour of
-throwaway Python. The value is never the fixing: it is being able to ask "did
-this session break anything" in ten seconds. Read-only on purpose — an automatic
-nearest-colour snap is a guess at that distance, and the 1-bit alpha the palette
-work depends on is exactly what a well-meaning fix would round away.
-
-*Done when:* one command reports off-palette pixels and partial alpha per frame,
-and changes nothing.
-
-## Next: review and tidy the sound slice
-
-**Before any new feature.** The sound work landed in one long sitting and grew
-by trial: samples were named live, rejected, renamed, and the tools around them
-were built while being used. It works, and it was committed *because* it works —
-but nobody has read it back as a whole, and some of it is very likely redundant.
-
-*Scope: the diff of the commit that carries this line.* Everything else waits.
-
-Concrete questions already worth asking, so the review does not have to
-rediscover them:
-
-- **The synth spec.** No sound has `kind`/`freq`/`decay` any more — each is
-  the cartridge's, played by its driver (ADR 0092). Does the synth half of
-  `sounds.ts` and `playback.ts` go too?
-- **The entity-editor plugin serves the game too** (`/api/rom`, `/api/arena`,
-  `/api/hud`) — its name has stopped describing what it serves.
-- **The input buffer** rode along in the same batch and has not been looked at
-  since the day it was written.
-
-*Done when:* the diff has been read end to end, the dead weight is gone, and
-anything kept on purpose says why — here or in `adr/`.
-
-## G. Crouch, and crouch attacks
-
-Frames settled: 17 is the way down, 18 the held crouch, and the crouching kick
-is 52–53 — all built. The standing guard is **28 and nothing else**: 11–13 was
-listed here as the standing guard and is in fact Goku exhausted (owner,
-2026-08-15), so the guard is a single frame held on contact, which is all it
-ever needed to be. **The crouching guard was the sheet's first known gap and is
-now closed** — the owner drew 182 rather than taking any of the three ways out
-that had been recorded, and it is built and wired (2026-08-22).
-
-Guard has no high/low since 2026-09-26 (`combat.md`, *The buttons*); crouching
-only lowers the hurt box. *Open:* whether a low blow needs its own reaction. Frame 76 is a hit to the
-stomach, so the sprite exists — the question is whether the fight reads better
-with it, or whether high/low is a distinction that costs a reaction per fighter
-and buys little.
-
-## The moveset: name what is on the sheet, then build it
-
-**The current attacks are placeholders and will be redone**, so nothing about
-their timing, their button, or their 12–16 frame active windows is worth
-preserving or retrofitting separately — that work folds into this.
-
-**The button scheme gives the list its shape.** Burst Limit's four — Attack,
-Smash, Ki, Guard (`combat.md`, 2026-09-26) — so what we are looking for on the
-sheet is a rush string and its smashes in each stance, plus specials, rather
-than "some punches and some kicks". Which animation is a punch and which a kick
-stays the character's business, not the player's.
-
-**Animations are named for what the pose is** — `punch_hook`, `kick_roundhouse`
-— with a number only to separate two that really are alike. A name like
-`punch_3` encodes the order we happened to find frames in, which is a fact about
-the sheet and not about the blow, and it makes `states.json` unreadable without
-a second window open. Stance is part of the identity where it binds the move:
-`kick_crouch`, `kick_air`.
-
-**The sheet is fully catalogued** — every frame has a description and every move
-a group, in `descriptions.json`, which is where the counts live. What it holds
-beyond the normals already built: a kick out of
-the background, a ki bolt and two Kamehamehas, a hop-and-lunge jump attack, a
-teleport, a throw, a thirteen-frame SSJ3 ultimate, a victory pose, and effect
-sets for the beam, an explosion and the Super Saiyan crackle.
-
-**What it does not hold is a labelled rush.** The remaining work is a
-judgement call rather than a lookup: deciding which poses make Goku's string and
-which his smashes, in each of the three stances — and which of the leftovers
-become specials.
-
-Two gaps the catalogue turned up and neither is in `combat.md`: **a throw**
-(137–139, and it is the honest answer to blocking costing nothing) and **a turn**
-(153 is the only front-facing fighting-form frame, so an animated turn is
-possible where today facing flips in one frame).
-
-**Every attack in the new set needs a `cancelBy`** — the field landed 2026-08-16
-and only the three chain kicks use it. Without one the cancel window is the whole
-animation, which is what silently stopped the medium string being a combo; the
-arithmetic is in `combat.md` and a test in `states.test.ts` checks it against the
-shipped data.
-
-*Done when:* every place in the rush tree names an animation, and what is
-left over is either assigned to a special or explicitly parked.
-
-## Authoring combos in the editor
-
-*Open, and worth deciding before an editor UI is built:* the owner wants to
-author combos in the editor. `states.json` is already the definition of a chain
-— a second "combos" structure would be a second source of truth to reconcile.
-The likely right answer is a chain-shaped **view** of the states, not a new
-format. Deferred by the owner, not dropped.
-
-## The repo has no LICENSE
-
-The code and the tools are the part of this repository that is actually ours,
-and nothing says on what terms anyone may read or use them. Wanted: a licence
-for the code, plus one line making explicit what the README already implies —
-Dragon Ball and its characters belong to their owners, the sprites are not
-distributed here (BYOA), and the project is non-commercial and unaffiliated.
-
-Not a legal opinion, and worth a few minutes of the owner's own judgement:
-mechanics, control schemes and combo systems are not what copyright covers, so
-naming FighterZ or Budokai as influences in the docs is ordinary attribution
-rather than a risk. The exposure that exists is the sprites and the characters,
-which BYOA and non-commercial status already address as well as a fan project
-can.
-
-*Done when:* a LICENSE file exists and the README says what it covers and what
-it does not.
-
----
+- **Loading the ROM without a stall** (owner, 2026-11-07): measure where the time
+  goes, then a loading screen or drawing on demand.
+- **The effects on the music's chip** (ADR 0092): the rendered buffers go.
+- **Settings:** the music's level first, fixed at 30% of the effects' until then.
+- **Menus** — title, select, a second round — and with them how a scene says it
+  wants to be replaced; the select's fighters spill out of their slots
+  (`bugs.md`).
+- **Other dumps of the cartridge:** only the owner's is checked.
+- **What the original does that is not read yet:** the red bars under the HUD
+  while charging; `$37` set to `16` by a big explosion; idle's poses held 13–14
+  frames where its script says 12; the sparks' tiles and palette; a name for
+  each `sfx_<id>`.
+- **What we change of the original:** a crouching attack's two frames of the way
+  down; five objects a fighter; the winners' poses in the air.
+- **Nothing checks that a `sound` or `hitFx` id exists**, as one does for `anim`.
 
 ## Not yet ordered
 
-Real work, carried over from the checklists this file replaced. It gets slotted
-into the sequence above when its turn comes, rather than living in a second
-queue.
-
-- **Once the original is ported: what we change of it** (owner, 2026-10-31).
-  The first: a crouching attack flashes two frames of the way down before the
-  held crouch — the original's own (`rom.md`, a handler starting a move
-  part-way), seen in the emulator too. Ours could return straight to the held
-  crouch.
-- **The winners' poses in the air** (owner, 2026-11-04). `82` is the original's
-  pose above the arena, and Gohan's does not fit on the ground, so it is off for
-  him for now (`poses` in his `specials.json`). To come back to: what becomes of
-  these poses, for every fighter who has one.
-- **Five objects a fighter** (owner, 2026-11-01: not yet) — the original
-  gives each player five object slots and puts out nothing past them
-  (`rom.md`, Object slots): Double Punch's dust thins, a ki blast spam
-  stops. Ours have no limit, so the dust is up to one puff denser.
-- **The sparks' tiles and palette** — `hit_spark` and `guard_spark` are
-  drawn with the explosions' (`rom.md`, What a melee blow leaves), an
-  assumption a VRAM / OAM snapshot taken at a hit would settle.
-
-- **What follows the hit types** (`combat.md`, *Open*): a `stun` type, a hit
-  type for ki blasts — the projectile and how it is taken — and whatever
-  punishes a string thrown at nothing.
-- **What is left of the sounds.** Every sound is the cartridge's driver
-  playing its id (ADR 0092). Left: a name for each `sfx_<id>` once what plays
-  it is known (`rom.md`, The sounds); the KO (`voice_ko`) for when there is a
-  KO; Freeza's shout (`32`), a blip 0.05 s long and quiet in the driver as in
-  the sound test — the original's own, or asked for another way `?`.
-- **The rest of what spends ki.** The ki blast pays for itself as of
-  2026-08-24 (`cost` on the state, checked before the transition fires), so the
-  machinery is there and used. Vanish and the fast dash are the two that still
-  do not exist.
-- **What the kamehameha is still missing.** The move fires and hurts as of
-  2026-08-25; what is absent is everything between the hands and the bolt.
-  Two pieces, in this order:
-  1. **A spawn that lives as long as its state.** The charge sphere and the
-     muzzle flash (frames 132-133) have to appear on entering a state and be
-     taken away when it is left — today an effect plays its animation out and
-     nothing can end it early. This is the `attachment` ADR 0014 named.
-     The sphere is the cartridge's object (`kame_sphere`); the original
-     draws it with colour-math transparency.
-  2. **The beam.** A band from the hands to the bolt's head, so its length
-     changes every frame. Tiled from a one-column sprite, never a stretched
-     one — a stretched pixel stops being square. It needs the owner's position
-     each frame, which is the thing ADR 0014 refused a bolt; that ADR gets
-     superseded rather than edited when this lands.
-- **One set of hit types.** `light` and `heavy` are the original's two
-  reactions, added beside our five rather than mapped onto them (owner,
-  2026-10-29); decide which survive once `goku` plays more than three blows.
-- **The original's stun and chip** (owner, 2026-10-29: later). Every blow
-  carries a stun value that empties a gauge into a dizzy, and some chip on
-  guard (`rom.md`, Hit data).
-- **A KO.** Health floors at zero and nothing happens there — no defeat state,
-  no round. `Entity.defeated` is there and unused. Round rules come with a second player.
-- **Walk speeds out of `states.json`** and into attributes, with the rest of the
-  tunable numbers.
-- **Chip damage and a guard break.** Blocking exists and costs nothing, which is
-  right while every attack is a normal; specials should chip, and holding guard
-  forever should eventually fail. Both wait for specials.
-- **The rest of the motions.** Recognition itself landed 2026-08-23
-  (`input/motion.ts`, trigger `motion:<name>`) and `qcf` is wired to a normal to
-  prove it. What is left is the other shapes and, with them, the leniency
-  questions each one asks — a dragon punch that also accepts a quarter circle is
-  a different game from one that does not. `MOTIONS` says which exist.
-- **A remapping screen.** All four attack buttons are wired to the ZSNES
-  defaults; nothing lets a player change them.
-- **Round rules and a second player.**
-- **How a scene says it wants to be replaced** — left until there are two
-  screens to move between (menus), when the answer can be judged.
+- A LICENSE for the code, and a README line on what is not ours.
+- A second player, and round rules.
+- A remapping screen.
+- Combos authored in the editor, as a view of the states, never a second format.
+- The player's move list, once a screen exists for it.
