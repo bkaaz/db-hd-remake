@@ -199,7 +199,7 @@ async function recordObjects(): Promise<void> {
 
 async function playOurs(): Promise<void> {
   const { chromium } = (await import(PLAYWRIGHT)).default;
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 800, height: 700 } });
   await page.addInitScript(() => localStorage.setItem("db-hd-remake.toggles", JSON.stringify({ boxes: false, readout: false, dummy: false, intro: false, ko: false })));
   let lines: string[] = [];

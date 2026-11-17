@@ -90,19 +90,24 @@ The project owner wants to go **slowly and deliberately**:
 - **Editor and engine co-evolve:** every phase is a vertical slice — data model
   + editor + engine + verification. See `docs/entity-editor.md`.
 
-## Running the app (assume it is already running)
+## Running the app (look for it before starting one)
 
-The owner keeps the dev server and the editor **running at all times** on their
-default ports:
+The project runs inside an `sbx` sandbox; the owner views it from his own
+browser through a published port. The game and the editor share one server:
 
 | What | URL |
 |---|---|
 | Game | http://localhost:5173 |
 | Entity editor | http://localhost:5173/tools/entity-editor/ |
 
-- **Do not start, restart or kill them, and do not spawn background processes**
-  for them. If a port is unreachable or behaves oddly, **say so and ask** — do
-  not "fix" it by launching your own.
+- **Look for a running server first**: `localhost:5173` in the sandbox, then
+  the owner's at `host.docker.internal:5173`. Use whichever answers.
+- **If none answers, ask before starting one.** Once he agrees:
+  `npm run dev -- --host 0.0.0.0` in the background, log to
+  `logs/dev-server.log` — `0.0.0.0` so the owner can publish the port
+  (`sbx port publish <sandbox> 5173:5173`).
+- **Never restart or kill a server you did not start.** If one is unreachable
+  or behaves oddly, **say so and ask** — do not "fix" it by launching another.
 - `npm run typecheck` and `npm run build` are free to run at any time; do run
   them before handing work back.
 

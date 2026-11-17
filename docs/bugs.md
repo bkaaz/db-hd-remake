@@ -20,6 +20,20 @@ because a number would only need translating back.
 
 ---
 
+**`npm run moves` plays the same thing in ours for every move** (*breaks a
+tool*, 2026-11-17, Claude). `npm run moves -- goku --only a8,a9,a1`: the
+original side is right, ours plays `data/debug.json`'s mode 5 each time, on
+P1. `scripts/moves.ts` hands the game its timeline by intercepting
+`/api/debug`, but since ADR 0093 the game reads `debug.json` through Vite's
+glob (`src/ui/setup.ts`), so no request is ever made.
+
+**The select screen says "No fighters to choose from."** (*breaks play*,
+2026-11-17, Claude). Open the game on the `select` scene: no slot is
+pickable. `src/scenes/select.ts` gives a slot a body only if its
+`EntityDef` has an animation named `idle`, but the exported animations are
+named by move (`m00`, `m01`, …) — `loadEntityDef` succeeds for every
+fighter, the `idle` check is what drops them.
+
 **The KO comes late, sometimes long after the knockdown** (*annoying*,
 2026-11-08, owner). Player two knocked out: before KO is announced player
 one can move for a while — rightly, for a moment — but sometimes for far
