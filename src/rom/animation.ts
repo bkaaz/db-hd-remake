@@ -121,14 +121,14 @@ export function moveAnim(move: number, ops: ScriptOp[], boxesOf?: (drawing: numb
 /**
  * A move's animations, cut where its script spawns an object mid-way: `m9b`
  * up to the ki blast, `m9b_2` from it on — because our states fire a spawn
- * when they are entered (ADR 0018). A spawn before anything is shown stays
+ * when they are entered (ADR 0017). A spawn before anything is shown stays
  * with the first part; it fires on entry as it is. Each later part starts
  * where the one before left off: the drawing that is up, flipped and offset
  * as it was.
  *
  * Cut too where each blow after the first begins (`blowStarts`), so every
  * blow of a multi-hit move is a state of its own, with its own damage and
- * type (ADR 0023) — and at the steps in `cuts` (`jumpCuts`), and at the
+ * type (ADR 0017) — and at the steps in `cuts` (`jumpCuts`), and at the
  * move's frames in `frameCuts`: where another move's handler starts this one
  * part-way, inside a step as often as not (`crouch.ts`). A step a cut falls
  * inside is shown in pieces, its count of steps unchanged.

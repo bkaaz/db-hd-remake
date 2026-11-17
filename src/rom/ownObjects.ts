@@ -61,7 +61,7 @@ export interface OwnObject {
 }
 
 /**
- * Named by what they are (ADR 0037), as the owner knows the moves — never
+ * Named by what they are (ADR 0036), as the owner knows the moves — never
  * guessed from a picture (`npm run rom -- object`); which move puts one out
  * is the cartridge's to say.
  */

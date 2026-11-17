@@ -62,7 +62,7 @@ export interface Step {
   /**
    * Effects its script puts out as this step begins (`b0`), at `at` sprite px
    * from the entity, x toward its facing — written by the export only for a
-   * move no part of which a state fires from (Saiyan Meteor's `ae`, ADR 0018).
+   * move no part of which a state fires from (Saiyan Meteor's `ae`, ADR 0017).
    */
   spawns?: { name: string; at: [number, number] }[];
 }
@@ -125,7 +125,7 @@ export interface Attributes {
   /**
    * The palette variants this fighter has sheets for — `<sheet>@<name>.png`,
    * written by `npm run rom -- export` — for the entity to draw from in place
-   * of its own (ADR 0026).
+   * of its own (ADR 0063).
    */
   palettes: string[];
   /** Of those, the ones burning steps through, in order ($0D:EC98). */

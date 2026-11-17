@@ -1,6 +1,6 @@
 /**
  * The music of a fight: the cartridge's driver playing a song on the chip
- * running live in an AudioWorklet (ADR 0094), through the page's one audio
+ * running live in an AudioWorklet (ADR 0092), through the page's one audio
  * context. Which song is the page's pick, kept as the scale is: picking
  * another changes the song a fight plays and rebuilds nothing. Separate from `playback.ts` because the effects there are still
  * rendered once and played as buffers; they move onto this chip later.

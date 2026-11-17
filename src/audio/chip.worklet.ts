@@ -1,5 +1,5 @@
 /**
- * The sound chip running live, on the audio thread (ADR 0094): the driver
+ * The sound chip running live, on the audio thread (ADR 0092): the driver
  * booted as the game boots it, then asked for a song once it has set itself
  * up. Loaded with `audioWorklet.addModule`, never imported by the game.
  */

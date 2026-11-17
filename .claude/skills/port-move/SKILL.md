@@ -24,7 +24,7 @@ fighter up to date; `fighterStates.test.ts` fails until it is run.
 ## A fighter's first draft
 
 `npm run rom -- export --fighter <name>`, `commands`, then `draft --fighter
-<name>` (ADR 0070) and `export` again for its objects, then `states`. His names
+<name>` (ADR 0038) and `export` again for its objects, then `states`. His names
 go in `src/rom/moveNames.ts` first. What the draft left out is printed one line
 a move: it goes into `docs/port-review.md`. Correct `specials.json` by hand from
 there, never `--force` once it has been corrected.
@@ -59,8 +59,8 @@ npm run rom -- port a5
 ```
 
 It gives, per **part** of the move's animation (`ma5`, `ma5_2`, … — one per
-blow, ADR 0023; one per spawn, ADR 0018; one per step a by-step handler
-jumps to, ADR 0028): the blow's frame, hit type, damage and stun; the speed
+blow, ADR 0017; one per spawn, ADR 0017; one per step a by-step handler
+jumps to, ADR 0017): the blow's frame, hit type, damage and stun; the speed
 the handler sets (`vel`, `velAt`); the sounds and spawns with their frames;
 where the handler re-arms the blow; and, for a handler that runs by step,
 what it does on each (`handler on step N`). What the handler does on no one
@@ -90,7 +90,7 @@ first.
   resource's record palette: that matched once by chance.
   One drawn in **his own** palette (record = his own, or own + k loaded
   from field `0x17`) is `lit` in `objects.json`, with `alt`: it then follows
-  the lighting and player two's colours (ADR 0087).
+  the lighting and player two's colours (ADR 0036).
 - **Tile base 0 and no load**: the object draws from its thrower's own
   sprite — the whole tile set of the drawing up as it is put out, which
   holds tiles his drawing never shows (Vegeta's sprays). `objectTiles.ts`
@@ -117,7 +117,7 @@ first.
   palettes it shows into `objects.json`. Its `--frames` also takes the frames from
   the recording: only for an object whose code gave none.
 - **A shared object** (type `a`: ki blast, explosions, dust, Kamehameha) is
-  one spawn for everyone, named by what it is (ADR 0037); only its colours
+  one spawn for everyone, named by what it is (ADR 0036); only its colours
   may be the fighter's.
 
 ## Before writing anything: the whole move, as the original plays it
@@ -165,7 +165,7 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   stand, walk or crouch state may be listed (`entries.test.ts` holds it).
   Where an entry goes is not yours to pick: `entries --order` (and
   `states --fighter`) puts the command entries in the cartridge's order,
-  the table's last row first (ADR 0060).
+  the table's last row first (ADR 0038).
 - no swing `sound`: the export put the script's sounds on the animation's
   steps (`sfx`), and they play through the bank entry whose `rom` is that
   id — every effect of the original has one, played by the cartridge's
@@ -214,7 +214,7 @@ before asking for a new mechanism:
 `npm test` — `src/rom/hits.test.ts` and `port.test.ts` hold goku's states
 to the cartridge. Then `npm run blows -- goku`, and `npm run moves -- <fighter>
 --only <move>`, which plays the move in the original and in ours and prints what
-differs (ADR 0075). Hand the owner one move to try, the next only after he answers,
+differs (ADR 0090). Hand the owner one move to try, the next only after he answers,
 and a recording (`L`) for anything about behaviour.
 
 ## What the report cannot tell yet

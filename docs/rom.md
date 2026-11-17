@@ -1,8 +1,8 @@
 # The cartridge — what is known
 
 A map of what has been found in the original, and how. Why we read it at all:
-[ADR 0016](./adr/0016-the-original-is-read-from-the-cartridge.md); how — the
-code first, a recording to confirm: [ADR 0022](./adr/0022-logic-is-read-from-the-code.md). Addresses
+[ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md); how — the
+code first, a recording to confirm: [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md). Addresses
 are confirmed unless marked `?`. A field that code reads gets its address in
 that code; this page is for what nothing reads yet.
 
@@ -338,7 +338,7 @@ scripts' `a1` name (`src/rom/lines.ts`). A recording's `$2141` shows the stream'
 16 frames. While the beam is out the thrower's object palette changes
 every 4 frames (palette records `0x130`–`0x133` through `$01:84EF`, above).
 
-The export makes each object Goku spawns a spawn entity (ADR 0018); which
+The export makes each object Goku spawns a spawn entity (ADR 0017); which
 ones, with their recorded timing, is `objects` in `src/rom/cartridge.ts`.
 **Mr. Buu's Energy Field** (`8/12`, `$0F:D8BE`) has no picture: it strikes with what the move's `b1` effect of kind 2 draws, the circle. It adds 2 to the radius (`$30C4` / `$30D4`) up to `0x41`; from `0x40` the radius is `0x40` plus `$0F:D939` `1 2 2 1` by `$74 & 3`. The frame shown is radius / 4, which names its box; gone once its owner leaves `af` / `d8` (`$0F:B5F5`). None of it steps in a hit pause. The circle shrinks by 2 a frame from the script's frame 140. A hit disarms its blow (top bits `f8` → `b8`) and puts `a/02` in another slot; armed again 60 frames later.
 
@@ -751,7 +751,7 @@ an entry for one of his commands. **The table is read from its end**:
 `$0D:F588` points Y at the last row's byte 4 — ground `8C` (so row `88`,
 the air's first, is read on the ground too), air `3C` from `+88`, mode
 `7C` from `+C8` — and `$0D:EF31` steps back 8 bytes a row, so of two
-commands met the later row's starts (ADR 0060).
+commands met the later row's starts (ADR 0038).
 
 **A move that reads the next one while it plays** (Vegeta's `a4`,
 `$20:97c7`, from frame 8; `a5`, `$20:9885`, from frame 1): each frame the
@@ -822,7 +822,7 @@ whose field `0x26` bit 5 is set and whose blow has gone (`$0D:F1B4`).
 (field `0x35`).
 
 A blow of a multi-hit move takes the record covering its first active
-step; the records change a step before each kick's hit box ends (ADR 0023).
+step; the records change a step before each kick's hit box ends (ADR 0017).
 Double Punch (`a7`, `$20:8727`) stands until frame 6, slides at vx 2.0
 until 44 (`$0D:D7A0` stops it), re-arms at 32, and raises dust
 (`$0D:DE6C`) on every 4th frame of the game (`$74 & 3`) from frame 1 to 43;
@@ -876,7 +876,7 @@ and closes at 16 px a frame each frame of step `0c` until within 40 px,
 then jumps to frame 128 and stops; its blow at 146 does nothing itself.
 Ours: `meteor`'s `rush` and `arrived` (`src/entity/approach.ts`), opened
 by `health:80`; `meteor_scene` plays `ae` whole with its sparks on the
-steps (ADR 0045) and a `seize` (ADR 0035).
+steps (ADR 0017) and a `seize` (ADR 0035).
 Connecting on step `11` puts the opponent in `30`, stopped and behind,
 and the mover in **`ae`** (`$20:8A29`, picking its frame by `LDY $44 /
 CPY`, the frame a word): frame 1 untouchable (`0x96` = `f0`), holds the
@@ -1314,9 +1314,19 @@ at 400 `?`.
 `tools/re/` — Mesen 2 Lua scripts, run from Debug → Script Window with *Allow
 access to I/O* on; each writes into `logs/`.
 
+**Mesen in the sandbox** is 2.1.1 (Linux ARM64), the owner's on his Mac 2.2.1. A
+save state names the Mesen that saved it in header bytes 3–6 (`major<<16 |
+minor<<8 | rev`) and an older one refuses a newer state, so `run.lua` writes
+2.0.0 there before loading. What the sandbox needs, none of it in the repo:
+`~/.local/opt/mesen/Mesen` with `dotnet-runtime-8`, `libsdl2-2.0-0` and `xauth`;
+`~/.local/bin/mesen`, which `MESEN` names, running it under `xvfb-run -a` with
+`DOTNET_ROOT=/usr/lib/dotnet` (the test runner still opens a display); and
+`~/.config/Mesen2/settings.json` with `"FirstRun": false` and
+`Debug.ScriptWindow.AllowIoOsAccess: true`.
+
 | script | answers |
 |---|---|
-| `run.lua` | what `npm run original` puts before `record-fight.lua`: a save state and both pads, no window (ADR 0074); a state from a newer Mesen loads too (ADR 0095) |
+| `run.lua` | what `npm run original` puts before `record-fight.lua`: a save state and both pads, no window (ADR 0090); a state from a newer Mesen loads too (ADR 0090) |
 | `record-fight.lua` | **start here**: both fighters, camera, hitstop, sounds asked for, voices' samples and object slots, every frame anything happens, into a new `logs/fight-<n>.txt` |
 | `record-ram.lua` | every RAM region and the pad, once per frame — find a value by what was pressed |
 | `log-dma.lua` | every DMA, beside the sprite id — where graphics come from |

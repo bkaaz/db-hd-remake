@@ -906,7 +906,7 @@ export class Entity {
 
   /**
    * Whether a blow was armed since the last ask — a state with a blow
-   * entered, which is how our parts re-arm one (ADR 0043). Taken once.
+   * entered, which is how our parts re-arm one (ADR 0017). Taken once.
    */
   takeArmed(): boolean {
     const armed = this.armed;

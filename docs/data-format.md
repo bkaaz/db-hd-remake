@@ -42,14 +42,14 @@ load it.
 | section | written by |
 |---|---|
 | `frames.json` | `npm run rom -- export`, whole: where each drawing sits on the sheet the browser draws ([ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md)) |
-| `animations.json` | `npm run rom -- export` writes it whole; the editor's Animations tab edits it ([ADR 0017](./adr/0017-the-cartridges-animations-are-named-by-move-id.md)) |
-| `states.json` | **by hand**; the editor's States tab is a read-only view. Another fighter's is written whole by `npm run rom -- states --fighter <name>`, or all of them by `states --all`; a test fails when one is out of date ([ADR 0038](./adr/0038-a-fighters-own-specials-are-merged-into-the-template.md)) |
-| `specials.json` | by hand, first drafted by `npm run rom -- draft --fighter <name>` ([ADR 0070](./adr/0070-the-rest-of-the-roster-is-drafted-from-the-reports.md)) — another fighter's own specials, merged into his `states.json` by that command; shape in `src/rom/specials.ts` |
+| `animations.json` | `npm run rom -- export` writes it whole; the editor's Animations tab edits it ([ADR 0017](./adr/0017-the-export-owns-a-fighters-animations.md)) |
+| `states.json` | **by hand**; the editor's States tab is a read-only view. Another fighter's is written whole by `npm run rom -- states --fighter <name>`, or all of them by `states --all`; a test fails when one is out of date ([ADR 0038](./adr/0038-a-fighters-states-are-generated.md)) |
+| `specials.json` | by hand, first drafted by `npm run rom -- draft --fighter <name>` ([ADR 0038](./adr/0038-a-fighters-states-are-generated.md)) — another fighter's own specials, merged into his `states.json` by that command; shape in `src/rom/specials.ts` |
 | `objects.json` | `npm run rom -- draft` — his objects with no recording yet, as `npm run rom -- export` draws them; shape `OwnObject`, `src/rom/ownObjects.ts` |
 | `sounds.json` | the editor, Sounds tab; a fighter's voice from the cartridge (the entries with a `rom` or a `line`) by `npm run rom -- export`, which keeps the rest |
 | `attributes.json` | by hand |
 | `look.json` | a spawn's only: `npm run rom -- export` — what the browser draws its pictures from, with the ROM ([ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md)); shape `SpawnLook`, `src/rom/spawnLook.ts` |
-| `palettes.json` | by hand — colour sets of our own, as rules over his palette, which `npm run rom -- export` draws in every lighting ([ADR 0063](./adr/0063-a-colour-set-of-ours-is-a-rule-over-his-palette.md)); shape in `src/entity/palettesFile.ts` |
+| `palettes.json` | by hand — colour sets of our own, as rules over his palette, which `npm run rom -- export` draws in every lighting ([ADR 0063](./adr/0063-a-palette-is-another-sheet.md)); shape in `src/entity/palettesFile.ts` |
 
 The editor saves **one section per Save**, chosen by the active tab, so a script
 and a tab can work on different sections without overwriting each other. The
@@ -143,7 +143,7 @@ nine fighters would each want a copy of it. A grunt *is* his.
   resolves in the fighter's own file rather than the bank, the only kind that
   does.
 - **A step's `sfx` is what the cartridge plays as that step begins** —
-  its own ids, written by `npm run rom -- export` from the script (ADR 0024).
+  its own ids, written by `npm run rom -- export` from the script (ADR 0092).
   A bank entry says which id it is with `rom`. A state's `sound` is for what
   no script plays.
 - **A `grab` with `caught` holds whoever the blow before it caught**, in any state
@@ -157,7 +157,7 @@ nine fighters would each want a copy of it. A grunt *is* his.
 - **`pillar` stands a light on the floor ahead of a state** and runs on through the next ones (ADR 0014); a bolt's `sharesBlow` spends its set's other blows with its own.
 - **A step's `spawns` are what its script puts out as it begins**, once per
   start of the animation, not per loop — written by the export for a move
-  that holds the opponent (ADR 0045) and for an object listed with `onStep`
+  that holds the opponent (ADR 0017) and for an object listed with `onStep`
   (ADR 0014); everywhere else a state's `fires` does it. A spawn whose
   `attributes.json` says `follows` rides on its owner until he leaves that
   start of the animation: `"pose"` showing the frame his drawing names,

@@ -3,7 +3,7 @@ import { Dummy, type Script } from "../debug/dummy";
 /**
  * A scenario for the original, `tools/re/runs/<name>.json`: a save state, and
  * what each pad does, in the debug dummy's own tokens — the same script can be
- * played by our game's mode 5 (ADR 0074). Pure: `scripts/original.ts` runs it.
+ * played by our game's mode 5 (ADR 0090). Pure: `scripts/original.ts` runs it.
  */
 export interface Scenario {
   /** `raw/states/<state>.mss`. */

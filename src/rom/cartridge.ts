@@ -6,7 +6,7 @@
 
 import type { Rgb } from "../entity/palettesFile";
 
-/** BYOA: the owner's own dump, never in git (ADR 0016). */
+/** BYOA: the owner's own dump, never in git (ADR 0090). */
 export const ROM_PATH = "raw/rom/Dragon Ball Z - Hyper Dimension (tr).sfc";
 
 export interface FighterTables {
@@ -96,7 +96,7 @@ export interface SpawnDef {
   /**
    * The moves that put it out by the step its b0 begins, never a cut — an
    * effect that rides its owner rather than a projectile a state `fires`
-   * (ADR 0018). Its code kills it in any other move, so elsewhere it is left
+   * (ADR 0017). Its code kills it in any other move, so elsewhere it is left
    * off. Idle's lightning: 00 and 60 ($0F:B87C).
    */
   onStep?: number[];

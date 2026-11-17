@@ -149,7 +149,7 @@ defender is still in hitstun. Nothing is interrupted; the sum is
 `recovery + next start-up ≤ hitstun`. → `combat.md` (Chaining)
 
 **Lit** (an object) — drawn in its thrower's palette, so in his colours in every
-lighting and as player two: a sheet each. → `SpawnDef.lit`, ADR 0087
+lighting and as player two: a sheet each. → `SpawnDef.lit`, ADR 0036
 
 **Motion input** — a **sequence** of directions completed inside a window, where
 a `held:` trigger is one frame. Written the genre's way and always relative to
@@ -253,7 +253,7 @@ may not carry `relaunch`. → `combat.md` (The buttons)
 
 **Song** — one of the cartridge's pieces of music, by its number (`01`–`09`
 a fight's); played by the chip running live. → `rom.md` (A fight's song),
-[ADR 0094](./adr/0094-the-music-is-the-chip-running-live.md)
+[ADR 0092](./adr/0092-every-sound-is-the-cartridges-driver.md)
 
 **Spawn** — anything a state brings into the world: a hit spark, an aura, a ki
 blast. Not a kind of object — it is an ordinary `Entity`, authored in

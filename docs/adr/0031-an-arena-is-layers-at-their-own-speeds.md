@@ -11,7 +11,7 @@ where they scroll apart and stacks the rest by tile priority
 debug scene's grid is a backdrop like any arena and stays the default;
 `?arena=<name>&time=<lighting>` replaces it — a scene parameter (0008).
 The fighters are drawn in front of every layer, in the palette the
-original gives them on that stage — another sheet, as the fire is (0026),
+original gives them on that stage — another sheet, as the fire is (0063),
 named by the lighting (`lightingPalettes` in `src/rom/arena.ts`).
 
 **Rejected:**

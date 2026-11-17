@@ -19,7 +19,7 @@ do
 
   -- A state names the Mesen that saved it, and an older one refuses it even
   -- when the format is the same: the owner's saves as 2.2.1, the sandbox's is
-  -- 2.1.1 (ADR 0095). Written down as 2.0.0, any Mesen 2 takes it.
+  -- 2.1.1 (ADR 0090). Written down as 2.0.0, any Mesen 2 takes it.
   local function anyMesen2(state)
     return state:sub(1, 3) .. string.char(0x00, 0x00, 0x02, 0x00) .. state:sub(8)
   end

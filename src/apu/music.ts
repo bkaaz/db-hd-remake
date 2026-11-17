@@ -2,7 +2,7 @@
  * A song as the game loads it (`$0E:817D`, `$00:D19C`): its samples and its
  * own upload put into the booted chip, then `1` asked for on port 0
  * (`$00:DE5A`, sent by `$00:D8AF`). The game plays it on the chip running
- * live (`audio/music.ts`, ADR 0094); the CLI renders it to listen to.
+ * live (`audio/music.ts`, ADR 0092); the CLI renders it to listen to.
  */
 
 import { toFile } from "../rom/cartridge";

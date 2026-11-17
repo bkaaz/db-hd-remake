@@ -82,7 +82,7 @@ the ROM once and the browser keeps it (`cartridge/remembered.ts`).
    needs from the cartridge. Measure first where the time goes; then a
    loading screen, or a different approach (drawing on demand, a worker).
    *Done when:* the start shows progress or plays at once, never a freeze.
-4. **The effects on the same chip as the music** (ADR 0094): every effect,
+4. **The effects on the same chip as the music** (ADR 0092): every effect,
    voice and line asked for on its ports as the game asks, the driver
    mixing them with the song; the rendered buffers of ADR 0092 go.
 5. **Settings** (owner, 2026-11-08): a place for what the player sets,
@@ -129,7 +129,7 @@ specials and objects do not. The throw (`9d`) followed from the report
 engine does not have. In order:
 
 1. **Objects from a recording** (ADR 0036; shared objects are named by what
-   they are, ADR 0037 — a fighter's own colours for one, a variant of its
+   they are, ADR 0036 — a fighter's own colours for one, a variant of its
    sheet, still to make: Vegeta's ki blast is in Goku's). The owner records a fighter's
    attacks once (`tools/re/record-objects.lua`, the list from
    `npm run rom -- spawns`); `npm run rom -- objects` turns the recording
@@ -149,7 +149,7 @@ engine does not have. In order:
 ## Now: Goku from the cartridge
 
 Everything below waits while this runs — the owner paused combat work on
-2026-10-28 to try it. Why and how: [ADR 0016](./adr/0016-the-original-is-read-from-the-cartridge.md);
+2026-10-28 to try it. Why and how: [ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md);
 what is known so far: [`rom.md`](./rom.md). The tile format is done
 (`src/rom/decompress.ts`), and so is every drawing: `npm run rom -- frames`.
 The owner prefers static analysis to recordings (2026-10-28): `npm run dis`
@@ -164,7 +164,7 @@ rom -- export`, states by hand after the original's moves.
 Every move is an animation now, `m00`…`mff` (ADR 0017), written by the export.
 
 `goku` plays (owner, 2026-10-29): walk, crouch and stand up, three jumps,
-dash, four blows, guard, reactions, and the ki blast as a spawn (ADR 0018).
+dash, four blows, guard, reactions, and the ki blast as a spawn (ADR 0017).
 Its states are by hand in `data/entities/goku/states.json`; the original's
 buttons are A S D X + C (`combat.md`, The buttons).
 
@@ -206,7 +206,7 @@ cartridge does is in `rom.md` (`b0`'s counter, `b1`'s drawn effects):
 
 Built: the charge, the ball, the three beams with their base and band
 (ADR 0014), the explosion each head becomes, the pose held after it, the
-base's way in and out, the band thinning away, the victim's fire (ADR 0027)
+base's way in and out, the band thinning away, the victim's fire (ADR 0063)
 and Goku's line. What
 still differs from the original:
 
@@ -236,7 +236,7 @@ recording; which moves repeat or hold is listed by hand in
 
 ## After the port: the common part
 
-[ADR 0069](./adr/0069-the-common-part-waits-for-the-end-of-the-port.md). Waits
+[ADR 0038](./adr/0038-a-fighters-states-are-generated.md). Waits
 for the last fighter from the cartridge; nothing here starts before that.
 
 1. **The template out of Goku:** a file of its own, his specials into his
