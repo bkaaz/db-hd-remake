@@ -45,8 +45,6 @@ let pending: string[] = [];
 /** Frames between flushes — one request per event would be silly. */
 const FLUSH_EVERY = 30;
 
-export const isRecording = (): boolean => recording;
-
 /**
  * Say what is being run, for the top of the next recording. Called on building
  * a scene, not on starting a recording — the two are minutes apart and only the

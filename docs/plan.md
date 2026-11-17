@@ -50,7 +50,8 @@ that is part of the review.
 3. **The fixes**, one small change each, verified and reviewed.
 
 Agreed so far: from `bugs.md`, the late KO and Cell's downward sender wait for
-the mechanics.
+the mechanics. From the code: exports used only in their own file stay as
+they are (`knip` lists them).
 
 *Done when:* the agreed items are gone from this section and `bugs.md`, and
 the next section here is the common part.
@@ -246,6 +247,10 @@ for the last fighter from the cartridge; nothing here starts before that.
 3. **Rules of the game out of `attributes.json`** (`comboLimits`).
 4. **Freeze the port:** its flat states and hit types kept as they are.
 5. **The generator stops overwriting** a blow's type.
+6. **Whose `animations.json` is** — open. The export writes it whole, so an
+   animation edited in the editor or added for a mechanic is gone at the next
+   export. What comes from the cartridge and what is ours is settled with the
+   owner before the mechanics touch an animation.
 
 Then the mechanics, the order provisional: first the press our buffer loses on the
 frame a move ends — the state entered on a frame reads its input only on the
