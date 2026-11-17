@@ -145,6 +145,7 @@ export interface SeizeDef {
    * him at that offset from the seizer, floor or not, until a step says null;
    * `lands` ends his flight where he is. With
    * `every`, again each `every` frames: an animation of his that goes round (`57`).
+   * `onBy` is `on` by the held body's fighter.
    */
   steps?: { frame: number; anim?: string; show?: number; draws?: Record<string, string>; atBy?: Record<string, [number, number]>; at?: [number, number]; drift?: [number, number] | null; hide?: boolean; on?: [number, number] | null; onBy?: Record<string, [number, number]>; lands?: true; every?: number; toHold?: true; cry?: string; sound?: string }[];
   /** He flashes in his `candy` palettes until this frame: his `5f`'s first 96 ($0F:A92F), Oyatsu Kosen. */
@@ -168,7 +169,7 @@ export interface SeizeDef {
   /** Thrown up and away; none keeps him where he was set down. */
   launch?: { frame: number; vel: [number, number]; from?: [number, number]; quiet?: boolean };
   bounces?: number[];
-  /** `frame`: when he is let go; with a `ball`, when it says. */
+  /** `frame`: when he is let go; with a `ball`, when it says. `whenLands` puts him in another state as he lands. */
   release: { frame?: number; damage: number; reaction: string; vel: [number, number]; whenLands?: SeizeLanding; burns?: boolean; fx?: string; fxAbove?: number; flash?: number; ahead?: boolean };
   /** What flies in his place; he comes out where it ends (`match/ball.ts`). */
   ball?: SceneBallDef;

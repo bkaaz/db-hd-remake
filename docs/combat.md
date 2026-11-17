@@ -49,13 +49,10 @@ one smash. There is no depth to step into, so down is **crouch**, and up is
 alike; crouching only lowers the hurt box, so a high blow misses a crouching
 body because the boxes miss.
 
-**Specials are motion inputs** (`motion:qcf` and friends, `input/motion.ts`). A
-motion is matched loosely — ↓→ counts as a quarter circle — and a short window,
-not a strict shape, is what keeps false positives rare. The order is the
-order the directions were **pressed** (owner, 2026-10-31): a ↙ held through
-↓ ← → is not also ← ↓ →, so Final Flash and the Big Bang come out apart;
-the original's exact sequences were the stricter way not taken. A direction plus a
-button is a move of its own, ordered before the plain one in `states.json`.
+**Specials are the cartridge's commands** while the port stands (ADR 0050); how
+ours are asked for comes with the rework. One thing about it is settled
+(owner, 2026-10-31): directions count in the order they were **pressed**, so a ↙
+held through ↓ ← → is not also ← ↓ →.
 
 **A command on the ground is still read just after takeoff** — for the
 cartridge's fighters, whose commands are the original's (ADR 0050): for
@@ -95,10 +92,9 @@ a blow that needs another reaction is another type.
 In conversation a blow is written as its code plus **any frame of the move** —
 `fl30 fl39 la187` — and `npm run which` says what that points at.
 
-**Animations are named for the pose, never for the role.** One pose may serve
-several blows, and two animations may share sprites when they differ in timing
-(`kick_high` and `kick_high_hold`). An animation always plays through; a pose
-held longer is a second animation, not a field on the blow.
+**An animation is the cartridge's move**, named by its id (ADR 0017), and one may
+serve several blows. It always plays through; a pose held longer is another
+animation, not a field on the blow.
 
 ## Chaining
 
@@ -150,10 +146,10 @@ combo from being a round; hitstun scaling ends a ground loop by itself, because
 the defender eventually recovers before the next blow. **Launch** scaling — each
 lift raising less — is not built yet.
 
-**Off for `goku` while he is ported** (owner, 2026-10-29): the attribute
-`comboLimits: false` switches off this and the relaunch budget (§4), so the
-cartridge's numbers can be compared with the original's. On again when the
-fight is reworked.
+**Off for every fighter while the port stands** (owner, 2026-10-29): the
+attribute `comboLimits: false` switches off this and the relaunch budget (§4),
+so the cartridge's numbers can be compared with the original's. It leaves the
+fighters' attributes in the common part (`plan.md`).
 
 ### 4. Relaunch
 

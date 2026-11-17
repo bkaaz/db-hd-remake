@@ -1,7 +1,7 @@
 /**
  * The committed `data/`, as the game reads it: through Vite's glob, so the
  * dev server and a static build read it the same way and no server is asked
- * (plan.md, a static build). Each file is its own chunk, fetched when first
+ * (ADR 0090). Each file is its own chunk, fetched when first
  * read; what directories hold comes from the paths alone.
  *
  * The entity editor still writes through the dev server's `/api/section`.

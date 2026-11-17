@@ -1302,7 +1302,7 @@ slot shows player two's tile base `0x100` up.
 `9e` and `b1` have scripts and handlers, but no button or code of his was found
 to start them `?`.
 
-## How it was found
+## Recording the original
 
 A blow the script arms does not move him in front: through Ultra Headbutt, its hit
 included, `$30B0` says player two (`front=` in a run's log). Only `$0D:D8A2` does.

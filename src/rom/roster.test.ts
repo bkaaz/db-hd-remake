@@ -33,7 +33,7 @@ describe.skipIf(!existsSync(ROM_PATH))("the roster, on the cartridge", () => {
           readScript(rom, scriptAt(rom, t, move));
           read++;
         } catch {
-          // a command not read yet (plan.md, reading the cartridge by script)
+          // a command not read yet
         }
       }
       expect(read, name).toBeGreaterThan(240);

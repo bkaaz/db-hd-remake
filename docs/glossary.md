@@ -1,273 +1,65 @@
 # Glossary
 
-Words this project uses constantly and defines nowhere else. Half of them are
-the genre's, half are ours — `cancelBy`, `rank`, `relaunch` mean what *this* repo
-says they mean, and no external glossary would tell you.
-
-**One line per term, plus where the real explanation lives.** If an entry needs
-a paragraph it belongs in [`combat.md`](./combat.md) and this file should only
-point at it. A glossary that starts explaining becomes a second version of the
-design doc and drifts away from it.
-
-**Kept in sync with the implementation**: a term whose field or file is renamed
-is renamed here in the same change.
+Words this project uses and defines nowhere else. **One line a term, plus where it
+is explained**; a term whose field or file is renamed is renamed here in the same
+change.
 
 ---
 
-**Active frames** — the stretch of an attack where its hit box is out, and the
-only frames in which it can connect. Authored (2–4 frames), never inherited from
-how long a drawing is held. → `combat.md` §1
-
-**Arena** — what a fight stands in front of: the original's stage art, as
-layers scrolling at their own speeds, in a lighting. Not the `Stage`, which is
-the playfield's numbers. → `data/arenas/`, ADR 0081
-
-**Blown** — the reaction that sends a body away backward in a low flight, into
-a bounce (`blown_bounce`); what the rush's last smash does. → `combat.md` (The
-buttons)
-
-**Cancel** — interrupting your own attack with the next one instead of playing
-it out. On a connection (hit or block) up to its `cancelBy` frame; on a whiff
-for as many frames, once its last hit box is gone. Trigger: `cancelable`.
-→ `combat.md` (Chaining), `combat/swing.ts` (`missWindow`)
-
-**`cancelBy`** — the last frame of an attack at which a cancel may fire, counted
-from entering the state and ignoring frozen frames. Absent means "until the
-animation ends". → `states.ts`
-
-**Grab / held** — a throw: a state with `grab` takes hold of an opponent within
-`grabRange` who is `throwable` (trigger `grab`, or `grab:N` for a command's own
-range; `within:N` asks the distance alone, for a run); he plays
-`m30_<thrower>_<move>` where the thrower's step puts him, until the launch
-lets him go. → `match/throw.ts`, ADR 0035
-
-**Seize** — a scene on the opponent: set down once, playing his own
-animation, flown and let go hurt (Saiyan Meteor). → `match/seize.ts`, ADR 0035
-
-**Pinned** — the original's `4a` / `4b`, every fighter's: let fall, bounced
-once, left lying and flinching until whoever pinned him throws him (Galactic
-Gunfire). → the `pinned` states, `rom.md` (Galactic Gunfire)
-
-**Frees / freed** — one body's state lets the other's held step go on, on a
-frame it names (pinned lets Galactic Gunfire fire). → `frees` on the state,
-trigger `freed`, ADR 0035
-
-**Finale** — a ball thrown at the floor, swelling into an explosion, then the
-arena white (Saiyan Meteor, Galactic Gunfire). → `match/finale.ts`; a seize's
-(`seize.finale`) or a state's own (`finale`, `match/finales.ts`), ADR 0035
-
-**Charging** — holding A + S with the cartridge's `goku`: a dial on the HUD
-turns, and each turn gives back 5 health (`heal` on the state; health, not ki,
-for now). → `combat/heal.ts`, `combat.md` (The buttons)
-
-**Chain (string)** — a run of attacks joined by cancels. It is not a structure
-anywhere: it is a path through `states.json`, derived by `src/combat/chains.ts`
-and printed by `npm run chains`. → `plan.md`
-
-**Command** — a special's input as the cartridge's table has it, matched over
-the pad's history with the original's windows. → `src/input/command.ts`, ADR 0050
-
-**Combo** — a chain whose links actually hold: the defender never gets control
-back between the blows. The player's word for it, and the editor tab's name; the
-docs and the code say *chain*, *link* and *cancel* when the distinction matters.
-→ `combat.md`
-
-**Defence** — an attribute taken off every blow a fighter takes, before
-scaling; the cartridge's rule, so `goku` carries the original's raw damage
-and defence 8. → ADR 0019, `rom.md` (Hit data)
-
-**Depth** — how many blows landed before a link fires, by the **longest** route
-into it. Scaling shortens hitstun as depth grows, so a string can hold at its
-opener and break at its third link. → `combat.md` §3
-
-**Frame advantage** — `hitstun − the attacker's remaining recovery`: who acts
-first once a blow has landed. Plus means the attacker, minus means the defender,
-and minus can be correct when the blow also pushes them out of range.
-→ `combat.md` §1
-
-**Game pixel** — one pixel of the original's screen: the unit of every
-position, speed and box; the view scales them all at once.
-→ `src/view.ts`, ADR 0041
-
-**Guard** — a button and the stance it holds (`guard`, `guard_low`). A blow is
-blocked only in a state marked `guarding`: the stance and its blockstun.
-→ `combat.md` (The buttons)
-
-**Hop** — a direction tapped and then held: a low jump, the original's `08` / `09`.
-→ `input/hop.ts`, `combat.md` (Movement)
-
-**Hit type** — what a blow does to whoever it hits (`flinch`, `stagger`,
-`knockback`, `launch`, `slam`) — every number of it but the damage, which is
-the blow's own; written
-`fl30` in conversation — code plus any frame of the move. A blow is an animation
-plus a type. → `data/hit-types.json`, `combat/hitTypes.ts`
-
-**Hitstop** — the freeze on contact, applied to **both** fighters for the same
-number of frames, set by the blow's hit type. It is what gives a blow weight,
-and because both sides freeze equally it changes nothing about who acts first.
-→ `data/hit-types.json`
-
-**HUD** — the original's band over the fight: health as a number from 400, a
-bar that moves below 150, the names. Ours is HTML around the screen
-(ADR 0041). → `src/hud/`, ADR 0032
-
-**Intro** — a fighter's `3c`, played on the arena before the fight with the
-debug scene's intro switch on, both at once, then READY and FIGHT!.
-→ `src/match/opening.ts`, `rom.md` (`3c`, the fighter's intro), ADR 0064
-
-**Hitstun** — how long the **defender** is helpless after a blow, counted in
-frames and set by the blow's hit type, not by the length of the reaction
-animation. Everything about combos is arithmetic on this number. → `combat.md` §1
-
-**Ki** — the meter, **separate from health** (settled 2026-08-23). Capacity is
-`ki` in `attributes.json`; a state fills it at `ki` per frame and a move pays
-`cost` once on entering. Filled by holding A+Z (attack + guard), and a move nobody can pay for
-does not come out. → `combat.md` (The buttons)
-
-**Ki blast** — the Ki button's normal (the old S): a bolt thrown across the stage. Two states, because
-the throw is drawn in two parts, and the bolt is a spawn with its own
-`states.json` — its damage and its speed are authored there, not on the throw.
-→ `combat.md` (The buttons)
-
-**Kamehameha** — forward + Ki, or back + Ki for the same beam aimed up: a charged
-beam. Holding the button fills a level
-(`charge` on the state) which scales the bolt it fires (`fires.size`), and the
-pose is held until that bolt is gone (`spawnEnd`). The beam itself and the
-charge sphere are not built — see `plan.md`. → `combat.md` (The buttons)
-
-**KO** — health run out, with the debug scene's KO switch on: the fall in half
-speed, the announcement, the winner's pose; then X builds the scene again. → `src/match/round.ts`,
-`rom.md` (A KO and the round's end), ADR 0064
-
-**Launcher** — a blow that lifts a grounded opponent into a juggle instead of
-flooring them. The reaction is `launched`, the opposite end of the same axis as
-**Slam**; the attack carries `relaunch`, so past the budget it still hits and
-simply stops lifting. → `combat.md` §1, §4
-
-**Link** — hitting again *after* your attack has fully played out, because the
-defender is still in hitstun. Nothing is interrupted; the sum is
-`recovery + next start-up ≤ hitstun`. → `combat.md` (Chaining)
-
-**Lit** (an object) — drawn in its thrower's palette, so in his colours in every
-lighting and as player two: a sheet each. → `SpawnDef.lit`, ADR 0036
-
-**Motion input** — a **sequence** of directions completed inside a window, where
-a `held:` trigger is one frame. Written the genre's way and always relative to
-facing: **qcf** ↓↘→ (quarter circle forward), **qcb** ↓↙←, **dp** →↓↘ (dragon
-punch), **hcf** ←↙↓↘→ (half circle). Ours are lenient about the diagonals — ↓→
-is a qcf — so the name is the motion hands make, not the shape required. The
-trigger is `motion:<name>`; **which ones exist is `MOTIONS` in
-`input/motion.ts`**, never this line. → `combat.md` (The buttons)
-
-**Move id** (`m92`) — the original's number for a move, fighter field `0x40`;
-`goku`'s animations are named by it. → ADR 0017, `rom.md`
-
-**Proration (scaling)** — every blow after the first is worth 10% less, in both
-damage and hitstun, down to a floor of 20% and 50%. The counter lives on the
-defender and resets when they get control back. → `combat.md` §3
-
-**Queued** (a transition's `queued`) — the next part of a move, typed during
-this one and kept until its animation ends; not a cancel. → ADR 0013
-
-**Alt** (`@alt` sheets) — player two's colours when both sides are the same
-fighter: the next palette record. → `rom.md`, A stage id
-
-**Colour set** (`palettes.json`) — colours of our own for a fighter, a rule
-over his palette, picked in the side panel; Vegeta's `gold`. → ADR 0063
-
-**Glow** (a state's `glow`) — the palette 8 records past a fighter's own,
-drawn while he charges; Goku has none. → `rom.md`, `src/rom/arena.ts`
-
-**Inputs of** (a state's `inputsOf`) — from one of its frames, a state starts
-what another state's inputs would: the landing, a block, the dash. → ADR 0013
-
-**Push band** — the screen's outer 64 px: a fighter in it, moving toward that
-edge, scrolls the camera; nobody else does. → `src/camera/push.ts`, ADR 0081
-
-**Rank** — how badly a reaction has taken control away: flinch 1, stagger 2,
-knockdown 3, on the floor 4, and 0 for a fighter who is their own. A blow never
-lowers the rank the defender is already in, an equal rank re-enters, and rank 0
-is also what resets the combo counter; a reaction may never be `guarding`.
-→ `combat.md` §7, `states.ts` (`reactionFor`)
-
-**Relaunch** — a blow allowed to *re*-launch or re-floor a body that is already
-being juggled. Marked on the attack (`relaunch`; `smash` until 2026-09-26), spent from a budget of two per
-combo; past the budget it still hits and still hurts, it just stops lifting.
-→ `combat.md` §4
-
-**Rebound** — a body going back up off the floor at a share of the speed it
-landed with, never under a floor (`rebound` on the state): the knockdown's
-bounce.
-→ `combat/rebound.ts`
-
-**Rehit** — how many frames before a blow may connect **again**, while its hit
-box is still out (`rehit` on the state). Absent means one swing lands once. It is
-what makes a beam ten hits of one sprite rather than ten authored steps.
-→ `combat.md` §1, `combat/swing.ts`
-
-**Recovery** — the frames after the active ones, when the hit box is gone but you
-still cannot act. What makes a whiff punishable. → `combat.md` §1
-
-**Rush** — the string the Attack button walks, one blow per press; the Smash
-button ends it at any depth. A tree, derived from `states.json` like any chain.
-→ `combat.md` (The buttons)
-
-**SA-1** — the cartridge's second 65816; it runs the fight and unpacks the
-sprites, so the original's state is found in its I-RAM. → `rom.md`
-
-**Sender** — a blow (`9f`, `a0`, `a1`) whose state `sends` the opponent to
-another arena, up, sideways or down. → `arena/ways.ts`, ADR 0081
-
-**Journey** — what a sender plays before the arena changes: he flies off, the
-screen between, he is put down on the new one. → `arena/flight.ts`, ADR 0081; off
-behind the debug scene's "arena change" switch
-
-**Shake** — the backdrop jolting up and down while the fighters stay put:
-`shake` on a state, one of the original's four patterns. → `camera/shake.ts`
-
-**Shove** — a reaction's knockback as the cartridge does it: a speed on
-entering that dies out by 0.25 a frame. Not `push`, which keeps two bodies
-apart. → `combat.md`, `combat/knockback.ts`
-
-**Push box** — a step's body or head that keeps two fighters apart, in the
-air too. → `combat.md`, `combat/push.ts`
-
-**Hit again** (`ifHitAgain`) — a reaction that overrules the next blows taken in
-it: the original's high knockdown relaunched twice, then floored.
-→ [`combat.md`](./combat.md#how-the-engine-plays-a-blow), `entity/hitAgain.ts`
-
-**Situation flag** (`airborne`, `crouching`) **and its redirect**
-(`ifAirborne`, `ifCrouching`) — how a defender's circumstances change the
-reaction without any attack knowing about them. The flag marks the state, the
-redirect hangs off the reaction, and an attack still names one `onHit`. The flag
-also rides on the reaction, which is what makes it survive a string.
-→ [ADR 0019](./adr/0019-a-blow-is-a-state-its-type-says-how-it-is-taken.md)
-
-**Slam (spike)** — the knockdown a blow that comes *down* gives: `slam` drops the
-body where it stands instead of lifting it, and its air redirect `slam_air`
-drives an already-juggled body into the floor. The opposite end of the same axis
-as an uppercut's launch. → `combat.md` (The buttons)
-
-**Smash** — the Burst Limit button that ends a rush. Not a flag: a smash may or
-may not carry `relaunch`. → `combat.md` (The buttons)
-
-**Song** — one of the cartridge's pieces of music, by its number (`01`–`09`
-a fight's); played by the chip running live. → `rom.md` (A fight's song),
-[ADR 0092](./adr/0092-every-sound-is-the-cartridges-driver.md)
-
-**Spawn** — anything a state brings into the world: a hit spark, an aura, a ki
-blast. Not a kind of object — it is an ordinary `Entity`, authored in
-`data/spawns/<name>/`, and *effect*, *attachment* and *projectile* are words for
-how one behaves rather than three types. A state names one with `hitFx` (on
-contact; the file's `hitFx` when it names none, its `guardFx` when blocked),
-`groundFx` / `trail` (on the floor, once on entering / at a beat) or `fires` (on entering).
-→ [ADR 0014](./adr/0014-a-spawn-is-an-entity-told-only-its-target.md),
-[ADR 0014](./adr/0014-a-spawn-is-an-entity-told-only-its-target.md)
-
-**Startup** — the frames from pressing the button to the hit box appearing.
-→ `combat.md` §1
-
-**Vanish** — guard tapped just before a blow lands: a teleport behind the
-attacker, for ki. From neutral, guard, blockstun and the air; never from a
-reaction or one's own attack, so it counters and never escapes a combo.
-→ `combat.md` §5
+- **Active frames** — the frames an attack's hit box is out, the only ones it can connect on. → `combat.md` §1
+- **Alt** — player two's colours when both sides are the same fighter: the next palette record. → `rom.md`
+- **Arena** — the original's stage art behind a fight, layers scrolling at their own speeds, in a lighting; not the `Stage`, the playfield's numbers. → `data/arenas/`, ADR 0081
+- **Cancel** — cutting your own attack short with the next, up to its `cancelBy` on a connection, or for as long once a whiff's last hit box is gone. → `combat.md` (Chaining)
+- **`cancelBy`** — the last frame of an attack a cancel may fire on, counted from entering it. → `states.ts`
+- **Chain (string)** — attacks joined by cancels: a path through `states.json`, never a structure of its own. → `combat/chains.ts`, `npm run chains`
+- **Charging** — holding A + S: the HUD's dial turns and gives health back (`heal`). → `combat/heal.ts`
+- **Colour set** — colours of our own for a fighter, a rule over his palette (`palettes.json`). → ADR 0063
+- **Combo** — a chain whose links hold: the defender never gets control back. → `combat.md`
+- **Command** — a special's input as the cartridge's table has it. → `input/command.ts`, ADR 0050
+- **Defence** — an attribute taken off every blow a fighter takes, before scaling. → ADR 0019
+- **Depth** — how many blows landed before a link, by the longest route into it. → `combat.md` §3
+- **Finale** — a ball thrown at the floor, swelling into an explosion, then the arena white. → `match/finale.ts`, ADR 0035
+- **Frame advantage** — hitstun less the attacker's remaining recovery: who acts first after a blow. → `combat.md` §1
+- **Frees / freed** — one body's state letting the other's held step go on. → ADR 0035
+- **Game pixel** — one pixel of the original's screen, the unit of every position, speed and box. → ADR 0041
+- **Glow** — the palette a fighter is drawn in while he charges. → `rom.md`
+- **Grab / held** — a throw: the thrower's state holds the opponent, who plays `m30_<thrower>_<move>`. → `match/throw.ts`, ADR 0035
+- **Guard** — the stance that blocks; a blow is blocked only in a state marked `guarding`. → `combat.md`
+- **Hit again** (`ifHitAgain`) — a reaction that overrules the next blows taken in it. → `combat.md`, `entity/hitAgain.ts`
+- **Hit type** — what a blow does to whoever it hits, every number but its damage; written `fl30`, its code and a frame of the move. → `data/hit-types.json`, ADR 0019
+- **Hitstop** — the freeze on contact, the same for both fighters. → `combat.md` §1
+- **Hitstun** — how long the defender is helpless after a blow, set by its type. → `combat.md` §1
+- **Hop** — a direction tapped and then held: a low jump. → `input/hop.ts`
+- **HUD** — the original's band over the fight: health, its bar, the names. → `src/hud/`, ADR 0032
+- **Inputs of** (`inputsOf`) — a state starting what another state's inputs would. → ADR 0013
+- **Intro** — a fighter's opening pose on the arena before READY and FIGHT!. → `match/opening.ts`, ADR 0064
+- **Journey** — what a sender plays before the arena changes. → `arena/flight.ts`, ADR 0081
+- **Ki** — the meter separate from health, filled by a state and spent by `cost`. → `combat.md`
+- **KO** — health run out: the fall at half speed, the announcement, the winner's pose. → `match/round.ts`, ADR 0064
+- **Launcher** — a blow that lifts a grounded opponent into a juggle. → `combat.md` §4
+- **Link** — hitting again after your attack has played out, while the defender is still in hitstun. → `combat.md` (Chaining)
+- **Lit** (an object) — drawn in its thrower's palette, so in his colours in every lighting. → ADR 0036
+- **Move id** (`m92`) — the original's number for a move, which names its animation. → ADR 0017
+- **Pinned** — let fall, bounced, left lying until whoever pinned him throws him. → `rom.md`
+- **Push band** — the screen's outer band; a fighter moving toward its edge scrolls the camera. → `camera/push.ts`
+- **Push box** — a drawing's body or head, keeping two fighters apart. → `combat.md`
+- **Queued** — the next part of a move, typed during this one and taken when it ends. → ADR 0013
+- **Rank** — how badly a reaction has taken control away; a blow never lowers it. → `combat.md` §7
+- **Rebound** — a body going back up off the floor at a share of its speed. → `combat/rebound.ts`
+- **Recovery** — the frames after the active ones, when you still cannot act. → `combat.md` §1
+- **Rehit** — frames before a blow may connect again while its box is still out. → `combat/swing.ts`
+- **Relaunch** — a blow allowed to lift or floor a body already juggled, from a budget per combo. → `combat.md` §4
+- **Rush** — the string the Attack button walks; Smash ends it. → `combat.md` (The buttons)
+- **SA-1** — the cartridge's second CPU, which runs the fight. → `rom.md`
+- **Scaling** — each blow of a combo worth less, in damage and hitstun. → `combat.md` §3, `combat/scaling.ts`
+- **Seize** — a scene on the opponent: set down, flown and let go hurt. → `match/seize.ts`, ADR 0035
+- **Sender** — a blow whose state `sends` the opponent to another arena. → `arena/ways.ts`, ADR 0081
+- **Shake** — the backdrop jolting while the fighters stay put. → `camera/shake.ts`
+- **Shove** — a reaction's knockback, a speed that dies out each frame; not `push`. → `combat.md`
+- **Situation flag** (`airborne`, `crouching`) — what redirects a reaction without the attack knowing. → ADR 0019
+- **Slam** — a blow that drives the body down rather than lifting it. → `combat.md`
+- **Smash** — the button that ends a rush. → `combat.md` (The buttons)
+- **Song** — one of the cartridge's pieces of music, by its number. → ADR 0092
+- **Spawn** — anything a state brings into the world, an ordinary `Entity`. → ADR 0014
+- **Startup** — the frames from the press to the hit box. → `combat.md` §1
+- **Vanish** — guard tapped just before a blow lands: a teleport behind the attacker. → `combat.md` §5
