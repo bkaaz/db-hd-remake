@@ -77,7 +77,7 @@ export function missingEntries(rom: Uint8Array, t: FighterTables, file: StatesFi
     const when = move === null ? null : readsCommands(move);
     if (when === null) continue;
     const where = def.air || def.airborne ? "air" : "ground";
-    // what it borrows counts as its own (ADR 0061)
+    // what it borrows counts as its own (ADR 0013)
     const lender = def.inputsOf ? (file.states[def.inputsOf.state]?.transitions ?? []) : [];
     const entered = new Set(
       [...lender, ...(def.transitions ?? [])].flatMap((tr) =>

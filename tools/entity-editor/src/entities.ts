@@ -4,7 +4,7 @@ import { animationsModified, entitySoundsModified } from "./exporter";
  * The rail of things that can be opened: fighters and spawns.
  *
  * Both are entities and every tab works on either — a spawn is an entity is the
- * whole reason the editor needs nothing new to author one (ADR 0007). Both are
+ * whole reason the editor needs nothing new to author one (ADR 0014). Both are
  * drawn from the ROM: a fighter by name, a spawn from its `look.json`.
  */
 

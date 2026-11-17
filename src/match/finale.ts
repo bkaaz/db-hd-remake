@@ -7,7 +7,7 @@ import type { ShakeDef } from "../camera/shake";
  * the arena held white with bursts all over the screen before the blow
  * lands. Galactic Gunfire's drops straight down ($20:9E57). Pure, so the
  * timeline is tested; `seize.ts` plays it on a seized opponent,
- * `finales.ts` on its own (ADR 0058).
+ * `finales.ts` on its own (ADR 0035).
  */
 export interface FinaleDef {
   /** The mover's frame the ball leaves on (394). */

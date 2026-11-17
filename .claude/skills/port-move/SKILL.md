@@ -185,16 +185,16 @@ before asking for a new mechanism:
   `port` prints "bodies pass") — `pushless`;
 - a handler's frame jump to a step of its own is a part of its own; a
   script's `f0` hold released by the other body — `holdStep` + `freed`, the
-  other's `frees` (ADR 0057);
+  other's `frees` (ADR 0035);
 - a command's own range for a grab-like move (byte 2 bit `20`) — `grab:N`;
   health 80 or less — `health:N`;
 - hanging (vy 0 skips gravity, `$0D:CAD4`) — `air` with `gravity: 0`;
 - a throw where he lies — `throwsFoe`; a ball thrown at the floor and the
-  white — `finale` (ADR 0058), or a seize's (ADR 0046);
+  white — `finale` (ADR 0035), or a seize's (ADR 0035);
 - moving at the opponent until close — `rush` (`until` to stop it);
 - a move free again from a frame, as its handler calls `$0F:9EB1` (and
   `$0D:F9BD`) — `inputsOf` idle, `only: "buttons"` without the directions
-  (ADR 0061; `npm run rom -- entries` counts it);
+  (ADR 0013; `npm run rom -- entries` counts it);
 - a move that waits for a blow, with the list of what gets through — `parry`
   (ADR 0077); `npm run moves -- <f> --parry` plays it, `--held` a button's levels;
 - a stay-on-hit object that strikes again — `outlivesHit`, `rehit`; one no pause
@@ -202,12 +202,12 @@ before asking for a new mechanism:
   state each with `launch`, `frames:` and `burstsAtEnd`;
 - a held body in the cartridge's palette — a `grab`'s `shocks`; in a drawing of a
   table by fighter — a `seize` step's `draws` and `atBy`;
-- an object rewritten on the floor as another that strikes — `landsAs`; a scene a shot opens that does not hold its thrower — a `seize`'s `free` (ADR 0078);
+- an object rewritten on the floor as another that strikes — `landsAs`; a scene a shot opens that does not hold its thrower — a `seize`'s `free` (ADR 0014);
 - a run that stops at contact — `stopsOnContact`; a move in the air that lets him go on as he came in — `savesFlight` and `resumesFlight`;
-- a light on the floor ahead of him (`b1` kind 4) — `pillar`, and a set of objects with one blow between them — `sharesBlow` (ADR 0079); an object whose frame is its state — states of its own, its airborne ones moved twice a frame if its code calls `$0F:CBE4` and `$0F:E4EB` both (Cell Junior);
-- a command's button naming a bolt's place — `fires.atBy`; sparks that keep their place beside a bolt — a `with`'s `around`; a state that gives a handler's sound on a frame — `soundsAt`; a script that goes round with its line said once — `fromTop` and `muted` (ADR 0080);
+- a light on the floor ahead of him (`b1` kind 4) — `pillar`, and a set of objects with one blow between them — `sharesBlow` (ADR 0014); an object whose frame is its state — states of its own, its airborne ones moved twice a frame if its code calls `$0F:CBE4` and `$0F:E4EB` both (Cell Junior);
+- a command's button naming a bolt's place — `fires.atBy`; sparks that keep their place beside a bolt — a `with`'s `around`; a state that gives a handler's sound on a frame — `soundsAt`; a script that goes round with its line said once — `fromTop` and `muted` (ADR 0014);
 - an object gone when he leaves his move — `endsWithMove`, `true` or the
-  move ids its code tests (ADR 0062).
+  move ids its code tests (ADR 0014).
 
 ## 4. Check
 

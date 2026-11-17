@@ -5,7 +5,7 @@ import type { StateDef, StatesFile, Transition } from "./states";
  * inputs would — the original's landing, a block from frame 4, a dash call
  * the routines idle calls (`$0F:9EB1`, `$0D:F9BD`; docs/rom.md, Where a move
  * can start another). Borrowed, not copied: idle's dozen entries written into
- * six more states would drift apart the first time one is edited. ADR 0061.
+ * six more states would drift apart the first time one is edited. ADR 0013.
  */
 export interface InputsOf {
   /** The state whose input transitions are tried — idle, or crouch for a crouching one. */

@@ -189,6 +189,44 @@ a combo is. Rank is compared after the air version is chosen, so a flinch on a
 falling body becomes a juggle. Nothing forces rank 4, and a fighter on the floor
 is `invulnerable`.
 
+## How the engine plays a blow
+
+What the engine does today, in the order a blow happens. A field's exact
+meaning is its declaration in `src/entity/states.ts`; why it is shaped so is
+in `adr/` (0003, 0013, 0014, 0019, 0035).
+
+- **The state.** A state plays one animation and leaves only by a transition
+  in its data (ADR 0013). A blow is a state with a hit type and its own damage
+  (ADR 0019); a move the cartridge cuts into parts is a state per part.
+- **Contact.** A hit box overlapping a hurt box lands once per swing. The
+  defender's `defence` comes off the blow's damage, then the combo scales it
+  (§3). The type names the reaction; the defender's state may redirect it by
+  `ifAirborne` / `ifCrouching`, and a stance blocks into its own `guard`, the
+  file's `onGuard` otherwise. A body hit again in a reaction that says
+  `ifHitAgain` goes where that says for its first few blows.
+- **The pause and the stun.** Hitstop freezes both fighters and every bolt;
+  hitstun then runs on the defender (§1).
+- **The spark** stands at the leading edge of the boxes' overlap for a melee
+  blow (`impactPoint`, `combat/hit.ts`) and at its middle for a bolt — ours,
+  not the cartridge's, which puts it between the boxes' centres. A blow that
+  says `hitLight` leaves light where it landed (`combat/hitLight.ts`).
+- **The shove.** A reaction's `shove` starts at its speed and loses 0.25 px a
+  frame (`combat/knockback.ts`); one that reaches the screen's edge passes to
+  the attacker (§6). An attack's `launches` replaces the launch of the
+  reaction it sends into.
+- **Bodies.** Two fighters are kept apart by their drawings' `push` boxes —
+  body and head, each against each, in the air too — half the overlap each
+  (`combat/push.ts`). A drawing without them, and a held body, push nothing.
+- **In the air.** A state's `air` sets vx, vy and gravity on named frames, the
+  move's handler's order (`entity/air.ts`); `velAt` does the same on the
+  ground.
+- **Spawns.** A state `fires` a bolt or puts out an effect (ADR 0014): a bolt
+  has a `foe`, its own blow and the fields its object's code gives it
+  (`outlivesHit`, `rides`, `endsWithMove`, `burstsAbove`, `landsAs`); an
+  effect rides its owner by `follows`.
+- **Holding the opponent.** `grab`, `seize`, `finale`, `frees` and `throwsFoe`
+  move the other body from the holder's state (ADR 0035).
+
 ## Movement
 
 The walk is a bob — the sheet has no walking legs — so the fighter really moves

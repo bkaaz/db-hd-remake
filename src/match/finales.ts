@@ -3,7 +3,7 @@ import { finaleStep, throwBall, type Finale, type FinaleDef } from "./finale";
 import type { SeizeWorld } from "./seize";
 
 /**
- * A finale on a state of its own (ADR 0058): the opponent is not held, and
+ * A finale on a state of its own (ADR 0035): the opponent is not held, and
  * the ball goes on through the thrower's next states until the white is
  * gone, telling him as it lands and as it ends — the states wait on that,
  * as Galactic Gunfire's handler holds its frame ($20:9E57, $20:9F13).

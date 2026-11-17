@@ -48,7 +48,7 @@ export interface Transition {
    * Remembered, not taken: from frame `from` of the state, the first time
    * `when` holds it is kept (its press spent) and taken when the animation
    * ends, ahead of every other way out. The next part of a move typed during
-   * the one before — Vegeta's `a4` → `a5` → `a6` (ADR 0049). The buffer alone
+   * the one before — Vegeta's `a4` → `a5` → `a6` (ADR 0013). The buffer alone
    * would forget the press long before the move is over.
    */
   queued?: { from: number };
@@ -451,14 +451,14 @@ export interface StateDef {
   sends?: Way;
   /**
    * What this state's blow turns into where it lands — an effect put at the
-   * middle of the boxes' overlap in place of its `hitFx` (ADR 0044): the
+   * middle of the boxes' overlap in place of its `hitFx` (`combat.md`): the
    * original's projectiles, each rewritten into its explosion ($2A:8E31).
    */
   burstsInto?: string;
   /**
    * For a falling bolt: its ground is this many game px above its thrower's
    * floor, and reaching it puts out its `burstsInto` there and ends it —
-   * Vertical Ki's shot, rewritten as a/02 at y B8 ($0F:BB05; ADR 0056). Negative
+   * Vertical Ki's shot, rewritten as a/02 at y B8 ($0F:BB05; ADR 0014). Negative
    * for one that flies on through the floor: Kakusan's low ball, whose code has no floor.
    */
   burstsAbove?: number;
@@ -667,7 +667,7 @@ export interface StateDef {
    * 0x98 records past his own, Vegeta's in his pose ($20:9257) — if he has them.
    */
   win?: number;
-  /** From a frame, the input transitions of another state too, ahead of its own (ADR 0061). */
+  /** From a frame, the input transitions of another state too, ahead of its own (ADR 0013). */
   inputsOf?: InputsOf;
 
   /**
@@ -738,12 +738,12 @@ export interface StateDef {
    * On this frame of the state, the opponent's held script goes on — his
    * `freed` trigger. Pinned does it 8 frames into lying, and only then does
    * Galactic Gunfire fire, aiming until he is down ($0F:A545 sets the
-   * other's field 0x4b past his `f0` hold, $01:86F0; ADR 0057).
+   * other's field 0x4b past his `f0` hold, $01:86F0; ADR 0035).
    */
   frees?: number;
   /**
    * A finale of the state's own, the opponent left where he is (`finales.ts`,
-   * ADR 0058): thrown on its `frame`, it plays on through the states after,
+   * ADR 0035): thrown on its `frame`, it plays on through the states after,
    * telling the thrower `ballLanded` and `finaleDone` — Galactic Gunfire's
    * ball. Saiyan Meteor's is its seize's (`seize.finale`).
    */

@@ -3,7 +3,7 @@
 **Status:** accepted 2026-10-29 · extends 0017 (it names the parts)
 
 An object a script starts with `b0` — the ki blast, the transformation's hair
-— is exported as a **spawn entity** of its own (ADR 0007), into
+— is exported as a **spawn entity** of its own (ADR 0014), into
 `data/spawns/<name>/`, and the move that starts it is **cut there**: `m9b`
 runs up to the blast, `m9b_2` from it on, because a state fires its spawn on
 entry. A spawn before anything is shown stays with the first part.

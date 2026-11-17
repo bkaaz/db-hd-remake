@@ -205,7 +205,7 @@ size depends on how long. The one flying up (`ab`) waits. What the
 cartridge does is in `rom.md` (`b0`'s counter, `b1`'s drawn effects):
 
 Built: the charge, the ball, the three beams with their base and band
-(ADR 0025), the explosion each head becomes, the pose held after it, the
+(ADR 0014), the explosion each head becomes, the pose held after it, the
 base's way in and out, the band thinning away, the victim's fire (ADR 0027)
 and Goku's line. What
 still differs from the original:
@@ -554,7 +554,7 @@ queue.
   1. **A spawn that lives as long as its state.** The charge sphere and the
      muzzle flash (frames 132-133) have to appear on entering a state and be
      taken away when it is left — today an effect plays its animation out and
-     nothing can end it early. This is the `attachment` ADR 0007 named.
+     nothing can end it early. This is the `attachment` ADR 0014 named.
      The sphere is the cartridge's object (`kame_sphere`); the original
      draws it with colour-math transparency.
   2. **The beam.** A band from the hands to the bolt's head, so its length

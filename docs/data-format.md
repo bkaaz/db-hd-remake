@@ -72,12 +72,12 @@ picture of every screen, drawn from the ROM too (`src/arena/bands.ts`, ADR
   so facing is a sign flip on X with no geometry to recompute.
 - **`push` boxes are the body two fighters keep apart with**, the first two
   of a step's in order: the body, then the head. The export writes them from
-  the cartridge on every step (ADR 0039). An entity that authors none pushes
+  the cartridge on every step (`combat.md`). An entity that authors none pushes
   with its `pushWidth` attribute, and only on the ground.
 - **Knockback is on the reaction, not the blow.** A reaction faces its
   attacker, so a negative `vel` x is "backwards, away", and it slides for as
   long as the reaction lasts. A `shove` is the cartridge's kind: a speed on
-  entering that loses 0.25 a frame until it stops (ADR 0021); with `shoveFor` it
+  entering that loses 0.25 a frame until it stops (`combat.md`); with `shoveFor` it
   keeps its whole speed that many frames and then stops, as a reel does. How long a
   reaction lasts comes from the blow's `hitstun`, not from the pose: a shorter
   animation holds its last frame, a longer one is cut off. A drawing has no
@@ -90,7 +90,7 @@ it lands **once per entry into the state**, however many frames the box stays
 out. The defender is forced into the attack's `onHit`, or their own `onGotHit` if
 it names none — then into that reaction's `ifAirborne` or `ifCrouching` if they
 were off the ground or low. A body already in a reaction with `ifHitAgain` goes where
-that rule says instead, whatever the blow (ADR 0052); an attack's `launches`
+that rule says instead, whatever the blow (`combat.md`); an attack's `launches`
 replaces the launch of the reaction it sends into, by name.
 
 **How a blow is taken comes from its hit type.** A state that says `"type"`
@@ -148,17 +148,17 @@ nine fighters would each want a copy of it. A grunt *is* his.
   no script plays.
 - **A `grab` with `caught` holds whoever the blow before it caught**, in any state
   and in the air, where he is; off the floor he plays `m30_<thrower>_<move>_air`
-  (ADR 0071). The transition to it is `connected`, after `blocked` — `connected`
+  (ADR 0035). The transition to it is `connected`, after `blocked` — `connected`
   fires on a block too. That blow says `catches`: its attacker's pause begins a frame into his next state. A launch with `quiet` skips the reaction's sound. `startsAt` enters a state part-way through its animation.
-- **`hitLight` lights what a state's blow lands on** (`"ball"`, `"pillar"`, ADR 0072), and
+- **`hitLight` lights what a state's blow lands on** (`"ball"`, `"pillar"`, `combat.md`), and
   `paletteRun` runs a state through palettes from its frame 1, `plain` or `alt`;
   `paletteAt` holds a palette from a frame on, `[[1, "glow"], [46, null]]`.
-- **`fires.atBy`** places a bolt by the button of the command that began the move, **a `with`'s `around`** keeps a companion that far from its bolt, unmirrored (ADR 0080). **A `grab`'s `cries`** are the frames he cries out on; **a seize's `release.whenLands`** puts him in another state as he lands, **a step's `onBy`** is its `on` by his name. **`floorBurst` and `floorSound`** are what a bolt leaves on its floor where they are not its blow's. **`soundsAt`** plays sounds on frames of a state, for a handler's that no script holds; **`muted`** keeps a state's script silent, **`fromTop`** plays its animation from the top though the state before played the same.
-- **`pillar` stands a light on the floor ahead of a state** and runs on through the next ones (ADR 0079); a bolt's `sharesBlow` spends its set's other blows with its own.
+- **`fires.atBy`** places a bolt by the button of the command that began the move, **a `with`'s `around`** keeps a companion that far from its bolt, unmirrored (ADR 0014). **A `grab`'s `cries`** are the frames he cries out on; **a seize's `release.whenLands`** puts him in another state as he lands, **a step's `onBy`** is its `on` by his name. **`floorBurst` and `floorSound`** are what a bolt leaves on its floor where they are not its blow's. **`soundsAt`** plays sounds on frames of a state, for a handler's that no script holds; **`muted`** keeps a state's script silent, **`fromTop`** plays its animation from the top though the state before played the same.
+- **`pillar` stands a light on the floor ahead of a state** and runs on through the next ones (ADR 0014); a bolt's `sharesBlow` spends its set's other blows with its own.
 - **A step's `spawns` are what its script puts out as it begins**, once per
   start of the animation, not per loop — written by the export for a move
   that holds the opponent (ADR 0045) and for an object listed with `onStep`
-  (ADR 0048); everywhere else a state's `fires` does it. A spawn whose
+  (ADR 0014); everywhere else a state's `fires` does it. A spawn whose
   `attributes.json` says `follows` rides on its owner until he leaves that
   start of the animation: `"pose"` showing the frame his drawing names,
   `"body"` playing its own (`src/fx/follow.ts`).
@@ -167,14 +167,14 @@ nine fighters would each want a copy of it. A grunt *is* his.
   `seize` with no `place` takes him where he stands, with no `launch` keeps him there,
   `hides` stops drawing him from a frame, and `ball` flies in his place and lets him
   out where it ends (`match/ball.ts`). A later state of the scene names it in `sceneOf`.
-  Its `steps` may keep him at an offset from the seizer in the air (`on`), end his flight (`lands`), play his `anim` only as far as its script's hold (`toHold`, a step's `hold` in `animations.json`; `still` on the `seize` keeps him on its first drawing) or sound (`cry` him, `sound` the seizer); a spark may `sound` and `pause` the pair; `dome`, `bars`, `sparks` and `screens` are what the scene draws by frame (`match/sceneLight.ts`, ADR 0076).
+  Its `steps` may keep him at an offset from the seizer in the air (`on`), end his flight (`lands`), play his `anim` only as far as its script's hold (`toHold`, a step's `hold` in `animations.json`; `still` on the `seize` keeps him on its first drawing) or sound (`cry` him, `sound` the seizer); a spark may `sound` and `pause` the pair; `dome`, `bars`, `sparks` and `screens` are what the scene draws by frame (`match/sceneLight.ts`, ADR 0035).
 - **`sends`** (`up`, `side`, `down`) makes a state's blow take the fight to another arena that way, where one lies (`arena/ways.ts`, ADR 0083); where none does, it is only its reaction.
 - **`parry` makes a state wait for a blow** (ADR 0077): a blow whose hit box touches this state's is turned on the striker, who is held, and the state goes to `to`; `except` names by his fighter the moves that get through. A `seize` step's `draws` and `atBy` give the drawing and the offset by the held body's fighter. A `release` with `ahead` leaves him facing the seizer: a blow taken, not a throw. `launch.quiet` skips his cry.
 - **A `grab`'s `shocks`** flashes the held body in `attributes.shock`, four frames each (Shocking Stunner). A state after a grab with a `caught` grab of its own keeps him held, with no idle between.
 - **A `grab`'s `flips`** keeps the held body on the step before `step` until `frame`, then draws it upside down. **`stillCamera`** keeps the camera from following vertically while he is in the state; on a grab's `launch`, until the thrown body lands.
 - **`flipsOnLeaving`**: he flips as he leaves the state, with no `turnsBy`.
 - **`behindAt`** is `behind` from a frame of the state. **A bolt's `fallsToFloor`** has its thrower's floor for ground, **`burstsAtEnd`** bursts where its `lasts` runs out, `throughPause` is not held by a hit pause.
-- **A bolt's `landsAs`** names the bolts it is rewritten as on reaching its `burstsAbove` floor, on the floor in its place (ADR 0078). **A `seize`'s `free`** runs the scene a shot `opens` on its own clock, the seizer's state left alone (ADR 0078); its `light.flickers` keeps two radii, `release.flash` whitens the screen, `release.fxAbove` puts its `fx` that high on him. **A `grab.launch`'s `fx` and `flash`** are the same from the thrower.
+- **A bolt's `landsAs`** names the bolts it is rewritten as on reaching its `burstsAbove` floor, on the floor in its place (ADR 0014). **A `seize`'s `free`** runs the scene a shot `opens` on its own clock, the seizer's state left alone (ADR 0014); its `light.flickers` keeps two radii, `release.flash` whitens the screen, `release.fxAbove` puts its `fx` that high on him. **A `grab.launch`'s `fx` and `flash`** are the same from the thrower.
 - **`stopsOnContact`** ends a state's ground speed at its blow's contact, not before a frame if it names one. **`dips`** draws him so many px down from each frame named, boxes staying. **`savesFlight`** keeps the speeds he comes in with, **`resumesFlight`** puts them back later in the move.
 - **`throwsFoe` strikes the opponent wherever he is**, on a frame of a state: `ahead` leaves him facing the thrower, `fx` leaves an effect on him (Vegetto's throw).
 - **`turnsBy` is the state a body plays its turn in**, on finding the opponent behind

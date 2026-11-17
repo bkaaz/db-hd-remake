@@ -1,6 +1,6 @@
 # 0077 — A parry is a state that waits for a blow
 
-Status: accepted 2026-11-06 (Piccolo's pass; the owner asked for what can be done alone). Extends ADR 0046 and 0075.
+Status: accepted 2026-11-06 (Piccolo's pass; the owner asked for what can be done alone). Extends ADR 0035 and 0075.
 
 Regeneration is the cartridge's parry: two hit boxes touching while the striker's blow is armed turn it on him, unless
 his move is on his fighter's list (`$2A:8640`, `$2A:86A0`). A state says so in `parry`, and `match/parry.ts` asks before

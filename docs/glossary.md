@@ -42,7 +42,7 @@ range; `within:N` asks the distance alone, for a run); he plays
 lets him go. → `match/throw.ts`, ADR 0035
 
 **Seize** — a scene on the opponent: set down once, playing his own
-animation, flown and let go hurt (Saiyan Meteor). → `match/seize.ts`, ADR 0046
+animation, flown and let go hurt (Saiyan Meteor). → `match/seize.ts`, ADR 0035
 
 **Pinned** — the original's `4a` / `4b`, every fighter's: let fall, bounced
 once, left lying and flinching until whoever pinned him throws him (Galactic
@@ -50,11 +50,11 @@ Gunfire). → the `pinned` states, `rom.md` (Galactic Gunfire)
 
 **Frees / freed** — one body's state lets the other's held step go on, on a
 frame it names (pinned lets Galactic Gunfire fire). → `frees` on the state,
-trigger `freed`, ADR 0057
+trigger `freed`, ADR 0035
 
 **Finale** — a ball thrown at the floor, swelling into an explosion, then the
 arena white (Saiyan Meteor, Galactic Gunfire). → `match/finale.ts`; a seize's
-(`seize.finale`) or a state's own (`finale`, `match/finales.ts`), ADR 0058
+(`seize.finale`) or a state's own (`finale`, `match/finales.ts`), ADR 0035
 
 **Charging** — holding A + S with the cartridge's `goku`: a dial on the HUD
 turns, and each turn gives back 5 health (`heal` on the state; health, not ki,
@@ -74,7 +74,7 @@ docs and the code say *chain*, *link* and *cancel* when the distinction matters.
 
 **Defence** — an attribute taken off every blow a fighter takes, before
 scaling; the cartridge's rule, so `goku` carries the original's raw damage
-and defence 8. → ADR 0020, `rom.md` (Hit data)
+and defence 8. → ADR 0019, `rom.md` (Hit data)
 
 **Depth** — how many blows landed before a link fires, by the **longest** route
 into it. Scaling shortens hitstun as depth grows, so a string can hold at its
@@ -167,7 +167,7 @@ damage and hitstun, down to a floor of 20% and 50%. The counter lives on the
 defender and resets when they get control back. → `combat.md` §3
 
 **Queued** (a transition's `queued`) — the next part of a move, typed during
-this one and kept until its animation ends; not a cancel. → ADR 0049
+this one and kept until its animation ends; not a cancel. → ADR 0013
 
 **Alt** (`@alt` sheets) — player two's colours when both sides are the same
 fighter: the next palette record. → `rom.md`, A stage id
@@ -179,7 +179,7 @@ over his palette, picked in the side panel; Vegeta's `gold`. → ADR 0063
 drawn while he charges; Goku has none. → `rom.md`, `src/rom/arena.ts`
 
 **Inputs of** (a state's `inputsOf`) — from one of its frames, a state starts
-what another state's inputs would: the landing, a block, the dash. → ADR 0061
+what another state's inputs would: the landing, a block, the dash. → ADR 0013
 
 **Push band** — the screen's outer 64 px: a fighter in it, moving toward that
 edge, scrolls the camera; nobody else does. → `src/camera/push.ts`, ADR 0030
@@ -227,21 +227,21 @@ behind the debug scene's "arena change" switch
 
 **Shove** — a reaction's knockback as the cartridge does it: a speed on
 entering that dies out by 0.25 a frame. Not `push`, which keeps two bodies
-apart. → ADR 0021, `combat/knockback.ts`
+apart. → `combat.md`, `combat/knockback.ts`
 
 **Push box** — a step's body or head that keeps two fighters apart, in the
-air too. → ADR 0039, `combat/push.ts`
+air too. → `combat.md`, `combat/push.ts`
 
 **Hit again** (`ifHitAgain`) — a reaction that overrules the next blows taken in
 it: the original's high knockdown relaunched twice, then floored.
-→ [ADR 0052](./adr/0052-a-body-hit-again-in-the-high-knockdown.md), `entity/hitAgain.ts`
+→ [`combat.md`](./combat.md#how-the-engine-plays-a-blow), `entity/hitAgain.ts`
 
 **Situation flag** (`airborne`, `crouching`) **and its redirect**
 (`ifAirborne`, `ifCrouching`) — how a defender's circumstances change the
 reaction without any attack knowing about them. The flag marks the state, the
 redirect hangs off the reaction, and an attack still names one `onHit`. The flag
 also rides on the reaction, which is what makes it survive a string.
-→ [ADR 0002](./adr/0002-the-defenders-situation-is-a-flag.md)
+→ [ADR 0019](./adr/0019-a-blow-is-a-state-its-type-says-how-it-is-taken.md)
 
 **Slam (spike)** — the knockdown a blow that comes *down* gives: `slam` drops the
 body where it stands instead of lifting it, and its air redirect `slam_air`
@@ -261,8 +261,8 @@ blast. Not a kind of object — it is an ordinary `Entity`, authored in
 how one behaves rather than three types. A state names one with `hitFx` (on
 contact; the file's `hitFx` when it names none, its `guardFx` when blocked),
 `groundFx` / `trail` (on the floor, once on entering / at a beat) or `fires` (on entering).
-→ [ADR 0007](./adr/0007-everything-a-state-spawns-is-an-entity.md),
-[ADR 0014](./adr/0014-a-bolt-is-handed-its-target.md)
+→ [ADR 0014](./adr/0014-a-spawn-is-an-entity-told-only-its-target.md),
+[ADR 0014](./adr/0014-a-spawn-is-an-entity-told-only-its-target.md)
 
 **Startup** — the frames from pressing the button to the hit box appearing.
 → `combat.md` §1

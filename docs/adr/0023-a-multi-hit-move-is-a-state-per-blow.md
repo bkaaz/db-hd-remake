@@ -29,4 +29,4 @@ move's schedule.
 - **A constant `vel` per part.** Right in distance, wrong in feel: the
   original lunges with each kick and slows between them.
 - **Damage per hit inside one state.** A new field for what a state already
-  carries; a blow is a state (0015).
+  carries; a blow is a state (0019).

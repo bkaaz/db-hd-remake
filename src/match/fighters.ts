@@ -196,7 +196,7 @@ export class Fighters {
       };
       this.throws.update(this.player, this.opponent, around);
       this.throws.update(this.opponent, this.player, around);
-      // one body's state lets the other's held script go on ($0F:A545, ADR 0057)
+      // one body's state lets the other's held script go on ($0F:A545, ADR 0035)
       if (this.player.freesNow) this.opponent.free();
       if (this.opponent.freesNow) this.player.free();
       const world = {

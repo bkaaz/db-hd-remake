@@ -26,7 +26,7 @@ language**:
 The differences are deliberate and listed under *Deliberately absent* in
 `data-format.md` — there is no state scripting, no `onEnter` controller list and
 no command/motion vocabulary. A 2026-08-07 plan here sketched all three; none was
-built, and states stayed text ([ADR 0013](./adr/0013-states-stay-hand-authored.md)).
+built, and states stayed text ([ADR 0013](./adr/0013-what-a-state-does-is-in-its-data.md)).
 
 ## The tabs
 
@@ -34,7 +34,7 @@ built, and states stayed text ([ADR 0013](./adr/0013-states-stay-hand-authored.m
 |---|---|
 | **Sprites** | the sheet as the ROM draws it, with the export's frames and anchors — read-only ([ADR 0090](./adr/0090-the-cartridge-is-the-games-one-dependency.md)) |
 | **Animations** | timed steps, the hit/hurt/push box layer, preview |
-| **Combos** | the chain graph — a node per attack at its hit frame, an edge per cancel labelled with the button and the frames of margin; hover to dim what it does not touch. Read-only: authoring stays in text ([ADR 0013](./adr/0013-states-stay-hand-authored.md)) |
+| **Combos** | the chain graph — a node per attack at its hit frame, an edge per cancel labelled with the button and the frames of margin; hover to dim what it does not touch. Read-only: authoring stays in text ([ADR 0013](./adr/0013-what-a-state-does-is-in-its-data.md)) |
 
 Commands, Sounds and Attributes are placeholders beyond what is listed below.
 They get built when the engine work that needs them comes up the queue —
@@ -96,7 +96,7 @@ the tool lives in them.
 | **A. Rename + tabs** ✅ | reorganised; `sprite-editor` → `entity-editor` | loader path update | a clean base, no new features |
 | **B. Hit boxes** ✅ | box layer in Animations (draw, select, delete) | box overlay, toggle `B` | boxes authored and shown |
 | **D1. States — engine** ✅ | — (`states.json` hand-written) | state-machine runner, opponent-relative facing | idle and walk from data |
-| **D2. States — validation** ✅ | read-only States tab, problems flagged | shared `validateStates()` + `npm test` | safe hand-authoring; a visual state editor was dropped ([ADR 0013](./adr/0013-states-stay-hand-authored.md)) |
+| **D2. States — validation** ✅ | read-only States tab, problems flagged | shared `validateStates()` + `npm test` | safe hand-authoring; a visual state editor was dropped ([ADR 0013](./adr/0013-what-a-state-does-is-in-its-data.md)) |
 | **E. Sounds tab** ✅ | the game's bank by category, auditioned and edited | reuses `Audio` and `validateSounds()` unchanged | hearing `swing_2` against `swing_3`, which is the only way they differ |
 
 The Sounds tab is the first thing in the editor that is **not** part of an

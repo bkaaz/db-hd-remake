@@ -66,7 +66,7 @@ describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
       for (const [name, def] of blows) {
         const blow = blowOfAnim(rom, t, def.anim ?? "");
         expect(blow, `${fighter} ${name} plays ${def.anim}`).not.toBeNull();
-        // a blow that catches: the hold takes him at once, its type only a hitstop (ADR 0071)
+        // a blow that catches: the hold takes him at once, its type only a hitstop (ADR 0035)
         expect([def.catches ? blow?.type : def.type, def.damage], `${fighter} ${name}`).toEqual([blow?.type, blow?.damage]);
       }
     }

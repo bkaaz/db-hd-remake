@@ -272,7 +272,7 @@ rectangles (`$2A:87DE` fills player one's `$80` / `$90`, `$2A:886A` player
 two's `$88` / `$98`, from the block's `0xa0`… at an offset chosen by the
 caller, `0x80` there meaning none), and `$2A:89D0` tries the pairs `80/88`,
 `90/98`, `80/98`, `90/88`, leaving the first that touches in `$DC`. Ours
-are put elsewhere (ADR 0044).
+are put elsewhere (`combat.md`).
 
 **What an object strikes with** (`$2A:88F6`): `$2A:9AE3` by type, its pointer by animation, its pointer by the frame shown: x1 y1 x2 y2, signed, turned by the facing, `0x80` first for nothing. Only an object with both top bits of its first byte (`c0`) strikes (`$2A:81DC`), player one's in the even slots, two's in the odd. `objectBox` in `src/rom/collision.ts`.
 
@@ -760,7 +760,7 @@ handler saves the move's state (move, step, frame, flags, vx, vy into
 nothing the reader finds starts. Only its own move + 1 counts, in `f0`, and
 then it stops reading. As the script runs out, `f0` set starts move + 1
 (`$01:8518`), else the move ends (`$0F:9FA3`). No hit is needed. Ours: a
-transition's `queued` (ADR 0049).
+transition's `queued` (ADR 0013).
 
 **A special started** from the command table (`$0D:F11E`) sets the move,
 stops the fighter (`$0D:D7A0`: vx, vy and the shove to 0) and arms the
@@ -876,7 +876,7 @@ and closes at 16 px a frame each frame of step `0c` until within 40 px,
 then jumps to frame 128 and stops; its blow at 146 does nothing itself.
 Ours: `meteor`'s `rush` and `arrived` (`src/entity/approach.ts`), opened
 by `health:80`; `meteor_scene` plays `ae` whole with its sparks on the
-steps (ADR 0045) and a `seize` (ADR 0046).
+steps (ADR 0045) and a `seize` (ADR 0035).
 Connecting on step `11` puts the opponent in `30`, stopped and behind,
 and the mover in **`ae`** (`$20:8A29`, picking its frame by `LDY $44 /
 CPY`, the frame a word): frame 1 untouchable (`0x96` = `f0`), holds the
@@ -912,7 +912,7 @@ flight the radius is `$20:8E63`'s by the move's frame & 3 — a frame held
 while it flies, 394, so `49` (73) throughout. From
 274, every 4th frame of field `fd` to 32, `$20:8F8D` puts an `a/02` on
 the opponent, 28 px up — frames 276 to 304. Ours: the state's `ball`
-list, `seize.bursts` and `seize.finale` (ADR 0047). The band (`$0F:F1BC`):
+list, `seize.bursts` and `seize.finale` (ADR 0035). The band (`$0F:F1BC`):
 kind 4 at size 2 from the camera's x to + 0xFF at y `0xC6`; `$0F:F1F3`
 opens it 4 px each side once, then thickens it 16 a frame until its size
 is `0xC0`, and answers — the light filling the screen before the white.
