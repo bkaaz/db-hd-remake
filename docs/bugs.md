@@ -20,19 +20,11 @@ because a number would only need translating back.
 
 ---
 
-**`npm run moves` plays the same thing in ours for every move** (*breaks a
-tool*, 2026-11-17, Claude). `npm run moves -- goku --only a8,a9,a1`: the
-original side is right, ours plays `data/debug.json`'s mode 5 each time, on
-P1. `scripts/moves.ts` hands the game its timeline by intercepting
-`/api/debug`, but since ADR 0093 the game reads `debug.json` through Vite's
-glob (`src/ui/setup.ts`), so no request is ever made.
-
-**The select screen says "No fighters to choose from."** (*breaks play*,
-2026-11-17, Claude). Open the game on the `select` scene: no slot is
-pickable. `src/scenes/select.ts` gives a slot a body only if its
-`EntityDef` has an animation named `idle`, but the exported animations are
-named by move (`m00`, `m01`, …) — `loadEntityDef` succeeds for every
-fighter, the `idle` check is what drops them.
+**The select screen's fighters spill out of their slots** (*cosmetic*,
+2026-11-17, Claude). Open `?scene=select`: the cartridge's fighters at
+`SCALE` 2 are taller and wider than a slot (`CELL_W`, `CELL_H` in
+`src/scenes/select.ts`), overlap their neighbours and the prompt above the
+grid — Piccolo, Vegetto and Mr. Buu the most.
 
 **The KO comes late, sometimes long after the knockdown** (*annoying*,
 2026-11-08, owner). Player two knocked out: before KO is announced player
@@ -45,9 +37,3 @@ yet `?`; a recording (`L`) of one would say what the round waits on
 2026-11-08, owner). Cell's sender that sends the opponent down does not
 hit a fighter shorter than he is. Whether its box is too high or the
 opponent's hurt box too low is not known yet `?`.
-
-**The select screen offers no fighter** (*breaks play*, 2026-11-07). The
-select scene, the default without `?scene=debug`, says "No fighters to choose
-from.": a slot is offered only when its entity has an animation named
-`idle` (`src/scenes/select.ts`), and the cartridge's fighters name theirs
-after the move (`m…`), and none of them has one.

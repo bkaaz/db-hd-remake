@@ -75,8 +75,10 @@ export class SelectScene implements Scene {
         const available = !!id && ready.has(id);
         // Only a fighter that exists gets a body; the rest are names on a box.
         const def = available && id ? await loadEntityDef(id).catch(() => null) : null;
-        const entity = def && def.animations.idle ? new Entity(def, SCALE) : null;
-        entity?.preview("idle");
+        // stands as the fight starts him: the cartridge names animations by move, not "idle"
+        const standing = def?.states?.states[def.states.initial]?.anim;
+        const entity = def && standing && def.animations[standing] ? new Entity(def, SCALE) : null;
+        if (entity && standing) entity.preview(standing);
         slots.push({ id, available: available && !!entity, entity });
         labels.push(
           new Text({

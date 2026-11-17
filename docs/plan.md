@@ -49,6 +49,9 @@ that is part of the review.
    line.
 3. **The fixes**, one small change each, verified and reviewed.
 
+Agreed so far: from `bugs.md`, the late KO and Cell's downward sender wait for
+the mechanics.
+
 *Done when:* the agreed items are gone from this section and `bugs.md`, and
 the next section here is the common part.
 
