@@ -83,7 +83,6 @@ hold for every fighter, not only one.
 
 ## Not yet ordered
 
-- A LICENSE for the code, and a README line on what is not ours.
 - A second player, and round rules.
 - A remapping screen.
 - Combos authored in the editor, as a view of the states, never a second format.

@@ -408,8 +408,15 @@ Two properties the tree no longer shows, and both still hold:
   every picture and will play every sound from it; `ROM_PATH` in `.env.local`
   stands in for the player's file in development. Copyrighted images and audio
   must **never** enter git history — only code and `data/` are committed.
-  `assets/` is what is still read from files while `plan.md`'s slices retire
-  it.
+- **The cartridge is described, never copied.** `rom.md` and comments name
+  addresses, layouts, ids and what a field means, quoting an instruction or two
+  where a sentence needs it. `data/` holds the numbers the engine plays —
+  timings, boxes, damage, commands — re-expressed in our own format. Never a
+  listing of its code, a dump of its bytes, or any picture, sound or text of the
+  original.
+  `npm run dis` prints to the terminal; `preview/` and `logs/` are gitignored. A
+  test that needs the cartridge reads `ROM_PATH` and skips without it; a test of
+  a reader builds its own few bytes.
 
 ## Current status
 

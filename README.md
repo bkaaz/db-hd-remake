@@ -57,7 +57,7 @@ the page asks nothing. Why, and what was rejected:
 
 Every picture is drawn from it, and every sound is the cartridge's own sound
 driver playing it on an emulated SNES sound chip
-([ADR 0092](./docs/adr/0092-every-sound-is-the-drivers-rendered-once.md)).
+([ADR 0092](./docs/adr/0092-every-sound-is-the-cartridges-driver.md)).
 
 ## Entity editor
 
@@ -103,3 +103,10 @@ No original game assets are distributed in this repository or in its build — n
 the sprites, not the audio, and not in any encoding. What is here is the code and
 the data we wrote ourselves; every picture and sound is drawn from the player's
 own cartridge, in the browser, at runtime.
+
+The code is ours, under the [MIT License](./LICENSE); `src/apu/gauss.ts` keeps
+ares' ISC notice. `data/` is the numbers the engine plays — timings, boxes,
+damage, commands — read from the cartridge and written in our own format. The
+licence covers nothing of the original game — not its names, its characters, its
+pictures, its sounds or its code — none of which is ours to give, and none of
+which is here. You need your own cartridge to play.
