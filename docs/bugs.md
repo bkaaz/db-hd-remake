@@ -19,9 +19,3 @@ Severity in plain words — *cosmetic*, *annoying*, *breaks play*, *loses work* 
 because a number would only need translating back.
 
 ---
-
-**Eight objects fly unseen** (*cosmetic*, 2026-11-07, owner: left so for now).
-Their sheets hold no pixel, though they fly and strike: `buu_9_17`, `buu_9_18`,
-`buu_9_19`, `freeza_6_15`, and Mr. Buu's `mr_buu_8_0f` – `8_12`, whose picture
-is a circle the cartridge draws some other way (`rom.md`). Moved here from a
-test that checked the exported sheets, which no longer exist.
