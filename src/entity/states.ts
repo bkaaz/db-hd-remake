@@ -866,20 +866,6 @@ export interface InputSnapshot {
   strike: boolean;
   dash: boolean;
   /**
-   * A motion input completed inside its window — a *sequence* of directions,
-   * where every `held:` above is one frame. Recognised in `input/motion.ts`;
-   * each motion the runner knows gets a flag here.
-   */
-  qcf: boolean;
-  qcb: boolean;
-  hcf: boolean;
-  dbf: boolean;
-  dp: boolean;
-  fd: boolean;
-  rdp: boolean;
-  hcfu: boolean;
-  fbf: boolean;
-  /**
    * The cartridge's commands met this frame (`input/command.ts`): the move
    * each starts, to the button it was pressed with — `command:<move>`.
    */
@@ -1001,15 +987,6 @@ export const TRIGGERS = [
   "held:blast",
   "held:strike",
   "held:dash",
-  "motion:qcf",
-  "motion:qcb",
-  "motion:hcf",
-  "motion:dbf",
-  "motion:dp",
-  "motion:fd",
-  "motion:rdp",
-  "motion:hcfu",
-  "motion:fbf",
   "hop:fwd",
   "hop:back",
   "animEnd",
@@ -1105,33 +1082,6 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "held:dash":
       value = input.holding.dash;
-      break;
-    case "motion:qcf":
-      value = input.qcf;
-      break;
-    case "motion:qcb":
-      value = input.qcb;
-      break;
-    case "motion:hcf":
-      value = input.hcf;
-      break;
-    case "motion:dbf":
-      value = input.dbf;
-      break;
-    case "motion:dp":
-      value = input.dp;
-      break;
-    case "motion:fd":
-      value = input.fd;
-      break;
-    case "motion:rdp":
-      value = input.rdp;
-      break;
-    case "motion:hcfu":
-      value = input.hcfu;
-      break;
-    case "motion:fbf":
-      value = input.fbf;
       break;
     case "hop:fwd":
       value = input.hop === "fwd";

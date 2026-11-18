@@ -62,15 +62,6 @@ const NONE = {
   blast: false,
   strike: false,
   dash: false,
-  qcf: false,
-  qcb: false,
-  hcf: false,
-  dbf: false,
-  dp: false,
-  fd: false,
-  rdp: false,
-  hcfu: false,
-  fbf: false,
   holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
 };
 const FWD = { ...NONE, fwd: true };

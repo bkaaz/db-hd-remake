@@ -50,7 +50,7 @@ export interface EntityDef {
   states: StatesFile | null;
   sounds: Sounds;
   attributes: Attributes;
-  /** The cartridge's command table; empty for an entity of ours, which asks by `motion:`. */
+  /** The cartridge's command table; empty for an entity of ours. */
   commands: CommandDef[];
   /** Each palette variant's sheet, cut into the same frames as `frames`. */
   variants: Map<string, Map<string, Texture>>;

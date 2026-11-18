@@ -37,8 +37,7 @@ import { InputBuffer } from "../input/buffer";
 import { commandsMet, padFrame, PadHistory, tablesFor } from "../input/command";
 import { hopAsked } from "../input/hop";
 import { pressedNames, stickLine } from "../input/padLine";
-import { InputHistory, MOTION_NAMES } from "../input/history";
-import { Motions, type MotionName } from "../input/motion";
+import { InputHistory } from "../input/history";
 import {
   dipAt, groundSpeed, stoppedByContact,
   guardStateFor,
@@ -148,8 +147,6 @@ export interface EntityDebug {
   ki: number;
   /** The last few inputs as the engine saw them — see input/history.ts. */
   inputs: string;
-  /** Motions complete right now, so a recording can say when one landed. */
-  motions: MotionName[];
   /** The cartridge's commands met this frame, by move. */
   commands: string[];
   /** On a frame a button goes down: the stick's last frames and the buttons (`input/padLine.ts`). */
@@ -258,8 +255,6 @@ export class Entity {
    * *because* they saw the hit land is the one thing a buffer has to prevent.
    */
   private readonly buffer = new InputBuffer();
-  /** What the stick has been doing, for the triggers a single frame cannot answer. */
-  private readonly motions = new Motions();
   /** The pad as the cartridge's command reader sees it, a frame an entry. */
   private readonly pad = new PadHistory();
   /** The commands met this frame: move → our button. */
@@ -505,7 +500,6 @@ export class Entity {
       buffer: this.buffer.live(),
       ki: this.ki,
       inputs: this.history.line,
-      motions: MOTION_NAMES.filter((m) => this.motions.has(m)),
       commands: [...this.met.keys()],
       padPress: this.padPress(),
       queued: this.sm?.queuedTo ?? null,
@@ -1579,15 +1573,10 @@ export class Entity {
 
     const fwd = this.facing > 0 ? input.right : input.left;
     const back = this.facing > 0 ? input.left : input.right;
-    // Below the freeze check, like the buffer's tick: a hit pause must not age
-    // a motion out of existence either. Facing-relative, so turning around does
-    // not turn a quarter circle into its mirror mid-input.
-    const stick = { fwd, back, up: input.up, down: input.down };
-    this.motions.push(stick);
+    // Facing-relative, so the readout's → stays forward after a cross-up.
     this.history.record(
-      stick,
+      { fwd, back, up: input.up, down: input.down },
       ATTACK_LABELS.filter(([button]) => input[button]).map(([, label]) => label),
-      MOTION_NAMES.filter((m) => this.motions.has(m)),
     );
     // Live conditions, not latches: true only while they hold. `falling` turns
     // on at the apex; `nearGround` narrows that to the last stretch before
@@ -1610,15 +1599,6 @@ export class Entity {
         blast: this.buffer.has("blast"),
         strike: this.buffer.has("strike"),
         dash: this.buffer.has("dash"),
-        qcf: this.motions.has("qcf"),
-        qcb: this.motions.has("qcb"),
-        hcf: this.motions.has("hcf"),
-        dbf: this.motions.has("dbf"),
-        dp: this.motions.has("dp"),
-        fd: this.motions.has("fd"),
-        rdp: this.motions.has("rdp"),
-        hcfu: this.motions.has("hcfu"),
-        fbf: this.motions.has("fbf"),
         commands: (this.met = commandsMet(this.def.commands, tablesFor(this.airFrames), this.pad)),
         hop: hopAsked(this.pad),
         holding: input.holding,

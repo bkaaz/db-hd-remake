@@ -6,7 +6,7 @@ const template = {
   initial: "idle",
   onGotHit: "hurt",
   states: {
-    idle: { anim: "m00", transitions: [{ when: "pressed:attack", to: "punch" }, { when: ["motion:hcf", "pressed:smash"], to: "special" }] },
+    idle: { anim: "m00", transitions: [{ when: "pressed:attack", to: "punch" }, { when: ["command:a5", "pressed:smash"], to: "special" }] },
     punch: { anim: "m92", type: "heavy", damage: 27, transitions: [{ when: "animEnd", to: "idle" }] },
     special: { anim: "ma5", transitions: [{ when: "animEnd", to: "idle" }] },
     shot: { anim: "m9b", fires: { spawn: "goku_ki", at: [40, -56] }, transitions: [{ when: "animEnd", to: "idle" }] },

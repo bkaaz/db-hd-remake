@@ -20,7 +20,7 @@ export interface InputsOf {
 }
 
 /** What a player does or what holds of the two: never the lender's own clock (`animEnd`, `frames:`). */
-const INPUT = /^!?(held|pressed|released|command|close|motion|grab|health)\b/;
+const INPUT = /^!?(held|pressed|released|command|close|grab|health)\b/;
 
 /** Whether every trigger of a transition is an input — the rest are the lender's own business. */
 function isInput(t: Transition): boolean {
