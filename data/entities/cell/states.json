@@ -3669,7 +3669,7 @@
       "transitions": [
         {
           "when": "landed",
-          "to": "land"
+          "to": "idle"
         },
         {
           "when": "animEnd",

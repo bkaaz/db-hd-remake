@@ -2708,6 +2708,12 @@
           {
             "vx": 2,
             "vy": -4,
+            "gravity": 0
+          }
+        ],
+        [
+          4,
+          {
             "gravity": "own"
           }
         ]
@@ -4205,7 +4211,7 @@
     },
     "sender_a1_2": {
       "anim": "ma1",
-      "startsAt": 20,
+      "startsAt": 24,
       "vel": [
         0,
         0
