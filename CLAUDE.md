@@ -27,27 +27,32 @@ The project owner wants to go **slowly and deliberately**:
   comments, commits, and docs are in **English**.
 - **Record a settled piece of architecture as an ADR** — `docs/adr/NNNN-title.md`,
   one decision per file, **one screen**, opening with a `Status:` line that names
-  the dates and anything it supersedes. The number is an id, not a date: it is
-  assigned in the order ADRs are written, so nothing ever renumbers. Keep the
-  affected doc (`data-format.md`, `entity-editor.md`, …) in sync in the same
-  change. Three rules the 2500-line log it replaced grew on 2026-08-22:
+  the dates and anything it replaces. The number is an id, not a date: assigned in
+  the order ADRs are written, never renumbered, never reused. Keep the affected
+  doc (`data-format.md`, `entity-editor.md`, …) in sync in the same change.
   - **The conclusion and what was rejected — not the reasoning.** An alternative
     nobody took is the one thing no code and no memory can recover. How a problem
     was *found* belongs in the commit message.
-  - **Supersede, never edit.** Correcting an entry in place destroys the record
-    of what was known when. Write a new one and mark the old.
-  - **Do not restate the code.** If a doc comment already says it, the entry
-    points at the file instead. The code is the source of truth — which only
-    holds while something enforces it, so a shape shared by two programs is one
-    type, under one `tsconfig`, not two declarations that agree by hand.
+  - **Not a plan, and not the code.** What is still to do is `plan.md`. How a
+    thing is built is its file, and the entry points at it: if a doc comment
+    already says it, the ADR does not. A field or a reader added while porting
+    a move is code, not a decision.
+  - **An ADR follows the code it describes.** Removing or replacing what one
+    records, `grep docs/adr/` for it and rewrite the entry in the same change —
+    or delete the file when nothing of it holds any more. What it said before is
+    in git; the `Status:` line says when it changed.
+  - **One shape, one declaration.** The code is the source of truth only while
+    something enforces it, so a shape shared by two programs is one type, under
+    one `tsconfig`, not two declarations that agree by hand.
   - **`docs/adr/` is the engine, its data and its tools.** How the docs
     themselves are written belongs here in `CLAUDE.md`, not in an ADR.
 
-  **Rejected, so none of it comes back:** archiving the record by month or by
+  **Rejected, so none of it comes back:** an append-only record whose entries are
+  never edited or deleted (by 2026-11-18 it held 95 ADRs, most describing code
+  that had since changed, and was cut to 18), archiving the record by month or by
   topic (splits on a dimension nobody searches by, and gives `grep` two paths),
-  ADR files without a size cap (a file invites sections, which is what the
-  conversion was for), deleting old entries (a record that gets pruned is one
-  nobody trusts), and keeping a `decisions.md` beside `docs/adr/`.
+  ADR files without a size cap (a file invites sections), and keeping a
+  `decisions.md` beside `docs/adr/`.
 - **A living document names the file or the command, never the count.** How many
   frames the sheet has, how many states a fighter has, how many clips were cut —
   another file owns each of those and will change it without telling the doc.
@@ -223,8 +228,8 @@ npm run build     # typecheck + production build
 npm run typecheck # typecheck only
 npm test          # Vitest, run once (npm run test:watch to keep it running)
 npm run which -- <entity> fl30 la187
-                  # what a blow in the shorthand points at: hit type, the
-                  # move holding that frame, the animations that play it
+                  # what a blow in the shorthand points at: its hit type,
+                  # the animations (moves) that play that frame
 npm run blows -- <entity>
                   # every blow: its type spelled out beside its own damage
 npm run chains -- <entity>
@@ -320,63 +325,27 @@ npm run dis -- 0f:ebfc --x16
 
 ```
 .
-├── index.html                    # game page shell + #app mount
-├── src/                          # grouped by domain; *.test.ts sits beside its source
-│   ├── main.ts                   #   boot, wiring, input — the entry from index.html
-│   ├── entity/                   #   entityDef.ts: data + sheet -> EntityDef
-│   │                             #   entity.ts: one live instance in the world
-│   │                             #   states.ts: state-machine runner + validator
-│   │                             #   notation.ts: the fl30 shorthand, read
-│   ├── combat/                   #   hit.ts: box → world, overlap, hit detection
-│   │                             #   hitTypes.ts: what a blow does, by type
-│   │                             #   push.ts: separating two bodies
-│   ├── input/                    #   buffer.ts: the input buffer
-│   ├── audio/                    #   playback.ts: Web Audio, the browser half
-│   │                             #   sounds.ts: the shapes, pure
-│   ├── sprites/                  #   png.ts: minimal PNG read/write (no dependency)
-│   ├── fx/                       #   what an effect does once it is out
-│   ├── cartridge/                #   the player's ROM, and what the browser
-│   │                             #     draws from it (ADR 0090)
-│   ├── apu/                      #   the sound chip, running the ROM's driver:
-│   │                             #     every effect, voice and spoken line
-│   ├── camera/                   #   camera.ts, push.ts, shake.ts: the original's
-│   ├── hud/                      #   the original's HUD: hudFile.ts, health.ts, hud.ts
-│   ├── arena/                    #   arenaFile.ts: an arena's shape on disk
-│   │                             #   arena.ts, grid.ts: what stands behind a fight
-│   │                             #   cycles.ts, cycledLayer.ts: its palettes stepping
-│   └── rom/                      #   cartridge.ts: where things are in the ROM
-│                                 #   decompress.ts, frame.ts: tiles → a drawing
-│                                 #   disasm.ts, opcodes.ts: reading 65816 code
-│                                 #   export.ts: all of it into our entities
-│                                 #   stage.ts, lzss.ts, arena.ts: the arenas
-│                                 #   hud.ts: the HUD; roster.ts: every fighter
-├── scripts/                      # CLI entry points ONLY — one per npm run command;
-│   │                             #   nothing in the repo imports from here
-│   ├── blows.ts                  #   print every blow with its numbers
-│   ├── chains.ts                 #   print the cancel graph with its arithmetic
-│   ├── which.ts                  #   read the fl30 shorthand
-│   ├── sheet.ts                  #   labelled contact sheet of frames, to look at
-├── .claude/skills/               # procedures loaded on demand (port-move)
-├── tools/re/                     # Mesen 2 Lua scripts that record the original
-│                                 #   into logs/ (docs/rom.md); runs/ the scenarios
-│                                 #   npm run original plays
-├── tools/entity-editor/          # the authoring tool (Canvas 2D)
-│   ├── server.ts                 #   Vite dev-server plugin: /api/* endpoints (Node)
-│   └── src/                      #   editor UI (browser)
-├── data/entities/<name>/         # OUR data, committed: frames.json,
-│                                 #   animations.json, states.json, …
-├── data/arenas/<name>/           # arena.json: how an arena's layers scroll
-├── data/hud/hud.json             # where the original's HUD puts what
-├── data/audio/sounds.json        # the game's sound bank, one entry per id
-├── raw/                          # gitignored: rom/ the owner's cartridge (ROM_PATH
-│                                 #   in .env.local points at it), states/ the
-│                                 #   save states npm run original plays from
-├── preview/                      # gitignored: images drawn for a person to look
-│                                 #   at (npm run sheet). Nothing reads them back
-├── dist/web/                     # the build: plays from any static host, given a ROM
-├── docs/                         # design notes & decisions (read before building)
-├── vite.config.ts
-└── tsconfig.json
+├── index.html          # the game's page; src/main.ts is its entry
+├── src/                # the game and everything it shares, grouped by domain;
+│                       #   *.test.ts beside its source. A directory's files
+│                       #   say what they own in their headers
+├── scripts/            # CLI entry points ONLY, one per npm run command;
+│                       #   nothing in the repo imports from here
+├── tools/entity-editor/# the authoring tool (Canvas 2D): server.ts is the
+│                       #   dev-server plugin behind /api/*, src/ the UI
+├── tools/re/           # Mesen 2 Lua scripts that record the original into
+│                       #   logs/ (docs/rom.md); runs/ the scenarios
+│                       #   npm run original plays
+├── .claude/skills/     # procedures loaded on demand (port-move)
+├── data/               # OUR data, committed: entities/, spawns/, arenas/,
+│                       #   hud/, audio/ (docs/data-format.md)
+├── docs/               # design notes and decisions (docs/README.md)
+├── raw/                # gitignored: rom/ the owner's cartridge (ROM_PATH in
+│                       #   .env.local), states/ the save states
+│                       #   npm run original plays from
+├── preview/, logs/     # gitignored: pictures for a person to look at, and
+│                       #   recordings. Nothing reads preview/ back
+└── dist/web/           # the build: plays from any static host, given a ROM
 ```
 
 The directory says *what a file is about*, not whether it runs in the browser.
@@ -386,8 +355,7 @@ Two properties the tree no longer shows, and both still hold:
   'from "pixi.js"' src`); the rules, the readers and the sound chip are plain
   TypeScript, which is what lets Vitest run them in Node.
 - **Some files never reach the browser**: `sprites/png.ts` and the readers of
-  `rom/` that only
-  report exist for the CLI in `scripts/`. They live in `src/` beside the domain
+  `rom/` that only report exist for the CLI in `scripts/`. They live in `src/` beside the domain
   they belong to. The part of `rom/` that draws is shared: the export writes
   with it and the browser draws with it (ADR 0090).
 
@@ -426,7 +394,7 @@ and draws the cancel graph read-only; the **game** loads
 an entity and runs it as a **state machine** from `states.json`.
 
 Every fighter is read out of the owner's cartridge (`docs/rom.md`, ADR
-0090–0018) — the original's drawings, animation scripts, boxes and objects,
+0017, ADR 0090) — the original's drawings, animation scripts, boxes and objects,
 with states written after the original's moves — and drawn from the ROM in the
 browser (ADR 0090). The hand-built `goku_old` is gone; git keeps him. A blow names how it is taken — flinch,
 stagger, knockdown, or a juggle if it catches a falling body — pauses the game on

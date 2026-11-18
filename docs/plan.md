@@ -7,20 +7,7 @@ when*; later ones are a line.
 
 ---
 
-## First: a clean foundation, before any new work
-
-The approach changed several times — the last to reading the ROM in the
-browser (ADR 0090) — and nothing new starts until the project is tidy and all of
-it works. Reviewed with the owner area by area; what is agreed and left:
-
-1. **`CLAUDE.md`**, last: the rules about docs as they now are.
-
-Waiting for the mechanics, from `bugs.md`: the late KO and Cell's downward
-sender. Exports used only in their own file stay as they are.
-
-*Done when:* this section is empty, and the next one is the common part.
-
-## Then: the common part
+## First: the common part
 
 [ADR 0038](./adr/0038-a-fighters-states-are-generated.md), before the first change
 of mechanics.
