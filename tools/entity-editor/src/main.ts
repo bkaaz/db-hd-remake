@@ -210,9 +210,7 @@ function drawChains(): void {
   if (state.states) renderChainGraph(chainWrap, withHitTypes(state.states), byName, state.baseHitstun);
 }
 
-// Tab switching (Sprites / Animations / Combos; the rest are placeholders).
-// The Save button saves only the active tab's section, and its label reflects
-// it. States is read-only, so there Save is disabled rather than misleading.
+// Tab switching. Each panel saves its own section (`wireSave` above).
 const tabButtons = document.querySelectorAll<HTMLButtonElement>("#tabs .tab");
 const tabPanes = document.querySelectorAll<HTMLElement>(".tab-pane");
 function setTab(name: string): void {

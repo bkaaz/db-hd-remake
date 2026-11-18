@@ -11,7 +11,7 @@ describe("data/ read through the glob", () => {
   });
 
   it("says nothing of what is not there", async () => {
-    expect(await readEntity("goku_old")).toBeNull();
+    expect(await readEntity("nobody")).toBeNull();
     expect(await readData("nothing.json")).toBeNull();
   });
 
