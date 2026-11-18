@@ -2,11 +2,6 @@ import { describe, expect, it } from "vitest";
 import { isAmbiguous, readToken, type NotationData, type Reading } from "./notation";
 
 const DATA: NotationData = {
-  groups: {
-    jab: { frames: ["3", "4"] },
-    kicks: { frames: ["7", "8", "9"] },
-    high_kick: { frames: ["8", "9"] },
-  },
   animations: {
     jab: { steps: [{ frame: "3" }, { frame: "4" }, { frame: "3" }] },
     high_kick: { steps: [{ frame: "8" }, { frame: "9" }] },
@@ -30,10 +25,6 @@ describe("readToken", () => {
     expect(read("po4")).toMatchObject({ type: "pop", frame: "4" });
   });
 
-  it("finds the move from any one of its frames, whatever the order", () => {
-    expect(read("po4").moves).toEqual([{ name: "jab", frames: ["3", "4"] }]);
-  });
-
   it("names every animation playing the frame, with the states playing it", () => {
     expect(read("po3").animations).toEqual([{ name: "jab", states: ["jab", "jab_air"] }]);
   });
@@ -54,20 +45,15 @@ describe("readToken", () => {
 });
 
 describe("isAmbiguous", () => {
-  it("is settled by one animation, even inside two moves", () => {
-    // 3 is in `jab` only, but 8 sits in `kicks` and `high_kick` alike.
+  it("is settled by one animation", () => {
     expect(isAmbiguous(read("po3"))).toBe(false);
-    const nested = readToken("po8", { ...DATA, animations: { kicks: { steps: [{ frame: "8" }] } } });
-    expect(isAmbiguous(nested as Reading)).toBe(false);
   });
 
   it("asks when two animations play the frame", () => {
     expect(isAmbiguous(read("po9"))).toBe(true);
   });
 
-  it("asks when nothing plays it and two moves hold it", () => {
-    const bare = readToken("po8", { ...DATA, animations: {} }) as Reading;
-    expect(isAmbiguous(bare)).toBe(true);
+  it("asks when nothing plays it", () => {
+    expect(isAmbiguous(read("po5"))).toBe(true);
   });
 });
-

@@ -5,11 +5,11 @@ import { isAmbiguous, readToken, type NotationData } from "../src/entity/notatio
 
 /**
  * `npm run which -- <entity> fl30 fl39 la187` — what a move written in the
- * shorthand points at: the hit type, the moves in the catalogue holding that
- * frame, and the animations (and states) that already play it.
+ * shorthand points at: the hit type, and the animations (the cartridge's
+ * moves) and states that play that frame.
  *
- * Prints; writes nothing. When a frame is in several moves or several
- * animations, all of them are listed — choosing is the owner's call.
+ * Prints; writes nothing. When a frame is in several animations, all of them
+ * are listed — choosing is the owner's call.
  */
 
 const [name, ...tokens] = process.argv.slice(2);
@@ -22,7 +22,6 @@ const dir = path.join("data", "entities", name);
 const read = <T>(file: string): T => JSON.parse(readFileSync(path.join(dir, file), "utf8")) as T;
 
 const data: NotationData = {
-  groups: read<{ groups: NotationData["groups"] }>("descriptions.json").groups,
   animations: read<NotationData["animations"]>("animations.json"),
   states: read<{ states: NotationData["states"] }>("states.json").states,
   types: HIT_TYPES,
@@ -37,11 +36,9 @@ for (const token of tokens) {
     continue;
   }
   console.log(`${token}  ${r.type ?? "(no type)"} · frame ${r.frame}`);
-  const moves = r.moves.map((m) => `${m.name} (${m.frames.join(",")})`);
   const anims = r.animations.map((a) => `${a.name}${a.states.length ? ` ← ${a.states.join(", ")}` : ""}`);
-  console.log(`  move${moves.length === 1 ? " " : "s"}       ${moves.join(" · ") || "— in no move of the catalogue"}`);
   console.log(`  animation${anims.length === 1 ? " " : "s"}  ${anims.join(" · ") || "— none plays it yet"}`);
-  if (isAmbiguous(r)) console.log("  ? more than one — say which");
+  if (isAmbiguous(r) && anims.length > 1) console.log("  ? more than one — say which");
   console.log();
 }
 process.exit(failed ? 1 : 0);

@@ -13,9 +13,7 @@ The approach changed several times — the last to reading the ROM in the
 browser (ADR 0090) — and nothing new starts until the project is tidy and all of
 it works. Reviewed with the owner area by area; what is agreed and left:
 
-1. **What the hand-built Goku left in the code:** `npm run which`, which fails
-   without `descriptions.json` — mended to point without one.
-2. **`CLAUDE.md`**, last: the rules about docs as they now are.
+1. **`CLAUDE.md`**, last: the rules about docs as they now are.
 
 Waiting for the mechanics, from `bugs.md`: the late KO and Cell's downward
 sender. Exports used only in their own file stay as they are.
