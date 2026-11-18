@@ -1233,6 +1233,7 @@ Objects from `$0F:CFC4`. **His ki blast** is his own: `6/02`, vx 4, gone at 40 (
 ### Cell
 
 Handlers from `$10:C0CA`, objects from `$0F:C5CB`. His move-loaded tiles are `0x4E` (and `0x4C` under them); type `a`'s `21`, `22`, `23` draw from the shared `0x30` at `$6500`, `0x31` at `$7500`.
+**The sender down** (`a1`, `$10:C4B2`): a hop, vy −6 from 8; its blow is high, and misses Gotenks from every range (recorded, `npm run moves -- cell --against gotenks`).
 **His throw** (`9d`, `$10:C316`): `a/17` at +48, −96 on frame 29, as he is let go, and its copy 6 frames on at +54, −104 (recorded).
 **Giga Shoulder** (`a2`, `$10:C4E5`): behind on step 0, on frame 30 (`$10:C534`) (opponent ± 8 − x) / 32 whole px, turned to him, until 62, where it stops.
 **Psychic Lift** (`a6`, `$10:C60E`): step 1 holds until the opponent's y, one less a frame from `C8`, is under `0x78` (`$10:C661`). On frames 34 and 62 his voice `30` and `a/01` on him at a place by character (`$10:C73B`), facing his way; the throw on 90, 43 less defence, stun 6, `1b`, vx 2.5, vy −8. The hold is 82 frames, and his track's steps wait through it: it has no step of its own there (`THROWER_WAITS`, `held.ts`).

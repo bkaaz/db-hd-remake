@@ -315,7 +315,8 @@ npm run moves -- vegetto
                   # --close from arm's length, for what a blow that lands opens;
                   # --parry with the opponent's blow coming at a parrying move;
                   # --held a blast command with its button held, for its levels;
-                  # --objects records his objects. Needs Playwright (PLAYWRIGHT=dir)
+                  # --objects records his objects; --against gotenks another
+                  # opponent than Goku. Needs Playwright (PLAYWRIGHT=dir)
 npm run dis -- 0f:ebfc --x16
                   # the cartridge's 65816 code from that address; find <bytes>
                   # searches — docs/rom.md

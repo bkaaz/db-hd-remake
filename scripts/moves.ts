@@ -12,8 +12,9 @@
  *   npm run moves -- vegetto --held     his blast commands with the button held, for their levels
  *   npm run moves -- vegetto --report   the comparison again, nothing played
  *   npm run moves -- vegetto --objects  his objects recorded, into logs/objects-vegetto.*
+ *   npm run moves -- cell --against gotenks  any of the above on another opponent than Goku
  *
- * He plays against a standing Goku in practice: player one in Mesen, where player
+ * He plays against a standing opponent, Goku unless `--against` names one, in practice: player one in Mesen, where player
  * two's pad does nothing, and two in ours, where only two has a timeline. Results in `logs/moves/<fighter>/`. Ours needs Playwright, which is not a dependency:
  * PLAYWRIGHT names its directory.
  */
@@ -38,7 +39,8 @@ const [fighter, ...flags] = process.argv.slice(2);
 if (!fighter) throw new Error("npm run moves -- <fighter> [--original] [--ours] [--only a,b]");
 const only = flags.includes("--only") ? flags[flags.indexOf("--only") + 1].split(",") : null;
 const both = !flags.includes("--original") && !flags.includes("--ours") && !flags.includes("--report");
-const dir = `logs/moves/${fighter}`;
+const against = flags.includes("--against") ? flags[flags.indexOf("--against") + 1] : "goku";
+const dir = against === "goku" ? `logs/moves/${fighter}` : `logs/moves/${fighter}-vs-${against}`;
 mkdirSync(dir, { recursive: true });
 
 const commands = (JSON.parse(readFileSync(`data/entities/${fighter}/commands.json`, "utf8")) as CommandsFile).commands;
@@ -63,8 +65,13 @@ const FACE: Record<string, [number, number]> = {
   goku: [0, 0], vegeta: [1, 0], gotenks: [2, 0], gohan: [3, 0], vegetto: [4, 0],
   piccolo: [0, 1], mr_buu: [1, 1], buu: [2, 1], freeza: [3, 1], cell: [4, 1],
 };
-/** And Goku for the COM cursor, four to the left of Vegetto's where it starts. */
-const COM_TO_GOKU = ["fwd 3", 10, "fwd 3", 10, "fwd 3", 10, "fwd 3", 10];
+/** The COM cursor to the opponent's face, from Vegetto's where it starts: `fwd` is left. */
+function comTo(name: string): (string | number)[] {
+  const [column, row] = FACE[name];
+  const steps: (string | number)[] = row ? ["down 4", 15] : [];
+  for (let i = column; i < 4; i++) steps.push("fwd 3", 10);
+  return steps;
+}
 
 function toFace(name: string): (string | number)[] {
   const [column, row] = FACE[name];
@@ -93,13 +100,13 @@ function mesen(scenario: Scenario, out: string): Promise<void> {
  * many and one is a ki blast in it, so he takes the first count that leaves both standing apart.
  */
 async function fightState(): Promise<string> {
-  const name = `fight-${fighter}`;
+  const name = against === "goku" ? `fight-${fighter}` : `fight-${fighter}-${against}`;
   if (existsSync(`raw/states/${name}.mss`)) return name;
   const log = `${dir}/_fight.txt`;
   for (let presses = 10; presses <= 30; presses++) {
     await mesen({
       state: "select-practice", frames: 2610, saveAt: 2600, saveTo: name,
-      p1: { does: [10, ...toFace(fighter), 15, "blast 4", 40, ...COM_TO_GOKU, 20, ...Array.from({ length: presses }, () => ["blast 3", 42]).flat()] },
+      p1: { does: [10, ...toFace(fighter), 15, "blast 4", 40, ...comTo(against), 20, ...Array.from({ length: presses }, () => ["blast 3", 42]).flat()] },
       shots: [2600],
     }, log);
     const fight = readFileSync(log, "utf8").split("\n");
@@ -143,7 +150,7 @@ function movesOf(name: string): (state: string) => string {
 const LINE = /^(\d+) \+\s*\d+\s+P1 (\S+)\s+@(-?\d+),(-?\d+) .*?P2 (\S+)\s+@(-?\d+),(-?\d+) .*?\| (.*)$/;
 
 function readOurs(lines: string[]): Side {
-  const moves = { p1: movesOf("goku"), p2: movesOf(fighter) };
+  const moves = { p1: movesOf(against), p2: movesOf(fighter) };
   const open: Record<"p1" | "p2", { state: string; at: number; x: number; y: number } | null> = { p1: null, p2: null };
   const out: Side = { p1: [], p2: [], notes: [] };
   for (const line of lines) {
@@ -215,7 +222,7 @@ async function playOurs(): Promise<void> {
   for (const c of cases) {
     lines = [];
     mode = { p2: { does: c.does, loop: false, free: c.free }, ...(c.foe && { p1: { does: c.foe, loop: false } }) };
-    await page.goto(`http://localhost:5173/?scene=debug&mode=5&p1=goku&p2=${fighter}&hp2=80&arena=tournament`);
+    await page.goto(`http://localhost:5173/?scene=debug&mode=5&p1=${against}&p2=${fighter}&hp2=80&arena=tournament`);
     await page.waitForSelector("canvas");
     await page.waitForTimeout(700);
     await page.keyboard.press("l");

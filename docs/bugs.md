@@ -39,7 +39,3 @@ too long, and the KO waits with it. Which knockdowns do it is not known
 yet `?`; a recording (`L`) of one would say what the round waits on
 (`match/round.ts`).
 
-**Cell's downward sender misses shorter fighters** (*breaks play*,
-2026-11-08, owner). Cell's sender that sends the opponent down does not
-hit a fighter shorter than he is. Whether its box is too high or the
-opponent's hurt box too low is not known yet `?`.
