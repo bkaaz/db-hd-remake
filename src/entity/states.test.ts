@@ -233,35 +233,10 @@ describe("validateStates", () => {
     );
   });
 
-  it("warns about an invulnerable state with no way out", () => {
-    // Untouchable and unleavable is a fighter removed from the match.
-    const f = machine();
-    f.states.limbo = { anim: "hurt", invulnerable: true };
-    f.states.idle.transitions?.push({ when: "animEnd", to: "limbo" });
-    expect(validateStates(f, ANIMS).warnings).toContain(
-      'state "limbo": invulnerable and has no transitions — nothing can end it',
-    );
-  });
-
   it("reports an empty machine", () => {
     expect(validateStates({ initial: "idle", states: {} }, ANIMS).errors).toEqual([
       "no states defined",
     ]);
-  });
-
-  it("warns about a state nothing can reach", () => {
-    const f = machine();
-    f.states.orphan = { anim: "walk", transitions: [{ when: "animEnd", to: "idle" }] };
-    const { errors, warnings } = validateStates(f, ANIMS);
-    expect(errors).toEqual([]);
-    expect(warnings).toContain('state "orphan" is unreachable (no transition leads to it)');
-  });
-
-  it("does not call the onGotHit state unreachable — the engine forces it", () => {
-    const f = machine();
-    f.states.hurt = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.onGotHit = "hurt";
-    expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
   /** A machine whose flinch has an air version, as goku's does. */
@@ -280,10 +255,6 @@ describe("validateStates", () => {
     };
     return f;
   }
-
-  it("does not call an air reaction unreachable — its ground version leads there", () => {
-    expect(validateStates(withAirReaction(), ANIMS)).toEqual({ errors: [], warnings: [] });
-  });
 
   it("reports an ifAirborne that names no state", () => {
     const f = withAirReaction();
@@ -317,26 +288,6 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
-  it("warns about steps with no hurt box — frames where nothing can hit you", () => {
-    const withSteps = {
-      ...ANIMS,
-      walk: {
-        loop: true,
-        steps: [{ boxes: [{ type: "hurt" }] }, { boxes: [{ type: "push" }] }, {}],
-      },
-    };
-    expect(validateStates(machine(), withSteps).warnings).toContain(
-      'state "walk_fwd": animation "walk" has no hurt box on step 1, 2 — cannot be hit there',
-    );
-  });
-
-  it("says \"every step\" when an animation has no hurt boxes at all", () => {
-    const withSteps = { ...ANIMS, walk: { loop: true, steps: [{}, {}] } };
-    expect(validateStates(machine(), withSteps).warnings).toContain(
-      'state "walk_fwd": animation "walk" has no hurt box on every step — cannot be hit there',
-    );
-  });
-
   it("stays quiet when every step is covered", () => {
     const covered = { boxes: [{ type: "hurt" }] };
     const withSteps = {
@@ -344,14 +295,6 @@ describe("validateStates", () => {
       walk: { loop: true, steps: [covered] },
     };
     expect(validateStates(machine(), withSteps)).toEqual({ errors: [], warnings: [] });
-  });
-
-  it("warns about a state with no way out at all", () => {
-    const f = machine();
-    f.states.ko = { anim: "hurt" };
-    expect(validateStates(f, ANIMS).warnings).toContain(
-      'state "ko": no transitions — nothing can leave it',
-    );
   });
 
   it("reports a hitstop that is not a frame count", () => {
@@ -411,13 +354,6 @@ describe("validateStates", () => {
     expect(validateStates(f, ANIMS).errors).toContain('onGuard state "gaurd" does not exist');
   });
 
-  it("does not call the onGuard state unreachable — the engine forces it too", () => {
-    const f = machine();
-    f.states.hurt = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.onGuard = "hurt";
-    expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
-  });
-
   it("reports an onGotHit state that does not exist", () => {
     const f = machine();
     f.onGotHit = "hrut";
@@ -436,15 +372,6 @@ describe("validateStates", () => {
     expect(warnings).toContain(
       'state "punch": onHit reaction "hrut" is not a state of this entity — fine only if every opponent defines it',
     );
-  });
-
-  it("does not call an onHit reaction unreachable — the engine forces it", () => {
-    // `hurt` here is entered only by being hit; no transition leads to it.
-    const f = machine();
-    f.states.punch = { anim: "punch", onHit: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.hurt = { anim: "hurt", transitions: [{ when: "animEnd", to: "idle" }] };
-    f.states.idle.transitions?.push({ when: "pressed:attack", to: "punch" });
-    expect(validateStates(f, ANIMS)).toEqual({ errors: [], warnings: [] });
   });
 
   it.each(["goku", "vegeta"])("keeps the entity we ship, %s, valid", (entity) => {
@@ -832,24 +759,6 @@ describe("an airborne state has to notice the ground", () => {
     },
   };
 
-  it("warns when nothing catches the landing", () => {
-    expect(validateStates(flying as never, ANIMS).warnings).toContain(
-      'state "thrown": airborne with no "landed" or "nearGround" transition — ' +
-        "nothing happens when it reaches the floor",
-    );
-  });
-
-  it("is satisfied by either signal", () => {
-    for (const when of ["landed", "nearGround"]) {
-      const ok = JSON.parse(JSON.stringify(flying));
-      ok.states.thrown.transitions.push({ when, to: "idle" });
-      const found = validateStates(ok, ANIMS).warnings.filter((w: string) =>
-        w.includes("reaches the floor"),
-      );
-      expect(found).toEqual([]);
-    }
-  });
-
   it("is satisfied by a bolt that bursts on the floor, which needs a burst to leave", () => {
     const bolt = JSON.parse(JSON.stringify(flying));
     bolt.states.thrown.burstsAbove = 16;
@@ -858,9 +767,8 @@ describe("an airborne state has to notice the ground", () => {
     rewritten.states.thrown.landsAs = ["floor"];
     expect(validateStates(rewritten, ANIMS).errors.filter((e: string) => e.includes('"burstsAbove"'))).toEqual([]);
     bolt.states.thrown.burstsInto = "burst_s";
-    const { errors, warnings } = validateStates(bolt, ANIMS);
+    const { errors } = validateStates(bolt, ANIMS);
     expect(errors.filter((e: string) => e.includes('"burstsAbove"'))).toEqual([]);
-    expect(warnings.filter((w: string) => w.includes("reaches the floor"))).toEqual([]);
   });
 });
 
@@ -1539,13 +1447,6 @@ describe("a stance's own guard, through the validator", () => {
     expect(warnings).not.toContain("change stance mid-way");
   });
 
-  it("does not call a block unreachable just because nothing transitions to it", () => {
-    // It is forced from outside on contact, exactly like a reaction — the thing
-    // reachability already knows about `onGotHit` and every `onHit`.
-    expect(validateStates(crouching(), ANIMS).warnings).not.toContain(
-      'state "guard_crouch" is unreachable (no transition leads to it)',
-    );
-  });
 });
 
 describe("a crouching defender keeps the crouch a blow arrives on", () => {
@@ -1641,11 +1542,6 @@ describe("ifCrouching, through the validator", () => {
     );
   });
 
-  it("does not call a low version unreachable — the reaction that names it reaches it", () => {
-    expect(validateStates(lowered(), ANIMS).warnings).not.toContain(
-      'state "hurt_crouch" is unreachable (no transition leads to it)',
-    );
-  });
 });
 
 describe("a state that goes back into itself", () => {

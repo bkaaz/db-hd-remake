@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { airProblem, applyAir, fall, grounded, leavesGround, type AirBody, type AirTimeline } from "./air";
+import { airProblem, applyAir, fall, grounded, type AirBody, type AirTimeline } from "./air";
 
 // Jumping Knee Slash, as $20:85E2 runs it
 const KNEE: AirTimeline = [
@@ -76,10 +76,3 @@ describe("airProblem", () => {
   });
 });
 
-describe("leavesGround", () => {
-  it("is true only for a timeline that sets vy", () => {
-    expect(leavesGround(KNEE)).toBe(true);
-    expect(leavesGround([[4, { vx: 2 }]])).toBe(false);
-    expect(leavesGround(undefined)).toBe(false);
-  });
-});

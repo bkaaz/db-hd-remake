@@ -20,7 +20,7 @@ import type { ScreenCue } from "../screen";
 import type { FinaleDef } from "../match/finale";
 import type { Approach, Rush } from "./approach";
 import type { BallDef } from "../combat/ball";
-import { airProblem, leavesGround, type AirTimeline } from "./air";
+import { airProblem, type AirTimeline } from "./air";
 import type { HitLightKind } from "../combat/hitLight";
 import type { PaletteMarks } from "../combat/palettes";
 import type { PillarDef } from "../combat/pillar";
@@ -1504,6 +1504,14 @@ export function spawnsNamed(states: StatesFile | null | undefined): string[] {
   return [...names];
 }
 
+/**
+ * What is wrong with a states file. Not here, though once it was: a state
+ * nothing transitions to, one with no way out, an airborne one that never asks
+ * for the floor, a step with no hurt box. A fighter's states are the
+ * cartridge's, entered from outside — by a blow, the round, a journey, the
+ * opponent's throw — and its poses untouchable where the original's are, so
+ * on every fighter those fired by the hundred on states that are right.
+ */
 export function validateStates(authored: StatesFile, anims: Record<string, AnimInfo>): Validation {
   // Types are checked as written; everything else as the engine will run it.
   const errors: string[] = hitTypeErrors(authored);
@@ -1576,25 +1584,11 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     }
     if (def.sends !== undefined && !WAYS.includes(def.sends)) errors.push(`${where}: "sends" is one of ${WAYS.join(", ")}`);
 
-    // A step with no hurt box is a hole in the fighter: for those frames it
-    // cannot be hit at all, and nothing on screen says so.
-    const naked = (anim?.steps ?? [])
-      .map((s, i) => (s.boxes?.some((b) => b.type === "hurt") ? -1 : i))
-      .filter((i) => i >= 0);
-    if (anim?.steps && naked.length > 0) {
-      const which = naked.length === anim.steps.length ? "every step" : `step ${naked.join(", ")}`;
-      warnings.push(
-        `${where}: animation "${def.anim}" has no hurt box on ${which} — cannot be hit there`,
-      );
-    }
-
     // A state whose only way out is animEnd, playing a looping animation, is a
     // soft-lock: the animation never ends, so the entity never leaves. Easy to
     // create by forgetting to untick "loop" on an attack or a hit reaction.
     const exits = def.transitions ?? [];
-    if (exits.length === 0) {
-      warnings.push(`${where}: no transitions — nothing can leave it`);
-    } else if (anim?.loop && exits.every((t) => t.when === "animEnd")) {
+    if (exits.length > 0 && anim?.loop && exits.every((t) => t.when === "animEnd")) {
       warnings.push(
         `${where}: can never be left — animation "${def.anim}" loops, so animEnd never fires`,
       );
@@ -1683,25 +1677,8 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       errors.push(`${where}: "hitstun" must be a number of game frames, 0 or more`);
     }
 
-    // Whatever puts a fighter in the air — a jump, an uppercut, a throw nobody
-    // has written yet — has to say what happens when the ground arrives. Coming
-    // down is the engine's job, but noticing it is the data's, and a state that
-    // never asks stays airborne at ground level: no landing pose, no thud, no
-    // way out. This is the one mistake a new launcher will make.
     // a bolt that bursts on the floor is ended there by `Projectiles`, not by a transition
-    const floorEnds = def.burstsAbove !== undefined;
-    if (
-      (def.airborne || leavesGround(def.air)) &&
-      !floorEnds &&
-      !exits.some((t) => t.when === "landed" || t.when === "nearGround")
-    ) {
-      warnings.push(
-        `${where}: airborne with no "landed" or "nearGround" transition — ` +
-          `nothing happens when it reaches the floor`,
-      );
-    }
-
-    if (floorEnds && (typeof def.burstsAbove !== "number" || (!def.burstsInto && !def.landsAs?.length))) {
+    if (def.burstsAbove !== undefined && (typeof def.burstsAbove !== "number" || (!def.burstsInto && !def.landsAs?.length))) {
       errors.push(`${where}: "burstsAbove" needs a number of game px and a "burstsInto" or "landsAs" to leave there`);
     }
 
@@ -1834,12 +1811,6 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
       errors.push(`${where}: "invulnerable" must be true or false`);
     }
 
-    // A state nobody can touch and nobody can leave is a fighter removed from
-    // the match. The `no transitions` warning above does not cover it, because
-    // there the entity was at least still hittable.
-    if (def.invulnerable && exits.length === 0) {
-      warnings.push(`${where}: invulnerable and has no transitions — nothing can end it`);
-    }
 
     // A relaunch is a blow allowed to lift a body twice, so one that cannot lift
     // at all is a line that does nothing — usually the flag put on the wrong
@@ -1876,41 +1847,6 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
         errors.push(`${at}: unknown target state "${t.to}"`);
       }
     });
-  }
-
-  // A state nothing can reach is usually a typo in some transition's target.
-  // The engine can force a reaction from anywhere, so `onGotHit` and every
-  // `onHit` are entry points too — a reaction is never *transitioned* into.
-  if (file.initial && states[file.initial]) {
-    const roots = [file.initial];
-    if (file.onGotHit && states[file.onGotHit]) roots.push(file.onGotHit);
-    if (file.onGuard && states[file.onGuard]) roots.push(file.onGuard);
-    if (file.onRelease && states[file.onRelease]) roots.push(file.onRelease);
-    for (const name of [file.round?.intro, file.round?.ko, ...(file.round?.win ?? [])]) if (name && states[name]) roots.push(name);
-    for (const def of Object.values(states)) {
-      if (def.onHit && states[def.onHit] && !roots.includes(def.onHit)) roots.push(def.onHit);
-      // A stance's own block reaction is forced from outside like any other.
-      if (def.guard && states[def.guard] && !roots.includes(def.guard)) roots.push(def.guard);
-    }
-    const seen = new Set<string>(roots);
-    const queue = [...roots];
-    for (let cur = queue.pop(); cur !== undefined; cur = queue.pop()) {
-      const def = states[cur];
-      // An air version is an edge, not a root: it is reached exactly when the
-      // reaction that names it is, and no sooner.
-      const next = (def?.transitions ?? []).map((t) => t.to);
-      if (def?.ifAirborne) next.push(def.ifAirborne);
-      if (def?.ifCrouching) next.push(def.ifCrouching);
-      for (const to of next) {
-        if (states[to] && !seen.has(to)) {
-          seen.add(to);
-          queue.push(to);
-        }
-      }
-    }
-    for (const n of names) {
-      if (!seen.has(n)) warnings.push(`state "${n}" is unreachable (no transition leads to it)`);
-    }
   }
 
   return { errors, warnings };

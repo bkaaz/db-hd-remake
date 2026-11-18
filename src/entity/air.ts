@@ -66,11 +66,6 @@ export function fall(body: AirBody, own: number): number {
   return body.vy < 0 ? Math.min(0, body.vy + g) : body.vy;
 }
 
-/** Whether the timeline ever takes the body off the ground. */
-export function leavesGround(timeline: AirTimeline | undefined): boolean {
-  return (timeline ?? []).some(([, step]) => step.vy !== undefined);
-}
-
 /** What is wrong with a state's `air` as written, or null. */
 export function airProblem(air: unknown): string | null {
   const example = `e.g. [[16, { "vx": 1, "vy": -7, "gravity": 0 }]]`;
