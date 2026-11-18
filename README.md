@@ -10,8 +10,9 @@ What is actually built here:
 - **An engine** — a data-driven state machine per entity, hit/hurt/push
   collision, gravity and jump arcs, hitstop, knockback and knockdown, all
   authored as JSON rather than hard-coded.
-- **An entity editor** — a Canvas 2D tool that cuts sprite sheets into frames,
-  sets anchors, builds timed animations and draws collision boxes.
+- **An entity editor** — a Canvas 2D tool that shows each fighter's sheet as
+  the cartridge draws it, edits timed animations and their collision boxes,
+  auditions the sounds and draws the cancel graph.
 - **The cartridge read by script** — the original's drawings, animation
   scripts, boxes and objects decoded from the player's own ROM, and its sound
   driver run on an emulated SNES sound chip, all in the browser.
@@ -35,16 +36,15 @@ npm run dev
 npm run build            # dist/web: plays from any static host, given a ROM
 ```
 
-Then open the URL Vite prints (it opens the browser automatically). Two fighters
-face each other on a ground line. **←/→** walks, **↑** jumps, **↓** crouches,
-**A**/**S**/**Z**/**X** are the four attack buttons — light, medium, heavy and
-special, by strength rather than by limb — and holding away from your opponent blocks
-whatever lands next. **T** makes the training dummy attack on a timer, so the
-reactions can be seen; **B** toggles the collision-box overlay and **D** the readout of what the engine
-thinks about both fighters — state, rank, buffer, hit pause, combo count. **L**
-starts and stops a recording of what happened, written to `logs/session.log`
-(gitignored) as events rather than frames, so a combo attempt reads as twenty
-lines instead of six hundred.
+Then open the URL Vite prints. Two of the cartridge's fighters face each other
+on one of its arenas. **←/→** walks, **↑** jumps, **↓** crouches; **A**, **S**,
+**D** and **X** are the original's Y, B, X and A, **C** with a direction its
+dash, **Z** guards, and **A** + **S** held charges. The page lists every key
+under *keys*, beside its switches: **T** the training dummy, **B** the collision
+boxes, **O** the readout of what the engine thinks about both fighters, and
+**L** a recording of what happened, written to `logs/session.log` (gitignored)
+as events rather than frames, so a combo attempt reads as twenty lines instead
+of six hundred.
 
 ## Your own ROM
 

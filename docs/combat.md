@@ -19,8 +19,8 @@ well against the CPU, and the reverse is not true.
 | **Smash** | `S` | ends the string, at any depth, with a heavier blow |
 | **Ki** | `X` | the ki blast; forward or back + Ki is the kamehameha |
 | **Guard** | `Z` | held, a stance that blocks; tapped at the right moment, vanishes (§5) |
-| **Strike** | `D` | the original's X — only the cartridge's `goku` uses it so far |
-| **Dash** | `C` | with forward or back, the original's dash (its L/R) — `goku` only |
+| **Strike** | `D` | the original's X |
+| **Dash** | `C` | with forward or back, the original's dash (its L/R) |
 
 The table above is ours, and no fighter plays it yet: the cartridge's fighters
 play the original's own moves for now (`plan.md`): A, S, D and X are its Y, B, X and A, with no

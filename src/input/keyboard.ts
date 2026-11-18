@@ -12,15 +12,13 @@ import type { Toggle, Toggles } from "../debug/toggles";
  *
  * A button also reports whether it is **still down**, which is a different
  * question from whether it just went down and does not weaken the edge. A stance
- * you hold — charging ki on A+Z — cannot be expressed by edges at all: two of
+ * you hold — charging on A+S — cannot be expressed by edges at all: two of
  * them would have to land on the same frame, and the first to arrive alone
  * would spend itself on a punch.
  *
- * Four buttons are Burst Limit's — **Attack, Guard, Smash, Blast** (the ki
- * blast) — on the `A S` / `Z X` square that stands in for a pad's four face
- * buttons. A and S are the two that hit; Z, the guard, sits under the attack
- * so that holding both charges ki. **Strike** (D) and **Dash** (C) extend the
- * square for the original's X and L/R, which the cartridge's Goku plays.
+ * The cartridge's fighters play A, S, D and X as the original's Y, B, X and A,
+ * and C as its L/R, the dash; Z guards. Holding A and S together charges, as
+ * the original's Y + B does (`combat.md`, The buttons).
  *
  * Remapping comes later; nothing outside this file knows which key is which.
  */
@@ -185,7 +183,7 @@ export function keySheet(): [key: string, does: string][] {
     ["↑", "jump"],
     ["↓", "crouch"],
     ...BUTTONS.map((b): [string, string] => [button(b), b]),
-    [`${button("attack")}+${button("guard")}`, "charge ki"],
+    [`${button("attack")}+${button("smash")}`, "charge"],
     ["N", "next debug mode"],
     ["Space", "refill health and ki"],
   ];

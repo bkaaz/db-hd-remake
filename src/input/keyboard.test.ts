@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { Toggles, type Toggle } from "../debug/toggles";
-import { Keyboard, keyFor } from "./keyboard";
+import { readFileSync } from "node:fs";
+import type { StatesFile } from "../entity/states";
+import { Keyboard, keyFor, keySheet } from "./keyboard";
 
 /** A window that only collects the keyboard's listeners, so a test can press. */
 function fakeWindow() {
@@ -35,5 +37,16 @@ describe("keyFor", () => {
       press(keyFor(toggle).toLowerCase());
       expect([toggle, toggles.get(toggle)]).toEqual([toggle, !was]);
     }
+  });
+});
+
+describe("keySheet", () => {
+  it("names the keys a fighter's states charge on", () => {
+    // the sheet once said A+Z while every fighter charged on A+S
+    const { states } = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
+    const charge = states.idle.transitions!.find((t) => t.to === "charge_start")!;
+    const held = [charge.when].flat().map((w) => w.replace("held:", ""));
+    const keyOf = Object.fromEntries(keySheet().map(([key, does]) => [does, key]));
+    expect(keySheet()).toContainEqual([held.map((b) => keyOf[b]).join("+"), "charge"]);
   });
 });
