@@ -88,9 +88,14 @@ export class Round {
     return this.posing;
   }
 
-  /** Once the round is decided, nobody's buttons count. */
+  /**
+   * From the knockout on, nobody's buttons count: the winner plays out what he
+   * was doing and comes to stand, which is what the announcement waits for.
+   * Recorded (`tools/re/runs/ko-winner-moving.json`): a pad walking him back and
+   * forth through the KO changes nothing.
+   */
   get locked(): boolean {
-    return this.phase !== "fight";
+    return this.phase !== "fight" || this.out.size > 0;
   }
 
   /**

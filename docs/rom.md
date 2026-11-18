@@ -1117,6 +1117,8 @@ slows vx and the shove by 0.25 a frame (`$0D:EC5F`) and from frame `0xA8`
 cleared, and behind the other (`$0D:D8D5`). Vegeta's half speed lasts
 until then.
 
+**From the KO on, the pads do nothing** (recorded, `tools/re/runs/ko-winner-moving.json`: the winner walked back and forth through it moves as he does with the pad idle) `?` where.
+
 **The round ends** (`$0D:EA89`, every frame, unless either fighter is in
 `fb`, `3e` or `82`, or the object slots' type bytes, ORed, have bits 7 and
 6 both set — a live object with bit 6 `?`): the loser lying

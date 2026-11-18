@@ -52,6 +52,16 @@ describe("Round", () => {
     expect(b.heard).toEqual(["burst_0a"]);
   });
 
+  it("takes the buttons away from the knockout on, not from the announcement", () => {
+    // a winner still walking would hold the announcement back for as long as he walked
+    const { r } = round();
+    const [a, b] = [fighter(), fighter(0)];
+    expect(r.locked).toBe(false);
+    run(r, [a, b], 1);
+    expect(r.now).toBe("fight");
+    expect(r.locked).toBe(true);
+  });
+
   it("does nothing with the switch off: health floors at zero as before", () => {
     const { r } = round();
     const b = fighter(0);

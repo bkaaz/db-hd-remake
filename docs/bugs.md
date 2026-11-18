@@ -31,11 +31,3 @@ test that checked the exported sheets, which no longer exist.
 `SCALE` 2 are taller and wider than a slot (`CELL_W`, `CELL_H` in
 `src/scenes/select.ts`), overlap their neighbours and the prompt above the
 grid — Piccolo, Vegetto and Mr. Buu the most.
-
-**The KO comes late, sometimes long after the knockdown** (*annoying*,
-2026-11-08, owner). Player two knocked out: before KO is announced player
-one can move for a while — rightly, for a moment — but sometimes for far
-too long, and the KO waits with it. Which knockdowns do it is not known
-yet `?`; a recording (`L`) of one would say what the round waits on
-(`match/round.ts`).
-

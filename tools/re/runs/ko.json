@@ -1,7 +1,7 @@
 {
   "state": "gotenks-select",
-  "frames": 2000,
-  "healthAt": 1200,
+  "frames": 2600,
+  "healthAt": 1680,
   "hp1": 5,
   "shots": [
     1100
@@ -24,17 +24,11 @@
   },
   "p2": {
     "does": [
-      1200,
+      1680,
       "fwd 60",
       "attack 3",
-      60,
-      "attack 3",
-      60,
-      "attack 3",
-      60,
-      "attack 3",
-      60,
-      "attack 3"
+      30,
+      600
     ]
   }
 }
