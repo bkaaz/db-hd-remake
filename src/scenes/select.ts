@@ -4,12 +4,15 @@ import { loadEntityDef } from "../entity/entityDef";
 import { dataDirs, readData } from "../data/files";
 import type { Keyboard } from "../input/keyboard";
 import type { Scene, SceneContext, SceneRequest } from "../scene";
+import { reachOf, widest, type Reach } from "./reach";
 
 /** Small enough that ten of them fit, big enough to tell who is who. */
 const SCALE = 2;
-const CELL_W = 110;
-const CELL_H = 130;
 const GAP = 8;
+/** Under a fighter's feet, for his name. */
+const LABEL_ROOM = 22;
+/** Around him, inside his cell's border. */
+const PAD = 6;
 /** Over the grid, for the line that says whose pick it is. */
 const PROMPT_ROOM = 36;
 
@@ -41,12 +44,22 @@ export class SelectScene implements Scene {
   /** Last frame's directions, so a held key moves the cursor once, not always. */
   private was: WorldInput = NO_INPUT;
 
+  /** A cell, sized to hold the widest, tallest fighter: `reach.ts`. */
+  private readonly cellW: number;
+  private readonly cellH: number;
+  /** From a cell's top to the floor its fighter stands on. */
+  private readonly floor: number;
+
   private constructor(
     private readonly app: Application,
     private readonly slots: Slot[],
     private readonly columns: number,
     private readonly labels: Text[],
+    reach: Reach,
   ) {
+    this.cellW = 2 * (reach.half * SCALE + PAD);
+    this.floor = PAD + reach.up * SCALE;
+    this.cellH = this.floor + reach.down * SCALE + LABEL_ROOM;
     this.view.addChild(this.frames);
     for (const label of this.labels) this.view.addChild(label);
     for (const slot of this.slots) if (slot.entity) this.view.addChild(slot.entity.view);
@@ -69,6 +82,7 @@ export class SelectScene implements Scene {
     const columns = Math.max(...grid.map((row) => row.length));
     const slots: Slot[] = [];
     const labels: Text[] = [];
+    const reaches: Reach[] = [];
     for (const row of grid) {
       for (let c = 0; c < columns; c++) {
         const id = row[c] ?? null;
@@ -78,7 +92,10 @@ export class SelectScene implements Scene {
         // stands as the fight starts him: the cartridge names animations by move, not "idle"
         const standing = def?.states?.states[def.states.initial]?.anim;
         const entity = def && standing && def.animations[standing] ? new Entity(def, SCALE) : null;
-        if (entity && standing) entity.preview(standing);
+        if (entity && standing) {
+          entity.preview(standing);
+          reaches.push(reachOf(def.animations[standing], def.frames));
+        }
         slots.push({ id, available: available && !!entity, entity });
         labels.push(
           new Text({
@@ -93,7 +110,7 @@ export class SelectScene implements Scene {
       }
     }
     if (!slots.some((s) => s.available)) return "No fighters to choose from.";
-    return new SelectScene(ctx.app, slots, columns, labels);
+    return new SelectScene(ctx.app, slots, columns, labels, widest(reaches));
   }
 
   step(keyboard: Keyboard): SceneRequest | null {
@@ -145,8 +162,8 @@ export class SelectScene implements Scene {
    */
   private readonly place = (): void => {
     const rows = Math.ceil(this.slots.length / this.columns);
-    const width = this.columns * CELL_W + (this.columns - 1) * GAP;
-    const height = PROMPT_ROOM + rows * (CELL_H + GAP);
+    const width = this.columns * this.cellW + (this.columns - 1) * GAP;
+    const height = PROMPT_ROOM + rows * (this.cellH + GAP);
     const { width: screenW, height: screenH } = this.app.screen;
     const shrink = Math.min(1, screenW / width, screenH / height);
     this.view.scale.set(shrink);
@@ -156,10 +173,10 @@ export class SelectScene implements Scene {
     this.slots.forEach((slot, i) => {
       const { x, y } = this.cellAt(i, left, top);
       this.labels[i].x = x + 6;
-      this.labels[i].y = y + CELL_H - 18;
+      this.labels[i].y = y + this.cellH - 18;
       if (slot.entity) {
-        slot.entity.x = x + CELL_W / 2;
-        slot.entity.y = y + CELL_H - 24;
+        slot.entity.x = x + this.cellW / 2;
+        slot.entity.y = y + this.floor;
         slot.entity.groundY = slot.entity.y;
       }
     });
@@ -174,8 +191,8 @@ export class SelectScene implements Scene {
 
   private cellAt(i: number, left: number, top: number): { x: number; y: number } {
     return {
-      x: left + (i % this.columns) * (CELL_W + GAP),
-      y: top + Math.floor(i / this.columns) * (CELL_H + GAP),
+      x: left + (i % this.columns) * (this.cellW + GAP),
+      y: top + Math.floor(i / this.columns) * (this.cellH + GAP),
     };
   }
 
@@ -184,7 +201,7 @@ export class SelectScene implements Scene {
     this.slots.forEach((slot, i) => {
       const { x, y } = this.cellAt(i, this.left, this.top);
       this.frames
-        .rect(x, y, CELL_W, CELL_H)
+        .rect(x, y, this.cellW, this.cellH)
         .fill({ color: slot.available ? 0x201828 : 0x18181e })
         .stroke({ color: i === this.cursor ? 0xf0c040 : 0x3a3a48, width: i === this.cursor ? 2 : 1 });
     });

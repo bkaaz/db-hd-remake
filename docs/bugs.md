@@ -25,9 +25,3 @@ Their sheets hold no pixel, though they fly and strike: `buu_9_17`, `buu_9_18`,
 `buu_9_19`, `freeza_6_15`, and Mr. Buu's `mr_buu_8_0f` – `8_12`, whose picture
 is a circle the cartridge draws some other way (`rom.md`). Moved here from a
 test that checked the exported sheets, which no longer exist.
-
-**The select screen's fighters spill out of their slots** (*cosmetic*,
-2026-11-17, Claude). Open `?scene=select`: the cartridge's fighters at
-`SCALE` 2 are taller and wider than a slot (`CELL_W`, `CELL_H` in
-`src/scenes/select.ts`), overlap their neighbours and the prompt above the
-grid — Piccolo, Vegetto and Mr. Buu the most.
