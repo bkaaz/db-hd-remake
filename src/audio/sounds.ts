@@ -3,33 +3,18 @@
  *
  * A sound is the cartridge's: an effect or a voice by its id (`rom`), a
  * spoken line by its id (`line`), played by the cartridge's own driver
- * (ADR 0092). The synth spec (`kind`, `freq`, `decay`) is what a sound with
- * neither can be made of instead, and what plays until the driver's has
- * been rendered.
+ * (ADR 0092). Until the driver has rendered it, a sound is silent.
  *
  * Pure: no Web Audio, no DOM. `src/audio/playback.ts` turns a spec into actual sound.
  */
 
-/** How a placeholder is built. Two shapes cover everything a fighter needs. */
+/** One sound: which of the cartridge's it is, and how loud we play it. */
 export interface SoundSpec {
-  /**
-   * `noise` — filtered white noise: impacts, whiffs, anything percussive.
-   * `tone` — a falling sine: the thin metallic ring of a blocked blow.
-   *
-   * Optional when the cartridge plays it (`rom`, `line`): a voice above all
-   * has no honest synthesised stand-in, and inventing one is worse than
-   * staying silent until it has been rendered.
-   */
-  kind?: "noise" | "tone";
-  /** Centre frequency in Hz. Lower reads as heavier. Synth only. */
-  freq?: number;
-  /** How long it lasts, in seconds. Impacts are short; 0.05–0.25. Synth only. */
-  decay?: number;
   /** Peak volume, 0..1. */
   gain: number;
   /**
-   * Random pitch spread, as a fraction of `freq`. A run of identical hits reads
-   * as a machine gun; a few percent of wobble is what stops that.
+   * Random speed spread, as a fraction of the sample's own. A run of identical
+   * hits reads as a machine gun; a few percent of wobble is what stops that.
    */
   vary?: number;
   /**
@@ -102,18 +87,8 @@ export function validateSounds(sounds: Sounds | undefined): string[] {
     // errors about `_comment` on every boot is how a real problem gets ignored.
     if (id.startsWith("_")) continue;
     const where = `sound "${id}"`;
-    // A sound is the cartridge's, a synth spec, or both. Only a sound the
-    // cartridge does not play has to describe how to make one.
-    if ((s.rom === undefined && s.line === undefined) || s.kind !== undefined) {
-      if (s.kind !== "noise" && s.kind !== "tone") {
-        errors.push(`${where}: "kind" must be "noise" or "tone"`);
-      }
-      if (!(s.freq !== undefined && s.freq > 0)) {
-        errors.push(`${where}: "freq" must be a positive number of Hz`);
-      }
-      if (!(s.decay !== undefined && s.decay > 0)) {
-        errors.push(`${where}: "decay" must be a positive number of seconds`);
-      }
+    if (s.rom === undefined && s.line === undefined) {
+      errors.push(`${where}: names no cartridge sound — "rom" or "line"`);
     }
     if (!(s.gain > 0) || s.gain > 1) errors.push(`${where}: "gain" must be above 0 and at most 1`);
     if (s.vary !== undefined && (s.vary < 0 || s.vary >= 1)) {
@@ -129,19 +104,8 @@ export function validateSounds(sounds: Sounds | undefined): string[] {
 }
 
 /**
- * The pitch one playback should use, given a spec and a roll of the dice.
- *
- * Split out from playing so the wobble is testable: it is the difference
- * between a series of hits sounding like a fight and like a stuck key.
- */
-export function pitchFor(spec: SoundSpec, roll: number): number {
-  return (spec.freq ?? 0) * rateFor(spec, roll);
-}
-
-/**
- * The same wobble as a ratio, which is what a *sample* needs: a recorded hit is
- * varied by playing it slightly faster or slower, not by retuning a filter.
- * One definition, so the synth and the sample drift together or not at all.
+ * The speed one playback should use, given a spec and a roll of the dice.
+ * Split out from playing so the wobble is testable.
  */
 export function rateFor(spec: SoundSpec, roll: number): number {
   const spread = spec.vary ?? 0;

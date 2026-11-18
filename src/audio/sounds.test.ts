@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  pitchFor,
   rateFor,
   romIds,
   soundIdCollisions,
@@ -11,7 +10,7 @@ import {
   type Sounds,
 } from "./sounds";
 
-const ok: SoundSpec = { kind: "noise", freq: 400, decay: 0.1, gain: 0.5 };
+const ok: SoundSpec = { gain: 0.5, rom: 0x09 };
 
 describe("soundIdCollisions", () => {
   it("passes when a fighter only adds ids the bank does not have", () => {
@@ -38,7 +37,7 @@ describe("soundIdCollisions", () => {
 
 describe("validateSounds", () => {
   it("accepts a well-formed set", () => {
-    expect(validateSounds({ hit: ok, block: { ...ok, kind: "tone" } })).toEqual([]);
+    expect(validateSounds({ hit: ok, block: { gain: 0.4, rom: 0x0a }, voice: { gain: 0.6, line: 0 } })).toEqual([]);
   });
 
   it("accepts no sounds at all", () => {
@@ -46,22 +45,14 @@ describe("validateSounds", () => {
   });
 
   it("passes over a note, since JSON has nowhere else to put one", () => {
-    const withNote = { _comment: "placeholders, see src/audio/sounds.ts", hit: ok } as unknown as Sounds;
+    const withNote = { _comment: "a note, see src/audio/sounds.ts", hit: ok } as unknown as Sounds;
     expect(validateSounds(withNote)).toEqual([]);
   });
 
-  it("rejects an unknown kind", () => {
-    const bad = { hit: { ...ok, kind: "beep" } } as unknown as Sounds;
-    expect(validateSounds(bad)).toContain('sound "hit": "kind" must be "noise" or "tone"');
-  });
-
-  it("rejects nonsense numbers", () => {
-    expect(validateSounds({ hit: { ...ok, freq: 0 } })).toContain(
-      'sound "hit": "freq" must be a positive number of Hz',
-    );
-    expect(validateSounds({ hit: { ...ok, decay: -1 } })).toContain(
-      'sound "hit": "decay" must be a positive number of seconds',
-    );
+  it("rejects a sound that names no cartridge sound", () => {
+    expect(validateSounds({ hit: { gain: 0.5 } })).toEqual([
+      'sound "hit": names no cartridge sound — "rom" or "line"',
+    ]);
   });
 
   it("rejects a gain that would clip or be silent", () => {
@@ -70,25 +61,10 @@ describe("validateSounds", () => {
     expect(validateSounds({ hit: { ...ok, gain: 1 } })).toEqual([]);
   });
 
-  it("rejects a variance that could invert the pitch", () => {
+  it("rejects a variance that could stop or reverse a sample", () => {
     expect(validateSounds({ hit: { ...ok, vary: 1 } })).toHaveLength(1);
     expect(validateSounds({ hit: { ...ok, vary: 0 } })).toEqual([]);
   });
-});
-
-describe("a sound the cartridge plays", () => {
-  it("accepts a cartridge id alongside the spec that stands in for it", () => {
-    expect(validateSounds({ hit: { ...ok, rom: 0x09 } })).toEqual([]);
-  });
-
-  it("accepts one with no synth spec at all — a voice has no stand-in", () => {
-    expect(validateSounds({ voice_hurt: { gain: 0.6, rom: 0x30 } })).toEqual([]);
-  });
-
-  it("still demands a spec from a sound with no sample to fall back on", () => {
-    expect(validateSounds({ hit: { gain: 0.5 } })).toHaveLength(3);
-  });
-
 });
 
 describe("rateFor", () => {
@@ -96,12 +72,10 @@ describe("rateFor", () => {
     expect(rateFor(ok, 0.9)).toBe(1);
   });
 
-  it("spreads either side of unity, the same wobble the pitch uses", () => {
-    const spec = { ...ok, vary: 0.1, freq: 400 };
+  it("spreads either side of unity", () => {
+    const spec = { ...ok, vary: 0.1 };
     expect(rateFor(spec, 0)).toBeCloseTo(0.9);
     expect(rateFor(spec, 1)).toBeCloseTo(1.1);
-    // One definition: the synth's pitch is the centre frequency times the rate.
-    expect(pitchFor(spec, 0.25)).toBeCloseTo(400 * rateFor(spec, 0.25));
   });
 
   it("never stops or reverses a sample, however the roll falls", () => {
@@ -110,29 +84,9 @@ describe("rateFor", () => {
   });
 });
 
-describe("pitchFor", () => {
-  it("is the centre frequency with no variance", () => {
-    expect(pitchFor(ok, 0.9)).toBe(400);
-  });
-
-  it("spreads either side of the centre", () => {
-    const spec = { ...ok, vary: 0.1 };
-    expect(pitchFor(spec, 0)).toBeCloseTo(360);
-    expect(pitchFor(spec, 0.5)).toBeCloseTo(400);
-    expect(pitchFor(spec, 1)).toBeCloseTo(440);
-  });
-
-  it("never inverts, however the roll falls", () => {
-    const spec = { ...ok, vary: 0.99 };
-    for (const roll of [0, 0.25, 0.5, 0.75, 1]) {
-      expect(pitchFor(spec, roll)).toBeGreaterThan(0);
-    }
-  });
-});
-
 describe("soundForRom", () => {
-  const swing = { kind: "noise" as const, freq: 1600, decay: 0.07, gain: 0.16 };
-  const bank = { _comment: { gain: 1 }, swing_1: { ...swing, rom: 6 }, swing_2: { ...swing, rom: 7 }, hit_1: swing };
+  const swing = { gain: 0.16 };
+  const bank = { _comment: { gain: 1 }, swing_1: { ...swing, rom: 6 }, swing_2: { ...swing, rom: 7 }, hit_1: { ...swing, line: 2 } };
 
   it("finds the sound matched to a cartridge id", () => {
     expect(soundForRom(bank, 7)).toBe("swing_2");

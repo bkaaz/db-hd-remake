@@ -1,9 +1,9 @@
 /**
  * Playing sounds. The browser half of `src/audio/sounds.ts`, which owns the shapes.
  *
- * Plain Web Audio, no dependency: what a fighter needs is "play this short
- * noise now, several at once, with a little pitch wobble", and that is a few
- * dozen lines. The same reasoning as writing our own PNG encoder.
+ * Plain Web Audio, no dependency: what a fighter needs is "play this rendered
+ * sample now, several at once, with a little wobble", and that is a few dozen
+ * lines.
  *
  * Browsers refuse to start audio until the user has interacted with the page.
  * The game calls `start`: the context is made at once, suspended, so every
@@ -12,7 +12,7 @@
  */
 
 import { withVoices } from "./bank";
-import { pitchFor, rateFor, sampleKey, soundForLine, soundForRom, type Sounds } from "./sounds";
+import { rateFor, sampleKey, soundForLine, soundForRom, type Sounds } from "./sounds";
 import { cartridge } from "../cartridge/romFile";
 import { renderEffect } from "../apu/effect";
 import { renderLine } from "../apu/line";
@@ -33,7 +33,6 @@ export interface SoundPlayer {
  */
 export class Audio implements SoundPlayer {
   private ctx: AudioContext | null = null;
-  private noise: AudioBuffer | null = null;
   /** Rendered samples by `sampleKey`, empty until the context exists. */
   private readonly samples = new Map<string, AudioBuffer>();
   /** Every sample a map played from names, and those already asked for. */
@@ -97,57 +96,22 @@ export class Audio implements SoundPlayer {
     if (!ctx) return;
     if (ctx.state === "suspended") void ctx.resume();
 
+    // Silent until the driver has rendered it: nothing stands in.
+    const key = sampleKey(spec);
+    const sample = key ? this.samples.get(key) : undefined;
+    if (!sample) return;
+
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(spec.gain, ctx.currentTime);
     gain.connect(ctx.destination);
-
-    // A real sample beats the placeholder — but only once it has arrived. Until
-    // then, and if it never does, the synth spec is what plays: the game is
-    // audible from the first frame either way.
-    const key = sampleKey(spec);
-    const sample = key ? this.samples.get(key) : undefined;
-    if (sample) {
-      const src = ctx.createBufferSource();
-      src.buffer = sample;
-      // The recording carries its own envelope, so nothing is ramped here; the
-      // wobble is the same one the synth uses, applied as speed.
-      src.playbackRate.setValueAtTime(rateFor(spec, Math.random()), ctx.currentTime);
-      this.restart(`${side}:${id}`, src);
-      src.connect(gain);
-      src.start();
-      return;
-    }
-
-    // Nothing to synthesise and no sample yet: a recorded voice has no
-    // stand-in, so it simply waits rather than being faked.
-    if (spec.kind === undefined || spec.decay === undefined) return;
-
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + spec.decay);
-    const freq = pitchFor(spec, Math.random());
-    if (spec.kind === "tone") {
-      const osc = ctx.createOscillator();
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      // Falling pitch: a flat tone reads as a UI beep, not as an impact.
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, ctx.currentTime + spec.decay);
-      osc.connect(gain);
-      this.restart(`${side}:${id}`, osc);
-      osc.start();
-      osc.stop(ctx.currentTime + spec.decay);
-      return;
-    }
-
     const src = ctx.createBufferSource();
-    src.buffer = this.noiseBuffer(ctx);
-    const filter = ctx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.setValueAtTime(freq, ctx.currentTime);
-    filter.Q.setValueAtTime(1.2, ctx.currentTime);
-    src.connect(filter);
-    filter.connect(gain);
+    src.buffer = sample;
+    src.playbackRate.setValueAtTime(rateFor(spec, Math.random()), ctx.currentTime);
     this.restart(`${side}:${id}`, src);
+    src.connect(gain);
     src.start();
-    src.stop(ctx.currentTime + spec.decay);
   }
+
 
   /** Stop the copy of this sound still playing, and remember the new one. */
   private restart(key: string, node: AudioScheduledSourceNode): void {
@@ -204,8 +168,8 @@ export class Audio implements SoundPlayer {
     await this.render(ctx, keys);
 
     // One line a load, because "I cannot hear it" needs to be answerable
-    // without a debugger: a sound with no synth spec behind it is silent when
-    // its sample is missing, and that is indistinguishable from never firing.
+    // without a debugger: a sound whose sample is missing is silent, and that
+    // is indistinguishable from never firing.
     console.info(`[sounds] ${this.samples.size}/${this.requested.size} sample(s) loaded`);
   }
 
@@ -227,15 +191,5 @@ export class Audio implements SoundPlayer {
       this.samples.set(key, buffer);
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
-  }
-
-  /** One second of white noise, made once and reused by every impact. */
-  private noiseBuffer(ctx: AudioContext): AudioBuffer {
-    if (this.noise) return this.noise;
-    const buf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-    this.noise = buf;
-    return buf;
   }
 }

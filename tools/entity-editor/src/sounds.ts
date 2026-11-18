@@ -25,8 +25,8 @@ import { emitChange, state } from "./store";
 /** The bank is not an entity section, so it needs a key of its own. */
 const BANK_SECTION = "globalSounds";
 
-/** A new sound has to be playable and valid the moment it exists. */
-const BLANK: SoundSpec = { kind: "noise", freq: 800, decay: 0.1, gain: 0.3, vary: 0.05 };
+/** A new sound, valid once it is given the cartridge's id (`rom`) or line. */
+const BLANK: SoundSpec = { gain: 0.3, vary: 0.05 };
 
 /** Where one panel's sounds come from and where Save puts them back. */
 interface Source {
@@ -129,13 +129,8 @@ class SoundPanel {
   private fields(spec: SoundSpec, id: string): HTMLElement {
     const box = el("div", { className: "card" });
     box.append(text("label", spec.label ?? "", (v) => (spec.label = v || undefined)));
-    box.append(
-      choice("kind", spec.kind ?? "", (v) => {
-        spec.kind = v === "" ? undefined : (v as "noise" | "tone");
-      }),
-    );
-    box.append(number("freq (Hz)", spec.freq, 1, (v) => (spec.freq = v)));
-    box.append(number("decay (s)", spec.decay, 0.01, (v) => (spec.decay = v)));
+    box.append(number("rom (id)", spec.rom, 1, (v) => (spec.rom = v)));
+    box.append(number("line (id)", spec.line, 1, (v) => (spec.line = v)));
     box.append(number("gain", spec.gain, 0.01, (v) => (spec.gain = v ?? 0)));
     box.append(number("vary", spec.vary, 0.01, (v) => (spec.vary = v)));
 
@@ -343,21 +338,6 @@ function number(
     emitChange();
   });
   return field(label, input);
-}
-
-function choice(label: string, value: string, set: (v: string) => void): HTMLElement {
-  const select = el("select");
-  for (const option of ["", "noise", "tone"]) {
-    select.append(
-      el("option", { value: option, textContent: option === "" ? "(sample only)" : option }),
-    );
-  }
-  select.value = value;
-  select.addEventListener("change", () => {
-    set(select.value);
-    emitChange();
-  });
-  return field(label, select);
 }
 
 function field(label: string, input: HTMLElement): HTMLElement {
