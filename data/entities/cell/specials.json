@@ -228,7 +228,6 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 40,
-      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -479,7 +478,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
-      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -596,7 +594,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
-      "fatigue": 6,
       "transitions": [
         {
           "when": "landed",
@@ -630,7 +627,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
-      "fatigue": 6,
       "transitions": [
         {
           "when": "landed",
@@ -659,7 +655,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 29,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -678,7 +673,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 29,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -697,7 +691,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 29,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -716,7 +709,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 40,
-      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -794,7 +786,6 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 42,
-      "fatigue": 4,
       "fires": {
         "spawn": "cell_7_07",
         "at": [
@@ -1065,7 +1056,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 34,
-      "fatigue": 6,
       "fires": {
         "spawn": "cell_7_02",
         "at": [
@@ -1147,7 +1137,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 20,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1190,7 +1179,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 20,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1213,7 +1201,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 20,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1236,7 +1223,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 20,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1259,7 +1245,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 20,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1282,7 +1267,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 20,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1305,7 +1289,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 20,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1328,7 +1311,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 20,
-      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1351,7 +1333,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 80,
-      "fatigue": 8,
       "transitions": [
         {
           "when": "animEnd",
@@ -1694,7 +1675,6 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 18,
-      "fatigue": 2,
       "fires": {
         "spawn": "cell_7_02",
         "at": [

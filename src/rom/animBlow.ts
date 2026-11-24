@@ -9,11 +9,11 @@ import { moveParts } from "./parts";
  * after the record's reaction. Null where the part strikes nothing or the
  * move has no record for it.
  */
-export function blowOfAnim(rom: Uint8Array, t: FighterTables, anim: string): { type: string; damage: number; fatigue: number } | null {
+export function blowOfAnim(rom: Uint8Array, t: FighterTables, anim: string): { type: string; damage: number } | null {
   const [, id] = /^m([0-9a-f]{2})(?:_\d+)?$/.exec(anim) ?? [];
   if (!id) return null;
   const move = parseInt(id, 16);
   const part = moveParts(rom, t, move).parts.find((p) => p.anim === anim);
   const record = part?.blowStep == null ? undefined : recordAt(hitRecords(rom, t.character, move), part.blowStep);
-  return record ? { type: groundReaction(record), damage: record.damage, fatigue: record.stun } : null;
+  return record ? { type: groundReaction(record), damage: record.damage } : null;
 }

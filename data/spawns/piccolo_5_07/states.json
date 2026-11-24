@@ -10,7 +10,6 @@
       ],
       "type": "halt",
       "damage": 40,
-      "fatigue": 2,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "outlivesHit": true,

@@ -100,6 +100,8 @@ export class Throws {
       for (const fx of grab.launch.fx ?? []) world?.effect(fx.name, thrower.x + facing * fx.at[0] * scale, thrower.y + fx.at[1] * scale);
       if (grab.launch.flash) world?.flash(grab.launch.flash);
       other.release(grab.launch.reaction, grab.launch.vel, grab.launch.quiet);
+      // a hit like any other: after the reaction, which a spent fighter's collapse takes the place of ($0F:B39A)
+      if (other.health > 0) other.tire();
       hold.launched = true;
     }
   }
@@ -116,6 +118,7 @@ export function throwFoe(thrower: Entity, other: Entity, effect: (name: string, 
   other.facing = t.ahead ? (thrower.facing === 1 ? -1 : 1) : thrower.facing;
   other.hurtBy(t.damage);
   other.release(t.reaction, t.vel);
+  if (other.health > 0) other.tire();
   if (!t.fx) return;
   const { scale, facing } = thrower.placement;
   effect(t.fx.name, other.x + facing * t.fx.at[0] * scale, other.y + t.fx.at[1] * scale);

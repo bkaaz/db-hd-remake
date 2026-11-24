@@ -205,7 +205,6 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 34,
-      "fatigue": 0,
       "transitions": [
         {
           "when": "animEnd",
@@ -490,7 +489,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
-      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -510,7 +508,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
-      "fatigue": 6,
       "air": [
         [
           1,
@@ -628,7 +625,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
-      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -647,7 +643,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 32,
-      "fatigue": 4,
       "air": [
         [
           1,
@@ -898,7 +893,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
-      "fatigue": 2,
       "transitions": [
         {
           "when": "animEnd",
@@ -917,7 +911,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
-      "fatigue": 2,
       "transitions": [
         {
           "when": "animEnd",
@@ -942,7 +935,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
-      "fatigue": 2,
       "transitions": [
         {
           "when": "animEnd",
@@ -979,7 +971,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
-      "fatigue": 4,
       "transitions": [
         {
           "when": "command:aa",
@@ -1070,7 +1061,6 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 38,
-      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -1112,7 +1102,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 34,
-      "fatigue": 6,
       "transitions": [
         {
           "when": "landed",
@@ -1149,7 +1138,6 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 34,
-      "fatigue": 6,
       "holdStep": 3,
       "air": [
         [
@@ -1257,7 +1245,6 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 30,
-      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -1312,7 +1299,6 @@
       ],
       "type": "light",
       "damage": 18,
-      "fatigue": 2,
       "hitSound": "hit_09",
       "blockSound": "block_17"
     },
@@ -1690,7 +1676,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
-      "fatigue": 4,
       "transitions": [
         {
           "when": "command:aa",
@@ -1722,7 +1707,6 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
-      "fatigue": 4,
       "transitions": [
         {
           "when": "command:aa",

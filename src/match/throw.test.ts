@@ -42,6 +42,8 @@ function held(): Entity {
     hold: vi.fn(),
     release: vi.fn(),
     hurtBy: vi.fn(),
+    tire: vi.fn(),
+    health: 100,
     sound: vi.fn(),
   } as unknown as Entity;
 }
@@ -176,6 +178,9 @@ describe("Throws", () => {
     throws.update(t, h);
     expect(h.hurtBy).toHaveBeenCalledWith(40);
     expect(h.release).toHaveBeenCalledWith("reel_down", [-2.5, -8], undefined);
+    // a hit like a blow's, counted after the reaction it may take the place of
+    expect(h.tire).toHaveBeenCalledOnce();
+    expect(vi.mocked(h.tire).mock.invocationCallOrder[0]).toBeGreaterThan(vi.mocked(h.release).mock.invocationCallOrder[0]);
     expect(h.facing).toBe(1);
     // put where the last step holds him, then let go once
     expect([h.x, h.y]).toEqual([36, 136]);

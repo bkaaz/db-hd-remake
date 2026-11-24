@@ -45,7 +45,7 @@ describe("Seizures, a scene that hides him", () => {
   const def: SeizeDef = { at: 0, anim: "held", cry: "voice_hurt", hides: 2, release: { frame: 4, damage: 120, reaction: "reel_down", vel: [2.5, -7] } };
   const seizer = () => ({ takeFreeScene: () => null, seize: def, state: "scene", stateFrame: 1, x: 100, y: 200, facing: 1, scaleOf: 1 }) as unknown as Entity & { stateFrame: number };
   const held = () =>
-    ({ x: 300, y: 200, facing: -1, scaleOf: 1, floor: 200, hold: vi.fn(), hide: vi.fn(), sound: vi.fn(), hurtBy: vi.fn(), release: vi.fn() }) as unknown as Entity;
+    ({ x: 300, y: 200, facing: -1, scaleOf: 1, floor: 200, hold: vi.fn(), hide: vi.fn(), sound: vi.fn(), hurtBy: vi.fn(), release: vi.fn(), tire: vi.fn(), health: 100 }) as unknown as Entity;
   const world = {} as SeizeWorld;
 
   function play(s: Entity & { stateFrame: number }, h: Entity, until: number) {
@@ -105,6 +105,8 @@ describe("Seizures, a scene that hides him", () => {
     expect(h.hide).toHaveBeenLastCalledWith(false);
     expect([h.x, h.y]).toEqual([300, 200]);
     expect(h.hurtBy).toHaveBeenCalledWith(120);
+    // a hit like a blow's, counted after the reaction it may take the place of
+    expect(h.tire).toHaveBeenCalledOnce();
     expect(h.release).toHaveBeenCalledWith("reel_down", [2.5, -7]);
   });
 });

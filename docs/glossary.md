@@ -18,7 +18,7 @@ change.
 - **Command** — a special's input as the cartridge's table has it. → `input/command.ts`, ADR 0050
 - **Defence** — an attribute taken off every blow a fighter takes, before scaling. → ADR 0019
 - **Depth** — how many blows landed before a link, by the longest route into it. → `combat.md` §3
-- **Fatigue** — what blows taken build up (their `fatigue`, the cartridge's stun), nothing wears off; full, he collapses and then stands tired (`onTired`). → `combat.md` §8
+- **Fatigue** — hits taken, each counting one, blocked ones none; the twentieth collapses him and leaves him tired (`onTired`). → `combat.md` §8
 - **Finale** — a ball thrown at the floor, swelling into an explosion, then the arena white. → `match/finale.ts`, ADR 0035
 - **Frame advantage** — hitstun less the attacker's remaining recovery: who acts first after a blow. → `combat.md` §1
 - **Frees / freed** — one body's state letting the other's held step go on. → ADR 0035

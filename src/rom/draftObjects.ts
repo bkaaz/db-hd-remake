@@ -91,7 +91,7 @@ export function objectStates(rom: Uint8Array, s: Spawned, knownType: (type: stri
   const lasts = life.find((n) => Number.isFinite(n) && n > 0);
   const strikes = s.blow.damage > 0 && knownType(s.blow.type);
   const { file, state } = hitFields(objectHit(rom, s.type, s.anim));
-  const blow = strikes ? { type: s.blow.type, damage: s.blow.damage, fatigue: s.blow.stun, ...state } : {};
+  const blow = strikes ? { type: s.blow.type, damage: s.blow.damage, ...state } : {};
   const flight = s.vy !== 0 ? { airborne: true, launch: [s.vx, s.vy] } : { vel: [s.vx, 0] };
   return { initial: "fly", ...(strikes && file), states: { fly: { anim: "play", turn: false, ...flight, ...(lasts && { lasts }), ...blow } } } as unknown as StatesFile;
 }

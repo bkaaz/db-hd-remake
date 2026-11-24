@@ -189,18 +189,19 @@ is `invulnerable`.
 
 ### 8. Fatigue
 
-The original's stun gauge counted up (owner, 2026-11-24): every blow taken adds
-its cartridge's stun (`fatigue` on the blow), and past the full amount the
-fighter is spent and it starts again from nothing (`combat/fatigue.ts`). Slower
-than the original's, at the owner's call: it holds twice its 20, so it fills
-half as fast, and it does not wear off — the original's point every 16 frames
-is left out for now. Spent, he goes the original's way, in place of the blow's
-reaction: he **collapses** (`1d`), thrown up and away, bouncing twice and
-lying untouchable; gets up; and stands **tired**, bent over (`40`), for 300
-frames, where any blow ends it. Pressing buttons there shortens it in the
-original, three frames a frame; not yet in ours. A KO goes first: a blow that
-empties his health does not tire him. Only the blows tire
-for now: a throw and a seize cost health, not fatigue (`plan.md`).
+Hits taken, counted (owner, 2026-11-24): every hit counts one — a blow, a
+shot, a throw, a scene's last blow — and a blocked one none, as the
+original's does; nothing wears it off (`combat/fatigue.ts`). The twentieth
+spends him, and the count starts again. Simpler than the original's stun
+gauge, where each blow takes its own amount and the gauge refills, and it
+leaves blocking alone: a guard that wears out is a guard break (`plan.md`).
+
+Spent, he goes the original's way, in place of the hit's reaction: he
+**collapses** (`1d`), thrown up and away, bouncing twice and lying
+untouchable; gets up; and stands **tired**, bent over (`40`), for 300 frames,
+where any blow ends it. Pressing buttons there shortens it in the original,
+three frames a frame; not yet in ours. A KO goes first: a hit that empties his
+health does not count.
 
 ## How the engine plays a blow
 

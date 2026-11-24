@@ -12,7 +12,6 @@
       "turn": false,
       "type": "down",
       "damage": 18,
-      "fatigue": 2,
       "burstsInto": "burst_s",
       "burstsAbove": 16,
       "hitSound": "burst_0a",

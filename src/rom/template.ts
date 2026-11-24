@@ -23,7 +23,7 @@ export interface Template {
   dropped: Record<string, string>;
   /** What a kept state lost: the template's own objects it put out. */
   lost: Record<string, string[]>;
-  /** Blows whose numbers became his: state, then [type, damage, fatigue] before and after. */
+  /** Blows whose numbers became his: state, then [type, damage] before and after. */
   reblown: Record<string, [string, string]>;
   /** Shots that leave from where his hand is: state, then `at` before and after. */
   moved: Record<string, [[number, number], [number, number]]>;
@@ -37,7 +37,7 @@ export interface Fit {
   /** A value naming one of the template's own objects. */
   foreign: (value: string) => boolean;
   /** His blow for an animation, or null where his cartridge has none. */
-  blowOf: (anim: string) => { type: string; damage: number; fatigue: number } | null;
+  blowOf: (anim: string) => { type: string; damage: number } | null;
   /** Where his script puts out a shared object an animation fires (its `b0`), or null. */
   spawnAt?: (anim: string, spawn: string) => [number, number] | null;
 }
@@ -72,8 +72,8 @@ export function statesFrom(template: StatesFile, fit: Fit): Template {
     const state = redirect(copy, after) as typeof def;
     if (state.type !== undefined && state.anim) {
       const blow = fit.blowOf(state.anim);
-      if (blow && (blow.type !== state.type || blow.damage !== state.damage || blow.fatigue !== state.fatigue)) {
-        reblown[name] = [`${state.type} ${state.damage} ${state.fatigue ?? 0}`, `${blow.type} ${blow.damage} ${blow.fatigue}`];
+      if (blow && (blow.type !== state.type || blow.damage !== state.damage)) {
+        reblown[name] = [`${state.type} ${state.damage}`, `${blow.type} ${blow.damage}`];
         Object.assign(state, blow);
       }
     }

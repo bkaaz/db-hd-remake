@@ -702,8 +702,6 @@ export interface StateDef {
    * animation has a hit box.
    */
   damage?: number;
-  /** Fatigue this state's blow adds to whoever takes it: the cartridge's stun (`combat/fatigue.ts`). Absent, none. */
-  fatigue?: number;
   /**
    * Whether blows pass straight through this entity while it is here. Not "a
    * hit for no damage": nothing connects at all, so there is no spark, no
@@ -1677,9 +1675,6 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
 
     if (def.damage !== undefined && (typeof def.damage !== "number" || def.damage < 0)) {
       errors.push(`${where}: "damage" must be a number, 0 or more`);
-    }
-    if (def.fatigue !== undefined && (typeof def.fatigue !== "number" || def.fatigue < 0)) {
-      errors.push(`${where}: "fatigue" must be a number, 0 or more`);
     }
     // A typed blow is already refused by hitTypeErrors, with a better message.
     const strikes = anim?.steps?.some((s) => s.boxes?.some((b) => b.type === "hit"));

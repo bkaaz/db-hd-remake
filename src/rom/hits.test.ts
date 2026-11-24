@@ -1,5 +1,5 @@
 import { objectBox } from "./collision";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { blowStarts } from "./animation";
 import { blowOfAnim } from "./animBlow";
@@ -9,8 +9,6 @@ import { GOKU as GOKU_TABLES, ROM_PATH, scriptAt } from "./cartridge";
 import { readBoxes } from "./collision";
 import { readScript } from "./script";
 import { groundReaction, hitRecords, objectRecord, recordAt } from "./hits";
-import { OWN_OBJECTS } from "./ownObjects";
-import { draftedObjects } from "./draftObjects";
 import type { StatesFile } from "../entity/states";
 
 describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
@@ -69,26 +67,9 @@ describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
         const blow = blowOfAnim(rom, t, def.anim ?? "");
         expect(blow, `${fighter} ${name} plays ${def.anim}`).not.toBeNull();
         // a blow that catches: the hold takes him at once, its type only a hitstop (ADR 0035)
-        expect([def.catches ? blow?.type : def.type, def.damage, def.fatigue], `${fighter} ${name}`).toEqual([blow?.type, blow?.damage, blow?.fatigue]);
+        expect([def.catches ? blow?.type : def.type, def.damage], `${fighter} ${name}`).toEqual([blow?.type, blow?.damage]);
       }
     }
-  });
-
-  it("gives every spawn's blow its object's stun as fatigue", () => {
-    const objects = [...GOKU_TABLES.objects.spawns, ...ROSTER.flatMap((name) => [...(OWN_OBJECTS[name] ?? []), ...draftedObjects(name)])];
-    const spawns = readdirSync("data/spawns").filter((dir) => existsSync(`data/spawns/${dir}/states.json`));
-    let checked = 0;
-    for (const dir of spawns) {
-      const { states } = JSON.parse(readFileSync(`data/spawns/${dir}/states.json`, "utf8")) as StatesFile;
-      const blows = Object.entries(states).filter(([, def]) => def.type !== undefined);
-      if (blows.length === 0) continue;
-      const o = objects.find((ob) => ob.name === dir);
-      expect(o, dir).toBeDefined();
-      const { stun } = objectRecord(rom, o!.type, o!.anim);
-      for (const [name, def] of blows) expect(def.fatigue, `${dir} ${name}`).toBe(stun);
-      checked++;
-    }
-    expect(checked).toBeGreaterThan(0);
   });
 });
 

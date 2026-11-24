@@ -303,6 +303,7 @@ export class Seizures {
     held.facing = release.ahead ? (seizer.facing === 1 ? -1 : 1) : seizer.facing;
     held.hurtBy(release.damage);
     held.release(release.reaction, release.vel);
+    if (held.health > 0) held.tire();
     if (release.burns) held.setBurning();
     if (release.flash) world.flash(release.flash);
     if (release.fx) world.effect(release.fx, held.x, held.y - (release.fxAbove ?? BURST_ABOVE) * held.scaleOf);

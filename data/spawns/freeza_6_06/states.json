@@ -7,7 +7,6 @@
       "lasts": 80,
       "type": "heavy",
       "damage": 38,
-      "fatigue": 4,
       "burstsInto": "burst_s",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a",

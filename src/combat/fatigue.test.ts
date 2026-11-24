@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { Fatigue, FATIGUE_MAX } from "./fatigue";
+import { Fatigue, FATIGUE_HITS } from "./fatigue";
 
 describe("fatigue", () => {
-  it("fills with what blows add, and is spent only past the full amount", () => {
+  it("is spent by the last of its hits, and starts again from nothing", () => {
     const f = new Fatigue();
-    expect(f.take(FATIGUE_MAX)).toBe(false);
-    expect(f.fraction).toBe(1);
-    expect(f.take(1)).toBe(true);
+    for (let i = 1; i < FATIGUE_HITS; i++) expect(f.hit()).toBe(false);
+    expect(f.fraction).toBe((FATIGUE_HITS - 1) / FATIGUE_HITS);
+    expect(f.hit()).toBe(true);
     expect(f.fraction).toBe(0);
   });
 });

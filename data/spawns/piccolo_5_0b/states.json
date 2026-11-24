@@ -17,7 +17,6 @@
       "opens": "stunner_hold",
       "type": "down",
       "damage": 0,
-      "fatigue": 14,
       "outlivesHit": true
     }
   },

@@ -10,7 +10,6 @@
       ],
       "type": "high",
       "damage": 50,
-      "fatigue": 1,
       "hitSound": "burst_0a",
       "blockSound": "burst_0a",
       "outlivesHit": true,

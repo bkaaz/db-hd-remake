@@ -1112,15 +1112,10 @@ export class Entity {
     return this.sm?.def.damage ?? 0;
   }
 
-  /** Fatigue this entity's current attack adds. */
-  get attackFatigue(): number {
-    return this.sm?.def.fatigue ?? 0;
-  }
-
-  /** Take a blow's fatigue. Spent, he goes into `onTired` in place of the blow's reaction, as the original's `1d` does. */
-  tire(amount: number): void {
+  /** One more hit taken. Spent, he goes into `onTired` in place of the hit's reaction, as the original's `1d` does. */
+  tire(): void {
     const tired = this.def.states?.onTired;
-    if (tired && this.fatigue.take(amount)) this.forceState(tired);
+    if (tired && this.fatigue.hit()) this.forceState(tired);
   }
 
   /**

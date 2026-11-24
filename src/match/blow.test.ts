@@ -25,7 +25,6 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     placement: { x: 0, y: 0, facing: 1 as const, scale: 1 },
     boxes: (want: string) => (want === type ? [{ type, x: 0, y: -10, w: 10, h: 10 }] : []),
     attackDamage: 7,
-    attackFatigue: 2,
     health: 100,
     attackHitstop: 6,
     attackReaction: "hurt",
@@ -88,10 +87,10 @@ describe("landBlow", () => {
     expect(guarding.shoveBeforePause).not.toHaveBeenCalled();
   });
 
-  it("tires the defender by the blow's fatigue, not when he blocks it or it knocks him out", () => {
+  it("tires the defender, not when he blocks it or it knocks him out", () => {
     const hit = body("hurt");
     landBlow(body("hit"), hit, context());
-    expect(hit.tire).toHaveBeenCalledWith(2);
+    expect(hit.tire).toHaveBeenCalledOnce();
     const guarding = body("hurt", { guarding: true });
     landBlow(body("hit"), guarding, context());
     expect(guarding.tire).not.toHaveBeenCalled();

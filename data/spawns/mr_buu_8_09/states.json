@@ -12,7 +12,6 @@
       ],
       "type": "light",
       "damage": 28,
-      "fatigue": 4,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "endsWithMove": [

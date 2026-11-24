@@ -1,28 +1,26 @@
 /**
- * Fatigue: the original's stun gauge (field `0x68`) counted the other way, so
- * the HUD's line grows with it. Blows taken add their cartridge's stun; past
- * the full amount the fighter is spent and it starts again from nothing
- * ($0D:D5E7). It does not wear off: the original's point every 16 frames
- * ($0D:D78A) is left out, at the owner's call. What being spent does is the
- * entity's, not this.
+ * Fatigue: hits taken, counted toward a collapse. Every hit counts the same —
+ * a blow, a throw, a scene's last blow — and a blocked one does not count
+ * (owner, 2026-11-24): simpler than the original's stun gauge (field `0x68`),
+ * where each blow takes its own amount and the gauge refills by itself. What
+ * being spent does is the entity's (`onTired`), not this.
  */
 
-/** How much he can take: twice the original's 20, so it fills half as fast (owner, 2026-11-24). */
-export const FATIGUE_MAX = 40;
+/** Hits until he is spent. */
+export const FATIGUE_HITS = 20;
 
 export class Fatigue {
-  private level = 0;
+  private hits = 0;
 
-  /** Add a blow's worth; true when it went past the full amount, and it empties. */
-  take(amount: number): boolean {
-    this.level += amount;
-    if (this.level <= FATIGUE_MAX) return false;
-    this.level = 0;
+  /** One more hit; true when it is the one that spends him, and the count starts again. */
+  hit(): boolean {
+    if (++this.hits < FATIGUE_HITS) return false;
+    this.hits = 0;
     return true;
   }
 
   /** How full, 0..1 — what the HUD's line draws. */
   get fraction(): number {
-    return this.level / FATIGUE_MAX;
+    return this.hits / FATIGUE_HITS;
   }
 }

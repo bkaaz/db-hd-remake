@@ -13,7 +13,6 @@
       "lasts": 36,
       "type": "heavy",
       "damage": 32,
-      "fatigue": 4,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "outlivesHit": true

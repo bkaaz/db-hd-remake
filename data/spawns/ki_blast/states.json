@@ -8,7 +8,6 @@
       "turn": false,
       "type": "heavy",
       "damage": 18,
-      "fatigue": 2,
       "burstsInto": "burst",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a"
