@@ -9,6 +9,7 @@ import { Round, type RoundWorld } from "../match/round";
 import { Opening } from "../match/opening";
 import { NO_INPUT } from "../entity/entity";
 import { Projectiles } from "../match/projectiles";
+import { loadRules } from "../match/rules";
 import { isColourSet, type DebugRequest, type Scene, type SceneContext, type SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
@@ -131,6 +132,8 @@ export class DebugScene implements Scene {
     const dummy1 = mode.p1?.does ? Dummy.from(mode.p1) : null;
     if (typeof dummy1 === "string") return `mode ${req.mode}: ${dummy1}`;
 
+    const rules = await loadRules();
+    if (typeof rules === "string") return rules;
     const p1 = await loadFighter(req.p1);
     if (typeof p1 === "string") return p1;
     const p2 = req.p2 === req.p1 ? p1 : await loadFighter(req.p2);
@@ -160,7 +163,7 @@ export class DebugScene implements Scene {
     // the switch is read as each blow lands: off, every sender's way is closed
     const toggles = ctx.keyboard.toggles;
     const opens = travel ? (...a: Parameters<Travel["opens"]>) => toggles.get("journeys") && travel.opens(...a) : undefined;
-    const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles, opens });
+    const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles, opens, rules });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);

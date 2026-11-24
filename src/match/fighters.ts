@@ -15,6 +15,7 @@ import { landBlow, type BlowContext } from "./blow";
 import { parries } from "./parry";
 import type { Projectiles } from "./projectiles";
 import { Recorder } from "./record";
+import type { Rules } from "./rules";
 import { Seizures } from "./seize";
 import { Finales } from "./finales";
 import { passedShove } from "../combat/corner";
@@ -47,6 +48,7 @@ export interface FightersSetup {
   projectiles: Projectiles;
   /** Whether a sending blow has somewhere to send him — see `BlowContext.opens`. */
   opens?: BlowContext["opens"];
+  rules: Rules;
 }
 
 /** What the HUD and the status line need to know about the pair. */
@@ -131,12 +133,12 @@ export class Fighters {
    */
   private inFront: Entity;
 
-  constructor({ world, p1, p2, scale, audio, effects, projectiles, opens }: FightersSetup) {
+  constructor({ world, p1, p2, scale, audio, effects, projectiles, opens, rules }: FightersSetup) {
     this.impact = { effects, opens };
     this.projectiles = projectiles;
     // a side each, so that one's sound never cuts the other's (src/audio/playback.ts)
-    this.player = new Entity(p1, scale, audio.side("p1", p1.sounds));
-    this.opponent = p2 ? new Entity(p2, scale, audio.side("p2", p2.sounds)) : null;
+    this.player = new Entity(p1, scale, audio.side("p1", p1.sounds), rules.comboLimits);
+    this.opponent = p2 ? new Entity(p2, scale, audio.side("p2", p2.sounds), rules.comboLimits) : null;
     // the same fighter on both sides: player two takes the next palette ($01:82F2)
     if (this.opponent && p2!.name === p1.name) this.opponent.alt = true;
     this.inFront = this.player;

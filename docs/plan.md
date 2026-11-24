@@ -12,14 +12,13 @@ when*; later ones are a line.
 [ADR 0038](./adr/0038-a-fighters-states-are-generated.md), before the first change
 of mechanics.
 
-1. **Rules of the game out of `attributes.json`** (`comboLimits`).
-2. **Freeze the port:** its flat states and hit types kept as they are.
-3. **The generator stops overwriting** a blow's type and damage: a sparse file
+1. **Freeze the port:** its flat states and hit types kept as they are.
+2. **The generator stops overwriting** a blow's type and damage: a sparse file
    of each fighter's, by state, written once from what `blowOf` gives now,
    shaped as the later parameters will be. An override of nothing is an error.
-4. **A stale `replaces` caught:** a test fails when a common state changes
+3. **A stale `replaces` caught:** a test fails when a common state changes
    that a fighter plays a copy of (`attack_b`, `crouch_b`, … are copied).
-5. **Whose `animations.json` is** — open. The export writes it whole, so an
+4. **Whose `animations.json` is** — open. The export writes it whole, so an
    animation edited in the editor or added for a mechanic is gone at the next
    export. Settled with the owner before the mechanics touch an animation.
 

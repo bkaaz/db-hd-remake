@@ -15,10 +15,10 @@ after that. A state's command entries stand in the order of his command table,
 its last row first, as the cartridge tries them (`inTableOrder`).
 `fighterStates.test.ts` fails while a generated file is out of date.
 
-**Before the first change of mechanics** (`plan.md`, the common part): rules of
-the game leave the fighters' attributes; the generator stops overwriting what
-the design then owns. A new mechanic comes in through data and is off without
-it, so the port's rules stay playable as they stand.
+**Before the first change of mechanics** (`plan.md`, the common part): the
+generator stops overwriting what the design then owns. A new mechanic comes in
+through data and is off without it, so the port's rules stay playable as they
+stand.
 
 **Rejected:**
 

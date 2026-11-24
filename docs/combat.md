@@ -148,10 +148,9 @@ combo from being a round; hitstun scaling ends a ground loop by itself, because
 the defender eventually recovers before the next blow. **Launch** scaling — each
 lift raising less — is not built yet.
 
-**Off for every fighter while the port stands** (owner, 2026-10-29): the
-attribute `comboLimits: false` switches off this and the relaunch budget (§4),
-so the cartridge's numbers can be compared with the original's. It leaves the
-fighters' attributes in the common part (`plan.md`).
+**Off while the port stands** (owner, 2026-10-29): `comboLimits: false` in
+`data/rules.json` switches off this and the relaunch budget (§4) for both
+sides, so the cartridge's numbers can be compared with the original's.
 
 ### 4. Relaunch
 

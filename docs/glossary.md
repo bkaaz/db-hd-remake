@@ -52,6 +52,7 @@ change.
 - **Recovery** — the frames after the active ones, when you still cannot act. → `combat.md` §1
 - **Rehit** — frames before a blow may connect again while its box is still out. → `combat/swing.ts`
 - **Relaunch** — a blow allowed to lift or floor a body already juggled, from a budget per combo. → `combat.md` §4
+- **Rules** — what holds for both sides of a fight alike, never a fighter's attribute. → `data/rules.json`, `match/rules.ts`
 - **Rush** — the string the Attack button walks; Smash ends it. → `combat.md` (The buttons)
 - **SA-1** — the cartridge's second CPU, which runs the fight. → `rom.md`
 - **Scaling** — each blow of a combo worth less, in damage and hitstun. → `combat.md` §3, `combat/scaling.ts`

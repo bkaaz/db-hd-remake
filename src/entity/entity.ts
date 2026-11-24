@@ -395,6 +395,8 @@ export class Entity {
     private readonly def: EntityDef,
     private readonly scale: number,
     private readonly audio: SoundPlayer | null = null,
+    /** The game's `comboLimits` (`match/rules.ts`): only a fighter in a fight is told it. */
+    comboLimits = true,
   ) {
     this.gravity = def.attributes.gravity;
     this.landCue = def.attributes.landCue;
@@ -405,7 +407,7 @@ export class Entity {
     this.hitstop = def.attributes.hitstop;
     this.maxHealth = def.attributes.health;
     this.defence = def.attributes.defence;
-    this.combo = new Combo(def.attributes.comboLimits);
+    this.combo = new Combo(comboLimits);
     this.maxKi = def.attributes.ki;
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;

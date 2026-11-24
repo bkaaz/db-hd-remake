@@ -6,8 +6,9 @@ description: Port a move of the cartridge's goku into states — a normal, a spe
 # Porting a move from the cartridge
 
 Faithful first, changed later (owner, 2026-10-29): copy what the cartridge
-says, guess nothing, and say where it is silent. `goku` has our combo rules
-off (`comboLimits: false`) so his numbers can be compared with the original.
+says, guess nothing, and say where it is silent. The game has our combo rules
+off (`comboLimits: false` in `data/rules.json`) so the numbers can be compared
+with the original.
 
 ## 0. Another fighter: what is left to read
 
