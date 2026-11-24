@@ -31,7 +31,7 @@ describe("withOverrides", () => {
 
   it("refuses a state he does not have, one of his own, and a field that would not change", () => {
     expect(() => withOverrides(COMMON, { kick: { damage: 1 } }, null)).toThrow(/no such state/);
-    expect(() => withOverrides(COMMON, { jab: { damage: 1 } }, { states: {}, replaces: ["jab"] })).toThrow(/his own/);
+    expect(() => withOverrides(COMMON, { jab: { damage: 1 } }, { states: {}, replaces: { jab: "" } })).toThrow(/his own/);
     expect(() => withOverrides(COMMON, { jab: { damage: 10 } }, null)).toThrow(/what it is already/);
   });
 });

@@ -1,13 +1,13 @@
 {
-  "replaces": [
-    "attack_y_close",
-    "attack_y",
-    "attack_b",
-    "crouch_y",
-    "crouch_b",
-    "intro",
-    "win"
-  ],
+  "replaces": {
+    "attack_y_close": "f5b2223c",
+    "attack_y": "06b40d78",
+    "attack_b": "0749fefe",
+    "crouch_y": "73346a15",
+    "crouch_b": "71759fae",
+    "intro": "7c9c81ef",
+    "win": "4bf78085"
+  },
   "entries": [
     {
       "from": [

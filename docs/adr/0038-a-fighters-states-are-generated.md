@@ -10,10 +10,12 @@ states` from our files alone (`src/rom/compose.ts`): the common states
 (`data/template/states.json`) on his animations, his `overrides.json` laid on
 them — where his common states differ, field by field — and his
 `specials.json` merged in: his specials, and the common states he plays
-differently, named in `replaces`. All of it is by hand. A state's command
-entries stand in the order of his `commands.json`, its last row first, as the
-cartridge tries them (`inTableOrder`). `compose.test.ts` fails while a file is
-out of date.
+differently, named in `replaces` with a fingerprint of the common state his
+copy was last checked against — a change to it that passes his copy by is
+named by `npm run states` and fails a test until accepted. All of it is by
+hand. A state's command entries stand in the order of his `commands.json`, its
+last row first, as the cartridge tries them (`inTableOrder`). `compose.test.ts`
+fails while a file is out of date.
 
 The cartridge is a report: `npm run rom -- states` prints where its numbers
 differ from ours and writes nothing. The overrides were written once from what
@@ -36,6 +38,8 @@ rules stay playable as they stand.
   comes back.
 - **An override replacing a whole state** — a change to the common state would
   pass him by; `replaces` is for a state he plays differently, and says so.
+- **The common state's whole text kept beside each copy** — 58 states nobody
+  edits, to show what git already does (`git log -p`).
 - **Any special overriding a common state of its name** — a typo would silently
   drop a common state; `replaces` says so on purpose.
 - **The engine sorting command entries as it loads** — the file would say one

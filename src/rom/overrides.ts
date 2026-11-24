@@ -14,10 +14,10 @@ export type Overrides = Record<string, Partial<StateDef>>;
  * specials and the states he replaces are his own, edited where they stand.
  * An override that names no state, or changes nothing, is an error.
  */
-export function withOverrides(file: StatesFile, overrides: Overrides, own: { states: Record<string, unknown>; replaces?: string[] } | null): StatesFile {
+export function withOverrides(file: StatesFile, overrides: Overrides, own: { states: Record<string, unknown>; replaces?: Record<string, string> } | null): StatesFile {
   const states = { ...file.states };
   for (const [name, fields] of Object.entries(overrides)) {
-    if (own && (name in own.states || own.replaces?.includes(name))) throw new Error(`"${name}" is overridden, but it is his own: edit it in specials.json`);
+    if (own && (name in own.states || name in (own.replaces ?? {}))) throw new Error(`"${name}" is overridden, but it is his own: edit it in specials.json`);
     if (!(name in states)) throw new Error(`"${name}" is overridden, but the common states make no such state for him`);
     const was = states[name] as unknown as Record<string, unknown>;
     const merged = merge(was, fields) as Record<string, unknown>;

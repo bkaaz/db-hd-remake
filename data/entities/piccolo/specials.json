@@ -1,9 +1,9 @@
 {
-  "replaces": [
-    "attack_b",
-    "intro",
-    "win"
-  ],
+  "replaces": {
+    "attack_b": "0749fefe",
+    "intro": "7c9c81ef",
+    "win": "4bf78085"
+  },
   "entries": [
     {
       "from": [

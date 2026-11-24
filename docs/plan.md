@@ -12,9 +12,7 @@ when*; later ones are a line.
 [ADR 0038](./adr/0038-a-fighters-states-are-generated.md), before the first change
 of mechanics.
 
-1. **A stale `replaces` caught:** a test fails when a common state changes
-   that a fighter plays a copy of (`attack_b`, `crouch_b`, … are copied).
-2. **Whose `animations.json` is** — open. The export writes it whole, so an
+1. **Whose `animations.json` is** — open. The export writes it whole, so an
    animation edited in the editor or added for a mechanic is gone at the next
    export. Settled with the owner before the mechanics touch an animation.
 

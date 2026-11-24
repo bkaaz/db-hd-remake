@@ -49,6 +49,7 @@ import { arrow, buttonName, commandsFile, readCommands } from "../src/rom/comman
 import { closeLines, NORMALS } from "../src/rom/buttons.ts";
 import { fighterStates, generatedFighters, tablesOf } from "../src/rom/fighterStates.ts";
 import { COMMON } from "../src/rom/compose.ts";
+import { fingerprint } from "../src/rom/specials.ts";
 import { cartridgeLines } from "../src/rom/cartridgeReport.ts";
 import { draftSpecials } from "../src/rom/draft.ts";
 import { moveParts } from "../src/rom/parts.ts";
@@ -127,7 +128,7 @@ function reportStates(name: string, t: FighterTables): void {
   // a move he plays a state of his own from is read, whichever of its parts the template's copy plays
   const read = new Set([...Object.values(own?.states ?? {}).map((d) => moveOf(d.anim)), ...(own?.read ?? []).map((m) => parseInt(m, 16))]);
   for (const [state, def] of Object.entries(made.file.states)) {
-    if (own?.replaces?.includes(state)) continue;
+    if (state in (own?.replaces ?? {})) continue;
     const move = moveOf(def.anim);
     if (move !== null && !read.has(move) && !sameHandler(rom, GOKU, t, move))
       console.log(`  ${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, t.character, move))}) — to read`);
@@ -528,6 +529,8 @@ if (command === "tiles") {
     }
   }
   writeFileSync(`data/entities/${name}/objects.json`, JSON.stringify(unique, null, 2) + "\n");
+  // each copy stamped with the common state it was made from (staleCopies)
+  for (const state of Object.keys(draft.specials.replaces ?? {})) draft.specials.replaces![state] = fingerprint(template.states[state]);
   writeFileSync(path, JSON.stringify(draft.specials, null, 2) + "\n");
   for (const m of draft.moves) console.log(`| \`${m.move}\` ${m.state} | ${m.input} | ${m.left.join("; ") || "—"} |`);
   console.log(`${unique.length} objects with no recording`);

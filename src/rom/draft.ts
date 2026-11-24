@@ -107,7 +107,8 @@ export function draftSpecials(
       if (name === base(from) || name.startsWith(`${base(from)}_`)) state.transitions = [way, ...(state.transitions ?? [])];
     }
   }
-  return { specials: { replaces: Object.values(normals), entries, states }, objects, moves };
+  // the normals he plays as his own: stamped against the common states by whoever writes the file
+  return { specials: { replaces: Object.fromEntries(Object.values(normals).map((n) => [n, ""])), entries, states }, objects, moves };
 }
 
 /** One state per part of the move. */

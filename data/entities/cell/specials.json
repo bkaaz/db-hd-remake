@@ -1,10 +1,10 @@
 {
-  "replaces": [
-    "attack_x",
-    "intro",
-    "win",
-    "win_2"
-  ],
+  "replaces": {
+    "attack_x": "4ead24b4",
+    "intro": "7c9c81ef",
+    "win": "4bf78085",
+    "win_2": "0be0a2b6"
+  },
   "entries": [
     {
       "from": [

@@ -5,6 +5,7 @@
  * other fighter's specials; this puts his own back.
  */
 
+import { createHash } from "node:crypto";
 import type { StateDef, StatesFile, Transition } from "../entity/states";
 
 /** Section file `specials.json`: his special states, and where each is asked for. */
@@ -18,11 +19,14 @@ export interface SpecialsFile {
   entries: { from: string[]; when: Transition["when"]; to: string }[];
   states: Record<string, StateDef>;
   /**
-   * Template states his own handler plays differently (his far B slides,
-   * his crouching B hits twice): named here, his version in `states`
-   * replaces the template's whole — unnamed, a clash is still an error.
+   * Common states his own handler plays differently (his far B slides, his
+   * crouching B hits twice): named here, his version in `states` replaces the
+   * common one whole — unnamed, a clash is still an error. Each with the
+   * `fingerprint` of the common state his copy was last checked against, so a
+   * change to the common one that passes his copy by is called out
+   * (`staleCopies`) rather than lost.
    */
-  replaces?: string[];
+  replaces?: Record<string, string>;
   /**
    * Moves whose own handler is read and plays right through the template's
    * states on his own parts — his charge loops at other frames, which the
@@ -49,7 +53,7 @@ const ASKS = /^(pressed|command):/;
 /** `file` with his specials in it; a name taken or a state missing is an error, not a quiet skip. */
 export function withSpecials(file: StatesFile, specials: SpecialsFile, groups: Groups = {}): StatesFile {
   const states = { ...file.states };
-  const replaces = new Set(specials.replaces ?? []);
+  const replaces = new Set(Object.keys(specials.replaces ?? {}));
   for (const name of replaces) {
     if (!(name in states)) throw new Error(`"${name}" is replaced, but the template makes no such state`);
     if (!(name in specials.states)) throw new Error(`"${name}" is replaced, but specials.json does not define it`);
@@ -75,6 +79,18 @@ export function withSpecials(file: StatesFile, specials: SpecialsFile, groups: G
   }
   const round = specials.poses && file.round ? { ...file.round, win: specials.poses } : file.round;
   return { ...file, states, round };
+}
+
+/** A common state, shortened to what tells one version of it from another. */
+export function fingerprint(def: StateDef): string {
+  return createHash("sha1").update(JSON.stringify(def)).digest("hex").slice(0, 8);
+}
+
+/** The states he replaces whose common state has changed since his copy was checked against it. */
+export function staleCopies(common: StatesFile, specials: SpecialsFile): string[] {
+  return Object.entries(specials.replaces ?? {})
+    .filter(([name, print]) => common.states[name] && fingerprint(common.states[name]) !== print)
+    .map(([name]) => name);
 }
 
 /** A state's name as it is, a group's as its states; a group nobody defined is an error. */

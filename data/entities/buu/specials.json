@@ -1,14 +1,14 @@
 {
-  "replaces": [
-    "attack_y_close",
-    "attack_y",
-    "attack_b",
-    "crouch_y",
-    "jump_b",
-    "jump_fwd_y",
-    "charge_start",
-    "intro"
-  ],
+  "replaces": {
+    "attack_y_close": "f5b2223c",
+    "attack_y": "06b40d78",
+    "attack_b": "0749fefe",
+    "crouch_y": "73346a15",
+    "jump_b": "ae636e8d",
+    "jump_fwd_y": "075524d7",
+    "charge_start": "ce855e16",
+    "intro": "7c9c81ef"
+  },
   "entries": [
     {
       "from": [

@@ -29,7 +29,7 @@ missing.
 | `animations.json` | `npm run rom -- export`, whole; an edit in the editor is lost at the next export (ADR 0017) |
 | `states.json` | `npm run states`, whole: the common states with his overrides and specials, no cartridge (ADR 0038) |
 | `overrides.json` | by hand: where his common states differ, field by field (`rom/overrides.ts`, ADR 0038) |
-| `specials.json` | by hand, first drafted by `npm run rom -- draft` (ADR 0038) |
+| `specials.json` | by hand, first drafted by `npm run rom -- draft`; a fingerprint beside each state it `replaces` by `npm run states -- --accept` (ADR 0038) |
 | `objects.json` | `npm run rom -- draft`: a fighter's objects no recording has given yet |
 | `commands.json` | `npm run rom -- commands`, whole (ADR 0050) |
 | `sounds.json` | the editor's Sounds tab; a fighter's voices by `npm run rom -- export`, which keeps the rest |

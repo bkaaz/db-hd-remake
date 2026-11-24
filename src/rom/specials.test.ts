@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { StatesFile } from "../entity/states";
-import { withSpecials, type SpecialsFile } from "./specials";
+import { fingerprint, staleCopies, withSpecials, type SpecialsFile } from "./specials";
 
 const TEMPLATE: StatesFile = {
   initial: "idle",
@@ -59,10 +59,10 @@ describe("withSpecials", () => {
   });
 
   it("replaces a template state it names, and only one it names", () => {
-    const out = withSpecials(TEMPLATE, { ...BALL, replaces: ["kick"], states: { ...BALL.states, kick: { anim: "m93" } } });
+    const out = withSpecials(TEMPLATE, { ...BALL, replaces: { kick: "" }, states: { ...BALL.states, kick: { anim: "m93" } } });
     expect(out.states.kick).toEqual({ anim: "m93" });
-    expect(() => withSpecials(TEMPLATE, { ...BALL, replaces: ["nothing"], states: { ...BALL.states, nothing: { anim: "m93" } } })).toThrow(/makes no such state/);
-    expect(() => withSpecials(TEMPLATE, { ...BALL, replaces: ["kick"] })).toThrow(/does not define it/);
+    expect(() => withSpecials(TEMPLATE, { ...BALL, replaces: { nothing: "" }, states: { ...BALL.states, nothing: { anim: "m93" } } })).toThrow(/makes no such state/);
+    expect(() => withSpecials(TEMPLATE, { ...BALL, replaces: { kick: "" } })).toThrow(/does not define it/);
   });
 
   it("gives him his own winner's poses, keeping the rest of the round", () => {
@@ -71,5 +71,14 @@ describe("withSpecials", () => {
     expect(out.round).toEqual({ ...round, win: ["kick"] });
     expect(withSpecials({ ...TEMPLATE, round }, BALL).round).toEqual(round);
     expect(() => withSpecials({ ...TEMPLATE, round }, { ...BALL, poses: ["nothing"] })).toThrow(/no state/);
+  });
+});
+
+describe("staleCopies", () => {
+  it("names a copy whose common state changed since it was checked, and no other", () => {
+    const specials: SpecialsFile = { ...BALL, replaces: { kick: fingerprint(TEMPLATE.states.kick), ki: fingerprint(TEMPLATE.states.ki) } };
+    expect(staleCopies(TEMPLATE, specials)).toEqual([]);
+    const changed = { ...TEMPLATE, states: { ...TEMPLATE.states, kick: { anim: "m02", cancelBy: 12 } } };
+    expect(staleCopies(changed, specials)).toEqual(["kick"]);
   });
 });

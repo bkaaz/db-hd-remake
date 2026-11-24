@@ -260,7 +260,9 @@ npm run rom -- export --fighter vegeta
 npm run states    # every fighter's states.json from our files: the
                   # common states (data/template/), his overrides.json and
                   # specials.json — after any change to them; a test fails
-                  # until it is run. No cartridge
+                  # until it is run. No cartridge. Names a copy in his
+                  # replaces whose common state changed since; once looked
+                  # at: npm run states -- --accept vegeta attack_b
 npm run rom -- states --fighter vegeta
                   # where the cartridge's numbers differ from his states
                   # and attributes, printed, never written; --all for all
