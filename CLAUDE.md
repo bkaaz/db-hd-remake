@@ -166,10 +166,12 @@ collision resolution) is written free of PixiJS so it can be tested in Node.
 ## Authoring content: compute it, don't reason about it
 
 - **Anything derivable is computed by a script**, never worked out by hand or
-  by eye. A fighter's drawings, frames, animations, boxes and objects come out
+  by eye. A fighter's drawings, frames, animations, boxes and objects came out
   of the cartridge (`npm run rom -- export`, ADR 0017, ADR 0090) —
-  deterministic, identical every time. Never pull `frames.json` into context to
-  do arithmetic.
+  deterministic, identical every time. **Every `npm run rom` command writes
+  beside `data/`, under `logs/rom/data/`, never over it**: ours are by hand
+  since the port's end, and what the cartridge says is taken over by hand.
+  Never pull `frames.json` into context to do arithmetic.
 - **Never guess which pose is which** when it matters: render `npm run sheet`
   and look, or ask. A wrong frame is a silent, expensive mistake.
 - **Separate what was *computed* from what was *guessed*** when reporting, and
@@ -241,8 +243,8 @@ npm run rom -- frame 4a
                   # a drawing read straight from the cartridge, into
                   # preview/ (frames: draw all, tiles: every tile set;
                   # move 92: the animation script a move plays;
-                  # export: rewrites goku's sheet, frames.json and
-                  # animations.json whole — ADR 0017)
+                  # export: goku's frames.json and animations.json,
+                  # into logs/rom/data/ — ADR 0017)
 npm run rom -- port a5
                   # all the cartridge says about one move, per part of its
                   # animation — what its states are written from
@@ -253,7 +255,7 @@ npm run rom -- roster
                   # every fighter of the cartridge; any reading command
                   # takes --fighter <name> (port, move, frame…)
 npm run rom -- commands --fighter vegeta
-                  # his command table into commands.json, as the
+                  # his command table as a commands.json, as the
                   # engine matches it (src/input/command.ts)
 npm run rom -- export --fighter vegeta
                   # another fighter's sheet, frames and animations only
@@ -268,10 +270,10 @@ npm run rom -- states --fighter vegeta
                   # and attributes, printed, never written; --all for all
 npm run rom -- draft --fighter cell
                   # a first specials.json and his objects from the reports
-                  # (ADR 0038); --force writes it again
+                  # (ADR 0038)
 npm run rom -- export --all
                   # goku and every fighter with states, exported again;
-                  # then git diff data/ says what a reader's change moved
+                  # then diff -r data logs/rom/data says what differs
 npm run rom -- objects [logs/objects-rec.txt]
                   # a recording of the object slots read back: each
                   # object's frames and timing, speed, what it becomes
@@ -288,8 +290,7 @@ npm run rom -- todo --fighter vegeta
                   # the most shared first
 npm run rom -- entries --fighter vegeta
                   # the states whose move reads commands ($0F:9EB1)
-                  # but lack an entry for some of his; --order puts
-                  # the entries in the cartridge's order (ADR 0038)
+                  # but lack an entry for some of his
 npm run rom -- spawns --fighter vegeta
                   # every move that puts out an object, and how it is
                   # asked for — what to record (ADR 0036)

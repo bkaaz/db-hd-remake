@@ -36,7 +36,8 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 import { CANDY, FIRE, GOKU, SHOCK, ROM_PATH, scriptAt, tileResourceOf, type FighterTables, type SpawnDef } from "../src/rom/cartridge.ts";
 import { fighterTables, ROSTER, type FighterName } from "../src/rom/roster.ts";
 import { readScript, type ScriptOp } from "../src/rom/script.ts";
@@ -72,7 +73,7 @@ import { readAttributes } from "../src/rom/attributes.ts";
 import { commandContext } from "../src/rom/conditions.ts";
 import type { StatesFile } from "../src/entity/states.ts";
 import { portReport } from "../src/rom/port.ts";
-import { inTableOrder, missingEntries } from "../src/rom/entries.ts";
+import { missingEntries } from "../src/rom/entries.ts";
 import { setsOver } from "../src/rom/recolour.ts";
 import type { PalettesFile, Rgb } from "../src/entity/palettesFile.ts";
 import { long } from "../src/rom/disasm.ts";
@@ -171,6 +172,17 @@ const name = named >= 0 ? argv[named + 1] : "goku";
 const T = named >= 0 ? tablesOf(rom, name) : GOKU;
 if (named >= 0) argv.splice(named, 2);
 const [command, ...args] = argv;
+
+/**
+ * Where what the cartridge says of a file of `data/` is written: beside it,
+ * under `logs/rom/`, never over ours, which are by hand from the port's end
+ * (ADR 0038) — taken over by hand, `diff -r data logs/rom/data`.
+ */
+function beside(path: string): string {
+  const to = path.replace(/^data\//, "logs/rom/data/");
+  mkdirSync(dirname(to), { recursive: true });
+  return to;
+}
 // Goku's export is his own path: through another fighter's he loses his spawns
 if (named >= 0 && name === "goku" && ["export", "draft"].includes(command)) {
   throw new Error(`goku's ${command} is npm run rom -- ${command}, without --fighter`);
@@ -370,9 +382,9 @@ if (command === "tiles") {
   for (const line of changes) console.log(line);
   if (changes.length === 0) console.log(`${path}: as recorded already`);
   if (!args.includes("--dry-run") && changes.length > 0) {
-    writeFileSync(path, JSON.stringify(corrected.objects, null, 2) + "\n");
-    for (const spawn of stale) rmSync(`data/spawns/${spawn}/animations.json`);
-    console.log(`now: npm run rom -- export --fighter ${name}`);
+    writeFileSync(beside(path), JSON.stringify(corrected.objects, null, 2) + "\n");
+    for (const spawn of stale) console.log(`${spawn}'s animations.json is the drawn one's, no longer the recorded one's`);
+    console.log(`into ${beside(path)}; then npm run rom -- export --fighter ${name}`);
   }
 } else if (command === "vram") {
   // each object's tiles and colours in a recording's snapshots, named in the
@@ -465,16 +477,12 @@ if (command === "tiles") {
 } else if (command === "commands") {
   // the sequences as the engine matches them (src/input/command.ts, ADR 0050)
   const file = commandsFile(rom, T.character);
-  writeFileSync(`data/entities/${name}/commands.json`, JSON.stringify(file, null, 2) + "\n");
-  console.log(`${name}: ${file.commands.length} commands into data/entities/${name}/commands.json`);
+  const to = beside(`data/entities/${name}/commands.json`);
+  writeFileSync(to, JSON.stringify(file, null, 2) + "\n");
+  console.log(`${name}: ${file.commands.length} commands into ${to}`);
 } else if (command === "entries") {
   // states whose move's handler reads commands ($0F:9EB1) but lack an entry for some
   const states = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
-  // --order: put every state's command entries in the cartridge's order (goku's are by hand)
-  if (args.includes("--order")) {
-    writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(inTableOrder(states, readCommands(rom, T.character)), null, 2) + "\n");
-    console.log(`${name}: command entries put in the table's order, its last row first`);
-  }
   const missing = missingEntries(rom, T, states);
   for (const m of missing) console.log(`${m.state.padEnd(20)} ${states.states[m.state].anim?.padEnd(7)} ${(m.when || "always").padEnd(24)} ${m.moves.map(hex).join(" ")}`);
   if (missing.length === 0) console.log(`${name}: every state that reads commands has an entry for each`);
@@ -487,7 +495,6 @@ if (command === "tiles") {
 } else if (command === "draft" && T !== GOKU) {
   // a first specials.json from the reports; a second run needs --force, the file being by hand from then on
   const path = `data/entities/${name}/specials.json`;
-  if (existsSync(path) && !args.includes("--force")) throw new Error(`${path} is there: --force to write it again`);
   const types = JSON.parse(readFileSync("data/hit-types.json", "utf8")) as Record<string, unknown>;
   const known = (type: string) => type in types;
   const shared = (type: number, anim: number) => GOKU.objects.spawns.find((sp) => sp.type === type && sp.anim === anim)?.name;
@@ -509,10 +516,9 @@ if (command === "tiles") {
     if (shared(spawn.type, spawn.anim)) return [];
     const object = draftObject(rom, T, name, move, spawn);
     if (object) {
-      mkdirSync(`data/spawns/${object.name}`, { recursive: true });
-      writeFileSync(`data/spawns/${object.name}/states.json`, JSON.stringify(objectStates(rom, spawn, known), null, 2) + "\n");
+      writeFileSync(beside(`data/spawns/${object.name}/states.json`), JSON.stringify(objectStates(rom, spawn, known), null, 2) + "\n");
       // a body's gravity is not an object's: b0's speed holds the whole flight
-      if (spawn.vy !== 0) writeFileSync(`data/spawns/${object.name}/attributes.json`, JSON.stringify({ gravity: 0 }, null, 2) + "\n");
+      if (spawn.vy !== 0) writeFileSync(beside(`data/spawns/${object.name}/attributes.json`), JSON.stringify({ gravity: 0 }, null, 2) + "\n");
     } else console.log(`no frames for object ${hex(spawn.type)}/${hex(spawn.anim)}`);
     return object ? [object] : [];
   });
@@ -528,10 +534,10 @@ if (command === "tiles") {
       def.fires = { ...def.fires, ...first, ...(rest.length > 0 ? { with: rest } : { with: undefined }) };
     }
   }
-  writeFileSync(`data/entities/${name}/objects.json`, JSON.stringify(unique, null, 2) + "\n");
+  writeFileSync(beside(`data/entities/${name}/objects.json`), JSON.stringify(unique, null, 2) + "\n");
   // each copy stamped with the common state it was made from (staleCopies)
   for (const state of Object.keys(draft.specials.replaces ?? {})) draft.specials.replaces![state] = fingerprint(template.states[state]);
-  writeFileSync(path, JSON.stringify(draft.specials, null, 2) + "\n");
+  writeFileSync(beside(path), JSON.stringify(draft.specials, null, 2) + "\n");
   for (const m of draft.moves) console.log(`| \`${m.move}\` ${m.state} | ${m.input} | ${m.left.join("; ") || "—"} |`);
   console.log(`${unique.length} objects with no recording`);
 } else if (command === "export" && args.includes("--all")) {
@@ -593,8 +599,7 @@ if (command === "tiles") {
   for (const [name, source] of Object.entries(ARENAS)) {
     // its pictures the browser draws (ADR 0090); arena.json says how they scroll
     const { file } = exportArena(rom, source);
-    mkdirSync(`data/arenas/${name}`, { recursive: true });
-    writeFileSync(`data/arenas/${name}/arena.json`, JSON.stringify(file, null, 2) + "\n");
+    writeFileSync(beside(`data/arenas/${name}/arena.json`), JSON.stringify(file, null, 2) + "\n");
     console.log(`${name}: ${file.layers.length} layers × ${file.times.length} lightings`);
   }
 } else {
@@ -602,7 +607,6 @@ if (command === "tiles") {
   process.exit(1);
 }
 
-/** Writes the sheet and the two sections the export owns; states stay hand-written. */
 /** The shock's two palette records, at their addresses: the same for every fighter. */
 
 /** A fighter's voice and lines, played by the cartridge's driver with his samples (ADR 0092); his other sounds kept. */
@@ -610,15 +614,14 @@ function writeVoice(t: FighterTables, fighter: string): void {
   const ids = spokenLines(rom, t);
   const path = `data/entities/${fighter}/sounds.json`;
   const sounds = existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as Sounds) : {};
-  writeFileSync(path, JSON.stringify(voiceSounds(sounds, fighter, ids), null, 2) + "\n");
+  writeFileSync(beside(path), JSON.stringify(voiceSounds(sounds, fighter, ids), null, 2) + "\n");
   console.log(`${fighter}: voice 30 31 32, lines ${ids.map(lineName).join(" ")}; ${path}`);
 }
 
 /** An entity's frames and animations; its pictures the browser draws from the ROM (ADR 0090). */
 function write(dir: string, e: Exported): void {
-  mkdirSync(dir, { recursive: true });
-  writeFileSync(`${dir}/frames.json`, JSON.stringify(e.frames, null, 2) + "\n");
-  writeFileSync(`${dir}/animations.json`, JSON.stringify(e.animations, null, 2) + "\n");
+  writeFileSync(beside(`${dir}/frames.json`), JSON.stringify(e.frames, null, 2) + "\n");
+  writeFileSync(beside(`${dir}/animations.json`), JSON.stringify(e.animations, null, 2) + "\n");
 }
 
 /** A spawn's animations as `SpawnDef.animations` gives them: the frames each shows and how long. */
@@ -631,7 +634,7 @@ function animationsOf(spawn: string): SpawnDef["animations"] {
 
 /** What the browser draws a spawn's pictures from (`src/rom/spawnLook.ts`). */
 function writeLook(spawn: string, e: Exported): void {
-  if (e.look) writeFileSync(`data/spawns/${spawn}/look.json`, JSON.stringify(e.look, null, 2) + "\n");
+  if (e.look) writeFileSync(beside(`data/spawns/${spawn}/look.json`), JSON.stringify(e.look, null, 2) + "\n");
 }
 
 /**
@@ -649,7 +652,7 @@ function writeSpawn(spawn: string, e: Exported): void {
   const kept = existsSync(at) ? JSON.parse(readFileSync(at, "utf8")) : {};
   // a shimmer taken off by hand stays off: Goten's and Trunks's fades are their state's `paletteAt`
   const shimmer = !kept.palettes || kept.shimmer ? names.filter((n) => n.startsWith("shimmer")) : [];
-  writeFileSync(at, JSON.stringify({ ...kept, palettes: names, ...(shimmer.length && { shimmer }) }, null, 2) + "\n");
+  writeFileSync(beside(at), JSON.stringify({ ...kept, palettes: names, ...(shimmer.length && { shimmer }) }, null, 2) + "\n");
 }
 
 function describe(op: ScriptOp): string {

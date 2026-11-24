@@ -7,16 +7,7 @@ when*; later ones are a line.
 
 ---
 
-## First: the common part
-
-[ADR 0038](./adr/0038-a-fighters-states-are-generated.md), before the first change
-of mechanics.
-
-1. **Whose `animations.json` is** — open. The export writes it whole, so an
-   animation edited in the editor or added for a mechanic is gone at the next
-   export. Settled with the owner before the mechanics touch an animation.
-
-## Then: the mechanics
+## Next: the mechanics
 
 The order is provisional; `combat.md` says what each is. `npm run chains` has to
 hold for every fighter, not only one.

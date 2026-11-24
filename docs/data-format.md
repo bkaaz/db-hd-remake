@@ -23,19 +23,23 @@ brings into the world (ADR 0014). The game assembles a directory into one
 server's `/api/entity`. Every section is optional, and the game defaults what is
 missing.
 
+Every `npm run rom` command writes under `logs/rom/data/`, beside the file it
+reads the cartridge for, never over it (ADR 0017): from the port's end our files
+are by hand, and what the cartridge says is taken over by hand.
+
 | section | written by |
 |---|---|
-| `frames.json` | `npm run rom -- export`, whole (ADR 0090) |
-| `animations.json` | `npm run rom -- export`, whole; an edit in the editor is lost at the next export (ADR 0017) |
+| `frames.json` | made by `npm run rom -- export` until the port's end; by hand since (ADR 0090) |
+| `animations.json` | made by `npm run rom -- export` until the port's end; by hand and in the editor since (ADR 0017) |
 | `states.json` | `npm run states`, whole: the common states with his overrides and specials, no cartridge (ADR 0038) |
 | `overrides.json` | by hand: where his common states differ, field by field (`rom/overrides.ts`, ADR 0038) |
 | `specials.json` | by hand, first drafted by `npm run rom -- draft`; a fingerprint beside each state it `replaces` by `npm run states -- --accept` (ADR 0038) |
-| `objects.json` | `npm run rom -- draft`: a fighter's objects no recording has given yet |
-| `commands.json` | `npm run rom -- commands`, whole (ADR 0050) |
-| `sounds.json` | the editor's Sounds tab; a fighter's voices by `npm run rom -- export`, which keeps the rest |
+| `objects.json` | by hand; `npm run rom -- draft` and `recorded` say what the cartridge gives, beside |
+| `commands.json` | by hand since the port's end; `npm run rom -- commands` writes the cartridge's beside (ADR 0050) |
+| `sounds.json` | the editor's Sounds tab; `npm run rom -- export` writes a fighter's voices beside |
 | `attributes.json` | by hand |
 | `palettes.json` | by hand: colour sets of ours (ADR 0063) |
-| `look.json` | a spawn's only: `npm run rom -- export` (ADR 0036) |
+| `look.json` | a spawn's only: made by `npm run rom -- export` (ADR 0036), beside since the port's end |
 
 The editor saves **one section per Save**, chosen by the active tab, so a script
 and a tab working on different sections never overwrite each other. The game

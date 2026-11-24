@@ -27,10 +27,11 @@ in `data/template/states.json`, Goku's special in his `specials.json`;
 ## A fighter's first draft
 
 `npm run rom -- export --fighter <name>`, `commands`, then `draft --fighter
-<name>` (ADR 0038) and `export` again for its objects, then `states`. His names
+<name>` (ADR 0038) and `export` again for its objects — all of it into
+`logs/rom/data/`, copied into `data/` by hand — then `npm run states`. His names
 go in `src/rom/moveNames.ts` first. What the draft left out is printed one line
 a move: say it when handing the moves over. Correct `specials.json` by hand from
-there, never `--force` once it has been corrected.
+there.
 
 ## How a fighter is ported: in batches (owner, 2026-11-02)
 
@@ -166,8 +167,8 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   `commands.json` (`npm run rom -- commands`, ADR 0050). Then `npm run rom -- entries`: no
   stand, walk or crouch state may be listed (`npm run rom -- states` says
   so too).
-  Where an entry goes is not yours to pick: `entries --order` (and
-  `npm run states`) puts the command entries in the cartridge's order,
+  Where an entry goes is not yours to pick: `npm run states` puts the
+  command entries in the cartridge's order,
   the table's last row first (ADR 0038).
 - no swing `sound`: the export put the script's sounds on the animation's
   steps (`sfx`), and they play through the bank entry whose `rom` is that

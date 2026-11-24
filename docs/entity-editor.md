@@ -8,7 +8,7 @@ spawn. What an entity is on disk: [`data-format.md`](./data-format.md).
 | Tab | What it does |
 |---|---|
 | **Sprites** | the sheet as the ROM draws it, with the export's frames and anchors — read-only (ADR 0090) |
-| **Animations** | timed steps, the hit / hurt / push boxes, preview. Its edits are lost at the next export (ADR 0017), which the common part settles (`plan.md`) |
+| **Animations** | timed steps, the hit / hurt / push boxes, preview. Ours since the port's end: the export writes beside (ADR 0017) |
 | **Combos** | the chain graph: a node per attack at its hit frame, an edge per cancel with its button and margin (ADR 0009) — read-only |
 | **Sounds** | the game's bank and a fighter's voices, auditioned and edited |
 
