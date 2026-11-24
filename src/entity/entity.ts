@@ -1139,7 +1139,7 @@ export class Entity {
     return this.maxHealth > 0 ? this.hp / this.maxHealth : 0;
   }
 
-  /** How full the ki meter is, 0..1 — what the HUD's marks draw. */
+  /** How full the ki meter is, 0..1 — what the HUD's bars draw. */
   get kiFraction(): number {
     return this.maxKi > 0 ? this.ki / this.maxKi : 0;
   }

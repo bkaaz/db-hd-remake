@@ -169,7 +169,7 @@ export interface Attributes {
    */
   hitstun: number;
   /**
-   * The ki meter's capacity: six levels of 10, the HUD's six marks, so a
+   * The ki meter's capacity: six levels of 10, the HUD's six bars, so a
    * special's cost of 5 or 10 (its command row's) is half a mark or one.
    * A **separate** resource from health — `combat.md`.
    */

@@ -29,7 +29,7 @@ together charges, as the original's Y + B does — but where the original's
 charge refills health, its one pool, ours fills the **ki** meter, and a
 special costs ki rather than health: its command row's price, and it does
 not come out without it. The meter holds 60 — six levels of 10, the
-HUD's six marks, so a cost of 5 or 10 is half a level or one — and every
+HUD's six bars, so a cost of 5 or 10 is half a level or one — and every
 fighter starts a fight with 30 (owner, 2026-11-24).
 
 **The rush is a tree.** Attack walks one line, Smash branches off it at every
