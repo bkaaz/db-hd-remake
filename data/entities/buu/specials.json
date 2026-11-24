@@ -81,8 +81,10 @@
         "@ground"
       ],
       "when": [
-        "command:b7",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast"
       ],
       "to": "putty_uppercut"
     },
@@ -97,7 +99,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:b4",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "energy_sphere"
     },
     {
@@ -446,6 +453,7 @@
     },
     "putty_uppercut": {
       "anim": "mb7",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

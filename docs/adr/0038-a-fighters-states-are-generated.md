@@ -3,7 +3,8 @@
 **Status:** accepted 2026-11-17 · consolidates 0038, 0051, 0060, 0069 and 0070
 (2026-10-31 – 2026-11-04), which it replaces · 2026-11-24: the common states
 are a file of their own, Goku is generated like the rest, and the cartridge
-no longer writes any of it
+no longer writes any of it; the command entries go ahead of a special asked
+for by a press
 
 Every fighter's `states.json`, Goku's too, is written whole by `npm run
 states` from our files alone (`src/rom/compose.ts`): the common states
@@ -14,8 +15,9 @@ differently, named in `replaces` with a fingerprint of the common state his
 copy was last checked against — a change to it that passes his copy by is
 named by `npm run states` and fails a test until accepted. All of it is by
 hand. A state's command entries stand in the order of his `commands.json`, its
-last row first, as the cartridge tries them (`inTableOrder`). `compose.test.ts`
-fails while a file is out of date.
+last row first, as the cartridge tries them (`inTableOrder`), ahead of every
+transition that asks for a button, a special asked for by a press among them.
+`compose.test.ts` fails while a file is out of date.
 
 The cartridge is a report: `npm run rom -- states` prints where its numbers
 differ from ours and writes nothing. The overrides were written once from what

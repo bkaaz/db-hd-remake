@@ -29,8 +29,10 @@
       ],
       "when": [
         "grab:64",
-        "command:ae",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast"
       ],
       "to": "galactic_gunfire"
     },
@@ -63,7 +65,12 @@
         "@ground",
         "crouch_loop"
       ],
-      "when": "command:ac",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "final_flash"
     },
     {
@@ -1168,6 +1175,7 @@
     },
     "galactic_gunfire": {
       "anim": "mae",
+      "cost": 30,
       "vel": [
         0,
         0

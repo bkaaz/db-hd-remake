@@ -6,8 +6,10 @@
         "@ground"
       ],
       "when": [
-        "health:80",
-        "command:ad"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast"
       ],
       "to": "meteor"
     },
@@ -22,7 +24,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:aa",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "kame_charge"
     },
     {
@@ -839,6 +846,7 @@
     },
     "meteor": {
       "anim": "mad",
+      "cost": 30,
       "vel": [
         0,
         0

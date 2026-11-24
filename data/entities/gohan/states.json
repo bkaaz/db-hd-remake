@@ -130,17 +130,6 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "suki_combo"
-        },
-        {
-          "when": "command:ac",
-          "to": "kame_charge"
-        },
-        {
           "when": "command:ad",
           "to": "masenko"
         },
@@ -186,6 +175,24 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "suki_combo"
         },
         {
           "when": [
@@ -269,17 +276,6 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "suki_combo"
-        },
-        {
-          "when": "command:ac",
-          "to": "kame_charge"
-        },
-        {
           "when": "command:ad",
           "to": "masenko"
         },
@@ -325,6 +321,24 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "suki_combo"
         },
         {
           "when": [
@@ -404,17 +418,6 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "suki_combo"
-        },
-        {
-          "when": "command:ac",
-          "to": "kame_charge"
-        },
-        {
           "when": "command:ad",
           "to": "masenko"
         },
@@ -460,6 +463,24 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "suki_combo"
         },
         {
           "when": [
@@ -530,17 +551,6 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "suki_combo"
-        },
-        {
-          "when": "command:ac",
-          "to": "kame_charge"
-        },
-        {
           "when": "command:ad",
           "to": "masenko"
         },
@@ -586,6 +596,24 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "suki_combo"
         },
         {
           "when": "pressed:strike",
@@ -625,17 +653,6 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "suki_combo"
-        },
-        {
-          "when": "command:ac",
-          "to": "kame_charge"
-        },
-        {
           "when": "command:ad",
           "to": "masenko"
         },
@@ -681,6 +698,24 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "suki_combo"
         },
         {
           "when": "pressed:strike",
@@ -714,17 +749,6 @@
           "to": "crouch_down"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "suki_combo"
-        },
-        {
-          "when": "command:ac",
-          "to": "kame_charge"
-        },
-        {
           "when": "command:ad",
           "to": "masenko"
         },
@@ -770,6 +794,24 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "suki_combo"
         },
         {
           "when": [
@@ -3612,6 +3654,7 @@
     },
     "suki_combo": {
       "anim": "mae",
+      "cost": 30,
       "vel": [
         0,
         0

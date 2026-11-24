@@ -65,8 +65,10 @@
         "@ground"
       ],
       "when": [
-        "command:af",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast"
       ],
       "to": "flaming_headbutt"
     },
@@ -105,7 +107,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:ac",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "jubaku_ha"
     },
     {
@@ -394,6 +401,7 @@
     },
     "flaming_headbutt": {
       "anim": "maf",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

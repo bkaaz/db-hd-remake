@@ -19,3 +19,12 @@ Severity in plain words — *cosmetic*, *annoying*, *breaks play*, *loses work* 
 because a number would only need translating back.
 
 ---
+
+- **Vegeta's ultimate out of a diagonal jump flies on diagonally**, the
+  opponent with him — *breaks play*. Jump forward or back, ↓ + Ki with the
+  opponent in range: Galactic Gunfire rises along the jump's line. Cause `?`:
+  a special starts stopped only when a command began it
+  (`StateMachine.startedByCommand`, `entity.ts`), and his ultimate is asked
+  for by a press since down + Ki.
+- **Buu's charge is broken: its animation and its sound** — *annoying*. Hold
+  Charge (RB) as Buu.

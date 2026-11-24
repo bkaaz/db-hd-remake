@@ -131,10 +131,6 @@
           "to": "charge_start"
         },
         {
-          "when": "command:ac",
-          "to": "jubaku_ha"
-        },
-        {
           "when": [
             "grab:64",
             "command:aa"
@@ -152,13 +148,6 @@
         {
           "when": "command:a8",
           "to": "kienzan"
-        },
-        {
-          "when": [
-            "command:af",
-            "health:80"
-          ],
-          "to": "flaming_headbutt"
         },
         {
           "when": "command:9f",
@@ -190,6 +179,24 @@
         {
           "when": "command:a4",
           "to": "double_leg_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "flaming_headbutt"
         },
         {
           "when": [
@@ -273,10 +280,6 @@
           "to": "charge_start"
         },
         {
-          "when": "command:ac",
-          "to": "jubaku_ha"
-        },
-        {
           "when": [
             "grab:64",
             "command:aa"
@@ -294,13 +297,6 @@
         {
           "when": "command:a8",
           "to": "kienzan"
-        },
-        {
-          "when": [
-            "command:af",
-            "health:80"
-          ],
-          "to": "flaming_headbutt"
         },
         {
           "when": "command:9f",
@@ -332,6 +328,24 @@
         {
           "when": "command:a4",
           "to": "double_leg_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "flaming_headbutt"
         },
         {
           "when": [
@@ -411,10 +425,6 @@
           "to": "charge_start"
         },
         {
-          "when": "command:ac",
-          "to": "jubaku_ha"
-        },
-        {
           "when": [
             "grab:64",
             "command:aa"
@@ -432,13 +442,6 @@
         {
           "when": "command:a8",
           "to": "kienzan"
-        },
-        {
-          "when": [
-            "command:af",
-            "health:80"
-          ],
-          "to": "flaming_headbutt"
         },
         {
           "when": "command:9f",
@@ -470,6 +473,24 @@
         {
           "when": "command:a4",
           "to": "double_leg_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "flaming_headbutt"
         },
         {
           "when": [
@@ -540,10 +561,6 @@
           "to": "guard_low"
         },
         {
-          "when": "command:ac",
-          "to": "jubaku_ha"
-        },
-        {
           "when": [
             "grab:64",
             "command:aa"
@@ -561,13 +578,6 @@
         {
           "when": "command:a8",
           "to": "kienzan"
-        },
-        {
-          "when": [
-            "command:af",
-            "health:80"
-          ],
-          "to": "flaming_headbutt"
         },
         {
           "when": "command:9f",
@@ -599,6 +609,24 @@
         {
           "when": "command:a4",
           "to": "double_leg_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "flaming_headbutt"
         },
         {
           "when": "pressed:strike",
@@ -638,10 +666,6 @@
           "to": "guard_low"
         },
         {
-          "when": "command:ac",
-          "to": "jubaku_ha"
-        },
-        {
           "when": [
             "grab:64",
             "command:aa"
@@ -659,13 +683,6 @@
         {
           "when": "command:a8",
           "to": "kienzan"
-        },
-        {
-          "when": [
-            "command:af",
-            "health:80"
-          ],
-          "to": "flaming_headbutt"
         },
         {
           "when": "command:9f",
@@ -697,6 +714,24 @@
         {
           "when": "command:a4",
           "to": "double_leg_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "flaming_headbutt"
         },
         {
           "when": "pressed:strike",
@@ -730,10 +765,6 @@
           "to": "crouch_down"
         },
         {
-          "when": "command:ac",
-          "to": "jubaku_ha"
-        },
-        {
           "when": [
             "grab:64",
             "command:aa"
@@ -751,13 +782,6 @@
         {
           "when": "command:a8",
           "to": "kienzan"
-        },
-        {
-          "when": [
-            "command:af",
-            "health:80"
-          ],
-          "to": "flaming_headbutt"
         },
         {
           "when": "command:9f",
@@ -789,6 +813,24 @@
         {
           "when": "command:a4",
           "to": "double_leg_kick"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "flaming_headbutt"
         },
         {
           "when": [
@@ -2823,6 +2865,7 @@
     },
     "flaming_headbutt": {
       "anim": "maf",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

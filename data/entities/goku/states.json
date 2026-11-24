@@ -131,19 +131,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "health:80",
-            "command:ad"
-          ],
-          "to": "meteor"
-        },
-        {
           "when": "command:a5",
           "to": "quad_kick"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "command:ab",
@@ -199,6 +188,24 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "meteor"
         },
         {
           "when": [
@@ -282,19 +289,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "health:80",
-            "command:ad"
-          ],
-          "to": "meteor"
-        },
-        {
           "when": "command:a5",
           "to": "quad_kick"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "command:ab",
@@ -350,6 +346,24 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "meteor"
         },
         {
           "when": [
@@ -429,19 +443,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "health:80",
-            "command:ad"
-          ],
-          "to": "meteor"
-        },
-        {
           "when": "command:a5",
           "to": "quad_kick"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "command:ab",
@@ -497,6 +500,24 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "meteor"
         },
         {
           "when": [
@@ -567,19 +588,8 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "health:80",
-            "command:ad"
-          ],
-          "to": "meteor"
-        },
-        {
           "when": "command:a5",
           "to": "quad_kick"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "command:ab",
@@ -635,6 +645,24 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "meteor"
         },
         {
           "when": "pressed:strike",
@@ -674,19 +702,8 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "health:80",
-            "command:ad"
-          ],
-          "to": "meteor"
-        },
-        {
           "when": "command:a5",
           "to": "quad_kick"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "command:ab",
@@ -742,6 +759,24 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "meteor"
         },
         {
           "when": "pressed:strike",
@@ -774,19 +809,8 @@
           "to": "crouch_down"
         },
         {
-          "when": [
-            "health:80",
-            "command:ad"
-          ],
-          "to": "meteor"
-        },
-        {
           "when": "command:a5",
           "to": "quad_kick"
-        },
-        {
-          "when": "command:aa",
-          "to": "kame_charge"
         },
         {
           "when": "command:ab",
@@ -842,6 +866,24 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "meteor"
         },
         {
           "when": [
@@ -3338,6 +3380,7 @@
     },
     "meteor": {
       "anim": "mad",
+      "cost": 30,
       "vel": [
         0,
         0

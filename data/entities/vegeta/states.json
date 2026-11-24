@@ -135,10 +135,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
           "when": "command:ad",
           "to": "big_bang"
         },
@@ -176,14 +172,6 @@
         },
         {
           "when": [
-            "grab:64",
-            "command:ae",
-            "health:80"
-          ],
-          "to": "galactic_gunfire"
-        },
-        {
-          "when": [
             "grab",
             "command:9d"
           ],
@@ -192,6 +180,25 @@
         {
           "when": "command:a2",
           "to": "driving_elbow"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
+            "grab:64",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_gunfire"
         },
         {
           "when": [
@@ -279,10 +286,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
           "when": "command:ad",
           "to": "big_bang"
         },
@@ -320,14 +323,6 @@
         },
         {
           "when": [
-            "grab:64",
-            "command:ae",
-            "health:80"
-          ],
-          "to": "galactic_gunfire"
-        },
-        {
-          "when": [
             "grab",
             "command:9d"
           ],
@@ -336,6 +331,25 @@
         {
           "when": "command:a2",
           "to": "driving_elbow"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
+            "grab:64",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_gunfire"
         },
         {
           "when": [
@@ -419,10 +433,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
           "when": "command:ad",
           "to": "big_bang"
         },
@@ -460,14 +470,6 @@
         },
         {
           "when": [
-            "grab:64",
-            "command:ae",
-            "health:80"
-          ],
-          "to": "galactic_gunfire"
-        },
-        {
-          "when": [
             "grab",
             "command:9d"
           ],
@@ -476,6 +478,25 @@
         {
           "when": "command:a2",
           "to": "driving_elbow"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
+            "grab:64",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_gunfire"
         },
         {
           "when": [
@@ -550,10 +571,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
           "when": "command:ad",
           "to": "big_bang"
         },
@@ -591,14 +608,6 @@
         },
         {
           "when": [
-            "grab:64",
-            "command:ae",
-            "health:80"
-          ],
-          "to": "galactic_gunfire"
-        },
-        {
-          "when": [
             "grab",
             "command:9d"
           ],
@@ -607,6 +616,25 @@
         {
           "when": "command:a2",
           "to": "driving_elbow"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
+            "grab:64",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_gunfire"
         },
         {
           "when": "pressed:strike",
@@ -649,10 +677,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
           "when": "command:ad",
           "to": "big_bang"
         },
@@ -690,14 +714,6 @@
         },
         {
           "when": [
-            "grab:64",
-            "command:ae",
-            "health:80"
-          ],
-          "to": "galactic_gunfire"
-        },
-        {
-          "when": [
             "grab",
             "command:9d"
           ],
@@ -706,6 +722,25 @@
         {
           "when": "command:a2",
           "to": "driving_elbow"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
+            "grab:64",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_gunfire"
         },
         {
           "when": "pressed:strike",
@@ -746,10 +781,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
           "when": "command:ad",
           "to": "big_bang"
         },
@@ -787,14 +818,6 @@
         },
         {
           "when": [
-            "grab:64",
-            "command:ae",
-            "health:80"
-          ],
-          "to": "galactic_gunfire"
-        },
-        {
-          "when": [
             "grab",
             "command:9d"
           ],
@@ -803,6 +826,25 @@
         {
           "when": "command:a2",
           "to": "driving_elbow"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
+            "grab:64",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_gunfire"
         },
         {
           "when": [
@@ -878,8 +920,10 @@
         {
           "when": [
             "grab:64",
-            "command:ae",
-            "health:80"
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
           ],
           "to": "galactic_gunfire"
         },
@@ -945,8 +989,10 @@
         {
           "when": [
             "grab:64",
-            "command:ae",
-            "health:80"
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
           ],
           "to": "galactic_gunfire"
         },
@@ -1008,8 +1054,10 @@
         {
           "when": [
             "grab:64",
-            "command:ae",
-            "health:80"
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
           ],
           "to": "galactic_gunfire"
         },
@@ -3616,6 +3664,7 @@
     },
     "galactic_gunfire": {
       "anim": "mae",
+      "cost": 30,
       "vel": [
         0,
         0
@@ -5315,10 +5364,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ac",
-          "to": "final_flash"
-        },
-        {
           "when": "command:ad",
           "to": "big_bang"
         },
@@ -5356,14 +5401,6 @@
         },
         {
           "when": [
-            "grab:64",
-            "command:ae",
-            "health:80"
-          ],
-          "to": "galactic_gunfire"
-        },
-        {
-          "when": [
             "grab",
             "command:9d"
           ],
@@ -5372,6 +5409,25 @@
         {
           "when": "command:a2",
           "to": "driving_elbow"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_flash"
+        },
+        {
+          "when": [
+            "grab:64",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_gunfire"
         },
         {
           "when": "pressed:strike",

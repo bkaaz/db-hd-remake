@@ -82,7 +82,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:bc",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "beam_cannon"
     },
     {
@@ -97,8 +102,10 @@
         "@ground"
       ],
       "when": [
-        "command:a2",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast"
       ],
       "to": "aerial_assault"
     },
@@ -879,6 +886,7 @@
     },
     "aerial_assault": {
       "anim": "ma2",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

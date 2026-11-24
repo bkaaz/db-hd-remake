@@ -3,6 +3,7 @@ import type { FighterTables } from "./cartridge";
 import { readCommands, type Command } from "./commands";
 import { handlerAt, handlerFacts, type HandlerFact } from "./handler";
 import { READS_COMMANDS } from "./routines";
+import { ASKS } from "./specials";
 import { moveOf } from "./todo";
 
 /**
@@ -42,8 +43,10 @@ function commandOf(tr: Transition): number | null {
  * tries the table's rows from the last back to the first (`$0D:EF31`), so a
  * later row wins when two are met — a0 or 9f over the throw, which falls
  * through when out of range as our entry's `grab` does. The entries go as one
- * block where the first of them stood, ahead of the buttons, as the reader
- * runs before `$0D:FEC8`; the rest keep their places.
+ * block ahead of the first transition that asks for a button, as the reader
+ * runs before `$0D:FEC8` — ahead of a special asked for by a press too, so a
+ * command ending in that press still wins (Freeza's ← ↙ ↓ Ki over ↓ Ki);
+ * the rest keep their places.
  */
 export function inTableOrder(file: StatesFile, commands: readonly Pick<Command, "move">[]): StatesFile {
   const rank = new Map(commands.map((c, i) => [c.move, commands.length - i]));
@@ -53,7 +56,7 @@ export function inTableOrder(file: StatesFile, commands: readonly Pick<Command, 
       const asks = transitions.filter((tr) => commandOf(tr) !== null);
       if (asks.length === 0) return [name, def];
       const sorted = [...asks].sort((a, b) => (rank.get(commandOf(a)!) ?? 0) - (rank.get(commandOf(b)!) ?? 0));
-      const first = transitions.findIndex((tr) => commandOf(tr) !== null);
+      const first = transitions.findIndex((tr) => [tr.when].flat().some((w) => ASKS.test(w)));
       const rest = transitions.filter((tr) => commandOf(tr) === null);
       return [name, { ...def, transitions: [...rest.slice(0, first), ...sorted, ...rest.slice(first)] }];
     }),

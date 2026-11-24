@@ -30,8 +30,10 @@
         "@ground"
       ],
       "when": [
-        "command:ae",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast"
       ],
       "to": "suki_combo"
     },
@@ -81,7 +83,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:ac",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "kame_charge"
     },
     {
@@ -1180,6 +1187,7 @@
     },
     "suki_combo": {
       "anim": "mae",
+      "cost": 30,
       "vel": [
         0,
         0

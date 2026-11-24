@@ -91,7 +91,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:ae",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "final_kame"
     },
     {
@@ -99,8 +104,10 @@
         "@ground"
       ],
       "when": [
-        "command:b0",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast"
       ],
       "to": "galactic_juggle"
     },
@@ -729,6 +736,7 @@
     },
     "galactic_juggle": {
       "anim": "mb0",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

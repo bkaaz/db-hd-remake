@@ -21,7 +21,7 @@ pad out (owner, 2026-11-24; `inspiration.md`). Which key is which is
 |---|---|---|---|
 | move | d-pad, left stick | arrows | walk, jump (↑), crouch (↓) |
 | **Guard** | A | `Z` | held, a stance that blocks; tapped at the right moment, vanishes (§5) |
-| **Ki** | B | `X` | the ki blast; forward or back + Ki is the kamehameha |
+| **Ki** | B | `X` | the ki blast; forward + Ki is the kamehameha |
 | **Attack** | X | `A` | the rush: pressed again, walks the string one blow further |
 | **Smash** | Y | `S` | ends the string, at any depth, with a heavier blow |
 | **Dash** | LB | `Q` | with forward or back, the original's dash (its L/R) |
@@ -58,7 +58,19 @@ alike; crouching only lowers the hurt box, so a high blow misses a crouching
 body because the boxes miss.
 
 **Specials are the cartridge's commands** while the port stands (ADR 0050); how
-ours are asked for comes with the rework. One thing about it is settled
+ours are asked for comes with the rework, one move at a time (owner,
+2026-11-24), each in place of the cartridge's command:
+
+- **Forward + Ki**: every fighter's ↓ ↙ → Ki move — the Kamehameha and its
+  kind, or what the fighter has there instead.
+- **Down + Ki** is the **ultimate**: the move the cartridge kept for health 80
+  or less, now for any health at 30 ki. Cell has two: Bakuretsu Rush on
+  down + Ki, Tri Eruption with Charge held as well. Vegeta's Galactic
+  Gunfire keeps its 64 px and its start just off the ground.
+
+A direction counts only alone: down-forward + Ki is neither, and plays the ki
+blast. Where a command of the cartridge also ends in that direction and Ki,
+the command wins (`inTableOrder`, `rom/entries.ts`). One thing about it is settled
 (owner, 2026-10-31): directions count in the order they were **pressed**, so a ↙
 held through ↓ ← → is not also ← ↓ →.
 

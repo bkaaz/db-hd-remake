@@ -90,7 +90,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:aa",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "chou_kamehameha"
     },
     {
@@ -105,8 +110,11 @@
         "@ground"
       ],
       "when": [
-        "command:ac",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast",
+        "!held:charge"
       ],
       "to": "bakuretsu_rush"
     },
@@ -115,8 +123,11 @@
         "@ground"
       ],
       "when": [
-        "command:ad",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast",
+        "held:charge"
       ],
       "to": "tri_eruption"
     },
@@ -1050,6 +1061,7 @@
     },
     "bakuretsu_rush": {
       "anim": "mac",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,
@@ -1319,6 +1331,7 @@
     },
     "tri_eruption": {
       "anim": "mad",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

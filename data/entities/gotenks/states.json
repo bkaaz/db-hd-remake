@@ -130,19 +130,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "volleyball"
-        },
-        {
           "when": "command:b4",
           "to": "rolling_thunder"
-        },
-        {
-          "when": "command:ad",
-          "to": "ghost_kamikaze"
         },
         {
           "when": "command:ac",
@@ -186,6 +175,24 @@
         {
           "when": "command:af",
           "to": "ultra_headbutt"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "volleyball"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "ghost_kamikaze"
         },
         {
           "when": [
@@ -269,19 +276,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "volleyball"
-        },
-        {
           "when": "command:b4",
           "to": "rolling_thunder"
-        },
-        {
-          "when": "command:ad",
-          "to": "ghost_kamikaze"
         },
         {
           "when": "command:ac",
@@ -325,6 +321,24 @@
         {
           "when": "command:af",
           "to": "ultra_headbutt"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "volleyball"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "ghost_kamikaze"
         },
         {
           "when": [
@@ -404,19 +418,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "volleyball"
-        },
-        {
           "when": "command:b4",
           "to": "rolling_thunder"
-        },
-        {
-          "when": "command:ad",
-          "to": "ghost_kamikaze"
         },
         {
           "when": "command:ac",
@@ -460,6 +463,24 @@
         {
           "when": "command:af",
           "to": "ultra_headbutt"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "volleyball"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "ghost_kamikaze"
         },
         {
           "when": [
@@ -530,19 +551,8 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "volleyball"
-        },
-        {
           "when": "command:b4",
           "to": "rolling_thunder"
-        },
-        {
-          "when": "command:ad",
-          "to": "ghost_kamikaze"
         },
         {
           "when": "command:ac",
@@ -586,6 +596,24 @@
         {
           "when": "command:af",
           "to": "ultra_headbutt"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "volleyball"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "ghost_kamikaze"
         },
         {
           "when": "pressed:strike",
@@ -625,19 +653,8 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "volleyball"
-        },
-        {
           "when": "command:b4",
           "to": "rolling_thunder"
-        },
-        {
-          "when": "command:ad",
-          "to": "ghost_kamikaze"
         },
         {
           "when": "command:ac",
@@ -681,6 +698,24 @@
         {
           "when": "command:af",
           "to": "ultra_headbutt"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "volleyball"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "ghost_kamikaze"
         },
         {
           "when": "pressed:strike",
@@ -713,19 +748,8 @@
           "to": "crouch_down"
         },
         {
-          "when": [
-            "command:ae",
-            "health:80"
-          ],
-          "to": "volleyball"
-        },
-        {
           "when": "command:b4",
           "to": "rolling_thunder"
-        },
-        {
-          "when": "command:ad",
-          "to": "ghost_kamikaze"
         },
         {
           "when": "command:ac",
@@ -769,6 +793,24 @@
         {
           "when": "command:af",
           "to": "ultra_headbutt"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "volleyball"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "ghost_kamikaze"
         },
         {
           "when": [
@@ -3889,6 +3931,7 @@
     },
     "volleyball": {
       "anim": "mae",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

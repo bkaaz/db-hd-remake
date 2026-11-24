@@ -131,19 +131,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:a2",
-            "health:80"
-          ],
-          "to": "aerial_assault"
-        },
-        {
           "when": "command:b7",
           "to": "regeneration"
-        },
-        {
-          "when": "command:bc",
-          "to": "beam_cannon"
         },
         {
           "when": "command:bd",
@@ -187,6 +176,24 @@
         {
           "when": "command:9e",
           "to": "sonic_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "aerial_assault"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "beam_cannon"
         },
         {
           "when": [
@@ -270,19 +277,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:a2",
-            "health:80"
-          ],
-          "to": "aerial_assault"
-        },
-        {
           "when": "command:b7",
           "to": "regeneration"
-        },
-        {
-          "when": "command:bc",
-          "to": "beam_cannon"
         },
         {
           "when": "command:bd",
@@ -326,6 +322,24 @@
         {
           "when": "command:9e",
           "to": "sonic_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "aerial_assault"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "beam_cannon"
         },
         {
           "when": [
@@ -405,19 +419,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:a2",
-            "health:80"
-          ],
-          "to": "aerial_assault"
-        },
-        {
           "when": "command:b7",
           "to": "regeneration"
-        },
-        {
-          "when": "command:bc",
-          "to": "beam_cannon"
         },
         {
           "when": "command:bd",
@@ -461,6 +464,24 @@
         {
           "when": "command:9e",
           "to": "sonic_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "aerial_assault"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "beam_cannon"
         },
         {
           "when": [
@@ -531,19 +552,8 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:a2",
-            "health:80"
-          ],
-          "to": "aerial_assault"
-        },
-        {
           "when": "command:b7",
           "to": "regeneration"
-        },
-        {
-          "when": "command:bc",
-          "to": "beam_cannon"
         },
         {
           "when": "command:bd",
@@ -587,6 +597,24 @@
         {
           "when": "command:9e",
           "to": "sonic_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "aerial_assault"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "beam_cannon"
         },
         {
           "when": "pressed:strike",
@@ -626,19 +654,8 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:a2",
-            "health:80"
-          ],
-          "to": "aerial_assault"
-        },
-        {
           "when": "command:b7",
           "to": "regeneration"
-        },
-        {
-          "when": "command:bc",
-          "to": "beam_cannon"
         },
         {
           "when": "command:bd",
@@ -682,6 +699,24 @@
         {
           "when": "command:9e",
           "to": "sonic_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "aerial_assault"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "beam_cannon"
         },
         {
           "when": "pressed:strike",
@@ -714,19 +749,8 @@
           "to": "crouch_down"
         },
         {
-          "when": [
-            "command:a2",
-            "health:80"
-          ],
-          "to": "aerial_assault"
-        },
-        {
           "when": "command:b7",
           "to": "regeneration"
-        },
-        {
-          "when": "command:bc",
-          "to": "beam_cannon"
         },
         {
           "when": "command:bd",
@@ -770,6 +794,24 @@
         {
           "when": "command:9e",
           "to": "sonic_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "aerial_assault"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "beam_cannon"
         },
         {
           "when": [
@@ -3222,6 +3264,7 @@
     },
     "aerial_assault": {
       "anim": "ma2",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

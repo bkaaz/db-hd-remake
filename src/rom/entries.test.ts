@@ -42,6 +42,24 @@ describe("inTableOrder", () => {
     expect(out.states.idle.transitions!.map((t) => t.to)).toEqual(["guard", "throw", "quad", "jab"]);
   });
 
+  it("puts the commands ahead of a special asked for by a press, so a command ending in that press wins", () => {
+    const pressed: StatesFile = {
+      initial: "idle",
+      states: {
+        idle: {
+          anim: "m00",
+          transitions: [
+            { when: ["held:down", "pressed:blast"], to: "ultimate" },
+            { when: "command:a7", to: "ground_wave" },
+            { when: "pressed:blast", to: "ki" },
+          ],
+        },
+      },
+    };
+    const out = inTableOrder(pressed, [{ move: 0xa7 }]);
+    expect(out.states.idle.transitions!.map((t) => t.to)).toEqual(["ground_wave", "ultimate", "ki"]);
+  });
+
   it("leaves the file it was given as it was", () => {
     inTableOrder(file, [{ move: 0xa5 }, { move: 0x9d }]);
     expect(file.states.idle.transitions!.map((t) => t.to)).toEqual(["guard", "quad", "jab", "throw"]);

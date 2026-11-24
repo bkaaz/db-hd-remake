@@ -135,19 +135,8 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b4",
-          "to": "energy_sphere"
-        },
-        {
           "when": "command:b3",
           "to": "buu_burn"
-        },
-        {
-          "when": [
-            "command:b7",
-            "health:80"
-          ],
-          "to": "putty_uppercut"
         },
         {
           "when": "command:b1",
@@ -187,6 +176,24 @@
         {
           "when": "command:b6",
           "to": "matamol"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "putty_uppercut"
         },
         {
           "when": [
@@ -274,19 +281,8 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b4",
-          "to": "energy_sphere"
-        },
-        {
           "when": "command:b3",
           "to": "buu_burn"
-        },
-        {
-          "when": [
-            "command:b7",
-            "health:80"
-          ],
-          "to": "putty_uppercut"
         },
         {
           "when": "command:b1",
@@ -326,6 +322,24 @@
         {
           "when": "command:b6",
           "to": "matamol"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "putty_uppercut"
         },
         {
           "when": [
@@ -409,19 +423,8 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b4",
-          "to": "energy_sphere"
-        },
-        {
           "when": "command:b3",
           "to": "buu_burn"
-        },
-        {
-          "when": [
-            "command:b7",
-            "health:80"
-          ],
-          "to": "putty_uppercut"
         },
         {
           "when": "command:b1",
@@ -461,6 +464,24 @@
         {
           "when": "command:b6",
           "to": "matamol"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "putty_uppercut"
         },
         {
           "when": [
@@ -535,19 +556,8 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b4",
-          "to": "energy_sphere"
-        },
-        {
           "when": "command:b3",
           "to": "buu_burn"
-        },
-        {
-          "when": [
-            "command:b7",
-            "health:80"
-          ],
-          "to": "putty_uppercut"
         },
         {
           "when": "command:b1",
@@ -587,6 +597,24 @@
         {
           "when": "command:b6",
           "to": "matamol"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "putty_uppercut"
         },
         {
           "when": "pressed:strike",
@@ -630,19 +658,8 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b4",
-          "to": "energy_sphere"
-        },
-        {
           "when": "command:b3",
           "to": "buu_burn"
-        },
-        {
-          "when": [
-            "command:b7",
-            "health:80"
-          ],
-          "to": "putty_uppercut"
         },
         {
           "when": "command:b1",
@@ -682,6 +699,24 @@
         {
           "when": "command:b6",
           "to": "matamol"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "putty_uppercut"
         },
         {
           "when": "pressed:strike",
@@ -718,19 +753,8 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b4",
-          "to": "energy_sphere"
-        },
-        {
           "when": "command:b3",
           "to": "buu_burn"
-        },
-        {
-          "when": [
-            "command:b7",
-            "health:80"
-          ],
-          "to": "putty_uppercut"
         },
         {
           "when": "command:b1",
@@ -770,6 +794,24 @@
         {
           "when": "command:b6",
           "to": "matamol"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "putty_uppercut"
         },
         {
           "when": [
@@ -2891,6 +2933,7 @@
     },
     "putty_uppercut": {
       "anim": "mb7",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

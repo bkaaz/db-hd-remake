@@ -131,17 +131,6 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "galactic_juggle"
-        },
-        {
-          "when": "command:ae",
-          "to": "final_kame"
-        },
-        {
           "when": "command:a5",
           "to": "geri_combo"
         },
@@ -187,6 +176,24 @@
         {
           "when": "command:aa",
           "to": "shooting_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_juggle"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_kame"
         },
         {
           "when": [
@@ -270,17 +277,6 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "galactic_juggle"
-        },
-        {
-          "when": "command:ae",
-          "to": "final_kame"
-        },
-        {
           "when": "command:a5",
           "to": "geri_combo"
         },
@@ -326,6 +322,24 @@
         {
           "when": "command:aa",
           "to": "shooting_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_juggle"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_kame"
         },
         {
           "when": [
@@ -405,17 +419,6 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "galactic_juggle"
-        },
-        {
-          "when": "command:ae",
-          "to": "final_kame"
-        },
-        {
           "when": "command:a5",
           "to": "geri_combo"
         },
@@ -461,6 +464,24 @@
         {
           "when": "command:aa",
           "to": "shooting_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_juggle"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_kame"
         },
         {
           "when": [
@@ -531,17 +552,6 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "galactic_juggle"
-        },
-        {
-          "when": "command:ae",
-          "to": "final_kame"
-        },
-        {
           "when": "command:a5",
           "to": "geri_combo"
         },
@@ -587,6 +597,24 @@
         {
           "when": "command:aa",
           "to": "shooting_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_juggle"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_kame"
         },
         {
           "when": "pressed:strike",
@@ -626,17 +654,6 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "galactic_juggle"
-        },
-        {
-          "when": "command:ae",
-          "to": "final_kame"
-        },
-        {
           "when": "command:a5",
           "to": "geri_combo"
         },
@@ -682,6 +699,24 @@
         {
           "when": "command:aa",
           "to": "shooting_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_juggle"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_kame"
         },
         {
           "when": "pressed:strike",
@@ -714,17 +749,6 @@
           "to": "crouch_down"
         },
         {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "galactic_juggle"
-        },
-        {
-          "when": "command:ae",
-          "to": "final_kame"
-        },
-        {
           "when": "command:a5",
           "to": "geri_combo"
         },
@@ -770,6 +794,24 @@
         {
           "when": "command:aa",
           "to": "shooting_kick"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "galactic_juggle"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "final_kame"
         },
         {
           "when": [
@@ -3219,6 +3261,7 @@
     },
     "galactic_juggle": {
       "anim": "mb0",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

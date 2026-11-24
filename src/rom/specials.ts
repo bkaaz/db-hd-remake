@@ -48,7 +48,7 @@ export interface SpecialsFile {
 export type Groups = Record<string, string[]>;
 
 /** What asks for a button: a press, or a command (ADR 0050). */
-const ASKS = /^(pressed|command):/;
+export const ASKS = /^(pressed|command):/;
 
 /** `file` with his specials in it; a name taken or a state missing is an error, not a quiet skip. */
 export function withSpecials(file: StatesFile, specials: SpecialsFile, groups: Groups = {}): StatesFile {

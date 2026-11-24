@@ -147,19 +147,8 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:ae",
-          "to": "mightiness_bomber"
-        },
-        {
           "when": "command:af",
           "to": "energy_field"
-        },
-        {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "buu_breath"
         },
         {
           "when": "command:9f",
@@ -187,6 +176,24 @@
         {
           "when": "command:ad",
           "to": "flying_bomber"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "buu_breath"
         },
         {
           "when": [
@@ -286,19 +293,8 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:ae",
-          "to": "mightiness_bomber"
-        },
-        {
           "when": "command:af",
           "to": "energy_field"
-        },
-        {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "buu_breath"
         },
         {
           "when": "command:9f",
@@ -326,6 +322,24 @@
         {
           "when": "command:ad",
           "to": "flying_bomber"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "buu_breath"
         },
         {
           "when": [
@@ -421,19 +435,8 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:ae",
-          "to": "mightiness_bomber"
-        },
-        {
           "when": "command:af",
           "to": "energy_field"
-        },
-        {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "buu_breath"
         },
         {
           "when": "command:9f",
@@ -461,6 +464,24 @@
         {
           "when": "command:ad",
           "to": "flying_bomber"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "buu_breath"
         },
         {
           "when": [
@@ -547,19 +568,8 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:ae",
-          "to": "mightiness_bomber"
-        },
-        {
           "when": "command:af",
           "to": "energy_field"
-        },
-        {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "buu_breath"
         },
         {
           "when": "command:9f",
@@ -587,6 +597,24 @@
         {
           "when": "command:ad",
           "to": "flying_bomber"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "buu_breath"
         },
         {
           "when": "pressed:strike",
@@ -642,19 +670,8 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:ae",
-          "to": "mightiness_bomber"
-        },
-        {
           "when": "command:af",
           "to": "energy_field"
-        },
-        {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "buu_breath"
         },
         {
           "when": "command:9f",
@@ -682,6 +699,24 @@
         {
           "when": "command:ad",
           "to": "flying_bomber"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "buu_breath"
         },
         {
           "when": "pressed:strike",
@@ -730,19 +765,8 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:ae",
-          "to": "mightiness_bomber"
-        },
-        {
           "when": "command:af",
           "to": "energy_field"
-        },
-        {
-          "when": [
-            "command:b0",
-            "health:80"
-          ],
-          "to": "buu_breath"
         },
         {
           "when": "command:9f",
@@ -770,6 +794,24 @@
         {
           "when": "command:ad",
           "to": "flying_bomber"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast"
+          ],
+          "to": "buu_breath"
         },
         {
           "when": [
@@ -2974,6 +3016,7 @@
     },
     "buu_breath": {
       "anim": "mb0",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

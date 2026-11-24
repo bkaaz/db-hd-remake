@@ -131,26 +131,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ad",
-            "health:80"
-          ],
-          "to": "tri_eruption"
-        },
-        {
-          "when": [
-            "command:ac",
-            "health:80"
-          ],
-          "to": "bakuretsu_rush"
-        },
-        {
           "when": "command:a7",
           "to": "ki_flame"
-        },
-        {
-          "when": "command:aa",
-          "to": "chou_kamehameha"
         },
         {
           "when": "command:a6",
@@ -198,6 +180,35 @@
         {
           "when": "command:a2",
           "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "held:charge"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "!held:charge"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "chou_kamehameha"
         },
         {
           "when": [
@@ -281,26 +292,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ad",
-            "health:80"
-          ],
-          "to": "tri_eruption"
-        },
-        {
-          "when": [
-            "command:ac",
-            "health:80"
-          ],
-          "to": "bakuretsu_rush"
-        },
-        {
           "when": "command:a7",
           "to": "ki_flame"
-        },
-        {
-          "when": "command:aa",
-          "to": "chou_kamehameha"
         },
         {
           "when": "command:a6",
@@ -348,6 +341,35 @@
         {
           "when": "command:a2",
           "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "held:charge"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "!held:charge"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "chou_kamehameha"
         },
         {
           "when": [
@@ -427,26 +449,8 @@
           "to": "charge_start"
         },
         {
-          "when": [
-            "command:ad",
-            "health:80"
-          ],
-          "to": "tri_eruption"
-        },
-        {
-          "when": [
-            "command:ac",
-            "health:80"
-          ],
-          "to": "bakuretsu_rush"
-        },
-        {
           "when": "command:a7",
           "to": "ki_flame"
-        },
-        {
-          "when": "command:aa",
-          "to": "chou_kamehameha"
         },
         {
           "when": "command:a6",
@@ -494,6 +498,35 @@
         {
           "when": "command:a2",
           "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "held:charge"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "!held:charge"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "chou_kamehameha"
         },
         {
           "when": [
@@ -564,26 +597,8 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:ad",
-            "health:80"
-          ],
-          "to": "tri_eruption"
-        },
-        {
-          "when": [
-            "command:ac",
-            "health:80"
-          ],
-          "to": "bakuretsu_rush"
-        },
-        {
           "when": "command:a7",
           "to": "ki_flame"
-        },
-        {
-          "when": "command:aa",
-          "to": "chou_kamehameha"
         },
         {
           "when": "command:a6",
@@ -631,6 +646,35 @@
         {
           "when": "command:a2",
           "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "held:charge"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "!held:charge"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "chou_kamehameha"
         },
         {
           "when": "pressed:strike",
@@ -670,26 +714,8 @@
           "to": "guard_low"
         },
         {
-          "when": [
-            "command:ad",
-            "health:80"
-          ],
-          "to": "tri_eruption"
-        },
-        {
-          "when": [
-            "command:ac",
-            "health:80"
-          ],
-          "to": "bakuretsu_rush"
-        },
-        {
           "when": "command:a7",
           "to": "ki_flame"
-        },
-        {
-          "when": "command:aa",
-          "to": "chou_kamehameha"
         },
         {
           "when": "command:a6",
@@ -737,6 +763,35 @@
         {
           "when": "command:a2",
           "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "held:charge"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "!held:charge"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "chou_kamehameha"
         },
         {
           "when": "pressed:strike",
@@ -769,26 +824,8 @@
           "to": "crouch_down"
         },
         {
-          "when": [
-            "command:ad",
-            "health:80"
-          ],
-          "to": "tri_eruption"
-        },
-        {
-          "when": [
-            "command:ac",
-            "health:80"
-          ],
-          "to": "bakuretsu_rush"
-        },
-        {
           "when": "command:a7",
           "to": "ki_flame"
-        },
-        {
-          "when": "command:aa",
-          "to": "chou_kamehameha"
         },
         {
           "when": "command:a6",
@@ -836,6 +873,35 @@
         {
           "when": "command:a2",
           "to": "giga_shoulder"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "held:charge"
+          ],
+          "to": "tri_eruption"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:blast",
+            "!held:charge"
+          ],
+          "to": "bakuretsu_rush"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "chou_kamehameha"
         },
         {
           "when": [
@@ -4230,6 +4296,7 @@
     },
     "bakuretsu_rush": {
       "anim": "mac",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,
@@ -4499,6 +4566,7 @@
     },
     "tri_eruption": {
       "anim": "mad",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,

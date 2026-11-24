@@ -86,7 +86,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:ad",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "ghost_kamikaze"
     },
     {
@@ -101,8 +106,10 @@
         "@ground"
       ],
       "when": [
-        "command:ae",
-        "health:80"
+        "held:down",
+        "!held:fwd",
+        "!held:back",
+        "pressed:blast"
       ],
       "to": "volleyball"
     },
@@ -1401,6 +1408,7 @@
     },
     "volleyball": {
       "anim": "mae",
+      "cost": 30,
       "turn": false,
       "vel": [
         0,
