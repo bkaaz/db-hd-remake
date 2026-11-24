@@ -194,11 +194,12 @@ its cartridge's stun (`fatigue` on the blow), and past the full amount the
 fighter is spent and it starts again from nothing (`combat/fatigue.ts`). Slower
 than the original's, at the owner's call: it holds twice its 20, so it fills
 half as fast, and it does not wear off — the original's point every 16 frames
-is left out for now. Spent, he is **tired** — the original's own tired pose,
-`40`, in place of the collapse (`1d`) the original plays there — for 200
-frames, the collapse's length, and any blow ends it. On his feet he is tired at
-once, in place of the reaction; thrown or floored, when he is up. A KO goes
-first: a blow that empties his health does not tire him. Only the blows tire
+is left out for now. Spent, he goes the original's way, in place of the blow's
+reaction: he **collapses** (`1d`), thrown up and away, bouncing twice and
+lying untouchable; gets up; and stands **tired**, bent over (`40`), for 300
+frames, where any blow ends it. Pressing buttons there shortens it in the
+original, three frames a frame; not yet in ours. A KO goes first: a blow that
+empties his health does not tire him. Only the blows tire
 for now: a throw and a seize cost health, not fatigue (`plan.md`).
 
 ## How the engine plays a blow

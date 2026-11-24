@@ -797,7 +797,7 @@ export interface StatesFile {
    * of contact. Absent means this fighter cannot block at all.
    */
   onGuard?: string;
-  /** State forced on him when fatigue is spent (`combat/fatigue.ts`): the original's tired `40`. Absent: he never tires. */
+  /** State forced on him when fatigue is spent (`combat/fatigue.ts`): the original's collapse, `1d`, on into its tired `40`. Absent: he never tires. */
   onTired?: string;
   /**
    * The spark this entity's blows leave when their state names none — the

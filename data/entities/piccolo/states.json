@@ -2,7 +2,7 @@
   "initial": "idle",
   "onGotHit": "hurt",
   "onGuard": "guard_hit",
-  "onTired": "tired",
+  "onTired": "collapse",
   "hitFx": "hit_spark",
   "guardFx": "guard_spark",
   "round": {
@@ -1961,6 +1961,134 @@
         }
       ]
     },
+    "collapse": {
+      "_comment": "Fatigue spent (combat/fatigue.ts): the original's collapse, move 1d. Knockback 4 ($0D:D708) throws him up and away; he cannot be hit until he is up ($10:AF8E, field 0x96).",
+      "anim": "m1d",
+      "rank": 4,
+      "launch": [
+        -2,
+        -4
+      ],
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "falling",
+          "to": "collapse_fall"
+        },
+        {
+          "when": "landed",
+          "to": "collapse_bounce"
+        }
+      ]
+    },
+    "collapse_fall": {
+      "anim": "m1d_2",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "collapse_bounce"
+        }
+      ]
+    },
+    "collapse_bounce": {
+      "anim": "m1d_3",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "launch": [
+        null,
+        -2
+      ],
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "sound": "land_0d",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "collapse_bounce2"
+        }
+      ]
+    },
+    "collapse_bounce2": {
+      "anim": "m1d_4",
+      "rank": 4,
+      "airborne": true,
+      "turn": false,
+      "launch": [
+        null,
+        -1.5
+      ],
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "collapse_lie"
+        }
+      ]
+    },
+    "collapse_lie": {
+      "anim": "m1d_5",
+      "rank": 4,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "groundFx": "dust",
+      "sound": "land_0d",
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "tired_up"
+        }
+      ]
+    },
+    "tired_up": {
+      "_comment": "The get-up, 1f, with field f0 set by the collapse's end ($10:B031): it reads no buttons and goes on into 40 ($0F:A35E).",
+      "anim": "m1f",
+      "rank": 4,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "invulnerable": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "tired"
+        }
+      ]
+    },
+    "tired": {
+      "_comment": "The original's tired pose, move 40, every fighter's: 300 frames ($0F:A366; pressing buttons counts three a frame there, not yet here). A blow ends it.",
+      "anim": "m40",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "animLoops": true,
+      "transitions": [
+        {
+          "when": "frames:300",
+          "to": "idle"
+        }
+      ]
+    },
     "hurt_air": {
       "anim": "m24",
       "rank": 1,
@@ -2437,22 +2565,6 @@
         {
           "when": "landed",
           "to": "land"
-        }
-      ]
-    },
-    "tired": {
-      "_comment": "Fatigue spent (combat/fatigue.ts): the original's tired pose, move 40, which every fighter has; a blow ends it. As long as the original's 1d in its place, 200 frames.",
-      "anim": "m40",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "animLoops": true,
-      "transitions": [
-        {
-          "when": "frames:200",
-          "to": "idle"
         }
       ]
     },

@@ -755,7 +755,10 @@ backward — vy the attribute word `0x1B`, vx 1.5 × `0D` / `0F` (`$0D:FA8B`,
 up, `04`), so a block (`0d`, `0f`, `$0F:A081`) is over at frame 4 unless
 something is held. The landing (`$0F:A451`) reads the directions only
 while ↑ is held — a jump. Lying `1f` with field `f0` set goes into move
-`40` instead, `f0` 300, gravity off (`$0F:A35E`; what sets it `?`). `40` is
+`40` instead, `f0` 300, gravity off (`$0F:A35E`); the collapse `1d` sets `f0`
+to 1 as it ends and gets him up (`$10:B031`). `40` counts `f0` down a frame at
+a time, three while a button is pressed (field `0xE8`), and ends at 0
+(`$0F:A47F`). `40` is
 every fighter's tired pose, bent over, hands on his knees; `3f` and `57` play
 the same drawings, as does Vegetto's `b2`, where Galactic Juggle ends having
 caught nobody.
@@ -1017,7 +1020,7 @@ step by step. The 5 bytes after it:
 | 0–2 | which reaction, as bits — the bit read depends on the defender's situation (below) |
 | 2 | also: chip on guard (`$0D:CFD1`), `0x40` = byte 3 / 16, else `0x20` = byte 3 / 8 — byte 3 as it stands, no attack or defence, straight off health, and a KO when it empties it; none while `$1B15` is set or `$1A02 & 0F` is 3 `?`. Goku's specials carry it, his normals do not; the Kamehameha's heads `/ 8`, the ki blast none. `0x80` read for the attacker's own move `?` (`$0D:DC8B`) |
 | 3 | damage, + attacker field `0x6a` − defender field `0x6b`, never below 0; taken off health (field `0x60`) |
-| 4 | stun: taken off field `0x68`, which refills by 1 every 16 frames of `$74` up to 20 (`$0D:D78A`); below 0 the defender collapses — move `1d`: he sways, falls on his back and lies, 200 frames for Goku, 232 for Vegetto — and it is 20 again (`$0D:D5E7`, the throw's `$0F:B39A`) |
+| 4 | stun: taken off field `0x68`, which refills by 1 every 16 frames of `$74` up to 20 (`$0D:D78A`); below 0 the defender collapses — move `1d`, after knockback 4 (vx 2, vy −4): he falls on his back, bounces twice (vy −2, −1.5) and lies, untouchable (field `0x96`), 200 frames for Goku, 232 for Vegetto; then gets up tired (`40`, below) — and it is 20 again (`$0D:D5E7`, the throw's `$0F:B39A`) |
 
 **Attack and defence** are set at the round's start (`$01:8112`): `0x6a`
 from the ATTACK option (`$1ACB` / `$1AD1`), `0x6b` from `$1ACD` / `$1AD3`

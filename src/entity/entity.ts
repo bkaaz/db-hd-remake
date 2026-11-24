@@ -390,8 +390,6 @@ export class Entity {
    */
   private stun = 0;
   private readonly fatigue = new Fatigue();
-  /** Spent in the air or on the floor: tired once he is back on his feet. */
-  private tiredLater = false;
 
   constructor(
     private readonly def: EntityDef,
@@ -1119,15 +1117,10 @@ export class Entity {
     return this.sm?.def.fatigue ?? 0;
   }
 
-  /**
-   * Take a blow's fatigue. Spent, he is tired (`onTired`) — at once where he
-   * stands, where the original puts its `1d` in place of the reaction; a body
-   * thrown or floored is tired when he is up again.
-   */
+  /** Take a blow's fatigue. Spent, he goes into `onTired` in place of the blow's reaction, as the original's `1d` does. */
   tire(amount: number): void {
     const tired = this.def.states?.onTired;
-    if (!tired || !this.fatigue.take(amount)) return;
-    if (this.airborne || !this.forceState(tired)) this.tiredLater = true;
+    if (tired && this.fatigue.take(amount)) this.forceState(tired);
   }
 
   /**
@@ -1579,10 +1572,6 @@ export class Entity {
     if (fill) this.charge = Math.min(1, this.charge + 1 / fill);
     const perFrame = this.sm.def.ki;
     if (perFrame) this.ki = Math.max(0, Math.min(this.maxKi, this.ki + perFrame));
-    if (this.tiredLater && this.standing) {
-      this.tiredLater = false;
-      this.forceState(this.def.states!.onTired!);
-    }
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
