@@ -2,8 +2,6 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ROM_PATH } from "../rom/cartridge";
 import { ARENAS, exportArena } from "../rom/arena";
-import { exportHud } from "../rom/hud";
-import { ROSTER } from "../rom/roster";
 import { BAND_SCREEN } from "../arena/bands";
 import type { ArenaFile } from "../arena/arenaFile";
 import { arenaImages, bandsImage } from "./romBackdrops";
@@ -11,8 +9,7 @@ import { arenaImages, bandsImage } from "./romBackdrops";
 const json = <T>(path: string): T => JSON.parse(readFileSync(path, "utf8")) as T;
 
 /**
- * The browser draws every arena, the bands and the HUD; `arena.json` and
- * `hud.json` are the export's. They must describe the pictures drawn, or a
+ * The browser draws every arena and the bands; `arena.json` is the export's. They must describe the pictures drawn, or a
  * layer scrolls a picture that is not there.
  */
 describe.skipIf(!existsSync(ROM_PATH))("backdrops drawn at runtime", () => {
@@ -36,10 +33,5 @@ describe.skipIf(!existsSync(ROM_PATH))("backdrops drawn at runtime", () => {
   it("draws the bands a whole number of screens tall", () => {
     const bands = bandsImage(rom);
     expect([bands.width, bands.height % BAND_SCREEN.height]).toEqual([BAND_SCREEN.width, 0]);
-  });
-
-  it("cuts the HUD as hud.json says", () => {
-    const roster = Object.fromEntries(ROSTER.map((fighter, character) => [fighter, character]));
-    expect(json("data/hud/hud.json")).toEqual(exportHud(rom, roster).file);
   });
 });

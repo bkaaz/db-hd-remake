@@ -70,8 +70,7 @@ export class DebugScene implements Scene {
     private readonly req: DebugRequest,
     private readonly modes: number,
     private readonly effects: Effects,
-    /** The original's HUD; null when it has not been exported, which a notice says. */
-    private readonly hud: Hud | null,
+    private readonly hud: Hud,
     private readonly readouts: Readouts,
     /** Notices about broken data; they belong to this scene and go with it. */
     private readonly notices: Notice[],
@@ -188,7 +187,6 @@ export class DebugScene implements Scene {
       { name: p1.name, health: health[0] },
       health[1] === null ? null : { name: p2.name, health: health[1] },
     ]);
-    if (typeof hud === "string") notices.push(showMessage(ctx.page.notices, hud, true));
 
     // an announcement stands in the screen's middle ($0D:EB88), at a height the round says
     const announcer = ctx.audio.side("round");
@@ -214,7 +212,7 @@ export class DebugScene implements Scene {
       req,
       count,
       effects,
-      typeof hud === "string" ? null : hud,
+      hud,
       new Readouts(ctx.page),
       notices,
       round,
@@ -291,8 +289,8 @@ export class DebugScene implements Scene {
     else this.opening.step(this.fighters.bodies);
     this.stage.flash(this.fighters.takeFlash());
     for (const c of this.fighters.takeScreen()) this.stage.cue(c);
-    const { health } = this.fighters.status();
-    this.hud?.tick(health);
+    const { health, ki } = this.fighters.status();
+    this.hud.tick(health, ki);
     const shake = this.fighters.takeShake();
     if (shake) this.shake.start(shake);
     this.shake.tick();
@@ -331,7 +329,7 @@ export class DebugScene implements Scene {
   }
 
   render(keyboard: Keyboard): void {
-    this.hud?.draw();
+    this.hud.draw();
     this.readouts.draw(keyboard.toggles.get("readout") ? this.fighters.debug() : null);
     this.view.scroll(this.camera.x, this.camera.y);
     this.stage.scroll(this.camera.x, this.camera.y, this.shake.offset);
@@ -354,7 +352,7 @@ export class DebugScene implements Scene {
     this.travel?.destroy();
     this.fighters.destroy();
     this.effects.destroy();
-    this.hud?.destroy();
+    this.hud.destroy();
     this.readouts.destroy();
     for (const notice of this.notices) notice.destroy();
     this.waiting?.prompt.destroy();

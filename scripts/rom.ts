@@ -28,7 +28,7 @@
  *   npm run rom -- export            where every drawing sits on the sheet the browser
  *                                    draws: data/entities/goku/frames.json (frame n = drawing n),
  *                                    every move into its animations.json as m00…mff;
- *                                    each arena into data/arenas/, the HUD into data/hud/
+ *                                    each arena into data/arenas/
  *
  * Ids are hex, as the fighter's RAM holds them: the drawing is field 0x0a
  * (src/rom/cartridge.ts), and its tile set comes from the cartridge's table.
@@ -77,7 +77,7 @@ import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource
 import { drawFrame, readLayout, readPalette } from "../src/rom/frame.ts";
 import { BG1, BG2, drawLayer, drawStage, loadStage, STAGE_COUNT } from "../src/rom/stage.ts";
 import { altPalettes, ARENAS, exportArena, flashPalettes, glowPalettes, introPalettes, lightingPalettes, runPalettes, winPalettes } from "../src/rom/arena.ts";
-import { drawHud, exportHud } from "../src/rom/hud.ts";
+import { drawHud } from "../src/rom/hud.ts";
 
 if (!existsSync(ROM_PATH)) {
   console.error(`no cartridge at ${ROM_PATH} — it is the owner's own dump (BYOA)`);
@@ -578,11 +578,6 @@ if (command === "tiles") {
     writeFileSync(`data/arenas/${name}/arena.json`, JSON.stringify(file, null, 2) + "\n");
     console.log(`${name}: ${file.layers.length} layers × ${file.times.length} lightings`);
   }
-  // every fighter's name, by his place in the roster ($00:C511); the picture the browser draws
-  const hud = exportHud(rom, Object.fromEntries(ROSTER.map((fighter, character) => [fighter, character])));
-  mkdirSync("data/hud", { recursive: true });
-  writeFileSync("data/hud/hud.json", JSON.stringify(hud.file, null, 2) + "\n");
-  console.log(`hud: names for ${Object.keys(hud.file.names).join(", ")}`);
 } else {
   console.error("usage: npm run rom -- tiles | frame <drawing> | frames | move <id> | moves | port <id> | stage [id …] | export   (ids in hex)");
   process.exit(1);

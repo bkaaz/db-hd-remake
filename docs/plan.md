@@ -39,6 +39,9 @@ hold for every fighter, not only one.
 5. **The aura.**
 6. **The hit types:** one set (the original's beside our five), `stun`, a type
    for ki blasts; chip damage and a guard break.
+7. **Fatigue**, as Burst Limit's: what fills it, what it costs, and how it wears
+   off. The HUD has its line already, empty (`src/hud/panel.ts`); it fills
+   and reddens as fatigue grows.
 
 ## Later: the rest of the cartridge, and the game around the fight
 

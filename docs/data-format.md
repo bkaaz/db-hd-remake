@@ -41,8 +41,9 @@ and a tab working on different sections never overwrite each other. The game
 only reads.
 
 Not entities, and written whole by the export: an arena's
-`data/arenas/<name>/arena.json` (`src/arena/arenaFile.ts`) and the HUD's
-`data/hud/hud.json` (`src/hud/hudFile.ts`). By hand: `data/hit-types.json`,
+`data/arenas/<name>/arena.json` (`src/arena/arenaFile.ts`). By hand:
+`data/hud/faces.json` (where each face sits in its portrait, `src/hud/hud.ts`),
+`data/hit-types.json`,
 `data/roster.json`, `data/debug.json`.
 
 ## What a type cannot say

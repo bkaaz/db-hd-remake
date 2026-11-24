@@ -1,9 +1,7 @@
-import type { BarFlash, HudFile } from "./hudFile";
-
 /**
- * What the original's HUD shows of a fighter's health ($00:C57D), as pure
- * numbers: the health it shows, which trails the real one, its three digits
- * and its bar's ten tiles.
+ * What the HUD shows of a fighter's health, as numbers: the health it shows,
+ * which trails the real one as the original's does ($00:C57D), the layers
+ * that health is drawn in, and how the last one flashes ($00:C6DE).
  */
 
 /** One frame: the shown health steps 1 toward the real one, so a blow drains rather than cuts. */
@@ -11,32 +9,24 @@ export function stepShown(shown: number, health: number): number {
   return shown + Math.sign(Math.round(health) - shown);
 }
 
-/** Hundreds, tens, ones — always three, leading zeros and all ($00:9A4F). */
-export function digits(n: number): [number, number, number] {
-  const v = Math.max(0, Math.min(999, Math.round(n)));
-  return [Math.floor(v / 100), Math.floor(v / 10) % 10, v % 10];
+/** A layer's worth of health: the top layer drains over the next, full and a shade darker (owner, 2026-11-24). */
+export const LAYER = 100;
+
+/** How many layers have health left, and how much the top one has (1 to `LAYER`; 0 when none). */
+export function layersOf(shown: number): { count: number; left: number } {
+  const count = Math.max(0, Math.ceil(shown / LAYER));
+  return { count, left: count === 0 ? 0 : shown - (count - 1) * LAYER };
 }
 
-/** Which of the bar's colours to show — its own, or below `flash.below` one of a cycle the frame count steps through. */
-export function barColour(shown: number, frame: number, flash: BarFlash): number {
-  return shown >= flash.below ? 0 : flash.cycle[Math.floor(frame / flash.hold) % flash.cycle.length];
-}
+/** Below this the last layer flashes. */
+export const FLASH_BELOW = 81;
+/** Frames each colour of the flash holds, of the game's frame count. */
+const FLASH_HOLD = 3;
 
 /**
- * The bar's ten tiles, left to right, for a shown health ($00:C62D): half of
- * it, at least 1 while any is left and 1 less from 2 up, fills a cap of 5
- * px, eight tiles of 8 and a cap of 5 — so it is full from 150 up.
+ * Which colour of the flash the bar is in this frame — 0 dark red, 1 yellow,
+ * 2 orange, 3 red, both bars in step — or null while it is steady.
  */
-export function barTiles(shown: number, bar: HudFile["bar"]): number[] {
-  let v = shown <= 0 ? 0 : Math.max(1, shown >> 1);
-  if (v >= 2) v--;
-  v = Math.min(v, 255);
-  const take = (most: number): number => {
-    const n = Math.min(v, most);
-    v -= n;
-    return n;
-  };
-  const first = bar.first[take(bar.first.length - 1)];
-  const middle = Array.from({ length: 8 }, () => bar.middle[take(bar.middle.length - 1)]);
-  return [first, ...middle, bar.last[take(bar.last.length - 1)]];
+export function flashStep(shown: number, frame: number): number | null {
+  return shown >= FLASH_BELOW ? null : Math.floor(frame / FLASH_HOLD) % 4;
 }

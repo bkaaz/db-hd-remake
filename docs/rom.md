@@ -655,8 +655,8 @@ higher. Frame 0 — the script has run out — ends the move
 BG3, 2 bits a pixel, loaded by `$00:C430`: tiles from resource `0x0F` at
 VRAM `$3000` (`$0510` = 3), a 32×32 map packed at `$00:A441` for `$3800`
 (`$050D` = `$38`), palette record `0x0F` from colour 0 — `npm run rom --
-hud` draws it as loaded; the export cuts it for the game
-(`src/rom/hud.ts`, ADR 0032). Rows 0–3 are the band seen in
+hud` draws it as loaded (`src/rom/hud.ts`); the game's HUD is ours
+(ADR 0032). Rows 0–3 are the band seen in
 play: the ornament, the round gauges, two yellow bars, 気 between them, a
 number at each end ("100" in the map; the fight writes the health). Rows
 4–23 hold red segmented bars of falling length `?` (a gauge's steps,
