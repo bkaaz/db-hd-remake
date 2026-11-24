@@ -2,10 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { StatesFile } from "../entity/states";
 import { GOKU, ROM_PATH } from "./cartridge";
-import { readCommands } from "./commands";
-import { inTableOrder, missingEntries } from "./entries";
+import { inTableOrder } from "./entries";
 import { handlerAt, handlerFacts } from "./handler";
-import { fighterNamed } from "./roster";
 import { READS_COMMANDS } from "./routines";
 
 describe.skipIf(!existsSync(ROM_PATH))("where commands are read, on the cartridge", () => {
@@ -21,21 +19,31 @@ describe.skipIf(!existsSync(ROM_PATH))("where commands are read, on the cartridg
     // a normal reads none: far Y's handler, $0F:AA54
     expect(reads(0x92)).toBeUndefined();
   });
+});
 
-  // the states a player stands, walks or crouches in — the Double Kick was missing from the stand-up
-  const NEUTRAL = ["idle", "walk_fwd", "walk_back", "crouch_down", "crouch", "crouch_loop", "stand_up"];
+describe("inTableOrder", () => {
+  const file: StatesFile = {
+    initial: "idle",
+    states: {
+      idle: {
+        anim: "m00",
+        transitions: [
+          { when: "held:guard", to: "guard" },
+          { when: "command:a5", to: "quad" },
+          { when: "pressed:attack", to: "jab" },
+          { when: ["grab", "command:9d"], to: "throw" },
+        ],
+      },
+    },
+  };
 
-  for (const name of ["goku", "vegeta"]) {
-    it(`finds every command of ${name}'s in the states he stands, walks and crouches in`, () => {
-      const t = name === "goku" ? GOKU : fighterNamed(rom, name);
-      const states = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
-      expect(missingEntries(rom, t, states).filter((m) => NEUTRAL.includes(m.state))).toEqual([]);
-    });
+  it("puts the command entries where the first stood, the table's last row first, the rest in their places", () => {
+    const out = inTableOrder(file, [{ move: 0xa5 }, { move: 0x9d }]);
+    expect(out.states.idle.transitions!.map((t) => t.to)).toEqual(["guard", "throw", "quad", "jab"]);
+  });
 
-    it(`tries ${name}'s commands as the cartridge does, the table's last row first`, () => {
-      const t = name === "goku" ? GOKU : fighterNamed(rom, name);
-      const states = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
-      expect(inTableOrder(states, readCommands(rom, t.character))).toEqual(states);
-    });
-  }
+  it("leaves the file it was given as it was", () => {
+    inTableOrder(file, [{ move: 0xa5 }, { move: 0x9d }]);
+    expect(file.states.idle.transitions!.map((t) => t.to)).toEqual(["guard", "quad", "jab", "throw"]);
+  });
 });

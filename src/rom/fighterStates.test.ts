@@ -1,14 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { validateStates, type AnimInfo, type StatesFile } from "../entity/states";
-import { ROM_PATH, scriptAt } from "./cartridge";
-import { AIR_REEL, generatedFighters, tablesOf } from "./fighterStates";
-import { CROUCH } from "./crouch";
-import { holdStepOf, readScript } from "./script";
+import { generatedFighters } from "./fighterStates";
 
-describe.skipIf(!existsSync(ROM_PATH))("a fighter's generated states.json, on the cartridge", () => {
-  const rom = new Uint8Array(readFileSync(ROM_PATH));
-
+describe("a fighter's generated states.json", () => {
   it("covers Goku like the rest, the common states being a file of their own", () => {
     expect(generatedFighters()).toEqual(expect.arrayContaining(["goku", "vegeta"]));
   });
@@ -22,30 +17,6 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's generated states.json, on th
         if (spawn) expect(existsSync(`data/spawns/${spawn}/animations.json`), `${name} ${state} fires ${spawn}`).toBe(true);
       }
     }
-  });
-
-  it.each(generatedFighters())("%s's air reel stops on the step his 1a holds, the jump's fall pose", (name) => {
-    const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
-    const t = tablesOf(rom, name);
-    expect(states.reel_air.holdStep).toBe(holdStepOf(readScript(rom, scriptAt(rom, t, AIR_REEL))));
-  });
-
-  it.each(generatedFighters())("%s's crouch stays on the drawing his 03 holds", (name) => {
-    const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
-    const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, { steps: { frame: string }[] }>;
-    const { steps } = animations[states.crouch.anim!];
-    const hold = readScript(rom, scriptAt(rom, tablesOf(rom, name), CROUCH)).find((op) => op.op === "hold");
-    // Vegeta's holds nothing: his handler keeps him there ($20:9139)
-    if (hold?.op !== "hold") return;
-    expect(steps[states.crouch.holdStep ?? steps.length - 1].frame).toBe(String(hold.drawing));
-  });
-
-  it.each(generatedFighters())("%s lies knocked out on the step his 1c holds, not on through its second fall", (name) => {
-    const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
-    const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, { steps: { frame: string; dur: number }[] }>;
-    const step = animations[states.ko_down.anim!].steps[states.ko_down.holdStep!];
-    const hold = readScript(rom, scriptAt(rom, tablesOf(rom, name), 0x1c)).find((op) => op.op === "hold");
-    expect([step.frame, step.dur]).toEqual([String(hold?.op === "hold" && hold.drawing), 1]);
   });
 
   it.each(generatedFighters())("%s's crouching block ends crouched: down held, he never passes through standing", (name) => {

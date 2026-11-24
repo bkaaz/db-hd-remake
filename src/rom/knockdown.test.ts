@@ -2,7 +2,6 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { StatesFile } from "../entity/states";
 import { ROM_PATH } from "./cartridge";
-import { generatedFighters } from "./fighterStates";
 import { getUpFrame, highGravity, withKnockdown } from "./knockdown";
 import { ROSTER } from "./roster";
 
@@ -41,15 +40,5 @@ describe.skipIf(!existsSync(ROM_PATH))("the knockdown's tables, on the cartridge
 
   it("refuses a get-up with no step past his byte", () => {
     expect(() => getUpFrame(rom, ROSTER.indexOf("gohan"), [8, 8, 4])).toThrow(/none past/);
-  });
-
-  it.each(generatedFighters())("%s's states carry his own numbers", (name) => {
-    const character = ROSTER.indexOf(name as (typeof ROSTER)[number]);
-    const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
-    const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, { steps: { dur: number }[] }>;
-    const free = getUpFrame(rom, character, animations.m1f.steps.map((s) => s.dur));
-    expect(states.high_fall.air).toEqual([[0, { gravity: highGravity(rom, character) }]]);
-    expect(states.get_up.turnFrom).toBe(free);
-    expect(states.get_up.inputsOf?.from).toBe(free);
   });
 });

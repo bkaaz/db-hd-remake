@@ -49,6 +49,7 @@ import { arrow, buttonName, commandsFile, readCommands } from "../src/rom/comman
 import { closeLines, NORMALS } from "../src/rom/buttons.ts";
 import { fighterStates, generatedFighters, tablesOf } from "../src/rom/fighterStates.ts";
 import { COMMON } from "../src/rom/compose.ts";
+import { cartridgeLines } from "../src/rom/cartridgeReport.ts";
 import { draftSpecials } from "../src/rom/draft.ts";
 import { moveParts } from "../src/rom/parts.ts";
 import { draftedObjects, draftObject, objectName, objectStates } from "../src/rom/draftObjects.ts";
@@ -121,6 +122,7 @@ function reportStates(name: string, t: FighterTables): void {
   for (const state of new Set([...Object.keys(file.states), ...Object.keys(ours.states)])) {
     for (const line of differences(file.states[state], ours.states[state])) console.log(`  ${state}${line}`);
   }
+  for (const line of cartridgeLines(rom, t, name, ours.states)) console.log(`  ${line}`);
   // a copy is only goku's logic where it runs goku's code: the rest are his own, still to read
   // a move he plays a state of his own from is read, whichever of its parts the template's copy plays
   const read = new Set([...Object.values(own?.states ?? {}).map((d) => moveOf(d.anim)), ...(own?.read ?? []).map((m) => parseInt(m, 16))]);

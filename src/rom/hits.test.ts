@@ -2,9 +2,7 @@ import { objectBox } from "./collision";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { blowStarts } from "./animation";
-import { blowOfAnim } from "./animBlow";
-import { fighterNamed, ROSTER } from "./roster";
-import { tablesOf } from "./fighterStates";
+import { fighterNamed } from "./roster";
 import { GOKU as GOKU_TABLES, ROM_PATH, scriptAt } from "./cartridge";
 import { readBoxes } from "./collision";
 import { readScript } from "./script";
@@ -52,25 +50,6 @@ describe.skipIf(!existsSync(ROM_PATH))("hitRecords, on the cartridge", () => {
     expect([states.fly.type, states.fly.damage]).toEqual(["heavy", 18]);
   });
 
-  it("agrees with every blow a fighter's states copied from it", () => {
-    // The states are written by hand (ADR 0013) or from a template
-    // (template.ts); this is what keeps the copy honest. A state playing move
-    // mNN takes that move's damage and the type named after its reaction.
-    const fighters = ROSTER.filter((name) => existsSync(`data/entities/${name}/states.json`));
-    expect(fighters).toContain("goku");
-    for (const fighter of fighters) {
-      const t = fighter === "goku" ? GOKU_TABLES : tablesOf(rom, fighter);
-      const states = (JSON.parse(readFileSync(`data/entities/${fighter}/states.json`, "utf8")) as StatesFile).states;
-      const blows = Object.entries(states).filter(([, def]) => def.type !== undefined);
-      expect(blows.length).toBeGreaterThan(0);
-      for (const [name, def] of blows) {
-        const blow = blowOfAnim(rom, t, def.anim ?? "");
-        expect(blow, `${fighter} ${name} plays ${def.anim}`).not.toBeNull();
-        // a blow that catches: the hold takes him at once, its type only a hitstop (ADR 0035)
-        expect([def.catches ? blow?.type : def.type, def.damage], `${fighter} ${name}`).toEqual([blow?.type, blow?.damage]);
-      }
-    }
-  });
 });
 
 describe("recordAt", () => {

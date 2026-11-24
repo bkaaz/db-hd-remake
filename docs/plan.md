@@ -12,13 +12,9 @@ when*; later ones are a line.
 [ADR 0038](./adr/0038-a-fighters-states-are-generated.md), before the first change
 of mechanics.
 
-1. **The tests that hold our data to the cartridge become its report:**
-   `hits.test.ts`, `attributes.test.ts`, `knockdown.test.ts` and the like fail
-   the first time a number is changed on purpose; `npm run rom -- states`
-   already prints where they part. A test of a reader on its own bytes stays.
-2. **A stale `replaces` caught:** a test fails when a common state changes
+1. **A stale `replaces` caught:** a test fails when a common state changes
    that a fighter plays a copy of (`attack_b`, `crouch_b`, … are copied).
-3. **Whose `animations.json` is** — open. The export writes it whole, so an
+2. **Whose `animations.json` is** — open. The export writes it whole, so an
    animation edited in the editor or added for a mechanic is gone at the next
    export. Settled with the owner before the mechanics touch an animation.
 

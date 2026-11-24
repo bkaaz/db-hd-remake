@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { GOKU, ROM_PATH } from "./cartridge";
 import { portReport } from "./port";
 import { fighterNamed } from "./roster";
-import type { StatesFile } from "../entity/states";
 
 describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
@@ -79,46 +78,5 @@ describe.skipIf(!existsSync(ROM_PATH))("portReport, on the cartridge", () => {
       [1.25, []],
       [1.25, [[0, 2.375], [6, 1.25]]],
     ]);
-  });
-
-  it("is what goku's states copied", () => {
-    const { states } = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
-    for (const part of quad.parts) {
-      const [name, def] = Object.entries(states).find(([, d]) => d.anim === part.anim) ?? [];
-      expect(def, part.anim).toBeDefined();
-      expect(def?.velAt ?? [], name).toEqual(part.velAt);
-      expect(def?.type, name).toBe(part.blow?.type);
-      expect(def?.damage, name).toBe(part.blow?.damage);
-    }
-  });
-
-  it("says where blows pass him by, and goku's states keep it: the knee slash's start, the knockdown", () => {
-    const { states } = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
-    for (const move of [0xa4, 0x1b]) {
-      let on = false;
-      for (const part of portReport(rom, GOKU, move).parts) {
-        // a part takes what holds at its start; field 0x96 is set on a part's first frame here
-        on = part.unhittable.find((u) => u.frame === 0)?.on ?? on;
-        const [name, def] = Object.entries(states).find(([, d]) => d.anim === part.anim) ?? [];
-        expect([name, !!def?.invulnerable]).toEqual([name, on]);
-      }
-    }
-  });
-
-  it("says where bodies pass him, and every state that plays such a part is pushless — pinned's", () => {
-    for (const name of ["goku", "vegeta"]) {
-      const t = fighterNamed(rom, name);
-      const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
-      const moves = new Set(Object.values(states).flatMap((d) => (/^m([0-9a-f]{2})(_\d+)?$/.exec(d.anim) ? [parseInt(d.anim.slice(1, 3), 16)] : [])));
-      for (const move of moves) {
-        let pass = false;
-        for (const part of portReport(rom, t, move).parts) {
-          pass = part.unhittable.find((u) => u.frame === 0)?.pass ?? pass;
-          for (const [state, def] of Object.entries(states).filter(([, d]) => d.anim === part.anim)) {
-            expect([name, state, !!def.pushless]).toEqual([name, state, pass]);
-          }
-        }
-      }
-    }
   });
 });

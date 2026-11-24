@@ -164,7 +164,8 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   `stand_up` (`$0F:9EB1`; and wherever else the original allows it): a
   command is `"command:<move>"` — its input is the cartridge's, from
   `commands.json` (`npm run rom -- commands`, ADR 0050). Then `npm run rom -- entries`: no
-  stand, walk or crouch state may be listed (`entries.test.ts` holds it).
+  stand, walk or crouch state may be listed (`npm run rom -- states` says
+  so too).
   Where an entry goes is not yours to pick: `entries --order` (and
   `npm run states`) puts the command entries in the cartridge's order,
   the table's last row first (ADR 0038).
@@ -213,8 +214,9 @@ before asking for a new mechanism:
 
 ## 4. Check
 
-`npm test` — `src/rom/hits.test.ts` and `port.test.ts` hold goku's states
-to the cartridge. Then `npm run blows -- goku`, and `npm run moves -- <fighter>
+`npm test`, then `npm run rom -- states --fighter <name>`: where his blows,
+the frames blows and bodies pass him and his entries part from the
+cartridge, printed — a port leaves none of his own. Then `npm run blows -- goku`, and `npm run moves -- <fighter>
 --only <move>`, which plays the move in the original and in ours and prints what
 differs (ADR 0090). Hand the owner one move to try, the next only after he answers,
 and a recording (`L`) for anything about behaviour.
