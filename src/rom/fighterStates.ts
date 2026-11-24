@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import type { AnimInfo, StatesFile } from "../entity/states";
+import type { StatesFile } from "../entity/states";
 import { blowOfAnim } from "./animBlow";
 import { readAttributes, withAttributes } from "./attributes";
 import { CROUCH } from "./crouch";
@@ -14,6 +14,7 @@ import { fighterNamed, ROSTER, type FighterName } from "./roster";
 import { holdStepOf, readScript } from "./script";
 import { withSpecials, type Groups, type SpecialsFile } from "./specials";
 import { statesFrom, type Template } from "./template";
+import { blowsSaid, COMMON, GROUPS } from "./compose";
 import { moveOf } from "./todo";
 
 /**
@@ -45,10 +46,6 @@ export function tablesOf(rom: Uint8Array, name: string): FighterTables {
   return fighterNamed(rom, name, { ...GOKU.objects, spawns: [...GOKU.objects.spawns.filter((sp) => sp.type === 0xa), ...stepped] });
 }
 
-/** The states every fighter shares, by hand: his `states.json` is these on his numbers, with his specials. */
-export const COMMON = "data/template/states.json";
-/** The lists of common states an entry's `from` names as `@name`. */
-const GROUPS = "data/template/groups.json";
 
 /** Every fighter whose `states.json` is generated: all that have one, Goku with the rest. */
 export function generatedFighters(): FighterName[] {
@@ -113,20 +110,6 @@ function heldOn(states: StatesFile["states"], state: string, move: number, rom: 
   if (hold?.op !== "hold" || hold.drawing === null) return states;
   const holdStep = steps.findIndex((s) => s.frame === String(hold.drawing) && s.dur === 1);
   return holdStep < 0 || holdStep === steps.length - 1 ? states : { ...states, [state]: { ...states[state], holdStep } };
-}
-
-/**
- * A drawing may carry a hit box in a state that names no blow: a part of a
- * move whose reaction no type copies, or a pose reused in a reaction. The game
- * asks such a state to say 0 for itself (`validateStates`), and that is all
- * this says: ours hit with what `attackDamage` makes of nothing anyway.
- */
-function blowsSaid(states: StatesFile["states"], animations: Record<string, unknown>): StatesFile["states"] {
-  const strikes = (anim: string | undefined) =>
-    ((animations[anim ?? ""] as AnimInfo | undefined)?.steps ?? []).some((s) => s.boxes?.some((b) => b.type === "hit"));
-  return Object.fromEntries(
-    Object.entries(states).map(([name, def]) => [name, def.type === undefined && def.damage === undefined && strikes(def.anim) ? { ...def, damage: 0 } : def]),
-  );
 }
 
 function readJson<T>(path: string): T {

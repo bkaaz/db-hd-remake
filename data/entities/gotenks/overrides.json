@@ -1,0 +1,154 @@
+{
+  "walk_fwd": {
+    "vel": [
+      1.6484375,
+      0
+    ]
+  },
+  "walk_back": {
+    "vel": [
+      -1.19921875,
+      0
+    ]
+  },
+  "jump_up": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 0,
+          "vy": -10.15625
+        }
+      ]
+    ]
+  },
+  "jump_fwd": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 2.84765625,
+          "vy": -10.15625
+        }
+      ]
+    ],
+    "holdStep": 7
+  },
+  "jump_back": {
+    "air": [
+      [
+        2,
+        {
+          "vx": -2.09765625,
+          "vy": -10.15625
+        }
+      ]
+    ],
+    "holdStep": 7
+  },
+  "jump_fall": {
+    "holdStep": 0
+  },
+  "jump_y": {
+    "damage": 24
+  },
+  "jump_b": {
+    "damage": 26
+  },
+  "jump_fwd_y": {
+    "damage": 24
+  },
+  "jump_fwd_b": {
+    "damage": 26
+  },
+  "dash_fwd": {
+    "vel": [
+      3.09765625,
+      0
+    ]
+  },
+  "attack_b_close": {
+    "damage": 26
+  },
+  "ki_fire": {
+    "fires": {
+      "at": [
+        32,
+        -32
+      ]
+    }
+  },
+  "reel_air": {
+    "holdStep": 5
+  },
+  "reel_high": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3515625
+        }
+      ]
+    ]
+  },
+  "high_fall": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3515625
+        }
+      ]
+    ]
+  },
+  "high_bounce": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3515625
+        }
+      ]
+    ]
+  },
+  "get_up": {
+    "turnFrom": 30,
+    "inputsOf": {
+      "from": 30
+    }
+  },
+  "downed": {
+    "turnFrom": 30,
+    "inputsOf": {
+      "from": 30
+    }
+  },
+  "dash_fwd_run": {
+    "vel": [
+      3.09765625,
+      0
+    ]
+  },
+  "hop_fwd": {
+    "air": [
+      [
+        3,
+        {
+          "vx": 3.375,
+          "vy": -7.875
+        }
+      ]
+    ]
+  },
+  "hop_back": {
+    "air": [
+      [
+        3,
+        {
+          "vx": -2.625,
+          "vy": -7.875
+        }
+      ]
+    ]
+  }
+}

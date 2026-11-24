@@ -1,24 +1,27 @@
-# 0038 — A fighter's states are generated: the common states and his own specials
+# 0038 — A fighter's states are generated: the common states, his overrides and specials
 
 **Status:** accepted 2026-11-17 · consolidates 0038, 0051, 0060, 0069 and 0070
 (2026-10-31 – 2026-11-04), which it replaces · 2026-11-24: the common states
-are a file of their own and Goku is generated like the rest
+are a file of their own, Goku is generated like the rest, and the cartridge
+no longer writes any of it
 
-Every fighter's `states.json`, Goku's too, is written whole by `npm run rom --
-states`: the common states (`data/template/states.json`, by hand) through
-`src/rom/template.ts` onto his animations and numbers, and his own
-`specials.json` merged in — his specials, and the common states he plays
-differently, named in `replaces`. The common states were cut once from Goku's,
-his specials into his `specials.json`. Another fighter's first `specials.json`
-is drafted from the cartridge's reports (`npm run rom -- draft`) and is by hand
-after that. A state's command entries stand in the order of his command table,
-its last row first, as the cartridge tries them (`inTableOrder`).
-`fighterStates.test.ts` fails while a generated file is out of date.
+Every fighter's `states.json`, Goku's too, is written whole by `npm run
+states` from our files alone (`src/rom/compose.ts`): the common states
+(`data/template/states.json`) on his animations, his `overrides.json` laid on
+them — where his common states differ, field by field — and his
+`specials.json` merged in: his specials, and the common states he plays
+differently, named in `replaces`. All of it is by hand. A state's command
+entries stand in the order of his `commands.json`, its last row first, as the
+cartridge tries them (`inTableOrder`). `compose.test.ts` fails while a file is
+out of date.
 
-**Before the first change of mechanics** (`plan.md`, the common part): the
-generator stops overwriting what the design then owns. A new mechanic comes in
-through data and is off without it, so the port's rules stay playable as they
-stand.
+The cartridge is a report: `npm run rom -- states` prints where its numbers
+differ from ours and writes nothing. The overrides were written once from what
+it laid on at the end of the port (git tag `port-end`); `draft` still gives a
+new fighter's first `specials.json`.
+
+A new mechanic comes in through data and is off without it, so the port's
+rules stay playable as they stand.
 
 **Rejected:**
 
@@ -26,9 +29,13 @@ stand.
   the game, the editor or a log.
 - **Goku's own file as the template** — no change could be his alone, and his
   specials stood among the states everyone shares.
+- **The cartridge's numbers laid on at every run** — a number changed on purpose
+  was put back, and a test failed for it.
 - **Carrying over what the template did not make** from the old `states.json` —
   the file would be the generator's input and output, and a deleted special
   comes back.
+- **An override replacing a whole state** — a change to the common state would
+  pass him by; `replaces` is for a state he plays differently, and says so.
 - **Any special overriding a common state of its name** — a typo would silently
   drop a common state; `replaces` says so on purpose.
 - **The engine sorting command entries as it loads** — the file would say one

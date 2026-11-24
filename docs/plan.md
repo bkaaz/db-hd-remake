@@ -12,13 +12,13 @@ when*; later ones are a line.
 [ADR 0038](./adr/0038-a-fighters-states-are-generated.md), before the first change
 of mechanics.
 
-1. **Freeze the port:** its flat states and hit types kept as they are.
-2. **The generator stops overwriting** a blow's type and damage: a sparse file
-   of each fighter's, by state, written once from what `blowOf` gives now,
-   shaped as the later parameters will be. An override of nothing is an error.
-3. **A stale `replaces` caught:** a test fails when a common state changes
+1. **The tests that hold our data to the cartridge become its report:**
+   `hits.test.ts`, `attributes.test.ts`, `knockdown.test.ts` and the like fail
+   the first time a number is changed on purpose; `npm run rom -- states`
+   already prints where they part. A test of a reader on its own bytes stays.
+2. **A stale `replaces` caught:** a test fails when a common state changes
    that a fighter plays a copy of (`attack_b`, `crouch_b`, … are copied).
-4. **Whose `animations.json` is** — open. The export writes it whole, so an
+3. **Whose `animations.json` is** — open. The export writes it whole, so an
    animation edited in the editor or added for a mechanic is gone at the next
    export. Settled with the owner before the mechanics touch an animation.
 
@@ -62,9 +62,8 @@ hold for every fighter, not only one.
 ## Not yet ordered
 
 - **A fighter's character as parameters** of the common states (walk, dash,
-  jump, gravity, the get-up frame), resolved as `states` writes; the
-  cartridge's readers then write beside `data/`, in a gitignored directory,
-  never over it — when a mechanic or tuning runs into the generator.
+  jump, gravity, the get-up frame) in place of the same number overridden in
+  several states — when tuning them gets in the way.
 
 - A second player, and round rules.
 - A remapping screen.

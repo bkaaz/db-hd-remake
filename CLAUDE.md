@@ -257,12 +257,13 @@ npm run rom -- commands --fighter vegeta
                   # engine matches it (src/input/command.ts)
 npm run rom -- export --fighter vegeta
                   # another fighter's sheet, frames and animations only
+npm run states    # every fighter's states.json from our files: the
+                  # common states (data/template/), his overrides.json and
+                  # specials.json — after any change to them; a test fails
+                  # until it is run. No cartridge
 npm run rom -- states --fighter vegeta
-                  # his states from the common ones (data/template/):
-                  # on his animations with his blows, his specials merged
-npm run rom -- states --all
-                  # every fighter again, Goku too — after any change to
-                  # the common states; a test fails until it is run
+                  # where the cartridge's numbers differ from his states
+                  # and attributes, printed, never written; --all for all
 npm run rom -- draft --fighter cell
                   # a first specials.json and his objects from the reports
                   # (ADR 0038); --force writes it again

@@ -15,13 +15,14 @@ with the original.
 `npm run rom -- todo --fighter <name>` — a move on code goku's states
 already play is read (the states template copies it, his numbers by
 script); the rest are listed by handler, one reading each, the ones the
-whole roster runs first. `states --fighter <name>` says which copies run
-code of his own and so are still to read. His own specials go into
-`data/entities/<name>/specials.json`, never `states.json`: `states`
-rewrites that whole and merges them in (ADR 0038).
-A shared state is changed in `data/template/states.json`, Goku's special in
-his `specials.json`; `states --all` brings every fighter up to date, Goku
-too, and `fighterStates.test.ts` fails until it is run.
+whole roster runs first. `npm run rom -- states --fighter <name>` says which
+copies run code of his own and so are still to read, and where the
+cartridge's numbers differ from ours — printed, never written. His own
+specials go into `data/entities/<name>/specials.json`, his numbers on a
+common state into his `overrides.json`, never `states.json`: `npm run
+states` rewrites that whole from them (ADR 0038). A shared state is changed
+in `data/template/states.json`, Goku's special in his `specials.json`;
+`compose.test.ts` fails until `npm run states` is run.
 
 ## A fighter's first draft
 
@@ -165,7 +166,7 @@ One state per part, chained by `animEnd`, the last back to `idle`:
   `commands.json` (`npm run rom -- commands`, ADR 0050). Then `npm run rom -- entries`: no
   stand, walk or crouch state may be listed (`entries.test.ts` holds it).
   Where an entry goes is not yours to pick: `entries --order` (and
-  `states --fighter`) puts the command entries in the cartridge's order,
+  `npm run states`) puts the command entries in the cartridge's order,
   the table's last row first (ADR 0038).
 - no swing `sound`: the export put the script's sounds on the animation's
   steps (`sfx`), and they play through the bank entry whose `rom` is that

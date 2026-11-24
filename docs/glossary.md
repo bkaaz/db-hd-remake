@@ -43,6 +43,7 @@ change.
 - **Link** — hitting again after your attack has played out, while the defender is still in hitstun. → `combat.md` (Chaining)
 - **Lit** (an object) — drawn in its thrower's palette, so in his colours in every lighting. → ADR 0036
 - **Move id** (`m92`) — the original's number for a move, which names its animation. → ADR 0017
+- **Override** — a field of a common state a fighter has otherwise, in his `overrides.json`; an object merged, anything else replaced. → `rom/overrides.ts`
 - **Pinned** — let fall, bounced, left lying until whoever pinned him throws him. → `rom.md`
 - **Push band** — the screen's outer band; a fighter moving toward its edge scrolls the camera. → `camera/push.ts`
 - **Push box** — a drawing's body or head, keeping two fighters apart. → `combat.md`

@@ -1,0 +1,164 @@
+{
+  "walk_fwd": {
+    "vel": [
+      1.75,
+      0
+    ]
+  },
+  "walk_back": {
+    "vel": [
+      -1.84765625,
+      0
+    ]
+  },
+  "jump_up": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 0,
+          "vy": -10.875
+        }
+      ]
+    ]
+  },
+  "jump_fwd": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 2.84765625,
+          "vy": -10.875
+        }
+      ]
+    ],
+    "holdStep": 6
+  },
+  "jump_back": {
+    "air": [
+      [
+        2,
+        {
+          "vx": -2.84765625,
+          "vy": -10.875
+        }
+      ]
+    ],
+    "holdStep": 6
+  },
+  "jump_fall": {
+    "holdStep": 0
+  },
+  "jump_y": {
+    "damage": 26
+  },
+  "jump_fwd_b": {
+    "damage": 18
+  },
+  "dash_fwd": {
+    "vel": [
+      2.8984375,
+      0
+    ]
+  },
+  "dash_back": {
+    "vel": [
+      -2.796875,
+      0
+    ]
+  },
+  "attack_b_close": {
+    "type": "heavy",
+    "damage": 26
+  },
+  "crouch_b": {
+    "type": "light"
+  },
+  "ki_fire": {
+    "fires": {
+      "at": [
+        40,
+        -40
+      ]
+    }
+  },
+  "reel_air": {
+    "holdStep": 6
+  },
+  "reel_high": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3515625
+        }
+      ]
+    ]
+  },
+  "high_fall": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3515625
+        }
+      ]
+    ]
+  },
+  "high_bounce": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3515625
+        }
+      ]
+    ]
+  },
+  "get_up": {
+    "turnFrom": 41,
+    "inputsOf": {
+      "from": 41
+    }
+  },
+  "downed": {
+    "turnFrom": 41,
+    "inputsOf": {
+      "from": 41
+    }
+  },
+  "dash_fwd_run": {
+    "vel": [
+      2.8984375,
+      0
+    ]
+  },
+  "dash_back_run": {
+    "vel": [
+      -2.796875,
+      0
+    ]
+  },
+  "hop_fwd": {
+    "air": [
+      [
+        3,
+        {
+          "vx": 4.5,
+          "vy": -5.46875
+        }
+      ]
+    ]
+  },
+  "hop_back": {
+    "air": [
+      [
+        3,
+        {
+          "vx": -4.34765625,
+          "vy": -5.46875
+        }
+      ]
+    ]
+  }
+}

@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { validateStates, type AnimInfo, type StatesFile } from "../entity/states";
 import { ROM_PATH, scriptAt } from "./cartridge";
-import { AIR_REEL, fighterStates, generatedFighters, tablesOf } from "./fighterStates";
+import { AIR_REEL, generatedFighters, tablesOf } from "./fighterStates";
 import { CROUCH } from "./crouch";
 import { holdStepOf, readScript } from "./script";
 
@@ -59,11 +59,5 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's generated states.json, on th
     const file = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
     const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, AnimInfo>;
     expect(validateStates(file, animations).errors).toEqual([]);
-  });
-
-  it.each(generatedFighters())("%s's is what the common states and his specials make", (name) => {
-    const onDisk = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8"));
-    const { file } = fighterStates(rom, name, tablesOf(rom, name));
-    expect(onDisk, "out of date — npm run rom -- states --all").toEqual(JSON.parse(JSON.stringify(file)));
   });
 });

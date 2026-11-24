@@ -1,0 +1,135 @@
+{
+  "walk_fwd": {
+    "vel": [
+      1.44921875,
+      0
+    ]
+  },
+  "walk_back": {
+    "vel": [
+      -1.296875,
+      0
+    ]
+  },
+  "crouch": {
+    "holdStep": 1
+  },
+  "jump_up": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 0,
+          "vy": -10.25
+        }
+      ]
+    ]
+  },
+  "jump_fwd": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 2.173828125,
+          "vy": -10.25
+        }
+      ]
+    ]
+  },
+  "jump_back": {
+    "air": [
+      [
+        2,
+        {
+          "vx": -1.798828125,
+          "vy": -10.25
+        }
+      ]
+    ]
+  },
+  "jump_fwd_b": {
+    "damage": 27
+  },
+  "dash_fwd": {
+    "vel": [
+      3.19921875,
+      0
+    ]
+  },
+  "dash_back": {
+    "vel": [
+      -2.796875,
+      0
+    ]
+  },
+  "attack_y": {
+    "damage": 26
+  },
+  "crouch_y": {
+    "damage": 27
+  },
+  "crouch_b": {
+    "type": "trip",
+    "damage": 27
+  },
+  "ki_fire": {
+    "fires": {
+      "at": [
+        48,
+        -48
+      ]
+    }
+  },
+  "reel_air": {
+    "holdStep": 6
+  },
+  "get_up": {
+    "turnFrom": 32,
+    "inputsOf": {
+      "from": 32
+    }
+  },
+  "downed": {
+    "turnFrom": 32,
+    "inputsOf": {
+      "from": 32
+    }
+  },
+  "dash_fwd_run": {
+    "vel": [
+      3.19921875,
+      0
+    ]
+  },
+  "dash_back_run": {
+    "vel": [
+      -2.796875,
+      0
+    ]
+  },
+  "ko_down": {
+    "holdStep": 2
+  },
+  "hop_fwd": {
+    "air": [
+      [
+        3,
+        {
+          "vx": 1.875,
+          "vy": -7.125
+        }
+      ]
+    ]
+  },
+  "hop_back": {
+    "air": [
+      [
+        3,
+        {
+          "vx": -1.798828125,
+          "vy": -7.125
+        }
+      ]
+    ]
+  }
+}

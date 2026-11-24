@@ -45,7 +45,7 @@ function commandOf(tr: Transition): number | null {
  * block where the first of them stood, ahead of the buttons, as the reader
  * runs before `$0D:FEC8`; the rest keep their places.
  */
-export function inTableOrder(file: StatesFile, commands: readonly Command[]): StatesFile {
+export function inTableOrder(file: StatesFile, commands: readonly Pick<Command, "move">[]): StatesFile {
   const rank = new Map(commands.map((c, i) => [c.move, commands.length - i]));
   const states = Object.fromEntries(
     Object.entries(file.states).map(([name, def]) => {

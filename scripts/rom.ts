@@ -18,7 +18,8 @@
  *                                    a fight's song as the driver plays it, into
  *                                    preview/ as a WAV — every song when no id is given
  *   npm run rom -- roster            every fighter: drawings, resources, palette, boxes
- *   npm run rom -- states --all      every generated fighter's states.json, written again
+ *   npm run rom -- states --all      what the cartridge says of every fighter's states
+ *                                    and attributes beside ours — printed, never written
  *   npm run rom -- draft --fighter x a first specials.json, objects.json and spawn states from the reports
  *   npm run rom -- export --all      goku and every fighter that has states, exported again
  *   npm run rom -- commands          his command table into data/entities/<name>/commands.json
@@ -46,7 +47,8 @@ import { drawPortrait, portraitTiles } from "../src/rom/portrait.ts";
 import { describeFact } from "../src/rom/describe.ts";
 import { arrow, buttonName, commandsFile, readCommands } from "../src/rom/commands.ts";
 import { closeLines, NORMALS } from "../src/rom/buttons.ts";
-import { COMMON, fighterStates, generatedFighters, tablesOf } from "../src/rom/fighterStates.ts";
+import { fighterStates, generatedFighters, tablesOf } from "../src/rom/fighterStates.ts";
+import { COMMON } from "../src/rom/compose.ts";
 import { draftSpecials } from "../src/rom/draft.ts";
 import { moveParts } from "../src/rom/parts.ts";
 import { draftedObjects, draftObject, objectName, objectStates } from "../src/rom/draftObjects.ts";
@@ -105,15 +107,20 @@ function setsOf(name: string): PalettesFile | undefined {
   const path = `data/entities/${name}/palettes.json`;
   return existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as PalettesFile) : undefined;
 }
-/** His `states.json` and `attributes.json`, written whole, and what became of the template on the way. */
-function writeStates(name: string, t: FighterTables): void {
+/**
+ * What the cartridge says of his states and attributes beside ours, field by
+ * field — printed, never written: our files are ours (`npm run states` writes
+ * his states.json from them), and a number changed on purpose is not put back.
+ */
+function reportStates(name: string, t: FighterTables): void {
   const { file, made, own } = fighterStates(rom, name, t);
-  writeFileSync(`data/entities/${name}/states.json`, JSON.stringify(file, null, 2) + "\n");
-  if (own) console.log(`his own: ${Object.keys(own.states).join(", ")} (data/entities/${name}/specials.json)`);
-  for (const [state, why] of Object.entries(made.dropped)) console.log(`dropped ${state}: ${why}`);
-  for (const [state, what] of Object.entries(made.lost)) console.log(`${state} lost ${what.join(", ")}`);
-  for (const [state, [was, is]] of Object.entries(made.moved)) console.log(`${state} fires from ${is} (goku's ${was})`);
-  for (const [state, [was, is]] of Object.entries(made.reblown)) console.log(`${state}: ${was} -> ${is}`);
+  const ours = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
+  console.log(`${name}:`);
+  for (const [state, why] of Object.entries(made.dropped)) console.log(`  dropped ${state}: ${why}`);
+  for (const [state, what] of Object.entries(made.lost)) console.log(`  ${state} lost ${what.join(", ")}`);
+  for (const state of new Set([...Object.keys(file.states), ...Object.keys(ours.states)])) {
+    for (const line of differences(file.states[state], ours.states[state])) console.log(`  ${state}${line}`);
+  }
   // a copy is only goku's logic where it runs goku's code: the rest are his own, still to read
   // a move he plays a state of his own from is read, whichever of its parts the template's copy plays
   const read = new Set([...Object.values(own?.states ?? {}).map((d) => moveOf(d.anim)), ...(own?.read ?? []).map((m) => parseInt(m, 16))]);
@@ -121,32 +128,37 @@ function writeStates(name: string, t: FighterTables): void {
     if (own?.replaces?.includes(state)) continue;
     const move = moveOf(def.anim);
     if (move !== null && !read.has(move) && !sameHandler(rom, GOKU, t, move))
-      console.log(`${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, t.character, move))}) — to read`);
+      console.log(`  ${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, t.character, move))}) — to read`);
   }
-  // Goku's attributes are by hand, the others' base: his intro palettes are left out of them on purpose
-  if (name === "goku") return console.log(`${name}: ${Object.keys(file.states).length} states`);
   const his = readAttributes(rom, t.character);
-  // his defence, gravity, grab range and close lines; Goku's for what is not read (push width); his lightings, and the fire
-  const attributes = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8"));
-  writeFileSync(
-    `data/entities/${name}/attributes.json`,
-    JSON.stringify(
-      {
-        ...attributes,
-        defence: his.defence,
-        gravity: his.gravity,
-        grabRange: commandContext(rom, t.character).grab,
-        closeRange: { attack: closeLines(rom, t.character).y, smash: closeLines(rom, t.character).b },
-        palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE), ...Object.keys(SHOCK), ...Object.keys(CANDY)],
-        burn: Object.keys(FIRE),
-        shock: Object.keys(SHOCK),
-        candy: Object.keys(CANDY),
-      },
-      null,
-      2,
-    ) + "\n",
-  );
-  console.log(`${name}: ${Object.keys(file.states).length} states; his defence, gravity, walk, dash, jump and close lines; Goku's push width`);
+  const attributes = JSON.parse(readFileSync(`data/entities/${name}/attributes.json`, "utf8"));
+  // his defence, gravity, grab range and close lines; his lightings, colour sets and the fire as palettes — but Goku's, listed by hand
+  const read_ = {
+    defence: his.defence,
+    gravity: his.gravity,
+    grabRange: commandContext(rom, t.character).grab,
+    closeRange: { attack: closeLines(rom, t.character).y, smash: closeLines(rom, t.character).b },
+    ...(name === "goku"
+      ? {}
+      : {
+          palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE), ...Object.keys(SHOCK), ...Object.keys(CANDY)],
+          burn: Object.keys(FIRE),
+          shock: Object.keys(SHOCK),
+          candy: Object.keys(CANDY),
+        }),
+  };
+  for (const [key, value] of Object.entries(read_)) for (const line of differences(value, attributes[key])) console.log(`  attributes.${key}${line}`);
+}
+
+/** Where two values part, a line each: the cartridge's, then ours. */
+function differences(rom_: unknown, ours: unknown, at = ""): string[] {
+  if (JSON.stringify(rom_) === JSON.stringify(ours)) return [];
+  const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
+  if (isObject(rom_) && isObject(ours) && at.split(".").length < 3) {
+    return [...new Set([...Object.keys(rom_), ...Object.keys(ours)])].flatMap((k) => differences(rom_[k], ours[k], `${at}.${k}`));
+  }
+  const show = (v: unknown) => (v === undefined ? "—" : JSON.stringify(v));
+  return [`${at}: cartridge ${show(rom_)}, ours ${show(ours)}`];
 }
 
 // `--fighter <name>` reads another fighter of the roster, and exports only him
@@ -524,9 +536,9 @@ if (command === "tiles") {
     execFileSync(process.execPath, [...process.execArgv, process.argv[1], "export", ...who], { stdio: "inherit" });
   }
 } else if (command === "states" && args.includes("--all")) {
-  for (const fighter of generatedFighters()) writeStates(fighter, tablesOf(rom, fighter));
+  for (const fighter of generatedFighters()) reportStates(fighter, tablesOf(rom, fighter));
 } else if (command === "states") {
-  writeStates(name, T);
+  reportStates(name, T);
 } else if (command === "export" && T !== GOKU) {
   // his frames and animations; the browser draws his sheets (ADR 0090), the shared
   // spawns, the arenas and the HUD stay Goku's export

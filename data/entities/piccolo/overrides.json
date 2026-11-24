@@ -1,0 +1,156 @@
+{
+  "walk_fwd": {
+    "vel": [
+      1.59765625,
+      0
+    ]
+  },
+  "walk_back": {
+    "vel": [
+      -1.44921875,
+      0
+    ]
+  },
+  "jump_up": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 0,
+          "vy": -9.375
+        }
+      ]
+    ]
+  },
+  "jump_fwd": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 2.548828125,
+          "vy": -9.375
+        }
+      ]
+    ],
+    "holdStep": 6
+  },
+  "jump_back": {
+    "air": [
+      [
+        2,
+        {
+          "vx": -2.3203125,
+          "vy": -9.375
+        }
+      ]
+    ],
+    "holdStep": 6
+  },
+  "jump_y": {
+    "damage": 26
+  },
+  "jump_b": {
+    "damage": 28
+  },
+  "jump_fwd_y": {
+    "damage": 26
+  },
+  "jump_fwd_b": {
+    "damage": 28
+  },
+  "dash_fwd": {
+    "vel": [
+      2.796875,
+      0
+    ]
+  },
+  "dash_back": {
+    "vel": [
+      -3.09765625,
+      0
+    ]
+  },
+  "attack_y_close": {
+    "damage": 26
+  },
+  "attack_y": {
+    "damage": 28
+  },
+  "attack_b_close": {
+    "damage": 28
+  },
+  "crouch_y": {
+    "type": "light",
+    "damage": 26
+  },
+  "crouch_b": {
+    "damage": 28
+  },
+  "reel_air": {
+    "holdStep": 5
+  },
+  "reel_high": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.40625
+        }
+      ]
+    ]
+  },
+  "high_fall": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.40625
+        }
+      ]
+    ]
+  },
+  "high_bounce": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.40625
+        }
+      ]
+    ]
+  },
+  "get_up": {
+    "turnFrom": 18,
+    "inputsOf": {
+      "from": 18
+    }
+  },
+  "downed": {
+    "turnFrom": 18,
+    "inputsOf": {
+      "from": 18
+    }
+  },
+  "hop_fwd": {
+    "air": [
+      [
+        3,
+        {
+          "vx": 2.25,
+          "vy": -7.03125
+        }
+      ]
+    ]
+  },
+  "hop_back": {
+    "air": [
+      [
+        3,
+        {
+          "vx": -2.25,
+          "vy": -7.03125
+        }
+      ]
+    ]
+  }
+}

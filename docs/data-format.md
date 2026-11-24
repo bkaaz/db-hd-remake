@@ -27,7 +27,8 @@ missing.
 |---|---|
 | `frames.json` | `npm run rom -- export`, whole (ADR 0090) |
 | `animations.json` | `npm run rom -- export`, whole; an edit in the editor is lost at the next export (ADR 0017) |
-| `states.json` | `npm run rom -- states`, whole: the common states on his numbers, with his specials (ADR 0038) |
+| `states.json` | `npm run states`, whole: the common states with his overrides and specials, no cartridge (ADR 0038) |
+| `overrides.json` | by hand: where his common states differ, field by field (`rom/overrides.ts`, ADR 0038) |
 | `specials.json` | by hand, first drafted by `npm run rom -- draft` (ADR 0038) |
 | `objects.json` | `npm run rom -- draft`: a fighter's objects no recording has given yet |
 | `commands.json` | `npm run rom -- commands`, whole (ADR 0050) |

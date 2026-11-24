@@ -1,0 +1,159 @@
+{
+  "walk_fwd": {
+    "vel": [
+      1.3984375,
+      0
+    ]
+  },
+  "walk_back": {
+    "vel": [
+      -1.09765625,
+      0
+    ]
+  },
+  "jump_up": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 0,
+          "vy": -10.75
+        }
+      ]
+    ]
+  },
+  "jump_fwd": {
+    "air": [
+      [
+        2,
+        {
+          "vx": 2.25,
+          "vy": -10.75
+        }
+      ]
+    ]
+  },
+  "jump_back": {
+    "air": [
+      [
+        2,
+        {
+          "vx": -1.798828125,
+          "vy": -10.75
+        }
+      ]
+    ]
+  },
+  "jump_y": {
+    "damage": 26
+  },
+  "jump_b": {
+    "damage": 28
+  },
+  "jump_fwd_y": {
+    "damage": 26
+  },
+  "jump_fwd_b": {
+    "damage": 28
+  },
+  "dash_fwd": {
+    "vel": [
+      3.09765625,
+      0
+    ]
+  },
+  "dash_back": {
+    "vel": [
+      -2.8984375,
+      0
+    ]
+  },
+  "attack_y_close": {
+    "type": "heavy",
+    "damage": 26
+  },
+  "attack_y": {
+    "damage": 28
+  },
+  "attack_b_close": {
+    "damage": 28
+  },
+  "crouch_y": {
+    "damage": 29
+  },
+  "ki_fire": {
+    "fires": {
+      "at": [
+        28,
+        -48
+      ]
+    }
+  },
+  "reel_air": {
+    "holdStep": 5
+  },
+  "reel_high": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3671875
+        }
+      ]
+    ]
+  },
+  "high_fall": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3671875
+        }
+      ]
+    ]
+  },
+  "high_bounce": {
+    "air": [
+      [
+        0,
+        {
+          "gravity": 0.3671875
+        }
+      ]
+    ]
+  },
+  "dash_fwd_run": {
+    "vel": [
+      3.09765625,
+      0
+    ]
+  },
+  "dash_back_run": {
+    "vel": [
+      -2.8984375,
+      0
+    ]
+  },
+  "hop_fwd": {
+    "air": [
+      [
+        3,
+        {
+          "vx": 2.396484375,
+          "vy": -7.6171875
+        }
+      ]
+    ]
+  },
+  "hop_back": {
+    "air": [
+      [
+        3,
+        {
+          "vx": -2.396484375,
+          "vy": -7.6171875
+        }
+      ]
+    ]
+  }
+}
