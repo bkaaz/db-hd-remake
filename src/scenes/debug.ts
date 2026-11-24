@@ -291,8 +291,8 @@ export class DebugScene implements Scene {
     else this.opening.step(this.fighters.bodies);
     this.stage.flash(this.fighters.takeFlash());
     for (const c of this.fighters.takeScreen()) this.stage.cue(c);
-    const { health, dial } = this.fighters.status();
-    this.hud?.tick(health, dial);
+    const { health } = this.fighters.status();
+    this.hud?.tick(health);
     const shake = this.fighters.takeShake();
     if (shake) this.shake.start(shake);
     this.shake.tick();

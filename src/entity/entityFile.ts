@@ -169,8 +169,9 @@ export interface Attributes {
    */
   hitstun: number;
   /**
-   * The ki meter's capacity. A **separate** resource from health, decided
-   * 2026-08-23 — see `combat.md`, which had it open.
+   * The ki meter's capacity: six levels of 10, the HUD's six marks, so a
+   * special's cost of 5 or 10 (its command row's) is half a mark or one.
+   * A **separate** resource from health — `combat.md`.
    */
   ki: number;
 }
@@ -191,7 +192,7 @@ export const DEFAULT_ATTRIBUTES: Attributes = {
   copies: { count: 0, step: 0, spread: [0, 0] },
   follows: false,
   hitstun: 12,
-  ki: 100,
+  ki: 60,
 };
 
 /**

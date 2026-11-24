@@ -8,7 +8,6 @@ import { hitAgain } from "./hitAgain";
 import type { ShakeDef } from "../camera/shake";
 import { OWN_COLOURS } from "../arena/arenaFile";
 import type { Way } from "../arena/ways";
-import { healFrame } from "../combat/heal";
 import type { Anim, Box, EntityDef, Step } from "./entityDef";
 import { boxToWorld, type Placement, type WorldRect } from "../combat/hit";
 import type { SoundPlayer } from "../audio/playback";
@@ -168,6 +167,8 @@ const ATTACK_LABELS = [
 
 /** Frames between copies of a retriggered sound when the state names no interval. */
 const HUM_EVERY = 8;
+/** Ki every fighter enters a fight with, of his meter's `attributes.ki` (owner, 2026-11-24). */
+const START_KI = 30;
 /** Half the width of a finale's band, world px: the screen's 256 and more, whoever stands where. */
 const BAND_REACH = 512;
 
@@ -330,9 +331,6 @@ export class Entity {
   private hp = 0;
   /** The ki meter. A separate pool from health — see combat.md. */
   private ki = 0;
-  /** The charging dial the HUD shows, and the frames charged, which pace it ($0F:A020). */
-  private dialAt = 0;
-  private healClock = 0;
   /** Set on entering a state that `fires`; taken by whoever owns projectiles. */
   private fired: StateDef["fires"] | null = null;
   /** The `groundFx` of the state just entered, or its `trail`'s beat, until the fighters take it. */
@@ -409,6 +407,7 @@ export class Entity {
     this.maxKi = def.attributes.ki;
     this.baseHitstun = def.attributes.hitstun;
     this.hp = this.maxHealth;
+    this.ki = Math.min(START_KI, this.maxKi);
     this.sprite.scale.set(scale);
     this.ballG.blendMode = "add";
     this.bandG.blendMode = "add";
@@ -1130,11 +1129,6 @@ export class Entity {
     this.hp = Math.min(this.maxHealth, hp);
   }
 
-  /** Where the charging dial stands — what the HUD's round dial shows. */
-  get dial(): number {
-    return this.dialAt;
-  }
-
   /** How much health is left, in the original's units — what the HUD's number shows. */
   get health(): number {
     return this.hp;
@@ -1143,6 +1137,11 @@ export class Entity {
   /** How much of this fighter is left, 0..1 — what a health bar draws. */
   get healthFraction(): number {
     return this.maxHealth > 0 ? this.hp / this.maxHealth : 0;
+  }
+
+  /** How full the ki meter is, 0..1 — what the HUD's marks draw. */
+  get kiFraction(): number {
+    return this.maxKi > 0 ? this.ki / this.maxKi : 0;
   }
 
   /** His states for the end of a round (`match/round.ts`); none, and he cannot be knocked out. */
@@ -1402,9 +1401,6 @@ export class Entity {
     // about the pair, so the thing between the fighters takes it off the latch.
     this.fired = this.sm.def.fires ?? null;
     this.groundFx = this.sm.def.groundFx ?? null;
-    // a special's price; below 1 it leaves 1, as the original does ($0D:EEF7)
-    const price = this.sm.def.healthCost;
-    if (price) this.hp = Math.max(1, this.hp - price);
     this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.shovedAhead = 0;
@@ -1558,12 +1554,6 @@ export class Entity {
     if (fill) this.charge = Math.min(1, this.charge + 1 / fill);
     const perFrame = this.sm.def.ki;
     if (perFrame) this.ki = Math.max(0, Math.min(this.maxKi, this.ki + perFrame));
-    const heal = this.sm.def.heal;
-    if (heal) {
-      const { dial, gain } = healFrame(this.dialAt, this.healClock++, heal);
-      this.dialAt = dial;
-      this.hp = Math.min(this.maxHealth, this.hp + gain);
-    }
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.

@@ -12,7 +12,7 @@ change.
 - **Cancel** — cutting your own attack short with the next, up to its `cancelBy` on a connection, or for as long once a whiff's last hit box is gone. → `combat.md` (Chaining)
 - **`cancelBy`** — the last frame of an attack a cancel may fire on, counted from entering it. → `states.ts`
 - **Chain (string)** — attacks joined by cancels: a path through `states.json`, never a structure of its own. → `combat/chains.ts`, `npm run chains`
-- **Charging** — holding A + S: the HUD's dial turns and gives health back (`heal`). → `combat/heal.ts`
+- **Charging** — holding A + S: the state's `ki` rate fills the ki meter. → `combat.md` (The buttons)
 - **Colour set** — colours of our own for a fighter, a rule over his palette (`palettes.json`). → ADR 0063
 - **Combo** — a chain whose links hold: the defender never gets control back. → `combat.md`
 - **Command** — a special's input as the cartridge's table has it. → `input/command.ts`, ADR 0050
@@ -34,7 +34,7 @@ change.
 - **Inputs of** (`inputsOf`) — a state starting what another state's inputs would. → ADR 0013
 - **Intro** — a fighter's opening pose on the arena before READY and FIGHT!. → `match/opening.ts`, ADR 0064
 - **Journey** — what a sender plays before the arena changes. → `arena/flight.ts`, ADR 0081
-- **Ki** — the meter separate from health, filled by a state and spent by `cost`. → `combat.md`
+- **Ki** — the meter separate from health, filled by charging and spent by a special's `cost`; 30 at the start. → `combat.md`
 - **KO** — health run out: the fall at half speed, the announcement, the winner's pose. → `match/round.ts`, ADR 0064
 - **Launcher** — a blow that lifts a grounded opponent into a juggle. → `combat.md` §4
 - **Link** — hitting again after your attack has played out, while the defender is still in hitstun. → `combat.md` (Chaining)

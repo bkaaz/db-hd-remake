@@ -30,16 +30,14 @@ hold for every fighter, not only one.
 
 1. **The press lost as a move ends:** a state entered on a frame reads its input
    only on the next, so a window's last frame is never usable.
-2. **Ki** for the cartridge's fighters, who pay in health today, and what spends
-   it.
-3. **Cancels and combos:** the rush (`combat.md`, The buttons), strings joined
+2. **Cancels and combos:** the rush (`combat.md`, The buttons), strings joined
    up, what punishes a string thrown at nothing.
-4. **Vanish** (`combat.md` §5). *Done when:* a recording shows a vanish out of
+3. **Vanish** (`combat.md` §5). *Done when:* a recording shows a vanish out of
    blockstun, and a tap without ki blocks.
-5. **Launch scaling:** each lift raises less, so a juggle ends by the body
+4. **Launch scaling:** each lift raises less, so a juggle ends by the body
    falling out of it (`Combo.lifts`).
-6. **The aura.**
-7. **The hit types:** one set (the original's beside our five), `stun`, a type
+5. **The aura.**
+6. **The hit types:** one set (the original's beside our five), `stun`, a type
    for ki blasts; chip damage and a guard break.
 
 ## Later: the rest of the cartridge, and the game around the fight

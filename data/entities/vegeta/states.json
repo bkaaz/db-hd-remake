@@ -1455,11 +1455,7 @@
         0,
         0
       ],
-      "heal": {
-        "every": 2,
-        "turn": 13,
-        "gain": 5
-      },
+      "ki": 0.2,
       "loopSound": "charge_19",
       "loopEvery": 8,
       "glow": 0,
@@ -2639,7 +2635,7 @@
         0
       ],
       "turn": false,
-      "healthCost": 10,
+      "cost": 10,
       "transitions": [
         {
           "when": "animEnd",
@@ -2671,7 +2667,7 @@
     },
     "final_flash": {
       "anim": "mac",
-      "healthCost": 10,
+      "cost": 10,
       "vel": [
         0,
         0
@@ -3338,7 +3334,7 @@
         0
       ],
       "turn": false,
-      "healthCost": 5,
+      "cost": 5,
       "transitions": [
         {
           "when": "animEnd",
@@ -3413,7 +3409,7 @@
       "anim": "mb1",
       "airborne": true,
       "turn": false,
-      "healthCost": 5,
+      "cost": 5,
       "air": [
         [
           0,

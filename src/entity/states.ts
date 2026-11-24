@@ -27,7 +27,6 @@ import type { PillarDef } from "../combat/pillar";
 import { hitAgainProblem, type IfHitAgain } from "./hitAgain";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
-import type { HealDef } from "../combat/heal";
 import { WAYS, type Way } from "../arena/ways";
 import { SHAKE_PATTERNS, type ShakeDef } from "../camera/shake";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
@@ -392,20 +391,6 @@ export interface StateDef {
    * of how long its animation is.
    */
   ki?: number;
-
-  /**
-   * Charging as the original does it (`combat/heal.ts`): a dial that steps
-   * while in this state, each turn giving back health — health, not ki, for
-   * now, as the original has one pool.
-   */
-  heal?: HealDef;
-
-  /**
-   * Health a special costs as it starts — the original's one pool, byte 3 of
-   * its command row ($0D:EED7, `rom.md`, The buttons) — never taking the
-   * last point. Health, not ki, for now, as `heal` is.
-   */
-  healthCost?: number;
 
   /**
    * Ki spent **on entering** this state, and the price of admission: a
@@ -1748,15 +1733,6 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
         !Number.isInteger(def.shake.frames) || def.shake.frames < 1)
     ) {
       errors.push(`${where}: "shake" needs "pattern" 0 to ${SHAKE_PATTERNS - 1} and "frames" 1 or more, e.g. { "pattern": 1, "frames": 8 }`);
-    }
-    if (def.healthCost !== undefined && !(Number.isInteger(def.healthCost) && def.healthCost >= 1)) {
-      errors.push(`${where}: "healthCost" must be a whole number of health, 1 or more`);
-    }
-    if (
-      def.heal !== undefined &&
-      ![def.heal.every, def.heal.turn, def.heal.gain].every((n) => Number.isInteger(n) && n >= 1)
-    ) {
-      errors.push(`${where}: "heal" needs "every", "turn" and "gain", whole numbers 1 or more, e.g. { "every": 2, "turn": 13, "gain": 5 }`);
     }
     if (def.shove !== undefined && typeof def.shove !== "number") {
       errors.push(`${where}: "shove" must be a number of px per frame, e.g. -3`);

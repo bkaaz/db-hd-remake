@@ -25,10 +25,12 @@ well against the CPU, and the reverse is not true.
 The table above is ours, and no fighter plays it yet: the cartridge's fighters
 play the original's own moves for now (`plan.md`): A, S, D and X are its Y, B, X and A, with no
 strings between them, until it is reworked to these rules. Holding A and S
-together charges, as the original's Y + B does — and, as the original's,
-the charge refills **health**, the one pool the original has; our ki meter
-is left alone for now, to stay near the original while it is ported, and
-will change (owner, 2026-10-30).
+together charges, as the original's Y + B does — but where the original's
+charge refills health, its one pool, ours fills the **ki** meter, and a
+special costs ki rather than health: its command row's price, and it does
+not come out without it. The meter holds 60 — six levels of 10, the
+HUD's six marks, so a cost of 5 or 10 is half a level or one — and every
+fighter starts a fight with 30 (owner, 2026-11-24).
 
 **The rush is a tree.** Attack walks one line, Smash branches off it at every
 depth and ends it, and Smash alone is a move of its own:
@@ -273,8 +275,7 @@ Ours leaves them out on all three.
 
 Once every fighter is ported (the owner, 2026-11-04): close to Budokai 3 and
 Burst Limit, much simplified. A vanish attack, strings joined up — a combo, a
-launch, a vanish and on — an aura mode, and ki on the cartridge's fighters, who
-pay in health today. None of it is settled in detail; what comes first:
+launch, a vanish and on — an aura mode. None of it is settled in detail; what comes first:
 [`plan.md`](./plan.md).
 
 ## Open

@@ -565,7 +565,7 @@
         0,
         0
       ],
-      "healthCost": 5,
+      "cost": 5,
       "transitions": [
         {
           "when": "animEnd",
@@ -754,7 +754,7 @@
         0,
         0
       ],
-      "healthCost": 10,
+      "cost": 10,
       "transitions": [
         {
           "when": "animEnd",
@@ -839,7 +839,7 @@
         0,
         0
       ],
-      "healthCost": 10,
+      "cost": 10,
       "transitions": [
         {
           "when": "animEnd",
@@ -2030,11 +2030,7 @@
         0,
         0
       ],
-      "heal": {
-        "every": 2,
-        "turn": 13,
-        "gain": 5
-      },
+      "ki": 0.2,
       "loopSound": "sfx_46",
       "loopEvery": 8,
       "fires": {
@@ -2066,11 +2062,7 @@
         0,
         0
       ],
-      "heal": {
-        "every": 2,
-        "turn": 13,
-        "gain": 5
-      },
+      "ki": 0.2,
       "loopSound": "sfx_46",
       "loopEvery": 8,
       "transitions": [

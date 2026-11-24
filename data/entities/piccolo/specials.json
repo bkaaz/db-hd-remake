@@ -442,7 +442,7 @@
         0,
         0
       ],
-      "healthCost": 5,
+      "cost": 5,
       "transitions": [
         {
           "when": "animEnd",
@@ -746,7 +746,7 @@
         0,
         0
       ],
-      "healthCost": 5,
+      "cost": 5,
       "transitions": [
         {
           "when": "animEnd",
@@ -847,7 +847,7 @@
         0,
         0
       ],
-      "healthCost": 10,
+      "cost": 10,
       "fires": {
         "spawn": "piccolo_5_02",
         "at": [
@@ -1242,7 +1242,7 @@
     },
     "beam_cannon": {
       "anim": "mbc",
-      "healthCost": 10,
+      "cost": 10,
       "vel": [
         0,
         0

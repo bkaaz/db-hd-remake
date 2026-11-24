@@ -492,7 +492,7 @@
         0,
         0
       ],
-      "healthCost": 5,
+      "cost": 5,
       "transitions": [
         {
           "when": "animEnd",
@@ -723,7 +723,7 @@
         0,
         0
       ],
-      "healthCost": 10,
+      "cost": 10,
       "fires": {
         "spawn": "cell_7_04",
         "at": [
@@ -1692,7 +1692,7 @@
     },
     "chou_kamehameha": {
       "anim": "maa",
-      "healthCost": 10,
+      "cost": 10,
       "vel": [
         0,
         0

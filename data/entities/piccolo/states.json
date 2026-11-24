@@ -1333,11 +1333,7 @@
         0,
         0
       ],
-      "heal": {
-        "every": 2,
-        "turn": 13,
-        "gain": 5
-      },
+      "ki": 0.2,
       "loopSound": "charge_19",
       "loopEvery": 8,
       "glow": 0,
@@ -2686,7 +2682,7 @@
         0,
         0
       ],
-      "healthCost": 5,
+      "cost": 5,
       "transitions": [
         {
           "when": "animEnd",
@@ -2990,7 +2986,7 @@
         0,
         0
       ],
-      "healthCost": 5,
+      "cost": 5,
       "transitions": [
         {
           "when": "animEnd",
@@ -3091,7 +3087,7 @@
         0,
         0
       ],
-      "healthCost": 10,
+      "cost": 10,
       "fires": {
         "spawn": "piccolo_5_02",
         "at": [
@@ -3474,7 +3470,7 @@
     },
     "beam_cannon": {
       "anim": "mbc",
-      "healthCost": 10,
+      "cost": 10,
       "vel": [
         0,
         0

@@ -26,8 +26,6 @@ export class Hud {
   private readonly numbers: Sprite[][] = [];
   private readonly bars: Sprite[][] = [];
   private readonly dials: Sprite[][] = [];
-  /** Where each side's charging dial stands. */
-  private dial: [number, number | null] = [0, null];
   /** Each tile as drawn in each part's row, cut once. */
   private readonly glyphs = new Map<string, Texture>();
 
@@ -61,10 +59,9 @@ export class Hud {
     return new Hud(parent, file, sheet, fighters);
   }
 
-  /** One game frame: the shown health steps toward the real one; the dials stand where charging left them. */
-  tick(health: [number, number | null], dial: [number, number | null]): void {
+  /** One game frame: the shown health steps toward the real one. */
+  tick(health: [number, number | null]): void {
     this.frame++;
-    this.dial = dial;
     this.shown = [stepShown(this.shown[0], health[0]), this.shown[1] === null || health[1] === null ? null : stepShown(this.shown[1], health[1])];
   }
 
@@ -82,7 +79,7 @@ export class Hud {
       if (side === 1) tiles.reverse();
       const row = file.rows.bar[barColour(shown, this.frame, file.bar.flash)][side];
       tiles.forEach((t, i) => (this.bars[side][i].texture = this.glyph(row, t)));
-      const dial = file.dial.tile + 3 * (this.dial[side] ?? 0);
+      const dial = file.dial.tile;
       this.dials[side].forEach((sprite, i) => (sprite.texture = this.glyph(row, dial + i)));
     });
   }

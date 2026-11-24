@@ -60,10 +60,10 @@ describe.skipIf(!existsSync(ROM_PATH))("draftSpecials, on the cartridge", () => 
     expect(states.rise_2.air?.some(([, step]) => step.vy === -7 && step.gravity === 0)).toBe(true);
   });
 
-  it("charges health for what its command costs, on the first state only", () => {
+  it("charges ki for what its command costs, on the first state only", () => {
     const { states } = draft("gohan", { ad: "masenko" }).specials;
-    expect(states.masenko.healthCost).toBe(10);
-    expect(states.masenko_2.healthCost).toBeUndefined();
+    expect(states.masenko.cost).toBe(10);
+    expect(states.masenko_2.cost).toBeUndefined();
   });
 
   it("keeps what stays at $6800 under what a move loads: the ghost's picture reaches both", () => {
