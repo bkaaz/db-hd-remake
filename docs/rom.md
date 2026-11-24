@@ -688,6 +688,19 @@ Behind the band the screen is black in play, though BG3's colour 0 is
 clear there — channel 0's window table (`$00:BBBA`, 30 lines first) is
 the likely cause `?`.
 
+## The after-fight portraits
+
+`$02:D40E` loads them all with the screen: the palettes, 64 bytes a
+character from `$03:8140` (`MVN` to `$7F:0000`), then three `lzss` streams
+(`$00:D7C8`) — `$05:8000`, `$05:ACBC`, `$05:D42C`, characters 0–3, 4–7
+and 8–9 by the roster's number — each copied 0x4000 apart from `$7F:4000`,
+so a character's 100 tiles start 0x1000 × his number in. The winner's are
+DMA'd to VRAM `$0000` (`$7F:5000` for Vegeta) and drawn on BG map `$5000`
+in palette 2: tile 0 blank, tiles 1–99 a 9 × 11 picture, row by row, from
+tile column 11, row 3. His colours are the first 16 of his 64 bytes; what
+the other 48 are is not read `?`. `npm run rom -- portrait` draws them
+(`src/rom/portrait.ts`).
+
 ## The buttons
 
 **The player's buttons pick a move in `$0D:FEC8`** — the move ids are

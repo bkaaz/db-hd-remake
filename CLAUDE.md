@@ -295,6 +295,9 @@ npm run rom -- grab 9d
                   # where each opponent is held, the launch
 npm run rom -- hud
                   # the original's HUD as its loader leaves it, into preview/
+npm run rom -- portrait vegeta
+                  # a fighter's after-fight portrait, into preview/; with
+                  # no name every one, side by side
 npm run rom -- music 1 --seconds 60
                   # a fight's song as the driver plays it, a WAV into
                   # preview/; with no id every song

@@ -42,6 +42,7 @@ import { readScript, type ScriptOp } from "../src/rom/script.ts";
 import { decompress } from "../src/rom/decompress.ts";
 import { drawDrawing, exportFighter, exportSpawns, type Exported } from "../src/rom/export.ts";
 import { encodePng, type Rgba } from "../src/sprites/png.ts";
+import { drawPortrait, portraitTiles } from "../src/rom/portrait.ts";
 import { describeFact } from "../src/rom/describe.ts";
 import { arrow, buttonName, commandsFile, readCommands } from "../src/rom/commands.ts";
 import { closeLines, NORMALS } from "../src/rom/buttons.ts";
@@ -425,6 +426,15 @@ if (command === "tiles") {
   mkdirSync("preview", { recursive: true });
   writeFileSync("preview/rom-hud.png", encodePng(scaled(drawHud(rom), 3)));
   console.log("wrote preview/rom-hud.png");
+} else if (command === "portrait") {
+  // the after-fight portraits (src/rom/portrait.ts): one fighter's, or every one side by side
+  mkdirSync("preview", { recursive: true });
+  const tiles = portraitTiles(rom);
+  const who = args.length ? args.map((name) => ROSTER.indexOf(name as FighterName)) : ROSTER.map((_, n) => n);
+  if (who.some((n) => n < 0)) throw new Error(`portrait takes fighters by name: ${ROSTER.join(", ")}`);
+  const out = args.length === 1 ? `preview/portrait-${args[0]}.png` : "preview/portraits.png";
+  writeFileSync(out, encodePng(scaled(grid([who.map((n) => drawPortrait(rom, n, tiles))]), 3)));
+  console.log(`wrote ${out}`);
 } else if (command === "music") {
   mkdirSync("preview", { recursive: true });
   const at = args.indexOf("--seconds");
