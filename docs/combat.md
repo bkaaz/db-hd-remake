@@ -187,6 +187,20 @@ a combo is. Rank is compared after the air version is chosen, so a flinch on a
 falling body becomes a juggle. Nothing forces rank 4, and a fighter on the floor
 is `invulnerable`.
 
+### 8. Fatigue
+
+The original's stun gauge counted up (owner, 2026-11-24): every blow taken adds
+its cartridge's stun (`fatigue` on the blow), and past the full amount the
+fighter is spent and it starts again from nothing (`combat/fatigue.ts`). Slower
+than the original's, at the owner's call: it holds twice its 20, so it fills
+half as fast, and it does not wear off — the original's point every 16 frames
+is left out for now. Spent, he is **tired** — the original's own tired pose,
+`40`, in place of the collapse (`1d`) the original plays there — for 200
+frames, the collapse's length, and any blow ends it. On his feet he is tired at
+once, in place of the reaction; thrown or floored, when he is up. A KO goes
+first: a blow that empties his health does not tire him. Only the blows tire
+for now: a throw and a seize cost health, not fatigue (`plan.md`).
+
 ## How the engine plays a blow
 
 What the engine does today, in the order a blow happens. A field's exact
@@ -284,7 +298,7 @@ launch, a vanish and on — an aura mode. None of it is settled in detail; what 
 - `stun` — a blow that holds the opponent long enough for something else; and a
   hit type for ki blasts.
 - Deferred, not rejected: an offensive vanish after one's own smash, a throw, an
-  aura burst, transformation, fatigue, a taunt, and forward/back variants of the
+  aura burst, transformation, a taunt, and forward/back variants of the
   rush.
 - The CPU, and whether a second human ever plays — the second decides how
   forgiving the scaling has to be, which is tuning, not structure.

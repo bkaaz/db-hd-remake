@@ -425,6 +425,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 26,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -459,6 +460,7 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 29,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -487,6 +489,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 24,
+      "fatigue": 2,
       "transitions": [
         {
           "when": "connected",
@@ -515,6 +518,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 26,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -545,6 +549,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 38,
+      "fatigue": 4,
       "holdStep": 7,
       "air": [
         [
@@ -617,6 +622,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 22,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -635,6 +641,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 22,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -653,6 +660,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 22,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -677,6 +685,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 34,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -725,6 +734,7 @@
       ],
       "type": "light",
       "damage": 0,
+      "fatigue": 0,
       "catches": true,
       "hitSound": "hit_09",
       "blockSound": "block_17"
@@ -1256,6 +1266,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 22,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1297,6 +1308,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 24,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1316,6 +1328,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 22,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1335,6 +1348,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 24,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1354,6 +1368,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 22,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1373,6 +1388,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 24,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1392,6 +1408,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1411,6 +1428,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1431,6 +1449,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1457,6 +1476,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 60,
+      "fatigue": 3,
       "holdStep": 6,
       "air": [
         [
@@ -1518,6 +1538,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -1537,6 +1558,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -1556,6 +1578,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "holdStep": 4,
       "air": [
         [

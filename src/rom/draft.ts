@@ -165,7 +165,7 @@ function statesOf(
     if (i === 0 && facts.some((f) => /goes behind/.test(f.what) && !f.who)) state.behind = true;
     if (part.unhittable[0]?.frame === 0 && part.unhittable[0].on) state.invulnerable = true;
     if (i === 0 && report.commands[0]?.cost) state.cost = report.commands[0].cost;
-    if (part.blow && knownType(part.blow.type)) Object.assign(state, HIT, { type: part.blow.type, damage: part.blow.damage });
+    if (part.blow && knownType(part.blow.type)) Object.assign(state, HIT, { type: part.blow.type, damage: part.blow.damage, fatigue: part.blow.stun });
     else if (part.blow && part.blow.type === "other") left.push(`${part.anim}'s blow, a reaction no type copies`);
     if (report.launch && i === 0) state.grab = grabOf(report, "reel_down");
 

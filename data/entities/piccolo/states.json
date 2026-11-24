@@ -2,6 +2,7 @@
   "initial": "idle",
   "onGotHit": "hurt",
   "onGuard": "guard_hit",
+  "onTired": "tired",
   "hitFx": "hit_spark",
   "guardFx": "guard_spark",
   "round": {
@@ -999,6 +1000,7 @@
       "turn": false,
       "type": "long",
       "damage": 26,
+      "fatigue": 8,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1018,6 +1020,7 @@
       "turn": false,
       "type": "long",
       "damage": 28,
+      "fatigue": 8,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1037,6 +1040,7 @@
       "turn": false,
       "type": "long",
       "damage": 26,
+      "fatigue": 8,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1056,6 +1060,7 @@
       "turn": false,
       "type": "long",
       "damage": 28,
+      "fatigue": 8,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1159,6 +1164,7 @@
       "turn": false,
       "type": "light",
       "damage": 26,
+      "fatigue": 3,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1177,6 +1183,7 @@
       "turn": false,
       "type": "heavy",
       "damage": 28,
+      "fatigue": 6,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1195,6 +1202,7 @@
       "turn": false,
       "type": "light",
       "damage": 28,
+      "fatigue": 3,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1215,6 +1223,7 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 22,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -1231,6 +1240,7 @@
       "turn": false,
       "type": "light",
       "damage": 18,
+      "fatigue": 2,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1250,6 +1260,7 @@
       "crouching": true,
       "type": "light",
       "damage": 26,
+      "fatigue": 6,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1269,6 +1280,7 @@
       "crouching": true,
       "type": "heavy",
       "damage": 28,
+      "fatigue": 6,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -2428,6 +2440,22 @@
         }
       ]
     },
+    "tired": {
+      "_comment": "Fatigue spent (combat/fatigue.ts): the original's tired pose, move 40, which every fighter has; a blow ends it. As long as the original's 1d in its place, 200 frames.",
+      "anim": "m40",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "animLoops": true,
+      "transitions": [
+        {
+          "when": "frames:200",
+          "to": "idle"
+        }
+      ]
+    },
     "sonic_kick": {
       "anim": "m9e",
       "turn": false,
@@ -2439,6 +2467,7 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 26,
+      "fatigue": 8,
       "transitions": [
         {
           "when": "animEnd",
@@ -2724,6 +2753,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -2753,6 +2783,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "landed",
@@ -2772,6 +2803,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "holdStep": 1,
       "transitions": [
         {
@@ -2972,6 +3004,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -3027,6 +3060,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
+      "fatigue": 4,
       "transitions": [
         {
           "when": [
@@ -3059,6 +3093,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
+      "fatigue": 4,
       "transitions": [
         {
           "when": [
@@ -3204,6 +3239,7 @@
       ],
       "type": "light",
       "damage": 0,
+      "fatigue": 0,
       "catches": true,
       "hitSound": "hit_09",
       "blockSound": "block_17"
@@ -3239,6 +3275,7 @@
       ],
       "type": "light",
       "damage": 0,
+      "fatigue": 0,
       "catches": true,
       "hitSound": "hit_09",
       "blockSound": "block_17"
@@ -3254,6 +3291,7 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 22,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -3941,6 +3979,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
+      "fatigue": 4,
       "transitions": [
         {
           "when": [
@@ -3973,6 +4012,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
+      "fatigue": 4,
       "transitions": [
         {
           "when": [
@@ -4013,6 +4053,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
+      "fatigue": 4,
       "transitions": [
         {
           "when": [
@@ -4045,6 +4086,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 32,
+      "fatigue": 4,
       "transitions": [
         {
           "when": [

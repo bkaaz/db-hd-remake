@@ -13,6 +13,7 @@
       "turn": false,
       "type": "high",
       "damage": 20,
+      "fatigue": 3,
       "lasts": 66,
       "rehit": 32,
       "hitSound": "burst_0a",

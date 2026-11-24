@@ -11,6 +11,7 @@
       "lasts": 80,
       "type": "down",
       "damage": 32,
+      "fatigue": 5,
       "burstsInto": "burst_s",
       "hitSound": "burst_0a",
       "blockSound": "burst_0a"

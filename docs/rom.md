@@ -637,7 +637,7 @@ thrower's step], x mirrored when facing left — for Goku (+24, 0),
 fighters' burning ends; frame 1 the opponent gets its own palette back and
 turns to face the thrower; frame 20 the opponent says `30` and is
 thrown (`$0F:B321`): 40 damage (less defence, `$0D:D12E`), 3 off the
-stun gauge (dizzy, `1d`, if it runs out; KO, `1c`, at 0 health), else
+stun gauge (the collapse, `1d`, if it runs out; KO, `1c`, at 0 health), else
 move `1b` — the knockdown — at vx 2.5 away and vy −8.0; frame 21 it faces
 the thrower's way. `$0F:B321` moves him by its facing argument `$04`: bit 6
 set, vx is −`$06` (`$0F:B3BC`). Goku gives his own turned (`EOR #$40`), so
@@ -755,7 +755,10 @@ backward — vy the attribute word `0x1B`, vx 1.5 × `0D` / `0F` (`$0D:FA8B`,
 up, `04`), so a block (`0d`, `0f`, `$0F:A081`) is over at frame 4 unless
 something is held. The landing (`$0F:A451`) reads the directions only
 while ↑ is held — a jump. Lying `1f` with field `f0` set goes into move
-`40` instead, `f0` 300, gravity off (`$0F:A35E`; what sets it `?`).
+`40` instead, `f0` 300, gravity off (`$0F:A35E`; what sets it `?`). `40` is
+every fighter's tired pose, bent over, hands on his knees; `3f` and `57` play
+the same drawings, as does Vegetto's `b2`, where Galactic Juggle ends having
+caught nobody.
 With `f0` 0 it turns to face and reads `$0F:9EB1` only on a step past the byte
 of the fighter's entry at `$0F:A3B4`: 2, 2, 5, 5, 1, 2, 4, 2, 2, 6 by the
 roster's order — Gohan from step 6, his frame 33.
@@ -1014,7 +1017,7 @@ step by step. The 5 bytes after it:
 | 0–2 | which reaction, as bits — the bit read depends on the defender's situation (below) |
 | 2 | also: chip on guard (`$0D:CFD1`), `0x40` = byte 3 / 16, else `0x20` = byte 3 / 8 — byte 3 as it stands, no attack or defence, straight off health, and a KO when it empties it; none while `$1B15` is set or `$1A02 & 0F` is 3 `?`. Goku's specials carry it, his normals do not; the Kamehameha's heads `/ 8`, the ki blast none. `0x80` read for the attacker's own move `?` (`$0D:DC8B`) |
 | 3 | damage, + attacker field `0x6a` − defender field `0x6b`, never below 0; taken off health (field `0x60`) |
-| 4 | stun: taken off field `0x68`, which refills by 1 about every 16 frames up to 20; at 0 the defender is dizzy (move `1d`, 200 frames) and it refills to 20 |
+| 4 | stun: taken off field `0x68`, which refills by 1 every 16 frames of `$74` up to 20 (`$0D:D78A`); below 0 the defender collapses — move `1d`: he sways, falls on his back and lies, 200 frames for Goku, 232 for Vegetto — and it is 20 again (`$0D:D5E7`, the throw's `$0F:B39A`) |
 
 **Attack and defence** are set at the round's start (`$01:8112`): `0x6a`
 from the ATTACK option (`$1ACB` / `$1AD1`), `0x6b` from `$1ACD` / `$1AD3`

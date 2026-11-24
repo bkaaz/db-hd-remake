@@ -702,6 +702,8 @@ export interface StateDef {
    * animation has a hit box.
    */
   damage?: number;
+  /** Fatigue this state's blow adds to whoever takes it: the cartridge's stun (`combat/fatigue.ts`). Absent, none. */
+  fatigue?: number;
   /**
    * Whether blows pass straight through this entity while it is here. Not "a
    * hit for no damage": nothing connects at all, so there is no spark, no
@@ -795,6 +797,8 @@ export interface StatesFile {
    * of contact. Absent means this fighter cannot block at all.
    */
   onGuard?: string;
+  /** State forced on him when fatigue is spent (`combat/fatigue.ts`): the original's tired `40`. Absent: he never tires. */
+  onTired?: string;
   /**
    * The spark this entity's blows leave when their state names none — the
    * cartridge's fighters all leave the original's. Absent:
@@ -1524,6 +1528,10 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
     errors.push(`onGuard state "${file.onGuard}" does not exist`);
   }
 
+  if (file.onTired !== undefined && !states[file.onTired]) {
+    errors.push(`onTired state "${file.onTired}" does not exist`);
+  }
+
   if (file.onRelease !== undefined && !states[file.onRelease]) {
     errors.push(`onRelease state "${file.onRelease}" does not exist`);
   }
@@ -1669,6 +1677,9 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
 
     if (def.damage !== undefined && (typeof def.damage !== "number" || def.damage < 0)) {
       errors.push(`${where}: "damage" must be a number, 0 or more`);
+    }
+    if (def.fatigue !== undefined && (typeof def.fatigue !== "number" || def.fatigue < 0)) {
+      errors.push(`${where}: "fatigue" must be a number, 0 or more`);
     }
     // A typed blow is already refused by hitTypeErrors, with a better message.
     const strikes = anim?.steps?.some((s) => s.boxes?.some((b) => b.type === "hit"));

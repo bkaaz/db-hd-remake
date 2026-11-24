@@ -15,6 +15,8 @@ export interface PanelState {
   face: CanvasImageSource | null;
   shown: number;
   ki: number;
+  /** How tired, 0..1. */
+  fatigue: number;
   frame: number;
 }
 
@@ -29,6 +31,8 @@ const KI_ROWS = ["#b5ebff", "#8cdcff", "#63c6ff", "#63c6ff", "#4aaef0", "#4aaef0
 const KI_EMPTY = "#203040";
 /** The layers, the last first: the original's yellow, then darker shades of it. */
 const LAYERS = ["#ffff6b", "#f7d639", "#deb521", "#bd9410"];
+/** Fatigue's colour by how full it is: pale, then yellow, orange, red. */
+const FATIGUE: [number, string][] = [[0.25, "#e8e8d0"], [0.5, "#f8d040"], [0.75, "#f88828"], [Infinity, "#e82010"]];
 /** The last layer's flash ($00:C6DE): dark red, yellow, orange, red. */
 const FLASH = ["#630000", "#ffff6b", "#ffad10", "#e73100"];
 
@@ -92,8 +96,9 @@ export function drawPanel(g: CanvasRenderingContext2D, side: 0 | 1, s: PanelStat
   const { count, left } = layersOf(s.shown);
   LAYERS.forEach((c, k) => rect(42 + 6 * k, 4, 4, 4, k < count ? c : DARK));
 
-  // fatigue: its line, empty — TODO the mechanic (plan.md) fills it, and reddens it as it does
+  // fatigue: its line fills, and reddens as it does
   rect(91, 5, 26, 2, DARK);
+  rect(91, 5, Math.round(26 * Math.min(1, s.fatigue)), 2, FATIGUE.find(([below]) => s.fatigue < below)![1]);
 
   // health: the top layer drains over the next; the last is the original's yellow, and flashes
   const flash = flashStep(s.shown, s.frame);

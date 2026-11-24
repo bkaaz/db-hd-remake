@@ -201,6 +201,7 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 26,
+      "fatigue": 8,
       "transitions": [
         {
           "when": "animEnd",
@@ -235,6 +236,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -450,6 +452,7 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 20,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "landed",
@@ -475,6 +478,7 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 20,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "landed",
@@ -510,6 +514,7 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 20,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "landed",
@@ -562,6 +567,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 26,
+      "fatigue": 1,
       "holdStep": 3,
       "transitions": [
         {
@@ -582,6 +588,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -601,6 +608,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -671,6 +679,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -695,6 +704,7 @@
       "blockSound": "block_17",
       "type": "halt",
       "damage": 24,
+      "fatigue": 2,
       "transitions": [
         {
           "when": "connected",
@@ -782,6 +792,7 @@
       "blockSound": "block_17",
       "type": "halt",
       "damage": 0,
+      "fatigue": 5,
       "transitions": [
         {
           "when": "connected",
@@ -805,6 +816,7 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 0,
+      "fatigue": 0,
       "transitions": [
         {
           "when": "connected",
@@ -843,6 +855,7 @@
       "blockSound": "block_17",
       "type": "halt",
       "damage": 28,
+      "fatigue": 2,
       "transitions": [
         {
           "when": "connected",
@@ -880,6 +893,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -912,6 +926,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 28,
+      "fatigue": 4,
       "fires": {
         "spawn": "vegetto_4_03",
         "at": [
@@ -984,6 +999,7 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 26,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -1016,6 +1032,7 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 18,
+      "fatigue": 2,
       "fires": {
         "spawn": "vegetto_4_03",
         "at": [
@@ -1042,6 +1059,7 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 28,
+      "fatigue": 2,
       "transitions": [
         {
           "when": "animEnd",
@@ -1188,6 +1206,7 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 28,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "landed",

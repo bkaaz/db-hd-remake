@@ -614,6 +614,7 @@
       "turn": false,
       "type": "halt",
       "damage": 25,
+      "fatigue": 1,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -653,6 +654,7 @@
       "turn": false,
       "type": "halt",
       "damage": 26,
+      "fatigue": 1,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -684,6 +686,7 @@
       "turn": false,
       "type": "halt",
       "damage": 27,
+      "fatigue": 1,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -702,6 +705,7 @@
       "turn": false,
       "type": "halt",
       "damage": 27,
+      "fatigue": 1,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -722,6 +726,7 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 34,
+      "fatigue": 4,
       "air": [
         [
           6,
@@ -753,6 +758,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 20,
+      "fatigue": 1,
       "launches": {
         "reel_high": [
           -0.75,
@@ -774,6 +780,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 20,
+      "fatigue": 1,
       "air": [
         [
           6,
@@ -832,6 +839,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 30,
+      "fatigue": 8,
       "transitions": [
         {
           "when": "animEnd",
@@ -851,6 +859,7 @@
       "crouching": true,
       "type": "heavy",
       "damage": 21,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -870,6 +879,7 @@
       "crouching": true,
       "type": "heavy",
       "damage": 21,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -894,6 +904,7 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -3395,6 +3406,7 @@
       "turn": false,
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "air": [
@@ -3435,6 +3447,7 @@
       "turn": false,
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "air": [
@@ -3468,6 +3481,7 @@
       "turn": false,
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [

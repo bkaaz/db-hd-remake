@@ -21,7 +21,7 @@ const made = statesFrom(template, {
   has: (a) => his.has(a),
   special: (a) => a.startsWith("ma5"),
   foreign: (v) => v.startsWith("goku_"),
-  blowOf: (a) => (a === "m92" ? { type: "heavy", damage: 28 } : null),
+  blowOf: (a) => (a === "m92" ? { type: "heavy", damage: 28, fatigue: 2 } : null),
 });
 
 describe("statesFrom, a shared shot", () => {
@@ -57,7 +57,7 @@ describe("statesFrom", () => {
   });
 
   it("gives every blow his own numbers", () => {
-    expect(made.file.states.punch).toMatchObject({ type: "heavy", damage: 28 });
-    expect(made.reblown).toEqual({ punch: ["heavy 27", "heavy 28"] });
+    expect(made.file.states.punch).toMatchObject({ type: "heavy", damage: 28, fatigue: 2 });
+    expect(made.reblown).toEqual({ punch: ["heavy 27 0", "heavy 28 2"] });
   });
 });

@@ -418,6 +418,7 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 26,
+      "fatigue": 0,
       "transitions": [
         {
           "when": [
@@ -444,6 +445,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -473,6 +475,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "landed",
@@ -492,6 +495,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "landed",
@@ -511,6 +515,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "holdStep": 0,
       "transitions": [
         {
@@ -531,6 +536,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 24,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -672,6 +678,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 36,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "landed",
@@ -1341,6 +1348,7 @@
       "blockSound": "block_17",
       "type": "halt",
       "damage": 19,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1359,6 +1367,7 @@
       "blockSound": "block_17",
       "type": "halt",
       "damage": 19,
+      "fatigue": 1,
       "transitions": [
         {
           "when": "animEnd",
@@ -1383,6 +1392,7 @@
       "blockSound": "block_17",
       "type": "halt",
       "damage": 19,
+      "fatigue": 1,
       "transitions": [
         {
           "when": [
@@ -1437,6 +1447,7 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 25,
+      "fatigue": 2,
       "transitions": [
         {
           "when": "landed",
@@ -1456,6 +1467,7 @@
       "blockSound": "block_17",
       "type": "high",
       "damage": 25,
+      "fatigue": 2,
       "transitions": [
         {
           "when": "landed",
@@ -1536,6 +1548,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 34,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "connected",
@@ -1615,6 +1628,7 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 24,
+      "fatigue": 3,
       "transitions": [
         {
           "when": "animEnd",
@@ -1633,6 +1647,7 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 24,
+      "fatigue": 3,
       "transitions": [
         {
           "when": "animEnd",
@@ -1662,6 +1677,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 26,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -1680,6 +1696,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 26,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -1708,6 +1725,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 28,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -1726,6 +1744,7 @@
       "blockSound": "block_17",
       "type": "light",
       "damage": 18,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -1744,6 +1763,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 24,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -1762,6 +1782,7 @@
       "blockSound": "block_17",
       "type": "heavy",
       "damage": 24,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -1790,6 +1811,7 @@
       "blockSound": "block_17",
       "type": "trip",
       "damage": 26,
+      "fatigue": 6,
       "transitions": [
         {
           "when": "animEnd",
@@ -1822,6 +1844,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 36,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "animEnd",
@@ -1901,6 +1924,7 @@
       "blockSound": "block_17",
       "type": "down",
       "damage": 34,
+      "fatigue": 4,
       "transitions": [
         {
           "when": "landed",
@@ -2193,6 +2217,7 @@
       ],
       "type": "trip",
       "damage": 26,
+      "fatigue": 8,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [

@@ -55,6 +55,8 @@ export interface FightersStatus {
   health: [number, number | null];
   /** How full each side's ki meter is, 0..1. */
   ki: [number, number | null];
+  /** How tired each side is, 0..1. */
+  fatigue: [number, number | null];
 }
 
 /**
@@ -469,6 +471,7 @@ export class Fighters {
     return {
       health: [this.player.health, this.opponent?.health ?? null],
       ki: [this.player.kiFraction, this.opponent?.kiFraction ?? null],
+      fatigue: [this.player.fatigueFraction, this.opponent?.fatigueFraction ?? null],
     };
   }
 

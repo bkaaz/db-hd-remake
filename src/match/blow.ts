@@ -105,6 +105,8 @@ export function landBlow(
       launches: attacker.attackLaunches,
     });
     if (!away) dealt = defender.hurtBy(attacker.attackDamage);
+    // the KO goes before fatigue, as the original's does ($0F:B34E)
+    if (defender.health > 0) defender.tire(attacker.attackFatigue);
   }
   // A projectile that bursts does so at the middle of the overlap, a spark at
   // the deepest point of the blow — see impactPoint. Neither is where the

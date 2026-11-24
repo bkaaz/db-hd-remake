@@ -109,7 +109,7 @@ export const ROUTINES: Record<number, Routine> = {
   // (one pointer per opponent's character, then dx, dy by the mover's step)
   0x0dde9a: { fact: (c) => (word(c, 0) === null || word(c, 2) === null ? null : { what: "holds the opponent", hold: ((word(c, 2)! & 0xff) << 16) | word(c, 0)! }) },
   // the opponent thrown: $00 damage (less defence, $0D:D12E), $0A off the
-  // stun gauge, $02 its move — KO (1c) at 0 health, dizzy (1d) when the
+  // stun gauge, $02 its move — KO (1c) at 0 health, the collapse (1d) when the
   // gauge runs out instead — $04 facing, $06 vx, $08 vy
   0x0fb321: { fact: (c) => launch(c) },
 };

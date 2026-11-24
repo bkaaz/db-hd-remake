@@ -25,6 +25,8 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     placement: { x: 0, y: 0, facing: 1 as const, scale: 1 },
     boxes: (want: string) => (want === type ? [{ type, x: 0, y: -10, w: 10, h: 10 }] : []),
     attackDamage: 7,
+    attackFatigue: 2,
+    health: 100,
     attackHitstop: 6,
     attackReaction: "hurt",
     attackRelaunch: false,
@@ -44,6 +46,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     // Scaled by the combo it lands in, so it is rarely what was asked for.
     hurtBy: vi.fn(() => 5),
     gotHit: vi.fn(),
+    tire: vi.fn(),
     guardHit: vi.fn(() => true),
     freeze: vi.fn(),
     shoveBeforePause: vi.fn(),
@@ -83,6 +86,18 @@ describe("landBlow", () => {
     const guarding = body("hurt", { guarding: true });
     landBlow(body("hit"), guarding, context());
     expect(guarding.shoveBeforePause).not.toHaveBeenCalled();
+  });
+
+  it("tires the defender by the blow's fatigue, not when he blocks it or it knocks him out", () => {
+    const hit = body("hurt");
+    landBlow(body("hit"), hit, context());
+    expect(hit.tire).toHaveBeenCalledWith(2);
+    const guarding = body("hurt", { guarding: true });
+    landBlow(body("hit"), guarding, context());
+    expect(guarding.tire).not.toHaveBeenCalled();
+    const out = body("hurt", { health: 0 });
+    landBlow(body("hit"), out, context());
+    expect(out.tire).not.toHaveBeenCalled();
   });
 
   it("turns the defender to face whoever landed the blow", () => {

@@ -7,7 +7,7 @@ import { readData } from "../data/files";
 import { drawPortrait } from "../rom/portrait";
 import { ROSTER } from "../rom/roster";
 
-/** What the HUD reads off the fight: each side's name and health. */
+/** What the HUD reads off the fight before it starts: each side's name and health. */
 export interface HudFighter {
   name: string;
   health: number;
@@ -35,6 +35,7 @@ export class Hud {
   private readonly sprite: Sprite;
   private shown: (number | null)[];
   private ki: (number | null)[] = [0, null];
+  private fatigue: (number | null)[] = [0, null];
   /** Game frames counted: they pace the last layer's flashing. */
   private frame = 0;
 
@@ -73,11 +74,12 @@ export class Hud {
     return new Hud(parent, fighters, faces);
   }
 
-  /** One game frame: the shown health steps toward the real one; ki is shown as it is. */
-  tick(health: [number, number | null], ki: [number, number | null]): void {
+  /** One game frame: the shown health steps toward the real one; ki and fatigue are shown as they are. */
+  tick(health: [number, number | null], ki: [number, number | null], fatigue: [number, number | null]): void {
     this.frame++;
     this.shown = this.shown.map((s, side) => (s === null || health[side] === null ? null : stepShown(s, health[side]!)));
     this.ki = ki;
+    this.fatigue = fatigue;
   }
 
   draw(): void {
@@ -86,7 +88,7 @@ export class Hud {
       const shown = this.shown[side];
       if (!f || shown === null) return;
       const name = NAMES[f.name] ?? f.name;
-      drawPanel(this.g, side as 0 | 1, { name, face: this.faces[side], shown, ki: this.ki[side] ?? 0, frame: this.frame });
+      drawPanel(this.g, side as 0 | 1, { name, face: this.faces[side], shown, ki: this.ki[side] ?? 0, fatigue: this.fatigue[side] ?? 0, frame: this.frame });
     });
     this.texture.source.update();
   }

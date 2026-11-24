@@ -17,6 +17,7 @@ import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
 import { burnVariant, paletteVariant, shimmerVariant, shockVariant, markedVariant, runVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
+import { Fatigue } from "../combat/fatigue";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { shoveAfter } from "../combat/knockback";
@@ -388,6 +389,9 @@ export class Entity {
    * a symmetric pause must not do.
    */
   private stun = 0;
+  private readonly fatigue = new Fatigue();
+  /** Spent in the air or on the floor: tired once he is back on his feet. */
+  private tiredLater = false;
 
   constructor(
     private readonly def: EntityDef,
@@ -1110,6 +1114,22 @@ export class Entity {
     return this.sm?.def.damage ?? 0;
   }
 
+  /** Fatigue this entity's current attack adds. */
+  get attackFatigue(): number {
+    return this.sm?.def.fatigue ?? 0;
+  }
+
+  /**
+   * Take a blow's fatigue. Spent, he is tired (`onTired`) — at once where he
+   * stands, where the original puts its `1d` in place of the reaction; a body
+   * thrown or floored is tired when he is up again.
+   */
+  tire(amount: number): void {
+    const tired = this.def.states?.onTired;
+    if (!tired || !this.fatigue.take(amount)) return;
+    if (this.airborne || !this.forceState(tired)) this.tiredLater = true;
+  }
+
   /**
    * Play a sound on this entity's side of the fight — for what happens to
    * it, like the noise of a blow it takes, which the original plays as the
@@ -1137,6 +1157,11 @@ export class Entity {
   /** How much of this fighter is left, 0..1 — what a health bar draws. */
   get healthFraction(): number {
     return this.maxHealth > 0 ? this.hp / this.maxHealth : 0;
+  }
+
+  /** How tired he is, 0..1 — what the HUD's fatigue line draws. */
+  get fatigueFraction(): number {
+    return this.fatigue.fraction;
   }
 
   /** How full the ki meter is, 0..1 — what the HUD's bars draw. */
@@ -1554,6 +1579,10 @@ export class Entity {
     if (fill) this.charge = Math.min(1, this.charge + 1 / fill);
     const perFrame = this.sm.def.ki;
     if (perFrame) this.ki = Math.max(0, Math.min(this.maxKi, this.ki + perFrame));
+    if (this.tiredLater && this.standing) {
+      this.tiredLater = false;
+      this.forceState(this.def.states!.onTired!);
+    }
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
