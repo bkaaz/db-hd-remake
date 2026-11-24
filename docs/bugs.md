@@ -20,6 +20,9 @@ because a number would only need translating back.
 
 ---
 
+- **An attack right after jumping over the opponent faces the wrong way** —
+  *breaks play*. Jump over P2 and attack soon after landing: P1 does not turn
+  round and swings at the air, his back to the opponent.
 - **Vegeta's ultimate out of a diagonal jump flies on diagonally**, the
   opponent with him — *breaks play*. Jump forward or back, ↓ + Ki with the
   opponent in range: Galactic Gunfire rises along the jump's line. Cause `?`:
