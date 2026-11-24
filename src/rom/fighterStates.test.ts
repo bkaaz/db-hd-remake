@@ -48,6 +48,13 @@ describe.skipIf(!existsSync(ROM_PATH))("a fighter's generated states.json, on th
     expect([step.frame, step.dur]).toEqual([String(hold?.op === "hold" && hold.drawing), 1]);
   });
 
+  it.each(generatedFighters())("%s's crouching block ends crouched: down held, he never passes through standing", (name) => {
+    const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
+    const block = states.guard_crouch;
+    expect(states[block.inputsOf!.state].crouching).toBe(true);
+    expect(states[block.transitions!.find((t) => String(t.when).startsWith("frames:"))!.to!].crouching).toBe(true);
+  });
+
   it.each(generatedFighters())("%s passes the validator the game runs on loading him", (name) => {
     const file = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
     const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, AnimInfo>;

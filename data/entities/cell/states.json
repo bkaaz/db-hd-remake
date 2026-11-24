@@ -1534,13 +1534,13 @@
       "guard": "guard_crouch",
       "guarding": true,
       "inputsOf": {
-        "state": "idle",
+        "state": "crouch",
         "from": 4
       },
       "transitions": [
         {
           "when": "frames:4",
-          "to": "idle"
+          "to": "crouch"
         }
       ]
     },
