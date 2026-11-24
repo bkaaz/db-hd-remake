@@ -18,8 +18,9 @@ whole roster runs first. `states --fighter <name>` says which copies run
 code of his own and so are still to read. His own specials go into
 `data/entities/<name>/specials.json`, never `states.json`: `states`
 rewrites that whole and merges them in (ADR 0038).
-After changing Goku's `states.json`, `states --all` brings every generated
-fighter up to date; `fighterStates.test.ts` fails until it is run.
+A shared state is changed in `data/template/states.json`, Goku's special in
+his `specials.json`; `states --all` brings every fighter up to date, Goku
+too, and `fighterStates.test.ts` fails until it is run.
 
 ## A fighter's first draft
 

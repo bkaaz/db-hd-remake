@@ -16,6 +16,7 @@ change.
 - **Colour set** — colours of our own for a fighter, a rule over his palette (`palettes.json`). → ADR 0063
 - **Combo** — a chain whose links hold: the defender never gets control back. → `combat.md`
 - **Command** — a special's input as the cartridge's table has it. → `input/command.ts`, ADR 0050
+- **Common states** — the states every fighter shares, by hand; his `states.json` is them on his numbers with his specials. → `data/template/states.json`, ADR 0038
 - **Defence** — an attribute taken off every blow a fighter takes, before scaling. → ADR 0019
 - **Depth** — how many blows landed before a link, by the longest route into it. → `combat.md` §3
 - **Fatigue** — hits taken, each counting one, blocked ones none; the twentieth collapses him and leaves him tired (`onTired`). → `combat.md` §8

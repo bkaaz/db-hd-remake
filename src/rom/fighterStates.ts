@@ -24,7 +24,7 @@ import { moveOf } from "./todo";
 
 export interface FighterStates {
   file: StatesFile;
-  /** What the template did to Goku's states on the way. */
+  /** What the template did to the common states on the way. */
   made: Template;
   /** His `specials.json`, if he has one. */
   own: SpecialsFile | null;
@@ -37,15 +37,20 @@ export interface FighterStates {
  * part (Big Bang's flash).
  */
 export function tablesOf(rom: Uint8Array, name: string): FighterTables {
+  // Goku's own objects are the shared set: filtered like another's, he would lose his spawns
+  if (name === "goku") return GOKU;
   const stepped = [...(OWN_OBJECTS[name as FighterName] ?? []), ...draftedObjects(name)].flatMap((o) =>
     o.onStep ? [{ name: o.name, type: o.type, anim: o.anim, onStep: o.onStep, steps: [], loop: false, hits: false, palette: 0, loads: [] }] : [],
   );
   return fighterNamed(rom, name, { ...GOKU.objects, spawns: [...GOKU.objects.spawns.filter((sp) => sp.type === 0xa), ...stepped] });
 }
 
-/** Every fighter whose `states.json` is generated: all that have one but Goku, whose own is the template. */
+/** The states every fighter shares, by hand: his `states.json` is these on his numbers, with his specials. */
+export const COMMON = "data/template/states.json";
+
+/** Every fighter whose `states.json` is generated: all that have one, Goku with the rest. */
 export function generatedFighters(): FighterName[] {
-  return ROSTER.filter((name) => name !== "goku" && existsSync(`data/entities/${name}/states.json`));
+  return ROSTER.filter((name) => existsSync(`data/entities/${name}/states.json`));
 }
 
 /** Move `1c`: the KO. */
@@ -55,8 +60,8 @@ export const AIR_REEL = 0x1a;
 
 export function fighterStates(rom: Uint8Array, name: string, t: FighterTables): FighterStates {
   const animations = readJson<Record<string, unknown>>(`data/entities/${name}/animations.json`);
-  const template = readJson<StatesFile>("data/entities/goku/states.json");
-  // goku's own moves: what his command table picks, and what those go on to
+  const template = readJson<StatesFile>(COMMON);
+  // goku's own moves, which the common states were cut from: none may slip back in as shared
   const specials = ownMoves(rom, GOKU);
   const made = statesFrom(template, {
     has: (a) => a in animations,

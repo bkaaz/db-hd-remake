@@ -258,11 +258,11 @@ npm run rom -- commands --fighter vegeta
 npm run rom -- export --fighter vegeta
                   # another fighter's sheet, frames and animations only
 npm run rom -- states --fighter vegeta
-                  # his states from goku's: the shared moves on his
-                  # animations with his blows, goku's specials dropped
+                  # his states from the common ones (data/template/):
+                  # on his animations with his blows, his specials merged
 npm run rom -- states --all
-                  # every generated fighter again — after any change to
-                  # goku's states; a test fails until it is run
+                  # every fighter again, Goku too — after any change to
+                  # the common states; a test fails until it is run
 npm run rom -- draft --fighter cell
                   # a first specials.json and his objects from the reports
                   # (ADR 0038); --force writes it again

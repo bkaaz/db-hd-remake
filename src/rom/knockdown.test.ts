@@ -43,7 +43,7 @@ describe.skipIf(!existsSync(ROM_PATH))("the knockdown's tables, on the cartridge
     expect(() => getUpFrame(rom, ROSTER.indexOf("gohan"), [8, 8, 4])).toThrow(/none past/);
   });
 
-  it.each(["goku", ...generatedFighters()])("%s's states carry his own numbers", (name) => {
+  it.each(generatedFighters())("%s's states carry his own numbers", (name) => {
     const character = ROSTER.indexOf(name as (typeof ROSTER)[number]);
     const { states } = JSON.parse(readFileSync(`data/entities/${name}/states.json`, "utf8")) as StatesFile;
     const animations = JSON.parse(readFileSync(`data/entities/${name}/animations.json`, "utf8")) as Record<string, { steps: { dur: number }[] }>;

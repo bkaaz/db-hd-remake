@@ -27,7 +27,7 @@ missing.
 |---|---|
 | `frames.json` | `npm run rom -- export`, whole (ADR 0090) |
 | `animations.json` | `npm run rom -- export`, whole; an edit in the editor is lost at the next export (ADR 0017) |
-| `states.json` | Goku's by hand, until the common part (`plan.md`); every other fighter's by `npm run rom -- states`, whole (ADR 0038) |
+| `states.json` | `npm run rom -- states`, whole: the common states on his numbers, with his specials (ADR 0038) |
 | `specials.json` | by hand, first drafted by `npm run rom -- draft` (ADR 0038) |
 | `objects.json` | `npm run rom -- draft`: a fighter's objects no recording has given yet |
 | `commands.json` | `npm run rom -- commands`, whole (ADR 0050) |
@@ -43,7 +43,8 @@ only reads.
 Not entities, and written whole by the export: an arena's
 `data/arenas/<name>/arena.json` (`src/arena/arenaFile.ts`). By hand:
 `data/hud/faces.json` (where each face sits in its portrait, `src/hud/hud.ts`),
-`data/hit-types.json`,
+`data/hit-types.json`, `data/template/states.json` (the states every fighter
+shares, ADR 0038),
 `data/roster.json`, `data/debug.json`.
 
 ## What a type cannot say

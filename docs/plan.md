@@ -12,13 +12,14 @@ when*; later ones are a line.
 [ADR 0038](./adr/0038-a-fighters-states-are-generated.md), before the first change
 of mechanics.
 
-1. **The template out of Goku:** a file of its own, his specials into his
-   `specials.json`, and he is generated like the rest. *Done when:*
-   `goku/states.json` comes out of the command and the test covers him.
-2. **Named groups in `entries`** in place of the lists of states, by script.
-3. **Rules of the game out of `attributes.json`** (`comboLimits`).
-4. **Freeze the port:** its flat states and hit types kept as they are.
-5. **The generator stops overwriting** a blow's type.
+1. **Named groups in `entries`** in place of the lists of states, by script.
+2. **Rules of the game out of `attributes.json`** (`comboLimits`).
+3. **Freeze the port:** its flat states and hit types kept as they are.
+4. **The generator stops overwriting** a blow's type and damage: a sparse file
+   of each fighter's, by state, written once from what `blowOf` gives now,
+   shaped as the later parameters will be. An override of nothing is an error.
+5. **A stale `replaces` caught:** a test fails when a common state changes
+   that a fighter plays a copy of (`attack_b`, `crouch_b`, … are copied).
 6. **Whose `animations.json` is** — open. The export writes it whole, so an
    animation edited in the editor or added for a mechanic is gone at the next
    export. Settled with the owner before the mechanics touch an animation.
@@ -54,11 +55,18 @@ hold for every fighter, not only one.
   while charging; `$37` set to `16` by a big explosion; idle's poses held 13–14
   frames where its script says 12; the sparks' tiles and palette; a name for
   each `sfx_<id>`.
+  Whether a command or a held guard wins on a crouch's frame, and whether a
+  special can start from a low guard (`guard_low` has no entries).
 - **What we change of the original:** a crouching attack's two frames of the way
   down; five objects a fighter; the winners' poses in the air.
 - **Nothing checks that a `sound` or `hitFx` id exists**, as one does for `anim`.
 
 ## Not yet ordered
+
+- **A fighter's character as parameters** of the common states (walk, dash,
+  jump, gravity, the get-up frame), resolved as `states` writes; the
+  cartridge's readers then write beside `data/`, in a gitignored directory,
+  never over it — when a mechanic or tuning runs into the generator.
 
 - A second player, and round rules.
 - A remapping screen.

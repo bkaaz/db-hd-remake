@@ -46,7 +46,7 @@ import { drawPortrait, portraitTiles } from "../src/rom/portrait.ts";
 import { describeFact } from "../src/rom/describe.ts";
 import { arrow, buttonName, commandsFile, readCommands } from "../src/rom/commands.ts";
 import { closeLines, NORMALS } from "../src/rom/buttons.ts";
-import { fighterStates, generatedFighters, tablesOf } from "../src/rom/fighterStates.ts";
+import { COMMON, fighterStates, generatedFighters, tablesOf } from "../src/rom/fighterStates.ts";
 import { draftSpecials } from "../src/rom/draft.ts";
 import { moveParts } from "../src/rom/parts.ts";
 import { draftedObjects, draftObject, objectName, objectStates } from "../src/rom/draftObjects.ts";
@@ -123,6 +123,8 @@ function writeStates(name: string, t: FighterTables): void {
     if (move !== null && !read.has(move) && !sameHandler(rom, GOKU, t, move))
       console.log(`${state} copied, but his ${def.anim} runs his own handler (${long(handlerAt(rom, t.character, move))}) — to read`);
   }
+  // Goku's attributes are by hand, the others' base: his intro palettes are left out of them on purpose
+  if (name === "goku") return console.log(`${name}: ${Object.keys(file.states).length} states`);
   const his = readAttributes(rom, t.character);
   // his defence, gravity, grab range and close lines; Goku's for what is not read (push width); his lightings, and the fire
   const attributes = JSON.parse(readFileSync("data/entities/goku/attributes.json", "utf8"));
@@ -154,8 +156,8 @@ const name = named >= 0 ? argv[named + 1] : "goku";
 const T = named >= 0 ? tablesOf(rom, name) : GOKU;
 if (named >= 0) argv.splice(named, 2);
 const [command, ...args] = argv;
-// Goku is the template, written by his own path: through another fighter's he loses his spawns
-if (named >= 0 && name === "goku" && ["export", "states", "draft"].includes(command)) {
+// Goku's export is his own path: through another fighter's he loses his spawns
+if (named >= 0 && name === "goku" && ["export", "draft"].includes(command)) {
   throw new Error(`goku's ${command} is npm run rom -- ${command}, without --fighter`);
 }
 
@@ -476,7 +478,7 @@ if (command === "tiles") {
   const shared = (type: number, anim: number) => GOKU.objects.spawns.find((sp) => sp.type === type && sp.anim === anim)?.name;
   const spawnOf = (type: number, anim: number) => shared(type, anim) ?? objectName(name, { type, anim });
   // a normal on code of his own, or cut in two by what it puts out, cannot be goku's state on his animation
-  const template = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
+  const template = JSON.parse(readFileSync(COMMON, "utf8")) as StatesFile;
   const normals = Object.fromEntries(
     Object.entries(template.states).flatMap(([state, def]) => {
       const move = /^m(9[0-9a])$/.exec(def.anim ?? "")?.[1];
@@ -517,13 +519,13 @@ if (command === "tiles") {
   console.log(`${unique.length} objects with no recording`);
 } else if (command === "export" && args.includes("--all")) {
   // each in a run of its own: the tables and the objects are this run's, one fighter's
-  for (const fighter of ["goku", ...generatedFighters()]) {
+  for (const fighter of generatedFighters()) {
     const who = fighter === "goku" ? [] : ["--fighter", fighter];
     execFileSync(process.execPath, [...process.execArgv, process.argv[1], "export", ...who], { stdio: "inherit" });
   }
 } else if (command === "states" && args.includes("--all")) {
   for (const fighter of generatedFighters()) writeStates(fighter, tablesOf(rom, fighter));
-} else if (command === "states" && T !== GOKU) {
+} else if (command === "states") {
   writeStates(name, T);
 } else if (command === "export" && T !== GOKU) {
   // his frames and animations; the browser draws his sheets (ADR 0090), the shared
