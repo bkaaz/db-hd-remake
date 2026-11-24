@@ -10,24 +10,14 @@
   "entries": [
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a4",
       "to": "double_leg_kick"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "grab",
@@ -37,72 +27,42 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a7",
       "to": "ground_wave"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a0",
       "to": "sender_a0"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a1",
       "to": "sender_a1"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a9",
       "to": "freeza_slash"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:9f",
       "to": "sender_9f"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "command:af",
@@ -112,48 +72,28 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a8",
       "to": "kienzan"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a5",
       "to": "kishin_ha"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ab",
       "to": "death_ball"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "grab:64",
@@ -163,21 +103,14 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ac",
       "to": "jubaku_ha"
     },
     {
       "from": [
-        "jump_up",
-        "jump_fwd",
-        "jump_back"
+        "@jump"
       ],
       "when": [
         "frames:2",
@@ -187,7 +120,7 @@
     },
     {
       "from": [
-        "jump_fall",
+        "@fall",
         "jump_fall_attacked"
       ],
       "when": "command:ad",
@@ -195,9 +128,7 @@
     },
     {
       "from": [
-        "jump_up",
-        "jump_fwd",
-        "jump_back"
+        "@jump"
       ],
       "when": [
         "frames:2",
@@ -207,7 +138,7 @@
     },
     {
       "from": [
-        "jump_fall",
+        "@fall",
         "jump_fall_attacked"
       ],
       "when": "command:a6",

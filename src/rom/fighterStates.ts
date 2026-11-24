@@ -12,7 +12,7 @@ import { OWN_OBJECTS } from "./ownObjects";
 import { ownMoves } from "./ownMoves";
 import { fighterNamed, ROSTER, type FighterName } from "./roster";
 import { holdStepOf, readScript } from "./script";
-import { withSpecials, type SpecialsFile } from "./specials";
+import { withSpecials, type Groups, type SpecialsFile } from "./specials";
 import { statesFrom, type Template } from "./template";
 import { moveOf } from "./todo";
 
@@ -47,6 +47,8 @@ export function tablesOf(rom: Uint8Array, name: string): FighterTables {
 
 /** The states every fighter shares, by hand: his `states.json` is these on his numbers, with his specials. */
 export const COMMON = "data/template/states.json";
+/** The lists of common states an entry's `from` names as `@name`. */
+const GROUPS = "data/template/groups.json";
 
 /** Every fighter whose `states.json` is generated: all that have one, Goku with the rest. */
 export function generatedFighters(): FighterName[] {
@@ -83,7 +85,7 @@ export function fighterStates(rom: Uint8Array, name: string, t: FighterTables): 
   // his own walk, dash and jump on the template's states ($3D:9D9B)
   const moved = withAttributes(made.file, readAttributes(rom, t.character));
   // his commands tried as the cartridge tries them, the table's last row first
-  const file = inTableOrder(own ? withSpecials(moved, own) : moved, readCommands(rom, t.character));
+  const file = inTableOrder(own ? withSpecials(moved, own, readJson<Groups>(GROUPS)) : moved, readCommands(rom, t.character));
   const jumps = JUMPS_HELD.reduce((states, [state, move]) => heldOn(states, state, move, rom, t, animations), file.states);
   const held = blowsSaid(heldOn(heldOn(heldTumble(jumps, rom, t), "crouch", CROUCH, rom, t, animations), "ko_down", KO, rom, t, animations), animations);
   const getUp = (animations.m1f as { steps: { dur: number }[] }).steps.map((s) => s.dur);

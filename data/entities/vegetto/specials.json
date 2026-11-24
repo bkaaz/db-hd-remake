@@ -9,36 +9,21 @@
   "entries": [
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:aa",
       "to": "shooting_kick"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:9e",
       "to": "forward_kick"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "grab",
@@ -48,120 +33,70 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a4",
       "to": "aerial_kick"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a0",
       "to": "sender_a0"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a1",
       "to": "sender_a1"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ad",
       "to": "kakusan"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:9f",
       "to": "sender_9f"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a7",
       "to": "elbow_dash"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:af",
       "to": "big_bang"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a5",
       "to": "geri_combo"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ae",
       "to": "final_kame"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "command:b0",
@@ -171,9 +106,7 @@
     },
     {
       "from": [
-        "jump_up",
-        "jump_fwd",
-        "jump_back"
+        "@jump"
       ],
       "when": [
         "frames:2",
@@ -183,7 +116,7 @@
     },
     {
       "from": [
-        "jump_fall"
+        "@fall"
       ],
       "when": "command:a8",
       "to": "slashdown_kick"

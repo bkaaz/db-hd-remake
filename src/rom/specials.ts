@@ -36,11 +36,18 @@ export interface SpecialsFile {
   poses?: string[];
 }
 
+/**
+ * Named lists of common states an entry's `from` may give as `@name`
+ * (`data/template/groups.json`): a state added to where specials start from is
+ * added once, not on every fighter's every entry.
+ */
+export type Groups = Record<string, string[]>;
+
 /** What asks for a button: a press, or a command (ADR 0050). */
 const ASKS = /^(pressed|command):/;
 
 /** `file` with his specials in it; a name taken or a state missing is an error, not a quiet skip. */
-export function withSpecials(file: StatesFile, specials: SpecialsFile): StatesFile {
+export function withSpecials(file: StatesFile, specials: SpecialsFile, groups: Groups = {}): StatesFile {
   const states = { ...file.states };
   const replaces = new Set(specials.replaces ?? []);
   for (const name of replaces) {
@@ -54,7 +61,7 @@ export function withSpecials(file: StatesFile, specials: SpecialsFile): StatesFi
   for (const { from, when, to } of specials.entries) {
     if (!(to in specials.states)) throw new Error(`an entry leads to "${to}", which specials.json does not define`);
     if (!list(when).some((w) => ASKS.test(w))) throw new Error(`the entry to "${to}" asks for no button`);
-    for (const name of from) {
+    for (const name of from.flatMap((n) => named(n, groups))) {
       const state = states[name];
       if (!state) throw new Error(`the entry to "${to}" is from "${name}", which is no state`);
       const transitions = state.transitions ?? [];
@@ -68,6 +75,14 @@ export function withSpecials(file: StatesFile, specials: SpecialsFile): StatesFi
   }
   const round = specials.poses && file.round ? { ...file.round, win: specials.poses } : file.round;
   return { ...file, states, round };
+}
+
+/** A state's name as it is, a group's as its states; a group nobody defined is an error. */
+function named(name: string, groups: Groups): string[] {
+  if (!name.startsWith("@")) return [name];
+  const states = groups[name.slice(1)];
+  if (!states) throw new Error(`"${name}" is no group (data/template/groups.json)`);
+  return states;
 }
 
 function list(when: Transition["when"]): string[] {

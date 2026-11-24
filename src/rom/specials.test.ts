@@ -42,6 +42,16 @@ describe("withSpecials", () => {
     expect(out.states.crouch.transitions![0].to).toBe("ball");
   });
 
+  it("puts the entry in every state of a group its from names, beside the states named alone", () => {
+    const out = withSpecials(TEMPLATE, { ...BALL, entries: [{ ...BALL.entries[0], from: ["@still", "kick"] }] }, { still: ["idle", "crouch"] });
+    for (const name of ["idle", "crouch", "kick"]) expect(out.states[name].transitions, name).toContainEqual({ when: "command:ad", to: "ball" });
+    expect(out.states.ki.transitions ?? []).not.toContainEqual({ when: "command:ad", to: "ball" });
+  });
+
+  it("refuses a group nobody defined", () => {
+    expect(() => withSpecials(TEMPLATE, { ...BALL, entries: [{ ...BALL.entries[0], from: ["@still"] }] })).toThrow(/no group/);
+  });
+
   it("refuses a special named as a template state, an entry to nothing, and one asking for no button", () => {
     expect(() => withSpecials(TEMPLATE, { ...BALL, states: { ki: { anim: "mad" } } })).toThrow(/template makes already/);
     expect(() => withSpecials(TEMPLATE, { ...BALL, states: {} })).toThrow(/does not define/);

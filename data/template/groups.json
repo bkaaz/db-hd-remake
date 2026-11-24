@@ -1,0 +1,5 @@
+{
+  "ground": ["idle", "walk_fwd", "walk_back", "crouch_down", "crouch", "stand_up"],
+  "jump": ["jump_up", "jump_fwd", "jump_back"],
+  "fall": ["jump_fall"]
+}

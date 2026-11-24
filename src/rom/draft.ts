@@ -25,9 +25,10 @@ export interface Draft {
   moves: { move: string; state: string; input: string; left: string[] }[];
 }
 
-/** What every state a command is read from, on the ground and in a jump (`$0F:9EB1`). */
-const GROUND = ["idle", "walk_fwd", "walk_back", "crouch_down", "crouch", "stand_up"];
-const JUMPS = ["jump_up", "jump_fwd", "jump_back"];
+/** Where a command is read from, on the ground, rising and falling (`$0F:9EB1`): groups of `data/template/groups.json`. */
+const GROUND = ["@ground"];
+const JUMPS = ["@jump"];
+const FALLING = ["@fall"];
 const HIT = { hitSound: "hit_09", blockSound: "block_17" };
 /** A move below this is the game's own, not one more part of a special: landing, falling, a reaction. */
 const FIRST_SPECIAL = 0x90;
@@ -95,7 +96,7 @@ export function draftSpecials(
     if (command.where === "ground") entries.push({ from: GROUND, when: asked, to: base(move) });
     else {
       entries.push({ from: JUMPS, when: ["frames:2", ...when], to: base(move) });
-      entries.push({ from: ["jump_fall"], when: asked, to: base(move) });
+      entries.push({ from: FALLING, when: asked, to: base(move) });
     }
   }
 

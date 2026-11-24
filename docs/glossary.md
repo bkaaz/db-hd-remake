@@ -26,6 +26,7 @@ change.
 - **Game pixel** — one pixel of the original's screen, the unit of every position, speed and box. → ADR 0041
 - **Glow** — the palette a fighter is drawn in while he charges. → `rom.md`
 - **Grab / held** — a throw: the thrower's state holds the opponent, who plays `m30_<thrower>_<move>`. → `match/throw.ts`, ADR 0035
+- **Group** — a named list of common states an entry's `from` gives as `@name`. → `data/template/groups.json`, `rom/specials.ts`
 - **Guard** — the stance that blocks; a blow is blocked only in a state marked `guarding`. → `combat.md`
 - **Hit again** (`ifHitAgain`) — a reaction that overrules the next blows taken in it. → `combat.md`, `entity/hitAgain.ts`
 - **Hit type** — what a blow does to whoever it hits, every number but its damage; written `fl30`, its code and a frame of the move. → `data/hit-types.json`, ADR 0019

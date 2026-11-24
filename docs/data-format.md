@@ -44,7 +44,8 @@ Not entities, and written whole by the export: an arena's
 `data/arenas/<name>/arena.json` (`src/arena/arenaFile.ts`). By hand:
 `data/hud/faces.json` (where each face sits in its portrait, `src/hud/hud.ts`),
 `data/hit-types.json`, `data/template/states.json` (the states every fighter
-shares, ADR 0038),
+shares, ADR 0038) and `groups.json` beside it (the lists an entry's `from`
+names as `@ground`, `rom/specials.ts`),
 `data/roster.json`, `data/debug.json`.
 
 ## What a type cannot say

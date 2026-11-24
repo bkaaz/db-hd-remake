@@ -13,24 +13,14 @@
   "entries": [
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ad",
       "to": "flying_bomber"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "grab",
@@ -40,60 +30,35 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a0",
       "to": "sender_a0"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a1",
       "to": "sender_a1"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ab",
       "to": "kakusan"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:9f",
       "to": "sender_9f"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "command:b0",
@@ -103,81 +68,49 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:af",
       "to": "energy_field"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ae",
       "to": "mightiness_bomber"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a4",
       "to": "tornado_hip"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a8",
       "to": "planet_attack"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a5",
       "to": "oyatsu_kosen"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ac",
       "to": "powersault"
     },
     {
       "from": [
-        "jump_up",
-        "jump_fwd",
-        "jump_back"
+        "@jump"
       ],
       "when": [
         "frames:2",
@@ -187,7 +120,7 @@
     },
     {
       "from": [
-        "jump_fall"
+        "@fall"
       ],
       "when": "command:9e",
       "to": "butt_drop"

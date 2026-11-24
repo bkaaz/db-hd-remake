@@ -51,7 +51,7 @@ describe.skipIf(!existsSync(ROM_PATH))("draftSpecials, on the cartridge", () => 
   it("asks for an ultimate at his health, and a move in the air from a jump", () => {
     const { entries } = draft("gohan", { ae: "ultimate", a8: "dive" }).specials;
     expect(entries.find((e) => e.to === "ultimate")?.when).toEqual(["command:ae", "health:80"]);
-    expect(entries.filter((e) => e.to === "dive").map((e) => e.from[0])).toEqual(["jump_up", "jump_fall"]);
+    expect(entries.filter((e) => e.to === "dive").map((e) => e.from[0])).toEqual(["@jump", "@fall"]);
   });
 
   it("hangs a move begun in the air, and takes off where a handler sets vy", () => {

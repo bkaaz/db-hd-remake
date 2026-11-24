@@ -3,12 +3,7 @@
   "entries": [
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "health:80",
@@ -18,156 +13,91 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a5",
       "to": "quad_kick"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:aa",
       "to": "kame_charge"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ab",
       "to": "kame_up"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a4",
       "to": "knee_slash"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:9c",
       "to": "teleport_fwd"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:9e",
       "to": "teleport_back"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a7",
       "to": "double_punch"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:9f",
       "to": "sender_9f"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a6",
       "to": "spin_kick"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a1",
       "to": "sender_a1"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a9",
       "to": "large_ki"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a0",
       "to": "sender_a0"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "grab",
@@ -177,33 +107,21 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a2",
       "to": "double_kick"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a8",
       "to": "side_slash"
     },
     {
       "from": [
-        "jump_up",
-        "jump_fwd",
-        "jump_back",
+        "@jump",
         "hop_fwd",
         "hop_back"
       ],
@@ -215,7 +133,7 @@
     },
     {
       "from": [
-        "jump_fall"
+        "@fall"
       ],
       "when": "command:ac",
       "to": "slash_down"

@@ -17,12 +17,7 @@
   "entries": [
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "grab",
@@ -32,12 +27,7 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": [
         "command:ae",
@@ -47,141 +37,84 @@
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:aa",
       "to": "triangle_illusion"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a2",
       "to": "rushing_uppercut"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a4",
       "to": "knee_slasher"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a6",
       "to": "zankuu_kyaku"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a7",
       "to": "bakuretsu"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ab",
       "to": "renzoku"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ac",
       "to": "kame_charge"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:ad",
       "to": "masenko"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:9f",
       "to": "sender_9f"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a0",
       "to": "sender_a0"
     },
     {
       "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "crouch_down",
-        "crouch",
-        "stand_up"
+        "@ground"
       ],
       "when": "command:a1",
       "to": "sender_a1"
     },
     {
       "from": [
-        "jump_up",
-        "jump_fwd",
-        "jump_back"
+        "@jump"
       ],
       "when": [
         "frames:2",
@@ -191,7 +124,7 @@
     },
     {
       "from": [
-        "jump_fall"
+        "@fall"
       ],
       "when": "command:a8",
       "to": "bukuuh_kyaku"
