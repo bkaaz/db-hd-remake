@@ -1,6 +1,9 @@
 import { Container, Sprite, Texture } from "pixi.js";
 import { stepShown } from "./health";
 import { drawPanel, PANEL_HEIGHT } from "./panel";
+import { COUNTER_BOTTOM, drawCounter } from "./counter";
+import { HitCounter } from "./hits";
+import type { Landing } from "../match/fighters";
 import { cartridge } from "../cartridge/romFile";
 import { toCanvas } from "../cartridge/canvas";
 import { readData } from "../data/files";
@@ -36,6 +39,7 @@ export class Hud {
   private shown: (number | null)[];
   private ki: (number | null)[] = [0, null];
   private fatigue: (number | null)[] = [0, null];
+  private readonly counters = [new HitCounter(), new HitCounter()];
   /** Game frames counted: they pace the last layer's flashing. */
   private frame = 0;
 
@@ -45,7 +49,7 @@ export class Hud {
     private readonly faces: (HTMLCanvasElement | null)[],
   ) {
     this.canvas.width = 256;
-    this.canvas.height = PANEL_HEIGHT;
+    this.canvas.height = Math.max(PANEL_HEIGHT, COUNTER_BOTTOM + 1);
     this.g = this.canvas.getContext("2d")!;
     this.texture = Texture.from(this.canvas);
     this.texture.source.scaleMode = "nearest";
@@ -74,12 +78,13 @@ export class Hud {
     return new Hud(parent, fighters, faces);
   }
 
-  /** One game frame: the shown health steps toward the real one; ki and fatigue are shown as they are. */
-  tick(health: [number, number | null], ki: [number, number | null], fatigue: [number, number | null]): void {
+  /** One game frame: the shown health steps toward the real one; ki and fatigue are shown as they are; each side's combo counts. */
+  tick(health: [number, number | null], ki: [number, number | null], fatigue: [number, number | null], landing: [Landing, Landing | null]): void {
     this.frame++;
     this.shown = this.shown.map((s, side) => (s === null || health[side] === null ? null : stepShown(s, health[side]!)));
     this.ki = ki;
     this.fatigue = fatigue;
+    landing.forEach((l, side) => this.counters[side].tick(l?.hits ?? 0, l?.damage ?? 0));
   }
 
   draw(): void {
@@ -89,6 +94,8 @@ export class Hud {
       if (!f || shown === null) return;
       const name = NAMES[f.name] ?? f.name;
       drawPanel(this.g, side as 0 | 1, { name, face: this.faces[side], shown, ki: this.ki[side] ?? 0, fatigue: this.fatigue[side] ?? 0, frame: this.frame });
+      const combo = this.counters[side].shown;
+      if (combo) drawCounter(this.g, side as 0 | 1, combo);
     });
     this.texture.source.update();
   }

@@ -31,7 +31,7 @@ change.
 - **Hitstop** — the freeze on contact, the same for both fighters. → `combat.md` §1
 - **Hitstun** — how long the defender is helpless after a blow, set by its type. → `combat.md` §1
 - **Hop** — a direction tapped and then held: a low jump. → `input/hop.ts`
-- **HUD** — the corners over the fight: face, ki, health in layers, fatigue, the name. → `src/hud/`, ADR 0032
+- **HUD** — the corners over the fight: face, ki, health in layers, fatigue, the name; under them the hit counter. → `src/hud/`, ADR 0032
 - **Inputs of** (`inputsOf`) — a state starting what another state's inputs would. → ADR 0013
 - **Intro** — a fighter's opening pose on the arena before READY and FIGHT!. → `match/opening.ts`, ADR 0064
 - **Journey** — what a sender plays before the arena changes. → `arena/flight.ts`, ADR 0081

@@ -57,6 +57,14 @@ export interface FightersStatus {
   ki: [number, number | null];
   /** How tired each side is, 0..1. */
   fatigue: [number, number | null];
+  /** The combo each side is landing — the one being done to the other (`combat/combo.ts`). */
+  landing: [Landing, Landing | null];
+}
+
+/** A combo's hits so far and what they cost. */
+export interface Landing {
+  hits: number;
+  damage: number;
 }
 
 /**
@@ -472,6 +480,10 @@ export class Fighters {
       health: [this.player.health, this.opponent?.health ?? null],
       ki: [this.player.kiFraction, this.opponent?.kiFraction ?? null],
       fatigue: [this.player.fatigueFraction, this.opponent?.fatigueFraction ?? null],
+      landing: [
+        this.opponent ? { hits: this.opponent.combo.hits, damage: this.opponent.combo.damage } : { hits: 0, damage: 0 },
+        this.opponent ? { hits: this.player.combo.hits, damage: this.player.combo.damage } : null,
+      ],
     };
   }
 

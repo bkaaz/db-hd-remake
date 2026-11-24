@@ -1,6 +1,7 @@
 /**
- * The HUD's lettering: a 5 × 7 font of our own, capitals and digits, as the
- * dots each string lights — so the drawing can outline them in one pass.
+ * The HUD's lettering: two fonts of our own, as the dots each string lights —
+ * so the drawing can outline them in one pass. A 5 × 7 of capitals and digits
+ * for the names; a 4 × 6 for the hit counter, of only what it writes.
  */
 
 const GLYPHS: Record<string, string> = {
@@ -37,6 +38,32 @@ export function textDots(text: string): [number, number][] {
   const dots: [number, number][] = [];
   [...text.toUpperCase()].forEach((ch, i) => {
     GLYPHS[ch]?.split(" ").forEach((row, y) => [...row].forEach((bit, x) => bit === "1" && dots.push([i * ADVANCE + x, y])));
+  });
+  return dots;
+}
+
+const SMALL: Record<string, string> = {
+  0: "0110 1001 1001 1001 1001 0110", 1: "0100 1100 0100 0100 0100 1110", 2: "0110 1001 0010 0100 1000 1111",
+  3: "1110 0001 0110 0001 0001 1110", 4: "1001 1001 1001 1111 0001 0001", 5: "1111 1000 1110 0001 0001 1110",
+  6: "0110 1000 1110 1001 1001 0110", 7: "1111 0001 0010 0100 0100 0100", 8: "0110 1001 0110 1001 1001 0110",
+  9: "0110 1001 1001 0111 0001 0110",
+  A: "0110 1001 1001 1111 1001 1001", D: "1110 1001 1001 1001 1001 1110", E: "1111 1000 1110 1000 1000 1111",
+  G: "0111 1000 1011 1001 1001 0111", H: "1001 1001 1111 1001 1001 1001", I: "1110 0100 0100 0100 0100 1110",
+  M: "1001 1111 1111 1001 1001 1001", S: "0111 1000 0110 0001 0001 1110", T: "1110 0100 0100 0100 0100 0100",
+};
+/** A small letter's cell: four dots and a gap. */
+const SMALL_ADVANCE = 5;
+
+/** How wide `text` is drawn in the small font. */
+export function smallWidth(text: string): number {
+  return text.length * SMALL_ADVANCE - 1;
+}
+
+/** The dots `text` lights in the small font; what it lacks is a space. */
+export function smallDots(text: string): [number, number][] {
+  const dots: [number, number][] = [];
+  [...text.toUpperCase()].forEach((ch, i) => {
+    SMALL[ch]?.split(" ").forEach((row, y) => [...row].forEach((bit, x) => bit === "1" && dots.push([i * SMALL_ADVANCE + x, y])));
   });
   return dots;
 }

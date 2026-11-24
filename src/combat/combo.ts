@@ -15,10 +15,9 @@ import { scaledDamage, scaledHitstun } from "./scaling";
  * which means the counter cannot drift out of step with what the fighter is
  * actually doing.
  *
- * Nothing reads it yet beyond the debug readout. It is here now because the
- * three scalings of `docs/combat.md` §3 — damage, hitstun and launch — all hang
- * off this one number, and a counter invented twice is a counter that disagrees
- * with itself.
+ * The three scalings of `docs/combat.md` §3 — damage, hitstun and launch —
+ * hang off this one number, and the HUD's hit counter shows it: a counter
+ * invented twice is a counter that disagrees with itself.
  *
  * Pure: no PixiJS, no entities, no clock.
  */

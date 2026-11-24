@@ -10,7 +10,9 @@ bar is the original's — its look, its drain of a point a frame, its flash belo
 ki is six bars under it, the one filling grown from its bottom, after Budokai
 Tenkaichi 3; the name in a 5 × 7 font of ours, in English. Black fills above
 the frames and beside them, so a camera risen past the arena's top shows no
-edge there; under them the arena stays seen. The face is cut, unscaled, from the fighter's portrait
+edge there; under them the arena stays seen. Under the panel of whoever
+lands a combo, from its second hit to a second after it ends, its hits and
+damage in two lines after Burst Limit's, in a 4 × 6 font of ours. The face is cut, unscaled, from the fighter's portrait
 on the cartridge's after-fight screen (`src/rom/portrait.ts`), where
 `data/hud/faces.json` says.
 
