@@ -255,9 +255,10 @@ The walk is a bob — the sheet has no walking legs — so the fighter really mo
 by **dashing**: a slow dash that is free and a fast one that costs ki. Neither
 is built. The dash will decide how the corner and spacing play.
 
-**The hop** is the original's and every fighter has it (owner, 2026-11-07):
-forward or back tapped, then pressed again within 9 frames and held for 6, a
-low jump of his own speeds that can attack as a jump does (`input/hop.ts`).
+**The dash is asked for two ways**, as in Burst Limit: Dash (LB) with forward
+or back, or forward or back tapped twice and held, the taps up to 12 frames
+apart (`input/doubleTap.ts`). It took the original's hop's gesture, and the hop
+is gone (owner, 2026-11-24).
 
 ## Where the fight happens
 

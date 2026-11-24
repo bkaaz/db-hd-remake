@@ -7,15 +7,7 @@ when*; later ones are a line.
 
 ---
 
-## Next: the controls
-
-**A pad and the keyboard, laid out as Burst Limit's** (owner, 2026-11-24;
-`inspiration.md`). *Done when:* an Xbox pad and the keyboard both play the
-basics — movement, guard, ki blast, rush, smash, dash on LB or a double-tap
-held, charging on RB held — and the table in `combat.md` (The buttons) says
-which key and which pad button is which.
-
-## Then: the mechanics
+## Next: the mechanics
 
 The order is provisional; `combat.md` says what each is. `npm run chains` has to
 hold for every fighter, not only one.

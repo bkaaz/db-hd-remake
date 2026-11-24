@@ -860,8 +860,6 @@ export interface InputSnapshot {
    * each starts, to the button it was pressed with — `command:<move>`.
    */
   commands?: ReadonlyMap<string, string>;
-  /** A direction tapped and then held, every fighter's hop (`input/hop.ts`) — `hop:fwd`, `hop:back`. */
-  hop?: "fwd" | "back" | null;
   /**
    * Buttons still down. Separate from the four edges above: a press is a
    * moment and this is a state, and only the second can express a stance you
@@ -978,8 +976,6 @@ export const TRIGGERS = [
   "held:strike",
   "held:dash",
   "held:charge",
-  "hop:fwd",
-  "hop:back",
   "animEnd",
   "stunEnd",
   "spawnEnd",
@@ -1076,12 +1072,6 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "held:charge":
       value = input.holding.charge;
-      break;
-    case "hop:fwd":
-      value = input.hop === "fwd";
-      break;
-    case "hop:back":
-      value = input.hop === "back";
       break;
     case "animEnd":
       value = signals.animEnded;

@@ -19,6 +19,7 @@ change.
 - **Common states** — the states every fighter shares, by hand; his `states.json` is them on his numbers with his specials. → `data/template/states.json`, ADR 0038
 - **Defence** — an attribute taken off every blow a fighter takes, before scaling. → ADR 0019
 - **Depth** — how many blows landed before a link, by the longest route into it. → `combat.md` §3
+- **Double tap** — forward or back tapped twice and held: the dash without its button. → `input/doubleTap.ts`
 - **Fatigue** — hits taken, each counting one, blocked ones none; the twentieth collapses him and leaves him tired (`onTired`). → `combat.md` §8
 - **Finale** — a ball thrown at the floor, swelling into an explosion, then the arena white. → `match/finale.ts`, ADR 0035
 - **Frame advantage** — hitstun less the attacker's remaining recovery: who acts first after a blow. → `combat.md` §1
@@ -32,7 +33,6 @@ change.
 - **Hit type** — what a blow does to whoever it hits, every number but its damage; written `fl30`, its code and a frame of the move. → `data/hit-types.json`, ADR 0019
 - **Hitstop** — the freeze on contact, the same for both fighters. → `combat.md` §1
 - **Hitstun** — how long the defender is helpless after a blow, set by its type. → `combat.md` §1
-- **Hop** — a direction tapped and then held: a low jump. → `input/hop.ts`
 - **HUD** — the corners over the fight: face, ki, health in layers, fatigue, the name; under them the hit counter. → `src/hud/`, ADR 0032
 - **Inputs of** (`inputsOf`) — a state starting what another state's inputs would. → ADR 0013
 - **Intro** — a fighter's opening pose on the arena before READY and FIGHT!. → `match/opening.ts`, ADR 0064

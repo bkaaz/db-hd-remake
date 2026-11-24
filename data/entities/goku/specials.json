@@ -121,9 +121,7 @@
     },
     {
       "from": [
-        "@jump",
-        "hop_fwd",
-        "hop_back"
+        "@jump"
       ],
       "when": [
         "frames:2",

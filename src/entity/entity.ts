@@ -35,7 +35,7 @@ import { approachSpeed, rushing, rushStep } from "./approach";
 import { afterDefence } from "../combat/scaling";
 import { InputBuffer } from "../input/buffer";
 import { commandsMet, padFrame, PadHistory, tablesFor } from "../input/command";
-import { hopAsked } from "../input/hop";
+import { DoubleTap } from "../input/doubleTap";
 import { pressedNames, stickLine } from "../input/padLine";
 import { InputHistory } from "../input/history";
 import {
@@ -265,6 +265,10 @@ export class Entity {
   private readonly buffer = new InputBuffer();
   /** The pad as the cartridge's command reader sees it, a frame an entry. */
   private readonly pad = new PadHistory();
+  /** Forward or back tapped twice and held: the dash button without the button. */
+  private readonly doubleTap = new DoubleTap();
+  /** Whether this frame's double tap holds the dash — `holding.dash` beside the button's own. */
+  private tapDashHeld = false;
   /** The commands met this frame: move → our button. */
   private met: ReadonlyMap<string, string> = new Map();
   /** Frames since it left the ground, 0 on it: which command tables it reads (`tablesFor`). */
@@ -1529,6 +1533,9 @@ export class Entity {
     this.pad.record(
       padFrame({ fwd: ahead ? input.right : input.left, back: ahead ? input.left : input.right, up: input.up, down: input.down }, input, input.holding),
     );
+    const tap = this.doubleTap.step(this.pad);
+    if (tap.pressed) this.buffer.press("dash");
+    this.tapDashHeld = tap.held;
     this.airFrames = this.airborne ? this.airFrames + 1 : 0;
 
     // A hit pause freezes the whole entity, animation included — the pose the
@@ -1611,8 +1618,7 @@ export class Entity {
         strike: this.buffer.has("strike"),
         dash: this.buffer.has("dash"),
         commands: (this.met = commandsMet(this.def.commands, tablesFor(this.airFrames), this.pad)),
-        hop: hopAsked(this.pad),
-        holding: input.holding,
+        holding: this.tapDashHeld ? { ...input.holding, dash: true } : input.holding,
       },
       {
         animEnded: this.animEnded,

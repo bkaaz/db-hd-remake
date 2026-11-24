@@ -224,14 +224,6 @@
           "to": "ki"
         },
         {
-          "when": "hop:fwd",
-          "to": "hop_fwd"
-        },
-        {
-          "when": "hop:back",
-          "to": "hop_back"
-        },
-        {
           "when": [
             "held:fwd",
             "pressed:dash"
@@ -376,14 +368,6 @@
           "to": "ki"
         },
         {
-          "when": "hop:fwd",
-          "to": "hop_fwd"
-        },
-        {
-          "when": "hop:back",
-          "to": "hop_back"
-        },
-        {
           "when": [
             "held:fwd",
             "pressed:dash"
@@ -522,14 +506,6 @@
         {
           "when": "pressed:blast",
           "to": "ki"
-        },
-        {
-          "when": "hop:fwd",
-          "to": "hop_fwd"
-        },
-        {
-          "when": "hop:back",
-          "to": "hop_back"
         },
         {
           "when": [
@@ -2684,72 +2660,6 @@
         {
           "when": "animEnd",
           "to": "idle"
-        }
-      ]
-    },
-    "hop_fwd": {
-      "anim": "m08",
-      "turn": false,
-      "air": [
-        [
-          3,
-          {
-            "vx": 2.396484375,
-            "vy": -7.6171875
-          }
-        ]
-      ],
-      "transitions": [
-        {
-          "when": [
-            "frames:2",
-            "pressed:attack"
-          ],
-          "to": "jump_fwd_y"
-        },
-        {
-          "when": [
-            "frames:2",
-            "pressed:smash"
-          ],
-          "to": "jump_fwd_b"
-        },
-        {
-          "when": "landed",
-          "to": "land"
-        }
-      ]
-    },
-    "hop_back": {
-      "anim": "m09",
-      "turn": false,
-      "air": [
-        [
-          3,
-          {
-            "vx": -2.396484375,
-            "vy": -7.6171875
-          }
-        ]
-      ],
-      "transitions": [
-        {
-          "when": [
-            "frames:2",
-            "pressed:attack"
-          ],
-          "to": "jump_fwd_y"
-        },
-        {
-          "when": [
-            "frames:2",
-            "pressed:smash"
-          ],
-          "to": "jump_fwd_b"
-        },
-        {
-          "when": "landed",
-          "to": "land"
         }
       ]
     },

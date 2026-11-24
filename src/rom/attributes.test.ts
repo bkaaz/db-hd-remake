@@ -8,17 +8,13 @@ import type { StatesFile } from "../entity/states";
 describe.skipIf(!existsSync(ROM_PATH))("readAttributes, on the cartridge", () => {
   const rom = new Uint8Array(readFileSync(ROM_PATH));
 
-  it("reads Goku's: the jump at -9.86, forward 2.40 and back 2.02, the hop as recorded", () => {
+  it("reads Goku's: the jump at -9.86, forward 2.40 and back 2.02", () => {
     const goku = readAttributes(rom, ROSTER.indexOf("goku"));
     expect(goku.gravity).toBeCloseTo(0.469, 2);
     expect(goku.jump).toBeCloseTo(-9.86, 2);
     // forward 06 by the word at 9, back 07 by 0B ($0D:FC99)
     expect(goku.jumpVx[0]).toBeCloseTo(2.4, 2);
     expect(goku.jumpVx[1]).toBeCloseTo(2.02, 2);
-    // the hop: recorded at vx 2.39, vy -7.12 both ways (tools/re/runs/double-tap.json)
-    expect(goku.hopVx[0]).toBeCloseTo(2.39, 1);
-    expect(goku.hopVx[1]).toBeCloseTo(2.39, 1);
-    expect(goku.hop).toBeCloseTo(-7.12, 1);
   });
 
   it("reads Vegeta's own: defence 10, a slower walk, a higher jump, more gravity", () => {
@@ -40,15 +36,13 @@ describe("withAttributes", () => {
         dash_fwd_run: { anim: "d", vel: [3, 0] },
         jump_fwd: { anim: "j", air: [[2, { vx: 2.02, vy: -9.86 }]] },
         jump_back: { anim: "j", air: [[2, { vx: -2.02, vy: -9.86 }]] },
-        hop_back: { anim: "h", air: [[3, { vx: -2.4, vy: -7.13 }]] },
       },
     } as unknown as StatesFile;
-    const out = withAttributes(file, { defence: 10, walk: [1.4, 1.1], dash: [3.1, 3], jump: -10.75, jumpVx: [2.25, 1.8], hop: -7.62, hopVx: [2.4, 2.3], gravity: 0.5 }).states;
+    const out = withAttributes(file, { defence: 10, walk: [1.4, 1.1], dash: [3.1, 3], jump: -10.75, jumpVx: [2.25, 1.8], gravity: 0.5 }).states;
     expect(out.walk_back.vel).toEqual([-1.1, 0]);
     expect(out.dash_fwd_run.vel).toEqual([3.1, 0]);
     expect(out.jump_fwd.air).toEqual([[2, { vx: 2.25, vy: -10.75 }]]);
     expect(out.jump_back.air).toEqual([[2, { vx: -1.8, vy: -10.75 }]]);
-    expect(out.hop_back.air).toEqual([[3, { vx: -2.3, vy: -7.62 }]]);
     expect(file.states.walk_back.vel).toEqual([-1.25, 0]);
   });
 });
