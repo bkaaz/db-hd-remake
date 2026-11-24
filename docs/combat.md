@@ -13,24 +13,30 @@ well against the CPU, and the reverse is not true.
 
 ## The buttons
 
-| button | key | what it does |
-|---|---|---|
-| **Attack** | `A` | the rush: pressed again, walks the string one blow further |
-| **Smash** | `S` | ends the string, at any depth, with a heavier blow |
-| **Ki** | `X` | the ki blast; forward or back + Ki is the kamehameha |
-| **Guard** | `Z` | held, a stance that blocks; tapped at the right moment, vanishes (§5) |
-| **Strike** | `D` | the original's X |
-| **Dash** | `C` | with forward or back, the original's dash (its L/R) |
+Burst Limit's layout, on an Xbox pad and on the keyboard as emulators lay a
+pad out (owner, 2026-11-24; `inspiration.md`). Which key is which is
+`input/layout.ts`'s, and nobody else's.
 
-The table above is ours, and no fighter plays it yet: the cartridge's fighters
-play the original's own moves for now (`plan.md`): A, S, D and X are its Y, B, X and A, with no
-strings between them, until it is reworked to these rules. Holding A and S
-together charges, as the original's Y + B does — but where the original's
-charge refills health, its one pool, ours fills the **ki** meter, and a
-special costs ki rather than health: its command row's price, and it does
-not come out without it. The meter holds 60 — six levels of 10, the
-HUD's six bars, so a cost of 5 or 10 is half a level or one — and every
-fighter starts a fight with 30 (owner, 2026-11-24).
+| button | pad | key | what it does |
+|---|---|---|---|
+| move | d-pad, left stick | arrows | walk, jump (↑), crouch (↓) |
+| **Guard** | A | `Z` | held, a stance that blocks; tapped at the right moment, vanishes (§5) |
+| **Ki** | B | `X` | the ki blast; forward or back + Ki is the kamehameha |
+| **Attack** | X | `A` | the rush: pressed again, walks the string one blow further |
+| **Smash** | Y | `S` | ends the string, at any depth, with a heavier blow |
+| **Dash** | LB | `Q` | with forward or back, the original's dash (its L/R) |
+| **Charge** | RB | `W` | held, fills the ki meter |
+| **Strike** | LT | `E` | the original's X, for its throw and its senders, until they are ours |
+
+The other trigger, Start and the grab and taunt of Burst Limit have nothing
+yet. No fighter plays the rush yet: the cartridge's fighters play the
+original's own moves for now (`plan.md`), Attack, Smash, Strike and Ki being
+its Y, B, X and A, with no strings between them, until they are reworked to
+these rules. Where the original's charge (Y + B) refills health, its one
+pool, ours fills the **ki** meter, and a special costs ki rather than health:
+its command row's price, and it does not come out without it. The meter holds
+60 — six levels of 10, the HUD's six bars, so a cost of 5 or 10 is half a
+level or one — and every fighter starts a fight with 30 (owner, 2026-11-24).
 
 **The rush is a tree.** Attack walks one line, Smash branches off it at every
 depth and ends it, and Smash alone is a move of its own:
@@ -64,7 +70,7 @@ ground's only there, so Galactic Gunfire's ↑ ↓ Y had to follow ↑ within a
 frame; ours leaves time to roll it (owner, 2026-11-03). Only a jump state
 with an entry for the move lets it out.
 
-**Ki is its own meter**, filled by holding Attack + Guard. A state that spends
+**Ki is its own meter**, filled by holding Charge. A state that spends
 it says so with `cost`, and a move nobody can afford does not come out.
 
 ## A blow is an animation plus a hit type
@@ -290,7 +296,9 @@ Ours leaves them out on all three.
 
 Once every fighter is ported (the owner, 2026-11-04): close to Budokai 3 and
 Burst Limit, much simplified. A vanish attack, strings joined up — a combo, a
-launch, a vanish and on — an aura mode. None of it is settled in detail; what comes first:
+launch, a vanish and on — an aura mode. Inspired by them, not copied: a mix
+with the owner's own ideas ([`inspiration.md`](./inspiration.md) says what
+those games do). None of it is settled in detail; what comes first:
 [`plan.md`](./plan.md).
 
 ## Open

@@ -34,7 +34,7 @@ export interface Script {
 const ROTATION = [90, "attack", 90, "smash", 90, "blast"];
 
 /** Pressed on the first frame of their step, held to its last. */
-const BUTTONS = ["attack", "guard", "smash", "blast", "strike", "dash"];
+const BUTTONS = ["attack", "guard", "smash", "blast", "strike", "dash", "charge"];
 /** Directions are held, and two of them are relative to which way the dummy looks. */
 const DIRECTIONS = ["fwd", "back", "up", "down"];
 

@@ -5,6 +5,8 @@
 - [`bugs.md`](./bugs.md) — what is known to be broken. Not a queue.
 - [`combat.md`](./combat.md) — the fight: what we want, and how the engine
   plays a blow today.
+- [`inspiration.md`](./inspiration.md) — what the games we borrow from do;
+  a reference shelf, not rules.
 - [`data-format.md`](./data-format.md) — where an entity's files live and who
   writes them.
 - [`entity-editor.md`](./entity-editor.md) — the editor and its tabs.

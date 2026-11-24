@@ -126,8 +126,7 @@
         },
         {
           "when": [
-            "held:attack",
-            "held:smash"
+            "held:charge"
           ],
           "to": "charge_start"
         },
@@ -277,8 +276,7 @@
         },
         {
           "when": [
-            "held:attack",
-            "held:smash"
+            "held:charge"
           ],
           "to": "charge_start"
         },
@@ -424,8 +422,7 @@
         },
         {
           "when": [
-            "held:attack",
-            "held:smash"
+            "held:charge"
           ],
           "to": "charge_start"
         },
@@ -1419,8 +1416,7 @@
         {
           "when": [
             "animEnd",
-            "held:attack",
-            "held:smash"
+            "held:charge"
           ],
           "to": "charge"
         },

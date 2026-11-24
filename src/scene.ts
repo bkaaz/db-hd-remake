@@ -2,7 +2,7 @@ import type { Application } from "pixi.js";
 import type { Audio } from "./audio/playback";
 import type { Music } from "./audio/music";
 import type { Sounds } from "./audio/sounds";
-import type { Keyboard } from "./input/keyboard";
+import type { Controls } from "./input/controls";
 import type { Page } from "./ui/page";
 
 /**
@@ -24,9 +24,9 @@ import type { Page } from "./ui/page";
  */
 export interface Scene {
   /** One fixed step. Returns a request to change scene, or null to carry on. */
-  step(keyboard: Keyboard): SceneRequest | null;
+  step(controls: Controls): SceneRequest | null;
   /** Draw, once per rendered frame rather than per game frame. */
-  render(keyboard: Keyboard): void;
+  render(controls: Controls): void;
   /**
    * Give everything back: display objects and, above all, listeners. A scene
    * that outlives its own resize handler moves fighters that no longer exist.
@@ -70,7 +70,7 @@ export const isColourSet = (pal: string | undefined): pal is string => pal !== u
 /**
  * What every scene is handed: the renderer, the page around it, the game-wide
  * sound bank and the player that plays it — one for the page, so its samples
- * are loaded once (`audio/playback.ts`) — and the keyboard — which is here rather than only in `step` because a scene may want
+ * are loaded once (`audio/playback.ts`) — and the controls — which are here rather than only in `step` because a scene may want
  * to *set* a toggle while it is being built, not just read one every frame.
  */
 export interface SceneContext {
@@ -80,7 +80,7 @@ export interface SceneContext {
   bank: Sounds;
   audio: Audio;
   music: Music;
-  keyboard: Keyboard;
+  controls: Controls;
 }
 
 const DEFAULT_FIGHTER = "goku";

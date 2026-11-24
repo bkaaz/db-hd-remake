@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Toggles, type Toggle } from "../debug/toggles";
 import { readFileSync } from "node:fs";
 import type { StatesFile } from "../entity/states";
+import type { WorldInput } from "../entity/entity";
 import { Keyboard, keyFor, keySheet } from "./keyboard";
 
 /** A window that only collects the keyboard's listeners, so a test can press. */
@@ -10,7 +11,8 @@ function fakeWindow() {
   const target = { addEventListener: (type: string, listen: (e: Partial<KeyboardEvent>) => void) => (listeners[type] = listen) };
   return {
     target: target as unknown as Window,
-    press: (key: string) => listeners.keydown({ key, repeat: false }),
+    /** A key by its place (`code`) and the letter it types (`key`), which a layout may make differ. */
+    press: (code: string, key = code.replace(/^Key/, "").toLowerCase()) => listeners.keydown({ code, key, repeat: false }),
     blur: () => listeners.blur({}),
   };
 }
@@ -20,10 +22,27 @@ describe("Keyboard", () => {
     const { target, press, blur } = fakeWindow();
     const keyboard = new Keyboard(new Toggles(null), target);
     press("ArrowRight");
-    press("a");
+    press("KeyA");
     blur();
     const input = keyboard.frame();
     expect([input.right, input.holding.attack]).toEqual([false, false]);
+  });
+
+  it("reads a play key by its place, not its letter", () => {
+    // on a QWERTZ board the key in Z's place types y
+    const { target, press } = fakeWindow();
+    const keyboard = new Keyboard(new Toggles(null), target);
+    press("KeyZ", "y");
+    expect(keyboard.frame().holding.guard).toBe(true);
+  });
+
+  it("presses a button for one frame and holds it until let go", () => {
+    const { target, press } = fakeWindow();
+    const keyboard = new Keyboard(new Toggles(null), target);
+    press("KeyS");
+    const first = keyboard.frame();
+    const second = keyboard.frame();
+    expect([first.smash, first.holding.smash, second.smash, second.holding.smash]).toEqual([true, true, false, true]);
   });
 });
 
@@ -34,19 +53,22 @@ describe("keyFor", () => {
     new Keyboard(toggles, target);
     for (const toggle of ["boxes", "readout", "dummy", "recording"] as Toggle[]) {
       const was = toggles.get(toggle);
-      press(keyFor(toggle).toLowerCase());
+      press(`Key${keyFor(toggle)}`);
       expect([toggle, toggles.get(toggle)]).toEqual([toggle, !was]);
     }
   });
 });
 
 describe("keySheet", () => {
-  it("names the keys a fighter's states charge on", () => {
+  it("names the key a fighter's states charge on", () => {
     // the sheet once said A+Z while every fighter charged on A+S
     const { states } = JSON.parse(readFileSync("data/entities/goku/states.json", "utf8")) as StatesFile;
     const charge = states.idle.transitions!.find((t) => t.to === "charge_start")!;
-    const held = [charge.when].flat().map((w) => w.replace("held:", ""));
-    const keyOf = Object.fromEntries(keySheet().map(([key, does]) => [does, key]));
-    expect(keySheet()).toContainEqual([held.map((b) => keyOf[b]).join("+"), "charge"]);
+    const [button] = [charge.when].flat().map((w) => w.replace("held:", "")) as (keyof WorldInput["holding"])[];
+    const { target, press } = fakeWindow();
+    const keyboard = new Keyboard(new Toggles(null), target);
+    const [key] = keySheet().find(([, does]) => does.startsWith(`${button} `))!;
+    press(`Key${key}`);
+    expect(keyboard.frame().holding[button]).toBe(true);
   });
 });

@@ -45,6 +45,7 @@ import {
   reactionFor,
   StateMachine,
   type CloseButton,
+  type Held,
   type SeizeDef,
   type GrabDef,
   type RoundStates,
@@ -76,13 +77,16 @@ export interface WorldInput {
   blast: boolean;
   strike: boolean;
   dash: boolean;
+  /** Burst Limit has no button for it: its ki fills by itself. Ours is held (RB). */
+  charge: boolean;
   /**
    * Whether each button is **still down**, which the edges above cannot say.
-   * A stance you hold — charging ki on A+Z — needs it: two edges would have to
-   * land on one frame, and whichever arrived alone would spend itself on a blow.
+   * A stance you hold — charging, the guard, a dash — is read here, never from
+   * an edge, which is gone the frame after.
    */
-holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean; strike: boolean; dash: boolean };
+  holding: Held;
 }
+
 
 /** What a fighter needs to know of the other one: where he stands, and whether he could be thrown. */
 export interface Opponent {
@@ -103,7 +107,8 @@ export const NO_INPUT: WorldInput = {
   blast: false,
   strike: false,
   dash: false,
-  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
+  charge: false,
+  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false, charge: false },
 };
 
 /**
@@ -156,7 +161,7 @@ export interface EntityDebug {
   combo: { hits: number; damage: number; lifts: number };
 }
 
-/** The button, not the key: nothing outside `input/keyboard.ts` knows which key is which. */
+/** The button, not the key: nothing outside `input/layout.ts` knows which key is which. */
 const ATTACK_LABELS = [
   ["attack", "A"],
   ["guard", "G"],
@@ -164,6 +169,7 @@ const ATTACK_LABELS = [
   ["blast", "B"],
   ["strike", "K"],
   ["dash", "D"],
+  ["charge", "C"],
 ] as const satisfies readonly (readonly [keyof WorldInput, string])[];
 
 /** Frames between copies of a retriggered sound when the state names no interval. */

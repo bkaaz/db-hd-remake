@@ -59,7 +59,7 @@ const MOVING: MoveCase[] = [
   { name: "jump back", does: [20, "up back 3", 90], before: WALK },
   { name: "dash fwd", does: [20, "dash fwd 30", 60], before: ["00"] },
   { name: "dash back", does: [20, "dash back 30", 60], before: ["00"] },
-  { name: "charge", does: [20, "attack smash 40", 60], before: ["00"] },
+  { name: "charge", does: [20, "charge 40", 60], before: ["00"] },
 ];
 
 /** What a command asks of where he stands or what he is playing, from its row: `conditions.ts`. */

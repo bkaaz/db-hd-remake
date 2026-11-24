@@ -2,7 +2,7 @@ import { Container, Graphics, Text, type Application } from "pixi.js";
 import { Entity, NO_INPUT, type WorldInput } from "../entity/entity";
 import { loadEntityDef } from "../entity/entityDef";
 import { dataDirs, readData } from "../data/files";
-import type { Keyboard } from "../input/keyboard";
+import type { Controls } from "../input/controls";
 import type { Scene, SceneContext, SceneRequest } from "../scene";
 import { reachOf, widest, type Reach } from "./reach";
 
@@ -113,8 +113,8 @@ export class SelectScene implements Scene {
     return new SelectScene(ctx.app, slots, columns, labels, widest(reaches));
   }
 
-  step(keyboard: Keyboard): SceneRequest | null {
-    const input = keyboard.frame();
+  step(controls: Controls): SceneRequest | null {
+    const input = controls.frame();
     const pressed = (key: keyof WorldInput): boolean => input[key] && !this.was[key];
 
     if (pressed("right")) this.cursor = (this.cursor + 1) % this.slots.length;

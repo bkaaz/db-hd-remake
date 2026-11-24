@@ -1,4 +1,5 @@
 import { Dummy, type Script } from "../debug/dummy";
+import type { WorldInput } from "../entity/entity";
 
 /**
  * A scenario for the original, `tools/re/runs/<name>.json`: a save state, and
@@ -44,8 +45,10 @@ export function padFrames(script: Script | undefined, frames: number): PadFrame[
   if (typeof dummy === "string") return dummy;
   return [...Array(frames)].map(() => {
     const input = dummy.input({ on: true, facing: 1, frozen: false });
-    const held = (button: keyof typeof HIGH | keyof typeof LOW) => input[button] || input.holding[button];
+    const held = (button: keyof WorldInput["holding"]) => input[button] || input.holding[button];
     let high = (input.up ? UP : 0) | (input.down ? DOWN : 0);
+    // the original charges on Y + B, ours on a button of its own
+    if (held("charge")) high |= HIGH.attack | HIGH.smash;
     let low = 0;
     for (const [button, bit] of Object.entries(HIGH)) if (held(button as keyof typeof HIGH)) high |= bit;
     for (const [button, bit] of Object.entries(LOW)) if (held(button as keyof typeof LOW)) low |= bit;

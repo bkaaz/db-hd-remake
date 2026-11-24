@@ -833,6 +833,9 @@ export function mayTurn(def: StateDef, elapsed: number): boolean {
   return !!def.turn || (def.turnFrom !== undefined && elapsed >= def.turnFrom);
 }
 
+/** Which buttons are still down — the controller's `holding`. */
+export type Held = { attack: boolean; guard: boolean; smash: boolean; blast: boolean; strike: boolean; dash: boolean; charge: boolean };
+
 /** What the entity's controller is asking for this frame, facing-relative. */
 export interface InputSnapshot {
   fwd: boolean;
@@ -864,7 +867,7 @@ export interface InputSnapshot {
    * moment and this is a state, and only the second can express a stance you
    * hold.
    */
-holding: { attack: boolean; guard: boolean; smash: boolean; blast: boolean; strike: boolean; dash: boolean };
+  holding: Held;
 }
 
 /** Things that happened to the entity this frame, rather than being asked for. */
@@ -974,6 +977,7 @@ export const TRIGGERS = [
   "held:blast",
   "held:strike",
   "held:dash",
+  "held:charge",
   "hop:fwd",
   "hop:back",
   "animEnd",
@@ -1069,6 +1073,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "held:dash":
       value = input.holding.dash;
+      break;
+    case "held:charge":
+      value = input.holding.charge;
       break;
     case "hop:fwd":
       value = input.hop === "fwd";

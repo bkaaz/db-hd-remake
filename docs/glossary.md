@@ -12,7 +12,7 @@ change.
 - **Cancel** — cutting your own attack short with the next, up to its `cancelBy` on a connection, or for as long once a whiff's last hit box is gone. → `combat.md` (Chaining)
 - **`cancelBy`** — the last frame of an attack a cancel may fire on, counted from entering it. → `states.ts`
 - **Chain (string)** — attacks joined by cancels: a path through `states.json`, never a structure of its own. → `combat/chains.ts`, `npm run chains`
-- **Charging** — holding A + S: the state's `ki` rate fills the ki meter. → `combat.md` (The buttons)
+- **Charging** — holding Charge (RB, `W`): the state's `ki` rate fills the ki meter. → `combat.md` (The buttons)
 - **Colour set** — colours of our own for a fighter, a rule over his palette (`palettes.json`). → ADR 0063
 - **Combo** — a chain whose links hold: the defender never gets control back. → `combat.md`
 - **Command** — a special's input as the cartridge's table has it. → `input/command.ts`, ADR 0050

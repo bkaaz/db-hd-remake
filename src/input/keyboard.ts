@@ -1,8 +1,10 @@
 import type { WorldInput } from "../entity/entity";
 import type { Toggle, Toggles } from "../debug/toggles";
+import { ACTIONS, bindingOf, DIRECTIONS, KEYS, type Action, type Direction } from "./layout";
 
 /**
- * The keyboard, turned into one game frame of input.
+ * The keyboard, turned into one game frame of input; which key plays what is
+ * `layout.ts`'s, and the debug keys are this file's.
  *
  * Two kinds of key live here and they behave differently. **Directions are
  * held**: pressed stays pressed until released. **Buttons are edge-triggered**:
@@ -11,16 +13,8 @@ import type { Toggle, Toggles } from "../debug/toggles";
  * the same reason — one press, one attack.
  *
  * A button also reports whether it is **still down**, which is a different
- * question from whether it just went down and does not weaken the edge. A stance
- * you hold — charging on A+S — cannot be expressed by edges at all: two of
- * them would have to land on the same frame, and the first to arrive alone
- * would spend itself on a punch.
- *
- * The cartridge's fighters play A, S, D and X as the original's Y, B, X and A,
- * and C as its L/R, the dash; Z guards. Holding A and S together charges, as
- * the original's Y + B does (`combat.md`, The buttons).
- *
- * Remapping comes later; nothing outside this file knows which key is which.
+ * question from whether it just went down and does not weaken the edge: a
+ * stance you hold — charging, the guard, a dash — is read from that.
  */
 export class Keyboard {
   /**
@@ -35,28 +29,14 @@ export class Keyboard {
    * Fill both fighters' health and ki, pressed with Space — a debug key, and
    * the reason it is an edge like N: it is asked for, not held.
    *
-   * Trying a move that costs ki otherwise means holding A+Z for twenty seconds
-   * first, and what is being looked at is never the charging.
+   * Trying a move that costs ki otherwise means holding the charge for twenty
+   * seconds first, and what is being looked at is never the charging.
    */
   private kiAsked = false;
 
-  private readonly held: Directions = { left: false, right: false, up: false, down: false };
-  private readonly armed: Buttons = {
-    attack: false,
-    guard: false,
-    smash: false,
-    blast: false,
-    strike: false,
-    dash: false,
-  };
-  private readonly down: Buttons = {
-    attack: false,
-    guard: false,
-    smash: false,
-    blast: false,
-    strike: false,
-    dash: false,
-  };
+  private readonly held = flags(DIRECTIONS);
+  private readonly armed = flags(ACTIONS);
+  private readonly down = flags(ACTIONS);
 
   /**
    * @param toggles the debug switches its keys flip (`TOGGLE_KEYS`) — the panel's too
@@ -80,12 +60,8 @@ export class Keyboard {
    * that never happens, and taking it twice spends the press on the first call.
    */
   frame(): WorldInput {
-    const input = {
-      ...this.held,
-      ...this.armed,
-      holding: { ...this.down },
-    };
-    for (const button of BUTTONS) this.armed[button] = false;
+    const input = { ...this.held, ...this.armed, holding: { ...this.down } };
+    for (const button of ACTIONS) this.armed[button] = false;
     return input;
   }
 
@@ -104,61 +80,42 @@ export class Keyboard {
   }
 
   private press(e: KeyboardEvent): void {
-    const direction = DIRECTION_KEYS[e.key];
-    if (direction) {
-      this.held[direction] = true;
+    const does = KEYS[e.code];
+    if (isDirection(does)) {
+      this.held[does] = true;
+      return;
+    }
+    if (does) {
+      this.down[does] = true;
+      // Auto-repeat must not re-arm: holding the key is still one attack.
+      if (!e.repeat) this.armed[does] = true;
       return;
     }
     const key = e.key.toLowerCase();
-    const button = BUTTON_KEYS[key];
-    if (button) {
-      this.down[button] = true;
-      // Auto-repeat must not re-arm: holding the key is still one attack.
-      if (!e.repeat) this.armed[button] = true;
-      return;
-    }
     if (key === " ") this.kiAsked = !e.repeat;
     else if (key === "n") this.modeAsked = !e.repeat;
     else if (TOGGLE_KEYS[key]) this.toggles.flip(TOGGLE_KEYS[key]);
   }
 
   private release(e: KeyboardEvent): void {
-    const direction = DIRECTION_KEYS[e.key];
-    if (direction) {
-      this.held[direction] = false;
-      return;
-    }
-    const button = BUTTON_KEYS[e.key.toLowerCase()];
-    if (button) this.down[button] = false;
+    const does = KEYS[e.code];
+    if (isDirection(does)) this.held[does] = false;
+    else if (does) this.down[does] = false;
   }
 
   private releaseAll(): void {
     for (const direction of DIRECTIONS) this.held[direction] = false;
-    for (const button of BUTTONS) this.down[button] = false;
+    for (const button of ACTIONS) this.down[button] = false;
   }
 }
 
-type Directions = Pick<WorldInput, "left" | "right" | "up" | "down">;
-type Buttons = Pick<WorldInput, "attack" | "guard" | "smash" | "blast" | "strike" | "dash">;
+function flags<K extends string>(names: readonly K[]): Record<K, boolean> {
+  return Object.fromEntries(names.map((n) => [n, false])) as Record<K, boolean>;
+}
 
-const BUTTONS = ["attack", "guard", "smash", "blast", "strike", "dash"] as const;
-const DIRECTIONS = ["left", "right", "up", "down"] as const;
-
-const DIRECTION_KEYS: Record<string, keyof Directions | undefined> = {
-  ArrowLeft: "left",
-  ArrowRight: "right",
-  ArrowUp: "up",
-  ArrowDown: "down",
-};
-
-const BUTTON_KEYS: Record<string, keyof Buttons | undefined> = {
-  a: "attack",
-  z: "guard",
-  s: "smash",
-  x: "blast",
-  d: "strike",
-  c: "dash",
-};
+function isDirection(does: Action | Direction | undefined): does is Direction {
+  return (DIRECTIONS as readonly string[]).includes(does ?? "");
+}
 
 const TOGGLE_KEYS: Record<string, Toggle | undefined> = {
   b: "boxes",
@@ -175,15 +132,16 @@ export function keyFor(toggle: Toggle): string {
   return (Object.keys(TOGGLE_KEYS).find((k) => TOGGLE_KEYS[k] === toggle) ?? "?").toUpperCase();
 }
 
-/** Every key that is not a switch, and what it does — the page's key sheet. */
+/** Every key that is not a switch, and what it does — the page's key sheet; the pad's button beside it. */
 export function keySheet(): [key: string, does: string][] {
-  const button = (b: keyof Buttons) => (Object.keys(BUTTON_KEYS).find((k) => BUTTON_KEYS[k] === b) ?? "?").toUpperCase();
   return [
     ["← →", "walk"],
     ["↑", "jump"],
     ["↓", "crouch"],
-    ...BUTTONS.map((b): [string, string] => [button(b), b]),
-    [`${button("attack")}+${button("smash")}`, "charge"],
+    ...ACTIONS.map((a): [string, string] => {
+      const { key, pad } = bindingOf(a);
+      return [key, `${a} (${pad})`];
+    }),
     ["N", "next debug mode"],
     ["Space", "refill health and ki"],
   ];

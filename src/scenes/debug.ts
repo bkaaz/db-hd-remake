@@ -3,7 +3,7 @@ import type { Music } from "../audio/music";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
-import type { Keyboard } from "../input/keyboard";
+import type { Controls } from "../input/controls";
 import { Fighters } from "../match/fighters";
 import { Round, type RoundWorld } from "../match/round";
 import { Opening } from "../match/opening";
@@ -161,7 +161,7 @@ export class DebugScene implements Scene {
       SPRITE_SCALE,
     );
     // the switch is read as each blow lands: off, every sender's way is closed
-    const toggles = ctx.keyboard.toggles;
+    const toggles = ctx.controls.keyboard.toggles;
     const opens = travel ? (...a: Parameters<Travel["opens"]>) => toggles.get("journeys") && travel.opens(...a) : undefined;
     const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles, opens, rules });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
@@ -201,7 +201,7 @@ export class DebugScene implements Scene {
       sound: (id) => announcer.play(id),
     };
     const round = new Round(world);
-    const opening = new Opening(world, fighters.bodies, ctx.keyboard.toggles.get("intro"));
+    const opening = new Opening(world, fighters.bodies, ctx.controls.keyboard.toggles.get("intro"));
 
     return new DebugScene(
       view,
@@ -229,7 +229,7 @@ export class DebugScene implements Scene {
   }
 
   /** One game frame, in the order the parts of it have to happen. */
-  step(keyboard: Keyboard): SceneRequest | null {
+  step(controls: Controls): SceneRequest | null {
     if (!this.playing) {
       this.playing = true;
       this.music.fight();
@@ -237,41 +237,41 @@ export class DebugScene implements Scene {
     if (this.waiting) {
       // the key that wakes it is for waking only: Space would refill the
       // health a mode or the address set, N leave the mode
-      keyboard.takeRefill();
-      keyboard.takeModeStep();
+      controls.keyboard.takeRefill();
+      controls.keyboard.takeModeStep();
       if (!this.waiting.awake()) return null;
       this.waiting.prompt.destroy();
       this.waiting = null;
     }
     // the pose plays on while X is awaited
-    const again = this.round.done || this.round.posed >= AGAIN_AFTER ? this.fightAgain(keyboard) : null;
+    const again = this.round.done || this.round.posed >= AGAIN_AFTER ? this.fightAgain(controls) : null;
     if (again) return again;
     // a KO's half speed: an odd frame only draws ($0E:821C)
-    if (this.round.skips(this.frame++)) return this.nextMode(keyboard);
+    if (this.round.skips(this.frame++)) return this.nextMode(controls);
     // a journey moves only those it carries
     if (this.journeying) {
       if (!this.journeying.step()) this.journeying = null;
       this.effects.update(false, this.camera.screen);
-      return this.nextMode(keyboard);
+      return this.nextMode(controls);
     }
     // under the announcement only the announcement moves
     if (this.round.holds) {
       this.round.step(this.fighters.bodies, true, true);
       this.effects.update(false, this.camera.screen);
-      return this.nextMode(keyboard);
+      return this.nextMode(controls);
     }
     const locked = this.round.locked || !this.opening.over;
     // taken even while locked: a press keeps until someone takes it, and it
     // would otherwise be the fight's first move
-    const pressed = keyboard.frame();
+    const pressed = controls.frame();
     const dummy = this.dummy.input({
-      on: keyboard.toggles.get("dummy"),
+      on: controls.keyboard.toggles.get("dummy"),
       facing: this.fighters.opponent?.facing ?? -1,
       // Read before the bodies move, which is the freeze this frame will use.
       frozen: this.fighters.frozen,
     });
     const one = this.dummy1?.input({
-      on: keyboard.toggles.get("dummy"),
+      on: controls.keyboard.toggles.get("dummy"),
       facing: this.fighters.player.facing,
       frozen: this.fighters.frozen,
     });
@@ -285,10 +285,10 @@ export class DebugScene implements Scene {
     // the walk and not the push would scroll every other frame.
     this.fighters.pushApart(this.camera.world);
     this.fighters.keepInView(this.camera);
-    if (keyboard.takeRefill()) this.fighters.refill();
+    if (controls.keyboard.takeRefill()) this.fighters.refill();
     this.fighters.exchangeBlows();
     this.depart();
-    if (this.opening.over) this.round.step(this.fighters.bodies, keyboard.toggles.get("ko"), this.fighters.quiet);
+    if (this.opening.over) this.round.step(this.fighters.bodies, controls.keyboard.toggles.get("ko"), this.fighters.quiet);
     else this.opening.step(this.fighters.bodies);
     this.stage.flash(this.fighters.takeFlash());
     for (const c of this.fighters.takeScreen()) this.stage.cue(c);
@@ -303,7 +303,7 @@ export class DebugScene implements Scene {
     this.cameraNotes.shake(this.shake.offset);
     tickLog();
     this.effects.update(this.fighters.frozen, this.camera.screen);
-    return this.nextMode(keyboard);
+    return this.nextMode(controls);
   }
 
   /**
@@ -312,8 +312,8 @@ export class DebugScene implements Scene {
    * taken after the prompt, so a button held through the pose cannot start
    * the next fight at once.
    */
-  private fightAgain(keyboard: Keyboard): SceneRequest | null {
-    const pressed = keyboard.frame().blast;
+  private fightAgain(controls: Controls): SceneRequest | null {
+    const pressed = controls.frame().blast;
     if (this.again) return pressed ? { ...this.req } : null;
     this.again = this.prompt("press X to fight again");
     return null;
@@ -326,17 +326,17 @@ export class DebugScene implements Scene {
    * reloads with it: health, positions and the timeline all start over, which
    * for a written-down situation is the point rather than the price.
    */
-  private nextMode(keyboard: Keyboard): SceneRequest | null {
-    if (!keyboard.takeModeStep() || this.modes < 2) return null;
+  private nextMode(controls: Controls): SceneRequest | null {
+    if (!controls.keyboard.takeModeStep() || this.modes < 2) return null;
     return { ...this.req, scene: "debug", mode: (this.req.mode + 1) % this.modes };
   }
 
-  render(keyboard: Keyboard): void {
+  render(controls: Controls): void {
     this.hud.draw();
-    this.readouts.draw(keyboard.toggles.get("readout") ? this.fighters.debug() : null);
+    this.readouts.draw(controls.keyboard.toggles.get("readout") ? this.fighters.debug() : null);
     this.view.scroll(this.camera.x, this.camera.y);
     this.stage.scroll(this.camera.x, this.camera.y, this.shake.offset);
-    this.fighters.render(keyboard.toggles.get("boxes"));
+    this.fighters.render(controls.keyboard.toggles.get("boxes"));
     this.effects.render();
   }
 

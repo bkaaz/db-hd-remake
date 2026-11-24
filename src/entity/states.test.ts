@@ -62,7 +62,7 @@ const NONE = {
   blast: false,
   strike: false,
   dash: false,
-  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false },
+  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false, charge: false },
 };
 const FWD = { ...NONE, fwd: true };
 const ATTACK = { ...NONE, attack: true };

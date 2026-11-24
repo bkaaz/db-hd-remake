@@ -5,6 +5,7 @@ import { Audio } from "./audio/playback";
 import { Music } from "./audio/music";
 import { Toggles } from "./debug/toggles";
 import { Keyboard } from "./input/keyboard";
+import { Controls } from "./input/controls";
 import { startRecording, stopRecording } from "./log";
 import { queryFor, type Scene, type SceneContext, type SceneRequest } from "./scene";
 import { firstRequest, REMEMBERED } from "./sceneSource";
@@ -40,12 +41,12 @@ async function boot(): Promise<void> {
   toggles.onChange((toggle, on) => {
     if (toggle === "recording") (on ? startRecording : stopRecording)();
   });
-  const keyboard = new Keyboard(toggles);
+  const controls = new Controls(new Keyboard(toggles));
   const bank = (await readData<Sounds>("audio/sounds.json")) ?? {};
   const audio = new Audio(bank);
   audio.start();
   const music = new Music(audio, localStorage);
-  const ctx: SceneContext = { app, page, bank, audio, music, keyboard };
+  const ctx: SceneContext = { app, page, bank, audio, music, controls };
 
   /** Null while a scene is being loaded: the crank turns, nothing happens. */
   let scene: Scene | null = null;
@@ -102,13 +103,13 @@ async function boot(): Promise<void> {
     while (acc >= FRAME_TIME && guard++ < MAX_CATCH_UP) {
       acc -= FRAME_TIME;
       if (!scene) continue;
-      const next = scene.step(keyboard);
+      const next = scene.step(controls);
       if (next) {
         go(next);
         break;
       }
     }
-    scene?.render(keyboard);
+    scene?.render(controls);
     if (loading) acc = 0; // Do not bank the wait as frames the new scene owes.
   });
 }
