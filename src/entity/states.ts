@@ -1143,6 +1143,10 @@ function fires(when: string | string[], input: InputSnapshot, signals: Signals):
 
 const triggersOf = (when: string | string[]): string[] => (Array.isArray(when) ? when : [when]);
 
+/** Whether a player asks for this transition: one of its triggers is a button, a direction or a command. */
+const asked = (when: string | string[]): boolean =>
+  triggersOf(when).some((t) => /^!?(pressed|held|close|command):/.test(t));
+
 /**
  * The button a transition spent, or null. A press that started a move must not
  * start a second one when the move ends and the buffer has not expired yet, so
@@ -1312,12 +1316,6 @@ export class StateMachine {
   }
 
   /**
-   * Advance one game frame. At most one transition fires per frame, which keeps
-   * behaviour predictable and makes state loops impossible.
-   *
-   * @returns the new state's name if it changed, else null.
-   */
-  /**
    * Put the state's clock at `frame` as the next update will see it — a
    * handler setting its move's frame ($44), or holding it (`Entity.holdClock`).
    */
@@ -1325,8 +1323,33 @@ export class StateMachine {
     this.elapsed = frame - 1;
   }
 
+  /**
+   * Advance one game frame: at most one transition, and the state it enters
+   * one more (`entered`) — never more, so a loop of states cannot spin.
+   *
+   * @returns the new state's name if it changed, else null.
+   */
   update(input: InputSnapshot, signals: Signals): string | null {
     this.elapsed++;
+    return this.choose(input, signals, false);
+  }
+
+  /**
+   * The state just entered reads its input on the frame it began — the first
+   * frame a fighter can act takes what he asked for, so the buffer keeps a
+   * press as long as it says, and a move ending loses no frame before the next.
+   *
+   * Only transitions a player asks for (a button, a direction, a command): the
+   * signals that began this state — a landing, an animation's end — would
+   * otherwise carry it straight through the next state too. The clock does
+   * not move; `update` still counts the state's first frame. Called once per
+   * frame at most, by whoever made the transition, so it cannot loop.
+   */
+  entered(input: InputSnapshot, signals: Signals): string | null {
+    return this.choose(input, signals, true);
+  }
+
+  private choose(input: InputSnapshot, signals: Signals, entering: boolean): string | null {
     for (const [button, down] of Object.entries(input.holding)) if (!down) this.released.add(button);
     // The signal is narrowed once, here, rather than at every transition: from
     // "connected" to "may be cancelled now", which a miss can be too.
@@ -1341,6 +1364,7 @@ export class StateMachine {
     if (this.queued && now.animEnded) return this.take(this.queued, null);
     for (const t of [...borrowed(this.file, this.def, this.elapsed), ...(this.def.transitions ?? [])]) {
       if (t.queued && (this.queued || this.elapsed < t.queued.from)) continue;
+      if (entering && !asked(t.when)) continue;
       if (!fires(t.when, input, now)) continue;
       if (!this.file.states[t.to]) {
         if (!warned.has(t.to)) {

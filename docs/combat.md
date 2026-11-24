@@ -106,6 +106,11 @@ animation, not a field on the blow.
 
 ## Chaining
 
+**The first frame a fighter can act takes what he asked for** (owner,
+2026-11-24): a state entered on a frame reads the buttons, directions and
+commands on that same frame (`StateMachine.entered`), so a move ending loses
+no frame before the next and the buffer keeps a press its whole window.
+
 - **Link** — the attack finishes, control returns, the defender is still in
   hitstun. It falls out of hitstun against recovery; nothing builds it.
 - **Cancel** — the attack is interrupted by the next one, through the

@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { BUFFER_FRAMES, InputBuffer } from "../input/buffer";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
@@ -1811,5 +1812,63 @@ describe("mayTurn", () => {
     const f = machine();
     f.states.idle = { ...f.states.idle, turnFrom: -1 };
     expect(validateStates(f, ANIMS).errors.join()).toContain('"turnFrom"');
+  });
+});
+
+describe("StateMachine.entered: the first frame a fighter can act takes what he asked for", () => {
+  /** A punch that ends into idle, from which a press of attack starts it again. */
+  function punching(): StatesFile {
+    const f = withAttack();
+    f.states.punch = { anim: "punch", transitions: [{ when: "frames:2", to: "walk_fwd" }, { when: "animEnd", to: "idle" }] };
+    return f;
+  }
+
+  it("fires a press in the state just entered, on the frame it was entered", () => {
+    const sm = new StateMachine(punching());
+    sm.update(NONE, QUIET);
+    sm.update(ATTACK, QUIET); // idle -> punch
+    sm.update(NONE, { ...QUIET, animEnded: true }); // punch -> idle
+    expect(sm.entered(ATTACK, QUIET)).toBe("punch");
+    expect(sm.pressSpent).toBe("attack");
+  });
+
+  it("leaves the clock alone: the state's frames count from the next update", () => {
+    const sm = new StateMachine(punching());
+    sm.update(NONE, { ...QUIET });
+    sm.entered(ATTACK, QUIET); // idle -> punch, its clock at 0
+    sm.update(NONE, QUIET);
+    expect(sm.current).toBe("punch");
+    sm.update(NONE, QUIET);
+    expect(sm.current).toBe("walk_fwd");
+  });
+
+  it("does not carry the signal that began the state through the next one", () => {
+    const sm = new StateMachine(punching());
+    sm.update(ATTACK, QUIET); // idle -> punch
+    sm.update(NONE, { ...QUIET, animEnded: true }); // punch -> idle
+    sm.update(ATTACK, QUIET); // idle -> punch
+    expect(sm.entered(NONE, { ...QUIET, animEnded: true })).toBeNull();
+    expect(sm.current).toBe("punch");
+  });
+
+  it("keeps a press the buffer's whole window, though the move it waits on ends on the window's last frame", () => {
+    const sm = new StateMachine(withAttack());
+    const buffer = new InputBuffer();
+    sm.update(ATTACK, QUIET); // idle -> punch
+    const frames: string[] = [];
+    // pressed on frame 0, and the punch ends on frame BUFFER_FRAMES - 1, as an entity runs them
+    for (let frame = 0; frame < BUFFER_FRAMES; frame++) {
+      if (frame === 0) buffer.press("attack");
+      const input = () => ({ ...NONE, attack: buffer.has("attack") });
+      const signals = { ...QUIET, animEnded: frame === BUFFER_FRAMES - 1 };
+      const before = sm.current;
+      const changed = sm.update(input(), frame === 0 ? QUIET : signals);
+      if (sm.pressSpent) buffer.consume(sm.pressSpent);
+      if (changed && changed !== before && sm.entered(input(), QUIET) && sm.pressSpent) buffer.consume(sm.pressSpent);
+      frames.push(sm.current);
+      buffer.tick();
+    }
+    expect(frames.at(-1)).toBe("punch");
+    expect(buffer.has("attack")).toBe(false);
   });
 });

@@ -46,7 +46,9 @@ import {
   StateMachine,
   type CloseButton,
   type Held,
+  type InputSnapshot,
   type SeizeDef,
+  type Signals,
   type GrabDef,
   type RoundStates,
   type StateDef,
@@ -1605,7 +1607,9 @@ export class Entity {
     const before = this.sm.current;
     // a held clock: the state sees the same frame again ($20:8DC6)
     if (this.clockHeld) this.sm.setFrame(this.stateFrames);
-    const changed = this.sm.update(
+    // What the state machine reads, built again for a state just entered: the
+    // buffer has spent a press by then, and the animation has begun.
+    const snapshot = (): InputSnapshot => (
       {
         fwd,
         back,
@@ -1619,7 +1623,9 @@ export class Entity {
         dash: this.buffer.has("dash"),
         commands: (this.met = commandsMet(this.def.commands, tablesFor(this.airFrames), this.pad)),
         holding: this.tapDashHeld ? { ...input.holding, dash: true } : input.holding,
-      },
+      }
+    );
+    const signals = (): Signals => (
       {
         animEnded: this.animEnded,
         stunEnded: this.stun === 0,
@@ -1643,8 +1649,9 @@ export class Entity {
         ki: this.ki,
         spawnEnded: this.thrown === 0,
         charged: this.charge >= 1,
-      },
+      }
     );
+    const changed = this.sm.update(snapshot(), signals());
     // A press that started a move, or was kept for the next one, is spent, so
     // it cannot start a second one before the buffer has expired.
     if (this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
@@ -1652,6 +1659,13 @@ export class Entity {
     if (changed) this.enterState(changed === before || !!this.sm.def.fromTop);
     // every move begun by a button arms, a blow in it or not: a throw, a shot (recorded)
     if (changed && this.sm.startedByButton) this.armed = true;
+    // the state just entered takes what is asked on its first frame (`StateMachine.entered`)
+    const next = changed ? this.sm.entered(snapshot(), signals()) : null;
+    if (next) {
+      if (this.sm.pressSpent) this.buffer.consume(this.sm.pressSpent);
+      this.enterState(false);
+      if (this.sm.startedByButton) this.armed = true;
+    }
     this.buffer.tick();
 
     // Velocities are authored in sprite pixels, like box coordinates, and X is

@@ -12,16 +12,14 @@ when*; later ones are a line.
 The order is provisional; `combat.md` says what each is. `npm run chains` has to
 hold for every fighter, not only one.
 
-1. **The press lost as a move ends:** a state entered on a frame reads its input
-   only on the next, so a window's last frame is never usable.
-2. **Cancels and combos:** the rush (`combat.md`, The buttons), strings joined
+1. **Cancels and combos:** the rush (`combat.md`, The buttons), strings joined
    up, what punishes a string thrown at nothing.
-3. **Vanish** (`combat.md` §5). *Done when:* a recording shows a vanish out of
+2. **Vanish** (`combat.md` §5). *Done when:* a recording shows a vanish out of
    blockstun, and a tap without ki blocks.
-4. **Launch scaling:** each lift raises less, so a juggle ends by the body
+3. **Launch scaling:** each lift raises less, so a juggle ends by the body
    falling out of it (`Combo.lifts`).
-5. **The aura.**
-6. **The hit types:** one set (the original's beside our five), `stun`, a type
+4. **The aura.**
+5. **The hit types:** one set (the original's beside our five), `stun`, a type
    for ki blasts; chip damage and a guard break.
 
 ## Later: the rest of the cartridge, and the game around the fight
