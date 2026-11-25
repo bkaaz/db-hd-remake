@@ -30,7 +30,7 @@ import type { ReboundDef } from "../combat/rebound";
 import { WAYS, type Way } from "../arena/ways";
 import { SHAKE_PATTERNS, type ShakeDef } from "../camera/shake";
 import { hitTypeErrors, withHitTypes } from "../combat/hitTypes";
-import { missWindow, type AnimSteps } from "../combat/swing";
+import { cancelWindow, type AnimSteps } from "../combat/swing";
 
 export interface Transition {
   /**
@@ -1276,6 +1276,13 @@ export class StateMachine {
   private queued: Transition | null = null;
 
   /**
+   * The buttons a cancel of this state asks for, pressed since it began: kept
+   * until the cancel window opens rather than for the buffer's 12 frames, so
+   * every press during a blow is one more blow (owner, 2026-11-24).
+   */
+  private kept = new Set<string>();
+
+  /**
    * `anims` is only read for when a swing misses; without them a miss is
    * never cancellable, which is what a test about something else wants.
    */
@@ -1313,6 +1320,7 @@ export class StateMachine {
     this.elapsed = 0;
     this.released = new Set();
     this.queued = null;
+    this.kept = new Set();
   }
 
   /**
@@ -1362,10 +1370,12 @@ export class StateMachine {
     };
     this.pressSpent = null;
     if (this.queued && now.animEnded) return this.take(this.queued, null);
+    const withKept = this.keep(input);
     for (const t of [...borrowed(this.file, this.def, this.elapsed), ...(this.def.transitions ?? [])]) {
       if (t.queued && (this.queued || this.elapsed < t.queued.from)) continue;
       if (entering && !asked(t.when)) continue;
-      if (!fires(t.when, input, now)) continue;
+      const cancel = triggersOf(t.when).includes("cancelable");
+      if (!fires(t.when, cancel ? withKept : input, now)) continue;
       if (!this.file.states[t.to]) {
         if (!warned.has(t.to)) {
           warned.add(t.to);
@@ -1386,9 +1396,23 @@ export class StateMachine {
         continue;
       }
       if (t.to === this.current && !triggersOf(t.when).includes("animEnd")) return null;
-      return this.take(t, pressIn(t.when, input));
+      return this.take(t, pressIn(t.when, cancel ? withKept : input));
     }
     return null;
+  }
+
+  /** `input` with the buttons kept for this state's cancels pressed; a new one is kept, and spent. */
+  private keep(input: InputSnapshot): InputSnapshot {
+    for (const t of this.def.transitions ?? []) {
+      if (!triggersOf(t.when).includes("cancelable")) continue;
+      const button = pressIn(t.when, input);
+      if (button && (input as unknown as Record<string, unknown>)[button] === true && !this.kept.has(button)) {
+        this.kept.add(button);
+        this.pressSpent = button;
+      }
+    }
+    const kept = Object.fromEntries([...this.kept].map((b) => [b, true]));
+    return { ...input, ...kept };
   }
 
   /**
@@ -1424,14 +1448,14 @@ export class StateMachine {
   }
 
   /**
-   * Inside this attack's cancel window: the one for a blow that connected
-   * (the whole attack when it has no `cancelBy`), or the one for a miss.
+   * Inside this attack's cancel window (`cancelWindow`). A blow that connected
+   * in an animation the machine was not given has only its `cancelBy`.
    */
   private cancelable(connected: boolean): boolean {
     const by = this.def.cancelBy;
-    if (connected) return by === undefined || this.elapsed <= by;
-    const miss = missWindow(this.anims[this.def.anim], by);
-    return miss !== null && this.elapsed >= miss[0] && this.elapsed <= miss[1];
+    const window = cancelWindow(this.anims[this.def.anim], by);
+    if (window === null) return connected && (by === undefined || this.elapsed <= by);
+    return this.elapsed >= window[0] && this.elapsed <= window[1];
   }
 }
 

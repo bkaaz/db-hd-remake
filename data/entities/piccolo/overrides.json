@@ -70,13 +70,13 @@
       0
     ]
   },
-  "attack_y_close": {
+  "rush_1": {
     "damage": 26
   },
-  "attack_y": {
+  "rush_3": {
     "damage": 28
   },
-  "attack_b_close": {
+  "rush_2": {
     "damage": 28
   },
   "crouch_y": {

@@ -1,6 +1,6 @@
 {
   "replaces": {
-    "attack_y": "06b40d78",
+    "rush_3": "06b40d78",
     "crouch_y": "73346a15",
     "crouch_b": "71759fae",
     "attack_x": "4ead24b4",
@@ -1103,7 +1103,7 @@
         }
       ]
     },
-    "attack_y": {
+    "rush_3": {
       "anim": "m92",
       "turn": false,
       "vel": [
@@ -1113,11 +1113,11 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "attack_y_2"
+          "to": "rush_3_2"
         }
       ]
     },
-    "attack_y_2": {
+    "rush_3_2": {
       "anim": "m92_2",
       "turn": false,
       "vel": [

@@ -1,6 +1,7 @@
 import { soundIdCollisions, validateSounds } from "../audio/sounds";
 import type { Music } from "../audio/music";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
+import { readPicks, stepOf, withRush } from "../combat/rushSlots";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
 import type { Controls } from "../input/controls";
@@ -10,7 +11,7 @@ import { Opening } from "../match/opening";
 import { NO_INPUT } from "../entity/entity";
 import { Projectiles } from "../match/projectiles";
 import { loadRules } from "../match/rules";
-import { isColourSet, type DebugRequest, type Scene, type SceneContext, type SceneRequest } from "../scene";
+import { isColourSet, sameBut, type DebugRequest, type Scene, type SceneContext, type SceneRequest } from "../scene";
 import { Dummy } from "../debug/dummy";
 import { loadMode } from "../debug/mode";
 import { Camera } from "../camera/camera";
@@ -67,8 +68,8 @@ export class DebugScene implements Scene {
     private readonly dummy: Dummy,
     /** Player one's, if the mode gives him one: then the keyboard does not move him. */
     private readonly dummy1: Dummy | null,
-    /** What built this scene, and how many modes there are to step through. */
-    private readonly req: DebugRequest,
+    /** What built this scene — or what it took in place since — and how many modes there are to step through. */
+    private req: DebugRequest,
     private readonly modes: number,
     private readonly effects: Effects,
     private readonly hud: Hud,
@@ -90,7 +91,22 @@ export class DebugScene implements Scene {
     private readonly travel: Travel | null,
     /** The fight's song, from the scene's start to its end. */
     private readonly music: Music,
+    /** Player one as his data has him, before any rush tried from the panel. */
+    private readonly own: EntityDef,
+    /** What a recording says this scene is, for a request (`describes`). */
+    private readonly situation: (req: DebugRequest) => string[],
   ) {}
+
+  /** A pick that only changes player one's rush is tried on him where he stands; any other builds the scene again. */
+  take(request: SceneRequest): boolean {
+    if (request.scene !== "debug" || !sameBut(request, this.req, "rush1")) return false;
+    const def = request.rush1 === undefined ? this.own : tryRush(this.own, request.rush1);
+    if (typeof def === "string" || !def.states) return false;
+    this.fighters.player.playStates(def.states);
+    this.req = request;
+    describes(this.situation(request));
+    return true;
+  }
 
   /** Frames since the scene began: half speed skips the odd ones. */
   private frame = 0;
@@ -114,17 +130,8 @@ export class DebugScene implements Scene {
     if (typeof loaded === "string") return loaded;
     const { mode, count } = loaded;
 
-    // What a recording made from here is a recording *of* — the number alone
-    // means nothing, because mode 0 is the everyday scratch setup.
-    describes([
-      `debug mode ${req.mode}: ${JSON.stringify(mode)}`,
-      `p1=${req.p1} p2=${req.p2}` +
-        (req.arena ? ` arena=${req.arena}${req.time ? ` time=${req.time}` : ""}` : "") +
-        (req.hp1 !== undefined ? ` hp1=${req.hp1}` : "") +
-        (req.hp2 !== undefined ? ` hp2=${req.hp2}` : "") +
-        (req.pal1 !== undefined ? ` pal1=${req.pal1}` : "") +
-        (req.pal2 !== undefined ? ` pal2=${req.pal2}` : ""),
-    ]);
+    const situation = (r: DebugRequest) => situationOf(r, mode);
+    describes(situation(req));
 
     const dummy = Dummy.from(mode.p2);
     if (typeof dummy === "string") return `mode ${req.mode}: ${dummy}`;
@@ -134,9 +141,11 @@ export class DebugScene implements Scene {
 
     const rules = await loadRules();
     if (typeof rules === "string") return rules;
-    const p1 = await loadFighter(req.p1);
+    const own = await loadFighter(req.p1);
+    if (typeof own === "string") return own;
+    const p1 = req.rush1 === undefined ? own : tryRush(own, req.rush1);
     if (typeof p1 === "string") return p1;
-    const p2 = req.p2 === req.p1 ? p1 : await loadFighter(req.p2);
+    const p2 = req.p2 === req.p1 ? own : await loadFighter(req.p2);
     if (typeof p2 === "string") return p2;
     // Each definition once, though two Gokus play from one.
     const defs = p1 === p2 ? [p1] : [p1, p2];
@@ -225,6 +234,8 @@ export class DebugScene implements Scene {
       (text) => showPrompt(ctx.page.notices, text),
       travel,
       ctx.music,
+      own,
+      situation,
     );
   }
 
@@ -386,6 +397,28 @@ function reportProblems(ctx: SceneContext, def: EntityDef): Notice[] {
   for (const p of validateSounds(def.sounds)) console.error(`[sounds] ${def.name}: ${p}`);
   for (const p of soundIdCollisions(ctx.bank, def.sounds)) console.error(`[sounds] ${p}`);
   return notices;
+}
+
+/** What a recording made from here is a recording *of*: mode 0's number alone means nothing. */
+function situationOf(r: DebugRequest, mode: unknown): string[] {
+  return [
+    `debug mode ${r.mode}: ${JSON.stringify(mode)}`,
+    `p1=${r.p1} p2=${r.p2}` +
+      (r.arena ? ` arena=${r.arena}${r.time ? ` time=${r.time}` : ""}` : "") +
+      (r.hp1 !== undefined ? ` hp1=${r.hp1}` : "") +
+      (r.hp2 !== undefined ? ` hp2=${r.hp2}` : "") +
+      (r.pal1 !== undefined ? ` pal1=${r.pal1}` : "") +
+      (r.pal2 !== undefined ? ` pal2=${r.pal2}` : "") +
+      (r.rush1 !== undefined ? ` rush1=${r.rush1}` : ""),
+  ];
+}
+
+/** His definition playing the rush the panel tries (`combat/rushSlots.ts`), or why it cannot. */
+function tryRush(def: EntityDef, text: string): EntityDef | string {
+  if (!def.states) return `${def.name}: no states.json to try a rush on`;
+  const picks = readPicks(text, def.animations);
+  if (typeof picks === "string") return `${def.name}: ${picks}`;
+  return { ...def, states: withRush(def.states, def.animations, def.attributes.hitstun, picks, stepOf(def.states)) };
 }
 
 /** A fighter's definition, or why it cannot fight. */

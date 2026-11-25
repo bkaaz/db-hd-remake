@@ -56,13 +56,13 @@
       0
     ]
   },
-  "attack_y_close": {
+  "rush_1": {
     "damage": 28
   },
-  "attack_b_close": {
+  "rush_2": {
     "damage": 28
   },
-  "attack_b": {
+  "smash": {
     "damage": 32
   },
   "reel_high": {

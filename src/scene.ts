@@ -32,6 +32,12 @@ export interface Scene {
    * that outlives its own resize handler moves fighters that no longer exist.
    */
   destroy(): void;
+  /**
+   * Run `request` in place when it differs only by what can change while the
+   * fight goes on; false, and it is built again. A pick that only tries
+   * something on the running fight need not start it over.
+   */
+  take?(request: SceneRequest): boolean;
 }
 
 /** What to run, in the few values it takes to say it. */
@@ -62,6 +68,11 @@ export interface DebugRequest {
   pal1?: string;
   /** Player two's, the same way. */
   pal2?: string;
+  /**
+   * Player one's rush tried out, three animations for A1–A3, comma-joined
+   * (`combat/rushSlots.ts`): the debug panel's, laid on his own states.
+   */
+  rush1?: string;
 }
 
 /** Whether a colours pick names a set of ours rather than "1" or "2". */
@@ -112,8 +123,15 @@ export function queryFor(request: SceneRequest): string {
     if (request.hp2 !== undefined) q.set("hp2", String(request.hp2));
     if (request.pal1 !== undefined) q.set("pal1", request.pal1);
     if (request.pal2 !== undefined) q.set("pal2", request.pal2);
+    if (request.rush1 !== undefined) q.set("rush1", request.rush1);
   }
   return `?${q.toString()}`;
+}
+
+/** Whether two requests ask for the same scene but for `key` — what a scene may change in place (`Scene.take`). */
+export function sameBut(a: DebugRequest, b: DebugRequest, key: keyof DebugRequest): boolean {
+  const rest = (r: DebugRequest) => queryFor({ ...r, [key]: undefined });
+  return rest(a) === rest(b);
 }
 
 export function requestFromUrl(url: URL): SceneRequest | string {
@@ -143,6 +161,8 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       if (!/^([12]|[a-z][a-z0-9_]*)$/.test(pal)) return `${key} "${pal}" is not a set of colours — 1, 2 or a set's name`;
       colours[key] = pal;
     }
+    const rush1 = q.get("rush1");
+    if (rush1 !== null && !/^[a-z0-9_]+(,[a-z0-9_]+){2}$/.test(rush1)) return `rush1 "${rush1}" is not three animations, comma-joined`;
     return {
       scene: "debug",
       p1,
@@ -152,6 +172,7 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       ...(time !== null && { time }),
       ...health,
       ...colours,
+      ...(rush1 !== null && { rush1 }),
     };
   }
   return `unknown scene "${scene}" — try select or debug`;

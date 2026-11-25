@@ -1,0 +1,9 @@
+{
+  "78": { "from": "mae", "steps": [1, 3] },
+  "80": { "from": "mae", "steps": [5, 7] },
+  "82": { "from": "mae", "steps": [8, 10] },
+  "74": { "from": "mae", "steps": [12, 12] },
+  "77": { "from": "mae", "steps": [14, 16] },
+  "110": { "from": "mae", "steps": [17, 20] },
+  "116": { "from": "mae", "steps": [21, 23] }
+}

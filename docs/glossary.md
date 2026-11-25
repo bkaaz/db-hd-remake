@@ -9,7 +9,8 @@ change.
 - **Active frames** — the frames an attack's hit box is out, the only ones it can connect on. → `combat.md` §1
 - **Alt** — player two's colours when both sides are the same fighter: the next palette record. → `rom.md`
 - **Arena** — the original's stage art behind a fight, layers scrolling at their own speeds, in a lighting; not the `Stage`, the playfield's numbers. → `data/arenas/`, ADR 0081
-- **Cancel** — cutting your own attack short with the next, up to its `cancelBy` on a connection, or for as long once a whiff's last hit box is gone. → `combat.md` (Chaining)
+- **Basic blow** — a short blow cut from one of a fighter's longer animations and closed by his stance, for a rush slot: `b_<name>`. → `entity/basics.ts`
+- **Cancel** — cutting your own attack short with the next, once its last hit box is gone and up to its `cancelBy`, hit or miss. → `combat.md` (Chaining)
 - **`cancelBy`** — the last frame of an attack a cancel may fire on, counted from entering it. → `states.ts`
 - **Chain (string)** — attacks joined by cancels: a path through `states.json`, never a structure of its own. → `combat/chains.ts`, `npm run chains`
 - **Charging** — holding Charge (RB, `W`): the state's `ki` rate fills the ki meter. → `combat.md` (The buttons)

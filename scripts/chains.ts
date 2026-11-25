@@ -46,17 +46,18 @@ for (const o of openings(states)) {
 }
 console.log();
 console.log(
-  pad("from", 16) + pad("type", 6) + pad("on", 9) + pad("→ into", 18) + pad("type", 6) + pad("window", 8) + pad("start-up", 10) + pad("latest hit", 12) + pad("hitstun", 9) + pad("depth", 7) + "margin",
+  pad("from", 16) + pad("type", 6) + pad("on", 9) + pad("→ into", 18) + pad("type", 6) + pad("frames", 9) + pad("window", 8) + pad("start-up", 10) + pad("latest hit", 12) + pad("hitstun", 9) + pad("depth", 7) + "margin",
 );
 
 for (const l of links.sort((a, b) => a.depth - b.depth || a.from.localeCompare(b.from))) {
-  const verdict = l.launcher ? "  (launcher — chain ends here)" : l.margin < 0 ? "  ✗ DROPS" : "";
+  const verdict = l.opens > l.closes ? "  ✗ NEVER OPENS" : l.launcher ? "  (launcher — chain ends here)" : l.margin < 0 ? "  ✗ DROPS" : "";
   console.log(
     pad(l.from, 16) +
       pad(code(l.from), 6) +
       pad(l.on ?? "—", 9) +
       pad(`→ ${l.to}`, 18) +
       pad(code(l.to), 6) +
+      pad(`${l.opens}–${l.closes}`, 9) +
       pad(l.window, 8) +
       pad(l.startup, 10) +
       pad(`+${l.worst}`, 12) +
@@ -78,5 +79,7 @@ if (parked.length > 0) {
 console.log(
   "\nlatest hit = window + start-up: the most frames that can pass between this blow\n" +
     "and the next one, since the player decides when to press. It has to fit inside\n" +
-    "the hitstun this blow still gives at its depth in the chain.",
+    "the hitstun this blow still gives at its depth in the chain.\n" +
+    "frames: of this blow's state, the ones the cancel may fire on — from the frame\n" +
+    "its last hit box is gone to its cancelBy.",
 );

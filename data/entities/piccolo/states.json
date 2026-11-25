@@ -196,26 +196,12 @@
           "to": "beam_cannon"
         },
         {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "attack_y_close"
-        },
-        {
           "when": "pressed:attack",
-          "to": "attack_y"
-        },
-        {
-          "when": [
-            "pressed:smash",
-            "close:smash"
-          ],
-          "to": "attack_b_close"
+          "to": "rush_1"
         },
         {
           "when": "pressed:smash",
-          "to": "attack_b"
+          "to": "smash"
         },
         {
           "when": "pressed:strike",
@@ -342,26 +328,12 @@
           "to": "beam_cannon"
         },
         {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "attack_y_close"
-        },
-        {
           "when": "pressed:attack",
-          "to": "attack_y"
-        },
-        {
-          "when": [
-            "pressed:smash",
-            "close:smash"
-          ],
-          "to": "attack_b_close"
+          "to": "rush_1"
         },
         {
           "when": "pressed:smash",
-          "to": "attack_b"
+          "to": "smash"
         },
         {
           "when": "pressed:strike",
@@ -484,26 +456,12 @@
           "to": "beam_cannon"
         },
         {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "attack_y_close"
-        },
-        {
           "when": "pressed:attack",
-          "to": "attack_y"
-        },
-        {
-          "when": [
-            "pressed:smash",
-            "close:smash"
-          ],
-          "to": "attack_b_close"
+          "to": "rush_1"
         },
         {
           "when": "pressed:smash",
-          "to": "attack_b"
+          "to": "smash"
         },
         {
           "when": "pressed:strike",
@@ -814,26 +772,12 @@
           "to": "beam_cannon"
         },
         {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "attack_y_close"
-        },
-        {
           "when": "pressed:attack",
-          "to": "attack_y"
-        },
-        {
-          "when": [
-            "pressed:smash",
-            "close:smash"
-          ],
-          "to": "attack_b_close"
+          "to": "rush_1"
         },
         {
           "when": "pressed:smash",
-          "to": "attack_b"
+          "to": "smash"
         },
         {
           "when": "pressed:strike",
@@ -1166,7 +1110,7 @@
         }
       ]
     },
-    "attack_y_close": {
+    "rush_1": {
       "anim": "m90",
       "vel": [
         0,
@@ -1184,7 +1128,7 @@
         }
       ]
     },
-    "attack_y": {
+    "rush_3": {
       "anim": "m92",
       "vel": [
         0,
@@ -1202,7 +1146,7 @@
         }
       ]
     },
-    "attack_b_close": {
+    "rush_2": {
       "anim": "m91",
       "vel": [
         0,
@@ -1220,7 +1164,7 @@
         }
       ]
     },
-    "attack_b": {
+    "smash": {
       "anim": "m93",
       "turn": false,
       "vel": [
@@ -1234,7 +1178,7 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "attack_b_2"
+          "to": "smash_2"
         }
       ]
     },
@@ -3321,7 +3265,7 @@
       "hitSound": "hit_09",
       "blockSound": "block_17"
     },
-    "attack_b_2": {
+    "smash_2": {
       "anim": "m93_2",
       "turn": false,
       "vel": [

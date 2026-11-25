@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeEndOf, missWindow, Swing, type AnimSteps } from "./swing";
+import { activeEndOf, cancelWindow, Swing, type AnimSteps } from "./swing";
 
 /** Advance `n` live frames. */
 const wait = (s: Swing, n: number): void => {
@@ -101,22 +101,25 @@ describe("activeEndOf", () => {
   });
 });
 
-describe("missWindow", () => {
-  it("opens on the frame after the last hit box", () => {
-    expect(missWindow(KICK, 9)?.[0]).toBe(8);
+describe("cancelWindow", () => {
+  it("opens on the frame after the last hit box, so the swing is seen whole", () => {
+    expect(cancelWindow(KICK, 9)?.[0]).toBe(8);
   });
 
-  it("lasts as long as the window a hit gets", () => {
-    // A hit may cancel from the start-up (4) to cancelBy (9): 5 frames.
-    const [from, to] = missWindow(KICK, 9)!;
-    expect(to - from + 1).toBe(9 - 4);
+  it("closes on cancelBy", () => {
+    expect(cancelWindow(KICK, 9)?.[1]).toBe(9);
   });
 
-  it("stays open to the end when the attack has no cancelBy, like a hit", () => {
-    expect(missWindow(KICK, undefined)?.[1]).toBe(Infinity);
+  it("stays open to the end when the attack has no cancelBy", () => {
+    expect(cancelWindow(KICK, undefined)?.[1]).toBe(Infinity);
+  });
+
+  it("opens on the last frame when the hit box is drawn to the end", () => {
+    const toTheEnd = { steps: [{ dur: 3 }, { dur: 4, boxes: [{ type: "hit" }] }] };
+    expect(cancelWindow(toTheEnd, undefined)?.[0]).toBe(7);
   });
 
   it("does not exist for an animation that cannot hit", () => {
-    expect(missWindow({ steps: [{ dur: 5 }] }, 9)).toBeNull();
+    expect(cancelWindow({ steps: [{ dur: 5 }] }, 9)).toBeNull();
   });
 });

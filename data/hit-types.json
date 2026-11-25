@@ -2,7 +2,7 @@
   "flinch": {
     "code": "fl",
     "onHit": "hurt_chain",
-    "hitstun": 20,
+    "hitstun": 26,
     "hitstop": 8,
     "relaunch": false
   },

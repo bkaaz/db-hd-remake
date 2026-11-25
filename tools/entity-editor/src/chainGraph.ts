@@ -98,6 +98,8 @@ export function renderChainGraph(
           to: e.to,
           on: e.when.replace(/pressed:|held:/g, ""),
           window: 0,
+          opens: 0,
+          closes: 0,
           startup: 0,
           worst: 0,
           depth: 0,

@@ -30,7 +30,8 @@ are by hand, and what the cartridge says is taken over by hand.
 | section | written by |
 |---|---|
 | `frames.json` | made by `npm run rom -- export` until the port's end; by hand since (ADR 0090) |
-| `animations.json` | made by `npm run rom -- export` until the port's end; by hand and in the editor since (ADR 0017) |
+| `animations.json` | made by `npm run rom -- export` until the port's end; by hand and in the editor since (ADR 0017); its `b_<name>` by `npm run basics` |
+| `basics.json` | by hand: his basic blows, each cut from steps of one of his animations (`entity/basics.ts`) |
 | `states.json` | `npm run states`, whole: the common states with his overrides and specials, no cartridge (ADR 0038) |
 | `overrides.json` | by hand: where his common states differ, field by field (`rom/overrides.ts`, ADR 0038) |
 | `specials.json` | by hand, first drafted by `npm run rom -- draft`; a fingerprint beside each state it `replaces` by `npm run states -- --accept` (ADR 0038) |

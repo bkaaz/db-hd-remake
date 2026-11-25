@@ -477,9 +477,9 @@ describe("cancelBy closes the window a chain fires in", () => {
   });
 });
 
-describe("a string goes on through a miss", () => {
-  // punch: 2 frames of wind-up, 2 with a hit box, 6 of recovery; cancelBy 4,
-  // so a hit may cancel for 2 frames and a miss for 2 frames from frame 5.
+describe("a string goes on once the swing is seen whole, hit or miss", () => {
+  // punch: 2 frames of wind-up, 2 with a hit box, 6 of recovery; cancelBy 6,
+  // so a hit and a miss alike may cancel on frames 5 and 6.
   const PUNCH = {
     steps: [
       { dur: 2, boxes: [{ type: "hurt" }] },
@@ -491,7 +491,7 @@ describe("a string goes on through a miss", () => {
     const f = withAttack();
     f.states.punch = {
       anim: "punch",
-      cancelBy: 4,
+      cancelBy: 6,
       transitions: [
         { when: ["cancelable", "pressed:guard"], to: "kick" },
         { when: "animEnd", to: "idle" },
@@ -502,12 +502,13 @@ describe("a string goes on through a miss", () => {
   }
   const MEDIUM = { ...NONE, guard: true };
 
-  /** Enter the punch, wait `frames` frames having hit nothing, then press. */
-  const pressAfter = (frames: number, anims: Record<string, typeof PUNCH> = { punch: PUNCH }): string => {
+  /** Enter the punch, wait `frames` frames, having hit or not, then press. */
+  const pressAfter = (frames: number, anims: Record<string, typeof PUNCH> = { punch: PUNCH }, hit = false): string => {
     const sm = new StateMachine(chained(), anims);
+    const signals = { ...QUIET, hitConfirmed: hit };
     sm.update(ATTACK, QUIET);
-    for (let i = 0; i < frames; i++) sm.update(NONE, QUIET);
-    sm.update(MEDIUM, QUIET);
+    for (let i = 0; i < frames; i++) sm.update(NONE, signals);
+    sm.update(MEDIUM, signals);
     return sm.current;
   };
 
@@ -515,13 +516,38 @@ describe("a string goes on through a miss", () => {
     expect(pressAfter(3)).toBe("punch");
   });
 
-  it("once the last hit box is gone", () => {
-    expect(pressAfter(4)).toBe("kick");
+  it("not while the hit box of a blow that landed is still out", () => {
+    expect(pressAfter(1, undefined, true)).toBe("punch");
+    expect(pressAfter(3, undefined, true)).toBe("punch");
   });
 
-  it("for as long as a hit's window lasts, and no longer", () => {
+  it("once the last hit box is gone", () => {
+    expect(pressAfter(4)).toBe("kick");
+    expect(pressAfter(4, undefined, true)).toBe("kick");
+  });
+
+  it("keeps a press made early in the swing until the window opens: each press is one more blow", () => {
+    const sm = new StateMachine(chained(), { punch: PUNCH });
+    const hit = { ...QUIET, hitConfirmed: true };
+    sm.update(ATTACK, QUIET);
+    sm.update(MEDIUM, hit); // frame 1: pressed during the wind-up, once
+    for (let i = 0; i < 3; i++) sm.update(NONE, hit); // frames 2–4: the hit box is out
+    expect(sm.current).toBe("punch");
+    sm.update(NONE, hit); // frame 5: it is gone
+    expect(sm.current).toBe("kick");
+  });
+
+  it("keeps nothing when nothing was pressed", () => {
+    const sm = new StateMachine(chained(), { punch: PUNCH });
+    sm.update(ATTACK, QUIET);
+    for (let i = 0; i < 6; i++) sm.update(NONE, { ...QUIET, hitConfirmed: true });
+    expect(sm.current).toBe("punch");
+  });
+
+  it("up to cancelBy, and no longer", () => {
     expect(pressAfter(5)).toBe("kick");
     expect(pressAfter(6)).toBe("punch");
+    expect(pressAfter(6, undefined, true)).toBe("punch");
   });
 
   it("never when the machine does not know the animation", () => {

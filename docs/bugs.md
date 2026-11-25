@@ -20,6 +20,10 @@ because a number would only need translating back.
 
 ---
 
+- **`npm run chains` calls every link a launcher** — *annoying*: "(launcher —
+  chain ends here)" on a light blow too. `chainLinks` (`combat/chains.ts`)
+  takes a reaction with no `vel` for a knockdown, and the reactions push with
+  `shove` now. The margins are right; only the label is wrong.
 - **An attack right after jumping over the opponent faces the wrong way** —
   *breaks play*. Jump over P2 and attack soon after landing: P1 does not turn
   round and swings at the air, his back to the opponent.

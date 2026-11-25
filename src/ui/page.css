@@ -85,6 +85,12 @@ html, body {
 }
 .side-setup:empty { display: none; }
 .side-setup .field { display: contents; }
+/* A long option or line wraps or is cut here, never widens the column off the page. */
+.side-setup select { max-width: 18em; }
+.side-setup code { max-width: 24em; white-space: normal; overflow-wrap: anywhere; }
+.stepper { display: inline-flex; align-items: center; gap: 2px; }
+.stepper .step { padding: 2px 5px; line-height: 1; }
+.stepper .step:disabled { opacity: 0.35; cursor: default; }
 
 #bar {
   display: flex;

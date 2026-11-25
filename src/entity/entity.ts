@@ -52,6 +52,7 @@ import {
   type GrabDef,
   type RoundStates,
   type StateDef,
+  type StatesFile,
 } from "./states";
 
 /**
@@ -302,7 +303,7 @@ export class Entity {
   /** A band whose head is gone, thinning where it stood whatever state comes next. */
   private fading: { band: BandDef; frames: number; gone: number; head: number } | null = null;
 
-  private readonly sm: StateMachine | null;
+  private sm: StateMachine | null;
   /** Set by `preview()`: play one animation and ignore the state machine. */
   private previewing = false;
 
@@ -404,7 +405,7 @@ export class Entity {
   private readonly fatigue = new Fatigue();
 
   constructor(
-    private readonly def: EntityDef,
+    private def: EntityDef,
     private readonly scale: number,
     private readonly audio: SoundPlayer | null = null,
     /** The game's `comboLimits` (`match/rules.ts`): only a fighter in a fight is told it. */
@@ -904,6 +905,17 @@ export class Entity {
 
   get isHeld(): boolean {
     return this.held;
+  }
+
+  /**
+   * Play `states` from now on, where he stands and with what health and ki he
+   * has — a rush tried from the debug panel, without building the scene again.
+   * He starts over in his first state: the one he is in may not be in them.
+   */
+  playStates(states: StatesFile): void {
+    this.def = { ...this.def, states };
+    this.sm = new StateMachine(withHitTypes(states), this.def.animations);
+    this.release();
   }
 
   /** The effect put on the floor under this entity this frame, in world px — taken once. */

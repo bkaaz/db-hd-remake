@@ -29,10 +29,10 @@ pad out (owner, 2026-11-24; `inspiration.md`). Which key is which is
 | **Strike** | LT | `E` | the original's X, for its throw and its senders, until they are ours |
 
 The other trigger, Start and the grab and taunt of Burst Limit have nothing
-yet. No fighter plays the rush yet: the cartridge's fighters play the
-original's own moves for now (`plan.md`), Attack, Smash, Strike and Ki being
-its Y, B, X and A, with no strings between them, until they are reworked to
-these rules. Where the original's charge (Y + B) refills health, its one
+yet. Attack and Smash play `rush_1` and `smash` from standing, the
+original's standing blows (`data/template/`); the rest of what the
+cartridge's fighters do is still the original's own moves (`plan.md`),
+Strike and Ki being its X and A, until it is reworked to these rules. Where the original's charge (Y + B) refills health, its one
 pool, ours fills the **ki** meter, and a special costs ki rather than health:
 its command row's price, and it does not come out without it. The meter holds
 60 — six levels of 10, the HUD's six bars, so a cost of 5 or 10 is half a
@@ -47,8 +47,23 @@ A → A → A → A
 S   S   S   S      (and S alone, from neutral)
 ```
 
-What each place holds will be `npm run chains`' to list once a fighter plays
-it. Crouching has its own shorter rush; the air has one attack and
+**A fighter has a rush only once the owner accepts how it plays** (owner,
+2026-11-24); until then Attack is one blow. Goku and Freeza have one, three
+blows deep on the original's standing blows, no enders yet. **Each press is
+one blow**, each seen whole and stepping forward: a press made any time
+during a blow is kept until its cancel opens (`StateMachine`, `cancelable`),
+rush_1 and rush_2 are a `flinch`, and `npm run chains -- goku` shows the
+windows. A rush is three picks, one animation a slot, each a whole blow a
+fighter can stop on, since he cannot know another press is coming — judged
+by eye, as no field of an animation says it; the step and the windows are
+computed from the picks (`combat/rushSlots.ts`). The cartridge's own whole
+blows are few — a special's parts end mid-motion — so a fighter has **basic
+blows** cut from his longer animations, an ultimate's quick run first, each
+closed by his stance (`basics.json`); the panel lists them first. The debug panel tries
+player one's under his readout (`ui/rushPicks.ts`, the scene's `rush1`,
+taken by the running fight in place: `Scene.take`) and shows each link's margin; it keeps nothing — an accepted rush is written into
+his data by hand. Which blow stands where is still to choose.
+Crouching has its own shorter rush; the air has one attack and
 one smash. There is no depth to step into, so down is **crouch**, and up is
 **jump**.
 
@@ -126,10 +141,14 @@ no frame before the next and the buffer keeps a press its whole window.
 - **Link** — the attack finishes, control returns, the defender is still in
   hitstun. It falls out of hitstun against recovery; nothing builds it.
 - **Cancel** — the attack is interrupted by the next one, through the
-  `cancelable` trigger. On a hit or a block, up to the attack's `cancelBy`; on a
-  miss, once the last hit box is gone, for a window as long as a hit's
-  (`missWindow` in `combat/swing.ts`). A string therefore goes on whether it
-  lands or not — an experiment; what punishes a whiffed string is still open.
+  `cancelable` trigger: from the frame its last hit box is gone — the last
+  frame, if it is drawn to the end — up to its `cancelBy`, so the swing is
+  seen whole and the next blow follows it rather than lands on top of it
+  (owner, 2026-11-24; `cancelWindow` in `combat/swing.ts`). Its button,
+  pressed any time in the blow, is kept until then, not for the buffer's 12
+  frames. A miss gets the
+  same window as a hit, so a string goes on whether it lands or not — an
+  experiment; what punishes a whiffed string is still open.
 
 **A link is a true combo only if** `hitstun ≥ window + start-up of the next
 blow`, counted from the frame the blow landed, at the blow's depth in the

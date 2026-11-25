@@ -65,10 +65,10 @@
       0
     ]
   },
-  "attack_y_close": {
+  "rush_1": {
     "damage": 24
   },
-  "attack_y": {
+  "rush_3": {
     "damage": 26
   },
   "ki_fire": {

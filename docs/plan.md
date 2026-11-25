@@ -12,8 +12,10 @@ when*; later ones are a line.
 The order is provisional; `combat.md` says what each is. `npm run chains` has to
 hold for every fighter, not only one.
 
-1. **Cancels and combos:** the rush (`combat.md`, The buttons), strings joined
-   up, what punishes a string thrown at nothing.
+1. **Cancels and combos:** which blow stands where in Goku's and Freeza's
+   rush; a rush for each other fighter, accepted by the owner; enders on Smash, a launcher
+   and a ki follow-up after it, once the owner picks their animations; what
+   punishes a string thrown at nothing.
 2. **Vanish** (`combat.md` §5). *Done when:* a recording shows a vanish out of
    blockstun, and a tap without ki blocks.
 3. **Launch scaling:** each lift raises less, so a juggle ends by the body

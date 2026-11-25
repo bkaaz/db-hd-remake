@@ -70,17 +70,17 @@
       0
     ]
   },
-  "attack_y_close": {
+  "rush_1": {
     "type": "heavy",
     "damage": 27
   },
-  "attack_y": {
+  "rush_3": {
     "damage": 30
   },
-  "attack_b_close": {
+  "rush_2": {
     "damage": 26
   },
-  "attack_b": {
+  "smash": {
     "damage": 32
   },
   "crouch_y": {

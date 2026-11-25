@@ -17,7 +17,7 @@ describe.skipIf(!existsSync(ROM_PATH))("todo, on the cartridge", () => {
   const left = todo(rom, fighterNamed(rom, "vegeta"), [{ name: "goku", t: GOKU, states }]);
 
   it("counts as read a move on code goku's states already play: the far Y, the ki blast", () => {
-    expect(left.read.find((r) => r.move === 0x92)?.states).toContain("attack_y");
+    expect(left.read.find((r) => r.move === 0x92)?.states).toContain("smash");
     expect(left.read.map((r) => r.move)).toContain(0x9b);
   });
 

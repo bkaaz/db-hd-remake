@@ -1,8 +1,8 @@
 {
   "replaces": {
-    "attack_y_close": "f5b2223c",
-    "attack_y": "06b40d78",
-    "attack_b": "0749fefe",
+    "rush_1": "f5b2223c",
+    "rush_3": "06b40d78",
+    "smash": "0749fefe",
     "crouch_y": "73346a15",
     "jump_b": "ae636e8d",
     "jump_fwd_y": "075524d7",
@@ -978,7 +978,7 @@
         }
       ]
     },
-    "attack_y_close": {
+    "rush_1": {
       "anim": "m90",
       "turn": false,
       "vel": [
@@ -992,12 +992,12 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "attack_y_close_2"
+          "to": "rush_1_2"
         }
       ],
       "rehit": 5
     },
-    "attack_y_close_2": {
+    "rush_1_2": {
       "anim": "m90_2",
       "turn": false,
       "vel": [
@@ -1007,11 +1007,11 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "attack_y_close_3"
+          "to": "rush_1_3"
         }
       ]
     },
-    "attack_y_close_3": {
+    "rush_1_3": {
       "anim": "m90_3",
       "turn": false,
       "vel": [
@@ -1025,7 +1025,7 @@
         }
       ]
     },
-    "attack_y": {
+    "rush_3": {
       "anim": "m92",
       "turn": false,
       "vel": [
@@ -1045,11 +1045,11 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "attack_y_2"
+          "to": "rush_3_2"
         }
       ]
     },
-    "attack_y_2": {
+    "rush_3_2": {
       "anim": "m92_2",
       "turn": false,
       "vel": [
@@ -1073,11 +1073,11 @@
       "transitions": [
         {
           "when": "animEnd",
-          "to": "attack_y_3"
+          "to": "rush_3_3"
         }
       ]
     },
-    "attack_y_3": {
+    "rush_3_3": {
       "anim": "m92_3",
       "turn": false,
       "vel": [
@@ -1101,7 +1101,7 @@
         }
       ]
     },
-    "attack_b": {
+    "smash": {
       "anim": "m93",
       "turn": false,
       "vel": [

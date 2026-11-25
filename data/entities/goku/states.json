@@ -208,26 +208,12 @@
           "to": "meteor"
         },
         {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "attack_y_close"
-        },
-        {
           "when": "pressed:attack",
-          "to": "attack_y"
-        },
-        {
-          "when": [
-            "pressed:smash",
-            "close:smash"
-          ],
-          "to": "attack_b_close"
+          "to": "rush_1"
         },
         {
           "when": "pressed:smash",
-          "to": "attack_b"
+          "to": "smash"
         },
         {
           "when": "pressed:strike",
@@ -366,26 +352,12 @@
           "to": "meteor"
         },
         {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "attack_y_close"
-        },
-        {
           "when": "pressed:attack",
-          "to": "attack_y"
-        },
-        {
-          "when": [
-            "pressed:smash",
-            "close:smash"
-          ],
-          "to": "attack_b_close"
+          "to": "rush_1"
         },
         {
           "when": "pressed:smash",
-          "to": "attack_b"
+          "to": "smash"
         },
         {
           "when": "pressed:strike",
@@ -520,26 +492,12 @@
           "to": "meteor"
         },
         {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "attack_y_close"
-        },
-        {
           "when": "pressed:attack",
-          "to": "attack_y"
-        },
-        {
-          "when": [
-            "pressed:smash",
-            "close:smash"
-          ],
-          "to": "attack_b_close"
+          "to": "rush_1"
         },
         {
           "when": "pressed:smash",
-          "to": "attack_b"
+          "to": "smash"
         },
         {
           "when": "pressed:strike",
@@ -886,26 +844,12 @@
           "to": "meteor"
         },
         {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "attack_y_close"
-        },
-        {
           "when": "pressed:attack",
-          "to": "attack_y"
-        },
-        {
-          "when": [
-            "pressed:smash",
-            "close:smash"
-          ],
-          "to": "attack_b_close"
+          "to": "rush_1"
         },
         {
           "when": "pressed:smash",
-          "to": "attack_b"
+          "to": "smash"
         },
         {
           "when": "pressed:strike",
@@ -1244,26 +1188,44 @@
         }
       ]
     },
-    "attack_y_close": {
+    "rush_1": {
       "anim": "m90",
       "vel": [
         0,
         0
       ],
       "turn": false,
-      "type": "light",
+      "type": "flinch",
       "damage": 25,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "pressed:attack"
+          ],
+          "to": "rush_2"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          0,
+          1.1875
+        ],
+        [
+          6,
+          0.625
+        ]
+      ],
+      "cancelBy": 18
     },
-    "attack_y": {
-      "anim": "m92",
+    "rush_3": {
+      "anim": "m94",
       "vel": [
         0,
         0
@@ -1278,27 +1240,55 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          0,
+          1.1875
+        ],
+        [
+          10,
+          0.625
+        ]
       ]
     },
-    "attack_b_close": {
-      "anim": "m91",
+    "rush_2": {
+      "anim": "m92",
       "vel": [
         0,
         0
       ],
       "turn": false,
-      "type": "light",
+      "type": "flinch",
       "damage": 27,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "pressed:attack"
+          ],
+          "to": "rush_3"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "velAt": [
+        [
+          0,
+          1.1875
+        ],
+        [
+          10,
+          0.625
+        ]
+      ],
+      "cancelBy": 23
     },
-    "attack_b": {
+    "smash": {
       "anim": "m93",
       "vel": [
         0,

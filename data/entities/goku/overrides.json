@@ -1,0 +1,70 @@
+{
+  "rush_1": {
+    "type": "flinch",
+    "transitions": [
+      {
+        "when": [
+          "cancelable",
+          "pressed:attack"
+        ],
+        "to": "rush_2"
+      },
+      {
+        "when": "animEnd",
+        "to": "idle"
+      }
+    ],
+    "velAt": [
+      [
+        0,
+        1.1875
+      ],
+      [
+        6,
+        0.625
+      ]
+    ],
+    "cancelBy": 18
+  },
+  "rush_2": {
+    "type": "flinch",
+    "transitions": [
+      {
+        "when": [
+          "cancelable",
+          "pressed:attack"
+        ],
+        "to": "rush_3"
+      },
+      {
+        "when": "animEnd",
+        "to": "idle"
+      }
+    ],
+    "anim": "m92",
+    "velAt": [
+      [
+        0,
+        1.1875
+      ],
+      [
+        10,
+        0.625
+      ]
+    ],
+    "cancelBy": 23
+  },
+  "rush_3": {
+    "anim": "m94",
+    "velAt": [
+      [
+        0,
+        1.1875
+      ],
+      [
+        10,
+        0.625
+      ]
+    ]
+  }
+}

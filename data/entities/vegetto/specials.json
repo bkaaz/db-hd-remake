@@ -1,6 +1,6 @@
 {
   "replaces": {
-    "attack_b": "0749fefe",
+    "smash": "0749fefe",
     "crouch_y": "73346a15",
     "crouch_b": "71759fae",
     "attack_x": "4ead24b4",
@@ -800,7 +800,7 @@
       ],
       "catches": true
     },
-    "attack_b": {
+    "smash": {
       "anim": "m93",
       "turn": false,
       "vel": [
@@ -1070,7 +1070,7 @@
         [
           9,
           {
-            "vx": -2.0
+            "vx": -2
           }
         ],
         [
@@ -2120,7 +2120,7 @@
         [
           171,
           {
-            "vx": 1.0
+            "vx": 1
           }
         ],
         [
@@ -2170,7 +2170,7 @@
         [
           179,
           {
-            "vx": 2.0
+            "vx": 2
           }
         ],
         [

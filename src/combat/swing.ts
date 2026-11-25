@@ -97,15 +97,17 @@ export function activeEndOf(anim: AnimSteps | undefined): number {
 }
 
 /**
- * The frames of its state, counted from 1 on entering, in which a swing that
- * **missed** may be cancelled into the next blow (owner, 2026-09-29, an
- * experiment — what punishes it comes later). It opens once the last hit box
- * is gone and lasts as long as a hit's window does, so a string keeps the same
- * rhythm whether it lands or not; `cancelBy` itself stays tuned for the hit.
- * Null for an animation that cannot hit, and so cannot miss.
+ * The frames of its state, counted from 1 on entering, in which a blow may be
+ * cancelled into the next: from the frame its last hit box is gone, so the
+ * swing is seen whole and the next blow follows it rather than lands on top of
+ * it (owner, 2026-11-24), to its `cancelBy`. A hit box drawn to the very end
+ * opens it on the last frame, or it would never open. The same whether it
+ * landed or missed, so a string keeps one rhythm; what punishes a miss comes
+ * later. Null for an animation that cannot hit.
  */
-export function missWindow(anim: AnimSteps | undefined, cancelBy: number | undefined): [number, number] | null {
+export function cancelWindow(anim: AnimSteps | undefined, cancelBy: number | undefined): [number, number] | null {
   const end = activeEndOf(anim);
   if (end === 0) return null;
-  return [end + 1, cancelBy === undefined ? Infinity : end + cancelBy - startupOf(anim)];
+  const frames = (anim?.steps ?? []).reduce((n, s) => n + s.dur, 0);
+  return [Math.min(end + 1, frames), cancelBy ?? Infinity];
 }

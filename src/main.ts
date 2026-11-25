@@ -60,6 +60,7 @@ async function boot(): Promise<void> {
     // you were, and the address stays short (ADR 0008).
     localStorage.setItem(REMEMBERED, queryFor(request));
     setup.show(request);
+    if (scene?.take?.(request)) return;
     scene?.destroy();
     scene = null;
     failure?.destroy();

@@ -7,6 +7,7 @@ import { cartridge } from "../cartridge/romFile";
 import { fightSongIds } from "../apu/music";
 import type { Music } from "../audio/music";
 import { readSongPick } from "../match/song";
+import { RushPicks } from "./rushPicks";
 
 /**
  * The picks that set a scene up, each where it belongs: over the game's
@@ -43,6 +44,7 @@ export class SetupBar {
   private modes = 1;
   /** The songs a fight plays, as the original's pre-fight choice offers them. */
   private songs: number[] = [];
+  private readonly rush = new RushPicks(() => this.render());
 
   constructor(
     request: SceneRequest,
@@ -107,13 +109,16 @@ export class SetupBar {
         const now = r[key] === undefined ? "" : String(r[key]);
         const pal = who === "p1" ? "pal1" : "pal2";
         sides[i].push(
-          field("fighter", picker(r[who], fighters, (name) => change({ [who]: name }))),
+          // another fighter's rush is not his: player one's pick goes with him
+          field("fighter", picker(r[who], fighters, (name) => (who === "p1" ? this.go({ ...without(r, "rush1"), p1: name }) : change({ [who]: name })))),
           // auto is the original's: player two's second set when both are the same fighter
           // a set of ours shows as the next number after the cartridge's two, its name in the address
           field("palette", segmented(r[pal] ?? "", [...COLOURS, ...(this.colourSets[r[who]] ?? []).map((c, n): Choice => [c, String(n + 3)])], (v) => this.go(v ? { ...r, [pal]: v } : without(r, pal)))),
           field("hp", segmented(now, healths, (v) => this.go(v === now ? without(r, key) : { ...r, [key]: Number(v) }))),
         );
       });
+      // a rush of player one's, tried out: a new address, as every pick here is
+      sides[0].push(...this.rush.fields(r.p1, r.rush1, (rush1) => this.go(rush1 === undefined ? without(r, "rush1") : { ...r, rush1 })));
     }
     arenaLine.append(field("scale", this.scalePicker()));
     const notice = this.notice ? [noticeLine(this.notice)] : [];
@@ -138,7 +143,7 @@ function noticeLine(text: string): HTMLElement {
 }
 
 /** The request without some of its optional parameters. */
-function without(r: DebugRequest, ...keys: ("arena" | "time" | "hp1" | "hp2" | "pal1" | "pal2")[]): DebugRequest {
+function without(r: DebugRequest, ...keys: ("arena" | "time" | "hp1" | "hp2" | "pal1" | "pal2" | "rush1")[]): DebugRequest {
   const copy = { ...r };
   for (const k of keys) delete copy[k];
   return copy;

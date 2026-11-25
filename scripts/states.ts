@@ -12,7 +12,7 @@ import { fingerprint, staleCopies, type SpecialsFile } from "../src/rom/specials
  *
  * A copy he `replaces` whose common state changed since it was checked is
  * named, and `compose.test.ts` fails, until it is looked at and accepted:
- * `npm run states -- --accept vegeta attack_b`.
+ * `npm run states -- --accept vegeta smash`.
  */
 
 const common = JSON.parse(readFileSync(COMMON, "utf8")) as StatesFile;

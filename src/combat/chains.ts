@@ -1,6 +1,6 @@
 import { pressIn, type StatesFile } from "../entity/states";
 import { scaledHitstun } from "./scaling";
-import { startupOf, type AnimSteps } from "./swing";
+import { cancelWindow, startupOf, type AnimSteps } from "./swing";
 
 export type { AnimSteps };
 
@@ -27,6 +27,10 @@ export interface Link {
   on: string | null;
   /** Frames between the blow landing and the last frame it may be cancelled. */
   window: number;
+  /** Frame of the state the cancel opens on, once the swing is seen whole (`cancelWindow`). */
+  opens: number;
+  /** The last frame it may fire on — after `opens`, or the link never fires. */
+  closes: number;
   /** Start-up of the attack being cancelled into. */
   startup: number;
   /** The latest the next blow can land, counted from this one — window + start-up. */
@@ -189,7 +193,8 @@ export function chainLinks(
     const anim = anims[attack.anim];
     // No window means the whole animation is one, which is what every attack
     // did before `cancelBy` existed — and is usually the bug.
-    const window = (attack.cancelBy ?? framesOf(anim)) - startupOf(anim);
+    const closes = attack.cancelBy ?? framesOf(anim);
+    const window = closes - startupOf(anim);
     const startup = startupOf(anims[states[to]?.anim ?? ""]);
     const at = depth(from);
     const hitstun = scaledHitstun(attack.hitstun ?? baseHitstun, at);
@@ -198,6 +203,8 @@ export function chainLinks(
       to,
       on,
       window,
+      opens: cancelWindow(anim, attack.cancelBy)?.[0] ?? 1,
+      closes,
       startup,
       worst: window + startup,
       depth: at,

@@ -237,6 +237,9 @@ npm run blows -- <entity>
 npm run chains -- <entity>
                   # what cancels into what, and how many frames of margin each
                   # link has — the instrument for tuning frame data
+npm run basics    # each fighter's basic blows (b_<name>) written into his
+                  # animations.json from his basics.json; a test fails until
+                  # it is run after a change
 npm run sheet -- <entity> --frames 0-30
                   # labelled contact sheet into preview/ (gitignored)
 npm run rom -- frame 4a
@@ -264,7 +267,7 @@ npm run states    # every fighter's states.json from our files: the
                   # specials.json — after any change to them; a test fails
                   # until it is run. No cartridge. Names a copy in his
                   # replaces whose common state changed since; once looked
-                  # at: npm run states -- --accept vegeta attack_b
+                  # at: npm run states -- --accept vegeta smash
 npm run rom -- states --fighter vegeta
                   # where the cartridge's numbers differ from his states
                   # and attributes, printed, never written; --all for all
