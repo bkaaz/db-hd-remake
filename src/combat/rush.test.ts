@@ -4,7 +4,7 @@ import type { StatesFile } from "../entity/states";
 import { generatedFighters } from "../rom/fighterStates";
 import { chainLinks, type AnimSteps } from "./chains";
 import { withHitTypes } from "./hitTypes";
-import { SLOTS, withRush, type BlowAnim, type Picks } from "./rushSlots";
+import { ENDERS, RUSH, SLOTS, withRush, type BlowAnim, type Picks } from "./rushSlots";
 
 /**
  * The rush on every fighter's data as it stands (`combat.md`, The buttons). A
@@ -35,23 +35,39 @@ describe.each(generatedFighters())("%s's Attack and Smash", (name) => {
   });
 });
 
-describe.each(["goku", "freeza"])("%s's rush", (name) => {
-  const { links } = fighter(name);
+/** What each accepted rush holds, and how fast it steps — the rest is computed. */
+const ACCEPTED: Record<string, { picks: Picks; step: { windup: number; hit: number } }> = {
+  // the owner's, 2026-11-25: the Quad Kick's four kicks, an ender of the ultimate's at each depth
+  goku: {
+    picks: {
+      rush_1: { anim: "b_qk1", type: "flinch" },
+      rush_2: { anim: "b_qk2", type: "flinch" },
+      rush_3: { anim: "b_qk3", type: "flinch" },
+      rush_4: { anim: "b_qk4", type: "heavy" },
+      smash_1: { anim: "b_116", type: "stagger" },
+      smash_2: { anim: "b_110", type: "down" },
+      smash_3: { anim: "b_80", type: "high" },
+    },
+    step: { windup: 1.1875, hit: 0.625 },
+  },
+  freeza: { picks: { rush_1: { anim: "m90" }, rush_2: { anim: "m91" }, rush_3: { anim: "m92" } }, step: { windup: 2.375, hit: 1.25 } },
+};
 
-  it("walks Attack rush_1 → rush_2 → rush_3 by cancels", () => {
-    expect(links.map((l) => `${l.from}>${l.to}`).sort()).toEqual(["rush_1>rush_2", "rush_2>rush_3"]);
+describe.each(Object.keys(ACCEPTED))("%s's rush", (name) => {
+  const { links } = fighter(name);
+  const { picks } = ACCEPTED[name];
+
+  it("walks Attack down the line it picked, and leaves it on Smash where an ender is picked", () => {
+    const line = RUSH.filter((_, i) => RUSH.slice(0, i + 1).every((r) => picks[r]));
+    const walks = line.slice(1).map((s, i) => `${line[i]}>${s}`);
+    const ends = ENDERS.filter((e, i) => picks[e] && line[i]).map((e) => `${RUSH[ENDERS.indexOf(e)]}>${e}`);
+    expect(links.map((l) => `${l.from}>${l.to}`).sort()).toEqual([...walks, ...ends].sort());
   });
 
   it("opens every link, and holds it: the latest press still lands inside the hitstun", () => {
     expect(links.filter((l) => l.opens > l.closes || !(l.margin >= 0))).toEqual([]);
   });
 });
-
-/** What each accepted rush holds, and how fast it steps — the rest is computed. */
-const ACCEPTED: Record<string, { picks: Picks; step: { windup: number; hit: number } }> = {
-  goku: { picks: { rush_1: { anim: "m90" }, rush_2: { anim: "m92" }, rush_3: { anim: "m94" } }, step: { windup: 1.1875, hit: 0.625 } },
-  freeza: { picks: { rush_1: { anim: "m90" }, rush_2: { anim: "m91" }, rush_3: { anim: "m92" } }, step: { windup: 2.375, hit: 1.25 } },
-};
 
 describe.each(Object.keys(ACCEPTED))("%s's rush on disk", (name) => {
   it("is what withRush makes of its picks: the steps and the windows computed, none by hand", () => {

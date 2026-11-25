@@ -89,6 +89,11 @@ describe("withRush", () => {
       expect(["rush_4", "smash_1", "smash_2", "smash_3"].map((s) => deep.states[s].type)).toEqual(["knockback", "knockback", "down", "launch"]);
     });
 
+    it("throws the ends where he stands: A4 and every S take no step", () => {
+      expect(["rush_4", "smash_1", "smash_2", "smash_3"].map((s) => deep.states[s].velAt)).toEqual([undefined, undefined, undefined, undefined]);
+      expect(deep.states.rush_3.velAt).toBeDefined();
+    });
+
     it("takes a picked effect over the rule's", () => {
       const picked = withRush(file, anims, 14, { ...three, smash_1: { anim: "s", type: "trip" } }, step);
       expect(picked.states.smash_1.type).toBe("trip");

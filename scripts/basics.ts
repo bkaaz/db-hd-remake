@@ -16,7 +16,8 @@ for (const name of names) {
   if (!existsSync(recipes)) continue;
   const path = `data/entities/${name}/animations.json`;
   const anims = JSON.parse(readFileSync(path, "utf8")) as Record<string, Anim>;
-  const made = withBasics(anims, JSON.parse(readFileSync(recipes, "utf8")) as BasicsFile);
+  const frames = JSON.parse(readFileSync(`data/entities/${name}/frames.json`, "utf8")) as Record<string, unknown>;
+  const made = withBasics(anims, JSON.parse(readFileSync(recipes, "utf8")) as BasicsFile, frames);
   writeFileSync(path, JSON.stringify(made, null, 2) + "\n");
   console.log(`${name}: ${Object.keys(made).filter((a) => a.startsWith(BASIC)).join(" ")}`);
 }

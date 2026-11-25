@@ -34,6 +34,9 @@ export type Picks = Partial<Record<Slot, Pick>>;
  */
 export const EFFECTS: Partial<Record<Slot, string>> = { rush_4: "knockback", smash_1: "knockback", smash_2: "down", smash_3: "launch" };
 
+/** The blows that step forward: the line's first three. An end — A4, every S — is thrown where he stands (owner, 2026-11-25). */
+const STEPS = new Set<Slot>(["rush_1", "rush_2", "rush_3"]);
+
 /** An animation as the rush reads it: its poses too, to tell a whole blow. */
 export interface BlowAnim extends AnimSteps {
   loop?: boolean;
@@ -71,7 +74,7 @@ export function candidates(anims: Record<string, BlowAnim>, played: ReadonlySet<
 
 /**
  * `file` with its rush made of `picks`: Attack walks the line, Smash leaves it
- * for the ender of that depth; each blow steps forward by `step`; each cancel
+ * for the ender of that depth; A1–A3 step forward by `step`; each cancel
  * window is the longest that keeps every way out of it a combo, never past
  * its animation. A slot new to the file starts as a copy of its neighbour's
  * state — rush_4 of rush_3, an ender of `smash` — for its damage and sounds.
@@ -83,13 +86,13 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
   const make = (slot: Slot, base: StateDef, type: string | undefined, exits: Transition[]) => {
     const { anim, type: picked } = picks[slot]!;
     const startup = startupOf(anims[anim]);
-    const { cancelBy: _old, ...rest } = base;
+    const { cancelBy: _old, velAt: _step, ...rest } = base;
     const cancels = exits.length > 1;
     states[slot] = {
       ...rest,
       anim,
       ...((picked ?? type) !== undefined && { type: picked ?? type }),
-      velAt: startup === 0 ? [[0, step.hit]] : [[0, step.windup], [startup, step.hit]],
+      ...(STEPS.has(slot) && { velAt: startup === 0 ? [[0, step.hit]] : [[0, step.windup], [startup, step.hit]] }),
       ...(cancels && { cancelBy: framesOf(anims[anim]) }),
       transitions: exits,
     };

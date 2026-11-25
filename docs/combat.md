@@ -48,9 +48,11 @@ S   S   S   S      (and S alone, from neutral)
 ```
 
 **A fighter has a rush only once the owner accepts how it plays** (owner,
-2026-11-24); until then Attack is one blow. Goku and Freeza have one, three
-blows deep on the original's standing blows, no enders yet. **Each press is
-one blow**, each seen whole and stepping forward: a press made any time
+2026-11-24); until then Attack is one blow. Goku's is the Quad Kick's four
+kicks with an ender at each depth, Freeza's three of the original's standing
+blows (`rush.test.ts` holds both to their picks). **Each press is
+one blow**, each seen whole, A1–A3 stepping forward and every end — A4, each
+S — thrown where he stands: a press made any time
 during a blow is kept until its cancel opens (`StateMachine`, `cancelable`),
 rush_1 and rush_2 are a `flinch`, and `npm run chains -- goku` shows the
 windows. A rush is three picks, one animation a slot, each a whole blow a

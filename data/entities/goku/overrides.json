@@ -1,5 +1,6 @@
 {
   "rush_1": {
+    "anim": "b_qk1",
     "type": "flinch",
     "transitions": [
       {
@@ -10,6 +11,13 @@
         "to": "rush_2"
       },
       {
+        "when": [
+          "cancelable",
+          "pressed:smash"
+        ],
+        "to": "smash_1"
+      },
+      {
         "when": "animEnd",
         "to": "idle"
       }
@@ -20,13 +28,14 @@
         1.1875
       ],
       [
-        6,
+        5,
         0.625
       ]
     ],
-    "cancelBy": 18
+    "cancelBy": 19
   },
   "rush_2": {
+    "anim": "b_qk2",
     "type": "flinch",
     "transitions": [
       {
@@ -37,34 +46,62 @@
         "to": "rush_3"
       },
       {
+        "when": [
+          "cancelable",
+          "pressed:smash"
+        ],
+        "to": "smash_2"
+      },
+      {
         "when": "animEnd",
         "to": "idle"
       }
     ],
-    "anim": "m92",
     "velAt": [
       [
         0,
         1.1875
       ],
       [
-        10,
+        8,
         0.625
       ]
     ],
-    "cancelBy": 23
+    "cancelBy": 21
   },
   "rush_3": {
-    "anim": "m94",
+    "anim": "b_qk3",
+    "type": "flinch",
+    "transitions": [
+      {
+        "when": [
+          "cancelable",
+          "pressed:attack"
+        ],
+        "to": "rush_4"
+      },
+      {
+        "when": [
+          "cancelable",
+          "pressed:smash"
+        ],
+        "to": "smash_3"
+      },
+      {
+        "when": "animEnd",
+        "to": "idle"
+      }
+    ],
     "velAt": [
       [
         0,
         1.1875
       ],
       [
-        10,
+        9,
         0.625
       ]
-    ]
+    ],
+    "cancelBy": 24
   }
 }

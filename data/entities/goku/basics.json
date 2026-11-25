@@ -6,5 +6,9 @@
   "77": { "from": "mae", "steps": [14, 16] },
   "110": { "from": "mae", "steps": [17, 20] },
   "116": { "from": "mae", "steps": [21, 23] },
-  "89": { "from": "m97", "steps": [0, 1] }
+  "89": { "from": "m97", "steps": [0, 1] },
+  "qk1": { "from": "ma5", "steps": [0, 2], "hits": [1, 2], "durs": { "0": 5 } },
+  "qk2": { "parts": [{ "from": "ma5", "steps": [3, 3] }, { "from": "ma5_2", "steps": [0, 1] }] },
+  "qk3": { "parts": [{ "from": "ma5_2", "steps": [2, 3], "durs": { "3": 5 } }, { "from": "ma5_3", "steps": [0, 2], "durs": { "2": 6 } }] },
+  "qk4": { "parts": [{ "from": "ma5_4", "steps": [0, 0], "hits": [], "sfx": { "0": [7] } }, { "from": "ma5_5", "steps": [0, 3] }], "slow": 1.5 }
 }

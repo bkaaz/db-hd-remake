@@ -1529,6 +1529,78 @@
           "to": "idle"
         }
       ]
+    },
+    "rush_4": {
+      "anim": "b_qk4",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "heavy",
+      "damage": 27,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_1": {
+      "anim": "b_116",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "stagger",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_3": {
+      "anim": "b_80",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "high",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
     }
   },
   "replaces": {}
