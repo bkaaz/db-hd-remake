@@ -135,10 +135,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -189,6 +185,15 @@
             "pressed:blast"
           ],
           "to": "final_flash"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": [
@@ -272,10 +277,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -326,6 +327,15 @@
             "pressed:blast"
           ],
           "to": "final_flash"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": [
@@ -405,10 +415,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -459,6 +465,15 @@
             "pressed:blast"
           ],
           "to": "final_flash"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": [
@@ -529,10 +544,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -583,6 +594,15 @@
             "pressed:blast"
           ],
           "to": "final_flash"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": [
@@ -635,10 +655,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -689,6 +705,15 @@
             "pressed:blast"
           ],
           "to": "final_flash"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": [
@@ -739,10 +764,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -793,6 +814,15 @@
             "pressed:blast"
           ],
           "to": "final_flash"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": [
@@ -5308,10 +5338,6 @@
           "to": "energy_dash"
         },
         {
-          "when": "command:ad",
-          "to": "big_bang"
-        },
-        {
           "when": "command:9c",
           "to": "knee_slash"
         },
@@ -5362,6 +5388,15 @@
             "pressed:blast"
           ],
           "to": "final_flash"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": [

@@ -86,12 +86,13 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
     const exits: Transition[] = [
       ...(next ? [{ when: ["cancelable", "pressed:attack"], to: next }] : []),
       ...(ender ? [{ when: ["cancelable", "pressed:smash"], to: ender }] : []),
+      ...followUps(states[slot] ?? states[line[i - 1]]),
       { when: "animEnd", to: "idle" },
     ];
     const type = next ? "flinch" : (EFFECTS[slot] ?? states[slot]?.type);
     make(slot, states[slot] ?? states[line[i - 1]], type, exits);
     if (i === 0 && picks[CLOSE]) make(CLOSE, states[CLOSE] ?? states[slot], type, exits);
-    if (ender) make(ender, states[ender] ?? states.smash, EFFECTS[ender], [{ when: "animEnd", to: "idle" }]);
+    if (ender) make(ender, states[ender] ?? states.smash, EFFECTS[ender], [...followUps(states[ender]), { when: "animEnd", to: "idle" }]);
   });
   closeIn(states, line.length > 0 && !!picks[CLOSE]);
   // each window from the margin of its tightest way out, with it open to the end
@@ -102,6 +103,21 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
   }
   for (const [slot, by] of open) states[slot] = { ...states[slot], cancelBy: Math.min(states[slot].cancelBy!, by) };
   return { ...file, states };
+}
+
+/**
+ * A slot's own ways out of the rush — Goku's specials off any of his blows
+ * (owner, 2026-11-25): the slot's, not the animation's, so they outlive a new
+ * pick; a new slot takes its neighbour's. Its ways on down the line, to an
+ * ender and to idle are the rush's. A special does not narrow the window,
+ * which stays the combo's: it need not be one itself.
+ */
+function followUps(def: StateDef | undefined): Transition[] {
+  return (def?.transitions ?? []).filter(isFollowUp);
+}
+
+function isFollowUp(t: Transition): boolean {
+  return t.when !== "animEnd" && !(SLOTS as readonly string[]).includes(t.to);
 }
 
 /**
@@ -118,10 +134,10 @@ function closeIn(states: Record<string, StateDef>, picked: boolean): void {
   }
 }
 
-/** The rush's links, with the sum each lives or dies by (`chainLinks`). */
+/** The rush's links, slot to slot, with the sum each lives or dies by (`chainLinks`). */
 export function rushLinks(file: StatesFile, anims: Record<string, AnimSteps>, baseHitstun: number): Link[] {
   const from = new Set<string>([...RUSH, CLOSE]);
-  return chainLinks(withHitTypes(file), anims, baseHitstun).filter((l) => from.has(l.from));
+  return chainLinks(withHitTypes(file), anims, baseHitstun).filter((l) => from.has(l.from) && (SLOTS as readonly string[]).includes(l.to));
 }
 
 /**

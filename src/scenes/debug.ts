@@ -1,7 +1,8 @@
 import { soundIdCollisions, validateSounds } from "../audio/sounds";
 import type { Music } from "../audio/music";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
-import { readPicks } from "../combat/rushAddress";
+import { picksOf, readPicks } from "../combat/rushAddress";
+import { withTempo } from "../combat/rushTempo";
 import { HIT_TYPES } from "../combat/hitTypes";
 import { stepOf, withRush } from "../combat/rushSlots";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
@@ -99,12 +100,13 @@ export class DebugScene implements Scene {
     private readonly situation: (req: DebugRequest) => string[],
   ) {}
 
-  /** A pick that only changes player one's rush is tried on him where he stands; any other builds the scene again. */
+  /** A pick that only changes player one's rush or its tempo is tried on him where he stands; any other builds the scene again. */
   take(request: SceneRequest): boolean {
-    if (request.scene !== "debug" || !sameBut(request, this.req, "rush1")) return false;
-    const def = request.rush1 === undefined ? this.own : tryRush(this.own, request.rush1);
+    if (request.scene !== "debug" || !sameBut(request, this.req, "rush1", "tempo1", "hitstop")) return false;
+    const def = tryRush(this.own, request);
     if (typeof def === "string" || !def.states) return false;
-    this.fighters.player.playStates(def.states);
+    if (request.rush1 !== this.req.rush1 || request.tempo1 !== this.req.tempo1) this.fighters.player.playStates(def.states, def.animations);
+    for (const body of this.fighters.bodies) body.hitstopScale = request.hitstop ?? 1;
     this.req = request;
     describes(this.situation(request));
     return true;
@@ -145,7 +147,7 @@ export class DebugScene implements Scene {
     if (typeof rules === "string") return rules;
     const own = await loadFighter(req.p1);
     if (typeof own === "string") return own;
-    const p1 = req.rush1 === undefined ? own : tryRush(own, req.rush1);
+    const p1 = tryRush(own, req);
     if (typeof p1 === "string") return p1;
     const p2 = req.p2 === req.p1 ? own : await loadFighter(req.p2);
     if (typeof p2 === "string") return p2;
@@ -177,6 +179,7 @@ export class DebugScene implements Scene {
     const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles, opens, rules });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
+    for (const body of fighters.bodies) body.hitstopScale = req.hitstop ?? 1;
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
     // colours asked for override the original's rule, which Fighters applied
     for (const [fighter, pal] of [[fighters.player, req.pal1], [fighters.opponent, req.pal2]] as const) {
@@ -411,16 +414,24 @@ function situationOf(r: DebugRequest, mode: unknown): string[] {
       (r.hp2 !== undefined ? ` hp2=${r.hp2}` : "") +
       (r.pal1 !== undefined ? ` pal1=${r.pal1}` : "") +
       (r.pal2 !== undefined ? ` pal2=${r.pal2}` : "") +
-      (r.rush1 !== undefined ? ` rush1=${r.rush1}` : ""),
+      (r.rush1 !== undefined ? ` rush1=${r.rush1}` : "") +
+      (r.tempo1 !== undefined ? ` tempo1=${r.tempo1}` : "") +
+      (r.hitstop !== undefined ? ` hitstop=${r.hitstop}` : ""),
   ];
 }
 
-/** His definition playing the rush the panel tries (`combat/rushSlots.ts`), or why it cannot. */
-function tryRush(def: EntityDef, text: string): EntityDef | string {
+/**
+ * His definition playing the rush the panel tries, at its tempo — his own
+ * rush when it picks none (`combat/rushSlots.ts`, `rushTempo.ts`) — or why it
+ * cannot. Untouched when the panel asks for nothing.
+ */
+function tryRush(def: EntityDef, req: DebugRequest): EntityDef | string {
+  if (req.rush1 === undefined && req.tempo1 === undefined) return def;
   if (!def.states) return `${def.name}: no states.json to try a rush on`;
-  const picks = readPicks(text, def.animations, HIT_TYPES);
+  const picks = req.rush1 === undefined ? picksOf(def.states) : readPicks(req.rush1, def.animations, HIT_TYPES);
   if (typeof picks === "string") return `${def.name}: ${picks}`;
-  return { ...def, states: withRush(def.states, def.animations, def.attributes.hitstun, picks, stepOf(def.states)) };
+  const animations = withTempo(def.animations, picks, req.tempo1 ?? 1);
+  return { ...def, animations, states: withRush(def.states, animations, def.attributes.hitstun, picks, stepOf(def.states)) };
 }
 
 /** A fighter's definition, or why it cannot fight. */

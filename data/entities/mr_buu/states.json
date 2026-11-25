@@ -147,10 +147,6 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:af",
-          "to": "energy_field"
-        },
-        {
           "when": "command:9f",
           "to": "sender_9f"
         },
@@ -185,6 +181,15 @@
             "pressed:blast"
           ],
           "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [
@@ -279,10 +284,6 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:af",
-          "to": "energy_field"
-        },
-        {
           "when": "command:9f",
           "to": "sender_9f"
         },
@@ -317,6 +318,15 @@
             "pressed:blast"
           ],
           "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [
@@ -407,10 +417,6 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:af",
-          "to": "energy_field"
-        },
-        {
           "when": "command:9f",
           "to": "sender_9f"
         },
@@ -445,6 +451,15 @@
             "pressed:blast"
           ],
           "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [
@@ -526,10 +541,6 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:af",
-          "to": "energy_field"
-        },
-        {
           "when": "command:9f",
           "to": "sender_9f"
         },
@@ -564,6 +575,15 @@
             "pressed:blast"
           ],
           "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [
@@ -628,10 +648,6 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:af",
-          "to": "energy_field"
-        },
-        {
           "when": "command:9f",
           "to": "sender_9f"
         },
@@ -666,6 +682,15 @@
             "pressed:blast"
           ],
           "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [
@@ -723,10 +748,6 @@
           "to": "tornado_hip"
         },
         {
-          "when": "command:af",
-          "to": "energy_field"
-        },
-        {
           "when": "command:9f",
           "to": "sender_9f"
         },
@@ -761,6 +782,15 @@
             "pressed:blast"
           ],
           "to": "mightiness_bomber"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "energy_field"
         },
         {
           "when": [

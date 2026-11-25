@@ -92,7 +92,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:b3",
+      "when": [
+        "held:back",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "buu_burn"
     },
     {

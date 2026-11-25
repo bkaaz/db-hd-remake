@@ -72,7 +72,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:af",
+      "when": [
+        "held:back",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "energy_field"
     },
     {

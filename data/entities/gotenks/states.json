@@ -134,10 +134,6 @@
           "to": "rolling_thunder"
         },
         {
-          "when": "command:ac",
-          "to": "kikoha"
-        },
-        {
           "when": "command:bd",
           "to": "ultra_renzoku"
         },
@@ -193,6 +189,15 @@
             "pressed:blast"
           ],
           "to": "ghost_kamikaze"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kikoha"
         },
         {
           "when": "pressed:attack",
@@ -266,10 +271,6 @@
           "to": "rolling_thunder"
         },
         {
-          "when": "command:ac",
-          "to": "kikoha"
-        },
-        {
           "when": "command:bd",
           "to": "ultra_renzoku"
         },
@@ -325,6 +326,15 @@
             "pressed:blast"
           ],
           "to": "ghost_kamikaze"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kikoha"
         },
         {
           "when": "pressed:attack",
@@ -394,10 +404,6 @@
           "to": "rolling_thunder"
         },
         {
-          "when": "command:ac",
-          "to": "kikoha"
-        },
-        {
           "when": "command:bd",
           "to": "ultra_renzoku"
         },
@@ -453,6 +459,15 @@
             "pressed:blast"
           ],
           "to": "ghost_kamikaze"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kikoha"
         },
         {
           "when": "pressed:attack",
@@ -513,10 +528,6 @@
           "to": "rolling_thunder"
         },
         {
-          "when": "command:ac",
-          "to": "kikoha"
-        },
-        {
           "when": "command:bd",
           "to": "ultra_renzoku"
         },
@@ -572,6 +583,15 @@
             "pressed:blast"
           ],
           "to": "ghost_kamikaze"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kikoha"
         },
         {
           "when": "pressed:strike",
@@ -615,10 +635,6 @@
           "to": "rolling_thunder"
         },
         {
-          "when": "command:ac",
-          "to": "kikoha"
-        },
-        {
           "when": "command:bd",
           "to": "ultra_renzoku"
         },
@@ -674,6 +690,15 @@
             "pressed:blast"
           ],
           "to": "ghost_kamikaze"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kikoha"
         },
         {
           "when": "pressed:strike",
@@ -710,10 +735,6 @@
           "to": "rolling_thunder"
         },
         {
-          "when": "command:ac",
-          "to": "kikoha"
-        },
-        {
           "when": "command:bd",
           "to": "ultra_renzoku"
         },
@@ -769,6 +790,15 @@
             "pressed:blast"
           ],
           "to": "ghost_kamikaze"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kikoha"
         },
         {
           "when": "pressed:attack",

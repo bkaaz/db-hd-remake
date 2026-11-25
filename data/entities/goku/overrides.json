@@ -18,6 +18,16 @@
         "to": "smash_1"
       },
       {
+        "when": [
+          "cancelable",
+          "held:fwd",
+          "!held:down",
+          "!held:up",
+          "pressed:blast"
+        ],
+        "to": "kame_charge"
+      },
+      {
         "when": "animEnd",
         "to": "idle"
       }
@@ -53,6 +63,16 @@
         "to": "smash_2"
       },
       {
+        "when": [
+          "cancelable",
+          "held:fwd",
+          "!held:down",
+          "!held:up",
+          "pressed:blast"
+        ],
+        "to": "kame_charge"
+      },
+      {
         "when": "animEnd",
         "to": "idle"
       }
@@ -86,6 +106,16 @@
           "pressed:smash"
         ],
         "to": "smash_3"
+      },
+      {
+        "when": [
+          "cancelable",
+          "held:fwd",
+          "!held:down",
+          "!held:up",
+          "pressed:blast"
+        ],
+        "to": "kame_charge"
       },
       {
         "when": "animEnd",

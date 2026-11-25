@@ -1,4 +1,5 @@
-import type { BlowAnim } from "../combat/rushSlots";
+import { labelOf } from "../combat/rushAddress";
+import { ENDERS, SLOTS, type BlowAnim, type Picks, type Slot } from "../combat/rushSlots";
 import type { Box, FrameDef } from "../entity/entityFile";
 
 /**
@@ -15,6 +16,18 @@ const HIT = "#ff4d4d";
 /** The step a blow lands on: the first with a hit box, else its first. */
 function landing(anim: BlowAnim): BlowAnim["steps"][number] | undefined {
   return anim.steps.find((s) => (s.boxes ?? []).some((b) => b.type === "hit")) ?? anim.steps[0];
+}
+
+/** Each picked slot's thumbnail: Attack's line on one row, Smash's enders under it; none until his sheet is drawn. */
+export function blowThumbs(picks: Picks, anims: Record<string, BlowAnim>, sheet: HTMLCanvasElement | null, frames: Record<string, FrameDef>): HTMLElement {
+  const rows = document.createElement("span");
+  rows.className = "thumbs";
+  for (const row of [SLOTS.filter((s) => !(ENDERS as readonly Slot[]).includes(s)), ENDERS]) {
+    const line = document.createElement("span");
+    if (sheet) line.append(...row.filter((s) => picks[s]).map((s) => blowThumb(labelOf(s), anims[picks[s]!.anim], sheet, frames)));
+    rows.append(line);
+  }
+  return rows;
 }
 
 /** `anim`'s landing drawn under `label`, or an empty square when there is nothing to draw. */

@@ -135,10 +135,6 @@
           "to": "quad_kick"
         },
         {
-          "when": "command:ab",
-          "to": "kame_up"
-        },
-        {
           "when": "command:a4",
           "to": "knee_slash"
         },
@@ -195,6 +191,15 @@
             "close:attack"
           ],
           "to": "rush_1_close"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_up"
         },
         {
           "when": [
@@ -286,10 +291,6 @@
           "to": "quad_kick"
         },
         {
-          "when": "command:ab",
-          "to": "kame_up"
-        },
-        {
           "when": "command:a4",
           "to": "knee_slash"
         },
@@ -346,6 +347,15 @@
             "close:attack"
           ],
           "to": "rush_1_close"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_up"
         },
         {
           "when": [
@@ -433,10 +443,6 @@
           "to": "quad_kick"
         },
         {
-          "when": "command:ab",
-          "to": "kame_up"
-        },
-        {
           "when": "command:a4",
           "to": "knee_slash"
         },
@@ -493,6 +499,15 @@
             "close:attack"
           ],
           "to": "rush_1_close"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_up"
         },
         {
           "when": [
@@ -571,10 +586,6 @@
           "to": "quad_kick"
         },
         {
-          "when": "command:ab",
-          "to": "kame_up"
-        },
-        {
           "when": "command:a4",
           "to": "knee_slash"
         },
@@ -624,6 +635,15 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_up"
         },
         {
           "when": [
@@ -685,10 +705,6 @@
           "to": "quad_kick"
         },
         {
-          "when": "command:ab",
-          "to": "kame_up"
-        },
-        {
           "when": "command:a4",
           "to": "knee_slash"
         },
@@ -741,6 +757,15 @@
         },
         {
           "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_up"
+        },
+        {
+          "when": [
             "held:fwd",
             "!held:down",
             "!held:up",
@@ -790,10 +815,6 @@
         {
           "when": "command:a5",
           "to": "quad_kick"
-        },
-        {
-          "when": "command:ab",
-          "to": "kame_up"
         },
         {
           "when": "command:a4",
@@ -852,6 +873,15 @@
             "close:attack"
           ],
           "to": "rush_1_close"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_up"
         },
         {
           "when": [
@@ -1243,6 +1273,16 @@
           "to": "smash_1"
         },
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -1286,6 +1326,16 @@
           "to": "smash_3"
         },
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -1327,6 +1377,16 @@
             "pressed:smash"
           ],
           "to": "smash_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
         },
         {
           "when": "animEnd",
@@ -4124,6 +4184,16 @@
       "blockSound": "block_17",
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -4137,7 +4207,8 @@
           6,
           0.625
         ]
-      ]
+      ],
+      "cancelBy": 46
     },
     "smash_1": {
       "anim": "b_116",
@@ -4152,10 +4223,21 @@
       "blockSound": "block_17",
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "cancelBy": 19
     },
     "smash_2": {
       "anim": "b_110",
@@ -4170,10 +4252,21 @@
       "blockSound": "block_17",
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "cancelBy": 24
     },
     "smash_3": {
       "anim": "b_80",
@@ -4188,10 +4281,31 @@
       "blockSound": "block_17",
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_up"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "cancelBy": 20
     },
     "rush_1_close": {
       "anim": "b_qk1_knee",
@@ -4218,6 +4332,16 @@
             "pressed:smash"
           ],
           "to": "smash_1"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
         },
         {
           "when": "animEnd",

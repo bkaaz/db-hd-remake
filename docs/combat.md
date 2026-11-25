@@ -21,7 +21,7 @@ pad out (owner, 2026-11-24; `inspiration.md`). Which key is which is
 |---|---|---|---|
 | move | d-pad, left stick | arrows | walk, jump (↑), crouch (↓) |
 | **Guard** | A | `Z` | held, a stance that blocks; tapped at the right moment, vanishes (§5) |
-| **Ki** | B | `X` | the ki blast; forward + Ki is the kamehameha |
+| **Ki** | B | `X` | the ki blast; forward + Ki is the kamehameha, back + Ki the ← ↙ ↓ ↘ → one, down + Ki the ultimate |
 | **Attack** | X | `A` | the rush: pressed again, walks the string one blow further |
 | **Smash** | Y | `S` | ends the string, at any depth, with a heavier blow |
 | **Dash** | LB | `Q` | with forward or back, the original's dash (its L/R) |
@@ -63,14 +63,21 @@ blows are few — a special's parts end mid-motion — so a fighter has **basic
 blows** cut from his longer animations, an ultimate's quick run first, each
 closed by his stance (`basics.json`); the panel lists them first. The debug panel tries
 player one's under his readout (`ui/rushPicks.ts`, the scene's `rush1`,
-taken by the running fight in place: `Scene.take`) and shows each link's margin; it keeps nothing — an accepted rush is written into
+taken by the running fight in place: `Scene.take`) and shows each link's margin, and plays the whole rush faster or slower — its
+tempo, 70% to 150% (`rushTempo.ts`), tried before a blow's own speed goes
+into its recipe as `slow`; the bar above the game scales every blow's
+hitstop the same way, tried before `data/hit-types.json` is changed; it keeps
+nothing — an accepted rush is written into
 his data by hand. Which blow stands where is still to choose.
 
 **How each end of the rush is taken is a rule, the same for every fighter**
 (owner, 2026-11-25); only the animations are his. The deeper, the better the
 end: A4 and S1 send him off (`knockback`), S2 floors him (`down`), S3 lifts
-him (`launch`) for the ki follow-up still to come — provisional, as `EFFECTS`
+him (`launch`) for a ki follow-up — provisional, as `EFFECTS`
 in `combat/rushSlots.ts` says; the panel tries another effect on any slot.
+Goku's S3 cancels into back + Ki, his upward Kamehameha, from the frame its
+hit box is gone (owner, 2026-11-25); an ender's own ways out stay through
+a new pick.
 
 **A1 has a close version, A1c**, thrown instead when the opponent is within
 the fighter's `closeRange.attack` — Goku's knee where his kick would reach
@@ -91,12 +98,14 @@ ours are asked for comes with the rework, one move at a time (owner,
 
 - **Forward + Ki**: every fighter's ↓ ↙ → Ki move — the Kamehameha and its
   kind, or what the fighter has there instead.
+- **Back + Ki**: every fighter's ← ↙ ↓ ↘ → Ki move (owner, 2026-11-25) —
+  Goku's upward Kamehameha, Big Bang, Death Ball, Masenko and their kind.
 - **Down + Ki** is the **ultimate**: the move the cartridge kept for health 80
   or less, now for any health at 30 ki. Cell has two: Bakuretsu Rush on
   down + Ki, Tri Eruption with Charge held as well. Vegeta's Galactic
   Gunfire keeps its 64 px and its start just off the ground.
 
-A direction counts only alone: down-forward + Ki is neither, and plays the ki
+A direction counts only alone: down-forward or down-back + Ki is none of them, and plays the ki
 blast. Where a command of the cartridge also ends in that direction and Ki,
 the command wins (`inTableOrder`, `rom/entries.ts`). One thing about it is settled
 (owner, 2026-10-31): directions count in the order they were **pressed**, so a ↙

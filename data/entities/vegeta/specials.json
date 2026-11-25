@@ -49,7 +49,12 @@
         "@ground",
         "crouch_loop"
       ],
-      "when": "command:ad",
+      "when": [
+        "held:back",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "big_bang"
     },
     {

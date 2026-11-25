@@ -135,10 +135,6 @@
           "to": "geri_combo"
         },
         {
-          "when": "command:af",
-          "to": "big_bang"
-        },
-        {
           "when": "command:a7",
           "to": "elbow_dash"
         },
@@ -194,6 +190,15 @@
             "pressed:blast"
           ],
           "to": "final_kame"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": "pressed:attack",
@@ -267,10 +272,6 @@
           "to": "geri_combo"
         },
         {
-          "when": "command:af",
-          "to": "big_bang"
-        },
-        {
           "when": "command:a7",
           "to": "elbow_dash"
         },
@@ -326,6 +327,15 @@
             "pressed:blast"
           ],
           "to": "final_kame"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": "pressed:attack",
@@ -395,10 +405,6 @@
           "to": "geri_combo"
         },
         {
-          "when": "command:af",
-          "to": "big_bang"
-        },
-        {
           "when": "command:a7",
           "to": "elbow_dash"
         },
@@ -454,6 +460,15 @@
             "pressed:blast"
           ],
           "to": "final_kame"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": "pressed:attack",
@@ -514,10 +529,6 @@
           "to": "geri_combo"
         },
         {
-          "when": "command:af",
-          "to": "big_bang"
-        },
-        {
           "when": "command:a7",
           "to": "elbow_dash"
         },
@@ -573,6 +584,15 @@
             "pressed:blast"
           ],
           "to": "final_kame"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": "pressed:strike",
@@ -616,10 +636,6 @@
           "to": "geri_combo"
         },
         {
-          "when": "command:af",
-          "to": "big_bang"
-        },
-        {
           "when": "command:a7",
           "to": "elbow_dash"
         },
@@ -675,6 +691,15 @@
             "pressed:blast"
           ],
           "to": "final_kame"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": "pressed:strike",
@@ -711,10 +736,6 @@
           "to": "geri_combo"
         },
         {
-          "when": "command:af",
-          "to": "big_bang"
-        },
-        {
           "when": "command:a7",
           "to": "elbow_dash"
         },
@@ -770,6 +791,15 @@
             "pressed:blast"
           ],
           "to": "final_kame"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "big_bang"
         },
         {
           "when": "pressed:attack",

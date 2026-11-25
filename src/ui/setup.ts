@@ -29,6 +29,8 @@ const FIRST_DEBUG: DebugRequest = { scene: "debug", p1: "goku", p2: "goku", mode
  * back to it (owner). Above a fighter's own full it is full.
  */
 const HEALTHS = [50, 80, 150, 200, 400];
+/** Shares of every blow's hitstop the bar offers. */
+const HITSTOPS = [0.25, 0.5, 0.75, 1, 1.25];
 /** A fighter's palette: the original's rule, his own, or his second set; then his sets of ours. */
 const COLOURS: Choice[] = [["", "auto"], ["1", "1"], ["2", "2"]];
 
@@ -101,6 +103,9 @@ export class SetupBar {
       // the page's pick, not the scene's: a new one is heard at once and rebuilds nothing
       const songs: Choice[] = [["none", "none"], ["random", "random"], ...this.songs.map((s): Choice => [String(s), String(s)])];
       arenaLine.append(field("music", picker(String(this.music.pick), songs, (v) => (this.music.pick = readSongPick(v)))));
+      // every blow's pause against its type's, tried before the table is changed
+      const stops = HITSTOPS.map((h): Choice => [String(h), String(h * 100)]);
+      arenaLine.append(field("hitstop %", segmented(String(r.hitstop ?? 1), stops, (v) => this.go(Number(v) === 1 ? without(r, "hitstop") : { ...r, hitstop: Number(v) }))));
 
       const fighters: Choice[] = this.fighters.map((f) => [f, f]);
       const healths: Choice[] = HEALTHS.map((h) => [String(h), String(h)]);
@@ -110,7 +115,7 @@ export class SetupBar {
         const pal = who === "p1" ? "pal1" : "pal2";
         sides[i].push(
           // another fighter's rush is not his: player one's pick goes with him
-          field("fighter", picker(r[who], fighters, (name) => (who === "p1" ? this.go({ ...without(r, "rush1"), p1: name }) : change({ [who]: name })))),
+          field("fighter", picker(r[who], fighters, (name) => (who === "p1" ? this.go({ ...without(r, "rush1", "tempo1"), p1: name }) : change({ [who]: name })))),
           // auto is the original's: player two's second set when both are the same fighter
           // a set of ours shows as the next number after the cartridge's two, its name in the address
           field("palette", segmented(r[pal] ?? "", [...COLOURS, ...(this.colourSets[r[who]] ?? []).map((c, n): Choice => [c, String(n + 3)])], (v) => this.go(v ? { ...r, [pal]: v } : without(r, pal)))),
@@ -118,7 +123,11 @@ export class SetupBar {
         );
       });
       // a rush of player one's, tried out: a new address, as every pick here is
-      sides[0].push(...this.rush.fields(r.p1, r.rush1, (rush1) => this.go(rush1 === undefined ? without(r, "rush1") : { ...r, rush1 })));
+      sides[0].push(
+        ...this.rush.fields(r.p1, { rush: r.rush1, tempo: r.tempo1 }, ({ rush, tempo }) =>
+          this.go({ ...without(r, "rush1", "tempo1"), ...(rush !== undefined && { rush1: rush }), ...(tempo !== undefined && { tempo1: tempo }) }),
+        ),
+      );
     }
     arenaLine.append(field("scale", this.scalePicker()));
     const notice = this.notice ? [noticeLine(this.notice)] : [];
@@ -143,7 +152,7 @@ function noticeLine(text: string): HTMLElement {
 }
 
 /** The request without some of its optional parameters. */
-function without(r: DebugRequest, ...keys: ("arena" | "time" | "hp1" | "hp2" | "pal1" | "pal2" | "rush1")[]): DebugRequest {
+function without(r: DebugRequest, ...keys: ("arena" | "time" | "hp1" | "hp2" | "pal1" | "pal2" | "rush1" | "tempo1" | "hitstop")[]): DebugRequest {
   const copy = { ...r };
   for (const k of keys) delete copy[k];
   return copy;

@@ -89,6 +89,8 @@ html, body {
 .side-setup select { max-width: 18em; }
 .side-setup code { max-width: 19em; white-space: normal; overflow-wrap: anywhere; }
 .stepper { display: inline-flex; align-items: center; gap: 2px; }
+/* A long row of choices — the rush's tempo — wraps rather than widen the column. */
+.side-setup .seg { display: inline-flex; flex-wrap: wrap; max-width: 19em; }
 /* A rush slot's row — blow, ▲ ▼, effect — fits the player's column at the
    narrowest the page lays it out; a longer name is cut in the select. */
 .stepper select { max-width: 7.5em; }

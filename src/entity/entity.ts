@@ -908,13 +908,14 @@ export class Entity {
   }
 
   /**
-   * Play `states` from now on, where he stands and with what health and ki he
-   * has — a rush tried from the debug panel, without building the scene again.
-   * He starts over in his first state: the one he is in may not be in them.
+   * Play `states` from now on — and `animations`, a rush's tempo tried — where
+   * he stands and with what health and ki he has: a rush tried from the debug
+   * panel, without building the scene again. He starts over in his first
+   * state: the one he is in may not be in them.
    */
-  playStates(states: StatesFile): void {
-    this.def = { ...this.def, states };
-    this.sm = new StateMachine(withHitTypes(states), this.def.animations);
+  playStates(states: StatesFile, animations = this.def.animations): void {
+    this.def = { ...this.def, states, animations };
+    this.sm = new StateMachine(withHitTypes(states), animations);
     this.release();
   }
 
@@ -1086,8 +1087,15 @@ export class Entity {
   }
 
   get attackHitstop(): number {
-    return this.sm?.def.hitstop ?? this.hitstop;
+    return Math.round((this.sm?.def.hitstop ?? this.hitstop) * this.hitstopScale);
   }
+
+  /**
+   * How long his blows pause the game against what their types say — the
+   * debug panel's hitstop, tried before the table (`data/hit-types.json`) is
+   * changed. A bolt he throws takes his.
+   */
+  hitstopScale = 1;
 
   /** Frames of white screen this entity's current attack asks for when it lands. */
   get attackFlash(): number {

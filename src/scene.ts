@@ -74,6 +74,10 @@ export interface DebugRequest {
    * panel's, laid on his own states.
    */
   rush1?: string;
+  /** How fast player one's rush plays, 1 its own (`combat/rushTempo.ts`): the panel's tempo. */
+  tempo1?: number;
+  /** Every blow's hitstop against what its type says, 1 as it is (`Entity.hitstopScale`). */
+  hitstop?: number;
 }
 
 /** Whether a colours pick names a set of ours rather than "1" or "2". */
@@ -125,13 +129,15 @@ export function queryFor(request: SceneRequest): string {
     if (request.pal1 !== undefined) q.set("pal1", request.pal1);
     if (request.pal2 !== undefined) q.set("pal2", request.pal2);
     if (request.rush1 !== undefined) q.set("rush1", request.rush1);
+    if (request.tempo1 !== undefined) q.set("tempo1", String(request.tempo1));
+    if (request.hitstop !== undefined) q.set("hitstop", String(request.hitstop));
   }
   return `?${q.toString()}`;
 }
 
-/** Whether two requests ask for the same scene but for `key` — what a scene may change in place (`Scene.take`). */
-export function sameBut(a: DebugRequest, b: DebugRequest, key: keyof DebugRequest): boolean {
-  const rest = (r: DebugRequest) => queryFor({ ...r, [key]: undefined });
+/** Whether two requests ask for the same scene but for `keys` — what a scene may change in place (`Scene.take`). */
+export function sameBut(a: DebugRequest, b: DebugRequest, ...keys: (keyof DebugRequest)[]): boolean {
+  const rest = (r: DebugRequest) => queryFor({ ...r, ...Object.fromEntries(keys.map((k) => [k, undefined])) });
   return rest(a) === rest(b);
 }
 
@@ -163,6 +169,10 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       colours[key] = pal;
     }
     const rush1 = q.get("rush1");
+    const tempo = q.get("tempo1");
+    if (tempo !== null && !(Number(tempo) >= 0.5 && Number(tempo) <= 2)) return `tempo1 "${tempo}" is not a tempo, 0.5 to 2`;
+    const stop = q.get("hitstop");
+    if (stop !== null && !(Number(stop) >= 0 && Number(stop) <= 2)) return `hitstop "${stop}" is not a share of the hitstop, 0 to 2`;
     if (rush1 !== null && !/^[AS][1-4]c?=[a-z0-9_]+(:[a-z]+)?(,[AS][1-4]c?=[a-z0-9_]+(:[a-z]+)?)*$/.test(rush1)) return `rush1 "${rush1}" is not slots and their blows, as A1=m90,S1=m93:knockback`;
     return {
       scene: "debug",
@@ -174,6 +184,8 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       ...health,
       ...colours,
       ...(rush1 !== null && { rush1 }),
+      ...(tempo !== null && { tempo1: Number(tempo) }),
+      ...(stop !== null && { hitstop: Number(stop) }),
     };
   }
   return `unknown scene "${scene}" — try select or debug`;

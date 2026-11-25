@@ -95,7 +95,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:ad",
+      "when": [
+        "held:back",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "masenko"
     },
     {

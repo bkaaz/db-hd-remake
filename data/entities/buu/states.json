@@ -135,10 +135,6 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b3",
-          "to": "buu_burn"
-        },
-        {
           "when": "command:b1",
           "to": "whip"
         },
@@ -185,6 +181,15 @@
             "pressed:blast"
           ],
           "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "buu_burn"
         },
         {
           "when": [
@@ -267,10 +272,6 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b3",
-          "to": "buu_burn"
-        },
-        {
           "when": "command:b1",
           "to": "whip"
         },
@@ -317,6 +318,15 @@
             "pressed:blast"
           ],
           "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "buu_burn"
         },
         {
           "when": [
@@ -395,10 +405,6 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b3",
-          "to": "buu_burn"
-        },
-        {
           "when": "command:b1",
           "to": "whip"
         },
@@ -445,6 +451,15 @@
             "pressed:blast"
           ],
           "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "buu_burn"
         },
         {
           "when": [
@@ -514,10 +529,6 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b3",
-          "to": "buu_burn"
-        },
-        {
           "when": "command:b1",
           "to": "whip"
         },
@@ -564,6 +575,15 @@
             "pressed:blast"
           ],
           "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "buu_burn"
         },
         {
           "when": [
@@ -616,10 +636,6 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b3",
-          "to": "buu_burn"
-        },
-        {
           "when": "command:b1",
           "to": "whip"
         },
@@ -666,6 +682,15 @@
             "pressed:blast"
           ],
           "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "buu_burn"
         },
         {
           "when": [
@@ -711,10 +736,6 @@
           "to": "disk_tackle"
         },
         {
-          "when": "command:b3",
-          "to": "buu_burn"
-        },
-        {
           "when": "command:b1",
           "to": "whip"
         },
@@ -761,6 +782,15 @@
             "pressed:blast"
           ],
           "to": "energy_sphere"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "buu_burn"
         },
         {
           "when": [

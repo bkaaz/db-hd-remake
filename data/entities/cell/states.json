@@ -143,10 +143,6 @@
           "to": "energy_burst"
         },
         {
-          "when": "command:ab",
-          "to": "kamehameha"
-        },
-        {
           "when": "command:a4",
           "to": "suki_combo"
         },
@@ -209,6 +205,15 @@
             "pressed:blast"
           ],
           "to": "chou_kamehameha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kamehameha"
         },
         {
           "when": "pressed:attack",
@@ -290,10 +295,6 @@
           "to": "energy_burst"
         },
         {
-          "when": "command:ab",
-          "to": "kamehameha"
-        },
-        {
           "when": "command:a4",
           "to": "suki_combo"
         },
@@ -356,6 +357,15 @@
             "pressed:blast"
           ],
           "to": "chou_kamehameha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kamehameha"
         },
         {
           "when": "pressed:attack",
@@ -433,10 +443,6 @@
           "to": "energy_burst"
         },
         {
-          "when": "command:ab",
-          "to": "kamehameha"
-        },
-        {
           "when": "command:a4",
           "to": "suki_combo"
         },
@@ -499,6 +505,15 @@
             "pressed:blast"
           ],
           "to": "chou_kamehameha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kamehameha"
         },
         {
           "when": "pressed:attack",
@@ -567,10 +582,6 @@
           "to": "energy_burst"
         },
         {
-          "when": "command:ab",
-          "to": "kamehameha"
-        },
-        {
           "when": "command:a4",
           "to": "suki_combo"
         },
@@ -633,6 +644,15 @@
             "pressed:blast"
           ],
           "to": "chou_kamehameha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kamehameha"
         },
         {
           "when": "pressed:strike",
@@ -684,10 +704,6 @@
           "to": "energy_burst"
         },
         {
-          "when": "command:ab",
-          "to": "kamehameha"
-        },
-        {
           "when": "command:a4",
           "to": "suki_combo"
         },
@@ -750,6 +766,15 @@
             "pressed:blast"
           ],
           "to": "chou_kamehameha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kamehameha"
         },
         {
           "when": "pressed:strike",
@@ -794,10 +819,6 @@
           "to": "energy_burst"
         },
         {
-          "when": "command:ab",
-          "to": "kamehameha"
-        },
-        {
           "when": "command:a4",
           "to": "suki_combo"
         },
@@ -860,6 +881,15 @@
             "pressed:blast"
           ],
           "to": "chou_kamehameha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kamehameha"
         },
         {
           "when": "pressed:attack",

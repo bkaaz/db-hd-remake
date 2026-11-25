@@ -53,6 +53,22 @@ describe("withRush", () => {
     expect(noWindup.states.rush_1.velAt).toEqual([[0, 1]]);
   });
 
+  describe("a slot's own way out, a special", () => {
+    const wave = { when: ["cancelable", "held:fwd", "pressed:blast"], to: "kame" };
+    const own = { ...made, states: { ...made.states, rush_1: { ...made.states.rush_1, transitions: [wave, ...made.states.rush_1.transitions!] } } };
+    const again = withRush(own, anims, 14, { ...three, rush_1: { anim: "b" }, rush_1_close: { anim: "quick" } }, step);
+
+    it("stays through a new pick, after the rush's ways on, and A1c leads there too", () => {
+      expect(exits(again, "rush_1")).toEqual(["cancelable+pressed:attack>rush_2", "cancelable+held:fwd+pressed:blast>kame", "animEnd>idle"]);
+      expect(exits(again, "rush_1_close")).toEqual(exits(again, "rush_1"));
+    });
+
+    it("leaves the window the combo's: a special is no link of the rush", () => {
+      expect(again.states.rush_1.cancelBy).toBe(withRush(file, anims, 14, { ...three, rush_1: { anim: "b" } }, step).states.rush_1.cancelBy);
+      expect(rushLinks(again, anims, 14).map((l) => l.to)).not.toContain("kame");
+    });
+  });
+
   describe("A1 thrown close", () => {
     const standing = { ...file, states: { ...file.states, idle: { anim: "a", transitions: [{ when: "pressed:attack", to: "rush_1" }] } } };
     const close = withRush(standing, anims, 14, { ...three, rush_1_close: { anim: "quick" } }, step);
@@ -94,6 +110,14 @@ describe("withRush", () => {
     it("throws every S where he stands, and steps A4 forward with the line, or it falls short", () => {
       expect(["smash_1", "smash_2", "smash_3"].map((s) => deep.states[s].velAt)).toEqual([undefined, undefined, undefined]);
       expect(deep.states.rush_4.velAt).toBeDefined();
+    });
+
+    it("keeps an ender's own way out through a new pick, cancelable to the end of its animation", () => {
+      const up = { when: ["cancelable", "held:back", "pressed:blast"], to: "kame_up" };
+      const withUp = { ...deep, states: { ...deep.states, smash_3: { ...deep.states.smash_3, transitions: [up, ...deep.states.smash_3.transitions!] } } };
+      const again = withRush(withUp, anims, 14, { ...three, smash_3: { anim: "a" } }, step);
+      expect(exits(again, "smash_3")).toEqual(["cancelable+held:back+pressed:blast>kame_up", "animEnd>idle"]);
+      expect(again.states.smash_3.cancelBy).toBe(framesOf(anims.a));
     });
 
     it("takes a picked effect over the rule's", () => {

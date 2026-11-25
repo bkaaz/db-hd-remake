@@ -79,7 +79,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:ac",
+      "when": [
+        "held:back",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "kikoha"
     },
     {

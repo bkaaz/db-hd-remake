@@ -135,6 +135,7 @@ export class Projectiles {
     // it sounds on its thrower's side, as the original plays it by the thrower
     const bolt = new Entity(def, this.scale, owner.sounds);
     bolt.dressAs(owner);
+    bolt.hitstopScale = owner.hitstopScale;
     // Bigger, not faster. `size` multiplies the drawing and the boxes placed
     // through it; the world scale that turns px-per-frame into movement is the
     // scene's, or a fully charged bolt would cross the stage in half the time.

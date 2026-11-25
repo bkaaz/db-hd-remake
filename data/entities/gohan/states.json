@@ -130,10 +130,6 @@
           "to": "charge_start"
         },
         {
-          "when": "command:ad",
-          "to": "masenko"
-        },
-        {
           "when": "command:a7",
           "to": "bakuretsu"
         },
@@ -175,6 +171,15 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
         },
         {
           "when": [
@@ -262,10 +267,6 @@
           "to": "charge_start"
         },
         {
-          "when": "command:ad",
-          "to": "masenko"
-        },
-        {
           "when": "command:a7",
           "to": "bakuretsu"
         },
@@ -307,6 +308,15 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
         },
         {
           "when": [
@@ -390,10 +400,6 @@
           "to": "charge_start"
         },
         {
-          "when": "command:ad",
-          "to": "masenko"
-        },
-        {
           "when": "command:a7",
           "to": "bakuretsu"
         },
@@ -435,6 +441,15 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
         },
         {
           "when": [
@@ -509,10 +524,6 @@
           "to": "guard_low"
         },
         {
-          "when": "command:ad",
-          "to": "masenko"
-        },
-        {
           "when": "command:a7",
           "to": "bakuretsu"
         },
@@ -554,6 +565,15 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
         },
         {
           "when": [
@@ -611,10 +631,6 @@
           "to": "guard_low"
         },
         {
-          "when": "command:ad",
-          "to": "masenko"
-        },
-        {
           "when": "command:a7",
           "to": "bakuretsu"
         },
@@ -656,6 +672,15 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
         },
         {
           "when": [
@@ -707,10 +732,6 @@
           "to": "crouch_down"
         },
         {
-          "when": "command:ad",
-          "to": "masenko"
-        },
-        {
           "when": "command:a7",
           "to": "bakuretsu"
         },
@@ -752,6 +773,15 @@
         {
           "when": "command:aa",
           "to": "triangle_illusion"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
         },
         {
           "when": [

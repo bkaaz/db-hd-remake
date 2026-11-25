@@ -135,10 +135,6 @@
           "to": "regeneration"
         },
         {
-          "when": "command:bd",
-          "to": "gekiretsudokan"
-        },
-        {
           "when": "command:a5",
           "to": "high_mystic"
         },
@@ -194,6 +190,15 @@
             "pressed:blast"
           ],
           "to": "beam_cannon"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "gekiretsudokan"
         },
         {
           "when": "pressed:attack",
@@ -267,10 +272,6 @@
           "to": "regeneration"
         },
         {
-          "when": "command:bd",
-          "to": "gekiretsudokan"
-        },
-        {
           "when": "command:a5",
           "to": "high_mystic"
         },
@@ -326,6 +327,15 @@
             "pressed:blast"
           ],
           "to": "beam_cannon"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "gekiretsudokan"
         },
         {
           "when": "pressed:attack",
@@ -395,10 +405,6 @@
           "to": "regeneration"
         },
         {
-          "when": "command:bd",
-          "to": "gekiretsudokan"
-        },
-        {
           "when": "command:a5",
           "to": "high_mystic"
         },
@@ -454,6 +460,15 @@
             "pressed:blast"
           ],
           "to": "beam_cannon"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "gekiretsudokan"
         },
         {
           "when": "pressed:attack",
@@ -514,10 +529,6 @@
           "to": "regeneration"
         },
         {
-          "when": "command:bd",
-          "to": "gekiretsudokan"
-        },
-        {
           "when": "command:a5",
           "to": "high_mystic"
         },
@@ -573,6 +584,15 @@
             "pressed:blast"
           ],
           "to": "beam_cannon"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "gekiretsudokan"
         },
         {
           "when": "pressed:strike",
@@ -616,10 +636,6 @@
           "to": "regeneration"
         },
         {
-          "when": "command:bd",
-          "to": "gekiretsudokan"
-        },
-        {
           "when": "command:a5",
           "to": "high_mystic"
         },
@@ -675,6 +691,15 @@
             "pressed:blast"
           ],
           "to": "beam_cannon"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "gekiretsudokan"
         },
         {
           "when": "pressed:strike",
@@ -711,10 +736,6 @@
           "to": "regeneration"
         },
         {
-          "when": "command:bd",
-          "to": "gekiretsudokan"
-        },
-        {
           "when": "command:a5",
           "to": "high_mystic"
         },
@@ -770,6 +791,15 @@
             "pressed:blast"
           ],
           "to": "beam_cannon"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "gekiretsudokan"
         },
         {
           "when": "pressed:attack",

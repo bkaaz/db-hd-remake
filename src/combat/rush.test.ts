@@ -19,7 +19,9 @@ function fighter(name: string) {
   const states = withHitTypes(read<StatesFile>(name, "states.json"));
   const anims = read<Record<string, AnimSteps>>(name, "animations.json");
   const { hitstun } = read<{ hitstun: number }>(name, "attributes.json");
-  return { states, links: chainLinks(states, anims, hitstun) };
+  // the rush's own links, slot to slot: a special off one of them is out of the line
+  const from = new Set<string>([...RUSH, CLOSE]);
+  return { states, links: chainLinks(states, anims, hitstun).filter((l) => from.has(l.from) && (SLOTS as readonly string[]).includes(l.to)) };
 }
 
 /** Where each state of the rush goes, as `when>to`. */

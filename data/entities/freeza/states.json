@@ -138,10 +138,6 @@
           "to": "explosive_grab"
         },
         {
-          "when": "command:ab",
-          "to": "death_ball"
-        },
-        {
           "when": "command:a5",
           "to": "kishin_ha"
         },
@@ -188,6 +184,15 @@
             "pressed:blast"
           ],
           "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "death_ball"
         },
         {
           "when": [
@@ -273,10 +278,6 @@
           "to": "explosive_grab"
         },
         {
-          "when": "command:ab",
-          "to": "death_ball"
-        },
-        {
           "when": "command:a5",
           "to": "kishin_ha"
         },
@@ -323,6 +324,15 @@
             "pressed:blast"
           ],
           "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "death_ball"
         },
         {
           "when": [
@@ -404,10 +414,6 @@
           "to": "explosive_grab"
         },
         {
-          "when": "command:ab",
-          "to": "death_ball"
-        },
-        {
           "when": "command:a5",
           "to": "kishin_ha"
         },
@@ -454,6 +460,15 @@
             "pressed:blast"
           ],
           "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "death_ball"
         },
         {
           "when": [
@@ -526,10 +541,6 @@
           "to": "explosive_grab"
         },
         {
-          "when": "command:ab",
-          "to": "death_ball"
-        },
-        {
           "when": "command:a5",
           "to": "kishin_ha"
         },
@@ -576,6 +587,15 @@
             "pressed:blast"
           ],
           "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "death_ball"
         },
         {
           "when": [
@@ -631,10 +651,6 @@
           "to": "explosive_grab"
         },
         {
-          "when": "command:ab",
-          "to": "death_ball"
-        },
-        {
           "when": "command:a5",
           "to": "kishin_ha"
         },
@@ -681,6 +697,15 @@
             "pressed:blast"
           ],
           "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "death_ball"
         },
         {
           "when": [
@@ -730,10 +755,6 @@
           "to": "explosive_grab"
         },
         {
-          "when": "command:ab",
-          "to": "death_ball"
-        },
-        {
           "when": "command:a5",
           "to": "kishin_ha"
         },
@@ -780,6 +801,15 @@
             "pressed:blast"
           ],
           "to": "jubaku_ha"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "death_ball"
         },
         {
           "when": [

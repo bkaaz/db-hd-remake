@@ -90,7 +90,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:ab",
+      "when": [
+        "held:back",
+        "!held:down",
+        "!held:up",
+        "pressed:blast"
+      ],
       "to": "death_ball"
     },
     {

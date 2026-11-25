@@ -7,12 +7,19 @@ import { readData } from "../data/files";
 import { BASIC } from "../entity/basics";
 import type { StatesFile } from "../entity/states";
 import { blowPicker, button, effectPicker, type BlowList } from "./blowPicker";
-import { blowThumb } from "./blowThumb";
+import { blowThumbs } from "./blowThumb";
 import { cartridge } from "../cartridge/romFile";
 import { drawFighter } from "../cartridge/romSheets";
 import { toCanvas } from "../cartridge/canvas";
 import type { FrameDef } from "../entity/entityFile";
-import { field, segmented } from "./controls";
+import { field, segmented, type Choice } from "./controls";
+import { TEMPOS, withTempo } from "../combat/rushTempo";
+
+/** What the panel asks of player one's rush: its picks as the address spells them, and its tempo. */
+export interface RushAsk {
+  rush?: string;
+  tempo?: number;
+}
 
 /**
  * Player one's rush under his readout: a blow and an effect for each slot —
@@ -35,13 +42,20 @@ export class RushPicks {
 
   constructor(private readonly redraw: () => void) {}
 
-  /** The slots for `name`, playing `rush` when the address asks one; nothing until his files are read. */
-  fields(name: string, rush: string | undefined, pick: (rush: string | undefined) => void): HTMLElement[] {
+  /**
+   * The slots for `name`, playing the rush and tempo the address asks, his own
+   * where it asks none; nothing until his files are read. `go` takes what
+   * changes, `undefined` for back to his own.
+   */
+  fields(name: string, asking: RushAsk, go: (to: RushAsk) => void): HTMLElement[] {
     const f = this.fighter(name);
     if (!f) return [];
+    const { rush, tempo = 1 } = asking;
+    const pick = (to: string | undefined) => go({ ...asking, rush: to });
     const asked = rush === undefined ? null : readPicks(rush, f.anims, HIT_TYPES);
     const picks = asked && typeof asked !== "string" ? asked : picksOf(f.states);
-    const made = withRush(f.states, f.anims, f.hitstun, picks, stepOf(f.states));
+    const anims = withTempo(f.anims, picks, tempo);
+    const made = withRush(f.states, anims, f.hitstun, picks, stepOf(f.states));
     const change = (slot: Slot, to: Picks[Slot]) => pick(writePicks({ ...picks, [slot]: to }));
     // a blow moves a place at a time, by trading with the slot under it in its own row of the tree
     const below = (slot: Slot): Slot | undefined => {
@@ -62,19 +76,13 @@ export class RushPicks {
       return field(labelOf(slot), row);
     });
     const order = (l: Link) => `${labelOf(l.from as Slot).slice(1)}${labelOf(l.to as Slot)}`;
-    const links = text(rushLinks(made, f.anims, f.hitstun).sort((a, b) => order(a).localeCompare(order(b))).map(verdict).join(" · "));
+    const links = text(rushLinks(made, anims, f.hitstun).sort((a, b) => order(a).localeCompare(order(b))).map(verdict).join(" · "));
+    const pace = segmented(String(tempo), TEMPOS.map((t): Choice => [String(t), `${Math.round(t * 100)}`]), (v) => go({ ...asking, tempo: Number(v) === 1 ? undefined : Number(v) }));
     const handOver = text(picksLine(name, picks));
     handOver.title = "the picks, to hand over";
-    const own = segmented(rush === undefined ? "own" : "", [["own", "his own"]], () => pick(undefined));
-    // Attack's line on one row, Smash's enders under it
-    const preview = document.createElement("span");
-    preview.className = "thumbs";
-    for (const row of [SLOTS.filter((s) => !(ENDERS as readonly Slot[]).includes(s)), ENDERS] as const) {
-      const line = document.createElement("span");
-      if (f.sheet) line.append(...row.filter((s) => picks[s]).map((s) => blowThumb(labelOf(s), f.anims[picks[s]!.anim], f.sheet!, f.frames)));
-      preview.append(line);
-    }
-    return [...slots, field("blows", preview), field("links", links), field("rush", handOver), own];
+    const own = segmented(rush === undefined && tempo === 1 ? "own" : "", [["own", "his own"]], () => go({}));
+    const preview = blowThumbs(picks, f.anims, f.sheet, f.frames);
+    return [...slots, field("blows", preview), field("tempo %", pace), field("links", links), field("rush", handOver), own];
   }
 
   private fighter(name: string): Fighter | undefined {
