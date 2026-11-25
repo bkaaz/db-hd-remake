@@ -51,8 +51,8 @@ S   S   S   S      (and S alone, from neutral)
 2026-11-24); until then Attack is one blow. Goku's is the Quad Kick's four
 kicks with an ender at each depth, Freeza's three of the original's standing
 blows (`rush.test.ts` holds both to their picks). **Each press is
-one blow**, each seen whole, A1–A3 stepping forward and every end — A4, each
-S — thrown where he stands: a press made any time
+one blow**, each seen whole, Attack's stepping forward — A4 too, or it falls
+short — and every S thrown where he stands: a press made any time
 during a blow is kept until its cancel opens (`StateMachine`, `cancelable`),
 rush_1 and rush_2 are a `flinch`, and `npm run chains -- goku` shows the
 windows. A rush is three picks, one animation a slot, each a whole blow a
@@ -71,6 +71,11 @@ his data by hand. Which blow stands where is still to choose.
 end: A4 and S1 send him off (`knockback`), S2 floors him (`down`), S3 lifts
 him (`launch`) for the ki follow-up still to come — provisional, as `EFFECTS`
 in `combat/rushSlots.ts` says; the panel tries another effect on any slot.
+
+**A1 has a close version, A1c**, thrown instead when the opponent is within
+the fighter's `closeRange.attack` — Goku's knee where his kick would reach
+past (owner, 2026-11-25). It leads on as A1 does; a fighter without one
+throws A1 at any range.
 Crouching has its own shorter rush; the air has one attack and
 one smash. There is no depth to step into, so down is **crouch**, and up is
 **jump**.

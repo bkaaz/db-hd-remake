@@ -4,7 +4,7 @@ import type { StatesFile } from "../entity/states";
 import { generatedFighters } from "../rom/fighterStates";
 import { chainLinks, type AnimSteps } from "./chains";
 import { withHitTypes } from "./hitTypes";
-import { ENDERS, RUSH, SLOTS, withRush, type BlowAnim, type Picks } from "./rushSlots";
+import { CLOSE, ENDERS, RUSH, SLOTS, withRush, type BlowAnim, type Picks } from "./rushSlots";
 
 /**
  * The rush on every fighter's data as it stands (`combat.md`, The buttons). A
@@ -41,6 +41,7 @@ const ACCEPTED: Record<string, { picks: Picks; step: { windup: number; hit: numb
   goku: {
     picks: {
       rush_1: { anim: "b_qk1", type: "flinch" },
+      rush_1_close: { anim: "b_qk1_knee", type: "flinch" },
       rush_2: { anim: "b_qk2", type: "flinch" },
       rush_3: { anim: "b_qk3", type: "flinch" },
       rush_4: { anim: "b_qk4", type: "heavy" },
@@ -61,7 +62,9 @@ describe.each(Object.keys(ACCEPTED))("%s's rush", (name) => {
     const line = RUSH.filter((_, i) => RUSH.slice(0, i + 1).every((r) => picks[r]));
     const walks = line.slice(1).map((s, i) => `${line[i]}>${s}`);
     const ends = ENDERS.filter((e, i) => picks[e] && line[i]).map((e) => `${RUSH[ENDERS.indexOf(e)]}>${e}`);
-    expect(links.map((l) => `${l.from}>${l.to}`).sort()).toEqual([...walks, ...ends].sort());
+    // A1 thrown close leads where A1 does
+    const close = picks[CLOSE] ? [...walks, ...ends].filter((l) => l.startsWith("rush_1>")).map((l) => l.replace("rush_1>", `${CLOSE}>`)) : [];
+    expect(links.map((l) => `${l.from}>${l.to}`).sort()).toEqual([...walks, ...ends, ...close].sort());
   });
 
   it("opens every link, and holds it: the latest press still lands inside the hitstun", () => {

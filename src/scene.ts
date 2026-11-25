@@ -163,7 +163,7 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       colours[key] = pal;
     }
     const rush1 = q.get("rush1");
-    if (rush1 !== null && !/^[AS][1-4]=[a-z0-9_]+(:[a-z]+)?(,[AS][1-4]=[a-z0-9_]+(:[a-z]+)?)*$/.test(rush1)) return `rush1 "${rush1}" is not slots and their blows, as A1=m90,S1=m93:knockback`;
+    if (rush1 !== null && !/^[AS][1-4]c?=[a-z0-9_]+(:[a-z]+)?(,[AS][1-4]c?=[a-z0-9_]+(:[a-z]+)?)*$/.test(rush1)) return `rush1 "${rush1}" is not slots and their blows, as A1=m90,S1=m93:knockback`;
     return {
       scene: "debug",
       p1,

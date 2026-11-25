@@ -142,6 +142,19 @@
       ],
       "when": "command:ac",
       "to": "slash_down"
+    },
+    {
+      "from": [
+        "idle",
+        "walk_fwd",
+        "walk_back",
+        "stand_up"
+      ],
+      "when": [
+        "pressed:attack",
+        "close:attack"
+      ],
+      "to": "rush_1_close"
     }
   ],
   "states": {
@@ -1546,6 +1559,16 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          0,
+          1.1875
+        ],
+        [
+          6,
+          0.625
+        ]
       ]
     },
     "smash_1": {
@@ -1601,6 +1624,45 @@
           "to": "idle"
         }
       ]
+    },
+    "rush_1_close": {
+      "anim": "b_qk1_knee",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "flinch",
+      "damage": 25,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "pressed:attack"
+          ],
+          "to": "rush_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "velAt": [
+        [
+          0,
+          0.625
+        ]
+      ],
+      "cancelBy": 12
     }
   },
   "replaces": {}

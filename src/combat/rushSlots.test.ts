@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { StatesFile } from "../entity/states";
 import { framesOf } from "./chains";
 import { HIT_TYPES } from "./hitTypes";
-import { candidates, DEFAULT_STEP, rushLinks, stepOf, withRush, type BlowAnim, type Picks } from "./rushSlots";
+import { DEFAULT_STEP, rushLinks, stepOf, withRush, type BlowAnim, type Picks } from "./rushSlots";
 
 const hit = { type: "hit" };
 /** Wind-up, hit box, recovery, in that pose order: frames 70 → 71 → 70. */
@@ -12,24 +12,6 @@ const blow = (windup: number, active: number, recovery: number, last = "70"): Bl
     { frame: "71", dur: active, boxes: [hit] },
     { frame: last, dur: recovery },
   ],
-});
-
-describe("candidates", () => {
-  it("takes every blow that hits, however it ends — that is the owner's to see", () => {
-    expect(candidates({ punch: blow(4, 4, 6), cut: blow(4, 4, 6, "88") }, new Set())).toEqual(["cut", "punch"]);
-  });
-
-  it("leaves out what cannot hit, a loop, and an object's one-frame steps", () => {
-    const still: BlowAnim = { steps: [{ frame: "70", dur: 4 }, { frame: "70", dur: 4 }] };
-    const looped: BlowAnim = { ...blow(4, 4, 6), loop: true };
-    const object: BlowAnim = { steps: [{ frame: "70", dur: 1, boxes: [hit] }, { frame: "70", dur: 1 }] };
-    expect(candidates({ still, looped, object }, new Set())).toEqual([]);
-  });
-
-  it("keeps one of animations drawn alike: the one a state plays, else the first by name", () => {
-    expect(candidates({ m85: blow(4, 4, 6), m90: blow(4, 4, 6) }, new Set(["m90"]))).toEqual(["m90"]);
-    expect(candidates({ m85: blow(4, 4, 6), m90: blow(4, 4, 6) }, new Set())).toEqual(["m85"]);
-  });
 });
 
 describe("withRush", () => {
@@ -71,6 +53,26 @@ describe("withRush", () => {
     expect(noWindup.states.rush_1.velAt).toEqual([[0, 1]]);
   });
 
+  describe("A1 thrown close", () => {
+    const standing = { ...file, states: { ...file.states, idle: { anim: "a", transitions: [{ when: "pressed:attack", to: "rush_1" }] } } };
+    const close = withRush(standing, anims, 14, { ...three, rush_1_close: { anim: "quick" } }, step);
+
+    it("is asked for by the same press with the opponent close, ahead of A1", () => {
+      expect(exits(close, "idle")).toEqual(["pressed:attack+close:attack>rush_1_close", "pressed:attack>rush_1"]);
+    });
+
+    it("leads on as A1 does, a flinch with its own window", () => {
+      expect(exits(close, "rush_1_close")).toEqual(exits(close, "rush_1"));
+      expect(close.states.rush_1_close.type).toBe("flinch");
+      expect(rushLinks(close, anims, 14).filter((l) => l.from === "rush_1_close" && !(l.margin >= 0))).toEqual([]);
+    });
+
+    it("is gone, the way in too, when it is not picked", () => {
+      const again = withRush(close, anims, 14, three, step);
+      expect(exits(again, "idle")).toEqual(["pressed:attack>rush_1"]);
+    });
+  });
+
   describe("A4 and the enders", () => {
     const deep = withRush(file, anims, 14, { ...three, rush_4: { anim: "a" }, smash_1: { anim: "s" }, smash_2: { anim: "s" }, smash_3: { anim: "s" } }, step);
 
@@ -89,9 +91,9 @@ describe("withRush", () => {
       expect(["rush_4", "smash_1", "smash_2", "smash_3"].map((s) => deep.states[s].type)).toEqual(["knockback", "knockback", "down", "launch"]);
     });
 
-    it("throws the ends where he stands: A4 and every S take no step", () => {
-      expect(["rush_4", "smash_1", "smash_2", "smash_3"].map((s) => deep.states[s].velAt)).toEqual([undefined, undefined, undefined, undefined]);
-      expect(deep.states.rush_3.velAt).toBeDefined();
+    it("throws every S where he stands, and steps A4 forward with the line, or it falls short", () => {
+      expect(["smash_1", "smash_2", "smash_3"].map((s) => deep.states[s].velAt)).toEqual([undefined, undefined, undefined]);
+      expect(deep.states.rush_4.velAt).toBeDefined();
     });
 
     it("takes a picked effect over the rule's", () => {

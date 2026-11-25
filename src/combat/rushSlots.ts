@@ -16,8 +16,14 @@ import { startupOf, type AnimSteps } from "./swing";
 export const RUSH = ["rush_1", "rush_2", "rush_3", "rush_4"] as const;
 /** Smash off each depth of it: smash_1 off rush_1, and so on. */
 export const ENDERS = ["smash_1", "smash_2", "smash_3"] as const;
-export type Slot = (typeof RUSH)[number] | (typeof ENDERS)[number];
-export const SLOTS: readonly Slot[] = [...RUSH, ...ENDERS];
+/**
+ * A1 thrown at an opponent within his `closeRange.attack` — Goku's knee where
+ * a kick would reach past him (owner, 2026-11-25). It leads on as A1 does;
+ * not picked, A1 is thrown at any range.
+ */
+export const CLOSE = "rush_1_close";
+export type Slot = (typeof RUSH)[number] | (typeof ENDERS)[number] | typeof CLOSE;
+export const SLOTS: readonly Slot[] = ["rush_1", CLOSE, ...RUSH.slice(1), ...ENDERS];
 
 /** What a slot plays, and how its blow is taken; no `type`, the slot's own. */
 export interface Pick {
@@ -34,8 +40,8 @@ export type Picks = Partial<Record<Slot, Pick>>;
  */
 export const EFFECTS: Partial<Record<Slot, string>> = { rush_4: "knockback", smash_1: "knockback", smash_2: "down", smash_3: "launch" };
 
-/** The blows that step forward: the line's first three. An end — A4, every S — is thrown where he stands (owner, 2026-11-25). */
-const STEPS = new Set<Slot>(["rush_1", "rush_2", "rush_3"]);
+/** The blows that step forward: Attack's whole line, A4 too, or it falls short. Every S is thrown where he stands (owner, 2026-11-25). */
+const STEPS = new Set<Slot>(["rush_1", CLOSE, "rush_2", "rush_3", "rush_4"]);
 
 /** An animation as the rush reads it: its poses too, to tell a whole blow. */
 export interface BlowAnim extends AnimSteps {
@@ -49,32 +55,9 @@ export interface Step {
   hit: number;
 }
 
-const pose = (step: { frame: string }): string => step.frame.split("_")[0];
-const hits = (step: AnimSteps["steps"][number]): boolean => (step.boxes ?? []).some((b) => b.type === "hit");
-
-/**
- * The animations a slot may hold: every one that hits. Whether it is a whole
- * blow — one a fighter can stop on, since he cannot know another press is
- * coming — is the owner's to see: a blow ending in its own pose is no test,
- * the original's often end on a recovery pose of their own. Of animations
- * drawn alike, the one a state plays, else the first by name; the one-frame
- * steps of an object's parts are no fighter's blow.
- */
-export function candidates(anims: Record<string, BlowAnim>, played: ReadonlySet<string>): string[] {
-  const kept = new Map<string, string>();
-  for (const name of Object.keys(anims).sort()) {
-    const { loop, steps } = anims[name];
-    if (loop || !steps.some(hits) || steps.every((s) => s.dur === 1)) continue;
-    const drawn = JSON.stringify(steps.map((s) => [pose(s), s.dur, hits(s)]));
-    const before = kept.get(drawn);
-    if (before === undefined || (!played.has(before) && played.has(name))) kept.set(drawn, name);
-  }
-  return [...kept.values()].sort();
-}
-
 /**
  * `file` with its rush made of `picks`: Attack walks the line, Smash leaves it
- * for the ender of that depth; A1–A3 step forward by `step`; each cancel
+ * for the ender of that depth; Attack's blows step forward by `step`; each cancel
  * window is the longest that keeps every way out of it a combo, never past
  * its animation. A slot new to the file starts as a copy of its neighbour's
  * state — rush_4 of rush_3, an ender of `smash` — for its damage and sounds.
@@ -105,9 +88,12 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
       ...(ender ? [{ when: ["cancelable", "pressed:smash"], to: ender }] : []),
       { when: "animEnd", to: "idle" },
     ];
-    make(slot, states[slot] ?? states[line[i - 1]], next ? "flinch" : (EFFECTS[slot] ?? states[slot]?.type), exits);
+    const type = next ? "flinch" : (EFFECTS[slot] ?? states[slot]?.type);
+    make(slot, states[slot] ?? states[line[i - 1]], type, exits);
+    if (i === 0 && picks[CLOSE]) make(CLOSE, states[CLOSE] ?? states[slot], type, exits);
     if (ender) make(ender, states[ender] ?? states.smash, EFFECTS[ender], [{ when: "animEnd", to: "idle" }]);
   });
+  closeIn(states, line.length > 0 && !!picks[CLOSE]);
   // each window from the margin of its tightest way out, with it open to the end
   const open = new Map<string, number>();
   for (const link of rushLinks({ ...file, states }, anims, baseHitstun)) {
@@ -118,9 +104,24 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
   return { ...file, states };
 }
 
+/**
+ * The way into A1c, where Attack starts A1: the same press with the opponent
+ * close, ahead of it. Taken out first, so a rush without A1c has none.
+ */
+function closeIn(states: Record<string, StateDef>, picked: boolean): void {
+  const asksA1 = (t: Transition) => t.to === "rush_1" && [t.when].flat().join() === "pressed:attack";
+  for (const [name, def] of Object.entries(states)) {
+    const kept = (def.transitions ?? []).filter((t) => t.to !== CLOSE);
+    if (kept.length === (def.transitions ?? []).length && !(picked && kept.some(asksA1))) continue;
+    const transitions = picked ? kept.flatMap((t) => (asksA1(t) ? [{ when: ["pressed:attack", "close:attack"], to: CLOSE }, t] : [t])) : kept;
+    states[name] = { ...def, transitions };
+  }
+}
+
 /** The rush's links, with the sum each lives or dies by (`chainLinks`). */
 export function rushLinks(file: StatesFile, anims: Record<string, AnimSteps>, baseHitstun: number): Link[] {
-  return chainLinks(withHitTypes(file), anims, baseHitstun).filter((l) => (RUSH as readonly string[]).includes(l.from));
+  const from = new Set<string>([...RUSH, CLOSE]);
+  return chainLinks(withHitTypes(file), anims, baseHitstun).filter((l) => from.has(l.from));
 }
 
 /**

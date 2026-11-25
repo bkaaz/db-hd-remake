@@ -1,28 +1,31 @@
 import type { StatesFile } from "../entity/states";
-import { ENDERS, RUSH, SLOTS, type Pick, type Picks, type Slot } from "./rushSlots";
+import { CLOSE, ENDERS, RUSH, SLOTS, type Pick, type Picks, type Slot } from "./rushSlots";
 
 /**
  * A rush's picks as people and addresses spell them: `A1`–`A4` for Attack's
- * line, `S1`–`S3` for Smash off each depth — `A1=m90,A2=m92,S1=m93:knockback`
+ * line, `A1c` for A1 thrown close, `S1`–`S3` for Smash off each depth —
+ * `A1=m90,A1c=b_knee,A2=m92,S1=m93:knockback`
  * in the scene's address, a line of the same words to hand over.
  */
 
-/** `A1` for rush_1, `S2` for smash_2. */
+/** `A1` for rush_1, `A1c` for its close one, `S2` for smash_2. */
 export function labelOf(slot: Slot): string {
+  if (slot === CLOSE) return "A1c";
   const at = RUSH.indexOf(slot as (typeof RUSH)[number]);
   return at >= 0 ? `A${at + 1}` : `S${ENDERS.indexOf(slot as (typeof ENDERS)[number]) + 1}`;
 }
 
 const SLOT_OF = new Map(SLOTS.map((s) => [labelOf(s), s]));
 
-/** What the rush in `file` plays now: rush_1 and each slot a cancel leads to; their effects are the rule's. */
+/** What the rush in `file` plays now — rush_1, A1c if a way leads in, each slot a cancel leads to — and how each is taken there. */
 export function picksOf(file: StatesFile): Picks {
   const picks: Picks = {};
-  const reached = new Set<string>(["rush_1"]);
+  const into = Object.values(file.states).some((d) => (d.transitions ?? []).some((t) => t.to === CLOSE));
+  const reached = new Set<string>(["rush_1", ...(into ? [CLOSE] : [])]);
   for (const slot of SLOTS) {
     const def = file.states[slot];
     if (!def || !reached.has(slot)) continue;
-    picks[slot] = { anim: def.anim };
+    picks[slot] = { anim: def.anim, ...(def.type !== undefined && { type: def.type }) };
     for (const t of def.transitions ?? []) if ([t.when].flat().includes("cancelable")) reached.add(t.to);
   }
   return picks;

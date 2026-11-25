@@ -191,6 +191,13 @@
         },
         {
           "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "rush_1_close"
+        },
+        {
+          "when": [
             "held:fwd",
             "!held:down",
             "!held:up",
@@ -335,6 +342,13 @@
         },
         {
           "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "rush_1_close"
+        },
+        {
+          "when": [
             "held:fwd",
             "!held:down",
             "!held:up",
@@ -472,6 +486,13 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "rush_1_close"
         },
         {
           "when": [
@@ -824,6 +845,13 @@
         {
           "when": "command:a8",
           "to": "side_slash"
+        },
+        {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "rush_1_close"
         },
         {
           "when": [
@@ -4099,6 +4127,16 @@
           "when": "animEnd",
           "to": "idle"
         }
+      ],
+      "velAt": [
+        [
+          0,
+          1.1875
+        ],
+        [
+          6,
+          0.625
+        ]
       ]
     },
     "smash_1": {
@@ -4154,6 +4192,45 @@
           "to": "idle"
         }
       ]
+    },
+    "rush_1_close": {
+      "anim": "b_qk1_knee",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "flinch",
+      "damage": 25,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "pressed:attack"
+          ],
+          "to": "rush_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "velAt": [
+        [
+          0,
+          0.625
+        ]
+      ],
+      "cancelBy": 12
     }
   }
 }

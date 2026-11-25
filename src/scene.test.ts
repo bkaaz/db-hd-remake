@@ -24,7 +24,7 @@ describe("scene requests", () => {
   });
 
   it("takes player one's rush as slots and their blows, and refuses what is not", () => {
-    expect(read("?scene=debug&rush1=A1=m90,A2=m92,S1=m93:knockback")).toMatchObject({ rush1: "A1=m90,A2=m92,S1=m93:knockback" });
+    expect(read("?scene=debug&rush1=A1=m90,A1c=b_knee,A2=m92,S1=m93:knockback")).toMatchObject({ rush1: "A1=m90,A1c=b_knee,A2=m92,S1=m93:knockback" });
     expect(read("?scene=debug&rush1=m90,m92")).toMatch(/is not slots/);
   });
 

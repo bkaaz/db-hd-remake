@@ -1,7 +1,8 @@
 import type { Link } from "../combat/chains";
 import { HIT_TYPES } from "../combat/hitTypes";
 import { labelOf, picksLine, picksOf, readPicks, writePicks } from "../combat/rushAddress";
-import { candidates, ENDERS, RUSH, rushLinks, SLOTS, stepOf, withRush, type BlowAnim, type Picks, type Slot } from "../combat/rushSlots";
+import { candidates } from "../combat/blowCandidates";
+import { CLOSE, ENDERS, RUSH, rushLinks, SLOTS, stepOf, withRush, type BlowAnim, type Picks, type Slot } from "../combat/rushSlots";
 import { readData } from "../data/files";
 import { BASIC } from "../entity/basics";
 import type { StatesFile } from "../entity/states";
@@ -44,6 +45,7 @@ export class RushPicks {
     const change = (slot: Slot, to: Picks[Slot]) => pick(writePicks({ ...picks, [slot]: to }));
     // a blow moves a place at a time, by trading with the slot under it in its own row of the tree
     const below = (slot: Slot): Slot | undefined => {
+      if (slot === CLOSE) return undefined;
       const row: readonly Slot[] = (RUSH as readonly Slot[]).includes(slot) ? RUSH : ENDERS;
       return row[row.indexOf(slot) + 1];
     };
@@ -67,7 +69,7 @@ export class RushPicks {
     // Attack's line on one row, Smash's enders under it
     const preview = document.createElement("span");
     preview.className = "thumbs";
-    for (const row of [RUSH, ENDERS] as const) {
+    for (const row of [SLOTS.filter((s) => !(ENDERS as readonly Slot[]).includes(s)), ENDERS] as const) {
       const line = document.createElement("span");
       if (f.sheet) line.append(...row.filter((s) => picks[s]).map((s) => blowThumb(labelOf(s), f.anims[picks[s]!.anim], f.sheet!, f.frames)));
       preview.append(line);

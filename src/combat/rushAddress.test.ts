@@ -7,12 +7,12 @@ const types = { knockback: 1, down: 1 };
 
 describe("the picks in words", () => {
   it("names Attack's slots A1–A4 and Smash's S1–S3", () => {
-    expect([labelOf("rush_1"), labelOf("rush_4"), labelOf("smash_1"), labelOf("smash_3")]).toEqual(["A1", "A4", "S1", "S3"]);
+    expect([labelOf("rush_1"), labelOf("rush_1_close"), labelOf("rush_4"), labelOf("smash_1"), labelOf("smash_3")]).toEqual(["A1", "A1c", "A4", "S1", "S3"]);
   });
 
   it("writes them for the address and reads them back", () => {
-    const picks = { rush_1: { anim: "m90" }, rush_2: { anim: "m92" }, smash_1: { anim: "m93", type: "knockback" } };
-    expect(writePicks(picks)).toBe("A1=m90,A2=m92,S1=m93:knockback");
+    const picks = { rush_1: { anim: "m90" }, rush_1_close: { anim: "m92" }, rush_2: { anim: "m92" }, smash_1: { anim: "m93", type: "knockback" } };
+    expect(writePicks(picks)).toBe("A1=m90,A1c=m92,A2=m92,S1=m93:knockback");
     expect(readPicks(writePicks(picks), anims, types)).toEqual(picks);
   });
 
@@ -28,7 +28,7 @@ describe("the picks in words", () => {
 });
 
 describe("picksOf", () => {
-  it("is rush_1 and every slot a cancel of the rush leads to, nothing else", () => {
+  it("is rush_1 and every slot a cancel of the rush leads to, each taken as its state says", () => {
     const file: StatesFile = {
       initial: "idle",
       states: {
@@ -38,6 +38,11 @@ describe("picksOf", () => {
         smash_1: { anim: "m93", type: "knockback", transitions: [] },
       },
     };
-    expect(picksOf(file)).toEqual({ rush_1: { anim: "m90" }, rush_2: { anim: "m92" }, smash_1: { anim: "m93" } });
+    expect(picksOf(file)).toEqual({ rush_1: { anim: "m90" }, rush_2: { anim: "m92" }, smash_1: { anim: "m93", type: "knockback" } });
+    const close: StatesFile = {
+      ...file,
+      states: { ...file.states, idle: { anim: "m00", transitions: [{ when: ["pressed:attack", "close:attack"], to: "rush_1_close" }] }, rush_1_close: { anim: "m93", transitions: [] } },
+    };
+    expect(picksOf(close).rush_1_close).toEqual({ anim: "m93" });
   });
 });
