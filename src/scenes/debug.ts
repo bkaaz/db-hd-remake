@@ -1,7 +1,9 @@
 import { soundIdCollisions, validateSounds } from "../audio/sounds";
 import type { Music } from "../audio/music";
 import { loadEntityDef, type EntityDef } from "../entity/entityDef";
-import { readPicks, stepOf, withRush } from "../combat/rushSlots";
+import { readPicks } from "../combat/rushAddress";
+import { HIT_TYPES } from "../combat/hitTypes";
+import { stepOf, withRush } from "../combat/rushSlots";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
 import type { Controls } from "../input/controls";
@@ -416,7 +418,7 @@ function situationOf(r: DebugRequest, mode: unknown): string[] {
 /** His definition playing the rush the panel tries (`combat/rushSlots.ts`), or why it cannot. */
 function tryRush(def: EntityDef, text: string): EntityDef | string {
   if (!def.states) return `${def.name}: no states.json to try a rush on`;
-  const picks = readPicks(text, def.animations);
+  const picks = readPicks(text, def.animations, HIT_TYPES);
   if (typeof picks === "string") return `${def.name}: ${picks}`;
   return { ...def, states: withRush(def.states, def.animations, def.attributes.hitstun, picks, stepOf(def.states)) };
 }

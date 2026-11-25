@@ -63,6 +63,12 @@ closed by his stance (`basics.json`); the panel lists them first. The debug pane
 player one's under his readout (`ui/rushPicks.ts`, the scene's `rush1`,
 taken by the running fight in place: `Scene.take`) and shows each link's margin; it keeps nothing — an accepted rush is written into
 his data by hand. Which blow stands where is still to choose.
+
+**How each end of the rush is taken is a rule, the same for every fighter**
+(owner, 2026-11-25); only the animations are his. The deeper, the better the
+end: A4 and S1 send him off (`knockback`), S2 floors him (`down`), S3 lifts
+him (`launch`) for the ki follow-up still to come — provisional, as `EFFECTS`
+in `combat/rushSlots.ts` says; the panel tries another effect on any slot.
 Crouching has its own shorter rush; the air has one attack and
 one smash. There is no depth to step into, so down is **crouch**, and up is
 **jump**.

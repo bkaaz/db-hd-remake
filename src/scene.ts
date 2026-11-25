@@ -69,8 +69,9 @@ export interface DebugRequest {
   /** Player two's, the same way. */
   pal2?: string;
   /**
-   * Player one's rush tried out, three animations for A1–A3, comma-joined
-   * (`combat/rushSlots.ts`): the debug panel's, laid on his own states.
+   * Player one's rush tried out, each slot's blow and maybe its effect —
+   * `A1=m90,A2=m92,S1=m93:knockback` (`combat/rushAddress.ts`): the debug
+   * panel's, laid on his own states.
    */
   rush1?: string;
 }
@@ -162,7 +163,7 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       colours[key] = pal;
     }
     const rush1 = q.get("rush1");
-    if (rush1 !== null && !/^[a-z0-9_]+(,[a-z0-9_]+){2}$/.test(rush1)) return `rush1 "${rush1}" is not three animations, comma-joined`;
+    if (rush1 !== null && !/^[AS][1-4]=[a-z0-9_]+(:[a-z]+)?(,[AS][1-4]=[a-z0-9_]+(:[a-z]+)?)*$/.test(rush1)) return `rush1 "${rush1}" is not slots and their blows, as A1=m90,S1=m93:knockback`;
     return {
       scene: "debug",
       p1,

@@ -36,6 +36,18 @@ describe("basicAnims", () => {
     expect(made.b_jab.steps[1].boxes).toEqual([hit]);
   });
 
+  it("keeps the hit boxes to the steps `hits` names, the rest still drawn", () => {
+    const kick = basicAnims({ kick: { from: "mae", steps: [0, 2], hits: [1, 1] } }, anims).b_kick;
+    expect(kick.steps.map((s) => [s.frame, (s.boxes ?? []).some((b) => b.type === "hit")])).toEqual([
+      ["70", false],
+      ["77", false],
+      ["78", true],
+      ["79", false],
+      ["70", false],
+    ]);
+    expect(() => basicAnims({ x: { from: "mae", steps: [0, 1], hits: [2, 2] } }, anims)).toThrow(/not among its steps/);
+  });
+
   it("refuses an animation or steps that are not there", () => {
     expect(() => basicAnims({ x: { from: "nope", steps: [0, 0] } }, anims)).toThrow(/no animation nope/);
     expect(() => basicAnims({ x: { from: "mae", steps: [1, 5] } }, anims)).toThrow(/no steps 1–5/);

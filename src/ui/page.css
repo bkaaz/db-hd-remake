@@ -87,9 +87,20 @@ html, body {
 .side-setup .field { display: contents; }
 /* A long option or line wraps or is cut here, never widens the column off the page. */
 .side-setup select { max-width: 18em; }
-.side-setup code { max-width: 24em; white-space: normal; overflow-wrap: anywhere; }
+.side-setup code { max-width: 19em; white-space: normal; overflow-wrap: anywhere; }
 .stepper { display: inline-flex; align-items: center; gap: 2px; }
+/* A rush slot's row — blow, ▲ ▼, effect — fits the player's column at the
+   narrowest the page lays it out; a longer name is cut in the select. */
+.stepper select { max-width: 7.5em; }
+.stepper select.effect { max-width: 7em; }
 .stepper .step { padding: 2px 5px; line-height: 1; }
+/* Each slot's blow at a glance: the drawing it lands with, its hit box over it. */
+.thumbs { display: flex; flex-direction: column; gap: 4px; max-width: 19em; }
+.thumbs > span { display: flex; flex-wrap: wrap; gap: 4px; }
+.thumbs > span:empty { display: none; }
+.thumb { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.thumb canvas { background: var(--panel2); border-radius: 3px; image-rendering: pixelated; }
+.thumb figcaption { font-size: 11px; color: var(--muted); }
 .stepper .step:disabled { opacity: 0.35; cursor: default; }
 
 #bar {

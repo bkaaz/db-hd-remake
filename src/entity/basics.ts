@@ -10,8 +10,12 @@ import type { Anim, Step } from "./entityFile";
  * Pure: plain data in and out.
  */
 
-/** Section file `basics.json`: each blow by name, cut from steps `steps[0]`–`steps[1]` of `from`. */
-export type BasicsFile = Record<string, { from: string; steps: [number, number] }>;
+/**
+ * Section file `basics.json`: each blow by name, cut from steps `steps[0]`–`steps[1]`
+ * of `from`. `hits`, steps of `from` too, keeps the hit boxes to those: the
+ * others are still drawn, a knee on the way to a kick, but strike nothing.
+ */
+export type BasicsFile = Record<string, { from: string; steps: [number, number]; hits?: [number, number] }>;
 
 /** A basic blow's animation is its name behind this: `b_78`. */
 export const BASIC = "b_";
@@ -33,11 +37,13 @@ export function basicAnims(recipes: BasicsFile, anims: Record<string, Anim>): Re
   if (!stance) throw new Error(`no ${STANCE_FROM} to take his stance from`);
   const still: Step = { ...without(stance), dur: STANCE_FRAMES };
   return Object.fromEntries(
-    Object.entries(recipes).map(([name, { from, steps: [first, last] }]) => {
+    Object.entries(recipes).map(([name, { from, steps: [first, last], hits = [first, last] }]) => {
       const source = anims[from]?.steps;
       if (!source) throw new Error(`basic "${name}": no animation ${from}`);
       if (!(first >= 0 && last >= first && last < source.length)) throw new Error(`basic "${name}": ${from} has no steps ${first}–${last}`);
-      const cut = source.slice(first, last + 1).map(withoutLanding);
+      if (!(hits[0] >= first && hits[1] >= hits[0] && hits[1] <= last)) throw new Error(`basic "${name}": hits ${hits[0]}–${hits[1]} are not among its steps ${first}–${last}`);
+      const striking = (at: number) => at >= hits[0] && at <= hits[1];
+      const cut = source.slice(first, last + 1).map((step, i) => withoutLanding(striking(first + i) ? step : harmless(step)));
       return [`${BASIC}${name}`, { loop: false, steps: [still, ...cut, still] }];
     }),
   );
@@ -54,6 +60,13 @@ function withoutLanding(step: Step): Step {
   const sfx = step.sfx?.filter((id) => id !== LANDING);
   const { sfx: _all, spawns: _spark, ...rest } = step;
   return sfx && sfx.length > 0 ? { ...rest, sfx } : rest;
+}
+
+/** A step drawn as it is, its hit boxes gone. */
+function harmless(step: Step): Step {
+  const boxes = step.boxes?.filter((b) => b.type !== "hit");
+  const { boxes: _all, ...rest } = step;
+  return boxes && boxes.length > 0 ? { ...rest, boxes } : rest;
 }
 
 /** The stance pose and its boxes alone: no sound, no voice, no hold. */

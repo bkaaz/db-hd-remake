@@ -23,15 +23,15 @@ describe("scene requests", () => {
     expect(read("?scene=debug&pal2=3")).toBe('pal2 "3" is not a set of colours — 1, 2 or a set\'s name');
   });
 
-  it("takes player one's rush as three animations, and refuses any other count", () => {
-    expect(read("?scene=debug&rush1=m92,m93_short,ma5_kick")).toMatchObject({ rush1: "m92,m93_short,ma5_kick" });
-    expect(read("?scene=debug&rush1=m92,m93")).toMatch(/not three animations/);
+  it("takes player one's rush as slots and their blows, and refuses what is not", () => {
+    expect(read("?scene=debug&rush1=A1=m90,A2=m92,S1=m93:knockback")).toMatchObject({ rush1: "A1=m90,A2=m92,S1=m93:knockback" });
+    expect(read("?scene=debug&rush1=m90,m92")).toMatch(/is not slots/);
   });
 
   it("tells a request that differs only by one parameter from one that asks for another scene", () => {
     const base = read("?scene=debug&p1=goku&p2=vegeta&mode=0") as DebugRequest;
-    expect(sameBut({ ...base, rush1: "m90,m91,m92" }, base, "rush1")).toBe(true);
-    expect(sameBut({ ...base, rush1: "m90,m91,m92", p1: "cell" }, base, "rush1")).toBe(false);
+    expect(sameBut({ ...base, rush1: "A1=m90" }, base, "rush1")).toBe(true);
+    expect(sameBut({ ...base, rush1: "A1=m90", p1: "cell" }, base, "rush1")).toBe(false);
     expect(sameBut({ ...base, hp1: 80 }, base, "rush1")).toBe(false);
   });
 
@@ -40,7 +40,7 @@ describe("scene requests", () => {
   });
 
   it("writes a request back to the same address", () => {
-    for (const query of ["?scene=debug&p1=goku&p2=goku&mode=2", "?scene=debug&p1=goku&p2=goku&mode=0&arena=tournament&time=evening", "?scene=debug&p1=goku&p2=goku&mode=0&hp1=100&hp2=50", "?scene=debug&p1=goku&p2=vegeta&mode=0&pal1=2&pal2=gold", "?scene=debug&p1=goku&p2=goku&mode=0&rush1=m90%2Cm91%2Cm92"]) {
+    for (const query of ["?scene=debug&p1=goku&p2=goku&mode=2", "?scene=debug&p1=goku&p2=goku&mode=0&arena=tournament&time=evening", "?scene=debug&p1=goku&p2=goku&mode=0&hp1=100&hp2=50", "?scene=debug&p1=goku&p2=vegeta&mode=0&pal1=2&pal2=gold", "?scene=debug&p1=goku&p2=goku&mode=0&rush1=A1%3Dm90%2CA2%3Dm91"]) {
       const request = read(query);
       if (typeof request === "string") throw new Error(request);
       expect(queryFor(request)).toBe(query);

@@ -1,25 +1,32 @@
 import type { Link } from "../combat/chains";
-import { candidates, picksLine, picksOf, readPicks, rushLinks, SLOTS, stepOf, withRush, type BlowAnim } from "../combat/rushSlots";
+import { HIT_TYPES } from "../combat/hitTypes";
+import { labelOf, picksLine, picksOf, readPicks, writePicks } from "../combat/rushAddress";
+import { candidates, ENDERS, RUSH, rushLinks, SLOTS, stepOf, withRush, type BlowAnim, type Picks, type Slot } from "../combat/rushSlots";
 import { readData } from "../data/files";
 import { BASIC } from "../entity/basics";
 import type { StatesFile } from "../entity/states";
+import { blowPicker, button, effectPicker, type BlowList } from "./blowPicker";
+import { blowThumb } from "./blowThumb";
+import { cartridge } from "../cartridge/romFile";
+import { drawFighter } from "../cartridge/romSheets";
+import { toCanvas } from "../cartridge/canvas";
+import type { FrameDef } from "../entity/entityFile";
 import { field, segmented } from "./controls";
 
 /**
- * Player one's rush slots under his readout: three picks of his blows, what
- * each link between them makes, and the line to hand over. It tries a rush,
- * never keeps one — a pick is the scene's address (`rush1`), as every pick of
- * the bar is (`setup.ts`), and the fighter's data stays as it is.
+ * Player one's rush under his readout: a blow and an effect for each slot —
+ * Attack's A1–A4, Smash's S1–S3 off each depth — what each link between them
+ * makes, and the line to hand over. It tries a rush, never keeps one: a pick
+ * is the scene's address (`rush1`), as every pick of the bar is (`setup.ts`),
+ * and the fighter's data stays as it is.
  */
 
-interface Fighter {
-  anims: Record<string, BlowAnim>;
+interface Fighter extends BlowList {
   states: StatesFile;
   hitstun: number;
-  /** His blows: the basics cut for a rush first, then those the common states play, then the rest. */
-  basics: string[];
-  normals: string[];
-  others: string[];
+  frames: Record<string, FrameDef>;
+  /** His sheet drawn from the cartridge, for the thumbnails; null until it is. */
+  sheet: HTMLCanvasElement | null;
 }
 
 export class RushPicks {
@@ -31,17 +38,41 @@ export class RushPicks {
   fields(name: string, rush: string | undefined, pick: (rush: string | undefined) => void): HTMLElement[] {
     const f = this.fighter(name);
     if (!f) return [];
-    const asked = rush === undefined ? null : readPicks(rush, f.anims);
+    const asked = rush === undefined ? null : readPicks(rush, f.anims, HIT_TYPES);
     const picks = asked && typeof asked !== "string" ? asked : picksOf(f.states);
-    const slots = SLOTS.map((_, i) =>
-      field(`A${i + 1}`, select(picks[i], f, (v) => pick(picks.map((p, j) => (j === i ? v : p)).join(",")))),
-    );
     const made = withRush(f.states, f.anims, f.hitstun, picks, stepOf(f.states));
-    const links = text(rushLinks(made, f.anims, f.hitstun).map(verdict).join(" · "));
+    const change = (slot: Slot, to: Picks[Slot]) => pick(writePicks({ ...picks, [slot]: to }));
+    // a blow moves a place at a time, by trading with the slot under it in its own row of the tree
+    const below = (slot: Slot): Slot | undefined => {
+      const row: readonly Slot[] = (RUSH as readonly Slot[]).includes(slot) ? RUSH : ENDERS;
+      return row[row.indexOf(slot) + 1];
+    };
+    const swap = (slot: Slot, other: Slot) => pick(writePicks({ ...picks, [slot]: picks[other], [other]: picks[slot] }));
+    const slots = SLOTS.map((slot) => {
+      const now = picks[slot];
+      const row = document.createElement("span");
+      row.className = "stepper";
+      row.append(
+        blowPicker(now?.anim, f, slot !== RUSH[0], (anim) => change(slot, anim ? { ...now, anim } : undefined)),
+        effectPicker(now?.type, now?.type ? undefined : made.states[slot]?.type, !now, (type) => now && change(slot, { anim: now.anim, ...(type && { type }) })),
+        swapButton(slot, below(slot), swap),
+      );
+      return field(labelOf(slot), row);
+    });
+    const order = (l: Link) => `${labelOf(l.from as Slot).slice(1)}${labelOf(l.to as Slot)}`;
+    const links = text(rushLinks(made, f.anims, f.hitstun).sort((a, b) => order(a).localeCompare(order(b))).map(verdict).join(" · "));
     const handOver = text(picksLine(name, picks));
     handOver.title = "the picks, to hand over";
     const own = segmented(rush === undefined ? "own" : "", [["own", "his own"]], () => pick(undefined));
-    return [...slots, field("links", links), field("rush", handOver), own];
+    // Attack's line on one row, Smash's enders under it
+    const preview = document.createElement("span");
+    preview.className = "thumbs";
+    for (const row of [RUSH, ENDERS] as const) {
+      const line = document.createElement("span");
+      if (f.sheet) line.append(...row.filter((s) => picks[s]).map((s) => blowThumb(labelOf(s), f.anims[picks[s]!.anim], f.sheet!, f.frames)));
+      preview.append(line);
+    }
+    return [...slots, field("blows", preview), field("links", links), field("rush", handOver), own];
   }
 
   private fighter(name: string): Fighter | undefined {
@@ -49,7 +80,14 @@ export class RushPicks {
       this.loaded.set(name, null);
       void load(name).then((f) => {
         this.loaded.set(name, f);
-        if (f) this.redraw();
+        if (!f) return;
+        this.redraw();
+        // the lists first; the sheet after, for the thumbnails
+        void cartridge().then((rom) => {
+          const drawn = drawFighter(rom, name);
+          f.sheet = drawn && toCanvas(drawn.sheet);
+          this.redraw();
+        });
       });
     }
     return this.loaded.get(name) ?? undefined;
@@ -57,11 +95,12 @@ export class RushPicks {
 }
 
 async function load(name: string): Promise<Fighter | null> {
-  const [anims, states, attributes, common] = await Promise.all([
+  const [anims, states, attributes, common, frames] = await Promise.all([
     readData<Record<string, BlowAnim>>(`entities/${name}/animations.json`),
     readData<StatesFile>(`entities/${name}/states.json`),
     readData<{ hitstun: number }>(`entities/${name}/attributes.json`),
     readData<StatesFile>("template/states.json"),
+    readData<Record<string, FrameDef>>(`entities/${name}/frames.json`),
   ]);
   if (!anims || !states || !attributes) return null;
   const shared = new Set(Object.values(common?.states ?? {}).map((d) => d.anim));
@@ -72,65 +111,24 @@ async function load(name: string): Promise<Fighter | null> {
     anims,
     states,
     hitstun: attributes.hitstun,
+    frames: frames ?? {},
+    sheet: null,
     basics: all.filter(basic),
     normals: all.filter((a) => !basic(a) && shared.has(a)),
     others: all.filter((a) => !basic(a) && !shared.has(a)),
   };
 }
 
-/** The select, and ▲ ▼ beside it for the blow before and after — no list to open and search by eye. */
-function select(value: string, f: Fighter, pick: (value: string) => void): HTMLElement {
-  const all = [...f.basics, ...f.normals, ...f.others];
-  const at = all.indexOf(value);
-  const step = (label: string, by: number) => {
-    const button = document.createElement("button");
-    button.className = "step";
-    button.textContent = label;
-    const to = all[at + by];
-    button.disabled = at < 0 || to === undefined;
-    button.addEventListener("click", () => {
-      button.blur();
-      if (to !== undefined) pick(to);
-    });
-    return button;
-  };
-  const row = document.createElement("span");
-  row.className = "stepper";
-  row.append(list(value, f, pick), step("▲", -1), step("▼", 1));
-  return row;
-}
-
-/** A select of his blows, the common ones first, each named with the poses it draws. */
-function list(value: string, f: Fighter, pick: (value: string) => void): HTMLSelectElement {
-  const element = document.createElement("select");
-  for (const [label, names] of [["basics", f.basics], ["normals", f.normals], ["others", f.others]] as const) {
-    const group = document.createElement("optgroup");
-    group.label = label;
-    for (const name of names) group.append(new Option(`${name}  ${poses(f.anims[name])}`, name, false, name === value));
-    element.append(group);
-  }
-  if (![...f.basics, ...f.normals, ...f.others].includes(value)) element.append(new Option(`${value} (not a blow)`, value, false, true));
-  element.addEventListener("change", () => {
-    element.blur();
-    pick(element.value);
-  });
+/** ⇅: trade places with the slot under it; none under it, nothing to trade. */
+function swapButton(slot: Slot, under: Slot | undefined, swap: (a: Slot, b: Slot) => void): HTMLButtonElement {
+  const element = button("⇅", under === undefined, () => under && swap(slot, under));
+  element.title = under ? `trade with ${labelOf(under)}` : "";
   return element;
 }
 
-/** At most this many poses named, or a long scene's widens the column off the page. */
-const POSES_SHOWN = 6;
-
-/** `70>74>70`: the poses in order, a pose held over several steps once; a long one cut with `…`. */
-function poses(anim: BlowAnim | undefined): string {
-  const drawn = (anim?.steps ?? []).map((s) => s.frame.split("_")[0]);
-  const once = drawn.filter((p, i) => p !== drawn[i - 1]);
-  return once.slice(0, POSES_SHOWN).join(">") + (once.length > POSES_SHOWN ? ">…" : "");
-}
-
 function verdict(l: Link): string {
-  const slot = (s: string) => `A${SLOTS.indexOf(s as (typeof SLOTS)[number]) + 1}`;
   const how = l.opens > l.closes ? "never opens" : l.margin < 0 ? `drops ${l.margin}` : `+${l.margin}`;
-  return `${slot(l.from)}→${slot(l.to)} ${how}`;
+  return `${labelOf(l.from as Slot)}→${labelOf(l.to as Slot)} ${how}`;
 }
 
 function text(content: string): HTMLElement {

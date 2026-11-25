@@ -49,8 +49,8 @@ describe.each(["goku", "freeza"])("%s's rush", (name) => {
 
 /** What each accepted rush holds, and how fast it steps — the rest is computed. */
 const ACCEPTED: Record<string, { picks: Picks; step: { windup: number; hit: number } }> = {
-  goku: { picks: ["m90", "m92", "m94"], step: { windup: 1.1875, hit: 0.625 } },
-  freeza: { picks: ["m90", "m91", "m92"], step: { windup: 2.375, hit: 1.25 } },
+  goku: { picks: { rush_1: { anim: "m90" }, rush_2: { anim: "m92" }, rush_3: { anim: "m94" } }, step: { windup: 1.1875, hit: 0.625 } },
+  freeza: { picks: { rush_1: { anim: "m90" }, rush_2: { anim: "m91" }, rush_3: { anim: "m92" } }, step: { windup: 2.375, hit: 1.25 } },
 };
 
 describe.each(Object.keys(ACCEPTED))("%s's rush on disk", (name) => {
@@ -64,7 +64,7 @@ describe.each(Object.keys(ACCEPTED))("%s's rush on disk", (name) => {
       const { anim, type, velAt, cancelBy, transitions } = f.states[s];
       return { anim, type, velAt, cancelBy, transitions };
     };
-    for (const s of SLOTS) expect(slot(states, s), s).toEqual(slot(made, s));
+    for (const s of SLOTS.filter((s) => ACCEPTED[name].picks[s])) expect(slot(states, s), s).toEqual(slot(made, s));
   });
 });
 
