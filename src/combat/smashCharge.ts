@@ -112,6 +112,14 @@ const VANISH_FRAMES = 6;
 const VANISH_LIMIT = 3;
 /** Heard as he vanishes: the teleport's, as Goku's sounds it (owner, 2026-11-26). */
 const VANISH_SOUND = "teleport_29";
+/**
+ * Frames the opponent flies before a vanish comes out after him: pressed
+ * sooner, he stays gone the longer; later, out after VANISH_FRAMES (owner,
+ * 2026-11-26). So he is placed as he comes out, not as he goes.
+ */
+const VANISH_FLOWN = 18;
+/** Each chase after the first sends him this much faster again (owner, 2026-11-26). */
+const CHASE_QUICKENS = 0.25;
 /** Frames the chase's blow holds its pose past its own, hanging in the air, the leg out (owner, 2026-11-26). */
 const CHASE_HOLD = 12;
 /** Where he may be when the opponent flies off: off the blow, about on his feet, or falling off the last chase. */
@@ -132,15 +140,22 @@ const BLINKS = [undefined, 6, 4, 2];
 const CHARGE_SOUND = "ball_2d";
 const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
 
+/** What a fighter's own about an ender's charge (`rush.json`'s `charge`). */
+export interface ChargeOptions {
+  /**
+   * The step of its animation he stops on to charge, where the wind-up's
+   * last pose is in the air — Gohan's Smash alone, crouching before the
+   * Zankuu Kyaku's leap (owner, 2026-11-26). Past it the wind-up plays on.
+   */
+  stopOn?: number;
+  /** What he throws coming out of a vanish, his S1's first level where none is named — Goku's air kick. */
+  chaseAnim?: string;
+  /** What he strikes down with coming out of a vanish above him, RB and down: none, no such vanish — Goku's air punch. */
+  chaseDownAnim?: string;
+}
+
 /** `file` with `ender` charged: its holds, its releases, and its way into them. */
-/**
- * `stopOn`: the step of its animation he stops on to charge, where the
- * wind-up's last pose is in the air — Gohan's Smash alone, crouching before
- * the Zankuu Kyaku's leap (owner, 2026-11-26). Past it the wind-up plays on
- * when he lets go. `chaseAnim`: what he throws coming out of a vanish, his
- * S1's first level where none is named — Goku's air kick (owner, 2026-11-26).
- */
-export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, stopOn?: number, chaseAnim?: string): StatesFile {
+export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, chaseAnim, chaseDownAnim }: ChargeOptions = {}): StatesFile {
   const sending = SENDING[ender];
   if (!sending) throw new Error(`${ender} does not charge: ${CHARGEABLE.join(", ")} do`);
   const s3 = file.states[ender];
@@ -281,20 +296,41 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     };
   }
   if (sending.chases) {
-    const thrown = chaseAnim ? anims[chaseAnim]?.steps : undefined;
-    if (chaseAnim && !thrown) throw new Error(`${ender}'s chase names ${chaseAnim}, no animation of his`);
-    const its = thrown ?? steps;
-    const out = its.reduce((last, st, i) => ((st.boxes ?? []).some((b) => b.type === "hit") ? i : last), -1);
-    const reach = reachOf(its[out]);
-    // the blow's last pose held, the leg out, as long again as CHASE_HOLD
-    const until = its.slice(0, out + 1).reduce((n, st) => n + st.dur, 0) + CHASE_HOLD;
-    chased(states, [ender, ...[0, 1, 2, 3].map(release)], { blow: release(1), top: release(3), anim: chaseAnim, hold: [out, until] }, vanish, chase, reach);
+    const own = [ender, ...[0, 1, 2, 3].map(release)];
+    const blowIn = (anim: string | undefined) => {
+      const its = anim ? anims[anim]?.steps : steps;
+      if (!its) throw new Error(`${ender}'s chase names ${anim}, no animation of his`);
+      const out = its.reduce((last, st, i) => ((st.boxes ?? []).some((b) => b.type === "hit") ? i : last), -1);
+      // the blow's last pose held, as long again as CHASE_HOLD
+      return { out, until: its.slice(0, out + 1).reduce((n, st) => n + st.dur, 0) + CHASE_HOLD, box: its[out] };
+    };
+    const side = blowIn(chaseAnim);
+    const kinds: Chase[] = [
+      // beside him, the blow sending him on at the top's speed
+      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), launches: states[release(3)].launches },
+    ];
+    if (chaseDownAnim) {
+      const down = blowIn(chaseDownAnim);
+      // over him, the blow driving him into the floor: asked first, down held
+      kinds.unshift({ vanish: `${ender}_vanish_down`, chase: `${ender}_chase_down`, asks: ["held:down"], anim: chaseDownAnim, hold: [down.out, down.until], appears: middleOf(down.box), rises: VANISH_ABOVE, type: "spike" });
+    }
+    for (const kind of kinds) chased(states, release(1), kind, kinds);
+    chasedFrom(states, own, kinds);
   }
   return { ...file, states };
 }
 
 /** Sprite px past the far edge of the blow that a vanish puts the opponent's middle: beside him, not on him, his body still in reach (owner, 2026-11-26). */
 const VANISH_BESIDE = 12;
+
+/** Sprite px above the opponent's feet a vanish over him comes out at, to strike him down. */
+const VANISH_ABOVE = 20;
+
+/** Sprite px ahead of him the middle of a step's hit box lies: where a vanish over him puts the opponent. */
+function middleOf(step: AnimSteps["steps"][number] | undefined): number {
+  const box = (step?.boxes ?? []).find((b) => b.type === "hit") as { x?: number; w?: number } | undefined;
+  return Math.round((box?.x ?? 0) + (box?.w ?? 0) / 2);
+}
 
 /** Sprite px ahead of him a vanish puts the opponent: the far edge of a step's hit box and a little more. */
 function reachOf(step: AnimSteps["steps"][number] | undefined): number {
@@ -307,20 +343,25 @@ function reachOf(step: AnimSteps["steps"][number] | undefined): number {
  * a moment, out past him facing him while he stands still, and `blow` again —
  * from the ender, its levels, the chase itself and about on his feet.
  */
-function chased(
-  states: Record<string, StateDef>,
-  own: string[],
-  thrown: { blow: string; top: string; anim?: string; hold: [step: number, until: number] },
-  vanish: string,
-  chase: string,
-  reach: number,
-): void {
-  const way: Transition = { when: ["chase", "pressed:boost", `!chased:${VANISH_LIMIT}`], to: vanish };
-  const struck = states[thrown.blow];
+/** One way a vanish chases: what asks for it, where he comes out, what he throws and how it takes him. */
+interface Chase {
+  vanish: string;
+  chase: string;
+  asks: string[];
+  anim?: string;
+  hold: [step: number, until: number];
+  appears: number;
+  rises?: number;
+  type?: string;
+  launches?: StateDef["launches"];
+}
+
+function chased(states: Record<string, StateDef>, blow: string, { vanish, chase, anim, hold, appears, rises, type, launches }: Chase, all: Chase[]): void {
+  const struck = states[blow];
   // out where he is, in the air too, hanging there until the blow is out
   const hang = { airborne: true, air: [[0, { vx: 0, vy: 0, gravity: 0 }]] as StateDef["air"] };
   states[vanish] = {
-    anim: thrown.anim ?? struck.anim,
+    anim: anim ?? struck.anim,
     vel: [0, 0],
     turn: false,
     ...hang,
@@ -331,29 +372,43 @@ function chased(
     cost: VANISH_COST,
     sound: VANISH_SOUND,
     vanishes: true,
-    appears: reach,
-    stillsFoe: true,
-    transitions: [{ when: `frames:${VANISH_FRAMES}`, to: chase }],
+    // out once he has flown far enough, or at once once he flies no more (a wall)
+    transitions: [
+      { when: [`frames:${VANISH_FRAMES}`, `flown:${VANISH_FLOWN}`], to: chase },
+      { when: [`frames:${VANISH_FRAMES}`, "!chase"], to: chase },
+    ],
   };
   // the blow played whole, its wind-up too: he comes out of nothing, already in
   // reach, so no lunge; sending him at the top's speed every time, to the edge;
   // a fall like a jump's once it is thrown
-  const { velAt: _slide, holdFrames: _held, holdStep: _out, trail: _dust, transitions = [], ...where } = struck;
+  const { velAt: _slide, holdFrames: _held, holdStep: _out, trail: _dust, launches: _sent, transitions = [], ...where } = struck;
   states[chase] = {
     ...where,
-    ...(thrown.anim && { anim: thrown.anim }),
-    launches: states[thrown.top].launches,
+    ...(anim && { anim }),
+    ...(type && { type }),
+    ...(launches && { launches, quickens: CHASE_QUICKENS }),
+    appears,
+    ...(rises !== undefined && { rises }),
     replays: true,
     stillsFoe: true,
     ...hang,
-    holdStep: thrown.hold[0],
-    holdFrames: thrown.hold[1],
-    transitions: [...transitions.filter((t) => !(t.when === "animEnd" && t.to === "idle")), { when: "animEnd", to: "jump_fall" }],
+    holdStep: hold[0],
+    holdFrames: hold[1],
+    // the vanishes' ways in are put on after (`chasedFrom`), none of the blow's
+    transitions: [
+      ...transitions.filter((t) => !(t.when === "animEnd" && t.to === "idle") && !all.some((c) => c.vanish === t.to)),
+      { when: "animEnd", to: "jump_fall" },
+    ],
   };
-  for (const name of [...CHASE_FROM, ...own, chase].filter((n) => states[n])) {
-    const rest = (states[name].transitions ?? []).filter((t) => t.to !== vanish);
-    // off the chase only once its blow has landed: a quick second press is not a second vanish before it
-    const ways = name === chase ? { ...way, when: [...[way.when].flat(), "connected"] } : way;
-    states[name] = { ...states[name], transitions: [ways, ...rest] };
+}
+
+/** The ways into the vanishes, in the order they are asked, from where he may be and off every chase — that one only once its blow has landed. */
+function chasedFrom(states: Record<string, StateDef>, own: string[], all: Chase[]): void {
+  const ways = all.map((c): Transition => ({ when: ["chase", "pressed:boost", ...c.asks, `!chased:${VANISH_LIMIT}`], to: c.vanish }));
+  for (const name of [...CHASE_FROM, ...own, ...all.map((c) => c.chase)].filter((n) => states[n])) {
+    const rest = (states[name].transitions ?? []).filter((t) => !all.some((c) => c.vanish === t.to));
+    // off a chase a quick second press is not a second vanish before its blow lands
+    const off = all.some((c) => c.chase === name);
+    states[name] = { ...states[name], transitions: [...ways.map((w) => (off ? { ...w, when: [...[w.when].flat(), "connected"] } : w)), ...rest] };
   }
 }

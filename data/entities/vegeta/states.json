@@ -2512,6 +2512,50 @@
         }
       ]
     },
+    "spiked": {
+      "_comment": "Spike (owner, 2026-11-26): driven down into the floor, off it in `ground_bounce`. Its body stands in the heavy reel's: the pose has none for some.",
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -1,
+        8
+      ],
+      "airborne": true,
+      "turn": false,
+      "boxesOf": "m16",
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "ground_bounce"
+        }
+      ]
+    },
+    "ground_bounce": {
+      "_comment": "Off the floor a spike drove him into: the floor costs him 20 (`hurts`), a thud and a shake; up again, open to a blow but to no vanish — a spike ends the chase (owner, 2026-11-26).",
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        -1,
+        -6
+      ],
+      "airborne": true,
+      "turn": false,
+      "boxesOf": "m16",
+      "sound": "land_0d",
+      "groundFx": "dust",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ],
+      "hurts": 20
+    },
     "crumple": {
       "_comment": "Crumple (owner, 2026-11-26): the light reel's pose, pushed back and held for as long as the blow holds him — no pause on the blow, so he who struck goes on at once to a new combo; then he stands. Once a combo: given again, the knockdown.",
       "anim": "m15",

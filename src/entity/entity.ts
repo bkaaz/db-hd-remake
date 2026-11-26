@@ -21,6 +21,7 @@ import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
 import { blinkOn, burnVariant, CHARGE_VARIANT, paletteVariant, shimmerVariant, shockVariant, markedVariant, runVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
+import { quickened } from "../combat/quicken";
 import { Fatigue } from "../combat/fatigue";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -108,6 +109,8 @@ export interface Opponent {
   stunned?: boolean;
   /** Flying off a blow a vanish may chase (`chaseable`). */
   chaseable?: boolean;
+  /** Frames he has flown so, none when not (`flown:N`). */
+  flown?: number;
   /** In a combo: blows have landed on him since he was last free. */
   inCombo?: boolean;
 }
@@ -447,6 +450,11 @@ export class Entity {
   /** Flying off a blow a vanish may chase (`chaseable`). */
   get chaseable(): boolean {
     return !!this.sm?.def.chaseable;
+  }
+
+  /** Frames he has flown off the blow a vanish may chase, none when not. */
+  get flown(): number {
+    return this.chaseable ? this.stateFrames : 0;
   }
 
   /** Blows have landed on him since he was last free. */
@@ -1191,7 +1199,7 @@ export class Entity {
 
   /** The launches this entity's current attack gives the reactions it sends into. */
   get attackLaunches(): Record<string, [number | null, number | null]> | undefined {
-    return this.sm?.def.launches;
+    return quickened(this.sm?.def.launches, this.sm?.def.quickens, this.chases);
   }
 
   /** Whether this entity's current attack sets whoever it hits burning. */
@@ -1690,7 +1698,7 @@ export class Entity {
       const ahead = Math.sign(this.foe.x - this.x) || this.facing;
       this.x = this.foe.x + ahead * def.appears * this.scale;
       // at his height, flying or not, never below the floor
-      if (this.foe.y !== undefined) this.y = Math.min(this.foe.y, this.groundY);
+      if (this.foe.y !== undefined) this.y = Math.min(this.foe.y, this.groundY) - (def.rises ?? 0) * this.scale;
       this.facing = ahead > 0 ? -1 : 1;
     }
   }
@@ -1846,6 +1854,7 @@ export class Entity {
         combo: opponent?.stunned === true,
         chase: opponent?.chaseable === true,
         chased: this.chases,
+        flown: opponent?.flown ?? 0,
       }
     );
     const changed = this.sm.update(snapshot(), signals());

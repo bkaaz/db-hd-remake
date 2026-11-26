@@ -157,10 +157,10 @@ describe("withCharge", () => {
   it("stops on the step named, crouching before a leap, the rest of the wind-up played once let go", () => {
     // crouch 4, leap 2, blow 6: stopped crouching, the blow 2 frames after he lets go
     const leap = { s3: { steps: [{ dur: 2 }, { dur: 4 }, { dur: 2 }, { dur: 6, boxes: [hit] }, { dur: 4 }] } };
-    const crouched = withCharge(file, leap, "smash_3", 1);
+    const crouched = withCharge(file, leap, "smash_3", { stopOn: 1 });
     expect(crouched.states.smash_3_charge_0.holdStep).toBe(1);
     expect(crouched.states.smash_3.transitions?.[2]).toEqual({ when: ["frames:4", "!frames:6", "held:smash"], to: "smash_3_charge_0" });
-    expect(() => withCharge(file, leap, "smash_3", 3)).toThrow(/too short to stop on/);
+    expect(() => withCharge(file, leap, "smash_3", { stopOn: 3 })).toThrow(/too short to stop on/);
   });
 
   it("will not charge a wind-up too short to stop on", () => {
@@ -241,15 +241,33 @@ describe("withCharge on S1", () => {
   it("chases the opponent its top sends flying: RB, a bar, gone, out past him, its first level again, three times a combo", () => {
     const way = { when: ["chase", "pressed:boost", "!chased:3"], to: "smash_1_vanish" };
     // out beside him, past the blow's far edge: the fixture's 20 + 20, and 12 more
-    expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, sound: "teleport_29", vanishes: true, appears: 52, stillsFoe: true });
+    expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, sound: "teleport_29", vanishes: true });
+    // the opponent flies on while he is gone, and he is placed as he comes out
+    expect(s1.states.smash_1_vanish.stillsFoe).toBeUndefined();
+    expect(s1.states.smash_1_chase).toMatchObject({ appears: 52, quickens: 0.25 });
     expect(s1.states.smash_1_chase.velAt).toBeUndefined();
-    expect(s1.states.smash_1_vanish.transitions).toEqual([{ when: "frames:6", to: "smash_1_chase" }]);
+    // pressed early, gone until he has flown far enough; out at once if he flies no more
+    expect(s1.states.smash_1_vanish.transitions).toEqual([
+      { when: ["frames:6", "flown:18"], to: "smash_1_chase" },
+      { when: ["frames:6", "!chase"], to: "smash_1_chase" },
+    ]);
     expect(s1.states.smash_1_chase).toMatchObject({ type: s1.states.smash_1_lv1.type, damage: s1.states.smash_1_lv1.damage, replays: true, stillsFoe: true });
     for (const name of ["idle", "smash_1", "smash_1_lv0", "smash_1_lv3"]) expect(s1.states[name].transitions?.[0]).toEqual(way);
     // off the chase only once its blow has landed, its pose held out in the air
     expect(s1.states.smash_1_chase.transitions?.[0]).toEqual({ ...way, when: [...way.when, "connected"] });
     expect(s1.states.smash_1_chase).toMatchObject({ holdStep: 1, holdFrames: 5 + 6 + 12, airborne: true });
     expect(withCharge(s1, anims, "smash_1")).toEqual(s1);
+  });
+
+  it("chases down too where the fighter names a blow for it: RB and down, out over him, driving him into the floor", () => {
+    const down = withCharge(s1File, anims, "smash_1", { chaseDownAnim: "s3" });
+    expect(down.states.smash_1_vanish_down).toMatchObject({ hidden: true, cost: 10, vanishes: true });
+    expect(down.states.smash_1_chase_down).toMatchObject({ type: "spike", airborne: true, stillsFoe: true, appears: 30, rises: 20 });
+    // asked first, down held, from where he may be and off each chase once its blow has landed
+    expect(down.states.idle.transitions?.slice(0, 2).map((t) => t.to)).toEqual(["smash_1_vanish_down", "smash_1_vanish"]);
+    expect(down.states.smash_1_chase.transitions?.[0].when).toEqual(["chase", "pressed:boost", "held:down", "!chased:3", "connected"]);
+    expect(withCharge(down, anims, "smash_1", { chaseDownAnim: "s3" })).toEqual(down);
+    expect(s1.states.smash_1_vanish_down).toBeUndefined();
   });
 
   it("charges only the enders it knows how to send", () => {

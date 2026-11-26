@@ -333,15 +333,21 @@ counts: the opener lands on someone in control of themselves.
 
 **The chase is built** (owner, 2026-11-26): while the opponent flies off a
 charged S1 (`sent_off`, `chaseable`), RB pressed (`pressed:boost`) spends a bar
-and he vanishes — not drawn, no effect or sound yet — comes out past the
+and he vanishes — his drawing left behind thinning into a lattice of pixels,
+to the teleport's sound, and built up again where he comes out (`fx/dissolve.ts`) — comes out — pressed early, only once the opponent has flown a little
+(`flown:N`), later at once — past the
 opponent on the side he flies to, at his height, as far as his blow
 reaches, facing him, hanging there while the opponent stands still, and
 throws his S1's first level again — or the blow his `rush.json` names,
 Goku's air kick (`chaseAnim`) — sending him back at the top's speed, always
-to the edge, then falls as from a jump: up to three times a combo (`chased:N`), the opponent bounced
+to the edge, and faster again with each chase after the first (`quickens`), then falls as from a jump: up to three times a combo (`chased:N`), the opponent bounced
 from side to side, then on to the wall. Made with every S1 that charges
 (`combat/smashCharge.ts`). The sendoff spends no relaunch: a throw across,
-not a lift. Its flight is drawn as a body sent to another arena, which has
+not a lift. RB with down held vanishes **over** him instead, where his
+`rush.json` names the blow for it (`chaseDownAnim`, Goku's air punch down):
+it drives him into the floor (`spike`), which costs him 20 more, off which
+he bounces up (`ground_bounce`), open to a blow but to no vanish: a spike
+is the chase's last. Its flight is drawn as a body sent to another arena, which has
 no boxes; it stands in the heavy reel's body (`boxesOf`), or nothing could
 hit it.
 

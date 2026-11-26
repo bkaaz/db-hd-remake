@@ -124,5 +124,12 @@
     "hitstun": 20,
     "hitstop": 8,
     "relaunch": true
+  },
+  "spike": {
+    "code": "sk",
+    "onHit": "spiked",
+    "hitstun": 20,
+    "hitstop": 12,
+    "relaunch": false
   }
 }

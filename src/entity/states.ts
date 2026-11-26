@@ -490,8 +490,12 @@ export interface StateDef {
   hidden?: boolean;
   /** Entering it, he stands this many sprite px past the opponent, on his far side, at his height, facing him: a vanish's coming out. */
   appears?: number;
+  /** With `appears`: this many sprite px above the opponent's feet, to strike down at him (owner, 2026-11-26). */
+  rises?: number;
   /** The opponent stands still while he is in this state, until its blow has landed: a vanish's chase. */
   stillsFoe?: boolean;
+  /** Each chase after the first sends him this much faster again along, a fraction of its `launches` (owner, 2026-11-26). */
+  quickens?: number;
   /** Entering it counts a vanish of this combo (`chased:N`). */
   vanishes?: boolean;
   /**
@@ -1006,6 +1010,8 @@ export interface Signals {
   chase?: boolean;
   /** Vanishes this entity has made in this combo: `chased:N`. */
   chased?: number;
+  /** Frames the opponent has flown off a blow a vanish may chase: `flown:N`. */
+  flown?: number;
   /**
    * The opponent is still reeling from a blow that hit him — the `combo` trigger: a charge
    * begun in the rush starts a level up. Not his combo count, which runs on
@@ -1019,7 +1025,7 @@ export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
 export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
-const COUNTED = /^(frames:\d+|health:\d+|ki:\d+|chased:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+const COUNTED = /^(frames:\d+|health:\d+|ki:\d+|chased:\d+|flown:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
 /** `command:a4` — the move whose command is met, two hex digits (ADR 0050). */
 const COMMAND = /^command:[0-9a-f]{2}$/;
 
@@ -1082,6 +1088,8 @@ function counted(key: string, signals: Signals): boolean | undefined {
   if (kind === "ki") return signals.ki >= Number(arg);
   // vanishes so far this combo: `!chased:3` is the limit (owner, 2026-11-26)
   if (kind === "chased") return (signals.chased ?? 0) >= Number(arg);
+  // how far the opponent has flown before a vanish comes out after him
+  if (kind === "flown") return (signals.flown ?? 0) >= Number(arg);
   // a command's own range for an opponent standing still, not the throw's (Galactic Gunfire's 64, $0D:F95B)
   if (kind === "grab") return signals.grabbable !== undefined && signals.grabbable < Number(arg);
   // a run that ends by the opponent, in the air or reeling too (Gotenks's a8, $20:BCC4)

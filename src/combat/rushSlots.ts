@@ -40,6 +40,8 @@ export interface Charged {
   stopOn?: number;
   /** S1's: what he throws coming out of a vanish. */
   chaseAnim?: string;
+  /** S1's: what he strikes down with coming out of a vanish above him, RB and down. */
+  chaseDownAnim?: string;
 }
 
 /** Section file `rush.json`: the rush the owner accepted, all `npm run states` needs to make it. No `step`, `DEFAULT_STEP`. */

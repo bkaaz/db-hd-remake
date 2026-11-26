@@ -1948,7 +1948,7 @@ describe("the ki trigger", () => {
 });
 
 describe("the vanish's triggers", () => {
-  const goes = (when: string, input: Partial<typeof NONE> & { boost?: boolean }, signals: Partial<typeof QUIET> & { chase?: boolean; chased?: number }) => {
+  const goes = (when: string, input: Partial<typeof NONE> & { boost?: boolean }, signals: Partial<typeof QUIET> & { chase?: boolean; chased?: number; flown?: number }) => {
     const f = machine();
     f.states.idle.transitions = [{ when, to: "walk_fwd" }];
     const sm = new StateMachine(f);
@@ -1962,6 +1962,10 @@ describe("the vanish's triggers", () => {
 
   it("pressed:boost: RB this frame", () => {
     expect([goes("pressed:boost", { boost: true }, {}), goes("pressed:boost", {}, {})]).toEqual([true, false]);
+  });
+
+  it("flown:N: the opponent has flown that many frames off a blow a vanish may chase", () => {
+    expect([goes("flown:18", {}, { flown: 17 }), goes("flown:18", {}, { flown: 18 }), goes("flown:18", {}, {})]).toEqual([false, true, false]);
   });
 
   it("chased:N: that many vanishes this combo, or more", () => {

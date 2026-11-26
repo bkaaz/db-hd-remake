@@ -72,7 +72,7 @@ describe.each(generatedFighters())("%s's rush", (name) => {
     const { hitstun } = read<{ hitstun: number }>(name, "attributes.json");
     const disk = read<StatesFile>(name, "states.json");
     const rushed = withRush(disk, anims, hitstun, rush.picks, rush.step ?? DEFAULT_STEP);
-    const charged = (rush.charge ?? []).reduce((f, c) => (typeof c === "string" ? withCharge(f, anims, c) : withCharge(f, anims, c.ender, c.stopOn, c.chaseAnim)), rushed);
+    const charged = (rush.charge ?? []).reduce((f, c) => (typeof c === "string" ? withCharge(f, anims, c) : withCharge(f, anims, c.ender, c)), rushed);
     expect(charged).toEqual(disk);
   });
 
