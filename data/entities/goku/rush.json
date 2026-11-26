@@ -34,7 +34,10 @@
     }
   },
   "charge": [
-    "smash_1",
+    {
+      "ender": "smash_1",
+      "chaseAnim": "m97"
+    },
     "smash_2",
     "smash_3",
     "smash"

@@ -240,12 +240,15 @@ describe("withCharge on S1", () => {
 
   it("chases the opponent its top sends flying: RB, a bar, gone, out past him, its first level again, three times a combo", () => {
     const way = { when: ["chase", "pressed:boost", "!chased:3"], to: "smash_1_vanish" };
-    // out as far past him as the blow's hit box reaches: the fixture's 20 + 20 / 2
-    expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, vanishes: true, appears: 30, stillsFoe: true });
+    // out beside him, past the blow's far edge: the fixture's 20 + 20, and 12 more
+    expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, sound: "teleport_29", vanishes: true, appears: 52, stillsFoe: true });
     expect(s1.states.smash_1_chase.velAt).toBeUndefined();
     expect(s1.states.smash_1_vanish.transitions).toEqual([{ when: "frames:6", to: "smash_1_chase" }]);
     expect(s1.states.smash_1_chase).toMatchObject({ type: s1.states.smash_1_lv1.type, damage: s1.states.smash_1_lv1.damage, replays: true, stillsFoe: true });
-    for (const name of ["idle", "smash_1", "smash_1_lv0", "smash_1_lv3", "smash_1_chase"]) expect(s1.states[name].transitions?.[0]).toEqual(way);
+    for (const name of ["idle", "smash_1", "smash_1_lv0", "smash_1_lv3"]) expect(s1.states[name].transitions?.[0]).toEqual(way);
+    // off the chase only once its blow has landed, its pose held out in the air
+    expect(s1.states.smash_1_chase.transitions?.[0]).toEqual({ ...way, when: [...way.when, "connected"] });
+    expect(s1.states.smash_1_chase).toMatchObject({ holdStep: 1, holdFrames: 5 + 6 + 12, airborne: true });
     expect(withCharge(s1, anims, "smash_1")).toEqual(s1);
   });
 

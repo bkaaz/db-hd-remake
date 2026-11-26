@@ -38,6 +38,8 @@ export type Picks = Partial<Record<Slot, Pick>>;
 export interface Charged {
   ender: string;
   stopOn?: number;
+  /** S1's: what he throws coming out of a vanish. */
+  chaseAnim?: string;
 }
 
 /** Section file `rush.json`: the rush the owner accepted, all `npm run states` needs to make it. No `step`, `DEFAULT_STEP`. */

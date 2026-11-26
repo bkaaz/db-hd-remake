@@ -40,7 +40,7 @@ export function composeStates(name: string): StatesFile {
   const blows = animations as unknown as Record<string, BlowAnim>;
   const withPicks = rush ? withRush(merged, blows, hitstun, rush.picks, rush.step ?? DEFAULT_STEP) : merged;
   // the enders he holds to charge, from each as the rush made it
-  const rushed = (rush?.charge ?? []).reduce((f, c) => (typeof c === "string" ? withCharge(f, blows, c) : withCharge(f, blows, c.ender, c.stopOn)), withPicks);
+  const rushed = (rush?.charge ?? []).reduce((f, c) => (typeof c === "string" ? withCharge(f, blows, c) : withCharge(f, blows, c.ender, c.stopOn, c.chaseAnim)), withPicks);
   // his commands tried as the cartridge tries them, the table's last row first
   const commands = (optional<CommandsFile>(`${dir}/commands.json`)?.commands ?? []).map((c) => ({ move: parseInt(c.move, 16) }));
   const file = inTableOrder(rushed, commands);

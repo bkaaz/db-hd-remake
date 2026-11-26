@@ -110,8 +110,12 @@ const AT_ONCE_COST = 10;
 const VANISH_COST = 10;
 const VANISH_FRAMES = 6;
 const VANISH_LIMIT = 3;
-/** Where he may be when the opponent flies off: off the blow, or about on his feet. */
-const CHASE_FROM = ["idle", "walk_fwd", "walk_back", "land"];
+/** Heard as he vanishes: the teleport's, as Goku's sounds it (owner, 2026-11-26). */
+const VANISH_SOUND = "teleport_29";
+/** Frames the chase's blow holds its pose past its own, hanging in the air, the leg out (owner, 2026-11-26). */
+const CHASE_HOLD = 12;
+/** Where he may be when the opponent flies off: off the blow, about on his feet, or falling off the last chase. */
+const CHASE_FROM = ["idle", "walk_fwd", "walk_back", "land", "jump_fall"];
 /** The ki charge (LB), which a direction + Smash breaks off into the blow at once. */
 const KI_CHARGE = ["charge_start", "charge"];
 /** Frames between puffs of a lunge's dust. */
@@ -133,9 +137,10 @@ const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
  * `stopOn`: the step of its animation he stops on to charge, where the
  * wind-up's last pose is in the air — Gohan's Smash alone, crouching before
  * the Zankuu Kyaku's leap (owner, 2026-11-26). Past it the wind-up plays on
- * when he lets go.
+ * when he lets go. `chaseAnim`: what he throws coming out of a vanish, his
+ * S1's first level where none is named — Goku's air kick (owner, 2026-11-26).
  */
-export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, stopOn?: number): StatesFile {
+export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, stopOn?: number, chaseAnim?: string): StatesFile {
   const sending = SENDING[ender];
   if (!sending) throw new Error(`${ender} does not charge: ${CHARGEABLE.join(", ")} do`);
   const s3 = file.states[ender];
@@ -275,14 +280,26 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       transitions: others.filter((t) => t.to !== "throw"),
     };
   }
-  if (sending.chases) chased(states, [ender, ...[0, 1, 2, 3].map(release)], release(1), vanish, chase, reachOf(steps[blowStep]));
+  if (sending.chases) {
+    const thrown = chaseAnim ? anims[chaseAnim]?.steps : undefined;
+    if (chaseAnim && !thrown) throw new Error(`${ender}'s chase names ${chaseAnim}, no animation of his`);
+    const its = thrown ?? steps;
+    const out = its.reduce((last, st, i) => ((st.boxes ?? []).some((b) => b.type === "hit") ? i : last), -1);
+    const reach = reachOf(its[out]);
+    // the blow's last pose held, the leg out, as long again as CHASE_HOLD
+    const until = its.slice(0, out + 1).reduce((n, st) => n + st.dur, 0) + CHASE_HOLD;
+    chased(states, [ender, ...[0, 1, 2, 3].map(release)], { blow: release(1), top: release(3), anim: chaseAnim, hold: [out, until] }, vanish, chase, reach);
+  }
   return { ...file, states };
 }
 
-/** Sprite px ahead of him the middle of a step's hit box lies: where a vanish puts the opponent. */
+/** Sprite px past the far edge of the blow that a vanish puts the opponent's middle: beside him, not on him, his body still in reach (owner, 2026-11-26). */
+const VANISH_BESIDE = 12;
+
+/** Sprite px ahead of him a vanish puts the opponent: the far edge of a step's hit box and a little more. */
 function reachOf(step: AnimSteps["steps"][number] | undefined): number {
   const box = (step?.boxes ?? []).find((b) => b.type === "hit") as { x?: number; w?: number } | undefined;
-  return Math.round((box?.x ?? 0) + (box?.w ?? 0) / 2);
+  return Math.round((box?.x ?? 0) + (box?.w ?? 0) + VANISH_BESIDE);
 }
 
 /**
@@ -290,28 +307,53 @@ function reachOf(step: AnimSteps["steps"][number] | undefined): number {
  * a moment, out past him facing him while he stands still, and `blow` again —
  * from the ender, its levels, the chase itself and about on his feet.
  */
-function chased(states: Record<string, StateDef>, own: string[], blow: string, vanish: string, chase: string, reach: number): void {
+function chased(
+  states: Record<string, StateDef>,
+  own: string[],
+  thrown: { blow: string; top: string; anim?: string; hold: [step: number, until: number] },
+  vanish: string,
+  chase: string,
+  reach: number,
+): void {
   const way: Transition = { when: ["chase", "pressed:boost", `!chased:${VANISH_LIMIT}`], to: vanish };
-  const struck = states[blow];
+  const struck = states[thrown.blow];
+  // out where he is, in the air too, hanging there until the blow is out
+  const hang = { airborne: true, air: [[0, { vx: 0, vy: 0, gravity: 0 }]] as StateDef["air"] };
   states[vanish] = {
-    anim: struck.anim,
+    anim: thrown.anim ?? struck.anim,
     vel: [0, 0],
     turn: false,
+    ...hang,
     damage: 0,
     hidden: true,
     invulnerable: true,
     pushless: true,
     cost: VANISH_COST,
+    sound: VANISH_SOUND,
     vanishes: true,
     appears: reach,
     stillsFoe: true,
     transitions: [{ when: `frames:${VANISH_FRAMES}`, to: chase }],
   };
-  // the blow played whole, its wind-up too: he comes out of nothing, already in reach, so no lunge
-  const { velAt: _slide, holdFrames: _held, holdStep: _out, trail: _dust, ...where } = struck;
-  states[chase] = { ...where, replays: true, stillsFoe: true };
+  // the blow played whole, its wind-up too: he comes out of nothing, already in
+  // reach, so no lunge; sending him at the top's speed every time, to the edge;
+  // a fall like a jump's once it is thrown
+  const { velAt: _slide, holdFrames: _held, holdStep: _out, trail: _dust, transitions = [], ...where } = struck;
+  states[chase] = {
+    ...where,
+    ...(thrown.anim && { anim: thrown.anim }),
+    launches: states[thrown.top].launches,
+    replays: true,
+    stillsFoe: true,
+    ...hang,
+    holdStep: thrown.hold[0],
+    holdFrames: thrown.hold[1],
+    transitions: [...transitions.filter((t) => !(t.when === "animEnd" && t.to === "idle")), { when: "animEnd", to: "jump_fall" }],
+  };
   for (const name of [...CHASE_FROM, ...own, chase].filter((n) => states[n])) {
     const rest = (states[name].transitions ?? []).filter((t) => t.to !== vanish);
-    states[name] = { ...states[name], transitions: [way, ...rest] };
+    // off the chase only once its blow has landed: a quick second press is not a second vanish before it
+    const ways = name === chase ? { ...way, when: [...[way.when].flat(), "connected"] } : way;
+    states[name] = { ...states[name], transitions: [ways, ...rest] };
   }
 }

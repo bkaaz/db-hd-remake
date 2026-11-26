@@ -334,9 +334,11 @@ counts: the opener lands on someone in control of themselves.
 **The chase is built** (owner, 2026-11-26): while the opponent flies off a
 charged S1 (`sent_off`, `chaseable`), RB pressed (`pressed:boost`) spends a bar
 and he vanishes — not drawn, no effect or sound yet — comes out past the
-opponent on the side he flies to, as far as his S1 reaches, facing him,
-while the opponent stands still, and throws his S1's first level again,
-sending him back: up to three times a combo (`chased:N`), the opponent bounced
+opponent on the side he flies to, at his height, as far as his blow
+reaches, facing him, hanging there while the opponent stands still, and
+throws his S1's first level again — or the blow his `rush.json` names,
+Goku's air kick (`chaseAnim`) — sending him back at the top's speed, always
+to the edge, then falls as from a jump: up to three times a combo (`chased:N`), the opponent bounced
 from side to side, then on to the wall. Made with every S1 that charges
 (`combat/smashCharge.ts`). The sendoff spends no relaunch: a throw across,
 not a lift. Its flight is drawn as a body sent to another arena, which has

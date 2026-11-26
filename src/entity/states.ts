@@ -488,7 +488,7 @@ export interface StateDef {
   boxesOf?: string;
   /** Not drawn while in this state: a vanish, with no picture of its own yet. */
   hidden?: boolean;
-  /** Entering it, he stands this many sprite px past the opponent, on his far side, facing him: a vanish's coming out. */
+  /** Entering it, he stands this many sprite px past the opponent, on his far side, at his height, facing him: a vanish's coming out. */
   appears?: number;
   /** The opponent stands still while he is in this state, until its blow has landed: a vanish's chase. */
   stillsFoe?: boolean;

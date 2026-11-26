@@ -4,6 +4,8 @@ import { alsoFired } from "./alsoFired";
 import { staysOnStep } from "./heldStep";
 import { blockOf } from "./block";
 import { Boost } from "./boost";
+import { Afterimage, APPEAR_FRAMES, dithered } from "../fx/dissolve";
+import { DITHER_LEVELS } from "../fx/dither";
 import { faceOpponent } from "./turning";
 import { applyAir, fall, ON_GROUND, type AirSetting } from "./air";
 import { hitAgain } from "./hitAgain";
@@ -97,6 +99,8 @@ export interface WorldInput {
 /** What a fighter needs to know of the other one: where he stands, and whether he could be thrown. */
 export interface Opponent {
   x: number;
+  /** Where his feet are, in world px: a vanish comes out at his height. */
+  y?: number;
   throwable: boolean;
   airborne: boolean;
   groundVx: number;
@@ -247,6 +251,10 @@ export class Entity {
   private chases = 0;
   /** Hidden by a state of his that `hidden`s him, not by a scene. */
   private vanished = false;
+  /** What his vanishes left behind, thinning away (`fx/dissolve.ts`). */
+  private ghosts: Afterimage[] = [];
+  /** Frames left of his coming out of a vanish, built up from a lattice of pixels. */
+  private appearing = 0;
   /** The opponent as this step saw him: where a vanish comes out. */
   private foe: Opponent | null = null;
   /** The charge being played fast (`entity/boost.ts`), or null. */
@@ -1627,6 +1635,12 @@ export class Entity {
    */
   update(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
     this.heldNow = input.holding;
+    this.ghosts = this.ghosts.filter((g) => g.tick());
+    // coming out: thicker each frame, whole at the end
+    if (this.appearing > 0) {
+      this.appearing--;
+      this.applyFrame();
+    }
     if (!this.boost) return this.step(input, opponent, bounds);
     const held = { ...NO_INPUT, holding: { ...NO_INPUT.holding, [this.boost.def.hold]: true } };
     for (let steps = this.boost.take(); steps > 0 && this.boost; steps--) this.step(held, opponent, bounds);
@@ -1660,13 +1674,23 @@ export class Entity {
   private vanishOnEntering(): void {
     const def = this.sm?.def;
     if (!def) return;
-    // only his own hiding: a scene hides him too, and is not undone here
-    if (def.hidden) this.hide((this.vanished = true));
-    else if (this.vanished) this.hide((this.vanished = false));
+    // only his own hiding, his drawing and not his view: a scene hides that,
+    // and what he leaves behind is in it; gone as the SNES goes, thinning out
+    if (def.hidden && !this.vanished) {
+      this.ghosts.push(new Afterimage(this.view, this.sprite));
+      this.vanished = true;
+      this.sprite.visible = this.shadow.visible = false;
+    } else if (!def.hidden && this.vanished) {
+      this.vanished = false;
+      this.sprite.visible = this.shadow.visible = true;
+      this.appearing = APPEAR_FRAMES;
+    }
     if (def.vanishes) this.chases++;
     if (def.appears !== undefined && this.foe) {
       const ahead = Math.sign(this.foe.x - this.x) || this.facing;
       this.x = this.foe.x + ahead * def.appears * this.scale;
+      // at his height, flying or not, never below the floor
+      if (this.foe.y !== undefined) this.y = Math.min(this.foe.y, this.groundY);
       this.facing = ahead > 0 ? -1 : 1;
     }
   }
@@ -2021,7 +2045,9 @@ export class Entity {
     const ft = this.def.frames.get(frame);
     if (!ft) return;
     const variant = this.shownVariant ? this.def.variants.get(this.shownVariant)?.get(frame) : undefined;
-    this.sprite.texture = variant ?? ft.tex;
+    const drawn = variant ?? ft.tex;
+    // coming out of a vanish: built up from a lattice of pixels
+    this.sprite.texture = this.appearing > 0 ? dithered(drawn, Math.round((1 - this.appearing / APPEAR_FRAMES) * DITHER_LEVELS)) : drawn;
     this.sprite.anchor.set(ft.anchor[0] / ft.w, ft.anchor[1] / ft.h);
   }
 
