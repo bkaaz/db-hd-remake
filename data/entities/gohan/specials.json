@@ -42,48 +42,6 @@
       "from": [
         "@ground"
       ],
-      "when": "command:aa",
-      "to": "triangle_illusion"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a2",
-      "to": "rushing_uppercut"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a4",
-      "to": "knee_slasher"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a6",
-      "to": "zankuu_kyaku"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a7",
-      "to": "bakuretsu"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:ab",
-      "to": "renzoku"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
       "when": [
         "held:fwd",
         "!held:down",
@@ -103,27 +61,6 @@
         "pressed:blast"
       ],
       "to": "masenko"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:9f",
-      "to": "sender_9f"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a0",
-      "to": "sender_a0"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a1",
-      "to": "sender_a1"
     },
     {
       "from": [

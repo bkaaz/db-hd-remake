@@ -163,6 +163,15 @@ describe("withCharge", () => {
     expect(charged.states.smash_3.transitions?.[3]).toEqual({ when: ["frames:8", "!frames:10", "held:smash"], to: "smash_3_charge_0" });
   });
 
+  it("stops on the step named, crouching before a leap, the rest of the wind-up played once let go", () => {
+    // crouch 4, leap 2, blow 6: stopped crouching, the blow 2 frames after he lets go
+    const leap = { s3: { steps: [{ dur: 2 }, { dur: 4 }, { dur: 2 }, { dur: 6, boxes: [hit] }, { dur: 4 }] } };
+    const crouched = withCharge(file, leap, "smash_3", 1);
+    expect(crouched.states.smash_3_charge_0.holdStep).toBe(1);
+    expect(crouched.states.smash_3.transitions?.[3]).toEqual({ when: ["frames:4", "!frames:6", "held:smash"], to: "smash_3_charge_0" });
+    expect(() => withCharge(file, leap, "smash_3", 3)).toThrow(/too short to stop on/);
+  });
+
   it("will not charge a wind-up too short to stop on", () => {
     expect(() => withCharge(file, { s3: { steps: [{ dur: 2 }, { dur: 6, boxes: [hit] }] } }, "smash_3")).toThrow(/too short to stop on/);
   });

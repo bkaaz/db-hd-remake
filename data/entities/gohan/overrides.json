@@ -109,5 +109,15 @@
   },
   "ko_down": {
     "holdStep": 2
+  },
+  "smash": {
+    "anim": "b_zk",
+    "holdStep": 10,
+    "transitions": [
+      {
+        "when": "landed",
+        "to": "land"
+      }
+    ]
   }
 }

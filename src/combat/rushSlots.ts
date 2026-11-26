@@ -38,8 +38,11 @@ export type Picks = Partial<Record<Slot, Pick>>;
 export interface RushFile {
   picks: Picks;
   step?: Step;
-  /** The enders charged by holding Smash (`combat/smashCharge.ts`): Goku's first (owner, 2026-11-26). */
-  charge?: string[];
+  /**
+   * The enders charged by holding Smash (`combat/smashCharge.ts`): Goku's first
+   * (owner, 2026-11-26); one with `stopOn` stops on that step of its animation.
+   */
+  charge?: (string | { ender: string; stopOn: number })[];
 }
 
 /**
@@ -89,7 +92,8 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
     const { anim, type: picked } = picks[slot]!;
     const startup = startupOf(anims[anim]);
     const { cancelBy: _old, velAt: _step, ...rest } = base;
-    const cancels = exits.length > 1;
+    // a window only where a way out asks for one: a charge's own ways are not cancels
+    const cancels = exits.some((t) => [t.when].flat().includes("cancelable"));
     states[slot] = {
       ...rest,
       anim,

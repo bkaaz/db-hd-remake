@@ -58,7 +58,14 @@ direction means what he asks for, not where he walks (owner, 2026-11-26).
 **A fighter has a rush only once the owner accepts how it plays** (owner,
 2026-11-24); until then Attack is one blow. Goku's is the Quad Kick's four
 kicks with an ender at each depth, Freeza's three of the original's standing
-blows (`rush.test.ts` holds both to their picks). **Each press is
+blows (`rush.test.ts` holds both to their picks); Gohan's, to try, his
+Bakuretsu's four punches. **A fighter brought over** takes his senders for
+his Smashes where they fit (owner, 2026-11-26): the up sender for Smash
+alone, the side one for S1, the down one for S2 — Gohan's is a dive from the
+air, nothing a charge can stop on, so his S2 is the Suki Combo's knee, and
+his S3 the Rushing Uppercut. Gohan's Smash alone is the Zankuu Kyaku, a
+leaping kick he charges crouched as the original starts it (`stopOn` in his
+`rush.json`: a charge may stop on a pose earlier than the last). **Each press is
 one blow**, each seen whole, Attack's stepping forward — A4 too, or it falls
 short — and every S thrown where he stands: a press made any time
 during a blow is kept until its cancel opens (`StateMachine`, `cancelable`),
@@ -94,7 +101,7 @@ direction counts alone, so down-back + S crouching is still the crouching
 Smash. It wins over a command of the cartridge on → + S: Goku's Double Kick
 and Vegetto's Forward Kick have no way in. A depth's window is timed by its
 own ways on, Attack and before A4 every ender; Smash alone, and anything off
-A4, may not be a combo (`npm run chains`). Every fighter has S1–S3; all but Goku's are the
+A4, may not be a combo (`npm run chains`). Every fighter has S1–S3; all but Goku's and Gohan's are the
 standing Smash, the crouching one and the crouching Attack until picked, and
 their Attack, still one blow, does not lead into them yet.
 
@@ -185,6 +192,15 @@ ours are asked for comes with the rework, one move at a time (owner,
   or less, now for any health at 30 ki. Cell has two: Bakuretsu Rush on
   down + Ki, Tri Eruption with Charge held as well. Vegeta's Galactic
   Gunfire keeps its 64 px and its start just off the ground.
+
+**Goku and Gohan ask for nothing by the cartridge's commands any more**
+(owner, 2026-11-26): a motion of more than one direction is not ours. A is the
+chain, S and Ki take a direction; what is left of his moves — the Knee
+Slash, Double Punch, Spin Kick, the senders, Large Ki Blast, Side Slash, the
+teleports, and Gohan's alike — stays as states nothing leads to, their
+animations' stock. Vanish
+comes for every fighter without an animation of its own. The others keep
+their commands until each is brought over.
 
 A direction counts only alone: down-forward or down-back + Ki is none of them, and plays the ki
 blast. Where a command of the cartridge also ends in that direction and Ki,

@@ -66,7 +66,8 @@ describe.each(generatedFighters())("%s's rush", (name) => {
     const { hitstun } = read<{ hitstun: number }>(name, "attributes.json");
     const disk = read<StatesFile>(name, "states.json");
     const rushed = withRush(disk, anims, hitstun, rush.picks, rush.step ?? DEFAULT_STEP);
-    expect((rush.charge ?? []).reduce((f, ender) => withCharge(f, anims, ender), rushed)).toEqual(disk);
+    const charged = (rush.charge ?? []).reduce((f, c) => (typeof c === "string" ? withCharge(f, anims, c) : withCharge(f, anims, c.ender, c.stopOn)), rushed);
+    expect(charged).toEqual(disk);
   });
 
   it("plays what the owner accepted as a combo: the latest press still lands inside the hitstun", () => {

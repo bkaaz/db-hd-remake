@@ -112,7 +112,13 @@ const CHARGE_SOUND = "ball_2d";
 const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
 
 /** `file` with `ender` charged: its holds, its releases, and its way into them. */
-export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string): StatesFile {
+/**
+ * `stopOn`: the step of its animation he stops on to charge, where the
+ * wind-up's last pose is in the air — Gohan's Smash alone, crouching before
+ * the Zankuu Kyaku's leap (owner, 2026-11-26). Past it the wind-up plays on
+ * when he lets go.
+ */
+export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, stopOn?: number): StatesFile {
   const sending = SENDING[ender];
   if (!sending) throw new Error(`${ender} does not charge: ${CHARGEABLE.join(", ")} do`);
   const s3 = file.states[ender];
@@ -128,16 +134,19 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   const startup = startupOf(anims[s3.anim]);
   const steps = anims[s3.anim]?.steps ?? [];
   const blowStep = steps.findIndex((st) => (st.boxes ?? []).some((b) => b.type === "hit"));
-  // he stops on the wind-up's last pose, the one before the blow: asked while
-  // it still has frames to run, or there is nothing to stop on
-  const pose = blowStep - 1;
+  // he stops on the wind-up's last pose, the one before the blow, or the one
+  // named: asked while it still has frames to run, or there is nothing to stop on
+  const pose = stopOn ?? blowStep - 1;
   const poseFrom = steps.slice(0, Math.max(pose, 0)).reduce((n, st) => n + st.dur, 0);
-  const decide = startup - 2;
-  if (pose < 0 || decide < Math.max(poseFrom, 1)) throw new Error(`${s3.anim}'s wind-up's last pose is too short to stop on`);
+  const poseEnd = poseFrom + (steps[pose]?.dur ?? 0);
+  const decide = poseEnd - 2;
+  if (pose < 0 || pose >= blowStep || decide < Math.max(poseFrom, 1)) throw new Error(`${s3.anim}'s wind-up's last pose is too short to stop on`);
+  // let go, what is left of the wind-up past the pose before the blow is out
+  const afterPose = startup - poseEnd;
   const others = (s3.transitions ?? []).filter((t) => !ours(t));
   // asked only while he is still winding up: a press held after the blow is
   // out starts nothing, or it strikes twice (owner's recording, 2026-11-26)
-  const held = (to: string, extra: string[] = []): Transition => ({ when: [`frames:${decide}`, `!frames:${startup}`, "held:smash", ...extra], to });
+  const held = (to: string, extra: string[] = []): Transition => ({ when: [`frames:${decide}`, `!frames:${poseEnd}`, "held:smash", ...extra], to });
   // the reaction each level sends him into, and how far: its own launch scaled
   const scaled = (v: number | null, by: number) => (v === null ? null : Math.round(v * by * 100) / 100);
   const sent = (level: number): Partial<StateDef> => {
@@ -246,12 +255,13 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       ...(s3.damage !== undefined && { damage: Math.round(s3.damage * DAMAGE[level]) }),
       ...sent(level),
       // let go past the wind-up: the blow's pose comes at once
-      ...lunge(level, 0),
-      ...hop(level, 0, 0),
+      ...lunge(level, afterPose),
+      ...hop(level, Math.max(0, afterPose - 1), afterPose),
       ...(level === 3 && { hitFlash: TOP_FLASH }),
       ...(sending.breaksFrom !== undefined && level >= sending.breaksFrom && { breaksGuard: true }),
       ...(sending.push?.[level] !== undefined && { pushes: sending.push[level] }),
-      transitions: others,
+      // a level is let go of, not begun: no throw for the other button
+      transitions: others.filter((t) => t.to !== "throw"),
     };
   }
   // the top, the world going on again

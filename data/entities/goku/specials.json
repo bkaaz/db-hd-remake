@@ -17,13 +17,6 @@
       "from": [
         "@ground"
       ],
-      "when": "command:a5",
-      "to": "quad_kick"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
       "when": [
         "held:fwd",
         "!held:down",
@@ -48,82 +41,12 @@
       "from": [
         "@ground"
       ],
-      "when": "command:a4",
-      "to": "knee_slash"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:9c",
-      "to": "teleport_fwd"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:9e",
-      "to": "teleport_back"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a7",
-      "to": "double_punch"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:9f",
-      "to": "sender_9f"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a6",
-      "to": "spin_kick"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a1",
-      "to": "sender_a1"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a9",
-      "to": "large_ki"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a0",
-      "to": "sender_a0"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
       "when": [
         "grab",
         "pressed:attack",
         "pressed:smash"
       ],
       "to": "throw"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
-      "when": "command:a8",
-      "to": "side_slash"
     },
     {
       "from": [

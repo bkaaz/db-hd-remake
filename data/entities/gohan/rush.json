@@ -1,13 +1,41 @@
 {
   "picks": {
+    "rush_1": {
+      "anim": "b_bk1",
+      "type": "flinch"
+    },
+    "rush_2": {
+      "anim": "b_bk2",
+      "type": "flinch"
+    },
+    "rush_3": {
+      "anim": "b_bk3",
+      "type": "flinch"
+    },
+    "rush_4": {
+      "anim": "b_bk4",
+      "type": "heavy"
+    },
     "smash_1": {
-      "anim": "m93"
+      "anim": "b_a0",
+      "type": "stagger"
     },
     "smash_2": {
-      "anim": "m95"
+      "anim": "b_knee",
+      "type": "stagger"
     },
     "smash_3": {
-      "anim": "m94"
+      "anim": "b_a2",
+      "type": "high"
     }
-  }
+  },
+  "charge": [
+    "smash_1",
+    "smash_2",
+    "smash_3",
+    {
+      "ender": "smash",
+      "stopOn": 1
+    }
+  ]
 }
