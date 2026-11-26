@@ -30,7 +30,10 @@
     }
   },
   "charge": [
-    "smash_1",
+    {
+      "ender": "smash_1",
+      "stopOn": 0
+    },
     "smash_2",
     "smash_3",
     {

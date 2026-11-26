@@ -4416,8 +4416,8 @@
         },
         {
           "when": [
-            "frames:5",
-            "!frames:7",
+            "frames:2",
+            "!frames:4",
             "held:smash",
             "combo"
           ],
@@ -4425,8 +4425,8 @@
         },
         {
           "when": [
-            "frames:5",
-            "!frames:7",
+            "frames:2",
+            "!frames:4",
             "held:smash"
           ],
           "to": "smash_1_charge_0"
@@ -4437,22 +4437,22 @@
         }
       ],
       "holdStep": 4,
-      "holdFrames": 21,
+      "holdFrames": 22,
       "velAt": [
         [
-          7,
+          8,
           1.5
         ],
         [
-          21,
+          22,
           0
         ]
       ],
       "trail": {
         "fx": "dust",
         "every": 4,
-        "from": 7,
-        "to": 21
+        "from": 8,
+        "to": 22
       }
     },
     "smash_2": {
@@ -4586,7 +4586,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 2,
+      "holdStep": 0,
       "damage": 0,
       "braces": 5,
       "transitions": [
@@ -4595,7 +4595,7 @@
           "to": "smash_1_lv0"
         },
         {
-          "when": "frames:5",
+          "when": "frames:8",
           "to": "smash_1_charge_1"
         }
       ]
@@ -4607,7 +4607,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 2,
+      "holdStep": 0,
       "damage": 0,
       "braces": 5,
       "blinks": 6,
@@ -4633,7 +4633,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 2,
+      "holdStep": 0,
       "damage": 0,
       "braces": 5,
       "blinks": 6,
@@ -4659,7 +4659,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 2,
+      "holdStep": 0,
       "damage": 0,
       "braces": 5,
       "cost": 5,
@@ -4687,7 +4687,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 2,
+      "holdStep": 0,
       "damage": 0,
       "braces": 5,
       "cost": 5,
@@ -4710,7 +4710,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 2,
+      "holdStep": 0,
       "damage": 0,
       "blinks": 6,
       "cost": 10,
@@ -4735,7 +4735,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 2,
+      "holdStep": 0,
       "damage": 0,
       "cost": 5,
       "blinks": 4,
@@ -4754,7 +4754,7 @@
         0
       ],
       "turn": false,
-      "holdStep": 2,
+      "holdStep": 0,
       "damage": 0,
       "cost": 5,
       "blinks": 2,
@@ -4777,22 +4777,22 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "holdStep": 4,
-      "holdFrames": 14,
+      "holdFrames": 18,
       "velAt": [
         [
-          0,
+          4,
           1.5
         ],
         [
-          14,
+          18,
           0
         ]
       ],
       "trail": {
         "fx": "dust",
         "every": 4,
-        "from": 0,
-        "to": 14
+        "from": 4,
+        "to": 18
       },
       "transitions": [
         {
@@ -4819,22 +4819,22 @@
         ]
       },
       "holdStep": 4,
-      "holdFrames": 16,
+      "holdFrames": 20,
       "velAt": [
         [
-          0,
+          4,
           2.5
         ],
         [
-          16,
+          20,
           0
         ]
       ],
       "trail": {
         "fx": "dust",
         "every": 4,
-        "from": 0,
-        "to": 16
+        "from": 4,
+        "to": 20
       },
       "transitions": [
         {
@@ -4861,22 +4861,22 @@
         ]
       },
       "holdStep": 4,
-      "holdFrames": 18,
+      "holdFrames": 22,
       "velAt": [
         [
-          0,
+          4,
           3.5
         ],
         [
-          18,
+          22,
           0
         ]
       ],
       "trail": {
         "fx": "dust",
         "every": 4,
-        "from": 0,
-        "to": 18
+        "from": 4,
+        "to": 22
       },
       "transitions": [
         {
@@ -4903,22 +4903,22 @@
         ]
       },
       "holdStep": 4,
-      "holdFrames": 20,
+      "holdFrames": 24,
       "velAt": [
         [
-          0,
+          4,
           4.5
         ],
         [
-          20,
+          24,
           0
         ]
       ],
       "trail": {
         "fx": "dust",
         "every": 4,
-        "from": 0,
-        "to": 20
+        "from": 4,
+        "to": 24
       },
       "hitFlash": 8,
       "transitions": [
@@ -4946,22 +4946,22 @@
         ]
       },
       "holdStep": 4,
-      "holdFrames": 20,
+      "holdFrames": 24,
       "velAt": [
         [
-          0,
+          4,
           4.5
         ],
         [
-          20,
+          24,
           0
         ]
       ],
       "trail": {
         "fx": "dust",
         "every": 4,
-        "from": 0,
-        "to": 20
+        "from": 4,
+        "to": 24
       },
       "hitFlash": 8,
       "transitions": [
