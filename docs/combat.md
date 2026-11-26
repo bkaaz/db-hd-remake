@@ -95,7 +95,9 @@ their Attack, still one blow, does not lead into them yet.
 (`charge` in his `rush.json`, `combat/smashCharge.ts`, which holds the
 numbers). S3 lifts him higher each level; S1's tap still staggers him, and
 from the first level it sends him off (`sendoff`): flat, in the pose of a
-body sent to another arena but kept in this one, further each level. Below,
+body sent to another arena but kept in this one, further each level. S1's
+kick stays out longer and drives him forward on it, raising dust, faster and
+further each level (`lunge`). Below,
 S3 stands for either. He stops on the wind-up's pose and lets go when Smash does —
 nothing else he presses counts — or by himself at the top: a tap is the
 plain S3, which lifts him low so he is soon down; held longer it is one of

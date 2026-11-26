@@ -168,6 +168,23 @@ describe("withCharge on S1", () => {
     expect(s1.states.smash_1_charge_3.transitions?.[0]).toEqual({ when: "!held:smash", to: "smash_1_lv3" });
   });
 
+  it("holds the kick out and drives him forward on it, further and faster each level, raising dust", () => {
+    // the fixture's animation: its blow is step 1, 6 frames long, after 5 of wind-up
+    const reach = (st: string) => {
+      const [[, speed], [until]] = s1.states[st].velAt!;
+      return speed * (until - s1.states[st].velAt![0][0]);
+    };
+    expect(s1.states.smash_1).toMatchObject({ holdStep: 1, holdFrames: 5 + 6 + 6, trail: { fx: "dust", from: 5, to: 17 } });
+    const levels = [0, 1, 2, 3].map((n) => reach(`smash_1_lv${n}`));
+    expect(levels).toEqual([...levels].sort((a, b) => a - b));
+    expect(new Set(levels).size).toBe(4);
+    expect(s1.states.smash_1_lv2.velAt![0][1]).toBeGreaterThan(s1.states.smash_1_lv1.velAt![0][1]);
+  });
+
+  it("leaves S3 where he stands", () => {
+    expect(made.states.smash_3_lv3.velAt).toBeUndefined();
+  });
+
   it("charges only the enders it knows how to send", () => {
     expect(() => withCharge(s1File, anims, "smash_2")).toThrow(/does not charge/);
   });

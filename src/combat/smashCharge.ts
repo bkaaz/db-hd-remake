@@ -38,9 +38,20 @@ interface Sending {
   lift: readonly number[];
   send: readonly number[];
   type?: { name: string; from: number };
+  /**
+   * He drives forward on the blow's pose, held that many frames longer, that
+   * fast, raising dust: S1's kick stays out and slides further each level
+   * (owner, 2026-11-26).
+   */
+  lunge?: { hold: readonly number[]; speed: readonly number[] };
 }
 const SENDING: Record<string, Sending> = {
-  smash_1: { lift: [1, 1, 1.1, 1.2], send: [1, 1, 1.25, 1.6], type: { name: "sendoff", from: 1 } },
+  smash_1: {
+    lift: [1, 1, 1.1, 1.2],
+    send: [1, 1, 1.25, 1.6],
+    type: { name: "sendoff", from: 1 },
+    lunge: { hold: [6, 8, 10, 12], speed: [1.5, 2.5, 3.5, 4.5] },
+  },
   smash_3: { lift: [0.5, 1.1, 1.2, 1.35], send: [1, 1.3, 1.6, 2] },
 };
 /** The enders that charge. */
@@ -63,6 +74,8 @@ const AT_ONCE_COST = 10;
 const BOOST_LEVEL = 6;
 /** The ki charge (LB), which a direction + Smash breaks off into the blow at once. */
 const KI_CHARGE = ["charge_start", "charge"];
+/** Frames between puffs of a lunge's dust. */
+const DUST_EVERY = 4;
 /** The top level whitens the screen when it lands, as a beam does. */
 const TOP_FLASH = 8;
 /** Frames of his charge colours, then of his own, by level, the first on reaching it: none before the first. */
@@ -108,12 +121,25 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     };
   };
   const boostCost = AT_ONCE_COST + [1, 2, 3].reduce((sum, level) => sum + costOf(level), 0);
+  // the blow's pose held and driven forward, from `start`, the frame of the state it begins on
+  const blowStep = (anims[s3.anim]?.steps ?? []).findIndex((st) => (st.boxes ?? []).some((b) => b.type === "hit"));
+  const lunge = (level: number, start: number): Partial<StateDef> => {
+    if (!sending.lunge || blowStep < 0) return {};
+    const until = start + anims[s3.anim].steps[blowStep].dur + sending.lunge.hold[level];
+    return {
+      holdStep: blowStep,
+      holdFrames: until,
+      velAt: [[start, sending.lunge.speed[level]], [until, 0]],
+      trail: { fx: "dust", every: DUST_EVERY, from: start, to: until },
+    };
+  };
   const states: Record<string, StateDef> = {
     ...file.states,
     // RB held: the charge played fast, or the plain blow at once where he cannot pay for it (owner, 2026-11-26)
     [ender]: {
       ...s3,
       ...sent(0),
+      ...lunge(0, startup),
       transitions: [
         { when: ["held:boost", `ki:${boostCost}`], to: boost(1) },
         { when: "held:boost", to: release(0) },
@@ -168,6 +194,8 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       ...blow,
       ...(s3.damage !== undefined && { damage: Math.round(s3.damage * DAMAGE[level]) }),
       ...sent(level),
+      // let go past the wind-up: the blow's pose comes at once
+      ...lunge(level, 0),
       ...(level === 3 && { hitFlash: TOP_FLASH }),
       transitions: others,
     };
