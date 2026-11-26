@@ -562,7 +562,7 @@
         },
         {
           "when": "pressed:attack",
-          "to": "crouch_y"
+          "to": "crouch_b"
         },
         {
           "when": [
@@ -661,7 +661,7 @@
         },
         {
           "when": "pressed:attack",
-          "to": "crouch_y"
+          "to": "crouch_b"
         },
         {
           "when": [
@@ -1413,14 +1413,7 @@
           "when": [
             "held:boost",
             "!frames:1",
-            "ki:20"
-          ],
-          "to": "smash_boost_1"
-        },
-        {
-          "when": [
-            "held:boost",
-            "!frames:1"
+            "!ki:20"
           ],
           "to": "smash_lv0"
         },
@@ -1470,6 +1463,12 @@
         "every": 4,
         "from": 7,
         "to": 8
+      },
+      "boosts": {
+        "hold": "smash",
+        "frames": 60,
+        "bar": 10,
+        "needs": 20
       },
       "carries": true,
       "inputsOf": {
@@ -3998,12 +3997,8 @@
         {
           "when": [
             "held:boost",
-            "ki:10"
+            "!ki:10"
           ],
-          "to": "kame_boost"
-        },
-        {
-          "when": "held:boost",
           "to": "kame_go_s"
         },
         {
@@ -4017,7 +4012,14 @@
           "when": "frames:20",
           "to": "kame_charge_2"
         }
-      ]
+      ],
+      "boosts": {
+        "hold": "blast",
+        "frames": 32,
+        "bar": 10,
+        "needs": 10
+      },
+      "charging": true
     },
     "kame_charge_2": {
       "anim": "maa",
@@ -4045,7 +4047,8 @@
           "when": "frames:12",
           "to": "kame_go_l"
         }
-      ]
+      ],
+      "charging": true
     },
     "kame_fire_s": {
       "anim": "maa_2",
@@ -4369,43 +4372,6 @@
           "when": "frames:2",
           "to": "kame_fire_l"
         }
-      ],
-      "screen": [
-        [
-          0,
-          "bright"
-        ]
-      ]
-    },
-    "kame_boost": {
-      "_comment": "Boost (RB) held with forward + Ki (owner, 2026-11-26): its own charge played fast — the pose, the ball grown to what a whole charge leaves — while the opponent and every bolt stand still and the art dims; then the large one, for a bar over the Kamehameha's own price. Nothing of the boost's own: the move's sounds and drawings. Without the ki, the small one at once.",
-      "anim": "maa",
-      "cost": 10,
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "ball": {
-        "at": [
-          -10,
-          -38
-        ],
-        "from": 2,
-        "grow": 2
-      },
-      "freezesFoe": 18,
-      "screen": [
-        [
-          0,
-          "dim"
-        ]
-      ],
-      "transitions": [
-        {
-          "when": "frames:18",
-          "to": "kame_go_l"
-        }
       ]
     },
     "kame_out": {
@@ -4514,14 +4480,7 @@
           "when": [
             "held:boost",
             "!frames:1",
-            "ki:20"
-          ],
-          "to": "smash_1_boost_1"
-        },
-        {
-          "when": [
-            "held:boost",
-            "!frames:1"
+            "!ki:20"
           ],
           "to": "smash_1_lv0"
         },
@@ -4559,6 +4518,12 @@
       ],
       "type": "stagger",
       "cancelBy": 19,
+      "boosts": {
+        "hold": "smash",
+        "frames": 60,
+        "bar": 10,
+        "needs": 20
+      },
       "holdStep": 1,
       "holdFrames": 17,
       "velAt": [
@@ -4593,14 +4558,7 @@
           "when": [
             "held:boost",
             "!frames:1",
-            "ki:20"
-          ],
-          "to": "smash_2_boost_1"
-        },
-        {
-          "when": [
-            "held:boost",
-            "!frames:1"
+            "!ki:20"
           ],
           "to": "smash_2_lv0"
         },
@@ -4638,6 +4596,12 @@
       ],
       "type": "stagger",
       "cancelBy": 24,
+      "boosts": {
+        "hold": "smash",
+        "frames": 60,
+        "bar": 10,
+        "needs": 20
+      },
       "holdStep": 2,
       "holdFrames": 16,
       "velAt": [
@@ -4672,14 +4636,7 @@
           "when": [
             "held:boost",
             "!frames:1",
-            "ki:20"
-          ],
-          "to": "smash_3_boost_1"
-        },
-        {
-          "when": [
-            "held:boost",
-            "!frames:1"
+            "!ki:20"
           ],
           "to": "smash_3_lv0"
         },
@@ -4732,6 +4689,12 @@
           -0.75,
           -3.75
         ]
+      },
+      "boosts": {
+        "hold": "smash",
+        "frames": 60,
+        "bar": 10,
+        "needs": 20
       }
     },
     "rush_1_close": {
@@ -4831,6 +4794,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "transitions": [
         {
           "when": "!held:smash",
@@ -4852,6 +4816,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "blinks": 6,
       "transitions": [
         {
@@ -4878,6 +4843,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "blinks": 6,
       "transitions": [
         {
@@ -4904,6 +4870,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "cost": 5,
       "blinks": 4,
       "sound": "ball_2d",
@@ -4932,6 +4899,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "cost": 5,
       "blinks": 2,
       "transitions": [
@@ -4942,68 +4910,6 @@
         {
           "when": "frames:15",
           "to": "smash_1_lv3"
-        }
-      ]
-    },
-    "smash_1_boost_1": {
-      "anim": "b_116",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "blinks": 6,
-      "cost": 10,
-      "freezesFoe": 18,
-      "screen": [
-        [
-          0,
-          "dim"
-        ]
-      ],
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_1_boost_2"
-        }
-      ]
-    },
-    "smash_1_boost_2": {
-      "anim": "b_116",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "cost": 5,
-      "blinks": 4,
-      "sound": "ball_2d",
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_1_boost_3"
-        }
-      ]
-    },
-    "smash_1_boost_3": {
-      "anim": "b_116",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "cost": 5,
-      "blinks": 2,
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_1_max"
         }
       ]
     },
@@ -5214,66 +5120,6 @@
         }
       ]
     },
-    "smash_1_max": {
-      "anim": "b_116",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "damage": 52,
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "sendoff",
-      "cancelBy": 19,
-      "launches": {
-        "sent_off": [
-          -8.32,
-          -3
-        ]
-      },
-      "holdStep": 1,
-      "holdFrames": 18,
-      "velAt": [
-        [
-          0,
-          4.5
-        ],
-        [
-          18,
-          0
-        ]
-      ],
-      "trail": {
-        "fx": "dust",
-        "every": 4,
-        "from": 0,
-        "to": 18
-      },
-      "hitFlash": 8,
-      "transitions": [
-        {
-          "when": [
-            "cancelable",
-            "held:fwd",
-            "!held:down",
-            "!held:up",
-            "pressed:blast"
-          ],
-          "to": "kame_charge"
-        },
-        {
-          "when": "animEnd",
-          "to": "idle"
-        }
-      ],
-      "screen": [
-        [
-          0,
-          "bright"
-        ]
-      ]
-    },
     "smash_2_charge_0": {
       "anim": "b_a1",
       "vel": [
@@ -5284,6 +5130,7 @@
       "holdStep": 1,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "transitions": [
         {
           "when": "!held:smash",
@@ -5305,6 +5152,7 @@
       "holdStep": 1,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "blinks": 6,
       "transitions": [
         {
@@ -5331,6 +5179,7 @@
       "holdStep": 1,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "blinks": 6,
       "transitions": [
         {
@@ -5357,6 +5206,7 @@
       "holdStep": 1,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "cost": 5,
       "blinks": 4,
       "sound": "ball_2d",
@@ -5385,6 +5235,7 @@
       "holdStep": 1,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "cost": 5,
       "blinks": 2,
       "transitions": [
@@ -5395,68 +5246,6 @@
         {
           "when": "frames:15",
           "to": "smash_2_lv3"
-        }
-      ]
-    },
-    "smash_2_boost_1": {
-      "anim": "b_a1",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 1,
-      "damage": 0,
-      "blinks": 6,
-      "cost": 10,
-      "freezesFoe": 18,
-      "screen": [
-        [
-          0,
-          "dim"
-        ]
-      ],
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_2_boost_2"
-        }
-      ]
-    },
-    "smash_2_boost_2": {
-      "anim": "b_a1",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 1,
-      "damage": 0,
-      "cost": 5,
-      "blinks": 4,
-      "sound": "ball_2d",
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_2_boost_3"
-        }
-      ]
-    },
-    "smash_2_boost_3": {
-      "anim": "b_a1",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 1,
-      "damage": 0,
-      "cost": 5,
-      "blinks": 2,
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_2_max"
         }
       ]
     },
@@ -5653,62 +5442,6 @@
         }
       ]
     },
-    "smash_2_max": {
-      "anim": "b_a1",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "damage": 52,
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "crumple_3",
-      "cancelBy": 24,
-      "holdStep": 2,
-      "holdFrames": 13,
-      "velAt": [
-        [
-          0,
-          1.8
-        ],
-        [
-          13,
-          0
-        ]
-      ],
-      "trail": {
-        "fx": "dust",
-        "every": 4,
-        "from": 0,
-        "to": 13
-      },
-      "hitFlash": 8,
-      "breaksGuard": true,
-      "pushes": -0.5,
-      "transitions": [
-        {
-          "when": [
-            "cancelable",
-            "held:fwd",
-            "!held:down",
-            "!held:up",
-            "pressed:blast"
-          ],
-          "to": "kame_charge"
-        },
-        {
-          "when": "animEnd",
-          "to": "idle"
-        }
-      ],
-      "screen": [
-        [
-          0,
-          "bright"
-        ]
-      ]
-    },
     "smash_3_charge_0": {
       "anim": "b_80",
       "vel": [
@@ -5719,6 +5452,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "transitions": [
         {
           "when": "!held:smash",
@@ -5740,6 +5474,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "blinks": 6,
       "transitions": [
         {
@@ -5766,6 +5501,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "blinks": 6,
       "transitions": [
         {
@@ -5792,6 +5528,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "cost": 5,
       "blinks": 4,
       "sound": "ball_2d",
@@ -5820,6 +5557,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "cost": 5,
       "blinks": 2,
       "transitions": [
@@ -5830,68 +5568,6 @@
         {
           "when": "frames:15",
           "to": "smash_3_lv3"
-        }
-      ]
-    },
-    "smash_3_boost_1": {
-      "anim": "b_80",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "blinks": 6,
-      "cost": 10,
-      "freezesFoe": 18,
-      "screen": [
-        [
-          0,
-          "dim"
-        ]
-      ],
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_3_boost_2"
-        }
-      ]
-    },
-    "smash_3_boost_2": {
-      "anim": "b_80",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "cost": 5,
-      "blinks": 4,
-      "sound": "ball_2d",
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_3_boost_3"
-        }
-      ]
-    },
-    "smash_3_boost_3": {
-      "anim": "b_80",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "cost": 5,
-      "blinks": 2,
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_3_max"
         }
       ]
     },
@@ -6076,58 +5752,6 @@
         }
       ]
     },
-    "smash_3_max": {
-      "anim": "b_80",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "damage": 52,
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "type": "high",
-      "cancelBy": 20,
-      "launches": {
-        "reel_high": [
-          -1.5,
-          -10.12
-        ]
-      },
-      "hitFlash": 8,
-      "transitions": [
-        {
-          "when": [
-            "cancelable",
-            "held:back",
-            "!held:down",
-            "!held:up",
-            "pressed:blast"
-          ],
-          "to": "kame_up"
-        },
-        {
-          "when": [
-            "cancelable",
-            "held:fwd",
-            "!held:down",
-            "!held:up",
-            "pressed:blast"
-          ],
-          "to": "kame_charge"
-        },
-        {
-          "when": "animEnd",
-          "to": "idle"
-        }
-      ],
-      "screen": [
-        [
-          0,
-          "bright"
-        ]
-      ]
-    },
     "smash_charge_0": {
       "anim": "m9f",
       "vel": [
@@ -6138,6 +5762,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "transitions": [
         {
           "when": "!held:smash",
@@ -6159,6 +5784,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "blinks": 6,
       "transitions": [
         {
@@ -6185,6 +5811,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "blinks": 6,
       "transitions": [
         {
@@ -6211,6 +5838,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "cost": 5,
       "blinks": 4,
       "sound": "ball_2d",
@@ -6239,6 +5867,7 @@
       "holdStep": 0,
       "damage": 0,
       "braces": 5,
+      "charging": true,
       "cost": 5,
       "blinks": 2,
       "transitions": [
@@ -6249,68 +5878,6 @@
         {
           "when": "frames:15",
           "to": "smash_lv3"
-        }
-      ]
-    },
-    "smash_boost_1": {
-      "anim": "m9f",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "blinks": 6,
-      "cost": 10,
-      "freezesFoe": 18,
-      "screen": [
-        [
-          0,
-          "dim"
-        ]
-      ],
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_boost_2"
-        }
-      ]
-    },
-    "smash_boost_2": {
-      "anim": "m9f",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "cost": 5,
-      "blinks": 4,
-      "sound": "ball_2d",
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_boost_3"
-        }
-      ]
-    },
-    "smash_boost_3": {
-      "anim": "m9f",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "holdStep": 0,
-      "damage": 0,
-      "cost": 5,
-      "blinks": 2,
-      "transitions": [
-        {
-          "when": "frames:6",
-          "to": "smash_max"
         }
       ]
     },
@@ -6477,54 +6044,6 @@
           "when": "landed",
           "to": "land"
         }
-      ]
-    },
-    "smash_max": {
-      "anim": "m9f",
-      "vel": [
-        0,
-        0
-      ],
-      "turn": false,
-      "type": "lift",
-      "damage": 52,
-      "hitSound": "hit_09",
-      "blockSound": "block_17",
-      "air": [
-        [
-          0,
-          {
-            "vx": 2,
-            "vy": -10,
-            "gravity": "own"
-          }
-        ]
-      ],
-      "holdStep": 3,
-      "trail": {
-        "fx": "dust",
-        "every": 4,
-        "from": 0,
-        "to": 1
-      },
-      "carries": true,
-      "inputsOf": {
-        "state": "jump_fall",
-        "only": "buttons",
-        "from": 8
-      },
-      "hitFlash": 8,
-      "transitions": [
-        {
-          "when": "landed",
-          "to": "land"
-        }
-      ],
-      "screen": [
-        [
-          0,
-          "bright"
-        ]
       ]
     }
   }

@@ -57,6 +57,11 @@ describe.each(generatedFighters())("%s's rush", (name) => {
     expect(crouch.indexOf(`${aimed("down").join("+")}>smash_3`)).toBeLessThan(crouch.indexOf("pressed:smash>crouch_b"));
   });
 
+  it("sweeps on down + Attack, every fighter's crouching Smash, and nothing leads to the crouching Attack's uppercut", () => {
+    expect(exits(states, "crouch")).toContain("pressed:attack>crouch_b");
+    expect(Object.values(states.states).flatMap((d) => d.transitions ?? []).filter((t) => t.to === "crouch_y")).toEqual([]);
+  });
+
   it("leaves every depth on Smash for the ender a direction asks for, any of them", () => {
     const line = RUSH.filter((_, i) => RUSH.slice(0, i + 1).every((r) => rush.picks[r]));
     for (const slot of line) expect(new Set(links.filter((l) => l.from === slot && l.on === "smash").map((l) => l.to))).toEqual(new Set(ENDERS));

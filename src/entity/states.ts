@@ -25,6 +25,7 @@ import type { HitLightKind } from "../combat/hitLight";
 import type { PaletteMarks } from "../combat/palettes";
 import type { PillarDef } from "../combat/pillar";
 import { hitAgainProblem, type IfHitAgain } from "./hitAgain";
+import type { BoostDef } from "./boost";
 import type { BandDef } from "../combat/band";
 import type { ReboundDef } from "../combat/rebound";
 import { WAYS, type Way } from "../arena/ways";
@@ -472,12 +473,10 @@ export interface StateDef {
   groundFx?: string;
   /** Health he loses entering this state, as a blow worth it would cost him: the wall's (owner, 2026-11-26). */
   hurts?: number;
-  /**
-   * The opponent, his hitstun and every bolt stand still this many frames as
-   * this state begins, while he goes on: a boost playing its move's charge
-   * fast, so a combo survives it (owner, 2026-11-26).
-   */
-  freezesFoe?: number;
+  /** A charge begins here: what boosting it asks (`entity/boost.ts`). */
+  boosts?: BoostDef;
+  /** Part of a charge a boost plays fast: it goes on through these, and ends on leaving them. */
+  charging?: boolean;
   /**
    * A reaction he is given once a combo: a blow that would send him here again
    * before he is free sends him to this one instead — the crumple, so it opens

@@ -3,6 +3,7 @@ import { aimSpeed, aimsOn } from "./aim";
 import { alsoFired } from "./alsoFired";
 import { staysOnStep } from "./heldStep";
 import { blockOf } from "./block";
+import { Boost } from "./boost";
 import { faceOpponent } from "./turning";
 import { applyAir, fall, ON_GROUND, type AirSetting } from "./air";
 import { hitAgain } from "./hitAgain";
@@ -236,8 +237,12 @@ export class Entity {
   private landed = false;
   /** Stopped by the screen's edge or the world's, this state: `wall`. */
   private walled = false;
-  /** The `freezesFoe` of the state just entered, for the fighters to hand the opponent. */
+  /** Frames the opponent stands still for this one's boost, for the fighters to hand him. */
   private foeFreeze = 0;
+  /** The charge being played fast (`entity/boost.ts`), or null. */
+  private boost: Boost | null = null;
+  /** The buttons held this frame, as the player holds them: what starts a boost. */
+  private heldNow: WorldInput["holding"] = NO_INPUT.holding;
   /** A blow armed on entering a state, for `takeArmed`. */
   private armed = false;
   /** A state entered that sends this entity behind the opponent, for `takeBehind`. */
@@ -937,7 +942,7 @@ export class Entity {
     this.release();
   }
 
-  /** Frames the opponent stands still for the state just entered (`freezesFoe`) — taken once. */
+  /** Frames the opponent stands still for this one's boost — taken once. */
   takeFoeFreeze(): number {
     const frames = this.foeFreeze;
     this.foeFreeze = 0;
@@ -1511,7 +1516,7 @@ export class Entity {
     this.fired = this.sm.def.fires ?? null;
     this.groundFx = this.sm.def.groundFx ?? null;
     if (this.sm.def.hurts) this.hurtBy(this.sm.def.hurts);
-    if (this.sm.def.freezesFoe) this.foeFreeze = this.sm.def.freezesFoe;
+    this.boostOnEntering();
     this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.shovedAhead = 0;
@@ -1591,8 +1596,40 @@ export class Entity {
     return this.animEnded;
   }
 
-  /** Advance one game frame (60 FPS): facing, state, movement, animation. */
+  /**
+   * One frame of the fight: one step of his own, or, boosting, as many of
+   * his charge's as fit the whole in `BOOST_FRAMES`, the button held for him
+   * and the opponent standing still.
+   */
   update(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
+    this.heldNow = input.holding;
+    if (!this.boost) return this.step(input, opponent, bounds);
+    const held = { ...NO_INPUT, holding: { ...NO_INPUT.holding, [this.boost.def.hold]: true } };
+    for (let steps = this.boost.take(); steps > 0 && this.boost; steps--) this.step(held, opponent, bounds);
+    if (this.boost) this.foeFreeze = 1;
+  }
+
+  /**
+   * A boost begins on entering the state its charge begins in, RB held and
+   * the ki there; it ends on leaving the charge, the bar paid then — so the
+   * ki the charge's own levels ask is still there to pay them.
+   */
+  private boostOnEntering(): void {
+    const def = this.sm?.def;
+    if (!def) return;
+    if (!this.boost && def.boosts && this.heldNow.boost && this.ki >= def.boosts.needs) {
+      this.boost = new Boost(def.boosts);
+      this.screenCues.push("dim");
+      this.foeFreeze = 1;
+    } else if (this.boost && !def.charging && !def.boosts) {
+      this.ki = Math.max(0, this.ki - this.boost.def.bar);
+      this.screenCues.push("bright");
+      this.boost = null;
+    }
+  }
+
+  /** One step of his own: facing, state, movement, animation. */
+  private step(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
     const opponentX = opponent?.x ?? null;
     if (this.previewing) {
       // a hold's drawings go step for step with the thrower, who waits out a freeze too

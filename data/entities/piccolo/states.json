@@ -685,7 +685,7 @@
         },
         {
           "when": "pressed:attack",
-          "to": "crouch_y"
+          "to": "crouch_b"
         },
         {
           "when": [
@@ -820,7 +820,7 @@
         },
         {
           "when": "pressed:attack",
-          "to": "crouch_y"
+          "to": "crouch_b"
         },
         {
           "when": [

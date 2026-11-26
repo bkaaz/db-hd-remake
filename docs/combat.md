@@ -142,16 +142,18 @@ a block is, and lands once he has too little — a throw takes him, and the
 push may leave the blow short (`braces`, `entity/block.ts`).
 
 **Boost (RB) held with a move that charges has the whole charge at once**
-(owner, 2026-11-26), for what the charge costs and a bar more. The rule: the
-move's own charge plays fast — its drawings, flashes and sounds, nothing of
-the boost's own — while the opponent, his hitstun and every bolt stand still
-and the arena's art dims (`freezesFoe`); then its top goes as a full charge's
-would, and the world with it. A freeze of both broke the flow; one that leaves
-him moving does not. Without the ki the move goes at once uncharged. S1 and
-S3 — standing, crouching, in the rush, or breaking off the ki charge — play
-their three levels in 18 frames (`combat/smashCharge.ts`); Goku's and
-Gohan's Kamehameha its pose and ball, into the large one (`kame_boost`, their
-`specials.json`), else the small one.
+(owner, 2026-11-26), for what the charge costs and a bar more. The rule, one
+for every move (`entity/boost.ts`): the move's own charge — its states, so its
+drawings, ball, flashes and sounds, nothing of the boost's own — plays to its
+top fast, the button held for him, in 18 frames whatever it takes by hand,
+while the opponent, his hitstun and every bolt stand still and the arena's
+art dims; it ends as he leaves the charge, the bar paid then. A freeze of
+both broke the flow; one that leaves him moving does not. A move says only
+where its charge begins and how long it takes by hand (`boosts`) and which
+states are the charge (`charging`): the enders' are made so
+(`combat/smashCharge.ts`), the Kamehamehas' are in `specials.json`. Without
+the ki the move goes at once uncharged — standing, crouching, in the rush,
+or breaking off the ki charge.
 
 **Goku's Smash alone is his up sender's hop** (owner, 2026-11-26; `m9f`,
 his `overrides.json`): he crouches, hops forward on the blow and lands into
@@ -173,8 +175,9 @@ the air stays the jumping blow.
 the fighter's `closeRange.attack` — Goku's knee where his kick would reach
 past (owner, 2026-11-25). It leads on as A1 does; a fighter without one
 throws A1 at any range.
-Crouching has its own shorter rush; the air has one attack and
-one smash. There is no depth to step into, so down is **crouch**, and up is
+**Down + Attack is a sweep** (owner, 2026-11-26), every fighter's: the
+crouching Smash's low kick (`crouch_b`, `m95`), not the crouching Attack's
+uppercut, which nothing leads to; the air has one attack and one smash. There is no depth to step into, so down is **crouch**, and up is
 **jump**.
 
 **Guard is a stance, not a direction.** A blow is blocked only in a state marked

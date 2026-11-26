@@ -17,11 +17,9 @@ import { startupOf, type AnimSteps } from "./swing";
  * combo is his to drop. Only letting go of Smash does anything; at the top it
  * lets go of itself.
  *
- * With RB (boost) held it is the top at once, for what the whole charge costs
- * and a bar more: the charge played fast, every level's flash and sound and
- * nothing of the boost's own, while the opponent and every bolt stand still
- * and the art dims (owner, 2026-11-26). Without the ki it is the plain blow,
- * at once all the same.
+ * With RB (boost) held the charge plays fast to its top, for what it costs and
+ * a bar more (`boosts`, `entity/boost.ts`); without the ki it is the plain
+ * blow, at once all the same.
  *
  * Laid over the states `withRush` made, from the ender as it is there, so a
  * new pick of it is charged as it was. Pure: plain data in and out.
@@ -101,8 +99,6 @@ const BRACE_COST = 5;
 const costOf = (level: number) => (level > 1 ? LEVEL_COST : 0);
 /** What RB costs over the whole charge, to have it at once: a bar of the meter (owner, 2026-11-26). */
 const AT_ONCE_COST = 10;
-/** Frames each level takes, the charge played fast with RB: the world stands still the three of them. */
-const BOOST_LEVEL = 6;
 /** The ki charge (LB), which a direction + Smash breaks off into the blow at once. */
 const KI_CHARGE = ["charge_start", "charge"];
 /** Frames between puffs of a lunge's dust. */
@@ -134,11 +130,9 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   const hold = (n: number) => `${ender}_charge_${n}`;
   const COMBO_HOLD = `${ender}_charge_1_combo`;
   const release = (n: number) => `${ender}_lv${n}`;
-  const atOnce = `${ender}_max`;
-  const boost = (n: number) => `${ender}_boost_${n}`;
   // what this puts on the ender, to take out before putting it back
   const ours = (t: Transition) =>
-    t.to.startsWith(`${ender}_charge_`) || t.to.startsWith(`${ender}_boost_`) || (t.to === release(0) && [t.when].flat()[0] === "held:boost");
+    t.to.startsWith(`${ender}_charge_`) || (t.to === release(0) && [t.when].flat()[0] === "held:boost");
   const startup = startupOf(anims[s3.anim]);
   const steps = anims[s3.anim]?.steps ?? [];
   const blowStep = steps.findIndex((st) => (st.boxes ?? []).some((b) => b.type === "hit"));
@@ -199,17 +193,17 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   };
   const states: Record<string, StateDef> = {
     ...file.states,
-    // RB held: the charge played fast, or the plain blow at once where he cannot pay for it (owner, 2026-11-26)
+    // RB held: the charge played fast (`entity/boost.ts`), or the plain blow at once where he cannot pay for it (owner, 2026-11-26)
     [ender]: {
       ...s3,
       ...sent(0),
+      boosts: { hold: "smash", frames: FULL, bar: AT_ONCE_COST, needs: boostCost },
       ...lunge(0, startup),
       // a frame before the blow is out: in the air when it lands, or there is no flight to take him along on
       ...hop(0, startup - 1, startup),
       transitions: [
         // the boost is asked as the blow begins, never once it is under way
-        { when: ["held:boost", "!frames:1", `ki:${boostCost}`], to: boost(1) },
-        { when: ["held:boost", "!frames:1"], to: release(0) },
+        { when: ["held:boost", "!frames:1", `!ki:${boostCost}`], to: release(0) },
         held(COMBO_HOLD, ["combo"]),
         held(hold(0)),
         ...others,
@@ -233,6 +227,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     // no blow: the animation's hit box is past the step it holds
     damage: 0,
     braces: BRACE_COST,
+    charging: true,
     ...(costOf(level) > 0 && { cost: costOf(level) }),
     ...(BLINKS[level] !== undefined && { blinks: BLINKS[level] }),
     ...(CUES[level] !== undefined && { sound: CUES[level] }),
@@ -248,19 +243,9 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   states[COMBO_HOLD] = holdState(1, hold(2), COMBO_TO_SECOND);
   states[hold(2)] = holdState(2, hold(3), LEVEL_AT[2] - LEVEL_AT[1]);
   states[hold(3)] = holdState(3, release(3), FULL - LEVEL_AT[2]);
-  // the same levels played fast with RB, the world standing still: the bar paid with the first
-  for (const level of [1, 2, 3]) {
-    const { braces: _, transitions: __, ...pose } = holdState(level, "", 0);
-    states[boost(level)] = {
-      ...pose,
-      cost: costOf(level) + (level === 1 ? AT_ONCE_COST : 0),
-      ...(level === 1 && { freezesFoe: 3 * BOOST_LEVEL, screen: [[0, "dim"]] as [number, "dim"][] }),
-      transitions: [{ when: `frames:${BOOST_LEVEL}`, to: level < 3 ? boost(level + 1) : atOnce }],
-    };
-  }
   for (let level = 0; level < 4; level++) {
-    // the level's own launch, none of the plain blow's
-    const { transitions: _, launches: __, ...blow } = s3;
+    // the level's own launch, none of the plain blow's, and no boost of its own: it is let go of, not begun
+    const { transitions: _, launches: __, boosts: ___, ...blow } = s3;
     states[release(level)] = {
       ...blow,
       ...(s3.damage !== undefined && { damage: Math.round(s3.damage * DAMAGE[level]) }),
@@ -275,7 +260,5 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       transitions: others.filter((t) => t.to !== "throw"),
     };
   }
-  // the top, the world going on again
-  states[atOnce] = { ...states[release(3)], screen: [[0, "bright"]] };
   return { ...file, states };
 }

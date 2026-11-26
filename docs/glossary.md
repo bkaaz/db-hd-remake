@@ -67,7 +67,7 @@ change.
 - **Slam** — a blow that drives the body down rather than lifting it. → `combat.md`
 - **Smash** — the button that ends a rush; with a direction, the ender it names (S1 forward, S2 back, S3 down). → `combat.md` (The buttons)
 - **Charged ender** — S1, S2 or S3 held to charge it, three levels over the plain one (`smash_3_lv1`–`3`). → `combat.md` (The buttons)
-- **Boost** — RB (`W`) held with a move that charges: its charge played fast while the world stands still, for ki (`smash_3_boost_1`, `kame_boost`). → `combat.md` (The buttons)
+- **Boost** — RB (`W`) held with a move that charges: its own charge played fast to the top while the world stands still, for ki (`boosts`, `entity/boost.ts`). → `combat.md` (The buttons)
 - **Crumple** — stunned on his feet after a charged S2, the light reel held, open to a new combo, once a combo (`crumple`). → `combat.md` (A blow is an animation plus a hit type)
 - **Lift** — taken up along with the attacker, level with him (`carries`): Goku's Smash alone. → `combat.md` (A blow is an animation plus a hit type)
 - **Wall bounce** — a body sent off (`sendoff`) meeting the screen's edge, thrown back and open to a blow. → `combat.md` (A blow is an animation plus a hit type)

@@ -211,7 +211,7 @@ export class Fighters {
       // one body's state lets the other's held script go on ($0F:A545, ADR 0035)
       if (this.player.freesNow) this.opponent.free();
       if (this.opponent.freesNow) this.player.free();
-      // a boost: the other stands still, and with him every bolt (`freezesFoe`)
+      // a boost: the other stands still, and with him every bolt (`entity/boost.ts`)
       this.opponent.freeze(this.player.takeFoeFreeze());
       this.player.freeze(this.opponent.takeFoeFreeze());
       const world = {

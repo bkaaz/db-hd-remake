@@ -823,12 +823,8 @@
         {
           "when": [
             "held:boost",
-            "ki:10"
+            "!ki:10"
           ],
-          "to": "kame_boost"
-        },
-        {
-          "when": "held:boost",
           "to": "kame_go_s"
         },
         {
@@ -842,7 +838,14 @@
           "when": "frames:20",
           "to": "kame_charge_2"
         }
-      ]
+      ],
+      "boosts": {
+        "hold": "blast",
+        "frames": 44,
+        "bar": 10,
+        "needs": 10
+      },
+      "charging": true
     },
     "kame_charge_2": {
       "anim": "mac",
@@ -870,7 +873,8 @@
           "when": "frames:12",
           "to": "kame_charge_3"
         }
-      ]
+      ],
+      "charging": true
     },
     "kame_charge_3": {
       "anim": "mac",
@@ -895,7 +899,8 @@
           "when": "frames:4",
           "to": "kame_charge_4"
         }
-      ]
+      ],
+      "charging": true
     },
     "kame_charge_4": {
       "anim": "mac",
@@ -916,38 +921,8 @@
           "when": "frames:8",
           "to": "kame_fire_l"
         }
-      ]
-    },
-    "kame_boost": {
-      "_comment": "Boost (RB) held with forward + Ki (owner, 2026-11-26): his own charge played fast — the pose, the ball grown to what a whole charge leaves — while the opponent and every bolt stand still and the art dims; then the large one, for a bar over the Kamehameha's own price, as Goku's. Without the ki, the small one at once.",
-      "anim": "mac",
-      "cost": 10,
-      "vel": [
-        0,
-        0
       ],
-      "turn": false,
-      "ball": {
-        "at": [
-          -16,
-          -40
-        ],
-        "from": 2,
-        "grow": 3.6
-      },
-      "freezesFoe": 18,
-      "screen": [
-        [
-          0,
-          "dim"
-        ]
-      ],
-      "transitions": [
-        {
-          "when": "frames:18",
-          "to": "kame_fire_l"
-        }
-      ]
+      "charging": true
     },
     "kame_go_s": {
       "anim": "mac",
@@ -1146,12 +1121,6 @@
           ],
           "to": "kame_end_l"
         }
-      ],
-      "screen": [
-        [
-          0,
-          "bright"
-        ]
       ]
     },
     "kame_end_l": {
