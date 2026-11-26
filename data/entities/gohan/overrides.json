@@ -63,7 +63,22 @@
     ]
   },
   "rush_3": {
-    "damage": 26
+    "transitions": [
+      {
+        "when": [
+          "cancelable",
+          "held:fwd",
+          "!held:down",
+          "!held:up",
+          "pressed:blast"
+        ],
+        "to": "kame_charge"
+      },
+      {
+        "when": "animEnd",
+        "to": "idle"
+      }
+    ]
   },
   "crouch_y": {
     "damage": 27
@@ -117,6 +132,42 @@
       {
         "when": "landed",
         "to": "land"
+      }
+    ]
+  },
+  "rush_1": {
+    "transitions": [
+      {
+        "when": [
+          "cancelable",
+          "held:fwd",
+          "!held:down",
+          "!held:up",
+          "pressed:blast"
+        ],
+        "to": "kame_charge"
+      },
+      {
+        "when": "animEnd",
+        "to": "idle"
+      }
+    ]
+  },
+  "rush_2": {
+    "transitions": [
+      {
+        "when": [
+          "cancelable",
+          "held:fwd",
+          "!held:down",
+          "!held:up",
+          "pressed:blast"
+        ],
+        "to": "kame_charge"
+      },
+      {
+        "when": "animEnd",
+        "to": "idle"
       }
     ]
   }

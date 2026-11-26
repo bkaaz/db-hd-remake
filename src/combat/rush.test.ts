@@ -35,9 +35,10 @@ function ownWay(from: string, to: string): boolean {
   return to === RUSH[depth + 1] || (depth < ENDERS.length && (ENDERS as readonly string[]).includes(to));
 }
 
-/** The links the owner has accepted as combos (2026-11-25): Goku's own ways on, Freeza's Attack line. */
+/** The links the owner has accepted as combos (2026-11-25): Goku's own ways on, Freeza's Attack line; Gohan's own ways on (2026-11-26). */
 const ACCEPTED: Record<string, (from: string, to: string) => boolean> = {
   goku: ownWay,
+  gohan: ownWay,
   freeza: (from, to) => ownWay(from, to) && to.startsWith("rush_"),
 };
 

@@ -1177,6 +1177,16 @@
           "to": "smash"
         },
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -1201,7 +1211,7 @@
       ],
       "turn": false,
       "type": "flinch",
-      "damage": 26,
+      "damage": 27,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
@@ -1248,6 +1258,16 @@
             "pressed:smash"
           ],
           "to": "smash"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
         },
         {
           "when": "animEnd",
@@ -1321,6 +1341,16 @@
             "pressed:smash"
           ],
           "to": "smash"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
         },
         {
           "when": "animEnd",
@@ -3663,6 +3693,17 @@
       "transitions": [
         {
           "when": [
+            "held:boost",
+            "ki:10"
+          ],
+          "to": "kame_boost"
+        },
+        {
+          "when": "held:boost",
+          "to": "kame_go_s"
+        },
+        {
+          "when": [
             "frames:20",
             "released:blast"
           ],
@@ -3744,6 +3785,37 @@
       "transitions": [
         {
           "when": "frames:8",
+          "to": "kame_fire_l"
+        }
+      ]
+    },
+    "kame_boost": {
+      "_comment": "Boost (RB) held with forward + Ki (owner, 2026-11-26): his own charge played fast — the pose, the ball grown to what a whole charge leaves — while the opponent and every bolt stand still and the art dims; then the large one, for a bar over the Kamehameha's own price, as Goku's. Without the ki, the small one at once.",
+      "anim": "mac",
+      "cost": 10,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -16,
+          -40
+        ],
+        "from": 2,
+        "grow": 3.6
+      },
+      "freezesFoe": 18,
+      "screen": [
+        [
+          0,
+          "dim"
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "frames:18",
           "to": "kame_fire_l"
         }
       ]
@@ -3945,6 +4017,12 @@
           ],
           "to": "kame_end_l"
         }
+      ],
+      "screen": [
+        [
+          0,
+          "bright"
+        ]
       ]
     },
     "kame_end_l": {
@@ -4328,7 +4406,6 @@
         0
       ],
       "turn": false,
-      "type": "heavy",
       "damage": 26,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -4371,10 +4448,21 @@
           "to": "smash"
         },
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
       ],
+      "type": "heavy",
       "velAt": [
         [
           0,
@@ -4394,7 +4482,6 @@
         0
       ],
       "turn": false,
-      "type": "stagger",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -4432,10 +4519,22 @@
           "to": "smash_1_charge_0"
         },
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
       ],
+      "type": "stagger",
+      "cancelBy": 40,
       "holdStep": 4,
       "holdFrames": 22,
       "velAt": [
@@ -4462,7 +4561,6 @@
         0
       ],
       "turn": false,
-      "type": "stagger",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -4500,10 +4598,22 @@
           "to": "smash_2_charge_0"
         },
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
       ],
+      "type": "stagger",
+      "cancelBy": 31,
       "holdStep": 1,
       "holdFrames": 11,
       "velAt": [
@@ -4530,7 +4640,6 @@
         0
       ],
       "turn": false,
-      "type": "high",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -4568,10 +4677,32 @@
           "to": "smash_3_charge_0"
         },
         {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
       ],
+      "type": "high",
+      "cancelBy": 41,
       "launches": {
         "reel_high": [
           -0.75,
@@ -4772,10 +4903,11 @@
         0
       ],
       "turn": false,
-      "type": "stagger",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "stagger",
+      "cancelBy": 40,
       "holdStep": 4,
       "holdFrames": 18,
       "velAt": [
@@ -4796,6 +4928,16 @@
       },
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -4808,10 +4950,11 @@
         0
       ],
       "turn": false,
-      "type": "sendoff",
       "damage": 36,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "sendoff",
+      "cancelBy": 40,
       "launches": {
         "sent_off": [
           -5.2,
@@ -4838,6 +4981,16 @@
       },
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -4850,10 +5003,11 @@
         0
       ],
       "turn": false,
-      "type": "sendoff",
       "damage": 44,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "sendoff",
+      "cancelBy": 40,
       "launches": {
         "sent_off": [
           -6.5,
@@ -4880,6 +5034,16 @@
       },
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -4892,10 +5056,11 @@
         0
       ],
       "turn": false,
-      "type": "sendoff",
       "damage": 52,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "sendoff",
+      "cancelBy": 40,
       "launches": {
         "sent_off": [
           -8.32,
@@ -4923,6 +5088,16 @@
       "hitFlash": 8,
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -4935,10 +5110,11 @@
         0
       ],
       "turn": false,
-      "type": "sendoff",
       "damage": 52,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "sendoff",
+      "cancelBy": 40,
       "launches": {
         "sent_off": [
           -8.32,
@@ -4965,6 +5141,16 @@
       },
       "hitFlash": 8,
       "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
         {
           "when": "animEnd",
           "to": "idle"
@@ -5170,10 +5356,11 @@
         0
       ],
       "turn": false,
-      "type": "stagger",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "stagger",
+      "cancelBy": 31,
       "holdStep": 1,
       "holdFrames": 6,
       "velAt": [
@@ -5194,6 +5381,16 @@
       },
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -5206,10 +5403,11 @@
         0
       ],
       "turn": false,
-      "type": "crumple",
       "damage": 36,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "crumple",
+      "cancelBy": 31,
       "holdStep": 1,
       "holdFrames": 7,
       "velAt": [
@@ -5231,6 +5429,16 @@
       "pushes": -3,
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -5243,10 +5451,11 @@
         0
       ],
       "turn": false,
-      "type": "crumple_2",
       "damage": 44,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "crumple_2",
+      "cancelBy": 31,
       "holdStep": 1,
       "holdFrames": 8,
       "velAt": [
@@ -5268,6 +5477,16 @@
       "pushes": -2,
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -5280,10 +5499,11 @@
         0
       ],
       "turn": false,
-      "type": "crumple_3",
       "damage": 52,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "crumple_3",
+      "cancelBy": 31,
       "holdStep": 1,
       "holdFrames": 9,
       "velAt": [
@@ -5307,6 +5527,16 @@
       "pushes": -0.5,
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -5319,10 +5549,11 @@
         0
       ],
       "turn": false,
-      "type": "crumple_3",
       "damage": 52,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "crumple_3",
+      "cancelBy": 31,
       "holdStep": 1,
       "holdFrames": 9,
       "velAt": [
@@ -5345,6 +5576,16 @@
       "breaksGuard": true,
       "pushes": -0.5,
       "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
         {
           "when": "animEnd",
           "to": "idle"
@@ -5550,10 +5791,11 @@
         0
       ],
       "turn": false,
-      "type": "high",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "high",
+      "cancelBy": 41,
       "launches": {
         "reel_high": [
           -0.75,
@@ -5561,6 +5803,26 @@
         ]
       },
       "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
         {
           "when": "animEnd",
           "to": "idle"
@@ -5574,10 +5836,11 @@
         0
       ],
       "turn": false,
-      "type": "high",
       "damage": 36,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "high",
+      "cancelBy": 41,
       "launches": {
         "reel_high": [
           -0.98,
@@ -5585,6 +5848,26 @@
         ]
       },
       "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
         {
           "when": "animEnd",
           "to": "idle"
@@ -5598,10 +5881,11 @@
         0
       ],
       "turn": false,
-      "type": "high",
       "damage": 44,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "high",
+      "cancelBy": 41,
       "launches": {
         "reel_high": [
           -1.2,
@@ -5609,6 +5893,26 @@
         ]
       },
       "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
         {
           "when": "animEnd",
           "to": "idle"
@@ -5622,10 +5926,11 @@
         0
       ],
       "turn": false,
-      "type": "high",
       "damage": 52,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "high",
+      "cancelBy": 41,
       "launches": {
         "reel_high": [
           -1.5,
@@ -5634,6 +5939,26 @@
       },
       "hitFlash": 8,
       "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
         {
           "when": "animEnd",
           "to": "idle"
@@ -5647,10 +5972,11 @@
         0
       ],
       "turn": false,
-      "type": "high",
       "damage": 52,
       "hitSound": "hit_09",
       "blockSound": "block_17",
+      "type": "high",
+      "cancelBy": 41,
       "launches": {
         "reel_high": [
           -1.5,
@@ -5659,6 +5985,26 @@
       },
       "hitFlash": 8,
       "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
         {
           "when": "animEnd",
           "to": "idle"

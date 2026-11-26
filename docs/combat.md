@@ -58,7 +58,7 @@ direction means what he asks for, not where he walks (owner, 2026-11-26).
 **A fighter has a rush only once the owner accepts how it plays** (owner,
 2026-11-24); until then Attack is one blow. Goku's is the Quad Kick's four
 kicks with an ender at each depth, Freeza's three of the original's standing
-blows (`rush.test.ts` holds both to their picks); Gohan's, to try, his
+blows (`rush.test.ts` holds them to their picks); Gohan's, accepted too, his
 Bakuretsu's four punches. **A fighter brought over** takes his senders for
 his Smashes where they fit (owner, 2026-11-26): the up sender for Smash
 alone, the side one for S1, the down one for S2 — Gohan's is a dive from the
@@ -93,7 +93,8 @@ him (`launch`) for a ki follow-up — provisional, as `EFFECTS`
 in `combat/rushSlots.ts` says; the panel tries another effect on any slot.
 Goku's S3 cancels into back + Ki, his upward Kamehameha, and every A and S
 of his into forward + Ki, from the frame its hit box is gone (owner,
-2026-11-25); a slot's own ways out stay through a new pick.
+2026-11-25); Gohan's the same, his S3 into back + Ki, his Masenko (owner,
+2026-11-26). A slot's own ways out stay through a new pick.
 
 **A direction + Smash asks for an ender wherever Smash is pressed** (owner,
 2026-11-25), for every fighter: forward + S is S1, back + S is S2 (swapped
@@ -148,8 +149,8 @@ and the arena's art dims (`freezesFoe`); then its top goes as a full charge's
 would, and the world with it. A freeze of both broke the flow; one that leaves
 him moving does not. Without the ki the move goes at once uncharged. S1 and
 S3 — standing, crouching, in the rush, or breaking off the ki charge — play
-their three levels in 18 frames (`combat/smashCharge.ts`); Goku's
-Kamehameha its pose and ball, into the large one (`kame_boost`, his
+their three levels in 18 frames (`combat/smashCharge.ts`); Goku's and
+Gohan's Kamehameha its pose and ball, into the large one (`kame_boost`, their
 `specials.json`), else the small one.
 
 **Goku's Smash alone is his up sender's hop** (owner, 2026-11-26; `m9f`,

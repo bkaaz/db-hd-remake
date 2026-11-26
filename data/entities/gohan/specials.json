@@ -822,6 +822,17 @@
       "transitions": [
         {
           "when": [
+            "held:boost",
+            "ki:10"
+          ],
+          "to": "kame_boost"
+        },
+        {
+          "when": "held:boost",
+          "to": "kame_go_s"
+        },
+        {
+          "when": [
             "frames:20",
             "released:blast"
           ],
@@ -903,6 +914,37 @@
       "transitions": [
         {
           "when": "frames:8",
+          "to": "kame_fire_l"
+        }
+      ]
+    },
+    "kame_boost": {
+      "_comment": "Boost (RB) held with forward + Ki (owner, 2026-11-26): his own charge played fast — the pose, the ball grown to what a whole charge leaves — while the opponent and every bolt stand still and the art dims; then the large one, for a bar over the Kamehameha's own price, as Goku's. Without the ki, the small one at once.",
+      "anim": "mac",
+      "cost": 10,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -16,
+          -40
+        ],
+        "from": 2,
+        "grow": 3.6
+      },
+      "freezesFoe": 18,
+      "screen": [
+        [
+          0,
+          "dim"
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "frames:18",
           "to": "kame_fire_l"
         }
       ]
@@ -1104,6 +1146,12 @@
           ],
           "to": "kame_end_l"
         }
+      ],
+      "screen": [
+        [
+          0,
+          "bright"
+        ]
       ]
     },
     "kame_end_l": {
@@ -1520,6 +1568,124 @@
         {
           "when": "animEnd",
           "to": "win_air_2"
+        }
+      ]
+    },
+    "rush_4": {
+      "anim": "b_bk4",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 26,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_1": {
+      "anim": "b_a0",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2": {
+      "anim": "b_9a",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_3": {
+      "anim": "b_a2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "masenko"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     }
