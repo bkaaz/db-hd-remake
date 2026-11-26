@@ -63,6 +63,8 @@ interface Sending {
    * sending him back — three times a combo (owner, 2026-11-26).
    */
   chases?: boolean;
+  /** Its blow, at any level, opens the same chase where it lands, whatever it sends him into: S3's and Smash's (owner, 2026-11-26). */
+  opensChase?: boolean;
 }
 
 /** A hop on the blow: `rise` up each level, `ahead` forward. */
@@ -86,9 +88,9 @@ const SENDING: Record<string, Sending> = {
     push: [undefined, -3, -2, -0.5],
     lunge: { hold: [2, 3, 4, 5], speed: [0.6, 1, 1.4, 1.8] },
   },
-  smash_3: { lift: [0.5, 1.1, 1.2, 1.35], send: [1, 1.3, 1.6, 2] },
+  smash_3: { lift: [0.5, 1.1, 1.2, 1.35], send: [1, 1.3, 1.6, 2], opensChase: true },
   // a level lower each since 2026-11-26: the top was too high
-  smash: { lift: [1, 1, 1, 1], send: [1, 1, 1, 1], types: ["lift", "lift", "lift", "lift"], hop: { rise: [4.5, 6, 8, 10], ahead: 2 }, carries: true },
+  smash: { lift: [1, 1, 1, 1], send: [1, 1, 1, 1], types: ["lift", "lift", "lift", "lift"], hop: { rise: [4.5, 6, 8, 10], ahead: 2 }, carries: true, opensChase: true },
 };
 /** The enders that charge. */
 export const CHARGEABLE = Object.keys(SENDING);
@@ -118,7 +120,7 @@ const VANISH_SOUND = "teleport_29";
  * 2026-11-26). So he is placed as he comes out, not as he goes.
  */
 const VANISH_FLOWN = 18;
-/** Each chase after the first sends him this much faster again (owner, 2026-11-26). */
+/** Each chase after the first sends him this much faster again; above a jump's height, down (owner, 2026-11-26). */
 const CHASE_QUICKENS = 0.25;
 /** Frames the chase's blow holds its pose past its own, hanging in the air, the leg out (owner, 2026-11-26). */
 const CHASE_HOLD = 12;
@@ -295,6 +297,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       transitions: others.filter((t) => t.to !== "throw"),
     };
   }
+  if (sending.opensChase) opening(states, [ender, ...[0, 1, 2, 3].map(release)]);
   if (sending.chases) {
     const own = [ender, ...[0, 1, 2, 3].map(release)];
     const blowIn = (anim: string | undefined) => {
@@ -343,6 +346,19 @@ function reachOf(step: AnimSteps["steps"][number] | undefined): number {
  * a moment, out past him facing him while he stands still, and `blow` again —
  * from the ender, its levels, the chase itself and about on his feet.
  */
+/**
+ * `own` opening the chase an S1 made (its ways in, as he has them standing):
+ * the blow marks where it lands as one to chase, and the vanishes are taken
+ * from the blow. Made after S1's, none without it.
+ */
+function opening(states: Record<string, StateDef>, own: string[]): void {
+  const ways = (states.idle?.transitions ?? []).filter((t) => states[t.to]?.vanishes);
+  for (const name of own.filter((n) => states[n])) {
+    const rest = (states[name].transitions ?? []).filter((t) => !states[t.to]?.vanishes);
+    states[name] = { ...states[name], opensChase: true, transitions: [...ways, ...rest] };
+  }
+}
+
 /** One way a vanish chases: what asks for it, where he comes out, what he throws and how it takes him. */
 interface Chase {
   vanish: string;
@@ -372,9 +388,11 @@ function chased(states: Record<string, StateDef>, blow: string, { vanish, chase,
     cost: VANISH_COST,
     sound: VANISH_SOUND,
     vanishes: true,
-    // out once he has flown far enough, or at once once he flies no more (a wall)
+    // out once he has flown far enough, sooner where the flight is ending
+    // (Smash's low lift), at once once he flies no more (a wall)
     transitions: [
       { when: [`frames:${VANISH_FRAMES}`, `flown:${VANISH_FLOWN}`], to: chase },
+      { when: [`frames:${VANISH_FRAMES}`, "landing"], to: chase },
       { when: [`frames:${VANISH_FRAMES}`, "!chase"], to: chase },
     ],
   };
@@ -386,10 +404,11 @@ function chased(states: Record<string, StateDef>, blow: string, { vanish, chase,
     ...where,
     ...(anim && { anim }),
     ...(type && { type }),
-    ...(launches && { launches, quickens: CHASE_QUICKENS }),
+    ...(launches && { launches, quickens: CHASE_QUICKENS, sinksAbove: true }),
     appears,
     ...(rises !== undefined && { rises }),
     replays: true,
+    forces: true,
     stillsFoe: true,
     ...hang,
     holdStep: hold[0],

@@ -332,15 +332,19 @@ counts: the opener lands on someone in control of themselves.
 ### 5. Vanish — a counter, not an escape; and a chase
 
 **The chase is built** (owner, 2026-11-26): while the opponent flies off a
-charged S1 (`sent_off`, `chaseable`), RB pressed (`pressed:boost`) spends a bar
+charged S1 (`sent_off`, `chaseable`), or off S3 or Smash at any level (their
+blow `opensChase` on whatever it sends him into), RB pressed (`pressed:boost`) spends a bar
 and he vanishes — his drawing left behind thinning into a lattice of pixels,
 to the teleport's sound, and built up again where he comes out (`fx/dissolve.ts`) — comes out — pressed early, only once the opponent has flown a little
-(`flown:N`), later at once — past the
+(`flown:N`) or once his flight is about to end (`landing`), later at once — past the
 opponent on the side he flies to, at his height, as far as his blow
 reaches, facing him, hanging there while the opponent stands still, and
 throws his S1's first level again — or the blow his `rush.json` names,
-Goku's air kick (`chaseAnim`) — sending him back at the top's speed, always
-to the edge, and faster again with each chase after the first (`quickens`), then falls as from a jump: up to three times a combo (`chased:N`), the opponent bounced
+Goku's air kick (`chaseAnim`), its reaction taken whatever he reels in
+(`forces`) — sending him back at the top's speed, always
+to the edge, and faster again with each chase after the first (`quickens`), down and
+not up while he flies above the attacker's own jump (`sinksAbove`, so a
+chase keeps to a jump's height; `combat/chaseLaunch.ts`), then falls as from a jump: up to three times a combo (`chased:N`), the opponent bounced
 from side to side, then on to the wall. Made with every S1 that charges
 (`combat/smashCharge.ts`). The sendoff spends no relaunch: a throw across,
 not a lift. RB with down held vanishes **over** him instead, where his

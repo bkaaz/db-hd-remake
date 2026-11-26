@@ -21,7 +21,7 @@ import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
 import { blinkOn, burnVariant, CHARGE_VARIANT, paletteVariant, shimmerVariant, shockVariant, markedVariant, runVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
-import { quickened } from "../combat/quicken";
+import { chaseLaunch, jumpPeak } from "../combat/chaseLaunch";
 import { Fatigue } from "../combat/fatigue";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -111,6 +111,8 @@ export interface Opponent {
   chaseable?: boolean;
   /** Frames he has flown so, none when not (`flown:N`). */
   flown?: number;
+  /** Falling, about to land (`landing`). */
+  nearGround?: boolean;
   /** In a combo: blows have landed on him since he was last free. */
   inCombo?: boolean;
 }
@@ -152,6 +154,10 @@ export interface Blow {
   launches?: Record<string, [number | null, number | null]>;
   /** The attacker's `pushes`: the shove his reaction takes in place of its own. */
   pushes?: number;
+  /** The attacker's `opensChase`: the reaction it sends him into may be chased. */
+  opensChase?: boolean;
+  /** The attacker's `forces`: its reaction, whatever `ifHitAgain` he is in. */
+  forces?: boolean;
   /** The attacker's flight, when his blow takes the defender along (`carries`): facing-relative, his gravity resolved. */
   carry?: { vx: number; vy: number; gravity: number };
 }
@@ -254,6 +260,8 @@ export class Entity {
   private chases = 0;
   /** Hidden by a state of his that `hidden`s him, not by a scene. */
   private vanished = false;
+  /** The reaction he is in was sent by a blow that opens a chase (`opensChase`): until he leaves it. */
+  private opened = false;
   /** What his vanishes left behind, thinning away (`fx/dissolve.ts`). */
   private ghosts: Afterimage[] = [];
   /** Frames left of his coming out of a vanish, built up from a lattice of pixels. */
@@ -364,6 +372,8 @@ export class Entity {
   private readonly swing = new Swing();
 
   private readonly gravity: number;
+  /** Sprite px his own jump rises: above it a chase sends the opponent down (`dips`). */
+  private readonly jumpPeak: number;
   private readonly landCue: number;
   private readonly closeRange: Partial<Record<CloseButton, number>>;
   private readonly grabRange: number;
@@ -449,7 +459,7 @@ export class Entity {
 
   /** Flying off a blow a vanish may chase (`chaseable`). */
   get chaseable(): boolean {
-    return !!this.sm?.def.chaseable;
+    return !!this.sm?.def.chaseable || this.opened;
   }
 
   /** Frames he has flown off the blow a vanish may chase, none when not. */
@@ -471,6 +481,7 @@ export class Entity {
     comboLimits = true,
   ) {
     this.gravity = def.attributes.gravity;
+    this.jumpPeak = jumpPeak(def.states?.states.jump_up?.air?.[0]?.[1].vy ?? 0, this.gravity);
     this.landCue = def.attributes.landCue;
     this.closeRange = def.attributes.closeRange;
     this.grabRange = def.attributes.grabRange;
@@ -1159,6 +1170,16 @@ export class Entity {
     return this.sm?.def.pushes;
   }
 
+  /** Whether the current attack opens a vanish's chase where it lands (`opensChase`). */
+  get attackOpensChase(): boolean {
+    return !!this.sm?.def.opensChase;
+  }
+
+  /** Whether the current attack's reaction is taken whatever he is in (`forces`). */
+  get attackForces(): boolean {
+    return !!this.sm?.def.forces;
+  }
+
   /** The flight the current attack takes the defender along on (`carries`), or undefined. */
   get attackCarry(): { vx: number; vy: number; gravity: number } | undefined {
     if (!this.sm?.def.carries) return undefined;
@@ -1199,7 +1220,9 @@ export class Entity {
 
   /** The launches this entity's current attack gives the reactions it sends into. */
   get attackLaunches(): Record<string, [number | null, number | null]> | undefined {
-    return quickened(this.sm?.def.launches, this.sm?.def.quickens, this.chases);
+    const def = this.sm?.def;
+    const above = this.foe?.y === undefined ? 0 : (this.groundY - this.foe.y) / this.scale;
+    return chaseLaunch(def?.launches, { quickens: def?.quickens, sinks: def?.sinksAbove }, this.chases, above, this.jumpPeak);
   }
 
   /** Whether this entity's current attack sets whoever it hits burning. */
@@ -1387,7 +1410,7 @@ export class Entity {
     // before the reaction is chosen: a blow past the limit is refused for the
     // same reason a jab at a floored fighter is, and looks the same from here.
     if (blow.relaunch && !this.combo.canRelaunch) return false;
-    const again = this.sm?.def.ifHitAgain;
+    const again = blow.forces ? undefined : this.sm?.def.ifHitAgain;
     const chosen = reactionFor(again ? hitAgain(again, ++this.hitsAgain) : blow.reaction, this.def.states, this.sm?.def);
     if (chosen === undefined) return false;
     // a reaction given once a combo, given again: its stand-in
@@ -1404,6 +1427,7 @@ export class Entity {
     if (launch?.[0] != null) this.vx = launch[0];
     if (launch?.[1] != null) this.vy = launch[1];
     if (blow.pushes !== undefined) this.shove = blow.pushes;
+    this.opened = blow.opensChase === true;
     // taken along: the attacker's flight, his forward this one's back, as he faces him
     if (blow.carry) {
       [this.vx, this.vy] = [-blow.carry.vx, blow.carry.vy];
@@ -1510,6 +1534,7 @@ export class Entity {
   /** `restart` plays its animation from the top even when the state names the one already playing. */
   private enterState(restart = false): void {
     if (!this.sm) return;
+    this.opened = false;
     // what it came in with, before it is stopped ($0F:B1EC: fields 0x80, 0x82)
     if (this.sm.def.savesFlight) this.savedFlight = [this.vx, this.vy];
     // a special starts stopped, whatever it was started from ($0D:D7A0)
@@ -1855,6 +1880,7 @@ export class Entity {
         chase: opponent?.chaseable === true,
         chased: this.chases,
         flown: opponent?.flown ?? 0,
+        landing: opponent?.chaseable === true && opponent.nearGround === true,
       }
     );
     const changed = this.sm.update(snapshot(), signals());

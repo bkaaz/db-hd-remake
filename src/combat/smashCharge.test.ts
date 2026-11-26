@@ -244,19 +244,30 @@ describe("withCharge on S1", () => {
     expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, sound: "teleport_29", vanishes: true });
     // the opponent flies on while he is gone, and he is placed as he comes out
     expect(s1.states.smash_1_vanish.stillsFoe).toBeUndefined();
-    expect(s1.states.smash_1_chase).toMatchObject({ appears: 52, quickens: 0.25 });
+    expect(s1.states.smash_1_chase).toMatchObject({ appears: 52, quickens: 0.25, sinksAbove: true });
     expect(s1.states.smash_1_chase.velAt).toBeUndefined();
     // pressed early, gone until he has flown far enough; out at once if he flies no more
     expect(s1.states.smash_1_vanish.transitions).toEqual([
       { when: ["frames:6", "flown:18"], to: "smash_1_chase" },
+      { when: ["frames:6", "landing"], to: "smash_1_chase" },
       { when: ["frames:6", "!chase"], to: "smash_1_chase" },
     ]);
-    expect(s1.states.smash_1_chase).toMatchObject({ type: s1.states.smash_1_lv1.type, damage: s1.states.smash_1_lv1.damage, replays: true, stillsFoe: true });
+    expect(s1.states.smash_1_chase).toMatchObject({ type: s1.states.smash_1_lv1.type, damage: s1.states.smash_1_lv1.damage, replays: true, forces: true, stillsFoe: true });
     for (const name of ["idle", "smash_1", "smash_1_lv0", "smash_1_lv3"]) expect(s1.states[name].transitions?.[0]).toEqual(way);
     // off the chase only once its blow has landed, its pose held out in the air
     expect(s1.states.smash_1_chase.transitions?.[0]).toEqual({ ...way, when: [...way.when, "connected"] });
     expect(s1.states.smash_1_chase).toMatchObject({ holdStep: 1, holdFrames: 5 + 6 + 12, airborne: true });
     expect(withCharge(s1, anims, "smash_1")).toEqual(s1);
+  });
+
+  it("opens the same chase off S3 at every level, its blow marking where it lands; none without S1's", () => {
+    const both = withCharge({ ...s1, states: { ...s1.states, reel_high: file.states.reel_high, smash_3: file.states.smash_3 } }, anims, "smash_3");
+    for (const name of ["smash_3", "smash_3_lv0", "smash_3_lv3"]) {
+      expect(both.states[name].opensChase).toBe(true);
+      expect(both.states[name].transitions?.[0].to).toBe("smash_1_vanish");
+    }
+    expect(withCharge(both, anims, "smash_3")).toEqual(both);
+    expect(made.states.smash_3.transitions?.some((t) => t.to.includes("vanish"))).toBe(false);
   });
 
   it("chases down too where the fighter names a blow for it: RB and down, out over him, driving him into the floor", () => {

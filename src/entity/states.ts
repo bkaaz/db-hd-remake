@@ -494,6 +494,12 @@ export interface StateDef {
   rises?: number;
   /** The opponent stands still while he is in this state, until its blow has landed: a vanish's chase. */
   stillsFoe?: boolean;
+  /** Its blow's reaction is taken whatever he is in, no `ifHitAgain` of his turning it: a chase's, off S3's high reel too. */
+  forces?: boolean;
+  /** Where its blow lands it opens a vanish's chase (`chase`), whatever it sends him into: S3's and Smash's. */
+  opensChase?: boolean;
+  /** Its `launches` send him down, not up, while he flies above the attacker's own jump (`combat/chaseLaunch.ts`). */
+  sinksAbove?: boolean;
   /** Each chase after the first sends him this much faster again along, a fraction of its `launches` (owner, 2026-11-26). */
   quickens?: number;
   /** Entering it counts a vanish of this combo (`chased:N`). */
@@ -1012,6 +1018,8 @@ export interface Signals {
   chased?: number;
   /** Frames the opponent has flown off a blow a vanish may chase: `flown:N`. */
   flown?: number;
+  /** That flight about to end on the floor: `landing`. */
+  landing?: boolean;
   /**
    * The opponent is still reeling from a blow that hit him — the `combo` trigger: a charge
    * begun in the rush starts a level up. Not his combo count, which runs on
@@ -1055,6 +1063,7 @@ export const TRIGGERS = [
   "charged",
   "combo",
   "chase",
+  "landing",
   "pressed:boost",
   "falling",
   "nearGround",
@@ -1176,6 +1185,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "chase":
       value = signals.chase === true;
+      break;
+    case "landing":
+      value = signals.landing === true;
       break;
     case "pressed:boost":
       value = input.boost === true;

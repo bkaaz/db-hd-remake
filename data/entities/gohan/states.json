@@ -1423,6 +1423,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "held:boost",
             "!frames:1",
             "!ki:20"
@@ -1487,7 +1495,8 @@
         "state": "jump_fall",
         "only": "buttons",
         "from": 20
-      }
+      },
+      "opensChase": true
     },
     "attack_x": {
       "anim": "m9a",
@@ -4706,6 +4715,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "held:boost",
             "!frames:1",
             "!ki:20"
@@ -4767,7 +4784,8 @@
         "frames": 60,
         "bar": 10,
         "needs": 20
-      }
+      },
+      "opensChase": true
     },
     "smash_1_charge_0": {
       "anim": "b_a0",
@@ -5173,6 +5191,13 @@
         {
           "when": [
             "frames:6",
+            "landing"
+          ],
+          "to": "smash_1_chase"
+        },
+        {
+          "when": [
+            "frames:6",
             "!chase"
           ],
           "to": "smash_1_chase"
@@ -5198,8 +5223,10 @@
         ]
       },
       "quickens": 0.25,
+      "sinksAbove": true,
       "appears": 84,
       "replays": true,
+      "forces": true,
       "stillsFoe": true,
       "airborne": true,
       "air": [
@@ -5712,6 +5739,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "cancelable",
             "held:back",
             "!held:down",
@@ -5734,7 +5769,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "opensChase": true
     },
     "smash_3_lv1": {
       "anim": "b_a2",
@@ -5757,6 +5793,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "cancelable",
             "held:back",
             "!held:down",
@@ -5779,7 +5823,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "opensChase": true
     },
     "smash_3_lv2": {
       "anim": "b_a2",
@@ -5802,6 +5847,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "cancelable",
             "held:back",
             "!held:down",
@@ -5824,7 +5877,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "opensChase": true
     },
     "smash_3_lv3": {
       "anim": "b_a2",
@@ -5848,6 +5902,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "cancelable",
             "held:back",
             "!held:down",
@@ -5870,7 +5932,8 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ]
+      ],
+      "opensChase": true
     },
     "smash_charge_0": {
       "anim": "b_zk",
@@ -6037,10 +6100,19 @@
       },
       "transitions": [
         {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "opensChase": true
     },
     "smash_lv1": {
       "anim": "b_zk",
@@ -6078,10 +6150,19 @@
       },
       "transitions": [
         {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "opensChase": true
     },
     "smash_lv2": {
       "anim": "b_zk",
@@ -6119,10 +6200,19 @@
       },
       "transitions": [
         {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "opensChase": true
     },
     "smash_lv3": {
       "anim": "b_zk",
@@ -6161,10 +6251,19 @@
       "hitFlash": 8,
       "transitions": [
         {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
           "when": "landed",
           "to": "land"
         }
-      ]
+      ],
+      "opensChase": true
     }
   }
 }
