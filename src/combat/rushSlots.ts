@@ -34,15 +34,21 @@ export interface Pick {
 /** A slot not picked is not in the rush: Attack's line stops at its first gap. */
 export type Picks = Partial<Record<Slot, Pick>>;
 
+/** An ender charged with what is his own: the step he stops on (`combat/smashCharge.ts`). */
+export interface Charged {
+  ender: string;
+  stopOn?: number;
+}
+
 /** Section file `rush.json`: the rush the owner accepted, all `npm run states` needs to make it. No `step`, `DEFAULT_STEP`. */
 export interface RushFile {
   picks: Picks;
   step?: Step;
   /**
    * The enders charged by holding Smash (`combat/smashCharge.ts`): Goku's first
-   * (owner, 2026-11-26); one with `stopOn` stops on that step of its animation.
+   * (owner, 2026-11-26); one written out says what is his own.
    */
-  charge?: (string | { ender: string; stopOn: number })[];
+  charge?: (string | Charged)[];
 }
 
 /**

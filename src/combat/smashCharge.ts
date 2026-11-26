@@ -56,7 +56,15 @@ interface Sending {
    * Once his blow is spent he has the air's own moves, a jump's — no chain
    * of the air's own.
    */
-  hop?: { rise: readonly number[]; ahead: number };
+  hop?: Hop;
+  /** Its hop takes him along, level (`carries`), and leaves a jump's moves once the blow is spent: Smash alone. */
+  carries?: boolean;
+}
+
+/** A hop on the blow: `rise` up each level, `ahead` forward. */
+export interface Hop {
+  rise: readonly number[];
+  ahead: number;
 }
 const SENDING: Record<string, Sending> = {
   smash_1: {
@@ -75,7 +83,7 @@ const SENDING: Record<string, Sending> = {
   },
   smash_3: { lift: [0.5, 1.1, 1.2, 1.35], send: [1, 1.3, 1.6, 2] },
   // a level lower each since 2026-11-26: the top was too high
-  smash: { lift: [1, 1, 1, 1], send: [1, 1, 1, 1], types: ["lift", "lift", "lift", "lift"], hop: { rise: [4.5, 6, 8, 10], ahead: 2 } },
+  smash: { lift: [1, 1, 1, 1], send: [1, 1, 1, 1], types: ["lift", "lift", "lift", "lift"], hop: { rise: [4.5, 6, 8, 10], ahead: 2 }, carries: true },
 };
 /** The enders that charge. */
 export const CHARGEABLE = Object.keys(SENDING);
@@ -177,13 +185,16 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   // the hop from `start`, the frame of the state it begins on
   const blowEnds = steps.slice(blowStep, lastBlow + 1).reduce((n, st) => n + st.dur, 0);
   const hop = (level: number, start: number, blowFrom: number): Partial<StateDef> => {
-    if (!sending.hop) return {};
+    const hopping = sending.hop;
+    if (!hopping) return {};
     return {
-      air: [[start, { vx: sending.hop.ahead, vy: -sending.hop.rise[level], gravity: "own" }]],
+      air: [[start, { vx: hopping.ahead, vy: -hopping.rise[level], gravity: "own" }]],
       trail: { fx: "dust", every: DUST_EVERY, from: start, to: start + 1 },
-      carries: true,
-      // the blow spent, what a jump falling may do
-      inputsOf: { state: "jump_fall", only: "buttons", from: blowFrom + blowEnds },
+      ...(sending.carries && {
+        carries: true,
+        // the blow spent, what a jump falling may do
+        inputsOf: { state: "jump_fall", only: "buttons", from: blowFrom + blowEnds },
+      }),
     };
   };
   const states: Record<string, StateDef> = {
