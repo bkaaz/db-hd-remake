@@ -1,22 +1,6 @@
 {
   "rush_1": {
-    "anim": "b_qk1",
-    "type": "flinch",
     "transitions": [
-      {
-        "when": [
-          "cancelable",
-          "pressed:attack"
-        ],
-        "to": "rush_2"
-      },
-      {
-        "when": [
-          "cancelable",
-          "pressed:smash"
-        ],
-        "to": "smash_1"
-      },
       {
         "when": [
           "cancelable",
@@ -31,37 +15,10 @@
         "when": "animEnd",
         "to": "idle"
       }
-    ],
-    "velAt": [
-      [
-        0,
-        1.1875
-      ],
-      [
-        5,
-        0.625
-      ]
-    ],
-    "cancelBy": 19
+    ]
   },
   "rush_2": {
-    "anim": "b_qk2",
-    "type": "flinch",
     "transitions": [
-      {
-        "when": [
-          "cancelable",
-          "pressed:attack"
-        ],
-        "to": "rush_3"
-      },
-      {
-        "when": [
-          "cancelable",
-          "pressed:smash"
-        ],
-        "to": "smash_2"
-      },
       {
         "when": [
           "cancelable",
@@ -76,37 +33,10 @@
         "when": "animEnd",
         "to": "idle"
       }
-    ],
-    "velAt": [
-      [
-        0,
-        1.1875
-      ],
-      [
-        8,
-        0.625
-      ]
-    ],
-    "cancelBy": 21
+    ]
   },
   "rush_3": {
-    "anim": "b_qk3",
-    "type": "flinch",
     "transitions": [
-      {
-        "when": [
-          "cancelable",
-          "pressed:attack"
-        ],
-        "to": "rush_4"
-      },
-      {
-        "when": [
-          "cancelable",
-          "pressed:smash"
-        ],
-        "to": "smash_3"
-      },
       {
         "when": [
           "cancelable",
@@ -121,17 +51,6 @@
         "when": "animEnd",
         "to": "idle"
       }
-    ],
-    "velAt": [
-      [
-        0,
-        1.1875
-      ],
-      [
-        9,
-        0.625
-      ]
-    ],
-    "cancelBy": 24
+    ]
   }
 }

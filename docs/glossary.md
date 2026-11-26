@@ -64,7 +64,7 @@ change.
 - **Shove** — a reaction's knockback, a speed that dies out each frame; not `push`. → `combat.md`
 - **Situation flag** (`airborne`, `crouching`) — what redirects a reaction without the attack knowing. → ADR 0019
 - **Slam** — a blow that drives the body down rather than lifting it. → `combat.md`
-- **Smash** — the button that ends a rush. → `combat.md` (The buttons)
+- **Smash** — the button that ends a rush; with a direction, the ender it names (S1 back, S2 forward, S3 down). → `combat.md` (The buttons)
 - **Song** — one of the cartridge's pieces of music, by its number. → ADR 0092
 - **Spawn** — anything a state brings into the world, an ordinary `Entity`. → ADR 0014
 - **Startup** — the frames from the press to the hit box. → `combat.md` §1

@@ -263,8 +263,9 @@ npm run rom -- commands --fighter vegeta
 npm run rom -- export --fighter vegeta
                   # another fighter's sheet, frames and animations only
 npm run states    # every fighter's states.json from our files: the
-                  # common states (data/template/), his overrides.json and
-                  # specials.json — after any change to them; a test fails
+                  # common states (data/template/), his overrides.json,
+                  # specials.json and rush.json — after any change to
+                  # them; a test fails
                   # until it is run. No cartridge. Names a copy in his
                   # replaces whose common state changed since; once looked
                   # at: npm run states -- --accept vegeta smash

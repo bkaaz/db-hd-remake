@@ -126,7 +126,10 @@
       ],
       "when": [
         "frames:2",
-        "command:9e"
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
       ],
       "to": "butt_drop"
     },
@@ -134,7 +137,12 @@
       "from": [
         "@fall"
       ],
-      "when": "command:9e",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
+      ],
       "to": "butt_drop"
     }
   ],

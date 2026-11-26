@@ -1,6 +1,7 @@
 import type { StateDef, StatesFile, Transition } from "../entity/states";
 import { chainLinks, framesOf, type Link } from "./chains";
 import { withHitTypes } from "./hitTypes";
+import { aimed, aimsIn, closeIn, type Aim } from "./rushEntries";
 import { startupOf, type AnimSteps } from "./swing";
 
 /**
@@ -33,6 +34,12 @@ export interface Pick {
 /** A slot not picked is not in the rush: Attack's line stops at its first gap. */
 export type Picks = Partial<Record<Slot, Pick>>;
 
+/** Section file `rush.json`: the rush the owner accepted, all `npm run states` needs to make it. No `step`, `DEFAULT_STEP`. */
+export interface RushFile {
+  picks: Picks;
+  step?: Step;
+}
+
 /**
  * How each end of the rush is taken unless a pick says (owner, 2026-11-25):
  * the deeper, the better the end — A4 and S1 send him off, S2 floors him, S3
@@ -56,16 +63,25 @@ export interface Step {
 }
 
 /**
+ * The direction that asks Smash for each ender, wherever Smash is pressed — in
+ * the rush and out of it (owner, 2026-11-25). Smash alone in the rush is the
+ * ender of its depth.
+ */
+export const AIMS: Record<(typeof ENDERS)[number], Aim> = { smash_1: "back", smash_2: "fwd", smash_3: "down" };
+
+/**
  * `file` with its rush made of `picks`: Attack walks the line, Smash leaves it
- * for the ender of that depth; Attack's blows step forward by `step`; each cancel
- * window is the longest that keeps every way out of it a combo, never past
- * its animation. A slot new to the file starts as a copy of its neighbour's
+ * for the ender of that depth, or the one its direction asks for; Attack's
+ * blows step forward by `step`; each cancel window is the longest that keeps
+ * the depth's own ways on — Attack, Smash alone — a combo, never past its
+ * animation, and open at least a frame where none can be. A slot new to the file starts as a copy of its neighbour's
  * state — rush_4 of rush_3, an ender of `smash` — for its damage and sounds.
  */
 export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, baseHitstun: number, picks: Picks, step: Step): StatesFile {
   const states: Record<string, StateDef> = { ...file.states };
   const gap = RUSH.findIndex((s) => !picks[s]);
   const line = gap === -1 ? [...RUSH] : RUSH.slice(0, gap);
+  const enders = ENDERS.filter((e) => picks[e]);
   const make = (slot: Slot, base: StateDef, type: string | undefined, exits: Transition[]) => {
     const { anim, type: picked } = picks[slot]!;
     const startup = startupOf(anims[anim]);
@@ -80,25 +96,35 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
       transitions: exits,
     };
   };
+  // the ways on that time each window: Attack down the line, Smash alone
+  const own = new Map<string, Set<string>>();
   line.forEach((slot, i) => {
     const next = line[i + 1];
-    const ender = ENDERS[i] && picks[ENDERS[i]] ? ENDERS[i] : undefined;
+    const ender = enders.find((e) => e === ENDERS[i]);
     const exits: Transition[] = [
       ...(next ? [{ when: ["cancelable", "pressed:attack"], to: next }] : []),
+      ...enders.filter((e) => e !== ender).map((e) => ({ when: ["cancelable", ...aimed(AIMS[e])], to: e })),
       ...(ender ? [{ when: ["cancelable", "pressed:smash"], to: ender }] : []),
       ...followUps(states[slot] ?? states[line[i - 1]]),
       { when: "animEnd", to: "idle" },
     ];
     const type = next ? "flinch" : (EFFECTS[slot] ?? states[slot]?.type);
     make(slot, states[slot] ?? states[line[i - 1]], type, exits);
-    if (i === 0 && picks[CLOSE]) make(CLOSE, states[CLOSE] ?? states[slot], type, exits);
-    if (ender) make(ender, states[ender] ?? states.smash, EFFECTS[ender], [...followUps(states[ender]), { when: "animEnd", to: "idle" }]);
+    own.set(slot, new Set([next, ender].filter((s) => s !== undefined)));
+    if (i === 0 && picks[CLOSE]) {
+      make(CLOSE, states[CLOSE] ?? states[slot], type, exits);
+      own.set(CLOSE, own.get(slot)!);
+    }
   });
-  closeIn(states, line.length > 0 && !!picks[CLOSE]);
-  // each window from the margin of its tightest way out, with it open to the end
+  for (const e of enders) make(e, states[e] ?? states.smash, EFFECTS[e], [...followUps(states[e]), { when: "animEnd", to: "idle" }]);
+  closeIn(states, CLOSE, line.length > 0 && !!picks[CLOSE]);
+  aimsIn(states, enders.map((e) => [e, AIMS[e]]), ENDERS);
+  // each window from the margin of its tightest way on, open to the end; one
+  // no window makes a combo is still open a frame, to be taken all the same
   const open = new Map<string, number>();
   for (const link of rushLinks({ ...file, states }, anims, baseHitstun)) {
-    const by = states[link.from].cancelBy! + link.margin;
+    if (!own.get(link.from)?.has(link.to)) continue;
+    const by = Math.max(link.opens, states[link.from].cancelBy! + link.margin);
     open.set(link.from, Math.min(open.get(link.from) ?? Infinity, by));
   }
   for (const [slot, by] of open) states[slot] = { ...states[slot], cancelBy: Math.min(states[slot].cancelBy!, by) };
@@ -118,20 +144,6 @@ function followUps(def: StateDef | undefined): Transition[] {
 
 function isFollowUp(t: Transition): boolean {
   return t.when !== "animEnd" && !(SLOTS as readonly string[]).includes(t.to);
-}
-
-/**
- * The way into A1c, where Attack starts A1: the same press with the opponent
- * close, ahead of it. Taken out first, so a rush without A1c has none.
- */
-function closeIn(states: Record<string, StateDef>, picked: boolean): void {
-  const asksA1 = (t: Transition) => t.to === "rush_1" && [t.when].flat().join() === "pressed:attack";
-  for (const [name, def] of Object.entries(states)) {
-    const kept = (def.transitions ?? []).filter((t) => t.to !== CLOSE);
-    if (kept.length === (def.transitions ?? []).length && !(picked && kept.some(asksA1))) continue;
-    const transitions = picked ? kept.flatMap((t) => (asksA1(t) ? [{ when: ["pressed:attack", "close:attack"], to: CLOSE }, t] : [t])) : kept;
-    states[name] = { ...def, transitions };
-  }
 }
 
 /** The rush's links, slot to slot, with the sum each lives or dies by (`chainLinks`). */

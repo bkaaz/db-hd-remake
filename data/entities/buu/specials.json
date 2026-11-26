@@ -118,7 +118,10 @@
       ],
       "when": [
         "frames:2",
-        "command:d2"
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
       ],
       "to": "slashdown_blast"
     },
@@ -126,7 +129,12 @@
       "from": [
         "@fall"
       ],
-      "when": "command:d2",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
+      ],
       "to": "slashdown_blast"
     },
     {

@@ -4,13 +4,13 @@ import type { StatesFile } from "../entity/states";
 import { generatedFighters } from "../rom/fighterStates";
 import { chainLinks, type AnimSteps } from "./chains";
 import { withHitTypes } from "./hitTypes";
-import { CLOSE, ENDERS, RUSH, SLOTS, withRush, type BlowAnim, type Picks } from "./rushSlots";
+import { aimed } from "./rushEntries";
+import { AIMS, CLOSE, DEFAULT_STEP, ENDERS, RUSH, SLOTS, withRush, type BlowAnim, type RushFile } from "./rushSlots";
 
 /**
- * The rush on every fighter's data as it stands (`combat.md`, The buttons). A
- * fighter has one only once the owner has accepted how it plays: Goku's and
- * Freeza's, on the original's three standing blows; everyone else's Attack is
- * one blow.
+ * The rush on every fighter's data as it stands (`combat.md`, The buttons):
+ * each made by `npm run states` of his `rush.json`. What the owner has
+ * accepted of it plays as a combo; the rest is a placeholder to pick over.
  */
 
 const read = <T>(name: string, file: string): T => JSON.parse(readFileSync(`data/entities/${name}/${file}`, "utf8")) as T;
@@ -19,78 +19,56 @@ function fighter(name: string) {
   const states = withHitTypes(read<StatesFile>(name, "states.json"));
   const anims = read<Record<string, AnimSteps>>(name, "animations.json");
   const { hitstun } = read<{ hitstun: number }>(name, "attributes.json");
-  // the rush's own links, slot to slot: a special off one of them is out of the line
-  const from = new Set<string>([...RUSH, CLOSE]);
-  return { states, links: chainLinks(states, anims, hitstun).filter((l) => from.has(l.from) && (SLOTS as readonly string[]).includes(l.to)) };
+  // the rush's own links, slot to slot: a special off one of them is out of it
+  const links = chainLinks(states, anims, hitstun).filter((l) => (SLOTS as readonly string[]).includes(l.from) && (SLOTS as readonly string[]).includes(l.to));
+  return { states, links, rush: read<RushFile>(name, "rush.json") };
 }
 
-/** Where each state of the rush goes, as `when>to`. */
+/** Where a state goes, as `when>to`. */
 const exits = (states: StatesFile, name: string): string[] =>
   (states.states[name]?.transitions ?? []).map((t) => `${[t.when].flat().join("+")}>${t.to}`);
 
-describe.each(generatedFighters())("%s's Attack and Smash", (name) => {
-  const { states } = fighter(name);
+/** A depth's own ways on: Attack down the line, Smash alone into its ender. */
+function ownWay(from: string, to: string): boolean {
+  const depth = from === CLOSE ? 0 : RUSH.indexOf(from as (typeof RUSH)[number]);
+  return to === RUSH[depth + 1] || to === ENDERS[depth];
+}
 
-  it("open from standing: Attack into rush_1, Smash into smash", () => {
-    expect(exits(states, "idle")).toContain("pressed:attack>rush_1");
-    expect(exits(states, "idle")).toContain("pressed:smash>smash");
-  });
-});
-
-/** What each accepted rush holds, and how fast it steps — the rest is computed. */
-const ACCEPTED: Record<string, { picks: Picks; step: { windup: number; hit: number } }> = {
-  // the owner's, 2026-11-25: the Quad Kick's four kicks, an ender of the ultimate's at each depth
-  goku: {
-    picks: {
-      rush_1: { anim: "b_qk1", type: "flinch" },
-      rush_1_close: { anim: "b_qk1_knee", type: "flinch" },
-      rush_2: { anim: "b_qk2", type: "flinch" },
-      rush_3: { anim: "b_qk3", type: "flinch" },
-      rush_4: { anim: "b_qk4", type: "heavy" },
-      smash_1: { anim: "b_116", type: "stagger" },
-      smash_2: { anim: "b_110", type: "down" },
-      smash_3: { anim: "b_80", type: "high" },
-    },
-    step: { windup: 1.1875, hit: 0.625 },
-  },
-  freeza: { picks: { rush_1: { anim: "m90" }, rush_2: { anim: "m91" }, rush_3: { anim: "m92" } }, step: { windup: 2.375, hit: 1.25 } },
+/** The links the owner has accepted as combos (2026-11-25): Goku's own ways on, Freeza's Attack line. */
+const ACCEPTED: Record<string, (from: string, to: string) => boolean> = {
+  goku: ownWay,
+  freeza: (from, to) => ownWay(from, to) && to.startsWith("rush_"),
 };
 
-describe.each(Object.keys(ACCEPTED))("%s's rush", (name) => {
-  const { links } = fighter(name);
-  const { picks } = ACCEPTED[name];
+describe.each(generatedFighters())("%s's rush", (name) => {
+  const { states, links, rush } = fighter(name);
 
-  it("walks Attack down the line it picked, and leaves it on Smash where an ender is picked", () => {
-    const line = RUSH.filter((_, i) => RUSH.slice(0, i + 1).every((r) => picks[r]));
-    const walks = line.slice(1).map((s, i) => `${line[i]}>${s}`);
-    const ends = ENDERS.filter((e, i) => picks[e] && line[i]).map((e) => `${RUSH[ENDERS.indexOf(e)]}>${e}`);
-    // A1 thrown close leads where A1 does
-    const close = picks[CLOSE] ? [...walks, ...ends].filter((l) => l.startsWith("rush_1>")).map((l) => l.replace("rush_1>", `${CLOSE}>`)) : [];
-    expect(links.map((l) => `${l.from}>${l.to}`).sort()).toEqual([...walks, ...ends, ...close].sort());
+  it("opens from standing: Attack into rush_1, Smash into smash, a direction + Smash into its ender", () => {
+    const smash = ENDERS.map((e) => `${aimed(AIMS[e]).join("+")}>${e}`);
+    expect(exits(states, "idle")).toEqual(expect.arrayContaining(["pressed:attack>rush_1", ...smash, "pressed:smash>smash"]));
+    const idle = exits(states, "idle");
+    for (const s of smash) expect(idle.indexOf(s)).toBeLessThan(idle.indexOf("pressed:smash>smash"));
   });
 
-  it("opens every link, and holds it: the latest press still lands inside the hitstun", () => {
-    expect(links.filter((l) => l.opens > l.closes || !(l.margin >= 0))).toEqual([]);
+  it("takes down + Smash crouching into S3, ahead of the crouching blow", () => {
+    const crouch = exits(states, "crouch");
+    expect(crouch.indexOf(`${aimed("down").join("+")}>smash_3`)).toBeLessThan(crouch.indexOf("pressed:smash>crouch_b"));
   });
-});
 
-describe.each(Object.keys(ACCEPTED))("%s's rush on disk", (name) => {
-  it("is what withRush makes of its picks: the steps and the windows computed, none by hand", () => {
-    const states = read<StatesFile>(name, "states.json");
+  it("leaves every depth on Smash for its ender, or the one a direction asks for", () => {
+    const line = RUSH.filter((_, i) => RUSH.slice(0, i + 1).every((r) => rush.picks[r]));
+    for (const slot of line) expect(new Set(links.filter((l) => l.from === slot && l.on === "smash").map((l) => l.to))).toEqual(new Set(ENDERS));
+  });
+
+  it("is what withRush makes of his rush.json, made again: nothing of it by hand", () => {
     const anims = read<Record<string, BlowAnim>>(name, "animations.json");
     const { hitstun } = read<{ hitstun: number }>(name, "attributes.json");
-    const { picks, step } = ACCEPTED[name];
-    const made = withRush(states, anims, hitstun, picks, step);
-    const slot = (f: StatesFile, s: string) => {
-      const { anim, type, velAt, cancelBy, transitions } = f.states[s];
-      return { anim, type, velAt, cancelBy, transitions };
-    };
-    for (const s of SLOTS.filter((s) => ACCEPTED[name].picks[s])) expect(slot(states, s), s).toEqual(slot(made, s));
+    const disk = read<StatesFile>(name, "states.json");
+    expect(withRush(disk, anims, hitstun, rush.picks, rush.step ?? DEFAULT_STEP)).toEqual(disk);
   });
-});
 
-describe.each(generatedFighters().filter((n) => n !== "goku" && n !== "freeza"))("%s, whose rush is not accepted yet", (name) => {
-  it("plays Attack as one blow", () => {
-    expect(fighter(name).links.filter((l) => l.from.startsWith("rush_"))).toEqual([]);
+  it("plays what the owner accepted as a combo: the latest press still lands inside the hitstun", () => {
+    const accepted = ACCEPTED[name] ?? (() => false);
+    expect(links.filter((l) => accepted(l.from, l.to) && (l.opens > l.closes || !(l.margin >= 0)))).toEqual([]);
   });
 });

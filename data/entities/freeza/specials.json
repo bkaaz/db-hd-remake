@@ -126,7 +126,10 @@
       ],
       "when": [
         "frames:2",
-        "command:ad"
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
       ],
       "to": "jasenkoh"
     },
@@ -135,7 +138,12 @@
         "@fall",
         "jump_fall_attacked"
       ],
-      "when": "command:ad",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
+      ],
       "to": "jasenkoh"
     },
     {
@@ -1318,16 +1326,6 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ],
-      "velAt": [
-        [
-          0,
-          2.375
-        ],
-        [
-          10,
-          1.25
-        ]
       ]
     },
     "smash": {

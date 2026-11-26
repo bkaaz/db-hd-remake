@@ -4,7 +4,7 @@
 (2026-10-31 – 2026-11-04), which it replaces · 2026-11-24: the common states
 are a file of their own, Goku is generated like the rest, and the cartridge
 no longer writes any of it; the command entries go ahead of a special asked
-for by a press
+for by a press · 2026-11-25: his rush is made of his `rush.json`
 
 Every fighter's `states.json`, Goku's too, is written whole by `npm run
 states` from our files alone (`src/rom/compose.ts`): the common states
@@ -14,7 +14,9 @@ them — where his common states differ, field by field — and his
 differently, named in `replaces` with a fingerprint of the common state his
 copy was last checked against — a change to it that passes his copy by is
 named by `npm run states` and fails a test until accepted. All of it is by
-hand. A state's command entries stand in the order of his `commands.json`, its
+hand, but the rush: his `rush.json` names its picks, and `withRush` makes
+its states and the ways into it over the rest — the same function the debug
+panel tries a rush with. A state's command entries stand in the order of his `commands.json`, its
 last row first, as the cartridge tries them (`inTableOrder`), ahead of every
 transition that asks for a button, a special asked for by a press among them.
 `compose.test.ts` fails while a file is out of date.
@@ -46,5 +48,7 @@ rules stay playable as they stand.
   drop a common state; `replaces` says so on purpose.
 - **The engine sorting command entries as it loads** — the file would say one
   order and the game play another.
+- **An accepted rush copied into his overrides and specials** — its steps and
+  windows were computed, and stood by hand where a test had to say so.
 - **Keeping two sets of rules alive** — every engine change would have to hold in
   both.

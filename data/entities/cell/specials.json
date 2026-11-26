@@ -142,7 +142,10 @@
       ],
       "when": [
         "frames:2",
-        "command:a9"
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
       ],
       "to": "negative_arrow"
     },
@@ -151,7 +154,12 @@
         "@fall",
         "jump_fall_attacked"
       ],
-      "when": "command:a9",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
+      ],
       "to": "negative_arrow"
     }
   ],

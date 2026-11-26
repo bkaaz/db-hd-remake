@@ -67,17 +67,35 @@ taken by the running fight in place: `Scene.take`) and shows each link's margin,
 tempo, 70% to 150% (`rushTempo.ts`), tried before a blow's own speed goes
 into its recipe as `slow`; the bar above the game scales every blow's
 hitstop the same way, tried before `data/hit-types.json` is changed; it keeps
-nothing — an accepted rush is written into
-his data by hand. Which blow stands where is still to choose.
+nothing — an accepted rush is its picks in his `rush.json`, and `npm run
+states` makes the rest. Which blow stands where is still to choose.
 
 **How each end of the rush is taken is a rule, the same for every fighter**
 (owner, 2026-11-25); only the animations are his. The deeper, the better the
 end: A4 and S1 send him off (`knockback`), S2 floors him (`down`), S3 lifts
 him (`launch`) for a ki follow-up — provisional, as `EFFECTS`
 in `combat/rushSlots.ts` says; the panel tries another effect on any slot.
-Goku's S3 cancels into back + Ki, his upward Kamehameha, from the frame its
-hit box is gone (owner, 2026-11-25); an ender's own ways out stay through
-a new pick.
+Goku's S3 cancels into back + Ki, his upward Kamehameha, and every A and S
+of his into forward + Ki, from the frame its hit box is gone (owner,
+2026-11-25); a slot's own ways out stay through a new pick.
+
+**A direction + Smash asks for an ender wherever Smash is pressed** (owner,
+2026-11-25), for every fighter: back + S is S1, forward + S is S2, down + S
+is S3 — standing, crouching (over the crouching Smash) and in the rush, where
+Smash alone is the ender of its depth (`AIMS`, `combat/rushEntries.ts`). The
+direction counts alone, so down-back + S crouching is still the crouching
+Smash. It wins over a command of the cartridge on → + S: Goku's Double Kick
+and Vegetto's Forward Kick have no way in. A depth's window is timed by its
+own ways on, Attack and Smash alone; a direction's ender there may not be a
+combo (`npm run chains`). Every fighter has S1–S3; all but Goku's are the
+standing Smash, the crouching one and the crouching Attack until picked, and
+their Attack, still one blow, does not lead into them yet.
+
+**In the air** (owner, 2026-11-26), forward + S is the fighter's dive: the
+cartridge's → ↓ + Smash move — Goku's Slash Down Kick and its kind — or the
+nearest he has: Cell's Negative Arrow and Gotenks's Air Dive (→ ↓ + Attack
+there), Mr. Buu's Butt Drop (↓ + Smash). Vegeta has none, and Smash alone in
+the air stays the jumping blow.
 
 **A1 has a close version, A1c**, thrown instead when the opponent is within
 the fighter's `closeRange.attack` — Goku's knee where his kick would reach

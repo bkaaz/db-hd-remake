@@ -166,10 +166,6 @@
           "to": "throw"
         },
         {
-          "when": "command:9e",
-          "to": "forward_kick"
-        },
-        {
           "when": "command:aa",
           "to": "shooting_kick"
         },
@@ -203,6 +199,33 @@
         {
           "when": "pressed:attack",
           "to": "rush_1"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -303,10 +326,6 @@
           "to": "throw"
         },
         {
-          "when": "command:9e",
-          "to": "forward_kick"
-        },
-        {
           "when": "command:aa",
           "to": "shooting_kick"
         },
@@ -340,6 +359,33 @@
         {
           "when": "pressed:attack",
           "to": "rush_1"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -436,10 +482,6 @@
           "to": "throw"
         },
         {
-          "when": "command:9e",
-          "to": "forward_kick"
-        },
-        {
           "when": "command:aa",
           "to": "shooting_kick"
         },
@@ -473,6 +515,33 @@
         {
           "when": "pressed:attack",
           "to": "rush_1"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -560,10 +629,6 @@
           "to": "throw"
         },
         {
-          "when": "command:9e",
-          "to": "forward_kick"
-        },
-        {
           "when": "command:aa",
           "to": "shooting_kick"
         },
@@ -601,6 +666,33 @@
         {
           "when": "pressed:attack",
           "to": "crouch_y"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -667,10 +759,6 @@
           "to": "throw"
         },
         {
-          "when": "command:9e",
-          "to": "forward_kick"
-        },
-        {
           "when": "command:aa",
           "to": "shooting_kick"
         },
@@ -708,6 +796,33 @@
         {
           "when": "pressed:attack",
           "to": "crouch_y"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -767,10 +882,6 @@
           "to": "throw"
         },
         {
-          "when": "command:9e",
-          "to": "forward_kick"
-        },
-        {
           "when": "command:aa",
           "to": "shooting_kick"
         },
@@ -806,6 +917,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -839,7 +977,10 @@
         {
           "when": [
             "frames:2",
-            "command:a8"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "slashdown_kick"
         },
@@ -883,7 +1024,10 @@
         {
           "when": [
             "frames:2",
-            "command:a8"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "slashdown_kick"
         },
@@ -923,7 +1067,10 @@
         {
           "when": [
             "frames:2",
-            "command:a8"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "slashdown_kick"
         },
@@ -953,7 +1100,12 @@
       "turn": false,
       "transitions": [
         {
-          "when": "command:a8",
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
           "to": "slashdown_kick"
         },
         {
@@ -4652,6 +4804,60 @@
         ]
       ],
       "damage": 0
+    },
+    "smash_1": {
+      "anim": "m93",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "knockback",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2": {
+      "anim": "m95",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_3": {
+      "anim": "m94",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "launch",
+      "damage": 30,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
     }
   }
 }

@@ -208,6 +208,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -348,6 +375,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -484,6 +538,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -615,6 +696,33 @@
           "to": "crouch_y"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "crouch_b"
         },
@@ -725,6 +833,33 @@
           "to": "crouch_y"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "crouch_b"
         },
@@ -825,6 +960,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -865,7 +1027,10 @@
         {
           "when": [
             "frames:2",
-            "command:ad"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "jasenkoh"
         },
@@ -916,7 +1081,10 @@
         {
           "when": [
             "frames:2",
-            "command:ad"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "jasenkoh"
         },
@@ -964,7 +1132,10 @@
         {
           "when": [
             "frames:2",
-            "command:ad"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "jasenkoh"
         },
@@ -999,7 +1170,12 @@
           "to": "evil_energy"
         },
         {
-          "when": "command:ad",
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
           "to": "jasenkoh"
         },
         {
@@ -1026,7 +1202,12 @@
           "to": "evil_energy"
         },
         {
-          "when": "command:ad",
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
           "to": "jasenkoh"
         },
         {
@@ -1211,11 +1392,37 @@
           "to": "rush_2"
         },
         {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
+          "when": [
+            "cancelable",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
       ],
-      "cancelBy": 25,
       "velAt": [
         [
           0,
@@ -1225,7 +1432,8 @@
           9,
           1.25
         ]
-      ]
+      ],
+      "cancelBy": 23
     },
     "rush_3": {
       "anim": "m92",
@@ -1240,6 +1448,33 @@
       "damage": 24,
       "transitions": [
         {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -1253,7 +1488,8 @@
           10,
           1.25
         ]
-      ]
+      ],
+      "cancelBy": 24
     },
     "rush_2": {
       "anim": "m91",
@@ -1275,11 +1511,37 @@
           "to": "rush_3"
         },
         {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
+          "when": [
+            "cancelable",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
       ],
-      "cancelBy": 17,
       "velAt": [
         [
           0,
@@ -1289,7 +1551,8 @@
           6,
           1.25
         ]
-      ]
+      ],
+      "cancelBy": 10
     },
     "smash": {
       "anim": "m93",
@@ -4499,6 +4762,60 @@
         {
           "when": "landed",
           "to": "land"
+        }
+      ]
+    },
+    "smash_1": {
+      "anim": "m93",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "knockback",
+      "damage": 26,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2": {
+      "anim": "m95",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "down",
+      "damage": 26,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_3": {
+      "anim": "m94",
+      "turn": false,
+      "vel": [
+        0,
+        0
+      ],
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "launch",
+      "damage": 26,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     }

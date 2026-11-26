@@ -204,6 +204,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -341,6 +368,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -474,6 +528,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -602,6 +683,33 @@
           "to": "crouch_y"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "crouch_b"
         },
@@ -709,6 +817,33 @@
           "to": "crouch_y"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "crouch_b"
         },
@@ -806,6 +941,33 @@
           "to": "rush_1"
         },
         {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
           "when": "pressed:smash",
           "to": "smash"
         },
@@ -839,7 +1001,10 @@
         {
           "when": [
             "frames:2",
-            "command:a8"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "bukuuh_kyaku"
         },
@@ -883,7 +1048,10 @@
         {
           "when": [
             "frames:2",
-            "command:a8"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "bukuuh_kyaku"
         },
@@ -923,7 +1091,10 @@
         {
           "when": [
             "frames:2",
-            "command:a8"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "bukuuh_kyaku"
         },
@@ -953,7 +1124,12 @@
       "turn": false,
       "transitions": [
         {
-          "when": "command:a8",
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
           "to": "bukuuh_kyaku"
         },
         {
@@ -3967,6 +4143,60 @@
         {
           "when": "animEnd",
           "to": "win_air_2"
+        }
+      ]
+    },
+    "smash_1": {
+      "anim": "m93",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "knockback",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2": {
+      "anim": "m95",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "down",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_3": {
+      "anim": "m94",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "launch",
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
         }
       ]
     }

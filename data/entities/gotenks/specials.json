@@ -124,7 +124,10 @@
       ],
       "when": [
         "frames:2",
-        "command:b0"
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
       ],
       "to": "air_dive"
     },
@@ -132,7 +135,12 @@
       "from": [
         "@fall"
       ],
-      "when": "command:b0",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
+      ],
       "to": "air_dive"
     },
     {

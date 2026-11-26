@@ -1,0 +1,13 @@
+{
+  "picks": {
+    "smash_1": {
+      "anim": "m93"
+    },
+    "smash_2": {
+      "anim": "m95"
+    },
+    "smash_3": {
+      "anim": "m94"
+    }
+  }
+}

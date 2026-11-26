@@ -120,7 +120,10 @@
       ],
       "when": [
         "frames:2",
-        "command:be"
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
       ],
       "to": "bukuuh_kyaku"
     },
@@ -128,7 +131,12 @@
       "from": [
         "@fall"
       ],
-      "when": "command:be",
+      "when": [
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
+      ],
       "to": "bukuuh_kyaku"
     }
   ],

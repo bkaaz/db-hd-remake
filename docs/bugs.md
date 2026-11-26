@@ -35,3 +35,13 @@ because a number would only need translating back.
   for by a press since down + Ki.
 - **Buu's charge is broken: its animation and its sound** — *annoying*. Hold
   Charge (RB) as Buu.
+- **The rush panel cuts a multi-part A1 short** — *annoying*, debug only.
+  Buu's, Gotenks's and Mr. Buu's A1 goes on into `rush_1_2` when it ends;
+  any rush the panel tries for them makes A1 end in idle and step by the
+  default step (`withRush` writes its end and `velAt`), so the panel does
+  not play their own A1 back as it is.
+- **`npm run rom -- export --fighter` asks for a recording it does not
+  need** — *annoying*, tools only. It throws when `logs/objects-<name>.txt`
+  is missing if any of his own objects lacks `ticks` or `animations`, even
+  one already exported, which it then keeps and never reads the recording
+  for (`scripts/rom.ts`, the `needed` check before `kept`).

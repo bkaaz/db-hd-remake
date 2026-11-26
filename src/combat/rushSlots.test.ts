@@ -97,8 +97,14 @@ describe("withRush", () => {
       expect(deep.states.rush_3.type).toBe("flinch");
     });
 
-    it("leaves each depth for its ender on Smash, an ender made out of smash", () => {
-      expect(exits(deep, "rush_2")).toEqual(["cancelable+pressed:attack>rush_3", "cancelable+pressed:smash>smash_2", "animEnd>idle"]);
+    it("leaves each depth for its ender on Smash, or the one a direction asks for, an ender made out of smash", () => {
+      expect(exits(deep, "rush_2")).toEqual([
+        "cancelable+pressed:attack>rush_3",
+        "cancelable+held:back+!held:down+!held:up+pressed:smash>smash_1",
+        "cancelable+held:down+!held:fwd+!held:back+pressed:smash>smash_3",
+        "cancelable+pressed:smash>smash_2",
+        "animEnd>idle",
+      ]);
       expect(deep.states.smash_2).toMatchObject({ anim: "s", damage: 29 });
       expect(exits(deep, "smash_2")).toEqual(["animEnd>idle"]);
     });
@@ -125,8 +131,23 @@ describe("withRush", () => {
       expect(picked.states.smash_1.type).toBe("trip");
     });
 
-    it("keeps every way out of a depth a combo: one window, the tightest of them", () => {
-      expect(rushLinks(deep, anims, 14).filter((l) => !(l.margin >= 0))).toEqual([]);
+    it("keeps a depth's own ways on a combo: one window, the tightest of them", () => {
+      const own = (l: { from: string; to: string }) => l.to === `smash_${l.from.slice(-1)}` || l.to === `rush_${Number(l.from.slice(-1)) + 1}`;
+      expect(rushLinks(deep, anims, 14).filter((l) => own(l) && !(l.margin >= 0))).toEqual([]);
+    });
+
+    it("lets a direction + Smash in the rush be taken where it cannot be a combo, the window still the depth's own", () => {
+      // A4 has no ender of its own, so no window narrows for one
+      expect(exits(deep, "rush_4").filter((e) => e.includes("smash"))).toHaveLength(3);
+      expect(deep.states.rush_4.cancelBy).toBe(framesOf(anims.a));
+    });
+
+    it("never closes a window before it opens, so a link that cannot be a combo is still taken", () => {
+      const late = { ...anims, slow: blow(40, 6, 6) };
+      const made = withRush(file, late, 14, { rush_1: { anim: "a" }, smash_1: { anim: "slow" } }, step);
+      const [link] = rushLinks(made, late, 14);
+      expect(link.margin).toBeLessThan(0);
+      expect(link.opens).toBeLessThanOrEqual(link.closes);
     });
   });
 

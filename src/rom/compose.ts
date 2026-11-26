@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import type { AnimInfo, StatesFile } from "../entity/states";
+import { DEFAULT_STEP, withRush, type BlowAnim, type RushFile } from "../combat/rushSlots";
 import type { CommandsFile } from "../input/command";
 import { inTableOrder } from "./entries";
 import { withOverrides, type Overrides } from "./overrides";
@@ -8,7 +9,7 @@ import { statesFrom } from "./template";
 
 /**
  * A fighter's `states.json` from our files alone — the common states, his
- * overrides, his specials, his command table — never the cartridge: what the
+ * overrides, his specials, his rush, his command table — never the cartridge: what the
  * cartridge says is a report beside it (`npm run rom -- states`), so a number
  * changed on purpose is never put back. `npm run states` writes it, and
  * `compose.test.ts` fails while a file on disk is not this.
@@ -32,9 +33,13 @@ export function composeStates(name: string): StatesFile {
   });
   const overridden = withOverrides(made.file, optional<Overrides>(`${dir}/overrides.json`) ?? {}, own);
   const merged = own ? withSpecials(overridden, own, readJson<Groups>(GROUPS)) : overridden;
+  // his rush made of his picks: its steps, windows and ways in computed (combat/rushSlots.ts)
+  const rush = optional<RushFile>(`${dir}/rush.json`);
+  const { hitstun } = readJson<{ hitstun: number }>(`${dir}/attributes.json`);
+  const rushed = rush ? withRush(merged, animations as unknown as Record<string, BlowAnim>, hitstun, rush.picks, rush.step ?? DEFAULT_STEP) : merged;
   // his commands tried as the cartridge tries them, the table's last row first
   const commands = (optional<CommandsFile>(`${dir}/commands.json`)?.commands ?? []).map((c) => ({ move: parseInt(c.move, 16) }));
-  const file = inTableOrder(merged, commands);
+  const file = inTableOrder(rushed, commands);
   return { ...file, states: blowsSaid(file.states, animations) };
 }
 

@@ -875,7 +875,16 @@ gone, so blows and the opponent's body pass him by.
 Large Ki Blast (`a9`, `$20:810A`, 5 health) shows the ki blast's pose and
 spawns object `0/04` at 12, 40 px ahead and 56 up; the upward Kamehameha
 (`ab`, `$20:8116`, 10) loads resource `51` on frame 2 and spawns `0/02` at
-18, 24 ahead and 72 up. `0/04` flips its frame every 4th frame of the game
+18, 24 ahead and 72 up. Its twin of the fight above the arena, `d5`
+(`$20:813C`), shows `85` then `8d`, hands down, and spawns `0/03` — the shot
+drawn aimed down — at 18, 24 ahead and 27 up, vx 3 vy 3; the handler turns
+the move into `d5` on frame 1 when he is above his opponent `?`.
+Every fighter's ← ↙ ↓ ↘ → A shot has such a twin, its shot drawn aimed down
+and flying down: Gohan `d5` (`2/04`), Vegeta `d7` (`1/05`), Gotenks `d9`
+(`3/09`), Piccolo `d7` (`5/04`), Buu `f5` (`9/05`, its flash `9/07` on
+`9/06`'s code), Vegetto `d5` and Freeza `d1` (their own shot, vy turned
+down), Cell `d2` — his code spawns `7/0a` on frame 18 (`$10:D035`), 32 ahead
+and 40 up, vx 3 vy 3. Mr. Buu's Energy Field has none. `0/04` flips its frame every 4th frame of the game
 (`$0F:B81D`), `0/02` steps palette records `0x130` + n every 4 (`$0F:B7D8`);
 both are gone after 80 frames (`$0F:B80F`, `B7CA`) and become `a/02` where
 they hit. Their speeds (3, 0 and 3, −3), `0/04`'s tiles — resource `47` at

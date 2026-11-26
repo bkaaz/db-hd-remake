@@ -121,13 +121,6 @@
       "from": [
         "@ground"
       ],
-      "when": "command:a2",
-      "to": "double_kick"
-    },
-    {
-      "from": [
-        "@ground"
-      ],
       "when": "command:a8",
       "to": "side_slash"
     },
@@ -137,7 +130,10 @@
       ],
       "when": [
         "frames:2",
-        "command:ac"
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
       ],
       "to": "slash_down"
     },
@@ -145,21 +141,13 @@
       "from": [
         "@fall"
       ],
-      "when": "command:ac",
-      "to": "slash_down"
-    },
-    {
-      "from": [
-        "idle",
-        "walk_fwd",
-        "walk_back",
-        "stand_up"
-      ],
       "when": [
-        "pressed:attack",
-        "close:attack"
+        "held:fwd",
+        "!held:down",
+        "!held:up",
+        "pressed:smash"
       ],
-      "to": "rush_1_close"
+      "to": "slash_down"
     }
   ],
   "states": {
@@ -1555,7 +1543,6 @@
         0
       ],
       "turn": false,
-      "type": "heavy",
       "damage": 27,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -1574,18 +1561,7 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ],
-      "velAt": [
-        [
-          0,
-          1.1875
-        ],
-        [
-          6,
-          0.625
-        ]
-      ],
-      "cancelBy": 46
+      ]
     },
     "smash_1": {
       "anim": "b_116",
@@ -1594,7 +1570,6 @@
         0
       ],
       "turn": false,
-      "type": "stagger",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -1613,8 +1588,7 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ],
-      "cancelBy": 19
+      ]
     },
     "smash_2": {
       "anim": "b_110",
@@ -1623,7 +1597,6 @@
         0
       ],
       "turn": false,
-      "type": "down",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -1642,8 +1615,7 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ],
-      "cancelBy": 24
+      ]
     },
     "smash_3": {
       "anim": "b_80",
@@ -1652,7 +1624,6 @@
         0
       ],
       "turn": false,
-      "type": "high",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -1681,8 +1652,7 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ],
-      "cancelBy": 20
+      ]
     },
     "rush_1_close": {
       "anim": "b_qk1_knee",
@@ -1691,25 +1661,10 @@
         0
       ],
       "turn": false,
-      "type": "flinch",
       "damage": 25,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
-        {
-          "when": [
-            "cancelable",
-            "pressed:attack"
-          ],
-          "to": "rush_2"
-        },
-        {
-          "when": [
-            "cancelable",
-            "pressed:smash"
-          ],
-          "to": "smash_1"
-        },
         {
           "when": [
             "cancelable",
@@ -1724,14 +1679,7 @@
           "when": "animEnd",
           "to": "idle"
         }
-      ],
-      "velAt": [
-        [
-          0,
-          0.625
-        ]
-      ],
-      "cancelBy": 12
+      ]
     }
   },
   "replaces": {}

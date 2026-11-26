@@ -178,19 +178,8 @@
           "to": "throw"
         },
         {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": "command:a8",
           "to": "side_slash"
-        },
-        {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "rush_1_close"
         },
         {
           "when": [
@@ -220,8 +209,42 @@
           "to": "meteor"
         },
         {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "rush_1_close"
+        },
+        {
           "when": "pressed:attack",
           "to": "rush_1"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -334,19 +357,8 @@
           "to": "throw"
         },
         {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": "command:a8",
           "to": "side_slash"
-        },
-        {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "rush_1_close"
         },
         {
           "when": [
@@ -376,8 +388,42 @@
           "to": "meteor"
         },
         {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "rush_1_close"
+        },
+        {
           "when": "pressed:attack",
           "to": "rush_1"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -486,19 +532,8 @@
           "to": "throw"
         },
         {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": "command:a8",
           "to": "side_slash"
-        },
-        {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "rush_1_close"
         },
         {
           "when": [
@@ -528,8 +563,42 @@
           "to": "meteor"
         },
         {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "rush_1_close"
+        },
+        {
           "when": "pressed:attack",
           "to": "rush_1"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -629,10 +698,6 @@
           "to": "throw"
         },
         {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": "command:a8",
           "to": "side_slash"
         },
@@ -670,6 +735,33 @@
         {
           "when": "pressed:attack",
           "to": "crouch_y"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -748,10 +840,6 @@
           "to": "throw"
         },
         {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": "command:a8",
           "to": "side_slash"
         },
@@ -789,6 +877,33 @@
         {
           "when": "pressed:attack",
           "to": "crouch_y"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -860,19 +975,8 @@
           "to": "throw"
         },
         {
-          "when": "command:a2",
-          "to": "double_kick"
-        },
-        {
           "when": "command:a8",
           "to": "side_slash"
-        },
-        {
-          "when": [
-            "pressed:attack",
-            "close:attack"
-          ],
-          "to": "rush_1_close"
         },
         {
           "when": [
@@ -902,8 +1006,42 @@
           "to": "meteor"
         },
         {
+          "when": [
+            "pressed:attack",
+            "close:attack"
+          ],
+          "to": "rush_1_close"
+        },
+        {
           "when": "pressed:attack",
           "to": "rush_1"
+        },
+        {
+          "when": [
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": "pressed:smash",
@@ -939,7 +1077,10 @@
         {
           "when": [
             "frames:2",
-            "command:ac"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "slash_down"
         },
@@ -983,7 +1124,10 @@
         {
           "when": [
             "frames:2",
-            "command:ac"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "slash_down"
         },
@@ -1023,7 +1167,10 @@
         {
           "when": [
             "frames:2",
-            "command:ac"
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
           ],
           "to": "slash_down"
         },
@@ -1053,7 +1200,12 @@
       "turn": false,
       "transitions": [
         {
-          "when": "command:ac",
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
           "to": "slash_down"
         },
         {
@@ -1268,6 +1420,26 @@
         {
           "when": [
             "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
+        {
+          "when": [
+            "cancelable",
             "pressed:smash"
           ],
           "to": "smash_1"
@@ -1321,6 +1493,26 @@
         {
           "when": [
             "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "cancelable",
             "pressed:smash"
           ],
           "to": "smash_3"
@@ -1370,6 +1562,26 @@
             "pressed:attack"
           ],
           "to": "rush_3"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": [
@@ -4178,11 +4390,40 @@
         0
       ],
       "turn": false,
-      "type": "heavy",
       "damage": 27,
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:back",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_1"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
+        },
         {
           "when": [
             "cancelable",
@@ -4198,6 +4439,7 @@
           "to": "idle"
         }
       ],
+      "type": "heavy",
       "velAt": [
         [
           0,
@@ -4217,7 +4459,6 @@
         0
       ],
       "turn": false,
-      "type": "stagger",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -4237,6 +4478,7 @@
           "to": "idle"
         }
       ],
+      "type": "stagger",
       "cancelBy": 19
     },
     "smash_2": {
@@ -4246,7 +4488,6 @@
         0
       ],
       "turn": false,
-      "type": "down",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -4266,6 +4507,7 @@
           "to": "idle"
         }
       ],
+      "type": "down",
       "cancelBy": 24
     },
     "smash_3": {
@@ -4275,7 +4517,6 @@
         0
       ],
       "turn": false,
-      "type": "high",
       "damage": 29,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -4305,6 +4546,7 @@
           "to": "idle"
         }
       ],
+      "type": "high",
       "cancelBy": 20
     },
     "rush_1_close": {
@@ -4314,7 +4556,6 @@
         0
       ],
       "turn": false,
-      "type": "flinch",
       "damage": 25,
       "hitSound": "hit_09",
       "blockSound": "block_17",
@@ -4325,6 +4566,26 @@
             "pressed:attack"
           ],
           "to": "rush_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:down",
+            "!held:fwd",
+            "!held:back",
+            "pressed:smash"
+          ],
+          "to": "smash_3"
         },
         {
           "when": [
@@ -4348,6 +4609,7 @@
           "to": "idle"
         }
       ],
+      "type": "flinch",
       "velAt": [
         [
           0,

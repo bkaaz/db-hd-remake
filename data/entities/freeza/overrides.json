@@ -74,60 +74,10 @@
     ]
   },
   "rush_1": {
-    "damage": 22,
-    "type": "flinch",
-    "transitions": [
-      {
-        "when": [
-          "cancelable",
-          "pressed:attack"
-        ],
-        "to": "rush_2"
-      },
-      {
-        "when": "animEnd",
-        "to": "idle"
-      }
-    ],
-    "cancelBy": 25,
-    "velAt": [
-      [
-        0,
-        2.375
-      ],
-      [
-        9,
-        1.25
-      ]
-    ]
+    "damage": 22
   },
   "rush_2": {
-    "damage": 21,
-    "type": "flinch",
-    "transitions": [
-      {
-        "when": [
-          "cancelable",
-          "pressed:attack"
-        ],
-        "to": "rush_3"
-      },
-      {
-        "when": "animEnd",
-        "to": "idle"
-      }
-    ],
-    "cancelBy": 17,
-    "velAt": [
-      [
-        0,
-        2.375
-      ],
-      [
-        6,
-        1.25
-      ]
-    ]
+    "damage": 21
   },
   "crouch_y": {
     "damage": 26
