@@ -211,6 +211,9 @@ export class Fighters {
       // one body's state lets the other's held script go on ($0F:A545, ADR 0035)
       if (this.player.freesNow) this.opponent.free();
       if (this.opponent.freesNow) this.player.free();
+      // a boost: the other stands still, and with him every bolt (`freezesFoe`)
+      this.opponent.freeze(this.player.takeFoeFreeze());
+      this.player.freeze(this.opponent.takeFoeFreeze());
       const world = {
         dust: (x: number, y: number) => this.impact.effects.spawn("dust", x, y),
         effect: (name: string, x: number, y: number) => this.impact.effects.spawn(name, x, y),
@@ -267,6 +270,10 @@ export class Fighters {
       { from: this.from[0], to: player.x },
       opponent ? { from: this.from[1], to: opponent.x } : null,
     );
+    // stopped at the edge, or put back on it: the wall a body sent off meets
+    const stopped = (at: number, wanted: number) => Math.abs(at - wanted) > 1e-6;
+    if (stopped(placed.a, player.x)) player.hitWall();
+    if (opponent && placed.b !== null && stopped(placed.b, opponent.x)) opponent.hitWall();
     player.x = placed.a;
     if (opponent && placed.b !== null) opponent.x = placed.b;
     if (!this.both().some((f) => f.holdsCamera)) camera.lift(this.both().map((f) => f.y));

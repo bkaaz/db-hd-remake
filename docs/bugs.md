@@ -45,3 +45,11 @@ because a number would only need translating back.
   is missing if any of his own objects lacks `ticks` or `animations`, even
   one already exported, which it then keeps and never reads the recording
   for (`scripts/rom.ts`, the `needed` check before `kept`).
+- **The rush panel does not charge a new S1 or S3** — *annoying*, debug only. A
+  new pick for Goku's S1 or S3 is made by `withRush` alone, so the charge's holds
+  and levels keep the animation they were made from until `npm run states`
+  runs `withCharge` again (`combat/smashCharge.ts`).
+- **A charged ender's ways out open late** — *minor*. A level is entered part
+  way through its ender's animation, but its `cancelBy` and the window
+  `cancelable` reads count from the state's start, so Goku's Ki
+  follow-ups off a charged S1 or S3 open later than off the plain one.

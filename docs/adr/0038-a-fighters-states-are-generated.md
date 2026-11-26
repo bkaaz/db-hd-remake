@@ -4,7 +4,7 @@
 (2026-10-31 – 2026-11-04), which it replaces · 2026-11-24: the common states
 are a file of their own, Goku is generated like the rest, and the cartridge
 no longer writes any of it; the command entries go ahead of a special asked
-for by a press · 2026-11-25: his rush is made of his `rush.json`
+for by a press · 2026-11-25: his rush is made of his `rush.json` · 2026-11-26: and his charged enders
 
 Every fighter's `states.json`, Goku's too, is written whole by `npm run
 states` from our files alone (`src/rom/compose.ts`): the common states
@@ -16,7 +16,7 @@ copy was last checked against — a change to it that passes his copy by is
 named by `npm run states` and fails a test until accepted. All of it is by
 hand, but the rush: his `rush.json` names its picks, and `withRush` makes
 its states and the ways into it over the rest — the same function the debug
-panel tries a rush with. A state's command entries stand in the order of his `commands.json`, its
+panel tries a rush with — and `withCharge` each ender its `charge` names. A state's command entries stand in the order of his `commands.json`, its
 last row first, as the cartridge tries them (`inTableOrder`), ahead of every
 transition that asks for a button, a special asked for by a press among them.
 `compose.test.ts` fails while a file is out of date.

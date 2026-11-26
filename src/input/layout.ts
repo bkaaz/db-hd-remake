@@ -13,7 +13,7 @@ import type { Held } from "../entity/states";
 /** A button of the fight, as the states read it (`held:`, `pressed:`). */
 export type Action = keyof Held;
 export type Direction = "left" | "right" | "up" | "down";
-export const ACTIONS = ["attack", "guard", "smash", "blast", "strike", "dash", "charge"] as const satisfies readonly Action[];
+export const ACTIONS = ["attack", "guard", "smash", "blast", "strike", "dash", "charge", "boost"] as const satisfies readonly Action[];
 export const DIRECTIONS = ["left", "right", "up", "down"] as const satisfies readonly Direction[];
 
 /**
@@ -29,8 +29,9 @@ export const KEYS: Record<string, Action | Direction> = {
   KeyX: "blast", // B
   KeyA: "attack", // X
   KeyS: "smash", // Y
-  KeyQ: "dash", // LB
-  KeyW: "charge", // RB
+  // no key for the dash: forward or back tapped twice (`doubleTap.ts`, owner 2026-11-26)
+  KeyQ: "charge", // LB
+  KeyW: "boost", // RB
   KeyE: "strike", // LT, until the original's moves on its X are ours
 };
 
@@ -44,8 +45,8 @@ export const PAD_BUTTONS: Record<number, Action | Direction> = {
   1: "blast", // B
   2: "attack", // X
   3: "smash", // Y
-  4: "dash", // LB
-  5: "charge", // RB
+  4: "charge", // LB
+  5: "boost", // RB
   6: "strike", // LT
   12: "up",
   13: "down",

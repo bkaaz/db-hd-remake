@@ -40,6 +40,12 @@ describe("aimsIn", () => {
     aimsIn(states, [["smash_1", "back"]], ENDERS);
     expect(exits(states, "jump_fall")[0]).toBe(`${aimed("back").join("+")}>slash_down`);
   });
+
+  it("leaves a direction + Smash into an ender where Smash alone starts nothing: the ki charge's", () => {
+    const states = { ...ground(), charge: { anim: "a", transitions: [{ when: aimed("down"), to: "smash_3" }] } };
+    aimsIn(states, [["smash_3", "down"]], ENDERS);
+    expect(exits(states, "charge")).toEqual([`${aimed("down").join("+")}>smash_3`]);
+  });
 });
 
 describe("closeIn", () => {

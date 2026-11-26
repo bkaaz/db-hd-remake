@@ -32,5 +32,9 @@
       "anim": "b_80",
       "type": "high"
     }
-  }
+  },
+  "charge": [
+    "smash_1",
+    "smash_3"
+  ]
 }

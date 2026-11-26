@@ -89,5 +89,12 @@
     "hitstun": 20,
     "hitstop": 8,
     "relaunch": true
+  },
+  "sendoff": {
+    "code": "so",
+    "onHit": "sent_off",
+    "hitstun": 20,
+    "hitstop": 12,
+    "relaunch": true
   }
 }

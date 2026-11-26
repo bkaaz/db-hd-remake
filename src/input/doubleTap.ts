@@ -1,7 +1,7 @@
 /**
  * The dash as Burst Limit asks for it: forward or back tapped twice and held.
- * It stands in for the dash button (LB) — pressed on the second tap, held
- * while the direction is — so the dash's own states need no second way in.
+ * It is the dash's only way in, its button gone to the charge (owner,
+ * 2026-11-26) — pressed on the second tap, held while the direction is.
  *
  * It replaced the original's hop on the same gesture (owner, 2026-11-24): one
  * gesture cannot start two moves. Pure: no PixiJS, no DOM.

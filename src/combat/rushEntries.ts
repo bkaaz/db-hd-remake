@@ -35,13 +35,21 @@ export function closeIn(states: Record<string, StateDef>, close: string, picked:
 export function aimsIn(states: Record<string, StateDef>, aims: [to: string, aim: Aim][], enders: readonly string[]): void {
   const plain = (t: Transition) => [t.when].flat().join() === "pressed:smash" && (t.to === "smash" || t.to === "crouch_b");
   const shapes = (["back", "fwd", "down"] as const).map((a) => aimed(a).join());
-  // only into an ender: back + Smash in the air is a special of his own
-  rewrite(states, (t) => enders.includes(t.to) && shapes.includes([t.when].flat().join()), (t) => (plain(t) ? aims.map(([to, aim]) => ({ when: aimed(aim), to })) : []));
+  // only where Smash alone starts a blow, and only into an ender: back + Smash
+  // in the air is a special of his own, the ki charge's are `withCharge`'s
+  const owns = (def: StateDef) => (def.transitions ?? []).some(plain);
+  rewrite(states, (t) => enders.includes(t.to) && shapes.includes([t.when].flat().join()), (t) => (plain(t) ? aims.map(([to, aim]) => ({ when: aimed(aim), to })) : []), owns);
 }
 
-/** Every state with the transitions `gone` says taken out and those `ahead` makes put before each that is left. */
-function rewrite(states: Record<string, StateDef>, gone: (t: Transition) => boolean, ahead: (t: Transition) => Transition[]): void {
+/** Every state `within` takes, with the transitions `gone` says taken out and those `ahead` makes put before each that is left. */
+function rewrite(
+  states: Record<string, StateDef>,
+  gone: (t: Transition) => boolean,
+  ahead: (t: Transition) => Transition[],
+  within: (def: StateDef) => boolean = () => true,
+): void {
   for (const [name, def] of Object.entries(states)) {
+    if (!within(def)) continue;
     const was = def.transitions ?? [];
     const transitions = was.filter((t) => !gone(t)).flatMap((t) => [...ahead(t), t]);
     if (JSON.stringify(transitions) !== JSON.stringify(was)) states[name] = { ...def, transitions };

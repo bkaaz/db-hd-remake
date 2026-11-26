@@ -1158,6 +1158,17 @@
       "transitions": [
         {
           "when": [
+            "held:boost",
+            "ki:10"
+          ],
+          "to": "kame_boost"
+        },
+        {
+          "when": "held:boost",
+          "to": "kame_go_s"
+        },
+        {
+          "when": [
             "frames:20",
             "released:blast"
           ],
@@ -1518,6 +1529,42 @@
         {
           "when": "frames:2",
           "to": "kame_fire_l"
+        }
+      ],
+      "screen": [
+        [
+          0,
+          "bright"
+        ]
+      ]
+    },
+    "kame_boost": {
+      "_comment": "Boost (RB) held with forward + Ki (owner, 2026-11-26): its own charge played fast — the pose, the ball grown to what a whole charge leaves — while the opponent and every bolt stand still and the art dims; then the large one, for a bar over the Kamehameha's own price. Nothing of the boost's own: the move's sounds and drawings. Without the ki, the small one at once.",
+      "anim": "maa",
+      "cost": 10,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ball": {
+        "at": [
+          -10,
+          -38
+        ],
+        "grow": 2
+      },
+      "freezesFoe": 18,
+      "screen": [
+        [
+          0,
+          "dim"
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "frames:18",
+          "to": "kame_go_l"
         }
       ]
     },

@@ -6,6 +6,7 @@ import { chainLinks, type AnimSteps } from "./chains";
 import { withHitTypes } from "./hitTypes";
 import { aimed } from "./rushEntries";
 import { AIMS, CLOSE, DEFAULT_STEP, ENDERS, RUSH, SLOTS, withRush, type BlowAnim, type RushFile } from "./rushSlots";
+import { withCharge } from "./smashCharge";
 
 /**
  * The rush on every fighter's data as it stands (`combat.md`, The buttons):
@@ -60,11 +61,12 @@ describe.each(generatedFighters())("%s's rush", (name) => {
     for (const slot of line) expect(new Set(links.filter((l) => l.from === slot && l.on === "smash").map((l) => l.to))).toEqual(new Set(ENDERS));
   });
 
-  it("is what withRush makes of his rush.json, made again: nothing of it by hand", () => {
+  it("is what withRush and withCharge make of his rush.json, made again: nothing of it by hand", () => {
     const anims = read<Record<string, BlowAnim>>(name, "animations.json");
     const { hitstun } = read<{ hitstun: number }>(name, "attributes.json");
     const disk = read<StatesFile>(name, "states.json");
-    expect(withRush(disk, anims, hitstun, rush.picks, rush.step ?? DEFAULT_STEP)).toEqual(disk);
+    const rushed = withRush(disk, anims, hitstun, rush.picks, rush.step ?? DEFAULT_STEP);
+    expect((rush.charge ?? []).reduce((f, ender) => withCharge(f, anims, ender), rushed)).toEqual(disk);
   });
 
   it("plays what the owner accepted as a combo: the latest press still lands inside the hitstun", () => {

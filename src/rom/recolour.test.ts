@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Rgb } from "../entity/palettesFile";
-import { recolour, setVariants } from "./recolour";
+import { recolour, setVariants, whitened } from "./recolour";
 
 /** Vegeta's colours 6, 7, 12, 13 by day, the rest black. */
 const day: Rgb[] = Array.from({ length: 16 }, () => [0, 0, 0] as Rgb);
@@ -23,5 +23,11 @@ describe("recolour", () => {
 
   it("names a set's variants after the ones it is drawn over", () => {
     expect(Object.keys(setVariants({ sets: { gold } }, { "": day, night }))).toEqual(["gold", "night_gold"]);
+  });
+});
+
+describe("whitened", () => {
+  it("takes every colour most of the way to white, black and white alike, on the SNES's steps", () => {
+    expect(whitened([[0, 0, 0], [248, 248, 248], [248, 224, 88]])).toEqual([[152, 152, 152], [248, 248, 248], [248, 240, 184]]);
   });
 });

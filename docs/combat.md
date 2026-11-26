@@ -24,8 +24,8 @@ pad out (owner, 2026-11-24; `inspiration.md`). Which key is which is
 | **Ki** | B | `X` | the ki blast; forward + Ki is the kamehameha, back + Ki the ← ↙ ↓ ↘ → one, down + Ki the ultimate |
 | **Attack** | X | `A` | the rush: pressed again, walks the string one blow further |
 | **Smash** | Y | `S` | ends the string, at any depth, with a heavier blow |
-| **Dash** | LB | `Q` | with forward or back, the original's dash (its L/R) |
-| **Charge** | RB | `W` | held, fills the ki meter |
+| **Charge** | LB | `Q` | held, fills the ki meter |
+| **Boost** | RB | `W` | held with a move that charges, has the whole charge at once, for ki |
 | **Strike** | LT | `E` | the original's X, for its throw and its senders, until they are ours |
 
 The other trigger, Start and the grab and taunt of Burst Limit have nothing
@@ -91,6 +91,39 @@ combo (`npm run chains`). Every fighter has S1–S3; all but Goku's are the
 standing Smash, the crouching one and the crouching Attack until picked, and
 their Attack, still one blow, does not lead into them yet.
 
+**S1 and S3 charge while Smash is held** (owner, 2026-11-26), Goku's first
+(`charge` in his `rush.json`, `combat/smashCharge.ts`, which holds the
+numbers). S3 lifts him higher each level; S1's tap still staggers him, and
+from the first level it sends him off (`sendoff`): flat, in the pose of a
+body sent to another arena but kept in this one, further each level. Below,
+S3 stands for either. He stops on the wind-up's pose and lets go when Smash does —
+nothing else he presses counts — or by himself at the top: a tap is the
+plain S3, which lifts him low so he is soon down; held longer it is one of
+three levels, each worth more and lifting higher, the top whitening the
+screen. Each level begins with a flash, and he blinks into his `charge`
+colours from there, faster each level; the second begins with Saiyan
+Meteor's ball charging too, the only sound of it. Begun while the opponent is still reeling from a hit
+(the `combo` trigger) it starts at the first level and reaches the second in
+a few frames, so a charged S3 can end the rush; held past that the combo is
+his to drop. It can be blocked. The first level is free and each past it
+costs 5 ki; where he cannot pay for the next he lets go at once, with the
+level he has — every charge so (`ki:N`). Once stopped in the pose he cannot be stopped: every
+blow is blocked where he stands for 5 ki, the charge going on, pushed back as
+a block is, and lands once he has too little — a throw takes him, and the
+push may leave the blow short (`braces`, `entity/block.ts`).
+
+**Boost (RB) held with a move that charges has the whole charge at once**
+(owner, 2026-11-26), for what the charge costs and a bar more. The rule: the
+move's own charge plays fast — its drawings, flashes and sounds, nothing of
+the boost's own — while the opponent, his hitstun and every bolt stand still
+and the arena's art dims (`freezesFoe`); then its top goes as a full charge's
+would, and the world with it. A freeze of both broke the flow; one that leaves
+him moving does not. Without the ki the move goes at once uncharged. S1 and
+S3 — standing, crouching, in the rush, or breaking off the ki charge — play
+their three levels in 18 frames (`combat/smashCharge.ts`); Goku's
+Kamehameha its pose and ball, into the large one (`kame_boost`, his
+`specials.json`), else the small one.
+
 **In the air** (owner, 2026-11-26), forward + S is the fighter's dive: the
 cartridge's → ↓ + Smash move — Goku's Slash Down Kick and its kind — or the
 nearest he has: Cell's Negative Arrow and Gotenks's Air Dive (→ ↓ + Attack
@@ -106,8 +139,9 @@ one smash. There is no depth to step into, so down is **crouch**, and up is
 **jump**.
 
 **Guard is a stance, not a direction.** A blow is blocked only in a state marked
-`guarding` — the stance and the blockstun it leads to. It blocks high and low
-alike; crouching only lowers the hurt box, so a high blow misses a crouching
+`guarding` — the stance and the blockstun it leads to — or one that
+`braces`, which blocks where he stands for ki (a charged ender). It blocks high
+and low alike; crouching only lowers the hurt box, so a high blow misses a crouching
 body because the boxes miss.
 
 **Specials are the cartridge's commands** while the port stands (ADR 0050); how
@@ -163,6 +197,7 @@ a blow that needs another reaction is another type.
 | high | `hi` | the original's high knockdown (move `1e`): thrown steeply up, hittable until it lands |
 | trip | `tr` | the original's short knockdown (move `19`): no bounce, up again 12 frames after landing |
 | halt | `ha` | the original's heavy reel stopped dead, no push (`$0D:D622`) — Saiyan Meteor's opening blow |
+| sendoff | `so` | thrown flat across the screen; off its edge he bounces back, a little health and a thud, no burst yet, and can be hit on the way (`wall_bounce`) before he lands and lies — a charged S1 |
 
 In conversation a blow is written as its code plus **any frame of the move** —
 `fl30 fl39 la187` — and `npm run which` says what that points at.
@@ -331,10 +366,10 @@ The walk is a bob — the sheet has no walking legs — so the fighter really mo
 by **dashing**: a slow dash that is free and a fast one that costs ki. Neither
 is built. The dash will decide how the corner and spacing play.
 
-**The dash is asked for two ways**, as in Burst Limit: Dash (LB) with forward
-or back, or forward or back tapped twice and held, the taps up to 12 frames
-apart (`input/doubleTap.ts`). It took the original's hop's gesture, and the hop
-is gone (owner, 2026-11-24).
+**The dash is forward or back tapped twice and held**, the taps up to 12
+frames apart (`input/doubleTap.ts`). It took the original's hop's gesture, and
+the hop is gone (owner, 2026-11-24); its button went to the charge, RB to the
+boost (owner, 2026-11-26).
 
 ## Where the fight happens
 

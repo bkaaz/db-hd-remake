@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { burnVariant, paletteVariant, shimmerVariant, shockVariant, runVariant, markedVariant } from "./palettes";
+import { burnVariant, paletteVariant, shimmerVariant, shockVariant, runVariant, markedVariant, blinkOn } from "./palettes";
 
 const fire = Array.from({ length: 15 }, (_, i) => `fire${i}`);
 
@@ -95,5 +95,11 @@ describe("markedVariant", () => {
 
   it("takes the alternate colours only where a variant has them", () => {
     expect([markedVariant(marks, 1, true, has), markedVariant(marks, 17, true, has)]).toEqual(["glow_alt", "run5"]);
+  });
+});
+
+describe("blinkOn", () => {
+  it("flashes on entering, then his own colours and the charge's by turns", () => {
+    expect([0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((f) => blinkOn(3, f))).toEqual([true, true, false, false, false, true, true, true, false, false]);
   });
 });

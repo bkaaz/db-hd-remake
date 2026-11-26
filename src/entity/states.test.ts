@@ -63,7 +63,7 @@ const NONE = {
   blast: false,
   strike: false,
   dash: false,
-  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false, charge: false },
+  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false, charge: false, boost: false },
 };
 const FWD = { ...NONE, fwd: true };
 const ATTACK = { ...NONE, attack: true };
@@ -1896,5 +1896,53 @@ describe("StateMachine.entered: the first frame a fighter can act takes what he 
     }
     expect(frames.at(-1)).toBe("punch");
     expect(buffer.has("attack")).toBe(false);
+  });
+});
+
+describe("the combo trigger", () => {
+  it("fires only while the opponent is in a combo of his", () => {
+    const f = machine();
+    f.states.idle.transitions = [{ when: "combo", to: "walk_fwd" }];
+    const at = (combo: boolean) => {
+      const sm = new StateMachine(f);
+      sm.update(NONE, { ...QUIET, combo });
+      return sm.current;
+    };
+    expect(at(false)).toBe("idle");
+    expect(at(true)).toBe("walk_fwd");
+  });
+});
+
+describe("the wall trigger", () => {
+  it("fires only once the body was stopped at an edge", () => {
+    const f = machine();
+    f.states.idle.transitions = [{ when: "wall", to: "walk_fwd" }];
+    const at = (walled: boolean) => {
+      const sm = new StateMachine(f);
+      sm.update(NONE, { ...QUIET, walled });
+      return sm.current;
+    };
+    expect(at(false)).toBe("idle");
+    expect(at(true)).toBe("walk_fwd");
+  });
+});
+
+describe("the ki trigger", () => {
+  it("asks for that much ki or more, and negated, for less", () => {
+    const f = machine();
+    f.states.idle.transitions = [{ when: "!ki:5", to: "walk_fwd" }];
+    const at = (ki: number) => {
+      const sm = new StateMachine(f);
+      sm.update(NONE, { ...QUIET, ki });
+      return sm.current;
+    };
+    expect(at(5)).toBe("idle");
+    expect(at(4)).toBe("walk_fwd");
+  });
+
+  it("is a trigger the validator knows", () => {
+    const f = machine();
+    f.states.idle.transitions = [{ when: "ki:10", to: "walk_fwd" }];
+    expect(validateStates(f, ANIMS).errors).toEqual([]);
   });
 });

@@ -19,6 +19,17 @@ export function shockVariant(variants: readonly string[], frame: number): string
   return variants[Math.floor(frame / 4) % 2];
 }
 
+/** The palette a charging fighter blinks into (`blinks`): his own, most of the way to white (`rom/recolour.ts`). */
+export const CHARGE_VARIANT = "charge";
+
+/** Frames of the flash a level of the charge begins with: short, or two levels a few frames apart run into one. */
+const LEVEL_FLASH = 2;
+
+/** Whether a state that `blinks` shows his charge colours on `frame` of it: the flash, then his own and the charge's by turns. */
+export function blinkOn(blinks: number, frame: number): boolean {
+  return frame < LEVEL_FLASH || Math.floor((frame - LEVEL_FLASH) / blinks) % 2 === 1;
+}
+
 /** Frames each palette of a fighter's run shows, the first a frame short ($20:B3CC counts from frame 1). */
 const RUN_EACH = 4;
 

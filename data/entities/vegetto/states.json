@@ -2355,6 +2355,59 @@
       ],
       "damage": 0
     },
+    "sent_off": {
+      "_comment": "Sendoff (owner, 2026-11-26): thrown flat to the screen's edge in the pose of a body sent to another arena, but kept in this one; the wall throws him back, the floor downs him.",
+      "anim": "m23",
+      "rank": 3,
+      "launch": [
+        -5.2,
+        -2.5
+      ],
+      "airborne": true,
+      "turn": false,
+      "air": [
+        [
+          0,
+          {
+            "gravity": 0.15
+          }
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "wall",
+          "to": "wall_bounce"
+        },
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ]
+    },
+    "wall_bounce": {
+      "_comment": "Off the wall a sendoff met, back toward whoever sent him and open to a blow on the way (owner, 2026-11-26): a little health and a thud, no burst yet.",
+      "anim": "m24",
+      "rank": 3,
+      "launch": [
+        1.5,
+        -3.5
+      ],
+      "airborne": true,
+      "turn": false,
+      "hurts": 4,
+      "sound": "land_0d",
+      "shake": {
+        "pattern": 1,
+        "frames": 8
+      },
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "down_bounce"
+        }
+      ],
+      "damage": 0
+    },
     "slam": {
       "anim": "m24",
       "rank": 3,

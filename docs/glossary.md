@@ -13,7 +13,7 @@ change.
 - **Cancel** — cutting your own attack short with the next, once its last hit box is gone and up to its `cancelBy`, hit or miss. → `combat.md` (Chaining)
 - **`cancelBy`** — the last frame of an attack a cancel may fire on, counted from entering it. → `states.ts`
 - **Chain (string)** — attacks joined by cancels: a path through `states.json`, never a structure of its own. → `combat/chains.ts`, `npm run chains`
-- **Charging** — holding Charge (RB, `W`): the state's `ki` rate fills the ki meter. → `combat.md` (The buttons)
+- **Charging** — holding Charge (LB, `Q`): the state's `ki` rate fills the ki meter. → `combat.md` (The buttons)
 - **Colour set** — colours of our own for a fighter, a rule over his palette (`palettes.json`). → ADR 0063
 - **Combo** — a chain whose links hold: the defender never gets control back. → `combat.md`
 - **Command** — a special's input as the cartridge's table has it. → `input/command.ts`, ADR 0050
@@ -30,6 +30,7 @@ change.
 - **Grab / held** — a throw: the thrower's state holds the opponent, who plays `m30_<thrower>_<move>`. → `match/throw.ts`, ADR 0035
 - **Group** — a named list of common states an entry's `from` gives as `@name`. → `data/template/groups.json`, `rom/specials.ts`
 - **Guard** — the stance that blocks; a blow is blocked only in a state marked `guarding`. → `combat.md`
+- **Braces** — a state that blocks every blow where he stands, for ki, going on (a charged ender holding). → `combat.md`
 - **Hit again** (`ifHitAgain`) — a reaction that overrules the next blows taken in it. → `combat.md`, `entity/hitAgain.ts`
 - **Hit type** — what a blow does to whoever it hits, every number but its damage; written `fl30`, its code and a frame of the move. → `data/hit-types.json`, ADR 0019
 - **Hitstop** — the freeze on contact, the same for both fighters. → `combat.md` §1
@@ -65,6 +66,9 @@ change.
 - **Situation flag** (`airborne`, `crouching`) — what redirects a reaction without the attack knowing. → ADR 0019
 - **Slam** — a blow that drives the body down rather than lifting it. → `combat.md`
 - **Smash** — the button that ends a rush; with a direction, the ender it names (S1 back, S2 forward, S3 down). → `combat.md` (The buttons)
+- **Charged ender** — S1 or S3 held to charge it, three levels over the plain one (`smash_3_lv1`–`3`). → `combat.md` (The buttons)
+- **Boost** — RB (`W`) held with a move that charges: its charge played fast while the world stands still, for ki (`smash_3_boost_1`, `kame_boost`). → `combat.md` (The buttons)
+- **Wall bounce** — a body sent off (`sendoff`) meeting the screen's edge, thrown back and open to a blow. → `combat.md` (A blow is an animation plus a hit type)
 - **Song** — one of the cartridge's pieces of music, by its number. → ADR 0092
 - **Spawn** — anything a state brings into the world, an ordinary `Entity`. → ADR 0014
 - **Startup** — the frames from the press to the hit box. → `combat.md` §1

@@ -38,6 +38,8 @@ export type Picks = Partial<Record<Slot, Pick>>;
 export interface RushFile {
   picks: Picks;
   step?: Step;
+  /** The enders charged by holding Smash (`combat/smashCharge.ts`): Goku's first (owner, 2026-11-26). */
+  charge?: string[];
 }
 
 /**

@@ -2,6 +2,7 @@ import { Container, Graphics, Sprite } from "pixi.js";
 import { aimSpeed, aimsOn } from "./aim";
 import { alsoFired } from "./alsoFired";
 import { staysOnStep } from "./heldStep";
+import { blockOf } from "./block";
 import { faceOpponent } from "./turning";
 import { applyAir, fall, ON_GROUND, type AirSetting } from "./air";
 import { hitAgain } from "./hitAgain";
@@ -15,7 +16,7 @@ import { activeBall, BALL_COLOUR, nextRadius } from "../combat/ball";
 import { HitLight, PILLAR_HEIGHT } from "../combat/hitLight";
 import { bandHeights, type BandDef } from "../combat/band";
 import { reboundSpeed } from "../combat/rebound";
-import { burnVariant, paletteVariant, shimmerVariant, shockVariant, markedVariant, runVariant } from "../combat/palettes";
+import { blinkOn, burnVariant, CHARGE_VARIANT, paletteVariant, shimmerVariant, shockVariant, markedVariant, runVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { Fatigue } from "../combat/fatigue";
 import { withHitTypes } from "../combat/hitTypes";
@@ -40,7 +41,6 @@ import { pressedNames, stickLine } from "../input/padLine";
 import { InputHistory } from "../input/history";
 import {
   dipAt, groundSpeed, stoppedByContact,
-  guardStateFor,
   hitFxOf,
   reactionFor,
   StateMachine,
@@ -80,8 +80,10 @@ export interface WorldInput {
   blast: boolean;
   strike: boolean;
   dash: boolean;
-  /** Burst Limit has no button for it: its ki fills by itself. Ours is held (RB). */
+  /** Burst Limit has no button for it: its ki fills by itself. Ours is held (LB). */
   charge: boolean;
+  /** Held with a move that charges, it has the whole charge at once, for ki (RB, `combat/smashCharge.ts`). */
+  boost: boolean;
   /**
    * Whether each button is **still down**, which the edges above cannot say.
    * A stance you hold — charging, the guard, a dash — is read here, never from
@@ -97,6 +99,8 @@ export interface Opponent {
   throwable: boolean;
   airborne: boolean;
   groundVx: number;
+  /** Still reeling from a blow that hit him: not blocking one, nor lying where one left him. */
+  stunned?: boolean;
 }
 
 export const NO_INPUT: WorldInput = {
@@ -111,7 +115,8 @@ export const NO_INPUT: WorldInput = {
   strike: false,
   dash: false,
   charge: false,
-  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false, charge: false },
+  boost: false,
+  holding: { attack: false, guard: false, smash: false, blast: false, strike: false, dash: false, charge: false, boost: false },
 };
 
 /**
@@ -173,6 +178,7 @@ const ATTACK_LABELS = [
   ["strike", "K"],
   ["dash", "D"],
   ["charge", "C"],
+  ["boost", "R"],
 ] as const satisfies readonly (readonly [keyof WorldInput, string])[];
 
 /** Frames between copies of a retriggered sound when the state names no interval. */
@@ -224,6 +230,10 @@ export class Entity {
   private stateFrames = 0;
   /** Latched on touching the ground; cleared when the state changes. */
   private landed = false;
+  /** Stopped by the screen's edge or the world's, this state: `wall`. */
+  private walled = false;
+  /** The `freezesFoe` of the state just entered, for the fighters to hand the opponent. */
+  private foeFreeze = 0;
   /** A blow armed on entering a state, for `takeArmed`. */
   private armed = false;
   /** A state entered that sends this entity behind the opponent, for `takeBehind`. */
@@ -402,6 +412,10 @@ export class Entity {
    * a symmetric pause must not do.
    */
   private stun = 0;
+  /** Still reeling from a blow that hit him: what the opponent's `combo` trigger asks. */
+  get stunned(): boolean {
+    return this.stun > 0;
+  }
   private readonly fatigue = new Fatigue();
 
   constructor(
@@ -919,6 +933,18 @@ export class Entity {
     this.release();
   }
 
+  /** Frames the opponent stands still for the state just entered (`freezesFoe`) — taken once. */
+  takeFoeFreeze(): number {
+    const frames = this.foeFreeze;
+    this.foeFreeze = 0;
+    return frames;
+  }
+
+  /** Stopped at the screen's edge by the camera (`Fighters.keepInView`): the `wall` trigger. */
+  hitWall(): void {
+    this.walled = true;
+  }
+
   /** The effect put on the floor under this entity this frame, in world px — taken once. */
   takeGroundFx(): { name: string; x: number; y: number } | null {
     const name = this.groundFx;
@@ -1129,11 +1155,7 @@ export class Entity {
    * the point of jumping in.
    */
   get guarding(): boolean {
-    return (
-      !!this.sm?.def.guarding &&
-      !this.airborne &&
-      guardStateFor(this.sm?.def, this.def.states) !== undefined
-    );
+    return blockOf(this.sm?.def, this.def.states, this.ki, this.airborne) !== null;
   }
 
   /** Sound this entity's current attack makes on landing, and on being blocked. */
@@ -1266,10 +1288,15 @@ export class Entity {
    * own default. Returns false when neither names a state that exists — the
    * hit still landed, it just has nothing to show for it.
    */
-  /** Enter this entity's block reaction. False when it cannot block at all. */
+  /** Enter this entity's block reaction, or pay to block where he stands (`braces`). False when it cannot block at all. */
   guardHit(): boolean {
-    const state = guardStateFor(this.sm?.def, this.def.states);
-    return state !== undefined && this.forceState(state);
+    const block = blockOf(this.sm?.def, this.def.states, this.ki, this.airborne);
+    if (block === null) return false;
+    if ("reaction" in block) return this.forceState(block.reaction);
+    // where he stands: the state and its clock go on
+    this.ki -= block.cost;
+    this.shove = block.shove;
+    return true;
   }
 
   /**
@@ -1373,8 +1400,12 @@ export class Entity {
     const running =
       (run && runVariant(this.altColours ? run.alt : run.plain, this.stateFrames)) ??
       (marks && markedVariant(marks, this.stateFrames, this.altColours, (v) => this.def.variants.has(v), this.lighting));
+    const blinks = this.sm?.def.blinks;
+    const blinking = blinks !== undefined && blinkOn(blinks, this.stateFrames) && this.def.variants.has(CHARGE_VARIANT);
     const variant = running
       ? running
+      : blinking
+      ? CHARGE_VARIANT
       : this.flashing !== null
       ? (shockVariant(this.def.attributes[this.flashing.kind] ?? [], this.flashing.frame) ?? this.lighting)
       : this.burning
@@ -1430,6 +1461,7 @@ export class Entity {
     this.finaleSaid = { ballLanded: false, finaleDone: false };
     this.clockHeld = false;
     this.landed = false;
+    this.walled = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
     // does so straight after forcing the reaction.
     this.stun = 0;
@@ -1448,6 +1480,8 @@ export class Entity {
     // about the pair, so the thing between the fighters takes it off the latch.
     this.fired = this.sm.def.fires ?? null;
     this.groundFx = this.sm.def.groundFx ?? null;
+    if (this.sm.def.hurts) this.hurtBy(this.sm.def.hurts);
+    if (this.sm.def.freezesFoe) this.foeFreeze = this.sm.def.freezesFoe;
     this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.shovedAhead = 0;
@@ -1652,6 +1686,7 @@ export class Entity {
         falling,
         nearGround,
         landed: this.landed,
+        walled: this.walled,
         close: this.closeTo(opponentX),
         grab: !!opponent?.throwable && Math.abs(opponent.x - this.x) / this.scale < this.grabRange,
         grabbable: opponent?.throwable ? Math.abs(opponent.x - this.x) / this.scale : undefined,
@@ -1669,6 +1704,7 @@ export class Entity {
         ki: this.ki,
         spawnEnded: this.thrown === 0,
         charged: this.charge >= 1,
+        combo: opponent?.stunned === true,
       }
     );
     const changed = this.sm.update(snapshot(), signals());
@@ -1733,7 +1769,9 @@ export class Entity {
       }
       this.shove = shoveAfter(this.shove, this.stateFrames + 1 + this.shovedAhead, this.sm.def.shoveFor);
     }
+    const unbounded = this.x;
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
+    if (this.x !== unbounded) this.walled = true;
     const ball = this.sm.def.ball;
     const up = activeBall(ball, this.stateFrames);
     if (up) this.ballAt = up.at;

@@ -317,6 +317,12 @@ export interface StateDef {
    */
   guarding?: boolean;
   /**
+   * Every blow arriving in this state is blocked in place, at this much ki a
+   * blow, the state going on with its clock — pushed back as a block is — and
+   * lands once he has less: a charged S3 holding (owner, 2026-11-26).
+   */
+  braces?: number;
+  /**
    * How severe a reaction this is: flinch below stagger below knockdown below
    * lying on the floor. Absent means 0, which is every state that is not a
    * reaction — so any reaction outranks standing there.
@@ -464,6 +470,14 @@ export interface StateDef {
    * body's x on the floor line ($0D:DE6C), whatever the drawing shows.
    */
   groundFx?: string;
+  /** Health he loses entering this state, as a blow worth it would cost him: the wall's (owner, 2026-11-26). */
+  hurts?: number;
+  /**
+   * The opponent, his hitstun and every bolt stand still this many frames as
+   * this state begins, while he goes on: a boost playing its move's charge
+   * fast, so a combo survives it (owner, 2026-11-26).
+   */
+  freezesFoe?: number;
   /** An effect put on the floor at a beat while the state plays (`entity/trail.ts`). */
   trail?: Trail;
   /** Closing on the opponent by a share of the distance (`entity/approach.ts`). */
@@ -648,6 +662,8 @@ export interface StateDef {
    * past his own, loaded while he charges ($0F:A072) — if he has one.
    */
   glow?: number;
+  /** Frames of his own colours, then of his `charge` ones, by turns after a flash on entering (`blinkOn`): a charged S3 holding (`combat/smashCharge.ts`). */
+  blinks?: number;
   /**
    * From this frame of the state, drawn in his winning colours — the palette
    * 0x98 records past his own, Vegeta's in his pose ($20:9257) — if he has them.
@@ -834,7 +850,7 @@ export function mayTurn(def: StateDef, elapsed: number): boolean {
 }
 
 /** Which buttons are still down — the controller's `holding`. */
-export type Held = { attack: boolean; guard: boolean; smash: boolean; blast: boolean; strike: boolean; dash: boolean; charge: boolean };
+export type Held = { attack: boolean; guard: boolean; smash: boolean; blast: boolean; strike: boolean; dash: boolean; charge: boolean; boost: boolean };
 
 /** What the entity's controller is asking for this frame, facing-relative. */
 export interface InputSnapshot {
@@ -888,6 +904,8 @@ export interface Signals {
   nearGround: boolean;
   /** The entity touched the ground (latched until the state changes). */
   landed: boolean;
+  /** Stopped by the screen's edge or the world's (latched until the state changes): the `wall` trigger. */
+  walled?: boolean;
   /**
    * Per button: the opponent is nearer than the entity's `closeRange` for it —
    * how the original picks a close normal over a far one with the same button.
@@ -931,7 +949,7 @@ export interface Signals {
   grabbable?: number;
   /** The opponent's distance in sprite px, whatever he is doing — what `within:N` asks. */
   distance?: number;
-  /** Ki in the meter right now — what a state's `cost` is measured against. */
+  /** Ki in the meter right now — what a state's `cost` is measured against, and `ki:N` asks. */
   ki: number;
   /**
    * Nothing this entity fired is still in the world. True for anyone who has
@@ -946,6 +964,12 @@ export interface Signals {
    * ignoring you.
    */
   charged: boolean;
+  /**
+   * The opponent is still reeling from a blow that hit him — the `combo` trigger: a charge
+   * begun in the rush starts a level up. Not his combo count, which runs on
+   * while he lies on the floor.
+   */
+  combo?: boolean;
 }
 
 /** The buttons that may have a close version, each its own `close:` trigger. */
@@ -953,7 +977,7 @@ export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
 export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
-const COUNTED = /^(frames:\d+|health:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+const COUNTED = /^(frames:\d+|health:\d+|ki:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
 /** `command:a4` — the move whose command is met, two hex digits (ADR 0050). */
 const COMMAND = /^command:[0-9a-f]{2}$/;
 
@@ -976,13 +1000,16 @@ export const TRIGGERS = [
   "held:strike",
   "held:dash",
   "held:charge",
+  "held:boost",
   "animEnd",
   "stunEnd",
   "spawnEnd",
   "charged",
+  "combo",
   "falling",
   "nearGround",
   "landed",
+  "wall",
   ...CLOSE_BUTTONS.map((b) => `close:${b}` as const),
   "grab",
   "cancelable",
@@ -998,7 +1025,7 @@ const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitio
 
 const warned = new Set<string>();
 
-/** `frames:N`, `released:<button>`, `health:N` (N or less), `grab:N` and `within:N` (under N px), or undefined for any other trigger. */
+/** `frames:N`, `released:<button>`, `health:N` (N or less), `ki:N` (N or more), `grab:N` and `within:N` (under N px), or undefined for any other trigger. */
 function counted(key: string, signals: Signals): boolean | undefined {
   const [kind, arg] = key.split(":");
   // how long a charge has run decides what it becomes (the Kamehameha)
@@ -1007,6 +1034,8 @@ function counted(key: string, signals: Signals): boolean | undefined {
   if (kind === "released") return signals.released?.has(arg) === true;
   // the cartridge's ultimates: health 80 or less ($0D:F650's condition bit)
   if (kind === "health") return signals.health !== undefined && signals.health <= Number(arg);
+  // what a level of a charge costs, there to pay: `!ki:5` lets go where it cannot be
+  if (kind === "ki") return signals.ki >= Number(arg);
   // a command's own range for an opponent standing still, not the throw's (Galactic Gunfire's 64, $0D:F95B)
   if (kind === "grab") return signals.grabbable !== undefined && signals.grabbable < Number(arg);
   // a run that ends by the opponent, in the air or reeling too (Gotenks's a8, $20:BCC4)
@@ -1073,6 +1102,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "held:charge":
       value = input.holding.charge;
       break;
+    case "held:boost":
+      value = input.holding.boost;
+      break;
     case "animEnd":
       value = signals.animEnded;
       break;
@@ -1085,6 +1117,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
     case "charged":
       value = signals.charged;
       break;
+    case "combo":
+      value = signals.combo === true;
+      break;
     case "falling":
       value = signals.falling;
       break;
@@ -1093,6 +1128,9 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "landed":
       value = signals.landed;
+      break;
+    case "wall":
+      value = signals.walled === true;
       break;
     case "close:attack":
     case "close:smash":
@@ -1131,7 +1169,7 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
         warned.add(key);
         console.warn(`[states] unknown trigger "${key}" — never fires`);
       }
-      value = false;
+      value = signals.combo === true;
   }
   return negated ? !value : value;
 }
@@ -1817,6 +1855,9 @@ export function validateStates(authored: StatesFile, anims: Record<string, AnimI
 
     if (def.guarding !== undefined && typeof def.guarding !== "boolean") {
       errors.push(`${where}: "guarding" must be true or false`);
+    }
+    if (def.braces !== undefined && (typeof def.braces !== "number" || def.braces < 0)) {
+      errors.push(`${where}: "braces" must be ki a blow, 0 or more`);
     }
     // What makes a combo a combo: a fighter a blow already holds cannot answer
     // the next one. All three scalings exist to end a sequence the victim cannot

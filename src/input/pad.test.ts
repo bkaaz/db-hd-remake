@@ -7,9 +7,9 @@ function pad(down: number[], x = 0, y = 0): PadState {
 }
 
 describe("readPads", () => {
-  it("plays Burst Limit's layout: A guards, B blasts, X rushes, Y smashes, LB dashes, RB charges", () => {
+  it("plays our layout: A guards, B blasts, X rushes, Y smashes, LB charges, RB boosts", () => {
     const down = readPads([pad([0, 1, 2, 3, 4, 5])]);
-    expect([...down].sort()).toEqual(["attack", "blast", "charge", "dash", "guard", "smash"]);
+    expect([...down].sort()).toEqual(["attack", "blast", "boost", "charge", "guard", "smash"]);
   });
 
   it("takes a stick pushed to a diagonal as both directions, and a resting one as none", () => {

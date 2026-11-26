@@ -41,3 +41,11 @@ export function setsOver(rom: Uint8Array, own: number, variants: Record<string, 
   const palettes = Object.fromEntries([["", own], ...Object.entries(variants)].map(([name, at]) => [name, readPalette(rom, at as number)]));
   return setVariants(file, palettes);
 }
+
+/** Share of the way to white a charge's colours go: the drawing still reads through it. */
+const CHARGE_WHITE = 0.6;
+
+/** His palette blinking as he charges (`CHARGE_VARIANT`): every colour most of the way to white. */
+export function whitened(palette: readonly Rgb[]): Rgb[] {
+  return palette.map((c) => c.map((v) => snap(v + (248 - v) * CHARGE_WHITE)) as Rgb);
+}

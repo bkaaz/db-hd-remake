@@ -2,14 +2,16 @@
  * Every palette a fighter's sheet is drawn in besides his own, by the name
  * the game asks for it (`Attributes.palettes`): the arena's lightings, his
  * glow, player two's colours, the fire a beam leaves, Shocking Stunner's
- * flash, and our colour sets over all of them. One list for the export and
+ * flash, a charge's blink, and our colour sets over all of them. One list for the export and
  * the browser, so both draw the same sheets.
  */
 
 import type { PalettesFile, Rgb } from "../entity/palettesFile";
 import { altPalettes, flashPalettes, glowPalettes, introPalettes, lightingPalettes, runPalettes, winPalettes } from "./arena";
 import { CANDY, FIRE, GOKU, SHOCK, type FighterTables } from "./cartridge";
-import { setsOver } from "./recolour";
+import { setsOver, whitened } from "./recolour";
+import { readPalette } from "./frame";
+import { CHARGE_VARIANT } from "../combat/palettes";
 import { paletteRecord } from "./resource";
 import { fighterTables, ROSTER, type FighterName } from "./roster";
 
@@ -33,5 +35,6 @@ export function fighterVariants(rom: Uint8Array, name: string, t: FighterTables,
       : { ...lightingPalettes(rom, t), ...glowPalettes(rom, t), ...flashPalettes(rom, t), ...altPalettes(rom, t), ...winPalettes(rom, t), ...runPalettes(rom, t) };
   const intro = name === "goku" ? {} : introPalettes(rom, t);
   const own = sets ? setsOver(rom, t.palette, lit, sets) : {};
-  return { ...FIRE, ...shock, ...lit, ...intro, ...own };
+  const charge = { [CHARGE_VARIANT]: whitened(readPalette(rom, t.palette)) };
+  return { ...FIRE, ...shock, ...lit, ...intro, ...charge, ...own };
 }

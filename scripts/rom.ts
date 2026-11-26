@@ -76,6 +76,7 @@ import { portReport } from "../src/rom/port.ts";
 import { missingEntries } from "../src/rom/entries.ts";
 import { setsOver } from "../src/rom/recolour.ts";
 import type { PalettesFile, Rgb } from "../src/entity/palettesFile.ts";
+import { CHARGE_VARIANT } from "../src/combat/palettes.ts";
 import { long } from "../src/rom/disasm.ts";
 import { objectFrame } from "../src/rom/object.ts";
 import { objectVram, resourcePalette, resourceStream } from "../src/rom/resource.ts";
@@ -145,7 +146,7 @@ function reportStates(name: string, t: FighterTables): void {
     ...(name === "goku"
       ? {}
       : {
-          palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE), ...Object.keys(SHOCK), ...Object.keys(CANDY)],
+          palettes: [...Object.keys(litOf(t)), ...Object.keys(introPalettes(rom, t)), ...Object.keys(colourSets(name, t.palette, litOf(t))), ...Object.keys(FIRE), ...Object.keys(SHOCK), ...Object.keys(CANDY), CHARGE_VARIANT],
           burn: Object.keys(FIRE),
           shock: Object.keys(SHOCK),
           candy: Object.keys(CANDY),
