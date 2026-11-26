@@ -96,5 +96,26 @@
     "hitstun": 20,
     "hitstop": 12,
     "relaunch": true
+  },
+  "crumple": {
+    "code": "cr",
+    "onHit": "crumple",
+    "hitstun": 40,
+    "hitstop": 12,
+    "relaunch": false
+  },
+  "crumple_2": {
+    "code": "cl",
+    "onHit": "crumple",
+    "hitstun": 55,
+    "hitstop": 12,
+    "relaunch": false
+  },
+  "crumple_3": {
+    "code": "cx",
+    "onHit": "crumple",
+    "hitstun": 70,
+    "hitstop": 12,
+    "relaunch": false
   }
 }

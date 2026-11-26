@@ -478,6 +478,14 @@ export interface StateDef {
    * fast, so a combo survives it (owner, 2026-11-26).
    */
   freezesFoe?: number;
+  /**
+   * A reaction he is given once a combo: a blow that would send him here again
+   * before he is free sends him to this one instead — the crumple, so it opens
+   * a combo once and is not a loop (owner, 2026-11-26).
+   */
+  oncePerCombo?: string;
+  /** On an attack: a guard it meets does not hold, the blow lands as on an open body (a charged S2's top). */
+  breaksGuard?: boolean;
   /** An effect put on the floor at a beat while the state plays (`entity/trail.ts`). */
   trail?: Trail;
   /** Closing on the opponent by a share of the distance (`entity/approach.ts`). */

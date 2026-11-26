@@ -29,6 +29,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackHitstop: 6,
     attackReaction: "hurt",
     attackRelaunch: false,
+    attackBreaksGuard: false,
     attackHitstun: 12,
     attackFx: "spark_1",
     attackGuardFx: "guard_spark",
@@ -59,6 +60,15 @@ const context = (): BlowContext =>
   ({ effects: { spawn: vi.fn() } }) as unknown as BlowContext;
 
 describe("landBlow", () => {
+  it("lands a blow that breaks guard on a guarding body as on an open one", () => {
+    const breaker = body("hit", { attackBreaksGuard: true } as Partial<Entity>);
+    const guarding = body("hurt", { guarding: true });
+    const result = landBlow(breaker, guarding, context());
+    expect(result?.blocked).toBe(false);
+    expect(guarding.guardHit).not.toHaveBeenCalled();
+    expect(guarding.gotHit).toHaveBeenCalled();
+  });
+
   it("freezes the defender but not a bolt, which waits out the pause with every bolt", () => {
     const bolt = body("hit", { travels: true, facing: 1 });
     const defender = body("hurt");

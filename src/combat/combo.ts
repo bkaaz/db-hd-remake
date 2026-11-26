@@ -45,6 +45,18 @@ export class Combo {
   private relaunches = 0;
   /** Severity of the state the fighter is in — 0 while they have control. */
   private rank = 0;
+  /** The reactions taken once a combo (`oncePerCombo`) this combo has given him. */
+  private readonly given = new Set<string>();
+
+  /** Whether this combo has already given him `reaction`. */
+  gave(reaction: string): boolean {
+    return this.given.has(reaction);
+  }
+
+  /** He took `reaction`, a reaction taken once a combo. */
+  give(reaction: string): void {
+    this.given.add(reaction);
+  }
 
   /** Blows landed since the fighter last had control. */
   get hits(): number {
@@ -119,6 +131,7 @@ export class Combo {
       this.count = 0;
       this.total = 0;
       this.relaunches = 0;
+      this.given.clear();
     }
   }
 }

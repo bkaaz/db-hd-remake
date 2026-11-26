@@ -91,14 +91,19 @@ combo (`npm run chains`). Every fighter has S1–S3; all but Goku's are the
 standing Smash, the crouching one and the crouching Attack until picked, and
 their Attack, still one blow, does not lead into them yet.
 
-**S1 and S3 charge while Smash is held** (owner, 2026-11-26), Goku's first
+**S1, S2 and S3 charge while Smash is held** (owner, 2026-11-26), Goku's first
 (`charge` in his `rush.json`, `combat/smashCharge.ts`, which holds the
 numbers). S3 lifts him higher each level; S1's tap still staggers him, and
 from the first level it sends him off (`sendoff`): flat, in the pose of a
 body sent to another arena but kept in this one, further each level. S1's
 kick stays out longer and drives him forward on it, raising dust, faster and
-further each level (`lunge`). Below,
-S3 stands for either. He stops on the wind-up's pose and lets go when Smash does —
+further each level (`lunge`). S1 and S3 end a combo; S2 opens the next:
+its tap only staggers him, Goku's (his `rush.json`), and from the first level he is stunned (`crumple`):
+pushed back, the heavy reel played once and its last pose held — not
+looped, which looks wrong (owner, 2026-11-26) — longer each level, open to a new rush, then on his feet again — once a combo,
+the second floors him (`oncePerCombo`) — and its top breaks a guard
+(`breaksGuard`): the answer to a guard and to a charge braced against blows.
+Below, S3 stands for any. He stops on the wind-up's last pose and lets go when Smash does —
 nothing else he presses counts — or by himself at the top: a tap is the
 plain S3, which lifts him low so he is soon down; held longer it is one of
 three levels, each worth more and lifting higher, the top whitening the
@@ -199,6 +204,7 @@ a blow that needs another reaction is another type.
 | high | `hi` | the original's high knockdown (move `1e`): thrown steeply up, hittable until it lands |
 | trip | `tr` | the original's short knockdown (move `19`): no bounce, up again 12 frames after landing |
 | halt | `ha` | the original's heavy reel stopped dead, no push (`$0D:D622`) — Saiyan Meteor's opening blow |
+| crumple | `cr` `cl` `cx` | pushed back and stunned on his feet, the heavy reel once, then its last pose held, 40, 55 or 70 frames, open to a new combo, then standing; once a combo — a charged S2 |
 | sendoff | `so` | thrown flat across the screen; off its edge he bounces back, a little health and a thud, no burst yet, and can be hit on the way (`wall_bounce`) before he lands and lies — a charged S1 |
 
 In conversation a blow is written as its code plus **any frame of the move** —

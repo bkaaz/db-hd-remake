@@ -26,7 +26,7 @@
     },
     "smash_2": {
       "anim": "b_110",
-      "type": "down"
+      "type": "stagger"
     },
     "smash_3": {
       "anim": "b_80",
@@ -35,6 +35,7 @@
   },
   "charge": [
     "smash_1",
+    "smash_2",
     "smash_3"
   ]
 }

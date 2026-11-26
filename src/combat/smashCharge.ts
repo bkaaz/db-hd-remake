@@ -29,15 +29,18 @@ import { startupOf, type AnimSteps } from "./swing";
 
 /**
  * How each level of an ender sends him, over the reaction it is taken with:
- * that much higher (`lift`) and further (`send`), none to three. A `type` from
- * level `from` on takes the blow another way: S1's charged levels send him off
- * flat to the wall, its tap still staggers him; S3's tap lifts him low, so he
- * is soon down (owner, 2026-11-26).
+ * that much higher (`lift`) and further (`send`), none to three. `types`
+ * take a level's blow another way, none its own: S1's charged levels send
+ * him off flat to the wall, its tap still staggers him; S2's leave him
+ * crumpling, longer each level, a new combo's opening, and its top breaks a
+ * guard (`breaksFrom`); S3's tap lifts him low, so he is soon down (owner,
+ * 2026-11-26).
  */
 interface Sending {
   lift: readonly number[];
   send: readonly number[];
-  type?: { name: string; from: number };
+  types?: readonly (string | undefined)[];
+  breaksFrom?: number;
   /**
    * He drives forward on the blow's pose, held that many frames longer, that
    * fast, raising dust: S1's kick stays out and slides further each level
@@ -49,9 +52,10 @@ const SENDING: Record<string, Sending> = {
   smash_1: {
     lift: [1, 1, 1.1, 1.2],
     send: [1, 1, 1.25, 1.6],
-    type: { name: "sendoff", from: 1 },
+    types: [undefined, "sendoff", "sendoff", "sendoff"],
     lunge: { hold: [6, 8, 10, 12], speed: [1.5, 2.5, 3.5, 4.5] },
   },
+  smash_2: { lift: [1, 1, 1, 1], send: [1, 1, 1, 1], types: [undefined, "crumple", "crumple_2", "crumple_3"], breaksFrom: 3 },
   smash_3: { lift: [0.5, 1.1, 1.2, 1.35], send: [1, 1.3, 1.6, 2] },
 };
 /** The enders that charge. */
@@ -103,26 +107,30 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   const ours = (t: Transition) =>
     t.to.startsWith(`${ender}_charge_`) || t.to.startsWith(`${ender}_boost_`) || (t.to === release(0) && [t.when].flat().join() === "held:boost");
   const startup = startupOf(anims[s3.anim]);
-  // asked while the wind-up's first pose still has frames to run, or there is nothing to stop on
+  const steps = anims[s3.anim]?.steps ?? [];
+  const blowStep = steps.findIndex((st) => (st.boxes ?? []).some((b) => b.type === "hit"));
+  // he stops on the wind-up's last pose, the one before the blow: asked while
+  // it still has frames to run, or there is nothing to stop on
+  const pose = blowStep - 1;
+  const poseFrom = steps.slice(0, Math.max(pose, 0)).reduce((n, st) => n + st.dur, 0);
   const decide = startup - 2;
-  if (decide < 1) throw new Error(`${s3.anim}'s wind-up is ${startup} frames: too short to stop on`);
+  if (pose < 0 || decide < Math.max(poseFrom, 1)) throw new Error(`${s3.anim}'s wind-up's last pose is too short to stop on`);
   const others = (s3.transitions ?? []).filter((t) => !ours(t));
   const held = (to: string, extra: string[] = []): Transition => ({ when: [`frames:${decide}`, "held:smash", ...extra], to });
   // the reaction each level sends him into, and how far: its own launch scaled
   const scaled = (v: number | null, by: number) => (v === null ? null : Math.round(v * by * 100) / 100);
   const sent = (level: number): Partial<StateDef> => {
-    const retyped = sending.type && level >= sending.type.from ? sending.type.name : undefined;
+    const retyped = sending.types?.[level];
     const reaction = HIT_TYPES[retyped ?? s3.type ?? ""]?.onHit;
     const base = reaction ? file.states[reaction]?.launch : undefined;
     const launch = base && [scaled(base[0], sending.send[level]), scaled(base[1], sending.lift[level])];
     return {
       ...(retyped && { type: retyped }),
-      ...(reaction && launch && { launches: { ...s3.launches, [reaction]: launch as [number | null, number | null] } }),
+      ...(reaction && launch && { launches: { [reaction]: launch as [number | null, number | null] } }),
     };
   };
   const boostCost = AT_ONCE_COST + [1, 2, 3].reduce((sum, level) => sum + costOf(level), 0);
   // the blow's pose held and driven forward, from `start`, the frame of the state it begins on
-  const blowStep = (anims[s3.anim]?.steps ?? []).findIndex((st) => (st.boxes ?? []).some((b) => b.type === "hit"));
   const lunge = (level: number, start: number): Partial<StateDef> => {
     if (!sending.lunge || blowStep < 0) return {};
     const until = start + anims[s3.anim].steps[blowStep].dur + sending.lunge.hold[level];
@@ -159,7 +167,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     anim: s3.anim,
     vel: [0, 0],
     turn: false,
-    holdStep: 0,
+    holdStep: pose,
     // no blow: the animation's hit box is past the step it holds
     damage: 0,
     braces: BRACE_COST,
@@ -189,7 +197,8 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     };
   }
   for (let level = 0; level < 4; level++) {
-    const { transitions: _, ...blow } = s3;
+    // the level's own launch, none of the plain blow's
+    const { transitions: _, launches: __, ...blow } = s3;
     states[release(level)] = {
       ...blow,
       ...(s3.damage !== undefined && { damage: Math.round(s3.damage * DAMAGE[level]) }),
@@ -197,6 +206,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       // let go past the wind-up: the blow's pose comes at once
       ...lunge(level, 0),
       ...(level === 3 && { hitFlash: TOP_FLASH }),
+      ...(sending.breaksFrom !== undefined && level >= sending.breaksFrom && { breaksGuard: true }),
       transitions: others,
     };
   }

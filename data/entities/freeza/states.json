@@ -2574,6 +2574,23 @@
         }
       ]
     },
+    "crumple": {
+      "_comment": "Crumple (owner, 2026-11-26): pushed back, the heavy reel played once, then stunned on his feet in its last pose, open to a new combo for as long as the blow holds him; then he stands. Once a combo: given again, the knockdown.",
+      "anim": "m16",
+      "rank": 1,
+      "shove": -2.5,
+      "shoveFor": 10,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "oncePerCombo": "reel_down",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        }
+      ]
+    },
     "slam": {
       "anim": "m24",
       "rank": 3,

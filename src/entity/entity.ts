@@ -1106,6 +1106,11 @@ export class Entity {
     return !!this.sm?.def.relaunch;
   }
 
+  /** The current attack goes through a guard (`breaksGuard`). */
+  get attackBreaksGuard(): boolean {
+    return !!this.sm?.def.breaksGuard;
+  }
+
   /** Frames to freeze both fighters for when this entity's attack connects. */
   /** This attack's hit is a hold's to pause, not the blow's (`catches`). */
   get attackCatches(): boolean {
@@ -1324,8 +1329,12 @@ export class Entity {
     // same reason a jab at a floored fighter is, and looks the same from here.
     if (blow.relaunch && !this.combo.canRelaunch) return false;
     const again = this.sm?.def.ifHitAgain;
-    const state = reactionFor(again ? hitAgain(again, ++this.hitsAgain) : blow.reaction, this.def.states, this.sm?.def);
-    if (state === undefined) return false;
+    const chosen = reactionFor(again ? hitAgain(again, ++this.hitsAgain) : blow.reaction, this.def.states, this.sm?.def);
+    if (chosen === undefined) return false;
+    // a reaction given once a combo, given again: its stand-in
+    const instead = this.def.states.states[chosen]?.oncePerCombo;
+    const state = instead !== undefined && this.combo.gave(chosen) ? instead : chosen;
+    if (instead !== undefined) this.combo.give(chosen);
     // Read before entering anything: arriving in a state can reset the combo,
     // and the hold this blow earns is decided by the beating up to it.
     const stun = this.combo.hold(blow.hitstun);

@@ -78,7 +78,8 @@ export function landBlow(
   // A blocked blow costs nothing and only moves you. Chip damage belongs to
   // specials, which do not exist yet, so a normal attack on guard is free to
   // eat — deliberately, since a block you cannot afford is not a block.
-  const blocked = defender.guarding && defender.guardHit();
+  // a blow that breaks guard lands as on an open body
+  const blocked = defender.guarding && !attacker.attackBreaksGuard && defender.guardHit();
   if (blocked) attacker.markBlocked();
   // a shot that opens a scene takes him whole: no blow, no spark, no pause ($0F:C2FC)
   if (!blocked && attacker.opens) return { attack, damage: 0, blocked, took, flash: 0 };

@@ -1745,6 +1745,15 @@
         },
         {
           "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
+        },
+        {
+          "when": [
             "held:back",
             "!held:down",
             "!held:up",
@@ -1777,6 +1786,15 @@
             "pressed:smash"
           ],
           "to": "smash_3"
+        },
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "smash_2"
         },
         {
           "when": [
@@ -2654,6 +2672,23 @@
         {
           "when": "landed",
           "to": "down_bounce"
+        }
+      ]
+    },
+    "crumple": {
+      "_comment": "Crumple (owner, 2026-11-26): pushed back, the heavy reel played once, then stunned on his feet in its last pose, open to a new combo for as long as the blow holds him; then he stands. Once a combo: given again, the knockdown.",
+      "anim": "m16",
+      "rank": 1,
+      "shove": -2.5,
+      "shoveFor": 10,
+      "turn": false,
+      "sound": "voice_hurt",
+      "ifAirborne": "reel_air",
+      "oncePerCombo": "reel_down",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
         }
       ]
     },
@@ -4674,6 +4709,32 @@
       "transitions": [
         {
           "when": [
+            "held:boost",
+            "ki:20"
+          ],
+          "to": "smash_2_boost_1"
+        },
+        {
+          "when": "held:boost",
+          "to": "smash_2_lv0"
+        },
+        {
+          "when": [
+            "frames:8",
+            "held:smash",
+            "combo"
+          ],
+          "to": "smash_2_charge_1_combo"
+        },
+        {
+          "when": [
+            "frames:8",
+            "held:smash"
+          ],
+          "to": "smash_2_charge_0"
+        },
+        {
+          "when": [
             "cancelable",
             "held:fwd",
             "!held:down",
@@ -4687,7 +4748,7 @@
           "to": "idle"
         }
       ],
-      "type": "down",
+      "type": "stagger",
       "cancelBy": 24
     },
     "smash_3": {
@@ -5260,6 +5321,347 @@
         "to": 18
       },
       "hitFlash": 8,
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "screen": [
+        [
+          0,
+          "bright"
+        ]
+      ]
+    },
+    "smash_2_charge_0": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "damage": 0,
+      "braces": 5,
+      "transitions": [
+        {
+          "when": "!held:smash",
+          "to": "smash_2_lv0"
+        },
+        {
+          "when": "frames:2",
+          "to": "smash_2_charge_1"
+        }
+      ]
+    },
+    "smash_2_charge_1": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "damage": 0,
+      "braces": 5,
+      "blinks": 6,
+      "transitions": [
+        {
+          "when": "!held:smash",
+          "to": "smash_2_lv1"
+        },
+        {
+          "when": "!ki:5",
+          "to": "smash_2_lv1"
+        },
+        {
+          "when": "frames:15",
+          "to": "smash_2_charge_2"
+        }
+      ]
+    },
+    "smash_2_charge_1_combo": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "damage": 0,
+      "braces": 5,
+      "blinks": 6,
+      "transitions": [
+        {
+          "when": "!held:smash",
+          "to": "smash_2_lv1"
+        },
+        {
+          "when": "!ki:5",
+          "to": "smash_2_lv1"
+        },
+        {
+          "when": "frames:5",
+          "to": "smash_2_charge_2"
+        }
+      ]
+    },
+    "smash_2_charge_2": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "damage": 0,
+      "braces": 5,
+      "cost": 5,
+      "blinks": 4,
+      "sound": "ball_2d",
+      "transitions": [
+        {
+          "when": "!held:smash",
+          "to": "smash_2_lv2"
+        },
+        {
+          "when": "!ki:5",
+          "to": "smash_2_lv2"
+        },
+        {
+          "when": "frames:20",
+          "to": "smash_2_charge_3"
+        }
+      ]
+    },
+    "smash_2_charge_3": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "damage": 0,
+      "braces": 5,
+      "cost": 5,
+      "blinks": 2,
+      "transitions": [
+        {
+          "when": "!held:smash",
+          "to": "smash_2_lv3"
+        },
+        {
+          "when": "frames:15",
+          "to": "smash_2_lv3"
+        }
+      ]
+    },
+    "smash_2_boost_1": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "damage": 0,
+      "blinks": 6,
+      "cost": 10,
+      "freezesFoe": 18,
+      "screen": [
+        [
+          0,
+          "dim"
+        ]
+      ],
+      "transitions": [
+        {
+          "when": "frames:6",
+          "to": "smash_2_boost_2"
+        }
+      ]
+    },
+    "smash_2_boost_2": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "damage": 0,
+      "cost": 5,
+      "blinks": 4,
+      "sound": "ball_2d",
+      "transitions": [
+        {
+          "when": "frames:6",
+          "to": "smash_2_boost_3"
+        }
+      ]
+    },
+    "smash_2_boost_3": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "holdStep": 1,
+      "damage": 0,
+      "cost": 5,
+      "blinks": 2,
+      "transitions": [
+        {
+          "when": "frames:6",
+          "to": "smash_2_max"
+        }
+      ]
+    },
+    "smash_2_lv0": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 29,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "stagger",
+      "cancelBy": 24,
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2_lv1": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 36,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "crumple",
+      "cancelBy": 24,
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2_lv2": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 44,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "crumple_2",
+      "cancelBy": 24,
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2_lv3": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 52,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "crumple_3",
+      "cancelBy": 24,
+      "hitFlash": 8,
+      "breaksGuard": true,
+      "transitions": [
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "smash_2_max": {
+      "anim": "b_110",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 52,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "crumple_3",
+      "cancelBy": 24,
+      "hitFlash": 8,
+      "breaksGuard": true,
       "transitions": [
         {
           "when": [

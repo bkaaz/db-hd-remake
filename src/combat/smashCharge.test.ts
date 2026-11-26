@@ -138,8 +138,15 @@ describe("withCharge", () => {
     expect(withCharge(made, anims, "smash_3")).toEqual(made);
   });
 
+  it("stops on the wind-up's last pose, the one before the blow, where it has more than one", () => {
+    const two = { s3: { steps: [{ dur: 5 }, { dur: 5 }, { dur: 6, boxes: [hit] }, { dur: 9 }] } };
+    const charged = withCharge(file, two, "smash_3");
+    expect(charged.states.smash_3_charge_0.holdStep).toBe(1);
+    expect(charged.states.smash_3.transitions?.[3]).toEqual({ when: ["frames:8", "held:smash"], to: "smash_3_charge_0" });
+  });
+
   it("will not charge a wind-up too short to stop on", () => {
-    expect(() => withCharge(file, { s3: { steps: [{ dur: 2 }, { dur: 6, boxes: [hit] }] } }, "smash_3")).toThrow(/too short/);
+    expect(() => withCharge(file, { s3: { steps: [{ dur: 2 }, { dur: 6, boxes: [hit] }] } }, "smash_3")).toThrow(/too short to stop on/);
   });
 });
 
@@ -185,7 +192,14 @@ describe("withCharge on S1", () => {
     expect(made.states.smash_3_lv3.velAt).toBeUndefined();
   });
 
+  it("leaves S2's tap a knockdown, crumples him from the first level, longer each, the top breaking a guard", () => {
+    const s2 = withCharge({ ...s1File, states: { ...s1File.states, smash_2: { ...s1File.states.smash_1, type: "down" } } }, anims, "smash_2");
+    expect([0, 1, 2, 3].map((n) => s2.states[`smash_2_lv${n}`].type)).toEqual(["down", "crumple", "crumple_2", "crumple_3"]);
+    expect([0, 1, 2, 3].map((n) => s2.states[`smash_2_lv${n}`].breaksGuard)).toEqual([undefined, undefined, undefined, true]);
+    expect(s2.states.smash_2_max.breaksGuard).toBe(true);
+  });
+
   it("charges only the enders it knows how to send", () => {
-    expect(() => withCharge(s1File, anims, "smash_2")).toThrow(/does not charge/);
+    expect(() => withCharge(s1File, anims, "rush_1")).toThrow(/does not charge/);
   });
 });

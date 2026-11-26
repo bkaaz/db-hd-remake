@@ -130,4 +130,14 @@ describe("Combo without our limits", () => {
     expect(beaten(true).hold(26)).toBeLessThan(26);
     expect(beaten(true).canRelaunch).toBe(false);
   });
+
+  it("remembers a reaction given once a combo until he is free again", () => {
+    const c = new Combo();
+    c.enter(1);
+    c.give("crumple");
+    c.enter(1);
+    expect(c.gave("crumple")).toBe(true);
+    c.enter(0);
+    expect(c.gave("crumple")).toBe(false);
+  });
 });
