@@ -57,6 +57,12 @@ interface Sending {
   hop?: Hop;
   /** Its hop takes him along, level (`carries`), and leaves a jump's moves once the blow is spent: Smash alone. */
   carries?: boolean;
+  /**
+   * The opponent its top sends flying may be chased: RB, a bar, and he
+   * vanishes, comes out past him and throws this ender's first level again,
+   * sending him back — three times a combo (owner, 2026-11-26).
+   */
+  chases?: boolean;
 }
 
 /** A hop on the blow: `rise` up each level, `ahead` forward. */
@@ -70,6 +76,7 @@ const SENDING: Record<string, Sending> = {
     send: [1, 1, 1.25, 1.6],
     types: [undefined, "sendoff", "sendoff", "sendoff"],
     lunge: { hold: [6, 8, 10, 12], speed: [1.5, 2.5, 3.5, 4.5] },
+    chases: true,
   },
   smash_2: {
     lift: [1, 1, 1, 1],
@@ -99,6 +106,12 @@ const BRACE_COST = 5;
 const costOf = (level: number) => (level > 1 ? LEVEL_COST : 0);
 /** What RB costs over the whole charge, to have it at once: a bar of the meter (owner, 2026-11-26). */
 const AT_ONCE_COST = 10;
+/** A vanish: what it costs, how long he is gone, how often a combo. He comes out as far past the opponent as his blow reaches. */
+const VANISH_COST = 10;
+const VANISH_FRAMES = 6;
+const VANISH_LIMIT = 3;
+/** Where he may be when the opponent flies off: off the blow, or about on his feet. */
+const CHASE_FROM = ["idle", "walk_fwd", "walk_back", "land"];
 /** The ki charge (LB), which a direction + Smash breaks off into the blow at once. */
 const KI_CHARGE = ["charge_start", "charge"];
 /** Frames between puffs of a lunge's dust. */
@@ -130,9 +143,11 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   const hold = (n: number) => `${ender}_charge_${n}`;
   const COMBO_HOLD = `${ender}_charge_1_combo`;
   const release = (n: number) => `${ender}_lv${n}`;
+  const vanish = `${ender}_vanish`;
+  const chase = `${ender}_chase`;
   // what this puts on the ender, to take out before putting it back
   const ours = (t: Transition) =>
-    t.to.startsWith(`${ender}_charge_`) || (t.to === release(0) && [t.when].flat()[0] === "held:boost");
+    t.to.startsWith(`${ender}_charge_`) || t.to === vanish || (t.to === release(0) && [t.when].flat()[0] === "held:boost");
   const startup = startupOf(anims[s3.anim]);
   const steps = anims[s3.anim]?.steps ?? [];
   const blowStep = steps.findIndex((st) => (st.boxes ?? []).some((b) => b.type === "hit"));
@@ -260,5 +275,43 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       transitions: others.filter((t) => t.to !== "throw"),
     };
   }
+  if (sending.chases) chased(states, [ender, ...[0, 1, 2, 3].map(release)], release(1), vanish, chase, reachOf(steps[blowStep]));
   return { ...file, states };
+}
+
+/** Sprite px ahead of him the middle of a step's hit box lies: where a vanish puts the opponent. */
+function reachOf(step: AnimSteps["steps"][number] | undefined): number {
+  const box = (step?.boxes ?? []).find((b) => b.type === "hit") as { x?: number; w?: number } | undefined;
+  return Math.round((box?.x ?? 0) + (box?.w ?? 0) / 2);
+}
+
+/**
+ * The vanish off a top that sends him flying: RB while he flies, a bar, gone
+ * a moment, out past him facing him while he stands still, and `blow` again —
+ * from the ender, its levels, the chase itself and about on his feet.
+ */
+function chased(states: Record<string, StateDef>, own: string[], blow: string, vanish: string, chase: string, reach: number): void {
+  const way: Transition = { when: ["chase", "pressed:boost", `!chased:${VANISH_LIMIT}`], to: vanish };
+  const struck = states[blow];
+  states[vanish] = {
+    anim: struck.anim,
+    vel: [0, 0],
+    turn: false,
+    damage: 0,
+    hidden: true,
+    invulnerable: true,
+    pushless: true,
+    cost: VANISH_COST,
+    vanishes: true,
+    appears: reach,
+    stillsFoe: true,
+    transitions: [{ when: `frames:${VANISH_FRAMES}`, to: chase }],
+  };
+  // the blow played whole, its wind-up too: he comes out of nothing, already in reach, so no lunge
+  const { velAt: _slide, holdFrames: _held, holdStep: _out, trail: _dust, ...where } = struck;
+  states[chase] = { ...where, replays: true, stillsFoe: true };
+  for (const name of [...CHASE_FROM, ...own, chase].filter((n) => states[n])) {
+    const rest = (states[name].transitions ?? []).filter((t) => t.to !== vanish);
+    states[name] = { ...states[name], transitions: [way, ...rest] };
+  }
 }

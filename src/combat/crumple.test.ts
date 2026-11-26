@@ -21,3 +21,14 @@ describe.each(generatedFighters())("%s stunned", (name) => {
     }
   });
 });
+
+describe.each(generatedFighters())("%s sent off", (name) => {
+  const { states } = read<StatesFile>(name, "states.json");
+  const anims = read<Record<string, { steps: { boxes?: { type: string }[] }[] }>>(name, "animations.json");
+
+  it("can be hit in his flight, his body another pose's where his own has none", () => {
+    const body = states.sent_off.boxesOf ?? states.sent_off.anim;
+    const types = new Set((anims[body].steps[0].boxes ?? []).map((b) => b.type));
+    expect([types.has("push"), types.has("hurt")]).toEqual([true, true]);
+  });
+});

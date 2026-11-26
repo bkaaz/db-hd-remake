@@ -2373,7 +2373,9 @@
           "when": "landed",
           "to": "down_bounce"
         }
-      ]
+      ],
+      "chaseable": true,
+      "boxesOf": "m16"
     },
     "wall_bounce": {
       "_comment": "Off the wall a sendoff met, back toward whoever sent him and open to a blow on the way (owner, 2026-11-26): a little health and a thud, no burst yet.",

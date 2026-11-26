@@ -102,6 +102,10 @@ export interface Opponent {
   groundVx: number;
   /** Still reeling from a blow that hit him: not blocking one, nor lying where one left him. */
   stunned?: boolean;
+  /** Flying off a blow a vanish may chase (`chaseable`). */
+  chaseable?: boolean;
+  /** In a combo: blows have landed on him since he was last free. */
+  inCombo?: boolean;
 }
 
 export const NO_INPUT: WorldInput = {
@@ -239,6 +243,12 @@ export class Entity {
   private walled = false;
   /** Frames the opponent stands still for this one's boost, for the fighters to hand him. */
   private foeFreeze = 0;
+  /** Vanishes made in this combo (`chased:N`), none once the opponent is free again. */
+  private chases = 0;
+  /** Hidden by a state of his that `hidden`s him, not by a scene. */
+  private vanished = false;
+  /** The opponent as this step saw him: where a vanish comes out. */
+  private foe: Opponent | null = null;
   /** The charge being played fast (`entity/boost.ts`), or null. */
   private boost: Boost | null = null;
   /** The buttons held this frame, as the player holds them: what starts a boost. */
@@ -425,6 +435,16 @@ export class Entity {
   get stunned(): boolean {
     return this.stun > 0;
   }
+
+  /** Flying off a blow a vanish may chase (`chaseable`). */
+  get chaseable(): boolean {
+    return !!this.sm?.def.chaseable;
+  }
+
+  /** Blows have landed on him since he was last free. */
+  get inCombo(): boolean {
+    return this.combo.hits > 0;
+  }
   private readonly fatigue = new Fatigue();
 
   constructor(
@@ -553,7 +573,10 @@ export class Entity {
 
   /** Boxes of one type active on the current animation step. */
   boxes(type: Box["type"]): Box[] {
-    return (this.currentStep()?.boxes ?? []).filter((b) => b.type === type);
+    // a body drawn in a pose with no boxes of its own, a flight's, stands in another's (`boxesOf`)
+    const body = this.sm?.def.boxesOf;
+    const from = body && type !== "hit" ? this.def.animations[body]?.steps[0] : this.currentStep();
+    return (from?.boxes ?? []).filter((b) => b.type === type);
   }
 
   /** True while this entity's current attack can still land. */
@@ -1517,6 +1540,7 @@ export class Entity {
     this.groundFx = this.sm.def.groundFx ?? null;
     if (this.sm.def.hurts) this.hurtBy(this.sm.def.hurts);
     this.boostOnEntering();
+    this.vanishOnEntering();
     this.shake = this.sm.def.shake ?? null;
     this.shove = this.sm.def.shove ?? 0;
     this.shovedAhead = 0;
@@ -1628,9 +1652,32 @@ export class Entity {
     }
   }
 
+  /**
+   * A vanish: not drawn while in a state that hides him, counted, and come out
+   * past the opponent on his far side — the way he flies, off a blow from
+   * this one — facing him (`appears`).
+   */
+  private vanishOnEntering(): void {
+    const def = this.sm?.def;
+    if (!def) return;
+    // only his own hiding: a scene hides him too, and is not undone here
+    if (def.hidden) this.hide((this.vanished = true));
+    else if (this.vanished) this.hide((this.vanished = false));
+    if (def.vanishes) this.chases++;
+    if (def.appears !== undefined && this.foe) {
+      const ahead = Math.sign(this.foe.x - this.x) || this.facing;
+      this.x = this.foe.x + ahead * def.appears * this.scale;
+      this.facing = ahead > 0 ? -1 : 1;
+    }
+  }
+
   /** One step of his own: facing, state, movement, animation. */
   private step(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
     const opponentX = opponent?.x ?? null;
+    this.foe = opponent;
+    if (!opponent?.inCombo) this.chases = 0;
+    // a chase holds him still until its blow lands
+    if (this.sm?.def.stillsFoe && !this.swing.spent) this.foeFreeze = 1;
     if (this.previewing) {
       // a hold's drawings go step for step with the thrower, who waits out a freeze too
       if (this.freezeFrames > 0) this.freezeFrames--;
@@ -1739,6 +1786,7 @@ export class Entity {
         attack: this.buffer.has("attack"),
         guard: this.buffer.has("guard"),
         smash: this.buffer.has("smash"),
+        boost: input.boost,
         blast: this.buffer.has("blast"),
         strike: this.buffer.has("strike"),
         dash: this.buffer.has("dash"),
@@ -1772,6 +1820,8 @@ export class Entity {
         spawnEnded: this.thrown === 0,
         charged: this.charge >= 1,
         combo: opponent?.stunned === true,
+        chase: opponent?.chaseable === true,
+        chased: this.chases,
       }
     );
     const changed = this.sm.update(snapshot(), signals());

@@ -116,6 +116,14 @@
       "turn": true,
       "transitions": [
         {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
           "when": "held:down",
           "to": "crouch_down"
         },
@@ -245,6 +253,14 @@
       "turn": true,
       "transitions": [
         {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
           "when": "held:down",
           "to": "crouch_down"
         },
@@ -369,6 +385,14 @@
       ],
       "turn": true,
       "transitions": [
+        {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
         {
           "when": "held:down",
           "to": "crouch_down"
@@ -1036,6 +1060,14 @@
         "only": "buttons"
       },
       "transitions": [
+        {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
         {
           "when": [
             "held:up",
@@ -2476,7 +2508,9 @@
           "when": "landed",
           "to": "down_bounce"
         }
-      ]
+      ],
+      "chaseable": true,
+      "boxesOf": "m16"
     },
     "wall_bounce": {
       "_comment": "Off the wall a sendoff met, back toward whoever sent him and open to a blow on the way (owner, 2026-11-26): a little health and a thud, no burst yet.",
@@ -4456,6 +4490,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "held:boost",
             "!frames:1",
             "!ki:20"
@@ -4837,6 +4879,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "cancelable",
             "held:fwd",
             "!held:down",
@@ -4890,6 +4940,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "cancelable",
             "held:fwd",
             "!held:down",
@@ -4941,6 +4999,14 @@
         "to": 22
       },
       "transitions": [
+        {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
         {
           "when": [
             "cancelable",
@@ -4997,6 +5063,14 @@
       "transitions": [
         {
           "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
             "cancelable",
             "held:fwd",
             "!held:down",
@@ -5010,6 +5084,73 @@
           "to": "idle"
         }
       ]
+    },
+    "smash_1_vanish": {
+      "anim": "b_a0",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 0,
+      "hidden": true,
+      "invulnerable": true,
+      "pushless": true,
+      "cost": 10,
+      "vanishes": true,
+      "appears": 48,
+      "stillsFoe": true,
+      "transitions": [
+        {
+          "when": "frames:6",
+          "to": "smash_1_chase"
+        }
+      ]
+    },
+    "smash_1_chase": {
+      "anim": "b_a0",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "damage": 36,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "type": "sendoff",
+      "cancelBy": 40,
+      "launches": {
+        "sent_off": [
+          -5.2,
+          -2.5
+        ]
+      },
+      "transitions": [
+        {
+          "when": [
+            "chase",
+            "pressed:boost",
+            "!chased:3"
+          ],
+          "to": "smash_1_vanish"
+        },
+        {
+          "when": [
+            "cancelable",
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:blast"
+          ],
+          "to": "kame_charge"
+        },
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ],
+      "replays": true,
+      "stillsFoe": true
     },
     "smash_2_charge_0": {
       "anim": "b_9a",

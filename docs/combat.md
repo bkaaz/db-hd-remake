@@ -329,9 +329,21 @@ a budget (`RELAUNCH_LIMIT`, `combat/combo.ts`). Past it the blow still hits and
 hurts, but the victim keeps falling on the arc they were on. Only a *re*-launch
 counts: the opener lands on someone in control of themselves.
 
-### 5. Vanish — a counter, not an escape
+### 5. Vanish — a counter, not an escape; and a chase
 
-**Not built yet.** Guard tapped just before a blow lands teleports behind the
+**The chase is built** (owner, 2026-11-26): while the opponent flies off a
+charged S1 (`sent_off`, `chaseable`), RB pressed (`pressed:boost`) spends a bar
+and he vanishes — not drawn, no effect or sound yet — comes out past the
+opponent on the side he flies to, as far as his S1 reaches, facing him,
+while the opponent stands still, and throws his S1's first level again,
+sending him back: up to three times a combo (`chased:N`), the opponent bounced
+from side to side, then on to the wall. Made with every S1 that charges
+(`combat/smashCharge.ts`). The sendoff spends no relaunch: a throw across,
+not a lift. Its flight is drawn as a body sent to another arena, which has
+no boxes; it stands in the heavy reel's body (`boxesOf`), or nothing could
+hit it.
+
+**The counter is not built yet.** Guard tapped just before a blow lands teleports behind the
 attacker, for ki; early, or without the ki, it is an ordinary block. From
 neutral, walking, crouching, guarding, blockstun and the air — **never** from a
 reaction or from one's own attack, so it never breaks a combo, and scaling and

@@ -3,7 +3,7 @@ import type { StatesFile } from "../entity/states";
 import { withCharge } from "./smashCharge";
 import type { AnimSteps } from "./swing";
 
-const hit = { type: "hit" };
+const hit = { type: "hit", x: 20, w: 20 };
 /** S3: a 5-frame wind-up, the hit box, a recovery. */
 const anims: Record<string, AnimSteps> = { s3: { steps: [{ dur: 5 }, { dur: 6, boxes: [hit] }, { dur: 9 }] } };
 const file: StatesFile = {
@@ -189,7 +189,7 @@ describe("withCharge on S1", () => {
   });
 
   it("is charged under its own names, the way in on S1", () => {
-    expect(s1.states.smash_1.transitions?.[2]).toEqual({ when: ["frames:3", "!frames:5", "held:smash"], to: "smash_1_charge_0" });
+    expect(s1.states.smash_1.transitions?.[3]).toEqual({ when: ["frames:3", "!frames:5", "held:smash"], to: "smash_1_charge_0" });
     expect(s1.states.smash_1_charge_3.transitions?.[0]).toEqual({ when: "!held:smash", to: "smash_1_lv3" });
   });
 
@@ -236,6 +236,17 @@ describe("withCharge on S1", () => {
     const pushes = [1, 2, 3].map((n) => -(s2.states[`smash_2_lv${n}`].pushes ?? 0));
     expect(pushes).toEqual([...pushes].sort((a, b) => b - a));
     expect(new Set(pushes).size).toBe(3);
+  });
+
+  it("chases the opponent its top sends flying: RB, a bar, gone, out past him, its first level again, three times a combo", () => {
+    const way = { when: ["chase", "pressed:boost", "!chased:3"], to: "smash_1_vanish" };
+    // out as far past him as the blow's hit box reaches: the fixture's 20 + 20 / 2
+    expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, vanishes: true, appears: 30, stillsFoe: true });
+    expect(s1.states.smash_1_chase.velAt).toBeUndefined();
+    expect(s1.states.smash_1_vanish.transitions).toEqual([{ when: "frames:6", to: "smash_1_chase" }]);
+    expect(s1.states.smash_1_chase).toMatchObject({ type: s1.states.smash_1_lv1.type, damage: s1.states.smash_1_lv1.damage, replays: true, stillsFoe: true });
+    for (const name of ["idle", "smash_1", "smash_1_lv0", "smash_1_lv3", "smash_1_chase"]) expect(s1.states[name].transitions?.[0]).toEqual(way);
+    expect(withCharge(s1, anims, "smash_1")).toEqual(s1);
   });
 
   it("charges only the enders it knows how to send", () => {

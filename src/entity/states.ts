@@ -477,6 +477,23 @@ export interface StateDef {
   boosts?: BoostDef;
   /** Part of a charge a boost plays fast: it goes on through these, and ends on leaving them. */
   charging?: boolean;
+  /** A reaction sending him flying away that a vanish may chase (`chase`): the sendoff (owner, 2026-11-26). */
+  chaseable?: boolean;
+  /**
+   * The animation whose first step's body — hurt and push boxes — this state
+   * stands in, its own drawing having none: the sendoff's flight, drawn as a
+   * body sent to another arena, the cartridge's, which nothing may hit
+   * (owner, 2026-11-26).
+   */
+  boxesOf?: string;
+  /** Not drawn while in this state: a vanish, with no picture of its own yet. */
+  hidden?: boolean;
+  /** Entering it, he stands this many sprite px past the opponent, on his far side, facing him: a vanish's coming out. */
+  appears?: number;
+  /** The opponent stands still while he is in this state, until its blow has landed: a vanish's chase. */
+  stillsFoe?: boolean;
+  /** Entering it counts a vanish of this combo (`chased:N`). */
+  vanishes?: boolean;
   /**
    * A reaction he is given once a combo: a blow that would send him here again
    * before he is free sends him to this one instead — the crumple, so it opens
@@ -890,6 +907,8 @@ export interface InputSnapshot {
   blast: boolean;
   strike: boolean;
   dash: boolean;
+  /** RB pressed this frame: a vanish (`pressed:boost`); held, the boost reads `held:boost`. */
+  boost?: boolean;
   /**
    * The cartridge's commands met this frame (`input/command.ts`): the move
    * each starts, to the button it was pressed with — `command:<move>`.
@@ -983,6 +1002,10 @@ export interface Signals {
    * ignoring you.
    */
   charged: boolean;
+  /** The opponent flies off a blow a vanish may chase (`chaseable`): the `chase` trigger. */
+  chase?: boolean;
+  /** Vanishes this entity has made in this combo: `chased:N`. */
+  chased?: number;
   /**
    * The opponent is still reeling from a blow that hit him — the `combo` trigger: a charge
    * begun in the rush starts a level up. Not his combo count, which runs on
@@ -996,7 +1019,7 @@ export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
 export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
-const COUNTED = /^(frames:\d+|health:\d+|ki:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+const COUNTED = /^(frames:\d+|health:\d+|ki:\d+|chased:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
 /** `command:a4` — the move whose command is met, two hex digits (ADR 0050). */
 const COMMAND = /^command:[0-9a-f]{2}$/;
 
@@ -1025,6 +1048,8 @@ export const TRIGGERS = [
   "spawnEnd",
   "charged",
   "combo",
+  "chase",
+  "pressed:boost",
   "falling",
   "nearGround",
   "landed",
@@ -1055,6 +1080,8 @@ function counted(key: string, signals: Signals): boolean | undefined {
   if (kind === "health") return signals.health !== undefined && signals.health <= Number(arg);
   // what a level of a charge costs, there to pay: `!ki:5` lets go where it cannot be
   if (kind === "ki") return signals.ki >= Number(arg);
+  // vanishes so far this combo: `!chased:3` is the limit (owner, 2026-11-26)
+  if (kind === "chased") return (signals.chased ?? 0) >= Number(arg);
   // a command's own range for an opponent standing still, not the throw's (Galactic Gunfire's 64, $0D:F95B)
   if (kind === "grab") return signals.grabbable !== undefined && signals.grabbable < Number(arg);
   // a run that ends by the opponent, in the air or reeling too (Gotenks's a8, $20:BCC4)
@@ -1138,6 +1165,12 @@ function evaluate(trigger: string, input: InputSnapshot, signals: Signals): bool
       break;
     case "combo":
       value = signals.combo === true;
+      break;
+    case "chase":
+      value = signals.chase === true;
+      break;
+    case "pressed:boost":
+      value = input.boost === true;
       break;
     case "falling":
       value = signals.falling;

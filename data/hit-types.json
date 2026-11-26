@@ -95,7 +95,7 @@
     "onHit": "sent_off",
     "hitstun": 20,
     "hitstop": 12,
-    "relaunch": true
+    "relaunch": false
   },
   "crumple": {
     "code": "cr",
