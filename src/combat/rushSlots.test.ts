@@ -34,8 +34,8 @@ describe("withRush", () => {
 
   it("puts each pick in its slot and walks Attack from one to the next", () => {
     expect(["rush_1", "rush_2", "rush_3"].map((s) => made.states[s].anim)).toEqual(["a", "b", "c"]);
-    expect(exits(made, "rush_1")).toEqual(["cancelable+pressed:attack>rush_2", "animEnd>idle"]);
-    expect(exits(made, "rush_3")).toEqual(["animEnd>idle"]);
+    expect(exits(made, "rush_1")).toEqual(["cancelable+pressed:attack>rush_2", "cancelable+pressed:smash>smash", "animEnd>idle"]);
+    expect(exits(made, "rush_3")).toEqual(["cancelable+pressed:smash>smash", "animEnd>idle"]);
   });
 
   it("makes a blow the line goes on from a flinch, and leaves the last its own blow", () => {
@@ -44,7 +44,7 @@ describe("withRush", () => {
 
   it("stops Attack's line at the first slot not picked", () => {
     const gap = withRush(file, anims, 14, { rush_1: { anim: "a" }, rush_3: { anim: "c" } }, step);
-    expect(exits(gap, "rush_1")).toEqual(["animEnd>idle"]);
+    expect(exits(gap, "rush_1")).toEqual(["cancelable+pressed:smash>smash", "animEnd>idle"]);
   });
 
   it("steps forward faster through the wind-up, slower from the hit box", () => {
@@ -59,7 +59,7 @@ describe("withRush", () => {
     const again = withRush(own, anims, 14, { ...three, rush_1: { anim: "b" }, rush_1_close: { anim: "quick" } }, step);
 
     it("stays through a new pick, after the rush's ways on, and A1c leads there too", () => {
-      expect(exits(again, "rush_1")).toEqual(["cancelable+pressed:attack>rush_2", "cancelable+held:fwd+pressed:blast>kame", "animEnd>idle"]);
+      expect(exits(again, "rush_1")).toEqual(["cancelable+pressed:attack>rush_2", "cancelable+pressed:smash>smash", "cancelable+held:fwd+pressed:blast>kame", "animEnd>idle"]);
       expect(exits(again, "rush_1_close")).toEqual(exits(again, "rush_1"));
     });
 
@@ -97,12 +97,13 @@ describe("withRush", () => {
       expect(deep.states.rush_3.type).toBe("flinch");
     });
 
-    it("leaves each depth for its ender on Smash, or the one a direction asks for, an ender made out of smash", () => {
+    it("leaves each depth for the ender a direction asks for, any of them, and Smash alone for Smash, an ender made out of smash", () => {
       expect(exits(deep, "rush_2")).toEqual([
         "cancelable+pressed:attack>rush_3",
-        "cancelable+held:back+!held:down+!held:up+pressed:smash>smash_1",
+        "cancelable+held:fwd+!held:down+!held:up+pressed:smash>smash_1",
+        "cancelable+held:back+!held:down+!held:up+pressed:smash>smash_2",
         "cancelable+held:down+!held:fwd+!held:back+pressed:smash>smash_3",
-        "cancelable+pressed:smash>smash_2",
+        "cancelable+pressed:smash>smash",
         "animEnd>idle",
       ]);
       expect(deep.states.smash_2).toMatchObject({ anim: "s", damage: 29 });
@@ -138,7 +139,7 @@ describe("withRush", () => {
 
     it("lets a direction + Smash in the rush be taken where it cannot be a combo, the window still the depth's own", () => {
       // A4 has no ender of its own, so no window narrows for one
-      expect(exits(deep, "rush_4").filter((e) => e.includes("smash"))).toHaveLength(3);
+      expect(exits(deep, "rush_4").filter((e) => e.includes(">smash_"))).toHaveLength(3);
       expect(deep.states.rush_4.cancelBy).toBe(framesOf(anims.a));
     });
 
@@ -158,7 +159,8 @@ describe("withRush", () => {
       const by = made.states[l.from].cancelBy!;
       expect(l.margin === 0 || by === framesOf(anims[made.states[l.from].anim])).toBe(true);
     }
-    expect(made.states.rush_3.cancelBy).toBeUndefined();
+    // the line's last: no way on to time, Smash alone open to its end
+    expect(made.states.rush_3.cancelBy).toBe(framesOf(anims.c));
   });
 
   it("says when a link cannot be a combo however it is cancelled", () => {

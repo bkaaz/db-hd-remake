@@ -104,6 +104,8 @@ export function landBlow(
       hitstun: attacker.attackHitstun,
       burns: attacker.attackBurns,
       launches: attacker.attackLaunches,
+      pushes: attacker.attackPushes,
+      carry: attacker.attackCarry,
     });
     if (!away) dealt = defender.hurtBy(attacker.attackDamage);
     // the KO goes before fatigue, as the original's does ($0F:B34E)

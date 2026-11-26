@@ -15,14 +15,17 @@ import type { Anim, Step } from "./entityFile";
  * Steps `steps[0]`–`steps[1]` of `from`. `hits`, steps of `from` too, keeps
  * the hit boxes to those — `[]` to none: the others are still drawn, a knee on
  * the way to a kick, but strike nothing. `sfx` adds sounds to steps of `from`,
- * by step: a kick whose swing the string played in the part before it. `durs`
- * sets how long a step of `from` lasts: a wind-up held too long for a rush.
+ * by step: a kick whose swing the string played in the part before it;
+ * `quiet` takes them off steps of `from` — a swing a charge would sound on
+ * the pose it holds (owner, 2026-11-26). `durs` sets how long a step of
+ * `from` lasts: a wind-up held too long for a rush.
  */
 export interface Cut {
   from: string;
   steps: [number, number];
   hits?: [number, number] | [];
   sfx?: Record<string, number[]>;
+  quiet?: number[];
   durs?: Record<string, number>;
 }
 
@@ -68,20 +71,22 @@ export function basicAnims(recipes: BasicsFile, anims: Record<string, Anim>, fra
 }
 
 /** One cut's steps, without what a script puts out for a blow sure to land; what is not there throws. */
-function cut(name: string, { from, steps: [first, last], hits = [first, last], sfx = {}, durs = {} }: Cut, anims: Record<string, Anim>): Step[] {
+function cut(name: string, { from, steps: [first, last], hits = [first, last], sfx = {}, quiet = [], durs = {} }: Cut, anims: Record<string, Anim>): Step[] {
   const source = anims[from]?.steps;
   if (!source) throw new Error(`basic "${name}": no animation ${from}`);
   if (!(first >= 0 && last >= first && last < source.length)) throw new Error(`basic "${name}": ${from} has no steps ${first}–${last}`);
   const [firstHit, lastHit] = hits;
   if (firstHit !== undefined && !(firstHit >= first && lastHit! >= firstHit && lastHit! <= last)) throw new Error(`basic "${name}": hits ${firstHit}–${lastHit} are not among its steps ${first}–${last}`);
   const striking = (at: number) => firstHit !== undefined && at >= firstHit && at <= lastHit!;
-  for (const at of [...Object.keys(sfx), ...Object.keys(durs)].map(Number)) {
+  for (const at of [...Object.keys(sfx), ...Object.keys(durs)].map(Number).concat(quiet)) {
     if (!(at >= first && at <= last)) throw new Error(`basic "${name}": step ${at} is not among its steps ${first}–${last}`);
   }
   return source.slice(first, last + 1).map((step, i) => {
     const added = sfx[first + i] ?? [];
-    const kept = withoutLanding(striking(first + i) ? step : harmless(step));
-    const timed = { ...kept, dur: durs[first + i] ?? kept.dur };
+    const drawn: Step = withoutLanding(striking(first + i) ? step : harmless(step));
+    const { sfx: _sounds, ...silent } = drawn;
+    const kept: Step = quiet.includes(first + i) ? silent : drawn;
+    const timed: Step = { ...kept, dur: durs[first + i] ?? kept.dur };
     return added.length > 0 ? { ...timed, sfx: [...(timed.sfx ?? []), ...added] } : timed;
   });
 }

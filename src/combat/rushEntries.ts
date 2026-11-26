@@ -41,6 +41,26 @@ export function aimsIn(states: Record<string, StateDef>, aims: [to: string, aim:
   rewrite(states, (t) => enders.includes(t.to) && shapes.includes([t.when].flat().join()), (t) => (plain(t) ? aims.map(([to, aim]) => ({ when: aimed(aim), to })) : []), owns);
 }
 
+/** Frames after Attack or Smash alone starts its blow that the other button still makes the pair a throw. */
+const PAIR_FRAMES = 3;
+
+/**
+ * The throw is Attack + Smash together (owner, 2026-11-26), and two keys are
+ * seldom down on one frame: the other one a frame or two late turns the blow
+ * the first started into the throw — A1, A1c or Smash alone, the opponent in
+ * reach. None where he has no throw.
+ */
+export function throwIn(states: Record<string, StateDef>): void {
+  const late = (button: string): Transition => ({ when: ["grab", `pressed:${button}`, `!frames:${PAIR_FRAMES}`], to: "throw" });
+  const isLate = (t: Transition) => t.to === "throw" && [t.when].flat().includes(`!frames:${PAIR_FRAMES}`);
+  for (const [name, other] of [["rush_1", "smash"], ["rush_1_close", "smash"], ["smash", "attack"]] as const) {
+    const def = states[name];
+    if (!def) continue;
+    const rest = (def.transitions ?? []).filter((t) => !isLate(t));
+    states[name] = { ...def, transitions: states.throw ? [late(other), ...rest] : rest };
+  }
+}
+
 /** Every state `within` takes, with the transitions `gone` says taken out and those `ahead` makes put before each that is left. */
 function rewrite(
   states: Record<string, StateDef>,

@@ -29,10 +29,10 @@ function fighter(name: string) {
 const exits = (states: StatesFile, name: string): string[] =>
   (states.states[name]?.transitions ?? []).map((t) => `${[t.when].flat().join("+")}>${t.to}`);
 
-/** A depth's own ways on: Attack down the line, Smash alone into its ender. */
+/** A depth's own ways on: Attack down the line, and before A4 each ender a direction asks for (owner, 2026-11-26). */
 function ownWay(from: string, to: string): boolean {
   const depth = from === CLOSE ? 0 : RUSH.indexOf(from as (typeof RUSH)[number]);
-  return to === RUSH[depth + 1] || to === ENDERS[depth];
+  return to === RUSH[depth + 1] || (depth < ENDERS.length && (ENDERS as readonly string[]).includes(to));
 }
 
 /** The links the owner has accepted as combos (2026-11-25): Goku's own ways on, Freeza's Attack line. */
@@ -56,7 +56,7 @@ describe.each(generatedFighters())("%s's rush", (name) => {
     expect(crouch.indexOf(`${aimed("down").join("+")}>smash_3`)).toBeLessThan(crouch.indexOf("pressed:smash>crouch_b"));
   });
 
-  it("leaves every depth on Smash for its ender, or the one a direction asks for", () => {
+  it("leaves every depth on Smash for the ender a direction asks for, any of them", () => {
     const line = RUSH.filter((_, i) => RUSH.slice(0, i + 1).every((r) => rush.picks[r]));
     for (const slot of line) expect(new Set(links.filter((l) => l.from === slot && l.on === "smash").map((l) => l.to))).toEqual(new Set(ENDERS));
   });

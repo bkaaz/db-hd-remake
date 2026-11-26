@@ -138,6 +138,10 @@ export interface Blow {
   burns?: boolean;
   /** The attacker's `launches`: a reaction's launch replaced, by its name. */
   launches?: Record<string, [number | null, number | null]>;
+  /** The attacker's `pushes`: the shove his reaction takes in place of its own. */
+  pushes?: number;
+  /** The attacker's flight, when his blow takes the defender along (`carries`): facing-relative, his gravity resolved. */
+  carry?: { vx: number; vy: number; gravity: number };
 }
 
 /** One fighter's innards, for the debug readout only — see `Entity.debug`. */
@@ -1106,6 +1110,17 @@ export class Entity {
     return !!this.sm?.def.relaunch;
   }
 
+  /** The shove the current attack's reaction takes in place of its own (`pushes`). */
+  get attackPushes(): number | undefined {
+    return this.sm?.def.pushes;
+  }
+
+  /** The flight the current attack takes the defender along on (`carries`), or undefined. */
+  get attackCarry(): { vx: number; vy: number; gravity: number } | undefined {
+    if (!this.sm?.def.carries) return undefined;
+    return { vx: this.vx, vy: this.vy, gravity: this.air.gravity === "own" ? this.gravity : this.air.gravity };
+  }
+
   /** The current attack goes through a guard (`breaksGuard`). */
   get attackBreaksGuard(): boolean {
     return !!this.sm?.def.breaksGuard;
@@ -1344,6 +1359,12 @@ export class Entity {
     const launch = blow.launches?.[state];
     if (launch?.[0] != null) this.vx = launch[0];
     if (launch?.[1] != null) this.vy = launch[1];
+    if (blow.pushes !== undefined) this.shove = blow.pushes;
+    // taken along: the attacker's flight, his forward this one's back, as he faces him
+    if (blow.carry) {
+      [this.vx, this.vy] = [-blow.carry.vx, blow.carry.vy];
+      this.air = { ...this.air, aloft: true, gravity: blow.carry.gravity };
+    }
     // After entering, because arriving in a state clears the clock — and this
     // blow's hold is the one thing about the reaction the blow gets to decide.
     this.stun = stun;

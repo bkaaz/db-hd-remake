@@ -63,6 +63,12 @@ describe("basicAnims", () => {
     expect(basicAnims({ kick: { from: "two", steps: [0, 1] } }, twice).b_kick.steps.map((s) => s.sfx)).toEqual([[7], undefined, undefined]);
   });
 
+  it("takes the sounds off a step it quiets, to sound them on another", () => {
+    const swing: Record<string, Anim> = { ...anims, up: { loop: false, steps: [{ frame: "88", dur: 4, sfx: [7] }, { frame: "89", dur: 4, boxes: [hit] }] } };
+    const moved = basicAnims({ kick: { from: "up", steps: [0, 1], quiet: [0], sfx: { "1": [7] } } }, swing).b_kick;
+    expect(moved.steps.map((s) => s.sfx)).toEqual([undefined, [7], undefined]);
+  });
+
   it("adds a sound to a step it names, a step of the cut", () => {
     const loud = basicAnims({ kick: { from: "mae", steps: [0, 1], sfx: { "0": [7] } } }, anims).b_kick;
     expect(loud.steps.map((s) => s.sfx)).toEqual([[7], undefined, undefined]);

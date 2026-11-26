@@ -1,7 +1,7 @@
 import type { StateDef, StatesFile, Transition } from "../entity/states";
 import { chainLinks, framesOf, type Link } from "./chains";
 import { withHitTypes } from "./hitTypes";
-import { aimed, aimsIn, closeIn, type Aim } from "./rushEntries";
+import { aimed, aimsIn, closeIn, throwIn, type Aim } from "./rushEntries";
 import { startupOf, type AnimSteps } from "./swing";
 
 /**
@@ -15,7 +15,7 @@ import { startupOf, type AnimSteps } from "./swing";
 
 /** Attack's line, in the order it walks it. */
 export const RUSH = ["rush_1", "rush_2", "rush_3", "rush_4"] as const;
-/** Smash off each depth of it: smash_1 off rush_1, and so on. */
+/** The enders, each asked for by its direction + Smash off any depth of it (`AIMS`). */
 export const ENDERS = ["smash_1", "smash_2", "smash_3"] as const;
 /**
  * A1 thrown at an opponent within his `closeRange.attack` — Goku's knee where
@@ -44,8 +44,8 @@ export interface RushFile {
 
 /**
  * How each end of the rush is taken unless a pick says (owner, 2026-11-25):
- * the deeper, the better the end — A4 and S1 send him off, S2 floors him, S3
- * lifts him. A blow the line goes on from is a `flinch`.
+ * A4 and S1 send him off, S2 floors him, S3 lifts him. A blow the line goes
+ * on from is a `flinch`.
  */
 export const EFFECTS: Partial<Record<Slot, string>> = { rush_4: "knockback", smash_1: "knockback", smash_2: "down", smash_3: "launch" };
 
@@ -66,16 +66,17 @@ export interface Step {
 
 /**
  * The direction that asks Smash for each ender, wherever Smash is pressed — in
- * the rush and out of it (owner, 2026-11-25). Smash alone in the rush is the
- * ender of its depth.
+ * the rush and out of it (owner, 2026-11-25; S1 forward and S2 back since
+ * 2026-11-26). Smash alone in the rush is Smash alone, as standing.
  */
-export const AIMS: Record<(typeof ENDERS)[number], Aim> = { smash_1: "back", smash_2: "fwd", smash_3: "down" };
+export const AIMS: Record<(typeof ENDERS)[number], Aim> = { smash_1: "fwd", smash_2: "back", smash_3: "down" };
 
 /**
- * `file` with its rush made of `picks`: Attack walks the line, Smash leaves it
- * for the ender of that depth, or the one its direction asks for; Attack's
- * blows step forward by `step`; each cancel window is the longest that keeps
- * the depth's own ways on — Attack, Smash alone — a combo, never past its
+ * `file` with its rush made of `picks`: Attack walks the line, a direction +
+ * Smash leaves it for the ender it asks for at any depth, Smash alone for
+ * Smash; Attack's blows step forward by `step`; each cancel window is the
+ * longest that keeps the depth's own ways on — Attack, and before A4 every
+ * ender — a combo, never past its
  * animation, and open at least a frame where none can be. A slot new to the file starts as a copy of its neighbour's
  * state — rush_4 of rush_3, an ender of `smash` — for its damage and sounds.
  */
@@ -98,29 +99,30 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
       transitions: exits,
     };
   };
-  // the ways on that time each window: Attack down the line, Smash alone
+  // the ways on that time each window: Attack down the line, and before A4
+  // each ender a direction asks for — none of them is the depth's own
   const own = new Map<string, Set<string>>();
   line.forEach((slot, i) => {
     const next = line[i + 1];
-    const ender = enders.find((e) => e === ENDERS[i]);
     const exits: Transition[] = [
       ...(next ? [{ when: ["cancelable", "pressed:attack"], to: next }] : []),
-      ...enders.filter((e) => e !== ender).map((e) => ({ when: ["cancelable", ...aimed(AIMS[e])], to: e })),
-      ...(ender ? [{ when: ["cancelable", "pressed:smash"], to: ender }] : []),
+      ...enders.map((e) => ({ when: ["cancelable", ...aimed(AIMS[e])], to: e })),
+      ...(states.smash ? [PLAIN_SMASH] : []),
       ...followUps(states[slot] ?? states[line[i - 1]]),
       { when: "animEnd", to: "idle" },
     ];
     const type = next ? "flinch" : (EFFECTS[slot] ?? states[slot]?.type);
     make(slot, states[slot] ?? states[line[i - 1]], type, exits);
-    own.set(slot, new Set([next, ender].filter((s) => s !== undefined)));
+    own.set(slot, new Set([next, ...(i < ENDERS.length ? enders : [])].filter((s) => s !== undefined)));
     if (i === 0 && picks[CLOSE]) {
       make(CLOSE, states[CLOSE] ?? states[slot], type, exits);
       own.set(CLOSE, own.get(slot)!);
     }
   });
-  for (const e of enders) make(e, states[e] ?? states.smash, EFFECTS[e], [...followUps(states[e]), { when: "animEnd", to: "idle" }]);
+  for (const e of enders) make(e, states[e] ?? blowOf(states.smash), EFFECTS[e], [...followUps(states[e]), { when: "animEnd", to: "idle" }]);
   closeIn(states, CLOSE, line.length > 0 && !!picks[CLOSE]);
   aimsIn(states, enders.map((e) => [e, AIMS[e]]), ENDERS);
+  throwIn(states);
   // each window from the margin of its tightest way on, open to the end; one
   // no window makes a combo is still open a frame, to be taken all the same
   const open = new Map<string, number>();
@@ -131,6 +133,16 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
   }
   for (const [slot, by] of open) states[slot] = { ...states[slot], cancelBy: Math.min(states[slot].cancelBy!, by) };
   return { ...file, states };
+}
+
+/**
+ * What a new ender takes of `smash`: its blow — what it costs, sounds like
+ * and is taken as — and nothing of how Smash alone moves, Goku's a hop
+ * (owner, 2026-11-26).
+ */
+function blowOf(smash: StateDef | undefined): StateDef {
+  const { anim = "", vel, turn, type, damage, hitSound, blockSound, hitFx } = smash ?? ({} as StateDef);
+  return { anim, vel, turn, type, damage, hitSound, blockSound, hitFx, transitions: [] };
 }
 
 /**
@@ -145,8 +157,15 @@ function followUps(def: StateDef | undefined): Transition[] {
 }
 
 function isFollowUp(t: Transition): boolean {
-  return t.when !== "animEnd" && !(SLOTS as readonly string[]).includes(t.to);
+  return t.when !== "animEnd" && !(SLOTS as readonly string[]).includes(t.to) && !isPlainSmash(t);
 }
+
+/**
+ * Smash alone in the rush is Smash alone, as standing: an ender is asked for
+ * with its direction, at any depth (owner, 2026-11-26).
+ */
+const PLAIN_SMASH: Transition = { when: ["cancelable", "pressed:smash"], to: "smash" };
+const isPlainSmash = (t: Transition) => t.to === PLAIN_SMASH.to && [t.when].flat().join() === [PLAIN_SMASH.when].flat().join();
 
 /** The rush's links, slot to slot, with the sum each lives or dies by (`chainLinks`). */
 export function rushLinks(file: StatesFile, anims: Record<string, AnimSteps>, baseHitstun: number): Link[] {

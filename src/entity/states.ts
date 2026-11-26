@@ -484,6 +484,18 @@ export interface StateDef {
    * a combo once and is not a loop (owner, 2026-11-26).
    */
   oncePerCombo?: string;
+  /**
+   * On an attack: the shove, px a frame, the reaction it sends him into takes
+   * in place of its own — a charged S2's, less the harder it is (owner,
+   * 2026-11-26).
+   */
+  pushes?: number;
+  /**
+   * On an attack: its blow takes him along — he flies as the attacker does,
+   * the same speed and gravity, so the two stay level: Smash alone, charged
+   * higher each level (owner, 2026-11-26).
+   */
+  carries?: boolean;
   /** On an attack: a guard it meets does not hold, the blow lands as on an open body (a charged S2's top). */
   breaksGuard?: boolean;
   /** An effect put on the floor at a beat while the state plays (`entity/trail.ts`). */

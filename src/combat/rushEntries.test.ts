@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { StateDef } from "../entity/states";
-import { aimed, aimsIn, closeIn } from "./rushEntries";
+import { aimed, aimsIn, closeIn, throwIn } from "./rushEntries";
 
 const ENDERS = ["smash_1", "smash_2", "smash_3"];
 
@@ -45,6 +45,19 @@ describe("aimsIn", () => {
     const states = { ...ground(), charge: { anim: "a", transitions: [{ when: aimed("down"), to: "smash_3" }] } };
     aimsIn(states, [["smash_3", "down"]], ENDERS);
     expect(exits(states, "charge")).toEqual([`${aimed("down").join("+")}>smash_3`]);
+  });
+});
+
+describe("throwIn", () => {
+  it("lets the other button turn a just-begun A1 or Smash into the throw, once, and none without a throw", () => {
+    const states = { ...ground(), rush_1: { anim: "a", transitions: [] }, smash: { anim: "a", transitions: [] }, throw: { anim: "a", transitions: [] } };
+    throwIn(states);
+    throwIn(states);
+    expect(exits(states, "rush_1")).toEqual(["grab+pressed:smash+!frames:3>throw"]);
+    expect(exits(states, "smash")).toEqual(["grab+pressed:attack+!frames:3>throw"]);
+    const { throw: _, ...none } = states;
+    throwIn(none);
+    expect(exits(none, "rush_1")).toEqual([]);
   });
 });
 

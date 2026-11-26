@@ -30,6 +30,8 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackReaction: "hurt",
     attackRelaunch: false,
     attackBreaksGuard: false,
+    attackPushes: undefined,
+    attackCarry: undefined,
     attackHitstun: 12,
     attackFx: "spark_1",
     attackGuardFx: "guard_spark",
@@ -60,6 +62,19 @@ const context = (): BlowContext =>
   ({ effects: { spawn: vi.fn() } }) as unknown as BlowContext;
 
 describe("landBlow", () => {
+  it("hands the defender the shove the attack gives his reaction in place of its own", () => {
+    const defender = body("hurt");
+    landBlow(body("hit", { attackPushes: -0.5 } as Partial<Entity>), defender, context());
+    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ pushes: -0.5 }));
+  });
+
+  it("hands the defender the attacker's flight when his blow takes him along", () => {
+    const defender = body("hurt");
+    const carry = { vx: 2, vy: -10, gravity: 0.469 };
+    landBlow(body("hit", { attackCarry: carry } as Partial<Entity>), defender, context());
+    expect(defender.gotHit).toHaveBeenCalledWith(expect.objectContaining({ carry }));
+  });
+
   it("lands a blow that breaks guard on a guarding body as on an open one", () => {
     const breaker = body("hit", { attackBreaksGuard: true } as Partial<Entity>);
     const guarding = body("hurt", { guarding: true });

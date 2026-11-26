@@ -1,6 +1,6 @@
 import type { StateDef, StatesFile, Transition } from "../entity/states";
 import { HIT_TYPES } from "./hitTypes";
-import { aimed } from "./rushEntries";
+import { aimed, type Aim } from "./rushEntries";
 import { AIMS } from "./rushSlots";
 import { startupOf, type AnimSteps } from "./swing";
 
@@ -41,12 +41,22 @@ interface Sending {
   send: readonly number[];
   types?: readonly (string | undefined)[];
   breaksFrom?: number;
+  /** The shove each level's reaction takes in place of its own, none its own: S2's less the harder (owner, 2026-11-26). */
+  push?: readonly (number | undefined)[];
   /**
    * He drives forward on the blow's pose, held that many frames longer, that
-   * fast, raising dust: S1's kick stays out and slides further each level
-   * (owner, 2026-11-26).
+   * fast, raising dust: S1's kick stays out and slides further each level,
+   * S2's a little way (owner, 2026-11-26).
    */
   lunge?: { hold: readonly number[]; speed: readonly number[] };
+  /**
+   * He hops on the blow, `rise` up each level and `ahead` forward, a puff of
+   * dust as he leaves the floor, and takes the opponent up with him, level
+   * (`carries`): Smash alone, Goku's up sender's hop (owner, 2026-11-26).
+   * Once his blow is spent he has the air's own moves, a jump's — no chain
+   * of the air's own.
+   */
+  hop?: { rise: readonly number[]; ahead: number };
 }
 const SENDING: Record<string, Sending> = {
   smash_1: {
@@ -55,8 +65,17 @@ const SENDING: Record<string, Sending> = {
     types: [undefined, "sendoff", "sendoff", "sendoff"],
     lunge: { hold: [6, 8, 10, 12], speed: [1.5, 2.5, 3.5, 4.5] },
   },
-  smash_2: { lift: [1, 1, 1, 1], send: [1, 1, 1, 1], types: [undefined, "crumple", "crumple_2", "crumple_3"], breaksFrom: 3 },
+  smash_2: {
+    lift: [1, 1, 1, 1],
+    send: [1, 1, 1, 1],
+    types: [undefined, "crumple", "crumple_2", "crumple_3"],
+    breaksFrom: 3,
+    push: [undefined, -3, -2, -0.5],
+    lunge: { hold: [2, 3, 4, 5], speed: [0.6, 1, 1.4, 1.8] },
+  },
   smash_3: { lift: [0.5, 1.1, 1.2, 1.35], send: [1, 1.3, 1.6, 2] },
+  // a level lower each since 2026-11-26: the top was too high
+  smash: { lift: [1, 1, 1, 1], send: [1, 1, 1, 1], types: ["lift", "lift", "lift", "lift"], hop: { rise: [4.5, 6, 8, 10], ahead: 2 } },
 };
 /** The enders that charge. */
 export const CHARGEABLE = Object.keys(SENDING);
@@ -105,7 +124,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   const boost = (n: number) => `${ender}_boost_${n}`;
   // what this puts on the ender, to take out before putting it back
   const ours = (t: Transition) =>
-    t.to.startsWith(`${ender}_charge_`) || t.to.startsWith(`${ender}_boost_`) || (t.to === release(0) && [t.when].flat().join() === "held:boost");
+    t.to.startsWith(`${ender}_charge_`) || t.to.startsWith(`${ender}_boost_`) || (t.to === release(0) && [t.when].flat()[0] === "held:boost");
   const startup = startupOf(anims[s3.anim]);
   const steps = anims[s3.anim]?.steps ?? [];
   const blowStep = steps.findIndex((st) => (st.boxes ?? []).some((b) => b.type === "hit"));
@@ -116,7 +135,9 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   const decide = startup - 2;
   if (pose < 0 || decide < Math.max(poseFrom, 1)) throw new Error(`${s3.anim}'s wind-up's last pose is too short to stop on`);
   const others = (s3.transitions ?? []).filter((t) => !ours(t));
-  const held = (to: string, extra: string[] = []): Transition => ({ when: [`frames:${decide}`, "held:smash", ...extra], to });
+  // asked only while he is still winding up: a press held after the blow is
+  // out starts nothing, or it strikes twice (owner's recording, 2026-11-26)
+  const held = (to: string, extra: string[] = []): Transition => ({ when: [`frames:${decide}`, `!frames:${startup}`, "held:smash", ...extra], to });
   // the reaction each level sends him into, and how far: its own launch scaled
   const scaled = (v: number | null, by: number) => (v === null ? null : Math.round(v * by * 100) / 100);
   const sent = (level: number): Partial<StateDef> => {
@@ -130,15 +151,30 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     };
   };
   const boostCost = AT_ONCE_COST + [1, 2, 3].reduce((sum, level) => sum + costOf(level), 0);
-  // the blow's pose held and driven forward, from `start`, the frame of the state it begins on
+  // the blow's poses driven forward, from `start`, the frame of the state they begin on
+  // the blow's last pose is the one held: the knee at its highest, S2's (owner, 2026-11-26)
+  const lastBlow = steps.reduce((last, st, i) => ((st.boxes ?? []).some((b) => b.type === "hit") ? i : last), -1);
   const lunge = (level: number, start: number): Partial<StateDef> => {
     if (!sending.lunge || blowStep < 0) return {};
-    const until = start + anims[s3.anim].steps[blowStep].dur + sending.lunge.hold[level];
+    const blowFrames = steps.slice(blowStep, lastBlow + 1).reduce((n, st) => n + st.dur, 0);
+    const until = start + blowFrames + sending.lunge.hold[level];
     return {
-      holdStep: blowStep,
+      holdStep: lastBlow,
       holdFrames: until,
       velAt: [[start, sending.lunge.speed[level]], [until, 0]],
       trail: { fx: "dust", every: DUST_EVERY, from: start, to: until },
+    };
+  };
+  // the hop from `start`, the frame of the state it begins on
+  const blowEnds = steps.slice(blowStep, lastBlow + 1).reduce((n, st) => n + st.dur, 0);
+  const hop = (level: number, start: number, blowFrom: number): Partial<StateDef> => {
+    if (!sending.hop) return {};
+    return {
+      air: [[start, { vx: sending.hop.ahead, vy: -sending.hop.rise[level], gravity: "own" }]],
+      trail: { fx: "dust", every: DUST_EVERY, from: start, to: start + 1 },
+      carries: true,
+      // the blow spent, what a jump falling may do
+      inputsOf: { state: "jump_fall", only: "buttons", from: blowFrom + blowEnds },
     };
   };
   const states: Record<string, StateDef> = {
@@ -148,9 +184,12 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       ...s3,
       ...sent(0),
       ...lunge(0, startup),
+      // a frame before the blow is out: in the air when it lands, or there is no flight to take him along on
+      ...hop(0, startup - 1, startup),
       transitions: [
-        { when: ["held:boost", `ki:${boostCost}`], to: boost(1) },
-        { when: "held:boost", to: release(0) },
+        // the boost is asked as the blow begins, never once it is under way
+        { when: ["held:boost", "!frames:1", `ki:${boostCost}`], to: boost(1) },
+        { when: ["held:boost", "!frames:1"], to: release(0) },
         held(COMBO_HOLD, ["combo"]),
         held(hold(0)),
         ...others,
@@ -158,10 +197,13 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     },
   };
   // charging ki: a direction + Smash breaks it off into the blow, at once
+  // Smash alone after every direction's, as standing
+  const direction = AIMS[ender as keyof typeof AIMS] as Aim | undefined;
   for (const name of KI_CHARGE.filter((k) => states[k])) {
-    const aim: Transition = { when: aimed(AIMS[ender as keyof typeof AIMS]), to: ender };
+    const aim: Transition = { when: direction ? aimed(direction) : ["pressed:smash"], to: ender };
     const rest = (states[name].transitions ?? []).filter((t) => t.to !== ender);
-    states[name] = { ...states[name], transitions: [aim, ...rest] };
+    const after = direction ? 0 : rest.reduce((last, t, i) => ([t.when].flat().includes("pressed:smash") ? i + 1 : last), 0);
+    states[name] = { ...states[name], transitions: [...rest.slice(0, after), aim, ...rest.slice(after)] };
   }
   const holdState = (level: number, to: string, after: number): StateDef => ({
     anim: s3.anim,
@@ -205,8 +247,10 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       ...sent(level),
       // let go past the wind-up: the blow's pose comes at once
       ...lunge(level, 0),
+      ...hop(level, 0, 0),
       ...(level === 3 && { hitFlash: TOP_FLASH }),
       ...(sending.breaksFrom !== undefined && level >= sending.breaksFrom && { breaksGuard: true }),
+      ...(sending.push?.[level] !== undefined && { pushes: sending.push[level] }),
       transitions: others,
     };
   }

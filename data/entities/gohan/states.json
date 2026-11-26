@@ -158,13 +158,6 @@
           "to": "sender_a0"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "command:a2",
           "to": "rushing_uppercut"
         },
@@ -200,12 +193,20 @@
           "to": "suki_combo"
         },
         {
+          "when": [
+            "grab",
+            "pressed:attack",
+            "pressed:smash"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "pressed:attack",
           "to": "rush_1"
         },
         {
           "when": [
-            "held:back",
+            "held:fwd",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -214,7 +215,7 @@
         },
         {
           "when": [
-            "held:fwd",
+            "held:back",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -322,13 +323,6 @@
           "to": "sender_a0"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "command:a2",
           "to": "rushing_uppercut"
         },
@@ -364,12 +358,20 @@
           "to": "suki_combo"
         },
         {
+          "when": [
+            "grab",
+            "pressed:attack",
+            "pressed:smash"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "pressed:attack",
           "to": "rush_1"
         },
         {
           "when": [
-            "held:back",
+            "held:fwd",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -378,7 +380,7 @@
         },
         {
           "when": [
-            "held:fwd",
+            "held:back",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -482,13 +484,6 @@
           "to": "sender_a0"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "command:a2",
           "to": "rushing_uppercut"
         },
@@ -524,12 +519,20 @@
           "to": "suki_combo"
         },
         {
+          "when": [
+            "grab",
+            "pressed:attack",
+            "pressed:smash"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "pressed:attack",
           "to": "rush_1"
         },
         {
           "when": [
-            "held:back",
+            "held:fwd",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -538,7 +541,7 @@
         },
         {
           "when": [
-            "held:fwd",
+            "held:back",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -633,13 +636,6 @@
           "to": "sender_a0"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "command:a2",
           "to": "rushing_uppercut"
         },
@@ -675,6 +671,14 @@
           "to": "suki_combo"
         },
         {
+          "when": [
+            "grab",
+            "pressed:attack",
+            "pressed:smash"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "pressed:strike",
           "to": "attack_x"
         },
@@ -684,7 +688,7 @@
         },
         {
           "when": [
-            "held:back",
+            "held:fwd",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -693,7 +697,7 @@
         },
         {
           "when": [
-            "held:fwd",
+            "held:back",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -767,13 +771,6 @@
           "to": "sender_a0"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "command:a2",
           "to": "rushing_uppercut"
         },
@@ -809,6 +806,14 @@
           "to": "suki_combo"
         },
         {
+          "when": [
+            "grab",
+            "pressed:attack",
+            "pressed:smash"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "pressed:strike",
           "to": "attack_x"
         },
@@ -818,7 +823,7 @@
         },
         {
           "when": [
-            "held:back",
+            "held:fwd",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -827,7 +832,7 @@
         },
         {
           "when": [
-            "held:fwd",
+            "held:back",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -895,13 +900,6 @@
           "to": "sender_a0"
         },
         {
-          "when": [
-            "grab",
-            "command:9d"
-          ],
-          "to": "throw"
-        },
-        {
           "when": "command:a2",
           "to": "rushing_uppercut"
         },
@@ -937,12 +935,20 @@
           "to": "suki_combo"
         },
         {
+          "when": [
+            "grab",
+            "pressed:attack",
+            "pressed:smash"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "pressed:attack",
           "to": "rush_1"
         },
         {
           "when": [
-            "held:back",
+            "held:fwd",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -951,7 +957,7 @@
         },
         {
           "when": [
-            "held:fwd",
+            "held:back",
             "!held:down",
             "!held:up",
             "pressed:smash"
@@ -1335,6 +1341,14 @@
       "blockSound": "block_17",
       "transitions": [
         {
+          "when": [
+            "grab",
+            "pressed:smash",
+            "!frames:3"
+          ],
+          "to": "throw"
+        },
+        {
           "when": "animEnd",
           "to": "idle"
         }
@@ -1388,6 +1402,14 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "transitions": [
+        {
+          "when": [
+            "grab",
+            "pressed:attack",
+            "!frames:3"
+          ],
+          "to": "throw"
+        },
         {
           "when": "animEnd",
           "to": "idle"
@@ -2381,8 +2403,8 @@
       ]
     },
     "crumple": {
-      "_comment": "Crumple (owner, 2026-11-26): pushed back, the heavy reel played once, then stunned on his feet in its last pose, open to a new combo for as long as the blow holds him; then he stands. Once a combo: given again, the knockdown.",
-      "anim": "m16",
+      "_comment": "Crumple (owner, 2026-11-26): the light reel's pose, pushed back and held for as long as the blow holds him — no pause on the blow, so he who struck goes on at once to a new combo; then he stands. Once a combo: given again, the knockdown.",
+      "anim": "m15",
       "rank": 1,
       "shove": -2.5,
       "shoveFor": 10,
@@ -2394,6 +2416,20 @@
         {
           "when": "stunEnd",
           "to": "idle"
+        }
+      ]
+    },
+    "lifted": {
+      "_comment": "Lift (owner, 2026-11-26): taken up along with whoever struck him, flying as he does (`carries`), level with him; down flat on landing. Rank 1, the lowest a reaction has: a blow in the air takes him as any falling body, his juggle.",
+      "anim": "m1e",
+      "rank": 1,
+      "airborne": true,
+      "turn": false,
+      "sound": "voice_hurt",
+      "transitions": [
+        {
+          "when": "landed",
+          "to": "down_bounce"
         }
       ]
     },

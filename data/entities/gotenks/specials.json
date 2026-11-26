@@ -22,7 +22,8 @@
       ],
       "when": [
         "grab",
-        "command:9d"
+        "pressed:attack",
+        "pressed:smash"
       ],
       "to": "throw"
     },

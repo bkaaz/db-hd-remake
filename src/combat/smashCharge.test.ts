@@ -41,6 +41,7 @@ function heldForAt(frames: number, combo = false, ki = 60): [string, number] {
         if (w === "!held:smash") return !held;
         if (w === "combo") return combo;
         if (w.startsWith("frames:")) return inState >= Number(w.slice(7));
+        if (w.startsWith("!frames:")) return inState < Number(w.slice(8));
         if (w.startsWith("!ki:")) return ki < Number(w.slice(4));
         return false;
       }),
@@ -53,8 +54,25 @@ function heldForAt(frames: number, combo = false, ki = 60): [string, number] {
 
 describe("withCharge", () => {
   it("stops on the wind-up's pose while Smash is held, before the hit box is out", () => {
-    expect(exits("smash_3").slice(2, 4)).toEqual(["frames:3+held:smash+combo>smash_3_charge_1_combo", "frames:3+held:smash>smash_3_charge_0"]);
+    expect(exits("smash_3").slice(2, 4)).toEqual(["frames:3+!frames:5+held:smash+combo>smash_3_charge_1_combo", "frames:3+!frames:5+held:smash>smash_3_charge_0"]);
     expect(made.states.smash_3_charge_0).toMatchObject({ anim: "s3", holdStep: 0 });
+  });
+
+  it("starts no charge on a press held once the blow is out, or it would strike twice", () => {
+    // let go at once, pressed again from the frame the hit box is out (owner's recording, 2026-11-26)
+    let state = "smash_3";
+    for (let f = 0; f < 30; f++) {
+      const next = (made.states[state].transitions ?? []).find((t) =>
+        [t.when].flat().every((w) => {
+          if (w === "held:smash") return f >= 5;
+          if (w.startsWith("frames:")) return f >= Number(w.slice(7));
+          if (w.startsWith("!frames:")) return f < Number(w.slice(8));
+          return false;
+        }),
+      );
+      if (next) state = next.to;
+    }
+    expect(state).toBe("smash_3");
   });
 
   it("leaves a tap a plain S3: let go before the first level, it is worth what S3 is", () => {
@@ -111,7 +129,7 @@ describe("withCharge", () => {
   });
 
   it("plays the charge fast with RB held, the world still, into the top: for the whole charge and a bar more", () => {
-    expect(exits("smash_3").slice(0, 2)).toEqual(["held:boost+ki:20>smash_3_boost_1", "held:boost>smash_3_lv0"]);
+    expect(exits("smash_3").slice(0, 2)).toEqual(["held:boost+!frames:1+ki:20>smash_3_boost_1", "held:boost+!frames:1>smash_3_lv0"]);
     expect([1, 2, 3].map((n) => exits(`smash_3_boost_${n}`))).toEqual([["frames:6>smash_3_boost_2"], ["frames:6>smash_3_boost_3"], ["frames:6>smash_3_max"]]);
     expect([1, 2, 3].reduce((sum, n) => sum + (made.states[`smash_3_boost_${n}`].cost ?? 0), 0)).toBe(20);
     expect(made.states.smash_3_boost_1.freezesFoe).toBe(18);
@@ -142,7 +160,7 @@ describe("withCharge", () => {
     const two = { s3: { steps: [{ dur: 5 }, { dur: 5 }, { dur: 6, boxes: [hit] }, { dur: 9 }] } };
     const charged = withCharge(file, two, "smash_3");
     expect(charged.states.smash_3_charge_0.holdStep).toBe(1);
-    expect(charged.states.smash_3.transitions?.[3]).toEqual({ when: ["frames:8", "held:smash"], to: "smash_3_charge_0" });
+    expect(charged.states.smash_3.transitions?.[3]).toEqual({ when: ["frames:8", "!frames:10", "held:smash"], to: "smash_3_charge_0" });
   });
 
   it("will not charge a wind-up too short to stop on", () => {
@@ -171,7 +189,7 @@ describe("withCharge on S1", () => {
   });
 
   it("is charged under its own names, the way in on S1", () => {
-    expect(s1.states.smash_1.transitions?.[3]).toEqual({ when: ["frames:3", "held:smash"], to: "smash_1_charge_0" });
+    expect(s1.states.smash_1.transitions?.[3]).toEqual({ when: ["frames:3", "!frames:5", "held:smash"], to: "smash_1_charge_0" });
     expect(s1.states.smash_1_charge_3.transitions?.[0]).toEqual({ when: "!held:smash", to: "smash_1_lv3" });
   });
 
@@ -188,6 +206,24 @@ describe("withCharge on S1", () => {
     expect(s1.states.smash_1_lv2.velAt![0][1]).toBeGreaterThan(s1.states.smash_1_lv1.velAt![0][1]);
   });
 
+  it("holds the blow's last pose where it has more than one, the knee at its highest", () => {
+    const knee = { s3: { steps: [{ dur: 4 }, { dur: 6, boxes: [hit] }, { dur: 6, boxes: [hit] }, { dur: 4 }] } };
+    const kneed = withCharge(s1File, knee, "smash_1");
+    expect(kneed.states.smash_1).toMatchObject({ holdStep: 2, holdFrames: 4 + 6 + 6 + 6 });
+  });
+
+  it("hops Smash alone higher each level and takes him up along, a lift at every level", () => {
+    const plain = withCharge({ ...s1File, states: { ...s1File.states, smash: { ...s1File.states.smash_1, type: "heavy" } } }, anims, "smash");
+    const rises = [0, 1, 2, 3].map((n) => (plain.states[`smash_lv${n}`].air![0][1] as { vy: number }).vy);
+    expect(rises).toEqual([...rises].sort((a, b) => b - a));
+    expect(new Set(rises).size).toBe(4);
+    expect([0, 1, 2, 3].map((n) => [plain.states[`smash_lv${n}`].type, plain.states[`smash_lv${n}`].carries])).toEqual(Array(4).fill(["lift", true]));
+    // the blow spent, a jump's moves in the air: no chain of the air's own
+    expect(plain.states.smash_lv2.inputsOf).toEqual({ state: "jump_fall", only: "buttons", from: 6 });
+    // off the floor a frame before the blow is out, so it has a flight to take him on
+    expect(plain.states.smash.air![0][0]).toBe(4);
+  });
+
   it("leaves S3 where he stands", () => {
     expect(made.states.smash_3_lv3.velAt).toBeUndefined();
   });
@@ -197,6 +233,10 @@ describe("withCharge on S1", () => {
     expect([0, 1, 2, 3].map((n) => s2.states[`smash_2_lv${n}`].type)).toEqual(["down", "crumple", "crumple_2", "crumple_3"]);
     expect([0, 1, 2, 3].map((n) => s2.states[`smash_2_lv${n}`].breaksGuard)).toEqual([undefined, undefined, undefined, true]);
     expect(s2.states.smash_2_max.breaksGuard).toBe(true);
+    // pushed back the less the harder: least where it breaks a guard
+    const pushes = [1, 2, 3].map((n) => -(s2.states[`smash_2_lv${n}`].pushes ?? 0));
+    expect(pushes).toEqual([...pushes].sort((a, b) => b - a));
+    expect(new Set(pushes).size).toBe(3);
   });
 
   it("charges only the enders it knows how to send", () => {

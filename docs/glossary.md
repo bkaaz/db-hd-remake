@@ -56,7 +56,7 @@ change.
 - **Rehit** — frames before a blow may connect again while its box is still out. → `combat/swing.ts`
 - **Relaunch** — a blow allowed to lift or floor a body already juggled, from a budget per combo. → `combat.md` §4
 - **Rules** — what holds for both sides of a fight alike, never a fighter's attribute. → `data/rules.json`, `match/rules.ts`
-- **Rush** — the string the Attack button walks; Smash ends it. → `combat.md` (The buttons)
+- **Rush** — the string the Attack button walks; a direction + Smash ends it in the ender it names. → `combat.md` (The buttons)
 - **SA-1** — the cartridge's second CPU, which runs the fight. → `rom.md`
 - **Scaling** — each blow of a combo worth less, in damage and hitstun. → `combat.md` §3, `combat/scaling.ts`
 - **Seize** — a scene on the opponent: set down, flown and let go hurt. → `match/seize.ts`, ADR 0035
@@ -65,10 +65,11 @@ change.
 - **Shove** — a reaction's knockback, a speed that dies out each frame; not `push`. → `combat.md`
 - **Situation flag** (`airborne`, `crouching`) — what redirects a reaction without the attack knowing. → ADR 0019
 - **Slam** — a blow that drives the body down rather than lifting it. → `combat.md`
-- **Smash** — the button that ends a rush; with a direction, the ender it names (S1 back, S2 forward, S3 down). → `combat.md` (The buttons)
+- **Smash** — the button that ends a rush; with a direction, the ender it names (S1 forward, S2 back, S3 down). → `combat.md` (The buttons)
 - **Charged ender** — S1, S2 or S3 held to charge it, three levels over the plain one (`smash_3_lv1`–`3`). → `combat.md` (The buttons)
 - **Boost** — RB (`W`) held with a move that charges: its charge played fast while the world stands still, for ki (`smash_3_boost_1`, `kame_boost`). → `combat.md` (The buttons)
-- **Crumple** — stunned on his feet after a charged S2, in the heavy reel's last pose, open to a new combo, once a combo (`crumple`). → `combat.md` (A blow is an animation plus a hit type)
+- **Crumple** — stunned on his feet after a charged S2, the light reel held, open to a new combo, once a combo (`crumple`). → `combat.md` (A blow is an animation plus a hit type)
+- **Lift** — taken up along with the attacker, level with him (`carries`): Goku's Smash alone. → `combat.md` (A blow is an animation plus a hit type)
 - **Wall bounce** — a body sent off (`sendoff`) meeting the screen's edge, thrown back and open to a blow. → `combat.md` (A blow is an animation plus a hit type)
 - **Song** — one of the cartridge's pieces of music, by its number. → ADR 0092
 - **Spawn** — anything a state brings into the world, an ordinary `Entity`. → ADR 0014

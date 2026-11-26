@@ -52,5 +52,31 @@
         "to": "idle"
       }
     ]
+  },
+  "smash": {
+    "anim": "m9f",
+    "air": [
+      [
+        8,
+        {
+          "vx": 2,
+          "vy": -6,
+          "gravity": "own"
+        }
+      ]
+    ],
+    "holdStep": 3,
+    "trail": {
+      "fx": "dust",
+      "every": 4,
+      "from": 8,
+      "to": 9
+    },
+    "transitions": [
+      {
+        "when": "landed",
+        "to": "land"
+      }
+    ]
   }
 }

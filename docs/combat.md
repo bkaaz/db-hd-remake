@@ -26,7 +26,8 @@ pad out (owner, 2026-11-24; `inspiration.md`). Which key is which is
 | **Smash** | Y | `S` | ends the string, at any depth, with a heavier blow |
 | **Charge** | LB | `Q` | held, fills the ki meter |
 | **Boost** | RB | `W` | held with a move that charges, has the whole charge at once, for ki |
-| **Strike** | LT | `E` | the original's X, for its throw and its senders, until they are ours |
+| **Strike** | LT | `E` | the original's X, for its senders, until they are ours |
+| **Throw** | X + Y | `A` + `S` | Attack and Smash together, the opponent in reach (`grab`), ahead of either alone, for every fighter (owner, 2026-11-26); the other a frame or two late turns the A1 or Smash just begun into it (`throwIn`) |
 
 The other trigger, Start and the grab and taunt of Burst Limit have nothing
 yet. Attack and Smash play `rush_1` and `smash` from standing, the
@@ -38,14 +39,21 @@ its command row's price, and it does not come out without it. The meter holds
 60 — six levels of 10, the HUD's six bars, so a cost of 5 or 10 is half a
 level or one — and every fighter starts a fight with 30 (owner, 2026-11-24).
 
-**The rush is a tree.** Attack walks one line, Smash branches off it at every
-depth and ends it, and Smash alone is a move of its own:
+**The rush is a tree.** Attack walks one line, and a direction + Smash
+branches off it at any depth into the ender that direction names — the
+player picks the end, the depth does not (owner, 2026-11-26). Smash alone is
+Smash alone, in the rush as standing:
 
 ```
 A → A → A → A
 ↓   ↓   ↓   ↓
-S   S   S   S      (and S alone, from neutral)
+→S  →S  →S  →S     S1
+←S  ←S  ←S  ←S     S2
+↓S  ↓S  ↓S  ↓S     S3      (S alone: Smash, anywhere)
 ```
+
+A direction is a choice: one held out of habit picks for him, on purpose — a
+direction means what he asks for, not where he walks (owner, 2026-11-26).
 
 **A fighter has a rush only once the owner accepts how it plays** (owner,
 2026-11-24); until then Attack is one blow. Goku's is the Quad Kick's four
@@ -71,8 +79,7 @@ nothing — an accepted rush is its picks in his `rush.json`, and `npm run
 states` makes the rest. Which blow stands where is still to choose.
 
 **How each end of the rush is taken is a rule, the same for every fighter**
-(owner, 2026-11-25); only the animations are his. The deeper, the better the
-end: A4 and S1 send him off (`knockback`), S2 floors him (`down`), S3 lifts
+(owner, 2026-11-25); only the animations are his. A4 and S1 send him off (`knockback`), S2 floors him (`down`), S3 lifts
 him (`launch`) for a ki follow-up — provisional, as `EFFECTS`
 in `combat/rushSlots.ts` says; the panel tries another effect on any slot.
 Goku's S3 cancels into back + Ki, his upward Kamehameha, and every A and S
@@ -80,14 +87,14 @@ of his into forward + Ki, from the frame its hit box is gone (owner,
 2026-11-25); a slot's own ways out stay through a new pick.
 
 **A direction + Smash asks for an ender wherever Smash is pressed** (owner,
-2026-11-25), for every fighter: back + S is S1, forward + S is S2, down + S
-is S3 — standing, crouching (over the crouching Smash) and in the rush, where
-Smash alone is the ender of its depth (`AIMS`, `combat/rushEntries.ts`). The
+2026-11-25), for every fighter: forward + S is S1, back + S is S2 (swapped
+2026-11-26), down + S is S3 — standing, crouching (over the crouching Smash) and at any depth of
+the rush, where Smash alone is Smash (`AIMS`, `combat/rushEntries.ts`). The
 direction counts alone, so down-back + S crouching is still the crouching
 Smash. It wins over a command of the cartridge on → + S: Goku's Double Kick
 and Vegetto's Forward Kick have no way in. A depth's window is timed by its
-own ways on, Attack and Smash alone; a direction's ender there may not be a
-combo (`npm run chains`). Every fighter has S1–S3; all but Goku's are the
+own ways on, Attack and before A4 every ender; Smash alone, and anything off
+A4, may not be a combo (`npm run chains`). Every fighter has S1–S3; all but Goku's are the
 standing Smash, the crouching one and the crouching Attack until picked, and
 their Attack, still one blow, does not lead into them yet.
 
@@ -98,9 +105,14 @@ from the first level it sends him off (`sendoff`): flat, in the pose of a
 body sent to another arena but kept in this one, further each level. S1's
 kick stays out longer and drives him forward on it, raising dust, faster and
 further each level (`lunge`). S1 and S3 end a combo; S2 opens the next:
-its tap only staggers him, Goku's (his `rush.json`), and from the first level he is stunned (`crumple`):
-pushed back, the heavy reel played once and its last pose held — not
-looped, which looks wrong (owner, 2026-11-26) — longer each level, open to a new rush, then on his feet again — once a combo,
+Goku's is his down sender's kick (`b_a1`, frames 108 to 110 and 5 as `ma1`
+has them, its wind-up cut from 18 frames to 6 to combo off the rush, and
+no hop), driving him a little way forward, raising dust (`lunge`); its tap only staggers him, Goku's (his `rush.json`), and from the first level he is stunned (`crumple`):
+pushed back — the less the harder, least where it breaks a guard
+(`pushes`) — into the light reel's pose and held there, with no pause on the
+blow and nothing on the art, so he who struck goes on at once
+(owner, 2026-11-26: a pose held alone, a loop and a slow motion all looked
+wrong) — longer each level, open to a new rush, then on his feet again — once a combo,
 the second floors him (`oncePerCombo`) — and its top breaks a guard
 (`breaksGuard`): the answer to a guard and to a charge braced against blows.
 Below, S3 stands for any. He stops on the wind-up's last pose and lets go when Smash does —
@@ -130,6 +142,16 @@ S3 — standing, crouching, in the rush, or breaking off the ki charge — play
 their three levels in 18 frames (`combat/smashCharge.ts`); Goku's
 Kamehameha its pose and ball, into the large one (`kame_boost`, his
 `specials.json`), else the small one.
+
+**Goku's Smash alone is his up sender's hop** (owner, 2026-11-26; `m9f`,
+his `overrides.json`): he crouches, hops forward on the blow and lands into
+`land`, sending nobody anywhere. It charges as the enders do, and lifts him
+at every level (`lift`): its blow takes him along (`carries`), flying as Goku
+does, so the two stay level the whole way, higher each level. Once his blow
+is spent he has a jump's moves (`inputsOf` `jump_fall`): the air Attack and
+Smash and the dive — no chain of the air's own (owner, 2026-11-26). Lifted,
+he is a reaction of the lowest rank, so a blow in the air juggles him. An ender new to a rush takes only Smash's
+blow — its cost, sounds and type — never how it moves (`rushSlots.ts`).
 
 **In the air** (owner, 2026-11-26), forward + S is the fighter's dive: the
 cartridge's → ↓ + Smash move — Goku's Slash Down Kick and its kind — or the
@@ -204,7 +226,8 @@ a blow that needs another reaction is another type.
 | high | `hi` | the original's high knockdown (move `1e`): thrown steeply up, hittable until it lands |
 | trip | `tr` | the original's short knockdown (move `19`): no bounce, up again 12 frames after landing |
 | halt | `ha` | the original's heavy reel stopped dead, no push (`$0D:D622`) — Saiyan Meteor's opening blow |
-| crumple | `cr` `cl` `cx` | pushed back and stunned on his feet, the heavy reel once, then its last pose held, 40, 55 or 70 frames, open to a new combo, then standing; once a combo — a charged S2 |
+| crumple | `cr` `cl` `cx` | pushed back and stunned on his feet, the light reel's pose held, no pause on the blow, 40, 55 or 70 frames, open to a new combo, then standing; once a combo — a charged S2 |
+| lift | `lf` | taken up along with the attacker, level with him the whole flight (`carries`), down flat on landing — Smash alone, charged or not |
 | sendoff | `so` | thrown flat across the screen; off its edge he bounces back, a little health and a thud, no burst yet, and can be hit on the way (`wall_bounce`) before he lands and lies — a charged S1 |
 
 In conversation a blow is written as its code plus **any frame of the move** —
