@@ -115,9 +115,11 @@ const VANISH_LIMIT = 3;
 /** Heard as he vanishes: the teleport's, as Goku's sounds it (owner, 2026-11-26). */
 const VANISH_SOUND = "teleport_29";
 /**
- * Frames the opponent flies before a vanish comes out after him: pressed
- * sooner, he stays gone the longer; later, out after VANISH_FRAMES (owner,
- * 2026-11-26). So he is placed as he comes out, not as he goes.
+ * Frames the opponent flies before a vanish starts coming out after him:
+ * pressed sooner, he stays gone the longer (owner, 2026-11-26). From then the
+ * opponent hangs where he is for VANISH_FRAMES, and he comes out: a body
+ * falling on through them would reach the floor, where the high reel cannot
+ * be touched (`combat/hitGate.ts`; owner, 2026-11-27).
  */
 const VANISH_FLOWN = 18;
 /** Each chase after the first sends him this much faster again; above a jump's height, down (owner, 2026-11-26). */
@@ -377,26 +379,23 @@ function chased(states: Record<string, StateDef>, blow: string, { vanish, chase,
   const struck = states[blow];
   // out where he is, in the air too, hanging there until the blow is out
   const hang = { airborne: true, air: [[0, { vx: 0, vy: 0, gravity: 0 }]] as StateDef["air"] };
+  const gone = { anim: anim ?? struck.anim, vel: [0, 0] as [number, number], turn: false, ...hang, damage: 0, hidden: true, invulnerable: true, pushless: true };
+  const out = `${vanish}_out`;
   states[vanish] = {
-    anim: anim ?? struck.anim,
-    vel: [0, 0],
-    turn: false,
-    ...hang,
-    damage: 0,
-    hidden: true,
-    invulnerable: true,
-    pushless: true,
+    ...gone,
     cost: VANISH_COST,
     sound: VANISH_SOUND,
     vanishes: true,
-    // out once he has flown far enough, sooner where the flight is ending
-    // (Smash's low lift), at once once he flies no more (a wall)
+    // coming out once he has flown far enough, sooner where the flight is
+    // ending (Smash's low lift), at once once he flies no more (a wall)
     transitions: [
-      { when: [`frames:${VANISH_FRAMES}`, `flown:${VANISH_FLOWN}`], to: chase },
-      { when: [`frames:${VANISH_FRAMES}`, "landing"], to: chase },
-      { when: [`frames:${VANISH_FRAMES}`, "!chase"], to: chase },
+      { when: `flown:${VANISH_FLOWN}`, to: out },
+      { when: "landing", to: out },
+      { when: "!chase", to: out },
     ],
   };
+  // the opponent held where he is while he comes out, so a low flight is still in reach
+  states[out] = { ...gone, stillsFoe: true, transitions: [{ when: `frames:${VANISH_FRAMES}`, to: chase }] };
   // the blow played whole, its wind-up too: he comes out of nothing, already in
   // reach, so no lunge; sending him at the top's speed every time, to the edge;
   // a fall like a jump's once it is thrown

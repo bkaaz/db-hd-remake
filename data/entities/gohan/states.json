@@ -5291,24 +5291,45 @@
       "vanishes": true,
       "transitions": [
         {
-          "when": [
-            "frames:6",
-            "flown:18"
-          ],
-          "to": "smash_1_chase_down"
+          "when": "flown:18",
+          "to": "smash_1_vanish_down_out"
         },
         {
-          "when": [
-            "frames:6",
-            "landing"
-          ],
-          "to": "smash_1_chase_down"
+          "when": "landing",
+          "to": "smash_1_vanish_down_out"
         },
         {
-          "when": [
-            "frames:6",
-            "!chase"
-          ],
+          "when": "!chase",
+          "to": "smash_1_vanish_down_out"
+        }
+      ]
+    },
+    "smash_1_vanish_down_out": {
+      "anim": "mc3",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "damage": 0,
+      "hidden": true,
+      "invulnerable": true,
+      "pushless": true,
+      "stillsFoe": true,
+      "transitions": [
+        {
+          "when": "frames:6",
           "to": "smash_1_chase_down"
         }
       ]
@@ -5406,24 +5427,45 @@
       "vanishes": true,
       "transitions": [
         {
-          "when": [
-            "frames:6",
-            "flown:18"
-          ],
-          "to": "smash_1_chase"
+          "when": "flown:18",
+          "to": "smash_1_vanish_out"
         },
         {
-          "when": [
-            "frames:6",
-            "landing"
-          ],
-          "to": "smash_1_chase"
+          "when": "landing",
+          "to": "smash_1_vanish_out"
         },
         {
-          "when": [
-            "frames:6",
-            "!chase"
-          ],
+          "when": "!chase",
+          "to": "smash_1_vanish_out"
+        }
+      ]
+    },
+    "smash_1_vanish_out": {
+      "anim": "ma6_2",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "damage": 0,
+      "hidden": true,
+      "invulnerable": true,
+      "pushless": true,
+      "stillsFoe": true,
+      "transitions": [
+        {
+          "when": "frames:6",
           "to": "smash_1_chase"
         }
       ]

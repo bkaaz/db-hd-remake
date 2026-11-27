@@ -336,7 +336,10 @@ charged S1 (`sent_off`, `chaseable`), or off S3 or Smash at any level (their
 blow `opensChase` on whatever it sends him into), RB pressed (`pressed:boost`) spends a bar
 and he vanishes — his drawing left behind thinning into a lattice of pixels,
 to the teleport's sound, and built up again where he comes out (`fx/dissolve.ts`) — comes out — pressed early, only once the opponent has flown a little
-(`flown:N`) or once his flight is about to end (`landing`), later at once — past the
+(`flown:N`) or once his flight is about to end (`landing`), later at once, the
+opponent hanging where he is from then on, so a low flight stays in reach; not
+at all, the bar kept, where he is about to be out of reach (the high reel's
+last 16 px, `combat/hitGate.ts`; owner, 2026-11-27) — past the
 opponent on the side he goes (his last frame's move); off a wall, between it
 and him, so he is sent across rather than back into it, the blow's middle on
 him as he flies off from there; as far as the screen's edge lets him — or,

@@ -242,15 +242,17 @@ describe("withCharge on S1", () => {
     const way = { when: ["chase", "pressed:boost", "!chased:3"], to: "smash_1_vanish" };
     // out beside him, past the blow's far edge: the fixture's 20 + 20, and 12 more
     expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, sound: "teleport_29", vanishes: true });
-    // the opponent flies on while he is gone, and he is placed as he comes out
+    // the opponent flies on while he waits, and hangs where he is while he comes out
     expect(s1.states.smash_1_vanish.stillsFoe).toBeUndefined();
+    expect(s1.states.smash_1_vanish_out).toMatchObject({ hidden: true, invulnerable: true, stillsFoe: true, transitions: [{ when: "frames:6", to: "smash_1_chase" }] });
+    expect(s1.states.smash_1_vanish_out.cost).toBeUndefined();
     expect(s1.states.smash_1_chase).toMatchObject({ appears: 52, quickens: 0.25, sinksAbove: true });
     expect(s1.states.smash_1_chase.velAt).toBeUndefined();
-    // pressed early, gone until he has flown far enough; out at once if he flies no more
+    // pressed early, gone until he has flown far enough; coming out at once if he flies no more
     expect(s1.states.smash_1_vanish.transitions).toEqual([
-      { when: ["frames:6", "flown:18"], to: "smash_1_chase" },
-      { when: ["frames:6", "landing"], to: "smash_1_chase" },
-      { when: ["frames:6", "!chase"], to: "smash_1_chase" },
+      { when: "flown:18", to: "smash_1_vanish_out" },
+      { when: "landing", to: "smash_1_vanish_out" },
+      { when: "!chase", to: "smash_1_vanish_out" },
     ]);
     expect(s1.states.smash_1_chase).toMatchObject({ type: s1.states.smash_1_lv1.type, damage: s1.states.smash_1_lv1.damage, replays: true, forces: true, stillsFoe: true });
     for (const name of ["idle", "smash_1", "smash_1_lv0", "smash_1_lv3"]) expect(s1.states[name].transitions?.[0]).toEqual(way);

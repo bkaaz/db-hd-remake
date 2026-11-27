@@ -99,6 +99,9 @@ export interface WorldInput {
 
 
 /** What a fighter needs to know of the other one: where he stands, and whether he could be thrown. */
+/** Frames from an RB to the vanish's hold on the opponent: he falls on through them (`outOfReachSoon`). */
+const HOLD_LAG = 3;
+
 export interface Opponent {
   x: number;
   /** Where his feet are, in world px: a vanish comes out at his height. */
@@ -110,6 +113,8 @@ export interface Opponent {
   stunned?: boolean;
   /** Flying off a blow a vanish may chase (`chaseable`). */
   chaseable?: boolean;
+  /** No blow touches him now, or will by the time a vanish holds him (`combat/hitGate.ts`): it would come out at nothing. */
+  outOfReachSoon?: boolean;
   /** Frames he has flown so, none when not (`flown:N`). */
   flown?: number;
   /** Which way he moved last frame, −1, 0 or 1: past him is the way he goes, not away from the attacker. */
@@ -680,7 +685,20 @@ export class Entity {
   }
 
   get invulnerable(): boolean {
-    return this.held || !!this.sm?.def.invulnerable || outOfReach(moveOf(this.animation), Number(this.animation.split("_")[1] ?? 1), (this.groundY - this.y) / this.scale);
+    return this.held || !!this.sm?.def.invulnerable || this.outOfReachAt(this.y);
+  }
+
+  /**
+   * Out of reach now or once he has fallen on for the frames between an RB
+   * and the vanish's hold taking him — a frame each for the press, the
+   * coming out and the freeze to reach him (`Opponent.outOfReachSoon`).
+   */
+  get outOfReachSoon(): boolean {
+    return this.invulnerable || this.outOfReachAt(this.y + HOLD_LAG * Math.max(0, this.vy) * this.scale);
+  }
+
+  private outOfReachAt(y: number): boolean {
+    return outOfReach(moveOf(this.animation), Number(this.animation.split("_")[1] ?? 1), (this.groundY - y) / this.scale);
   }
 
   /**
@@ -1756,7 +1774,9 @@ export class Entity {
     this.foe = opponent;
     if (!opponent?.inCombo) this.chases = 0;
     // a chase holds him still until its blow lands
-    if (this.sm?.def.stillsFoe && !this.swing.spent) this.foeFreeze = 1;
+    // a state with no blow of its own holds him for good: a vanish's coming out, whose last blow did land
+    const blowless = this.attackReaction === undefined && this.attackDamage === 0;
+    if (this.sm?.def.stillsFoe && (blowless || !this.swing.spent)) this.foeFreeze = 1;
     if (this.previewing) {
       // a hold's drawings go step for step with the thrower, who waits out a freeze too
       if (this.freezeFrames > 0) this.freezeFrames--;
@@ -1899,7 +1919,8 @@ export class Entity {
         spawnEnded: this.thrown === 0,
         charged: this.charge >= 1,
         combo: opponent?.stunned === true,
-        chase: opponent?.chaseable === true,
+        // not at one no blow can touch: RB then does nothing, rather than spend a bar on a miss
+        chase: opponent?.chaseable === true && !opponent.outOfReachSoon,
         chased: this.chases,
         flown: opponent?.flown ?? 0,
         landing: opponent?.chaseable === true && opponent.nearGround === true,
