@@ -282,6 +282,14 @@ describe("withCharge on S1", () => {
     expect(s1.states.smash_1_chase.transitions?.some((t) => t.when === "connected" && t.to === "jump_fall")).toBe(false);
   });
 
+  it("starts the chase's blow part-way where the fighter asks: a quick one", () => {
+    const quick = withCharge(s1File, anims, "smash_1", { chaseStartsAt: 4 }).states.smash_1_chase;
+    expect(quick.startsAt).toBe(4);
+    // its hang begins where it starts: keyed to frame 0, it never would, and he would fall through the kick
+    expect(quick.air).toEqual([[4, { vx: 0, vy: 0, gravity: 0 }]]);
+    expect(s1.states.smash_1_chase.startsAt).toBeUndefined();
+  });
+
   it("chases down too where the fighter names a blow for it: RB and down, out over him, driving him into the floor", () => {
     const down = withCharge(s1File, anims, "smash_1", { chaseDownAnim: "s3" });
     expect(down.states.smash_1_vanish_down).toMatchObject({ hidden: true, cost: 10, vanishes: true });

@@ -148,7 +148,7 @@ const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
 export type ChargeOptions = Omit<Charged, "ender">;
 
 /** `file` with `ender` charged: its holds, its releases, and its way into them. */
-export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, chaseAnim, chaseRises, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
+export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, chaseAnim, chaseRises, chaseStartsAt, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
   const sending = SENDING[ender];
   if (!sending) throw new Error(`${ender} does not charge: ${CHARGEABLE.join(", ")} do`);
   const s3 = file.states[ender];
@@ -301,7 +301,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     const side = blowIn(chaseAnim);
     const kinds: Chase[] = [
       // beside him, the blow sending him on at the top's speed
-      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), appearsNear: middleOf(side.box), ...(chaseRises !== undefined && { rises: chaseRises }), ...(chaseFalls && { falls: true }), launches: states[release(3)].launches },
+      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), appearsNear: middleOf(side.box), ...(chaseRises !== undefined && { rises: chaseRises }), ...(chaseFalls && { falls: true }), ...(chaseStartsAt !== undefined && { startsAt: chaseStartsAt }), launches: states[release(3)].launches },
     ];
     if (chaseDownAnim) {
       const down = blowIn(chaseDownAnim);
@@ -364,9 +364,11 @@ interface Chase {
   launches?: StateDef["launches"];
   /** Into the fall as the blow lands, no pose held. */
   falls?: boolean;
+  /** Frames into the blow it starts. */
+  startsAt?: number;
 }
 
-function chased(states: Record<string, StateDef>, blow: string, { vanish, chase, anim, hold, appears, appearsNear, rises, type, launches, falls }: Chase, all: Chase[]): void {
+function chased(states: Record<string, StateDef>, blow: string, { vanish, chase, anim, hold, appears, appearsNear, rises, type, launches, falls, startsAt }: Chase, all: Chase[]): void {
   const struck = states[blow];
   // out where he is, in the air too, hanging there until the blow is out
   const hang = { airborne: true, air: [[0, { vx: 0, vy: 0, gravity: 0 }]] as StateDef["air"] };
@@ -403,6 +405,8 @@ function chased(states: Record<string, StateDef>, blow: string, { vanish, chase,
     forces: true,
     stillsFoe: true,
     ...hang,
+    // entered part-way, its hang keyed to where it starts, or it never begins
+    ...(startsAt !== undefined && { startsAt, air: [[startsAt, hang.air![0][1]]] as StateDef["air"] }),
     ...(!falls && { holdStep: hold[0], holdFrames: hold[1] }),
     // the vanishes' ways in are put on after (`chasedFrom`), none of the blow's
     transitions: [

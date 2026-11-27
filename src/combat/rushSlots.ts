@@ -47,6 +47,8 @@ export interface Charged {
   chaseAnim?: string;
   /** S1's: sprite px over the opponent's feet he comes out at for it, none at his height — a blow aimed down, Gohan's kick. */
   chaseRises?: number;
+  /** S1's: frames into it the blow starts, its wind-up cut short — Gohan's quick kick (owner, 2026-11-27). */
+  chaseStartsAt?: number;
   /** S1's: off it into the fall the moment it lands, rather than hanging in its pose — Gohan's (owner, 2026-11-27). */
   chaseFalls?: boolean;
   /** S1's: what he strikes down with coming out of a vanish above him, RB and down: none, no such vanish — Goku's air punch. */
