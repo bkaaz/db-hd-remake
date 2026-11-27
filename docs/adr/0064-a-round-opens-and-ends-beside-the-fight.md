@@ -1,8 +1,8 @@
 # 0064 — A round opens and ends in modules of its own, behind debug switches
 
 **Status:** accepted 2026-11-17 · consolidates 0064, 0066, 0067, 0068, 0073 and
-0089 (2026-11-03 – 2026-11-07), which it replaces · any button fights again
-2026-11-27 · there is no second round yet
+0089 (2026-11-03 – 2026-11-07), which it replaces · any button fights again,
+an intro ends with its animation 2026-11-27 · there is no second round yet
 
 `Opening` (`match/opening.ts`) puts both fighters into their intros on the arena
 at once; READY drops as each intro's first state ends, and no button or KO
@@ -18,6 +18,8 @@ of the fight, not a direction, to fight again. Each is behind the debug scene's 
 - **A screen of its own before the fight**, or **the intros one after the
   other** as the original takes them — the owner wants both on the arena; the one
   who waits stood idle for nothing.
+- **The original's held intro poses** (Piccolo to frame 298, Mr. Buu 175) —
+  they timed its screen of one fighter; here they only stood before READY.
 - **The win pose by arena**, as the original — the arena it needs will not exist.
 - **The opening inside `Round`** — the start and the end share nothing but the
   screen.

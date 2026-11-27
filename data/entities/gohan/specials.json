@@ -1492,7 +1492,7 @@
       "turn": false,
       "transitions": [
         {
-          "when": "frames:71",
+          "when": "animEnd",
           "to": "idle"
         }
       ],
@@ -1509,8 +1509,7 @@
           46,
           null
         ]
-      ],
-      "holdStep": 9
+      ]
     },
     "win_air": {
       "anim": "m82",

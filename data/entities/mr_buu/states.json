@@ -2788,10 +2788,9 @@
         0
       ],
       "turn": false,
-      "holdStep": 7,
       "transitions": [
         {
-          "when": "frames:175",
+          "when": "animEnd",
           "to": "idle"
         }
       ]

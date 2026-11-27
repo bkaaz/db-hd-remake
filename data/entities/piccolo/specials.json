@@ -2808,10 +2808,9 @@
           "run0"
         ]
       ],
-      "holdStep": 9,
       "transitions": [
         {
-          "when": "frames:298",
+          "when": "animEnd",
           "to": "idle"
         }
       ]
