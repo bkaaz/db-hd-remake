@@ -241,6 +241,9 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     [ender]: {
       ...s3,
       ...sent(0),
+      // from its start though the rush blow before played the same animation:
+      // Gohan's S2 is his A2's punch, handed over at its last step it would end at once
+      replays: true,
       // the tap is the level-0 blow too, not only what the charge lets go of
       ...(sending.push?.[0] !== undefined && { pushes: sending.push[0] }),
       ...swingAt(poseEnd),
@@ -293,7 +296,8 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   states[hold(3)] = { ...holdState(3, release(3), FULL - LEVEL_AT[2]), ...(fullCry && { sound: fullCry }) };
   for (let level = 0; level < 4; level++) {
     // the level's own launch, none of the plain blow's, and no boost of its own: it is let go of, not begun
-    const { transitions: _, launches: __, boosts: ___, ...blow } = s3;
+    // nor its start over: a level takes the pose over from the charge
+    const { transitions: _, launches: __, boosts: ___, replays: ____, ...blow } = s3;
     states[release(level)] = {
       ...blow,
       ...(s3.damage !== undefined && { damage: Math.round(s3.damage * DAMAGE[level]) }),

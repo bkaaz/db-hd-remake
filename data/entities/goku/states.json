@@ -1566,6 +1566,7 @@
         "from": 7,
         "to": 8
       },
+      "replays": true,
       "boosts": {
         "hold": "smash",
         "frames": 60,
@@ -4686,6 +4687,7 @@
       ],
       "type": "stagger",
       "cancelBy": 19,
+      "replays": true,
       "boosts": {
         "hold": "smash",
         "frames": 60,
@@ -4764,6 +4766,7 @@
       ],
       "type": "crumple_0",
       "cancelBy": 24,
+      "replays": true,
       "pushes": 0,
       "boosts": {
         "hold": "smash",
@@ -4876,6 +4879,7 @@
           -3.75
         ]
       },
+      "replays": true,
       "boosts": {
         "hold": "smash",
         "frames": 60,

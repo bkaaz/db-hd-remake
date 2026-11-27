@@ -293,6 +293,12 @@ describe("withCharge on S1", () => {
     expect([lit.smash_1_lv0.hitLight, s1.states.smash_1_lv3.hitLight]).toEqual([undefined, undefined]);
   });
 
+  it("starts the ender's animation over though the blow before played it: no charge is skipped", () => {
+    expect(s1.states.smash_1.replays).toBe(true);
+    // what follows it hands the animation over, the pose held where the charge stopped it
+    expect([s1.states.smash_1_charge_0.replays, s1.states.smash_1_lv1.replays]).toEqual([undefined, undefined]);
+  });
+
   it("hears the swing on the wind-up's last pose as the blow goes, never while he charges", () => {
     const swung = { s3: { steps: [{ dur: 5, sfx: [7] }, { dur: 6, boxes: [hit] }, { dur: 9 }] } };
     const made = withCharge(s1File, { ...anims, ...swung }, "smash_1");
