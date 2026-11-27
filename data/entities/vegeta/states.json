@@ -2490,12 +2490,14 @@
       "boxesOf": "m16"
     },
     "wall_bounce": {
-      "_comment": "Off the wall a sendoff met, back toward whoever sent him and open to a blow on the way (owner, 2026-11-26): a little health and a thud, no burst yet.",
+      "_comment": "Off the wall a sendoff met, back toward whoever sent him and open to a blow on the way (owner, 2026-11-26): a little health and a thud, no burst yet, and far enough to be chased again (owner, 2026-11-27). Its body stands in the heavy reel's: the pose has none for some.",
       "anim": "m24",
       "rank": 3,
+      "boxesOf": "m16",
+      "chaseable": true,
       "launch": [
-        1.5,
-        -3.5
+        4.5,
+        -5
       ],
       "airborne": true,
       "turn": false,

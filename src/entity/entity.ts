@@ -22,6 +22,7 @@ import { reboundSpeed } from "../combat/rebound";
 import { blinkOn, burnVariant, CHARGE_VARIANT, paletteVariant, shimmerVariant, shockVariant, markedVariant, runVariant } from "../combat/palettes";
 import { Combo } from "../combat/combo";
 import { chaseLaunch, jumpPeak } from "../combat/chaseLaunch";
+import { appearAt } from "../combat/appearAt";
 import { Fatigue } from "../combat/fatigue";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
@@ -111,6 +112,10 @@ export interface Opponent {
   chaseable?: boolean;
   /** Frames he has flown so, none when not (`flown:N`). */
   flown?: number;
+  /** Which way he moved last frame, −1, 0 or 1: past him is the way he goes, not away from the attacker. */
+  goes?: number;
+  /** The screen's edge he met since the last blow, −1 left or 1 right, 0 none: off it, a vanish comes out between it and him and sends him across. */
+  wall?: number;
   /** Falling, about to land (`landing`). */
   nearGround?: boolean;
   /** In a combo: blows have landed on him since he was last free. */
@@ -254,6 +259,8 @@ export class Entity {
   private landed = false;
   /** Stopped by the screen's edge or the world's, this state: `wall`. */
   private walled = false;
+  /** Which edge he met since the last blow (`wall`): the wall trigger's own flag is gone with the state it ended. */
+  private wallSide = 0;
   /** Frames the opponent stands still for this one's boost, for the fighters to hand him. */
   private foeFreeze = 0;
   /** Vanishes made in this combo (`chased:N`), none once the opponent is free again. */
@@ -262,6 +269,11 @@ export class Entity {
   private vanished = false;
   /** The reaction he is in was sent by a blow that opens a chase (`opensChase`): until he leaves it. */
   private opened = false;
+  /** The screen, as the last frame gave it: its edges stop a body, so a vanish has room to come out only within it (`combat/appearAt.ts`). */
+  private screen = { min: -Infinity, max: Infinity };
+  /** Where he stood a frame ago, and which way he went from it (`Opponent.goes`). */
+  private lastX = 0;
+  goes = 0;
   /** What his vanishes left behind, thinning away (`fx/dissolve.ts`). */
   private ghosts: Afterimage[] = [];
   /** Frames left of his coming out of a vanish, built up from a lattice of pixels. */
@@ -999,9 +1011,15 @@ export class Entity {
     return frames;
   }
 
-  /** Stopped at the screen's edge by the camera (`Fighters.keepInView`): the `wall` trigger. */
-  hitWall(): void {
+  /** Stopped at the screen's edge on `side` (−1 left, 1 right) by the camera (`Fighters.keepInView`): the `wall` trigger. */
+  hitWall(side: number): void {
     this.walled = true;
+    this.wallSide = side;
+  }
+
+  /** The edge he met since the last blow landed on him, while he is in the air: `Opponent.wall`. */
+  get wall(): number {
+    return this.wallSide;
   }
 
   /** The effect put on the floor under this entity this frame, in world px — taken once. */
@@ -1410,6 +1428,7 @@ export class Entity {
     // before the reaction is chosen: a blow past the limit is refused for the
     // same reason a jab at a floored fighter is, and looks the same from here.
     if (blow.relaunch && !this.combo.canRelaunch) return false;
+    this.wallSide = 0;
     const again = blow.forces ? undefined : this.sm?.def.ifHitAgain;
     const chosen = reactionFor(again ? hitAgain(again, ++this.hitsAgain) : blow.reaction, this.def.states, this.sm?.def);
     if (chosen === undefined) return false;
@@ -1666,7 +1685,11 @@ export class Entity {
    * his charge's as fit the whole in `BOOST_FRAMES`, the button held for him
    * and the opponent standing still.
    */
-  update(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
+  update(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }, screen = bounds): void {
+    this.goes = Math.sign(this.x - this.lastX);
+    this.lastX = this.x;
+    this.screen = screen;
+    if (!this.airborne) this.wallSide = 0;
     this.heldNow = input.holding;
     this.ghosts = this.ghosts.filter((g) => g.tick());
     // coming out: thicker each frame, whole at the end
@@ -1720,11 +1743,10 @@ export class Entity {
     }
     if (def.vanishes) this.chases++;
     if (def.appears !== undefined && this.foe) {
-      const ahead = Math.sign(this.foe.x - this.x) || this.facing;
-      this.x = this.foe.x + ahead * def.appears * this.scale;
+      const reach = { past: def.appears * this.scale, near: (def.appearsNear ?? def.appears) * this.scale };
+      ({ x: this.x, facing: this.facing } = appearAt(this.x, this.foe, reach, this.screen, this.facing));
       // at his height, flying or not, never below the floor
       if (this.foe.y !== undefined) this.y = Math.min(this.foe.y, this.groundY) - (def.rises ?? 0) * this.scale;
-      this.facing = ahead > 0 ? -1 : 1;
     }
   }
 
@@ -1947,7 +1969,10 @@ export class Entity {
     }
     const unbounded = this.x;
     this.x = Math.max(bounds.min, Math.min(bounds.max, this.x));
-    if (this.x !== unbounded) this.walled = true;
+    if (this.x !== unbounded) {
+      this.walled = true;
+      this.wallSide = Math.sign(unbounded - this.x);
+    }
     const ball = this.sm.def.ball;
     const up = activeBall(ball, this.stateFrames);
     if (up) this.ballAt = up.at;

@@ -310,7 +310,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     const side = blowIn(chaseAnim);
     const kinds: Chase[] = [
       // beside him, the blow sending him on at the top's speed
-      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), launches: states[release(3)].launches },
+      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), appearsNear: middleOf(side.box), launches: states[release(3)].launches },
     ];
     if (chaseDownAnim) {
       const down = blowIn(chaseDownAnim);
@@ -329,7 +329,7 @@ const VANISH_BESIDE = 12;
 /** Sprite px above the opponent's feet a vanish over him comes out at, to strike him down. */
 const VANISH_ABOVE = 20;
 
-/** Sprite px ahead of him the middle of a step's hit box lies: where a vanish over him puts the opponent. */
+/** Sprite px ahead of him the middle of a step's hit box lies: where a vanish over him, or on his near side, puts the opponent. */
 function middleOf(step: AnimSteps["steps"][number] | undefined): number {
   const box = (step?.boxes ?? []).find((b) => b.type === "hit") as { x?: number; w?: number } | undefined;
   return Math.round((box?.x ?? 0) + (box?.w ?? 0) / 2);
@@ -367,12 +367,13 @@ interface Chase {
   anim?: string;
   hold: [step: number, until: number];
   appears: number;
+  appearsNear?: number;
   rises?: number;
   type?: string;
   launches?: StateDef["launches"];
 }
 
-function chased(states: Record<string, StateDef>, blow: string, { vanish, chase, anim, hold, appears, rises, type, launches }: Chase, all: Chase[]): void {
+function chased(states: Record<string, StateDef>, blow: string, { vanish, chase, anim, hold, appears, appearsNear, rises, type, launches }: Chase, all: Chase[]): void {
   const struck = states[blow];
   // out where he is, in the air too, hanging there until the blow is out
   const hang = { airborne: true, air: [[0, { vx: 0, vy: 0, gravity: 0 }]] as StateDef["air"] };
@@ -406,6 +407,7 @@ function chased(states: Record<string, StateDef>, blow: string, { vanish, chase,
     ...(type && { type }),
     ...(launches && { launches, quickens: CHASE_QUICKENS, sinksAbove: true }),
     appears,
+    ...(appearsNear !== undefined && { appearsNear }),
     ...(rises !== undefined && { rises }),
     replays: true,
     forces: true,

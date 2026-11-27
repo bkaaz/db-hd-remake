@@ -32,7 +32,9 @@
   "charge": [
     {
       "ender": "smash_1",
-      "stopOn": 0
+      "stopOn": 0,
+      "chaseAnim": "ma6_2",
+      "chaseDownAnim": "mc3"
     },
     "smash_2",
     "smash_3",

@@ -274,6 +274,8 @@ describe("withCharge on S1", () => {
     const down = withCharge(s1File, anims, "smash_1", { chaseDownAnim: "s3" });
     expect(down.states.smash_1_vanish_down).toMatchObject({ hidden: true, cost: 10, vanishes: true });
     expect(down.states.smash_1_chase_down).toMatchObject({ type: "spike", airborne: true, stillsFoe: true, appears: 30, rises: 20 });
+    // only asked for: at the edge the side vanish comes out on the near side, not over him
+    expect(down.states.smash_1_vanish.transitions?.some((t) => t.to === "smash_1_chase_down")).toBe(false);
     // asked first, down held, from where he may be and off each chase once its blow has landed
     expect(down.states.idle.transitions?.slice(0, 2).map((t) => t.to)).toEqual(["smash_1_vanish_down", "smash_1_vanish"]);
     expect(down.states.smash_1_chase.transitions?.[0].when).toEqual(["chase", "pressed:boost", "held:down", "!chased:3", "connected"]);

@@ -197,8 +197,8 @@ export class Fighters {
    */
   update(playerInput: WorldInput, opponentInput: WorldInput, field: Field): void {
     this.from = [this.player.x, this.opponent?.x ?? 0];
-    this.player.update(playerInput, this.opponent ?? null, field.bodies);
-    this.opponent?.update(opponentInput, this.player, field.bodies);
+    this.player.update(playerInput, this.opponent ?? null, field.bodies, field.shots);
+    this.opponent?.update(opponentInput, this.player, field.bodies, field.shots);
     // the screen's middle, as the original's $0571 + $80
     if (this.lastCamera) for (const fighter of [this.player, this.opponent]) fighter?.centreOn(this.lastCamera.x + VIEW.width / 2);
     if (this.opponent) {
@@ -272,8 +272,8 @@ export class Fighters {
     );
     // stopped at the edge, or put back on it: the wall a body sent off meets
     const stopped = (at: number, wanted: number) => Math.abs(at - wanted) > 1e-6;
-    if (stopped(placed.a, player.x)) player.hitWall();
-    if (opponent && placed.b !== null && stopped(placed.b, opponent.x)) opponent.hitWall();
+    if (stopped(placed.a, player.x)) player.hitWall(Math.sign(player.x - placed.a));
+    if (opponent && placed.b !== null && stopped(placed.b, opponent.x)) opponent.hitWall(Math.sign(opponent.x - placed.b));
     player.x = placed.a;
     if (opponent && placed.b !== null) opponent.x = placed.b;
     if (!this.both().some((f) => f.holdsCamera)) camera.lift(this.both().map((f) => f.y));

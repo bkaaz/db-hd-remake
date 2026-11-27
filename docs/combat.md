@@ -250,7 +250,7 @@ a blow that needs another reaction is another type.
 | halt | `ha` | the original's heavy reel stopped dead, no push (`$0D:D622`) — Saiyan Meteor's opening blow |
 | crumple | `cr` `cl` `cx` | pushed back and stunned on his feet, the light reel's pose held, no pause on the blow, 40, 55 or 70 frames, open to a new combo, then standing; once a combo — a charged S2 |
 | lift | `lf` | taken up along with the attacker, level with him the whole flight (`carries`), down flat on landing — Smash alone, charged or not |
-| sendoff | `so` | thrown flat across the screen; off its edge he bounces back, a little health and a thud, no burst yet, and can be hit on the way (`wall_bounce`) before he lands and lies — a charged S1 |
+| sendoff | `so` | thrown flat across the screen; off its edge he bounces back, a little health and a thud, no burst yet, and can be hit on the way (`wall_bounce`) before he lands and lies, or chased on (`chaseable`) — a charged S1 |
 
 In conversation a blow is written as its code plus **any frame of the move** —
 `fl30 fl39 la187` — and `npm run which` says what that points at.
@@ -337,7 +337,13 @@ blow `opensChase` on whatever it sends him into), RB pressed (`pressed:boost`) s
 and he vanishes — his drawing left behind thinning into a lattice of pixels,
 to the teleport's sound, and built up again where he comes out (`fx/dissolve.ts`) — comes out — pressed early, only once the opponent has flown a little
 (`flown:N`) or once his flight is about to end (`landing`), later at once — past the
-opponent on the side he flies to, at his height, as far as his blow
+opponent on the side he goes (his last frame's move); off a wall, between it
+and him, so he is sent across rather than back into it, the blow's middle on
+him as he flies off from there; as far as the screen's edge lets him — or,
+where not even the blow's middle on him fits, on the near side, that close,
+driving him into the wall, off
+which he bounces back far, open to the next vanish (`combat/appearAt.ts`,
+`wall_bounce`; owner, 2026-11-27) — at his height, as far as his blow
 reaches, facing him, hanging there while the opponent stands still, and
 throws his S1's first level again — or the blow his `rush.json` names,
 Goku's air kick (`chaseAnim`), its reaction taken whatever he reels in
