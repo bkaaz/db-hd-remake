@@ -126,6 +126,8 @@ export class Fighters {
   private readonly projectiles: Projectiles;
   /** Where each body stood before this frame moved it — what the camera reads its push from. */
   private from: [number, number] = [0, 0];
+  /** Who was gone in a vanish last frame: coming out, the camera cuts to him (`keepInView`). */
+  private hidden: boolean[] = [];
   /**
    * The body drawn over the other: the one who last armed a blow — the
    * original keeps one bit for the pair (`$30B0` bit 0, `$00:812E`) and
@@ -197,8 +199,8 @@ export class Fighters {
    */
   update(playerInput: WorldInput, opponentInput: WorldInput, field: Field): void {
     this.from = [this.player.x, this.opponent?.x ?? 0];
-    this.player.update(playerInput, this.opponent ?? null, field.bodies, field.shots);
-    this.opponent?.update(opponentInput, this.player, field.bodies, field.shots);
+    this.player.update(playerInput, this.opponent ?? null, field.bodies);
+    this.opponent?.update(opponentInput, this.player, field.bodies);
     // the screen's middle, as the original's $0571 + $80
     if (this.lastCamera) for (const fighter of [this.player, this.opponent]) fighter?.centreOn(this.lastCamera.x + VIEW.width / 2);
     if (this.opponent) {
@@ -265,18 +267,27 @@ export class Fighters {
    */
   keepInView(camera: Camera): void {
     this.lastCamera = camera;
-    const { player, opponent } = this;
-    const placed = camera.follow(
-      { from: this.from[0], to: player.x },
-      opponent ? { from: this.from[1], to: opponent.x } : null,
-    );
-    // stopped at the edge, or put back on it: the wall a body sent off meets
-    const stopped = (at: number, wanted: number) => Math.abs(at - wanted) > 1e-6;
-    if (stopped(placed.a, player.x)) player.hitWall(Math.sign(player.x - placed.a));
-    if (opponent && placed.b !== null && stopped(placed.b, opponent.x)) opponent.hitWall(Math.sign(opponent.x - placed.b));
-    player.x = placed.a;
-    if (opponent && placed.b !== null) opponent.x = placed.b;
-    if (!this.both().some((f) => f.holdsCamera)) camera.lift(this.both().map((f) => f.y));
+    const bodies = this.both();
+    // out of a vanish: a cut, so the camera jumps to frame both, and he did not walk there
+    if (bodies.some((f, i) => this.hidden[i] && !f.hidden)) {
+      if (this.opponent) camera.frame(this.player.x, this.opponent.x);
+      bodies.forEach((f, i) => (this.from[i] = f.x));
+    }
+    this.hidden = bodies.map((f) => f.hidden);
+    // a vanished body neither pushes the camera nor is held by it: nothing pins the other mid-arena
+    const seen = bodies.map((f, i) => ({ f, i })).filter(({ f }) => !f.hidden);
+    if (seen.length > 0) {
+      const [a, b] = seen;
+      const placed = camera.follow({ from: this.from[a.i], to: a.f.x }, b ? { from: this.from[b.i], to: b.f.x } : null);
+      // stopped at the edge, or put back on it: the wall a body sent off meets
+      const place = (f: Entity, at: number) => {
+        if (Math.abs(at - f.x) > 1e-6) f.hitWall(Math.sign(f.x - at));
+        f.x = at;
+      };
+      place(a.f, placed.a);
+      if (b && placed.b !== null) place(b.f, placed.b);
+    }
+    if (!bodies.some((f) => f.holdsCamera)) camera.lift(bodies.map((f) => f.y));
   }
 
   /**

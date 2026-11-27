@@ -274,8 +274,8 @@ export class Entity {
   private vanished = false;
   /** The reaction he is in was sent by a blow that opens a chase (`opensChase`): until he leaves it. */
   private opened = false;
-  /** The screen, as the last frame gave it: its edges stop a body, so a vanish has room to come out only within it (`combat/appearAt.ts`). */
-  private screen = { min: -Infinity, max: Infinity };
+  /** Where he may stand, as the last frame gave it: the arena, where a vanish has room to come out (`combat/appearAt.ts`). */
+  private bounds = { min: -Infinity, max: Infinity };
   /** Where he stood a frame ago, and which way he went from it (`Opponent.goes`). */
   private lastX = 0;
   goes = 0;
@@ -1703,10 +1703,10 @@ export class Entity {
    * his charge's as fit the whole in `BOOST_FRAMES`, the button held for him
    * and the opponent standing still.
    */
-  update(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }, screen = bounds): void {
+  update(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
     this.goes = Math.sign(this.x - this.lastX);
     this.lastX = this.x;
-    this.screen = screen;
+    this.bounds = bounds;
     if (!this.airborne) this.wallSide = 0;
     this.heldNow = input.holding;
     this.ghosts = this.ghosts.filter((g) => g.tick());
@@ -1745,6 +1745,11 @@ export class Entity {
    * past the opponent on his far side — the way he flies, off a blow from
    * this one — facing him (`appears`).
    */
+  /** Gone in a vanish: the camera leaves him be (`Fighters.keepInView`). */
+  get hidden(): boolean {
+    return this.vanished;
+  }
+
   private vanishOnEntering(): void {
     const def = this.sm?.def;
     if (!def) return;
@@ -1762,7 +1767,7 @@ export class Entity {
     if (def.vanishes) this.chases++;
     if (def.appears !== undefined && this.foe) {
       const reach = { past: def.appears * this.scale, near: (def.appearsNear ?? def.appears) * this.scale };
-      ({ x: this.x, facing: this.facing } = appearAt(this.x, this.foe, reach, this.screen, this.facing));
+      ({ x: this.x, facing: this.facing } = appearAt(this.x, this.foe, reach, this.bounds, this.facing));
       // at his height, flying or not, never below the floor
       if (this.foe.y !== undefined) this.y = Math.min(this.foe.y, this.groundY) - (def.rises ?? 0) * this.scale;
     }

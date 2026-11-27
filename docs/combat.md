@@ -342,7 +342,7 @@ at all, the bar kept, where he is about to be out of reach (the high reel's
 last 16 px, `combat/hitGate.ts`; owner, 2026-11-27) — past the
 opponent on the side he goes (his last frame's move); off a wall, between it
 and him, so he is sent across rather than back into it, the blow's middle on
-him as he flies off from there; as far as the screen's edge lets him — or,
+him as he flies off from there; as far as the arena's edge lets him (a vanished body holds no camera, which cuts to both as he comes out) — or,
 where not even the blow's middle on him fits, on the near side, that close,
 driving him into the wall, off
 which he bounces back far, open to the next vanish (`combat/appearAt.ts`,

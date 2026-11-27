@@ -30,6 +30,21 @@ describe("Camera", () => {
     expect(camera.x).toBe(128);
   });
 
+  it("cuts to frame both, moved as little as it takes: a vanish's coming out", () => {
+    const right = at(0);
+    right.frame(300, 250);
+    expect(right.x).toBe(300 + 16 - 256);
+    const left = at(200);
+    left.frame(150, 260);
+    expect(left.x).toBe(150 - 16);
+    const still = at(100);
+    still.frame(150, 250);
+    expect(still.x).toBe(100);
+    const end = at(200);
+    end.frame(500, 480);
+    expect(end.x).toBe(256);
+  });
+
   it("stops at the world's end", () => {
     const camera = at(255);
     camera.follow({ from: 470, to: 473 }, null);

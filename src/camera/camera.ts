@@ -116,6 +116,13 @@ export class Camera {
     return { a: hold(a.from + ka), b: b ? hold(b.from + kb) : null };
   }
 
+  /** Both on the screen, short of its edges, moved as little as that takes: a cut, as a vanish's coming out. */
+  frame(a: number, b: number): void {
+    const [lo, hi] = [Math.min(a, b) - MARGIN, Math.max(a, b) + MARGIN];
+    const x = Math.min(this.x, lo);
+    this.x = this.clampX(Math.max(x, hi - this.size.screen));
+  }
+
   /** One frame upward ($0D:CA55): toward an eighth of the higher fighter's height. */
   lift(ys: number[]): void {
     const top = Math.max(0, Math.floor(Math.min(...ys)));
