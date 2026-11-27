@@ -120,7 +120,9 @@ already running: load a scene by its URL and let the game's own dummy play, then
 read `logs/session.log` or take a screenshot. It still cannot judge timing or feel
 from a synthetic keypress — seconds of latency — so a move is played by the dummy,
 never by keys, and how a thing feels stays with the owner. **The original is played
-the same way**: `npm run original` (ADR 0090). Check a move yourself before handing
+the same way**: `npm run original` (ADR 0090). **The dummy's setup for a check
+goes in mode 5 of `data/debug.json`, and only there** — the other modes are
+the owner's, and are not touched or borrowed (owner, 2026-11-27). Check a move yourself before handing
 it over rather than asking the owner to record it.
 
 After a change, run typecheck/build **and `npm test`**, then say what you checked
