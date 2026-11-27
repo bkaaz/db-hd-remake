@@ -272,6 +272,16 @@ describe("withCharge on S1", () => {
     expect(made.states.smash_3.transitions?.some((t) => t.to.includes("vanish"))).toBe(false);
   });
 
+  it("falls off the chase's blow as it lands where the fighter asks, no pose held", () => {
+    const falls = withCharge(s1File, anims, "smash_1", { chaseFalls: true });
+    expect(falls.states.smash_1_chase.holdStep).toBeUndefined();
+    expect(falls.states.smash_1_chase.transitions?.slice(-2)).toEqual([
+      { when: "connected", to: "jump_fall" },
+      { when: "animEnd", to: "jump_fall" },
+    ]);
+    expect(s1.states.smash_1_chase.transitions?.some((t) => t.when === "connected" && t.to === "jump_fall")).toBe(false);
+  });
+
   it("chases down too where the fighter names a blow for it: RB and down, out over him, driving him into the floor", () => {
     const down = withCharge(s1File, anims, "smash_1", { chaseDownAnim: "s3" });
     expect(down.states.smash_1_vanish_down).toMatchObject({ hidden: true, cost: 10, vanishes: true });

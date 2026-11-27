@@ -33,8 +33,10 @@
     {
       "ender": "smash_1",
       "stopOn": 0,
-      "chaseAnim": "ma6_2",
-      "chaseDownAnim": "mc3"
+      "chaseAnim": "mb0",
+      "chaseFalls": true,
+      "chaseDownAnim": "m97",
+      "chaseDownRises": 40
     },
     "smash_2",
     "smash_3",

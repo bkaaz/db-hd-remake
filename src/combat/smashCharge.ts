@@ -1,7 +1,7 @@
 import type { StateDef, StatesFile, Transition } from "../entity/states";
 import { HIT_TYPES } from "./hitTypes";
 import { aimed, type Aim } from "./rushEntries";
-import { AIMS } from "./rushSlots";
+import { AIMS, type Charged } from "./rushSlots";
 import { startupOf, type AnimSteps } from "./swing";
 
 /**
@@ -145,21 +145,10 @@ const CHARGE_SOUND = "ball_2d";
 const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
 
 /** What a fighter's own about an ender's charge (`rush.json`'s `charge`). */
-export interface ChargeOptions {
-  /**
-   * The step of its animation he stops on to charge, where the wind-up's
-   * last pose is in the air — Gohan's Smash alone, crouching before the
-   * Zankuu Kyaku's leap (owner, 2026-11-26). Past it the wind-up plays on.
-   */
-  stopOn?: number;
-  /** What he throws coming out of a vanish, his S1's first level where none is named — Goku's air kick. */
-  chaseAnim?: string;
-  /** What he strikes down with coming out of a vanish above him, RB and down: none, no such vanish — Goku's air punch. */
-  chaseDownAnim?: string;
-}
+export type ChargeOptions = Omit<Charged, "ender">;
 
 /** `file` with `ender` charged: its holds, its releases, and its way into them. */
-export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, chaseAnim, chaseDownAnim }: ChargeOptions = {}): StatesFile {
+export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, chaseAnim, chaseRises, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
   const sending = SENDING[ender];
   if (!sending) throw new Error(`${ender} does not charge: ${CHARGEABLE.join(", ")} do`);
   const s3 = file.states[ender];
@@ -312,12 +301,12 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     const side = blowIn(chaseAnim);
     const kinds: Chase[] = [
       // beside him, the blow sending him on at the top's speed
-      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), appearsNear: middleOf(side.box), launches: states[release(3)].launches },
+      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), appearsNear: middleOf(side.box), ...(chaseRises !== undefined && { rises: chaseRises }), ...(chaseFalls && { falls: true }), launches: states[release(3)].launches },
     ];
     if (chaseDownAnim) {
       const down = blowIn(chaseDownAnim);
       // over him, the blow driving him into the floor: asked first, down held
-      kinds.unshift({ vanish: `${ender}_vanish_down`, chase: `${ender}_chase_down`, asks: ["held:down"], anim: chaseDownAnim, hold: [down.out, down.until], appears: middleOf(down.box), rises: VANISH_ABOVE, type: "spike" });
+      kinds.unshift({ vanish: `${ender}_vanish_down`, chase: `${ender}_chase_down`, asks: ["held:down"], anim: chaseDownAnim, hold: [down.out, down.until], appears: middleOf(down.box), rises: chaseDownRises ?? VANISH_ABOVE, type: "spike" });
     }
     for (const kind of kinds) chased(states, release(1), kind, kinds);
     chasedFrom(states, own, kinds);
@@ -373,9 +362,11 @@ interface Chase {
   rises?: number;
   type?: string;
   launches?: StateDef["launches"];
+  /** Into the fall as the blow lands, no pose held. */
+  falls?: boolean;
 }
 
-function chased(states: Record<string, StateDef>, blow: string, { vanish, chase, anim, hold, appears, appearsNear, rises, type, launches }: Chase, all: Chase[]): void {
+function chased(states: Record<string, StateDef>, blow: string, { vanish, chase, anim, hold, appears, appearsNear, rises, type, launches, falls }: Chase, all: Chase[]): void {
   const struck = states[blow];
   // out where he is, in the air too, hanging there until the blow is out
   const hang = { airborne: true, air: [[0, { vx: 0, vy: 0, gravity: 0 }]] as StateDef["air"] };
@@ -412,11 +403,11 @@ function chased(states: Record<string, StateDef>, blow: string, { vanish, chase,
     forces: true,
     stillsFoe: true,
     ...hang,
-    holdStep: hold[0],
-    holdFrames: hold[1],
+    ...(!falls && { holdStep: hold[0], holdFrames: hold[1] }),
     // the vanishes' ways in are put on after (`chasedFrom`), none of the blow's
     transitions: [
       ...transitions.filter((t) => !(t.when === "animEnd" && t.to === "idle") && !all.some((c) => c.vanish === t.to)),
+      ...(falls ? [{ when: "connected", to: "jump_fall" }] : []),
       { when: "animEnd", to: "jump_fall" },
     ],
   };

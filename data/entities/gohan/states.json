@@ -5265,7 +5265,7 @@
       ]
     },
     "smash_1_vanish_down": {
-      "anim": "mc3",
+      "anim": "m97",
       "vel": [
         0,
         0
@@ -5305,7 +5305,7 @@
       ]
     },
     "smash_1_vanish_down_out": {
-      "anim": "mc3",
+      "anim": "m97",
       "vel": [
         0,
         0
@@ -5335,7 +5335,7 @@
       ]
     },
     "smash_1_chase_down": {
-      "anim": "mc3",
+      "anim": "m97",
       "vel": [
         0,
         0
@@ -5346,8 +5346,8 @@
       "blockSound": "block_17",
       "type": "spike",
       "cancelBy": 40,
-      "appears": -2,
-      "rises": 20,
+      "appears": 28,
+      "rises": 40,
       "replays": true,
       "forces": true,
       "stillsFoe": true,
@@ -5362,8 +5362,8 @@
           }
         ]
       ],
-      "holdStep": 2,
-      "holdFrames": 56,
+      "holdStep": 1,
+      "holdFrames": 32,
       "transitions": [
         {
           "when": [
@@ -5401,7 +5401,7 @@
       ]
     },
     "smash_1_vanish": {
-      "anim": "ma6_2",
+      "anim": "mb0",
       "vel": [
         0,
         0
@@ -5441,7 +5441,7 @@
       ]
     },
     "smash_1_vanish_out": {
-      "anim": "ma6_2",
+      "anim": "mb0",
       "vel": [
         0,
         0
@@ -5471,7 +5471,7 @@
       ]
     },
     "smash_1_chase": {
-      "anim": "ma6_2",
+      "anim": "mb0",
       "vel": [
         0,
         0
@@ -5490,8 +5490,8 @@
       },
       "quickens": 0.25,
       "sinksAbove": true,
-      "appears": 50,
-      "appearsNear": 22,
+      "appears": 66,
+      "appearsNear": 40,
       "replays": true,
       "forces": true,
       "stillsFoe": true,
@@ -5506,8 +5506,6 @@
           }
         ]
       ],
-      "holdStep": 1,
-      "holdFrames": 24,
       "transitions": [
         {
           "when": [
@@ -5537,6 +5535,10 @@
             "pressed:blast"
           ],
           "to": "kame_charge"
+        },
+        {
+          "when": "connected",
+          "to": "jump_fall"
         },
         {
           "when": "animEnd",

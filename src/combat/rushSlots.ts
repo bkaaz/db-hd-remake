@@ -34,14 +34,25 @@ export interface Pick {
 /** A slot not picked is not in the rush: Attack's line stops at its first gap. */
 export type Picks = Partial<Record<Slot, Pick>>;
 
-/** An ender charged with what is his own: the step he stops on (`combat/smashCharge.ts`). */
+/** An ender charged with what is his own (`combat/smashCharge.ts`). */
 export interface Charged {
   ender: string;
+  /**
+   * The step of its animation he stops on to charge, where the wind-up's
+   * last pose is in the air — Gohan's Smash alone, crouching before the
+   * Zankuu Kyaku's leap (owner, 2026-11-26). Past it the wind-up plays on.
+   */
   stopOn?: number;
-  /** S1's: what he throws coming out of a vanish. */
+  /** S1's: what he throws coming out of a vanish, his S1's first level where none is named — Goku's air kick. */
   chaseAnim?: string;
-  /** S1's: what he strikes down with coming out of a vanish above him, RB and down. */
+  /** S1's: sprite px over the opponent's feet he comes out at for it, none at his height — a blow aimed down, Gohan's kick. */
+  chaseRises?: number;
+  /** S1's: off it into the fall the moment it lands, rather than hanging in its pose — Gohan's (owner, 2026-11-27). */
+  chaseFalls?: boolean;
+  /** S1's: what he strikes down with coming out of a vanish above him, RB and down: none, no such vanish — Goku's air punch. */
   chaseDownAnim?: string;
+  /** S1's: sprite px over the opponent's feet for it, VANISH_ABOVE where none is named. */
+  chaseDownRises?: number;
 }
 
 /** Section file `rush.json`: the rush the owner accepted, all `npm run states` needs to make it. No `step`, `DEFAULT_STEP`. */
