@@ -148,7 +148,7 @@ const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
 export type ChargeOptions = Omit<Charged, "ender">;
 
 /** `file` with `ender` charged: its holds, its releases, and its way into them. */
-export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, chaseAnim, chaseRises, chaseStartsAt, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
+export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, fullCry, fullHitLight, chaseAnim, chaseRises, chaseStartsAt, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
   const sending = SENDING[ender];
   if (!sending) throw new Error(`${ender} does not charge: ${CHARGEABLE.join(", ")} do`);
   const s3 = file.states[ender];
@@ -219,12 +219,16 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       }),
     };
   };
+  // the wind-up's last pose may carry the swing: heard as the blow goes, never while he charges
+  const swings = (steps[pose]?.sfx ?? []).length > 0;
+  const swingAt = (at?: number): Partial<StateDef> => (swings ? { delaysStep: { step: pose, ...(at !== undefined && { at }) } } : {});
   const states: Record<string, StateDef> = {
     ...file.states,
     // RB held: the charge played fast (`entity/boost.ts`), or the plain blow at once where he cannot pay for it (owner, 2026-11-26)
     [ender]: {
       ...s3,
       ...sent(0),
+      ...swingAt(poseEnd),
       boosts: { hold: "smash", frames: FULL, bar: AT_ONCE_COST, needs: boostCost },
       ...lunge(0, startup),
       // a frame before the blow is out: in the air when it lands, or there is no flight to take him along on
@@ -252,6 +256,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     vel: [0, 0],
     turn: false,
     holdStep: pose,
+    ...swingAt(),
     // no blow: the animation's hit box is past the step it holds
     damage: 0,
     braces: BRACE_COST,
@@ -270,7 +275,7 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   states[hold(1)] = holdState(1, hold(2), LEVEL_AT[1] - LEVEL_AT[0]);
   states[COMBO_HOLD] = holdState(1, hold(2), COMBO_TO_SECOND);
   states[hold(2)] = holdState(2, hold(3), LEVEL_AT[2] - LEVEL_AT[1]);
-  states[hold(3)] = holdState(3, release(3), FULL - LEVEL_AT[2]);
+  states[hold(3)] = { ...holdState(3, release(3), FULL - LEVEL_AT[2]), ...(fullCry && { sound: fullCry }) };
   for (let level = 0; level < 4; level++) {
     // the level's own launch, none of the plain blow's, and no boost of its own: it is let go of, not begun
     const { transitions: _, launches: __, boosts: ___, ...blow } = s3;
@@ -278,10 +283,12 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       ...blow,
       ...(s3.damage !== undefined && { damage: Math.round(s3.damage * DAMAGE[level]) }),
       ...sent(level),
+      ...swingAt(0),
       // let go past the wind-up: the blow's pose comes at once
       ...lunge(level, afterPose),
       ...hop(level, Math.max(0, afterPose - 1), afterPose),
       ...(level === 3 && { hitFlash: TOP_FLASH }),
+      ...(level === 3 && fullHitLight && { hitLight: fullHitLight }),
       ...(sending.breaksFrom !== undefined && level >= sending.breaksFrom && { breaksGuard: true }),
       ...(sending.push?.[level] !== undefined && { pushes: sending.push[level] }),
       // a level is let go of, not begun: no throw for the other button

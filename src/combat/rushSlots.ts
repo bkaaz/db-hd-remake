@@ -1,5 +1,6 @@
 import type { StateDef, StatesFile, Transition } from "../entity/states";
 import { chainLinks, framesOf, type Link } from "./chains";
+import type { HitLightKind } from "./hitLight";
 import { withHitTypes } from "./hitTypes";
 import { aimed, aimsIn, closeIn, throwIn, type Aim } from "./rushEntries";
 import { startupOf, type AnimSteps } from "./swing";
@@ -43,6 +44,10 @@ export interface Charged {
    * Zankuu Kyaku's leap (owner, 2026-11-26). Past it the wind-up plays on.
    */
   stopOn?: number;
+  /** Heard as the charge reaches its top level: Gohan's cry, his Rushing Suki Combo's (owner, 2026-11-27). */
+  fullCry?: string;
+  /** What its top level's blow lights where it lands: Gohan's ball, his Rushing Suki Combo's (owner, 2026-11-27). */
+  fullHitLight?: HitLightKind;
   /** S1's: what he throws coming out of a vanish, his S1's first level where none is named — Goku's air kick. */
   chaseAnim?: string;
   /** S1's: sprite px over the opponent's feet he comes out at for it, none at his height — a blow aimed down, Gohan's kick. */

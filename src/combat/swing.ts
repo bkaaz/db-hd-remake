@@ -70,7 +70,7 @@ export class Swing {
 
 /** The little of an animation a swing's timing needs: step lengths, and which steps hit. */
 export interface AnimSteps {
-  steps: { dur: number; boxes?: { type: string }[] }[];
+  steps: { dur: number; boxes?: { type: string }[]; sfx?: number[] }[];
 }
 
 const hits = (step: AnimSteps["steps"][number]): boolean => (step.boxes ?? []).some((b) => b.type === "hit");

@@ -272,6 +272,27 @@ describe("withCharge on S1", () => {
     expect(made.states.smash_3.transitions?.some((t) => t.to.includes("vanish"))).toBe(false);
   });
 
+  it("cries out as the charge reaches its top where the fighter names a cry", () => {
+    expect(withCharge(s1File, anims, "smash_1", { fullCry: "line_04" }).states.smash_1_charge_3.sound).toBe("line_04");
+    expect(s1.states.smash_1_charge_3.sound).toBeUndefined();
+  });
+
+  it("lights its top level's blow where the fighter names a light, that level alone", () => {
+    const lit = withCharge(s1File, anims, "smash_1", { fullHitLight: "ball" }).states;
+    expect([lit.smash_1_lv3.hitLight, lit.smash_1_lv2.hitLight, s1.states.smash_1_lv3.hitLight]).toEqual(["ball", undefined, undefined]);
+  });
+
+  it("hears the swing on the wind-up's last pose as the blow goes, never while he charges", () => {
+    const swung = { s3: { steps: [{ dur: 5, sfx: [7] }, { dur: 6, boxes: [hit] }, { dur: 9 }] } };
+    const made = withCharge(s1File, { ...anims, ...swung }, "smash_1");
+    // plain, as the blow comes out; charging, not at all; let go, at once
+    expect(made.states.smash_1.delaysStep).toEqual({ step: 0, at: 5 });
+    expect(made.states.smash_1_charge_0.delaysStep).toEqual({ step: 0 });
+    expect(made.states.smash_1_lv2.delaysStep).toEqual({ step: 0, at: 0 });
+    // a pose with no sound of its own leaves the script as it is
+    expect(s1.states.smash_1.delaysStep).toBeUndefined();
+  });
+
   it("falls off the chase's blow as it lands where the fighter asks, no pose held", () => {
     const falls = withCharge(s1File, anims, "smash_1", { chaseFalls: true });
     expect(falls.states.smash_1_chase.holdStep).toBeUndefined();

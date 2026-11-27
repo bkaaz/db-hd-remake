@@ -696,6 +696,12 @@ export interface StateDef {
   fromTop?: boolean;
   /** The script's sounds stay silent here: Buu's charge says its line once, though its script goes round (recorded). */
   muted?: boolean;
+  /**
+   * The script's sounds of `step` play on frame `at` of this state, not as the
+   * step begins; none, never. A charged blow's wind-up stops on that step, so
+   * its swing is heard when the blow goes, not when the charge starts (owner, 2026-11-27).
+   */
+  delaysStep?: { step: number; at?: number };
   /** Drawn bobbing where he stands, as the pose above the arena is (`entity/hover.ts`). */
   hover?: boolean;
   /** Sounds on these frames of the state: what a handler plays by the frame, in no script ($10:D9DE). */

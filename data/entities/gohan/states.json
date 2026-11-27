@@ -4689,7 +4689,7 @@
       }
     },
     "smash_2": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
@@ -4709,8 +4709,8 @@
         },
         {
           "when": [
-            "frames:3",
-            "!frames:5",
+            "frames:10",
+            "!frames:12",
             "held:smash",
             "combo"
           ],
@@ -4718,8 +4718,8 @@
         },
         {
           "when": [
-            "frames:3",
-            "!frames:5",
+            "frames:10",
+            "!frames:12",
             "held:smash"
           ],
           "to": "smash_2_charge_0"
@@ -4740,30 +4740,34 @@
         }
       ],
       "type": "stagger",
-      "cancelBy": 31,
+      "cancelBy": 22,
+      "delaysStep": {
+        "step": 1,
+        "at": 12
+      },
       "boosts": {
         "hold": "smash",
         "frames": 60,
         "bar": 10,
         "needs": 20
       },
-      "holdStep": 1,
-      "holdFrames": 11,
+      "holdStep": 2,
+      "holdFrames": 20,
       "velAt": [
         [
-          5,
+          12,
           0.6
         ],
         [
-          11,
+          20,
           0
         ]
       ],
       "trail": {
         "fx": "dust",
         "every": 4,
-        "from": 5,
-        "to": 11
+        "from": 12,
+        "to": 20
       }
     },
     "smash_3": {
@@ -5548,13 +5552,16 @@
       ]
     },
     "smash_2_charge_0": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
       ],
       "turn": false,
-      "holdStep": 0,
+      "holdStep": 1,
+      "delaysStep": {
+        "step": 1
+      },
       "damage": 0,
       "braces": 5,
       "charging": true,
@@ -5564,19 +5571,22 @@
           "to": "smash_2_lv0"
         },
         {
-          "when": "frames:7",
+          "when": "frames:0",
           "to": "smash_2_charge_1"
         }
       ]
     },
     "smash_2_charge_1": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
       ],
       "turn": false,
-      "holdStep": 0,
+      "holdStep": 1,
+      "delaysStep": {
+        "step": 1
+      },
       "damage": 0,
       "braces": 5,
       "charging": true,
@@ -5597,13 +5607,16 @@
       ]
     },
     "smash_2_charge_1_combo": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
       ],
       "turn": false,
-      "holdStep": 0,
+      "holdStep": 1,
+      "delaysStep": {
+        "step": 1
+      },
       "damage": 0,
       "braces": 5,
       "charging": true,
@@ -5624,13 +5637,16 @@
       ]
     },
     "smash_2_charge_2": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
       ],
       "turn": false,
-      "holdStep": 0,
+      "holdStep": 1,
+      "delaysStep": {
+        "step": 1
+      },
       "damage": 0,
       "braces": 5,
       "charging": true,
@@ -5653,13 +5669,16 @@
       ]
     },
     "smash_2_charge_3": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
       ],
       "turn": false,
-      "holdStep": 0,
+      "holdStep": 1,
+      "delaysStep": {
+        "step": 1
+      },
       "damage": 0,
       "braces": 5,
       "charging": true,
@@ -5674,10 +5693,11 @@
           "when": "frames:15",
           "to": "smash_2_lv3"
         }
-      ]
+      ],
+      "sound": "line_04"
     },
     "smash_2_lv0": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
@@ -5687,16 +5707,20 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "stagger",
-      "cancelBy": 31,
-      "holdStep": 1,
-      "holdFrames": 6,
+      "cancelBy": 22,
+      "delaysStep": {
+        "step": 1,
+        "at": 0
+      },
+      "holdStep": 2,
+      "holdFrames": 8,
       "velAt": [
         [
           0,
           0.6
         ],
         [
-          6,
+          8,
           0
         ]
       ],
@@ -5704,7 +5728,7 @@
         "fx": "dust",
         "every": 4,
         "from": 0,
-        "to": 6
+        "to": 8
       },
       "transitions": [
         {
@@ -5724,7 +5748,7 @@
       ]
     },
     "smash_2_lv1": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
@@ -5734,16 +5758,20 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "crumple",
-      "cancelBy": 31,
-      "holdStep": 1,
-      "holdFrames": 7,
+      "cancelBy": 22,
+      "delaysStep": {
+        "step": 1,
+        "at": 0
+      },
+      "holdStep": 2,
+      "holdFrames": 9,
       "velAt": [
         [
           0,
           1
         ],
         [
-          7,
+          9,
           0
         ]
       ],
@@ -5751,7 +5779,7 @@
         "fx": "dust",
         "every": 4,
         "from": 0,
-        "to": 7
+        "to": 9
       },
       "pushes": -3,
       "transitions": [
@@ -5772,7 +5800,7 @@
       ]
     },
     "smash_2_lv2": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
@@ -5782,16 +5810,20 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "crumple_2",
-      "cancelBy": 31,
-      "holdStep": 1,
-      "holdFrames": 8,
+      "cancelBy": 22,
+      "delaysStep": {
+        "step": 1,
+        "at": 0
+      },
+      "holdStep": 2,
+      "holdFrames": 10,
       "velAt": [
         [
           0,
           1.4
         ],
         [
-          8,
+          10,
           0
         ]
       ],
@@ -5799,7 +5831,7 @@
         "fx": "dust",
         "every": 4,
         "from": 0,
-        "to": 8
+        "to": 10
       },
       "pushes": -2,
       "transitions": [
@@ -5820,7 +5852,7 @@
       ]
     },
     "smash_2_lv3": {
-      "anim": "b_9a",
+      "anim": "b_bk2",
       "vel": [
         0,
         0
@@ -5830,16 +5862,20 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "crumple_3",
-      "cancelBy": 31,
-      "holdStep": 1,
-      "holdFrames": 9,
+      "cancelBy": 22,
+      "delaysStep": {
+        "step": 1,
+        "at": 0
+      },
+      "holdStep": 2,
+      "holdFrames": 11,
       "velAt": [
         [
           0,
           1.8
         ],
         [
-          9,
+          11,
           0
         ]
       ],
@@ -5847,9 +5883,10 @@
         "fx": "dust",
         "every": 4,
         "from": 0,
-        "to": 9
+        "to": 11
       },
       "hitFlash": 8,
+      "hitLight": "ball",
       "breaksGuard": true,
       "pushes": -0.5,
       "transitions": [

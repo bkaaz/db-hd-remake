@@ -2016,6 +2016,8 @@ export class Entity {
       if (bandHeights(band, frames, gone).head === 0) this.fading = null;
     }
     if (!this.clockHeld) for (const id of soundsOn(this.sm?.def.soundsAt, this.stateFrames)) this.audio?.play(id);
+    const delays = this.sm?.def.delaysStep;
+    if (!this.clockHeld && delays?.at === this.stateFrames) for (const id of this.anim?.steps[delays.step]?.sfx ?? []) this.audio?.playRom(id);
     if (!this.clockHeld) this.stateFrames++;
 
     if (!this.clockHeld) this.advanceAnim();
@@ -2162,7 +2164,8 @@ export class Entity {
   private stepBegins(): void {
     this.applyFrame();
     const step = this.currentStep();
-    if (!this.sm?.def.muted) for (const id of step?.sfx ?? []) this.audio?.playRom(id);
+    const delayed = this.sm?.def.delaysStep?.step === this.stepIndex;
+    if (!this.sm?.def.muted && !delayed) for (const id of step?.sfx ?? []) this.audio?.playRom(id);
     if (step?.voice !== undefined) this.audio?.playLine(step.voice);
     // placed now, while the facing is the step's; the fighters spawn them
     if (this.spawnedSteps.has(this.stepIndex)) return;
