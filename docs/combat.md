@@ -80,10 +80,12 @@ blows are few — a special's parts end mid-motion — so a fighter has **basic
 blows** cut from his longer animations, an ultimate's quick run first, each
 closed by his stance (`basics.json`); the panel lists them first. The debug panel tries
 player one's under his readout (`ui/rushPicks.ts`, the scene's `rush1`,
-taken by the running fight in place: `Scene.take`) and shows each link's margin, and plays the whole rush faster or slower — its
+taken by the running fight in place: `Scene.take`), names each link that does not combo, copies the picks to hand over, and plays the whole rush faster or slower — its
 tempo, 70% to 150% (`rushTempo.ts`), tried before a blow's own speed goes
 into its recipe as `slow`; the bar above the game scales every blow's
-hitstop the same way, tried before `data/hit-types.json` is changed; it keeps
+hitstop the same way, tried before `data/hit-types.json` is changed, and
+gives both fighters ki by themselves, a rate a second (`kiregen`, none
+unless asked), for testing what costs ki; it keeps
 nothing — an accepted rush is its picks in his `rush.json`, and `npm run
 states` makes the rest. Which blow stands where is still to choose.
 
@@ -256,7 +258,7 @@ a blow that needs another reaction is another type.
 | high | `hi` | the original's high knockdown (move `1e`): thrown steeply up, hittable until it lands |
 | trip | `tr` | the original's short knockdown (move `19`): no bounce, up again 12 frames after landing |
 | halt | `ha` | the original's heavy reel stopped dead, no push (`$0D:D622`) — Saiyan Meteor's opening blow |
-| crumple | `cr` `cl` `cx` | pushed back and stunned on his feet, the light reel's pose held, no pause on the blow, 40, 55 or 70 frames, open to a new combo, then standing; once a combo — a charged S2 |
+| crumple | `cr` `cl` `cx` | pushed back and stunned on his feet, the light reel's pose, then bent over panting (`crumple_pant`) while 20 frames or more are left, no pause on the blow, 40, 55 or 70 frames, open to a new combo, then standing; once a combo — a charged S2 |
 | lift | `lf` | taken up along with the attacker, level with him the whole flight (`carries`), down flat on landing — Smash alone, charged or not |
 | sendoff | `so` | thrown flat across the screen; off its edge he bounces back, a little health and a thud, no burst yet, and can be hit on the way (`wall_bounce`) before he lands and lies, or chased on (`chaseable`) — a charged S1 |
 

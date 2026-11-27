@@ -78,6 +78,8 @@ export interface DebugRequest {
   tempo1?: number;
   /** Every blow's hitstop against what its type says, 1 as it is (`Entity.hitstopScale`). */
   hitstop?: number;
+  /** Ki each fighter gains a second by himself (`Entity.kiRegen`), none unless asked: the debug panel's, for testing. */
+  kiregen?: number;
 }
 
 /** Whether a colours pick names a set of ours rather than "1" or "2". */
@@ -131,6 +133,7 @@ export function queryFor(request: SceneRequest): string {
     if (request.rush1 !== undefined) q.set("rush1", request.rush1);
     if (request.tempo1 !== undefined) q.set("tempo1", String(request.tempo1));
     if (request.hitstop !== undefined) q.set("hitstop", String(request.hitstop));
+    if (request.kiregen !== undefined) q.set("kiregen", String(request.kiregen));
   }
   return `?${q.toString()}`;
 }
@@ -173,6 +176,8 @@ export function requestFromUrl(url: URL): SceneRequest | string {
     if (tempo !== null && !(Number(tempo) >= 0.5 && Number(tempo) <= 2)) return `tempo1 "${tempo}" is not a tempo, 0.5 to 2`;
     const stop = q.get("hitstop");
     if (stop !== null && !(Number(stop) >= 0 && Number(stop) <= 2)) return `hitstop "${stop}" is not a share of the hitstop, 0 to 2`;
+    const regen = q.get("kiregen");
+    if (regen !== null && !(Number(regen) > 0 && Number(regen) <= 600)) return `kiregen "${regen}" is not ki a second, above 0 to 600`;
     if (rush1 !== null && !/^[AS][1-4]c?=[a-z0-9_]+(:[a-z]+)?(,[AS][1-4]c?=[a-z0-9_]+(:[a-z]+)?)*$/.test(rush1)) return `rush1 "${rush1}" is not slots and their blows, as A1=m90,S1=m93:knockback`;
     return {
       scene: "debug",
@@ -186,6 +191,7 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       ...(rush1 !== null && { rush1 }),
       ...(tempo !== null && { tempo1: Number(tempo) }),
       ...(stop !== null && { hitstop: Number(stop) }),
+      ...(regen !== null && { kiregen: Number(regen) }),
     };
   }
   return `unknown scene "${scene}" — try select or debug`;

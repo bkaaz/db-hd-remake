@@ -128,5 +128,35 @@
       3.09765625,
       0
     ]
+  },
+  "hurt_air": {
+    "anim": "m25"
+  },
+  "hurt_heavy_air": {
+    "anim": "m25"
+  },
+  "juggle": {
+    "anim": "m25"
+  },
+  "launched": {
+    "anim": "m25"
+  },
+  "blown": {
+    "anim": "m25"
+  },
+  "wall_bounce": {
+    "anim": "m25"
+  },
+  "spiked": {
+    "anim": "m25"
+  },
+  "ground_bounce": {
+    "anim": "m25"
+  },
+  "slam": {
+    "anim": "m25"
+  },
+  "slam_air": {
+    "anim": "m25"
   }
 }

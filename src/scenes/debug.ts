@@ -106,11 +106,14 @@ export class DebugScene implements Scene {
     // once the prompt is up the fight is over: nothing to try a pick on, and its
     // own request — this one, unchanged — has to build the scene again
     if (this.again) return false;
-    if (request.scene !== "debug" || !sameBut(request, this.req, "rush1", "tempo1", "hitstop")) return false;
+    if (request.scene !== "debug" || !sameBut(request, this.req, "rush1", "tempo1", "hitstop", "kiregen")) return false;
     const def = tryRush(this.own, request);
     if (typeof def === "string" || !def.states) return false;
     if (request.rush1 !== this.req.rush1 || request.tempo1 !== this.req.tempo1) this.fighters.player.playStates(def.states, def.animations);
-    for (const body of this.fighters.bodies) body.hitstopScale = request.hitstop ?? 1;
+    for (const body of this.fighters.bodies) {
+      body.hitstopScale = request.hitstop ?? 1;
+      body.kiRegen = request.kiregen ?? 0;
+    }
     this.req = request;
     describes(this.situation(request));
     return true;
@@ -183,7 +186,10 @@ export class DebugScene implements Scene {
     const fighters = new Fighters({ world: view.world, p1, p2, scale: SPRITE_SCALE, audio: ctx.audio, effects, projectiles, opens, rules });
     fighters.start(stage, { p1: mode.p1?.at, p2: mode.p2?.at });
     if (req.hp1 !== undefined) fighters.player.setHealth(req.hp1);
-    for (const body of fighters.bodies) body.hitstopScale = req.hitstop ?? 1;
+    for (const body of fighters.bodies) {
+      body.hitstopScale = req.hitstop ?? 1;
+      body.kiRegen = req.kiregen ?? 0;
+    }
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
     // colours asked for override the original's rule, which Fighters applied
     for (const [fighter, pal] of [[fighters.player, req.pal1], [fighters.opponent, req.pal2]] as const) {
@@ -423,7 +429,8 @@ function situationOf(r: DebugRequest, mode: unknown): string[] {
       (r.pal2 !== undefined ? ` pal2=${r.pal2}` : "") +
       (r.rush1 !== undefined ? ` rush1=${r.rush1}` : "") +
       (r.tempo1 !== undefined ? ` tempo1=${r.tempo1}` : "") +
-      (r.hitstop !== undefined ? ` hitstop=${r.hitstop}` : ""),
+      (r.hitstop !== undefined ? ` hitstop=${r.hitstop}` : "") +
+      (r.kiregen !== undefined ? ` kiregen=${r.kiregen}` : ""),
   ];
 }
 

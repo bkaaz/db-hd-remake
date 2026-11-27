@@ -500,6 +500,8 @@ export interface StateDef {
   stillsFoe?: boolean;
   /** A stunned opponent's stun stands still while he is in this state: a charge begun in a combo (`combat/stunHold.ts`). */
   holdsStun?: boolean;
+  /** Arriving here goes on with the stun he came in with, where any other state starts free: a reaction's second pose (the crumple's panting). */
+  keepsStun?: boolean;
   /** Entering it, a stunned opponent is left at least this much stun: the charge's second level, let go at once, still lands. */
   stunsAtLeast?: number;
   /** Its blow's reaction is taken whatever he is in, no `ifHitAgain` of his turning it: a chase's, off S3's high reel too. */
@@ -1034,6 +1036,8 @@ export interface Signals {
   chased?: number;
   /** Frames the opponent has flown off a blow a vanish may chase: `flown:N`. */
   flown?: number;
+  /** Hitstun left, held by a combo's charge counting as no end: `stun:N` (N or more). */
+  stunLeft?: number;
   /** That flight about to end on the floor: `landing`. */
   landing?: boolean;
   /**
@@ -1049,7 +1053,7 @@ export const CLOSE_BUTTONS = ["attack", "smash", "blast", "strike"] as const;
 export type CloseButton = (typeof CLOSE_BUTTONS)[number];
 
 /** Triggers carrying a number or a button: `frames:20`, `released:blast`. */
-const COUNTED = /^(frames:\d+|health:\d+|ki:\d+|chased:\d+|flown:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
+const COUNTED = /^(frames:\d+|health:\d+|ki:\d+|chased:\d+|flown:\d+|stun:\d+|grab:\d+|within:\d+|released:(attack|guard|smash|blast|strike|dash))$/;
 /** `command:a4` — the move whose command is met, two hex digits (ADR 0050). */
 const COMMAND = /^command:[0-9a-f]{2}$/;
 
@@ -1100,7 +1104,7 @@ const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitio
 
 const warned = new Set<string>();
 
-/** `frames:N`, `released:<button>`, `health:N` (N or less), `ki:N` (N or more), `grab:N` and `within:N` (under N px), or undefined for any other trigger. */
+/** `frames:N`, `released:<button>`, `health:N` (N or less), `ki:N` and `stun:N` (N or more), `grab:N` and `within:N` (under N px), or undefined for any other trigger. */
 function counted(key: string, signals: Signals): boolean | undefined {
   const [kind, arg] = key.split(":");
   // how long a charge has run decides what it becomes (the Kamehameha)
@@ -1115,6 +1119,8 @@ function counted(key: string, signals: Signals): boolean | undefined {
   if (kind === "chased") return (signals.chased ?? 0) >= Number(arg);
   // how far the opponent has flown before a vanish comes out after him
   if (kind === "flown") return (signals.flown ?? 0) >= Number(arg);
+  // long enough left for the crumple to go on as panting (owner, 2026-11-27)
+  if (kind === "stun") return (signals.stunLeft ?? 0) >= Number(arg);
   // a command's own range for an opponent standing still, not the throw's (Galactic Gunfire's 64, $0D:F95B)
   if (kind === "grab") return signals.grabbable !== undefined && signals.grabbable < Number(arg);
   // a run that ends by the opponent, in the air or reeling too (Gotenks's a8, $20:BCC4)

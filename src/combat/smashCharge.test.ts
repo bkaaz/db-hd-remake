@@ -238,7 +238,9 @@ describe("withCharge on S1", () => {
   });
 
   it("chases the opponent its top sends flying: RB, a bar, gone, out past him, its first level again, three times a combo", () => {
-    const way = { when: ["chase", "pressed:boost", "!chased:3"], to: "smash_1_vanish" };
+    // a blow's button waiting goes first: the Kamehameha off S1 with RB (owner, 2026-11-27)
+    const yields = ["!pressed:attack", "!pressed:smash", "!pressed:blast", "!pressed:strike"];
+    const way = { when: ["chase", "pressed:boost", "!chased:3", ...yields], to: "smash_1_vanish" };
     // out beside him, past the blow's far edge: the fixture's 20 + 20, and 12 more
     expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, sound: "teleport_29", vanishes: true });
     // the opponent flies on while he waits, and hangs where he is while he comes out
@@ -354,7 +356,7 @@ describe("withCharge on S1", () => {
     expect(down.states.smash_1_vanish.transitions?.some((t) => t.to === "smash_1_chase_down")).toBe(false);
     // asked first, down held, from where he may be and off each chase once its blow has landed
     expect(down.states.idle.transitions?.slice(0, 2).map((t) => t.to)).toEqual(["smash_1_vanish_down", "smash_1_vanish"]);
-    expect(down.states.smash_1_chase.transitions?.[0].when).toEqual(["chase", "pressed:boost", "held:down", "!chased:3", "connected"]);
+    expect(down.states.smash_1_chase.transitions?.[0].when).toEqual(["chase", "pressed:boost", "held:down", "!chased:3", "!pressed:attack", "!pressed:smash", "!pressed:blast", "!pressed:strike", "connected"]);
     expect(withCharge(down, anims, "smash_1", { chaseDownAnim: "s3" })).toEqual(down);
     expect(s1.states.smash_1_vanish_down).toBeUndefined();
   });

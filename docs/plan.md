@@ -50,13 +50,6 @@ hold for every fighter, not only one.
 - **A fighter's character as parameters** of the common states (walk, dash,
   jump, gravity, the get-up frame) in place of the same number overridden in
   several states — when tuning them gets in the way.
-
-- **The backdrop's light and dark on the grid too** (owner, 2026-11-27): the
-  grid arena takes a blow's brightening and darkening as every arena does, one
-  rule everywhere.
-- **The rush panel's `links` and `rush` text, simpler** (owner, 2026-11-27):
-  unreadable as it is (`ui/rushPicks.ts`) — a shorter view, and a button that
-  copies the picks to hand over.
 - A second player, and round rules.
 - A remapping screen.
 - Combos authored in the editor, as a view of the states, never a second format.

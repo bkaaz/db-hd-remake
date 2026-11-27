@@ -31,6 +31,8 @@ const FIRST_DEBUG: DebugRequest = { scene: "debug", p1: "goku", p2: "goku", mode
 const HEALTHS = [50, 80, 150, 200, 400];
 /** Shares of every blow's hitstop the bar offers. */
 const HITSTOPS = [0.25, 0.5, 0.75, 1, 1.25];
+/** Ki a second, for the panel's regen: 0 none, the last fills the meter in a second. */
+const KI_REGENS = [0, 0.5, 1, 2, 5, 60];
 /** A fighter's palette: the original's rule, his own, or his second set; then his sets of ours. */
 const COLOURS: Choice[] = [["", "auto"], ["1", "1"], ["2", "2"]];
 
@@ -106,6 +108,8 @@ export class SetupBar {
       // every blow's pause against its type's, tried before the table is changed
       const stops = HITSTOPS.map((h): Choice => [String(h), String(h * 100)]);
       arenaLine.append(field("hitstop %", segmented(String(r.hitstop ?? 1), stops, (v) => this.go(Number(v) === 1 ? without(r, "hitstop") : { ...r, hitstop: Number(v) }))));
+      const regens = KI_REGENS.map((k): Choice => [String(k), k ? String(k) : "off"]);
+      arenaLine.append(field("ki/s", segmented(String(r.kiregen ?? 0), regens, (v) => this.go(Number(v) === 0 ? without(r, "kiregen") : { ...r, kiregen: Number(v) }))));
 
       const fighters: Choice[] = this.fighters.map((f) => [f, f]);
       const healths: Choice[] = HEALTHS.map((h) => [String(h), String(h)]);
@@ -152,7 +156,7 @@ function noticeLine(text: string): HTMLElement {
 }
 
 /** The request without some of its optional parameters. */
-function without(r: DebugRequest, ...keys: ("arena" | "time" | "hp1" | "hp2" | "pal1" | "pal2" | "rush1" | "tempo1" | "hitstop")[]): DebugRequest {
+function without(r: DebugRequest, ...keys: ("arena" | "time" | "hp1" | "hp2" | "pal1" | "pal2" | "rush1" | "tempo1" | "hitstop" | "kiregen")[]): DebugRequest {
   const copy = { ...r };
   for (const k of keys) delete copy[k];
   return copy;

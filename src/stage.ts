@@ -6,12 +6,6 @@ import { VIEW } from "./view";
 export const WORLD = { width: 512, floor: 200 };
 /** What stands behind the fighters: the debug grid, or an arena (`src/arena/`). */
 export interface Backdrop {
-  /**
-   * Whether a blow's `hitFlash` turns it white, as the original whitens its
-   * stage's art (BG palettes 2–7). An arena does; the debug grid does not —
-   * the whole dark field going white is blinding (owner, 2026-10-29).
-   */
-  readonly whitens: boolean;
   /** Place it for the screen standing at `x`, `y` in the world — each layer at its own speed. */
   scroll(x: number, y: number): void;
   /** One game frame, through a hit pause too: what the backdrop does by itself. */
@@ -72,12 +66,12 @@ export class Stage {
 
   /** Turn the backdrop white for `frames` — the flash of a big hit. */
   flash(frames: number): void {
-    if (this.backdrop.whitens) this.flashLeft = Math.max(this.flashLeft, frames);
+    this.flashLeft = Math.max(this.flashLeft, frames);
   }
 
-  /** A move's ask of the art — faded down or up, held white or let go (`screen.ts`). An arena only, as the flash. */
+  /** A move's ask of the art — faded down or up, held white or let go (`screen.ts`): every backdrop alike, the debug grid too (owner, 2026-11-27). */
   cue(c: ScreenCue): void {
-    if (this.backdrop.whitens) this.screen = cue(this.screen, c);
+    this.screen = cue(this.screen, c);
   }
 
   /** One game frame of the flash and the fade. */

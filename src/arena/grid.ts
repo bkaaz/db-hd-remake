@@ -13,7 +13,6 @@ const BELOW = 8;
  * floor — what any scroll looks like, with nothing of the original's in it.
  */
 export class GridBackdrop implements Backdrop {
-  readonly whitens = false;
   private readonly g = new Graphics();
 
   constructor(parent: Container) {

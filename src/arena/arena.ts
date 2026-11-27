@@ -47,7 +47,6 @@ export async function loadArena(name: string, time: string | null): Promise<Load
 
 /** An arena on screen: its layers back to front, each scrolling at its own speed. */
 export class ArenaBackdrop implements Backdrop {
-  readonly whitens = true;
   private readonly layers: { sprite: Sprite; scroll: [number, number]; cycled?: CycledLayer }[];
   /** Under whatever its parent holds already: the flash and the fade stay over an arena that comes later. */
   private readonly root = new Container();

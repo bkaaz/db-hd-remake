@@ -121,7 +121,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -129,7 +133,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -274,7 +282,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -282,7 +294,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -423,7 +439,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -431,7 +451,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -997,7 +1021,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -1005,7 +1033,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -1137,7 +1169,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -1145,7 +1181,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -1499,7 +1539,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -1507,7 +1551,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -2691,6 +2739,32 @@
       "sound": "voice_hurt",
       "ifAirborne": "reel_air",
       "oncePerCombo": "reel_down",
+      "transitions": [
+        {
+          "when": "stunEnd",
+          "to": "idle"
+        },
+        {
+          "when": [
+            "animEnd",
+            "stun:20"
+          ],
+          "to": "crumple_pant"
+        }
+      ]
+    },
+    "crumple_pant": {
+      "_comment": "A crumple held long (owner, 2026-11-27): past the reel's pose, 20 frames of stun or more left, he pants bent over (m40, the tired pose) until it runs out, on the same clock (keepsStun). Still reeling: the same rank, and a blow takes him as it takes the crumple.",
+      "anim": "m40",
+      "animLoops": true,
+      "rank": 1,
+      "keepsStun": true,
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "ifAirborne": "reel_air",
       "transitions": [
         {
           "when": "stunEnd",
@@ -4633,7 +4707,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -4641,7 +4719,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -4809,7 +4891,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -4817,7 +4903,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -5142,7 +5232,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -5150,7 +5244,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -5212,7 +5310,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -5220,7 +5322,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -5282,7 +5388,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -5290,7 +5400,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -5353,7 +5467,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -5361,7 +5479,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -5489,6 +5611,10 @@
             "pressed:boost",
             "held:down",
             "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike",
             "connected"
           ],
           "to": "smash_1_vanish_down"
@@ -5498,6 +5624,10 @@
             "chase",
             "pressed:boost",
             "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike",
             "connected"
           ],
           "to": "smash_1_vanish"
@@ -5632,6 +5762,10 @@
             "pressed:boost",
             "held:down",
             "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike",
             "connected"
           ],
           "to": "smash_1_vanish_down"
@@ -5641,6 +5775,10 @@
             "chase",
             "pressed:boost",
             "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike",
             "connected"
           ],
           "to": "smash_1_vanish"
@@ -6157,7 +6295,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -6165,7 +6307,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -6220,7 +6366,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -6228,7 +6378,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -6283,7 +6437,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -6291,7 +6449,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -6347,7 +6509,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -6355,7 +6521,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -6557,7 +6727,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -6565,7 +6739,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -6616,7 +6794,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -6624,7 +6806,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -6675,7 +6861,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -6683,7 +6873,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },
@@ -6735,7 +6929,11 @@
             "chase",
             "pressed:boost",
             "held:down",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish_down"
         },
@@ -6743,7 +6941,11 @@
           "when": [
             "chase",
             "pressed:boost",
-            "!chased:3"
+            "!chased:3",
+            "!pressed:attack",
+            "!pressed:smash",
+            "!pressed:blast",
+            "!pressed:strike"
           ],
           "to": "smash_1_vanish"
         },

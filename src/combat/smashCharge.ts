@@ -462,9 +462,12 @@ function chased(states: Record<string, StateDef>, blow: string, { vanish, chase,
   };
 }
 
+/** A blow's button waiting: what it asks for goes first, if it can, and RB vanishes only once it is gone (owner, 2026-11-27). */
+const YIELDS_TO = ["!pressed:attack", "!pressed:smash", "!pressed:blast", "!pressed:strike"];
+
 /** The ways into the vanishes, in the order they are asked, from where he may be and off every chase — that one only once its blow has landed. */
 function chasedFrom(states: Record<string, StateDef>, own: string[], all: Chase[]): void {
-  const ways = all.map((c): Transition => ({ when: ["chase", "pressed:boost", ...c.asks, `!chased:${VANISH_LIMIT}`], to: c.vanish }));
+  const ways = all.map((c): Transition => ({ when: ["chase", "pressed:boost", ...c.asks, `!chased:${VANISH_LIMIT}`, ...YIELDS_TO], to: c.vanish }));
   for (const name of [...CHASE_FROM, ...own, ...all.map((c) => c.chase)].filter((n) => states[n])) {
     const rest = (states[name].transitions ?? []).filter((t) => !all.some((c) => c.vanish === t.to));
     // off a chase a quick second press is not a second vanish before its blow lands

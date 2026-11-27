@@ -273,6 +273,8 @@ export class Entity {
   private foeStun: StunAsk = NO_ASK;
   /** What the opponent asked of this one's stun clock this frame. */
   private stunAsk: StunAsk = NO_ASK;
+  /** The last count's ask held his clock: his stun has no end in sight (`stun:N`). */
+  private stunHeld = false;
   /** Vanishes made in this combo (`chased:N`), none once the opponent is free again. */
   private chases = 0;
   /** Hidden by a state of his that `hidden`s him, not by a scene. */
@@ -1260,6 +1262,8 @@ export class Entity {
    * changed. A bolt he throws takes his.
    */
   hitstopScale = 1;
+  /** Ki he gains a second by himself, never past his meter — the debug panel's, 0 unless asked. */
+  kiRegen = 0;
 
   /** Frames of white screen this entity's current attack asks for when it lands. */
   get attackFlash(): number {
@@ -1624,7 +1628,7 @@ export class Entity {
     this.walled = false;
     // A state arrives with no hold of its own; only a blow can set one, and it
     // does so straight after forcing the reaction.
-    this.stun = 0;
+    if (!this.sm.def.keepsStun) this.stun = 0;
     // Rank 0 is anything that is not a reaction, so arriving in one is the
     // fighter getting themselves back — which is exactly when a combo ends.
     this.combo.enter(this.sm.def.rank ?? 0);
@@ -1861,6 +1865,7 @@ export class Entity {
     this.showVariant();
 
     this.stun = stunAfter(this.stun, this.stunAsk);
+    this.stunHeld = this.stunAsk.hold && this.stun > 0;
     this.stunAsk = NO_ASK;
     // Below the freeze check with the stun clock: a hit pause freezes both
     // fighters equally and must not decide when the next hit of a multi-hit
@@ -1882,6 +1887,7 @@ export class Entity {
     if (fill) this.charge = Math.min(1, this.charge + 1 / fill);
     const perFrame = this.sm.def.ki;
     if (perFrame) this.ki = Math.max(0, Math.min(this.maxKi, this.ki + perFrame));
+    if (this.kiRegen) this.ki = Math.min(this.maxKi, this.ki + this.kiRegen / 60);
 
     // Facing is opponent-relative and only changes in states that allow it, so
     // an attack cannot turn around mid-swing.
@@ -1928,6 +1934,7 @@ export class Entity {
       {
         animEnded: this.animEnded,
         stunEnded: this.stun === 0,
+        stunLeft: this.stunHeld ? Infinity : this.stun,
         falling,
         nearGround,
         landed: this.landed,

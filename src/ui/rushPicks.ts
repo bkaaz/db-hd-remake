@@ -23,8 +23,8 @@ export interface RushAsk {
 
 /**
  * Player one's rush under his readout: a blow and an effect for each slot —
- * Attack's A1–A4, Smash's S1–S3 off each depth — what each link between them
- * makes, and the line to hand over. It tries a rush, never keeps one: a pick
+ * Attack's A1–A4, Smash's S1–S3 off each depth — the links that do not
+ * combo, and a button that copies the picks to hand over. It tries a rush, never keeps one: a pick
  * is the scene's address (`rush1`), as every pick of the bar is (`setup.ts`),
  * and the fighter's data stays as it is.
  */
@@ -76,10 +76,10 @@ export class RushPicks {
       return field(labelOf(slot), row);
     });
     const order = (l: Link) => `${labelOf(l.from as Slot).slice(1)}${labelOf(l.to as Slot)}`;
-    const links = text(rushLinks(made, anims, f.hitstun).sort((a, b) => order(a).localeCompare(order(b))).map(verdict).join(" · "));
+    const broken = rushLinks(made, anims, f.hitstun).filter((l) => l.opens > l.closes || (!l.launcher && l.margin < 0));
+    const links = text(broken.length ? broken.sort((a, b) => order(a).localeCompare(order(b))).map(verdict).join(" · ") : "all combo");
     const pace = segmented(String(tempo), TEMPOS.map((t): Choice => [String(t), `${Math.round(t * 100)}`]), (v) => go({ ...asking, tempo: Number(v) === 1 ? undefined : Number(v) }));
-    const handOver = text(picksLine(name, picks));
-    handOver.title = "the picks, to hand over";
+    const handOver = copyButton(picksLine(name, picks));
     const own = segmented(rush === undefined && tempo === 1 ? "own" : "", [["own", "his own"]], () => go({}));
     const preview = blowThumbs(picks, f.anims, f.sheet, f.frames);
     return [...slots, field("blows", preview), field("tempo %", pace), field("links", links), field("rush", handOver), own];
@@ -136,8 +136,21 @@ function swapButton(slot: Slot, under: Slot | undefined, swap: (a: Slot, b: Slot
   return element;
 }
 
+/** The picks onto the clipboard, to paste to whoever keeps them; the line itself only as its tooltip. */
+function copyButton(line: string): HTMLButtonElement {
+  const element = button("copy", false, () => {
+    void navigator.clipboard.writeText(line).then(
+      () => (element.textContent = "copied"),
+      () => (element.textContent = "copy failed"),
+    );
+  });
+  element.title = line;
+  return element;
+}
+
+/** A link that does not combo, and why: margins that hold, and links off a knockdown, are not shown (owner, 2026-11-27). */
 function verdict(l: Link): string {
-  const how = l.opens > l.closes ? "never opens" : l.margin < 0 ? `drops ${l.margin}` : `+${l.margin}`;
+  const how = l.opens > l.closes ? "never opens" : `drops ${l.margin}`;
   return `${labelOf(l.from as Slot)}→${labelOf(l.to as Slot)} ${how}`;
 }
 
