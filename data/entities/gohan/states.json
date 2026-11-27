@@ -5302,7 +5302,7 @@
       "vanishes": true,
       "transitions": [
         {
-          "when": "flown:18",
+          "when": "flown:10",
           "to": "smash_1_vanish_down_out"
         },
         {
@@ -5340,7 +5340,7 @@
       "stillsFoe": true,
       "transitions": [
         {
-          "when": "frames:6",
+          "when": "frames:3",
           "to": "smash_1_chase_down"
         }
       ]
@@ -5365,7 +5365,7 @@
       "airborne": true,
       "air": [
         [
-          0,
+          5,
           {
             "vx": 0,
             "vy": 0,
@@ -5373,6 +5373,7 @@
           }
         ]
       ],
+      "startsAt": 5,
       "holdStep": 1,
       "holdFrames": 32,
       "transitions": [
@@ -5438,7 +5439,7 @@
       "vanishes": true,
       "transitions": [
         {
-          "when": "flown:18",
+          "when": "flown:10",
           "to": "smash_1_vanish_out"
         },
         {
@@ -5476,7 +5477,7 @@
       "stillsFoe": true,
       "transitions": [
         {
-          "when": "frames:6",
+          "when": "frames:3",
           "to": "smash_1_chase"
         }
       ]
@@ -5495,7 +5496,7 @@
       "cancelBy": 40,
       "launches": {
         "sent_off": [
-          -8.32,
+          -11.65,
           -3
         ]
       },
@@ -5509,7 +5510,7 @@
       "airborne": true,
       "air": [
         [
-          4,
+          5,
           {
             "vx": 0,
             "vy": 0,
@@ -5517,7 +5518,7 @@
           }
         ]
       ],
-      "startsAt": 4,
+      "startsAt": 5,
       "transitions": [
         {
           "when": [

@@ -115,9 +115,9 @@ from the first level it sends him off (`sendoff`): flat, in the pose of a
 body sent to another arena but kept in this one, further each level. S1's
 kick stays out longer and drives him forward on it, raising dust, faster and
 further each level (`lunge`). S1 and S3 end a combo; S2 opens the next:
-Goku's is his down sender's kick (`b_a1`, frames 108 to 110 and 5 as `ma1`
-has them, its wind-up cut from 18 frames to 6 to combo off the rush, and
-no hop), driving him a little way forward, raising dust (`lunge`); every level stuns him (`crumple`), the tap a little (`crumple_0`),
+a punch, as Gohan's: Goku's is his 74 with the 70 before it to charge on
+(`b_74w`; owner, 2026-11-27), driving him a little way forward, raising dust
+(`lunge`); every level stuns him (`crumple`), the tap a little (`crumple_0`),
 and none pushes him away, so he stays in reach (`pushes` 0; owner,
 2026-11-27) — into the light reel's pose and held there, with no pause on the
 blow and nothing on the art, so he who struck goes on at once

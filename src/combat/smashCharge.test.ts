@@ -243,13 +243,13 @@ describe("withCharge on S1", () => {
     expect(s1.states.smash_1_vanish).toMatchObject({ hidden: true, invulnerable: true, cost: 10, sound: "teleport_29", vanishes: true });
     // the opponent flies on while he waits, and hangs where he is while he comes out
     expect(s1.states.smash_1_vanish.stillsFoe).toBeUndefined();
-    expect(s1.states.smash_1_vanish_out).toMatchObject({ hidden: true, invulnerable: true, stillsFoe: true, transitions: [{ when: "frames:6", to: "smash_1_chase" }] });
+    expect(s1.states.smash_1_vanish_out).toMatchObject({ hidden: true, invulnerable: true, stillsFoe: true, transitions: [{ when: "frames:3", to: "smash_1_chase" }] });
     expect(s1.states.smash_1_vanish_out.cost).toBeUndefined();
     expect(s1.states.smash_1_chase).toMatchObject({ appears: 52, quickens: 0.25, sinksAbove: true });
     expect(s1.states.smash_1_chase.velAt).toBeUndefined();
     // pressed early, gone until he has flown far enough; coming out at once if he flies no more
     expect(s1.states.smash_1_vanish.transitions).toEqual([
-      { when: "flown:18", to: "smash_1_vanish_out" },
+      { when: "flown:10", to: "smash_1_vanish_out" },
       { when: "landing", to: "smash_1_vanish_out" },
       { when: "!chase", to: "smash_1_vanish_out" },
     ]);
@@ -328,12 +328,22 @@ describe("withCharge on S1", () => {
     expect(s1.states.smash_1_chase.transitions?.some((t) => t.when === "connected" && t.to === "jump_fall")).toBe(false);
   });
 
-  it("starts the chase's blow part-way where the fighter asks: a quick one", () => {
-    const quick = withCharge(s1File, anims, "smash_1", { chaseStartsAt: 4 }).states.smash_1_chase;
-    expect(quick.startsAt).toBe(4);
+  it("starts every chase's blow 3 frames before its hit box, whatever the blow: quick", () => {
+    // the fixture's hit box is out 5 frames in: started at 2
+    const chase = s1.states.smash_1_chase;
+    expect(chase.startsAt).toBe(2);
     // its hang begins where it starts: keyed to frame 0, it never would, and he would fall through the kick
-    expect(quick.air).toEqual([[4, { vx: 0, vy: 0, gravity: 0 }]]);
-    expect(s1.states.smash_1_chase.startsAt).toBeUndefined();
+    expect(chase.air).toEqual([[2, { vx: 0, vy: 0, gravity: 0 }]]);
+    // a blow out sooner than that is played from its start
+    const quick = withCharge(s1File, { ...anims, quick: { steps: [{ dur: 2 }, { dur: 6, boxes: [hit] }] } }, "smash_1", { chaseAnim: "quick" });
+    expect(quick.states.smash_1_chase.startsAt).toBeUndefined();
+  });
+
+  it("sends him off a side chase faster across than the top it chases, no higher", () => {
+    const top = s1.states.smash_1_lv3.launches?.sent_off;
+    const chase = s1.states.smash_1_chase.launches?.sent_off;
+    expect(top && chase && chase[0]! / top[0]!).toBeCloseTo(1.4, 2);
+    expect(chase?.[1]).toBe(top?.[1]);
   });
 
   it("chases down too where the fighter names a blow for it: RB and down, out over him, driving him into the floor", () => {

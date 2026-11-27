@@ -34,7 +34,6 @@
       "ender": "smash_1",
       "stopOn": 0,
       "chaseAnim": "mc9",
-      "chaseStartsAt": 4,
       "chaseFalls": true,
       "chaseDownAnim": "m97",
       "chaseDownRises": 40

@@ -25,7 +25,7 @@
       "type": "stagger"
     },
     "smash_2": {
-      "anim": "b_a1",
+      "anim": "b_74w",
       "type": "stagger"
     },
     "smash_3": {
@@ -37,9 +37,18 @@
     {
       "ender": "smash_1",
       "chaseAnim": "m97",
-      "chaseDownAnim": "m96"
+      "chaseDownAnim": "m96",
+      "chaseFalls": true
     },
-    "smash_2",
+    {
+      "ender": "smash_2",
+      "fullCry": "line_01",
+      "chargeLight": "ball",
+      "chargeShake": {
+        "pattern": 3,
+        "frames": 24
+      }
+    },
     "smash_3",
     "smash"
   ]

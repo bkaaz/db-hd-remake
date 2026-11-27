@@ -129,7 +129,7 @@ const costOf = (level: number) => (level > 1 ? LEVEL_COST : 0);
 const AT_ONCE_COST = 10;
 /** A vanish: what it costs, how long he is gone, how often a combo. He comes out as far past the opponent as his blow reaches. */
 const VANISH_COST = 10;
-const VANISH_FRAMES = 6;
+const VANISH_FRAMES = 3;
 const VANISH_LIMIT = 3;
 /** Heard as he vanishes: the teleport's, as Goku's sounds it (owner, 2026-11-26). */
 const VANISH_SOUND = "teleport_29";
@@ -140,9 +140,13 @@ const VANISH_SOUND = "teleport_29";
  * falling on through them would reach the floor, where the high reel cannot
  * be touched (`combat/hitGate.ts`; owner, 2026-11-27).
  */
-const VANISH_FLOWN = 18;
+const VANISH_FLOWN = 10;
 /** Each chase after the first sends him this much faster again; above a jump's height, down (owner, 2026-11-26). */
 const CHASE_QUICKENS = 0.25;
+/** A side chase sends him this much faster across than the charged top it chases, no higher: quick, not floaty (owner, 2026-11-27). */
+const CHASE_SPEED = 1.4;
+/** Frames from his coming out to the chase's hit box: its wind-up cut to this, whatever the blow (owner, 2026-11-27). */
+const CHASE_WINDUP = 3;
 /** Frames the chase's blow holds its pose past its own, hanging in the air, the leg out (owner, 2026-11-26). */
 const CHASE_HOLD = 12;
 /** Where he may be when the opponent flies off: off the blow, about on his feet, or falling off the last chase. */
@@ -167,7 +171,7 @@ const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
 export type ChargeOptions = Omit<Charged, "ender">;
 
 /** `file` with `ender` charged: its holds, its releases, and its way into them. */
-export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, fullCry, chargeLight, chargeShake, chaseAnim, chaseRises, chaseStartsAt, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
+export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, fullCry, chargeLight, chargeShake, chaseAnim, chaseRises, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
   const sending = SENDING[ender];
   if (!sending) throw new Error(`${ender} does not charge: ${CHARGEABLE.join(", ")} do`);
   const s3 = file.states[ender];
@@ -329,19 +333,25 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     const blowIn = (anim: string | undefined) => {
       const its = anim ? anims[anim]?.steps : steps;
       if (!its) throw new Error(`${ender}'s chase names ${anim}, no animation of his`);
-      const out = its.reduce((last, st, i) => ((st.boxes ?? []).some((b) => b.type === "hit") ? i : last), -1);
+      const hits = (st: (typeof its)[number]) => (st.boxes ?? []).some((b) => b.type === "hit");
+      const out = its.reduce((last, st, i) => (hits(st) ? i : last), -1);
+      // its wind-up cut to CHASE_WINDUP: started that far before the first hit box
+      const first = its.findIndex(hits);
+      const startsAt = its.slice(0, first).reduce((n, st) => n + st.dur, 0) - CHASE_WINDUP;
       // the blow's last pose held, as long again as CHASE_HOLD
-      return { out, until: its.slice(0, out + 1).reduce((n, st) => n + st.dur, 0) + CHASE_HOLD, box: its[out] };
+      return { out, until: its.slice(0, out + 1).reduce((n, st) => n + st.dur, 0) + CHASE_HOLD, box: its[out], ...(startsAt > 0 && { startsAt }) };
     };
+    const faster = (sent: StateDef["launches"]) =>
+      sent && Object.fromEntries(Object.entries(sent).map(([to, [vx, vy]]) => [to, [vx === null ? null : Math.round(vx * CHASE_SPEED * 100) / 100, vy]])) as StateDef["launches"];
     const side = blowIn(chaseAnim);
     const kinds: Chase[] = [
       // beside him, the blow sending him on at the top's speed
-      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), appearsNear: middleOf(side.box), ...(chaseRises !== undefined && { rises: chaseRises }), ...(chaseFalls && { falls: true }), ...(chaseStartsAt !== undefined && { startsAt: chaseStartsAt }), launches: states[release(3)].launches },
+      { vanish, chase, asks: [], anim: chaseAnim, hold: [side.out, side.until], appears: reachOf(side.box), appearsNear: middleOf(side.box), ...(chaseRises !== undefined && { rises: chaseRises }), ...(chaseFalls && { falls: true }), startsAt: side.startsAt, launches: faster(states[release(3)].launches) },
     ];
     if (chaseDownAnim) {
       const down = blowIn(chaseDownAnim);
       // over him, the blow driving him into the floor: asked first, down held
-      kinds.unshift({ vanish: `${ender}_vanish_down`, chase: `${ender}_chase_down`, asks: ["held:down"], anim: chaseDownAnim, hold: [down.out, down.until], appears: middleOf(down.box), rises: chaseDownRises ?? VANISH_ABOVE, type: "spike" });
+      kinds.unshift({ vanish: `${ender}_vanish_down`, chase: `${ender}_chase_down`, asks: ["held:down"], anim: chaseDownAnim, hold: [down.out, down.until], appears: middleOf(down.box), rises: chaseDownRises ?? VANISH_ABOVE, type: "spike", startsAt: down.startsAt });
     }
     for (const kind of kinds) chased(states, release(1), kind, kinds);
     chasedFrom(states, own, kinds);
