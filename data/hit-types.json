@@ -97,6 +97,13 @@
     "hitstop": 12,
     "relaunch": false
   },
+  "crumple_0": {
+    "code": "cs",
+    "onHit": "crumple",
+    "hitstun": 25,
+    "hitstop": 0,
+    "relaunch": false
+  },
   "crumple": {
     "code": "cr",
     "onHit": "crumple",

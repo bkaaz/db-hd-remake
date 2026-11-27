@@ -117,9 +117,9 @@ kick stays out longer and drives him forward on it, raising dust, faster and
 further each level (`lunge`). S1 and S3 end a combo; S2 opens the next:
 Goku's is his down sender's kick (`b_a1`, frames 108 to 110 and 5 as `ma1`
 has them, its wind-up cut from 18 frames to 6 to combo off the rush, and
-no hop), driving him a little way forward, raising dust (`lunge`); its tap only staggers him, Goku's (his `rush.json`), and from the first level he is stunned (`crumple`):
-pushed back — the less the harder, least where it breaks a guard
-(`pushes`) — into the light reel's pose and held there, with no pause on the
+no hop), driving him a little way forward, raising dust (`lunge`); every level stuns him (`crumple`), the tap a little (`crumple_0`),
+and none pushes him away, so he stays in reach (`pushes` 0; owner,
+2026-11-27) — into the light reel's pose and held there, with no pause on the
 blow and nothing on the art, so he who struck goes on at once
 (owner, 2026-11-26: a pose held alone, a loop and a slow motion all looked
 wrong) — longer each level, open to a new rush, then on his feet again — once a combo,
@@ -129,7 +129,13 @@ Below, S3 stands for any. He stops on the wind-up's last pose and lets go when S
 nothing else he presses counts — or by himself at the top: a tap is the
 plain S3, which lifts him low so he is soon down; held longer it is one of
 three levels, each worth more and lifting higher, the top whitening the
-screen. Each level begins with a flash, and he blinks into his `charge`
+screen. A fighter's own charge may add more, per ender in his `rush.json`
+(owner, 2026-11-27; Gohan's S2 alone so far): a cry as it reaches the top
+(`fullCry`); and from the second level a light where the blow lands
+(`chargeLight`) and the screen shaking (`chargeShake`), both smaller at the
+second than at the top. Not a longer pause, nor the screen closing in on the
+blow: tried and dropped (owner, 2026-11-27).
+Each level begins with a flash, and he blinks into his `charge`
 colours from there, faster each level; the second begins with Saiyan
 Meteor's ball charging too, the only sound of it. Begun while the opponent is still reeling from a hit
 (the `combo` trigger) it starts at the first level and reaches the second in

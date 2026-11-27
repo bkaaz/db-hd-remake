@@ -42,7 +42,11 @@
     {
       "ender": "smash_2",
       "fullCry": "line_04",
-      "fullHitLight": "ball"
+      "chargeLight": "ball",
+      "chargeShake": {
+        "pattern": 3,
+        "frames": 24
+      }
     },
     "smash_3",
     {

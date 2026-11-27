@@ -1,4 +1,5 @@
 import { contact, impactPoint } from "../combat/hit";
+import type { ShakeDef } from "../camera/shake";
 import type { Entity } from "../entity/entity";
 import type { Effects } from "../fx/effects";
 import type { Way } from "../arena/ways";
@@ -18,6 +19,8 @@ export interface BlowResult {
   took: string;
   /** Frames of white screen it asks for (`hitFlash`); none when blocked. */
   flash: number;
+  /** The backdrop's shake it asks for (`hitShake`); none when blocked. */
+  shake?: ShakeDef;
   /** The way it sends him to another arena (`sends`), when one lies there and it is not the KO. */
   sends?: Way;
 }
@@ -117,9 +120,9 @@ export function landBlow(
   // the deepest point of the blow — see impactPoint. Neither is where the
   // cartridge puts them (`combat.md`).
   const burst = attacker.attackBurst;
+  const at = impactPoint(where, attacker.facing);
   if (burst) effects.spawn(burst, where.x + where.w / 2, where.y + where.h / 2);
   else {
-    const at = impactPoint(where, attacker.facing);
     if (!blocked) attacker.lightHit(at.x, at.y);
     effects.spawn(blocked ? attacker.attackGuardFx : attacker.attackFx, at.x, at.y);
   }
@@ -135,5 +138,6 @@ export function landBlow(
   else if (!attacker.travels) attacker.freeze(stop);
   if (!blocked) defender.shoveBeforePause();
   defender.freeze(stop);
-  return { attack, damage: dealt, blocked, took, flash: blocked ? 0 : attacker.attackFlash, ...(away && { sends: way }) };
+  const shake = blocked ? undefined : attacker.attackShake;
+  return { attack, damage: dealt, blocked, took, flash: blocked ? 0 : attacker.attackFlash, ...(shake && { shake }), ...(away && { sends: way }) };
 }

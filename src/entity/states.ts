@@ -437,6 +437,8 @@ export interface StateDef {
   burns?: boolean;
   /** Frames the whole screen goes white when this state's blow lands — the Kamehameha's 16. */
   hitFlash?: number;
+  /** The backdrop's shake as this state's blow lands, a hit and not a block (`camera/shake.ts`). */
+  hitShake?: ShakeDef;
   /**
    * This state's blow sends the opponent to another arena that way, where one
    * lies (`arena/ways.ts`); where none does, he only takes its reaction.
@@ -611,6 +613,8 @@ export interface StateDef {
   sameSwing?: boolean;
   /** What this state's blow lights where it lands, a hit and not a block (`combat/hitLight.ts`). */
   hitLight?: HitLightKind;
+  /** Its ball's share of the whole: a lower charge level's smaller one. */
+  hitLightSize?: number;
   /**
    * Palettes run through from frame 1, `alt` on the alternate colours: the
    * original picks by player, whose colours they are (Gohan's `ae`, `$20:B3DE`).

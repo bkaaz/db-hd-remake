@@ -1161,7 +1161,7 @@ export class Entity {
   /** A blow of this state landed at world x, y: what it lights, if it does. */
   lightHit(x: number, y: number): void {
     const kind = this.sm?.def.hitLight;
-    if (kind) this.hitLight.land(kind, x, y);
+    if (kind) this.hitLight.land(kind, x, y, this.sm?.def.hitLightSize);
   }
 
   /** Burning from now until it lands, as a blow's `burns` sets it: a scene's own let-go (`SeizeDef.release`). */
@@ -1247,6 +1247,11 @@ export class Entity {
   /** Frames of white screen this entity's current attack asks for when it lands. */
   get attackFlash(): number {
     return this.sm?.def.hitFlash ?? 0;
+  }
+
+  /** The backdrop's shake this entity's current attack asks for when it lands. */
+  get attackShake(): ShakeDef | undefined {
+    return this.sm?.def.hitShake;
   }
 
   /** Which way this entity's current attack sends whoever it lands on, if anywhere. */

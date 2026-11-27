@@ -228,14 +228,13 @@ describe("withCharge on S1", () => {
     expect(made.states.smash_3_lv3.velAt).toBeUndefined();
   });
 
-  it("leaves S2's tap a knockdown, crumples him from the first level, longer each, the top breaking a guard", () => {
+  it("crumples him at every level of S2, the tap a little, longer each, never pushing him away, the top breaking a guard", () => {
     const s2 = withCharge({ ...s1File, states: { ...s1File.states, smash_2: { ...s1File.states.smash_1, type: "down" } } }, anims, "smash_2");
-    expect([0, 1, 2, 3].map((n) => s2.states[`smash_2_lv${n}`].type)).toEqual(["down", "crumple", "crumple_2", "crumple_3"]);
+    expect(s2.states.smash_2.type).toBe("crumple_0");
+    expect([0, 1, 2, 3].map((n) => s2.states[`smash_2_lv${n}`].type)).toEqual(["crumple_0", "crumple", "crumple_2", "crumple_3"]);
     expect([0, 1, 2, 3].map((n) => s2.states[`smash_2_lv${n}`].breaksGuard)).toEqual([undefined, undefined, undefined, true]);
-    // pushed back the less the harder: least where it breaks a guard
-    const pushes = [1, 2, 3].map((n) => -(s2.states[`smash_2_lv${n}`].pushes ?? 0));
-    expect(pushes).toEqual([...pushes].sort((a, b) => b - a));
-    expect(new Set(pushes).size).toBe(3);
+    // he stays in reach (owner, 2026-11-27)
+    expect(["smash_2", ...[0, 1, 2, 3].map((n) => `smash_2_lv${n}`)].map((name) => s2.states[name].pushes)).toEqual([0, 0, 0, 0, 0]);
   });
 
   it("chases the opponent its top sends flying: RB, a bar, gone, out past him, its first level again, three times a combo", () => {
@@ -277,9 +276,21 @@ describe("withCharge on S1", () => {
     expect(s1.states.smash_1_charge_3.sound).toBeUndefined();
   });
 
-  it("lights its top level's blow where the fighter names a light, that level alone", () => {
-    const lit = withCharge(s1File, anims, "smash_1", { fullHitLight: "ball" }).states;
-    expect([lit.smash_1_lv3.hitLight, lit.smash_1_lv2.hitLight, s1.states.smash_1_lv3.hitLight]).toEqual(["ball", undefined, undefined]);
+  it("shakes the screen on its second and top levels' blows where the fighter asks, the second weaker and shorter", () => {
+    const shaken = withCharge(s1File, anims, "smash_1", { chargeShake: { pattern: 3, frames: 24 } }).states;
+    expect([1, 2, 3].map((level) => shaken[`smash_1_lv${level}`].hitShake)).toEqual([undefined, { pattern: 2, frames: 16 }, { pattern: 3, frames: 24 }]);
+    // the tap is no charge
+    expect([shaken.smash_1_lv0.hitShake, s1.states.smash_1_lv3.hitShake]).toEqual([undefined, undefined]);
+  });
+
+  it("lights its second and top levels' blows where the fighter names a light, the second's smaller", () => {
+    const lit = withCharge(s1File, anims, "smash_1", { chargeLight: "ball" }).states;
+    expect([1, 2, 3].map((level) => [lit[`smash_1_lv${level}`].hitLight, lit[`smash_1_lv${level}`].hitLightSize])).toEqual([
+      [undefined, undefined],
+      ["ball", 0.75],
+      ["ball", undefined],
+    ]);
+    expect([lit.smash_1_lv0.hitLight, s1.states.smash_1_lv3.hitLight]).toEqual([undefined, undefined]);
   });
 
   it("hears the swing on the wind-up's last pose as the blow goes, never while he charges", () => {

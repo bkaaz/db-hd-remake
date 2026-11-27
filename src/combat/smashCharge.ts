@@ -2,6 +2,7 @@ import type { StateDef, StatesFile, Transition } from "../entity/states";
 import { HIT_TYPES } from "./hitTypes";
 import { aimed, type Aim } from "./rushEntries";
 import { AIMS, type Charged } from "./rushSlots";
+import type { ShakeDef } from "../camera/shake";
 import { startupOf, type AnimSteps } from "./swing";
 
 /**
@@ -83,15 +84,27 @@ const SENDING: Record<string, Sending> = {
   smash_2: {
     lift: [1, 1, 1, 1],
     send: [1, 1, 1, 1],
-    types: [undefined, "crumple", "crumple_2", "crumple_3"],
+    // stunned at every level, the tap a little, and never pushed away: he stays in reach (owner, 2026-11-27)
+    types: ["crumple_0", "crumple", "crumple_2", "crumple_3"],
     breaksFrom: 3,
-    push: [undefined, -3, -2, -0.5],
+    push: [0, 0, 0, 0],
     lunge: { hold: [2, 3, 4, 5], speed: [0.6, 1, 1.4, 1.8] },
   },
   smash_3: { lift: [0.5, 1.1, 1.2, 1.35], send: [1, 1.3, 1.6, 2], opensChase: true },
   // a level lower each since 2026-11-26: the top was too high
   smash: { lift: [1, 1, 1, 1], send: [1, 1, 1, 1], types: ["lift", "lift", "lift", "lift"], hop: { rise: [4.5, 6, 8, 10], ahead: 2 }, carries: true, opensChase: true },
 };
+/** The level the charge's light and shake begin at: the first is a plain blow still (owner, 2026-11-27). */
+const EFFECTS_FROM = 2;
+/** A level's light, its share of the top's: the second's a little smaller. */
+const LIGHT_SIZE = [0, 0, 0.75, 1];
+
+/** A charged level's shake: the top's as named, a pattern weaker and a third shorter each level below. */
+function shakeAt(top: ShakeDef, level: number): ShakeDef {
+  const below = 3 - level;
+  return { pattern: Math.max(0, top.pattern - below), frames: Math.round((top.frames * level) / 3) };
+}
+
 /** The enders that charge. */
 export const CHARGEABLE = Object.keys(SENDING);
 
@@ -148,7 +161,7 @@ const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
 export type ChargeOptions = Omit<Charged, "ender">;
 
 /** `file` with `ender` charged: its holds, its releases, and its way into them. */
-export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, fullCry, fullHitLight, chaseAnim, chaseRises, chaseStartsAt, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
+export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, fullCry, chargeLight, chargeShake, chaseAnim, chaseRises, chaseStartsAt, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
   const sending = SENDING[ender];
   if (!sending) throw new Error(`${ender} does not charge: ${CHARGEABLE.join(", ")} do`);
   const s3 = file.states[ender];
@@ -228,6 +241,8 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
     [ender]: {
       ...s3,
       ...sent(0),
+      // the tap is the level-0 blow too, not only what the charge lets go of
+      ...(sending.push?.[0] !== undefined && { pushes: sending.push[0] }),
       ...swingAt(poseEnd),
       boosts: { hold: "smash", frames: FULL, bar: AT_ONCE_COST, needs: boostCost },
       ...lunge(0, startup),
@@ -288,7 +303,8 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
       ...lunge(level, afterPose),
       ...hop(level, Math.max(0, afterPose - 1), afterPose),
       ...(level === 3 && { hitFlash: TOP_FLASH }),
-      ...(level === 3 && fullHitLight && { hitLight: fullHitLight }),
+      ...(level >= EFFECTS_FROM && chargeLight && { hitLight: chargeLight, ...(level < 3 && { hitLightSize: LIGHT_SIZE[level] }) }),
+      ...(level >= EFFECTS_FROM && chargeShake && { hitShake: shakeAt(chargeShake, level) }),
       ...(sending.breaksFrom !== undefined && level >= sending.breaksFrom && { breaksGuard: true }),
       ...(sending.push?.[level] !== undefined && { pushes: sending.push[level] }),
       // a level is let go of, not begun: no throw for the other button

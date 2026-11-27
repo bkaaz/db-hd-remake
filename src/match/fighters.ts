@@ -371,6 +371,7 @@ export class Fighters {
       }
       const result = landBlow(a, d, this.impact);
       if (result) this.flash = Math.max(this.flash, result.flash);
+      if (result?.shake) this.shake = result.shake;
       if (result?.sends) this.sent = { way: result.sends, attacker: a, defender: d };
       this.recorder.blow(result, from, to, gap, named);
     }

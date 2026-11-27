@@ -7,7 +7,7 @@ describe("HitLight", () => {
     light.land("ball", 10, 20);
     expect(light.ball).toBeNull();
     light.tick();
-    expect(light.ball).toEqual({ x: 10, y: 20, radius: 16 });
+    expect(light.ball).toEqual({ x: 10, y: 20, radius: 16, gone: 32 });
   });
 
   it("grows a ball by 2 a frame and takes it away at 32", () => {
@@ -20,6 +20,18 @@ describe("HitLight", () => {
       light.tick();
     }
     expect(radii).toEqual([16, 18, 20, 22, 24, 26, 28, 30]);
+  });
+
+  it("grows a smaller ball from and to its share of the whole: a lower level's", () => {
+    const light = new HitLight();
+    light.land("ball", 0, 0, 0.5);
+    light.tick();
+    const radii: number[] = [];
+    while (light.ball) {
+      radii.push(light.ball.radius);
+      light.tick();
+    }
+    expect(radii).toEqual([8, 10, 12, 14]);
   });
 
   it("narrows a pillar by 2 a side from 32 and ends it", () => {
@@ -42,6 +54,6 @@ describe("HitLight", () => {
     light.tick();
     light.land("ball", 7, 7);
     light.tick();
-    expect(light.ball).toEqual({ x: 7, y: 7, radius: 16 });
+    expect(light.ball).toEqual({ x: 7, y: 7, radius: 16, gone: 32 });
   });
 });

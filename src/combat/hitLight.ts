@@ -16,28 +16,31 @@ const PILLAR = { half: 32, narrow: 2 };
 export const PILLAR_HEIGHT = 218;
 
 export class HitLight {
-  private due: { kind: HitLightKind; x: number; y: number } | null = null;
-  /** World x, y and the radius in sprite px; null with none up. */
-  ball: { x: number; y: number; radius: number } | null = null;
+  private due: { kind: HitLightKind; x: number; y: number; size: number } | null = null;
+  /** World x, y and the radius in sprite px, and the radius it goes at; null with none up. */
+  ball: { x: number; y: number; radius: number; gone: number } | null = null;
   /** World x and the half-width in sprite px; null with none up. */
   pillar: { x: number; half: number } | null = null;
 
-  /** A blow landed at x, y: lit on the first frame after its pause. */
-  land(kind: HitLightKind, x: number, y: number): void {
-    this.due = { kind, x, y };
+  /** A blow landed at x, y: lit on the first frame after its pause; a ball `size` of its whole. */
+  land(kind: HitLightKind, x: number, y: number, size = 1): void {
+    this.due = { kind, x, y, size };
   }
 
   /** One live frame: hit pauses do not count. */
   tick(): void {
     if (this.ball) {
       const radius = this.ball.radius + BALL.grow;
-      this.ball = radius >= BALL.gone ? null : { ...this.ball, radius };
+      this.ball = radius >= this.ball.gone ? null : { ...this.ball, radius };
     }
     if (this.pillar) {
       const half = this.pillar.half - PILLAR.narrow;
       this.pillar = half <= 0 ? null : { ...this.pillar, half };
     }
-    if (this.due?.kind === "ball") this.ball = { x: this.due.x, y: this.due.y, radius: BALL.from };
+    if (this.due?.kind === "ball") {
+      const { x, y, size } = this.due;
+      this.ball = { x, y, radius: Math.round(BALL.from * size), gone: Math.round(BALL.gone * size) };
+    }
     if (this.due?.kind === "pillar") this.pillar = { x: this.due.x, half: PILLAR.half };
     this.due = null;
   }
