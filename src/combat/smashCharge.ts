@@ -118,6 +118,12 @@ const DAMAGE = [1, 1.25, 1.5, 1.8];
 /** Ki each level past the first costs on reaching it — the first is free (owner, 2026-11-26) — and each blow blocked while he holds. */
 const LEVEL_COST = 5;
 const BRACE_COST = 5;
+/**
+ * Frames a stunned opponent is left past what the blow takes to land, as a
+ * charge begun in a combo reaches its second level: time to let go on its cue,
+ * not to hold on for free (owner, 2026-11-27).
+ */
+const STUN_MARGIN = 6;
 const costOf = (level: number) => (level > 1 ? LEVEL_COST : 0);
 /** What RB costs over the whole charge, to have it at once: a bar of the meter (owner, 2026-11-26). */
 const AT_ONCE_COST = 10;
@@ -291,8 +297,10 @@ export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, e
   });
   states[hold(0)] = holdState(0, hold(1), LEVEL_AT[0] - decide);
   states[hold(1)] = holdState(1, hold(2), LEVEL_AT[1] - LEVEL_AT[0]);
-  states[COMBO_HOLD] = holdState(1, hold(2), COMBO_TO_SECOND);
-  states[hold(2)] = holdState(2, hold(3), LEVEL_AT[2] - LEVEL_AT[1]);
+  // begun in a combo: his stun stands still to the second level, which leaves him
+  // enough of it to be hit by that level let go at once (`combat/stunHold.ts`)
+  states[COMBO_HOLD] = { ...holdState(1, hold(2), COMBO_TO_SECOND), holdsStun: true };
+  states[hold(2)] = { ...holdState(2, hold(3), LEVEL_AT[2] - LEVEL_AT[1]), stunsAtLeast: afterPose + STUN_MARGIN };
   states[hold(3)] = { ...holdState(3, release(3), FULL - LEVEL_AT[2]), ...(fullCry && { sound: fullCry }) };
   for (let level = 0; level < 4; level++) {
     // the level's own launch, none of the plain blow's, and no boost of its own: it is let go of, not begun

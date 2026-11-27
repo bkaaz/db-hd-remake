@@ -216,6 +216,9 @@ export class Fighters {
       // a boost: the other stands still, and with him every bolt (`entity/boost.ts`)
       this.opponent.freeze(this.player.takeFoeFreeze());
       this.player.freeze(this.opponent.takeFoeFreeze());
+      // a charge in a combo holds the stunned one's clock (`combat/stunHold.ts`)
+      this.opponent.askStun(this.player.takeFoeStun());
+      this.player.askStun(this.opponent.takeFoeStun());
       const world = {
         dust: (x: number, y: number) => this.impact.effects.spawn("dust", x, y),
         effect: (name: string, x: number, y: number) => this.impact.effects.spawn(name, x, y),

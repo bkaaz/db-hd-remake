@@ -32,6 +32,7 @@ import { shadowFrame, shadowSize } from "./shadow";
 import { trailAt } from "./trail";
 import { pillarAt, type PillarDef } from "../combat/pillar";
 import { outOfReach } from "../combat/hitGate";
+import { NO_ASK, stunAfter, type StunAsk } from "../combat/stunHold";
 import { moveStep } from "../fx/follow";
 import { hoverOffset, quiverOffset, soundsOn } from "./hover";
 import type { ScreenCue } from "../screen";
@@ -268,6 +269,10 @@ export class Entity {
   private wallSide = 0;
   /** Frames the opponent stands still for this one's boost, for the fighters to hand him. */
   private foeFreeze = 0;
+  /** What this frame asks of a stunned opponent's clock (`combat/stunHold.ts`) — taken once. */
+  private foeStun: StunAsk = NO_ASK;
+  /** What the opponent asked of this one's stun clock this frame. */
+  private stunAsk: StunAsk = NO_ASK;
   /** Vanishes made in this combo (`chased:N`), none once the opponent is free again. */
   private chases = 0;
   /** Hidden by a state of his that `hidden`s him, not by a scene. */
@@ -1023,6 +1028,18 @@ export class Entity {
   }
 
   /** Frames the opponent stands still for this one's boost — taken once. */
+  /** What this frame asks of the opponent's stun — taken once (`Fighters`). */
+  takeFoeStun(): StunAsk {
+    const ask = this.foeStun;
+    this.foeStun = NO_ASK;
+    return ask;
+  }
+
+  /** The opponent's ask of this one's stun clock, for its next count. */
+  askStun(ask: StunAsk): void {
+    this.stunAsk = ask;
+  }
+
   takeFoeFreeze(): number {
     const frames = this.foeFreeze;
     this.foeFreeze = 0;
@@ -1577,6 +1594,8 @@ export class Entity {
   private enterState(restart = false): void {
     if (!this.sm) return;
     this.opened = false;
+    const least = this.sm.def.stunsAtLeast;
+    if (least) this.foeStun = { ...this.foeStun, atLeast: Math.max(this.foeStun.atLeast, least) };
     // what it came in with, before it is stopped ($0F:B1EC: fields 0x80, 0x82)
     if (this.sm.def.savesFlight) this.savedFlight = [this.vx, this.vy];
     // a special starts stopped, whatever it was started from ($0D:D7A0)
@@ -1787,6 +1806,7 @@ export class Entity {
     // a state with no blow of its own holds him for good: a vanish's coming out, whose last blow did land
     const blowless = this.attackReaction === undefined && this.attackDamage === 0;
     if (this.sm?.def.stillsFoe && (blowless || !this.swing.spent)) this.foeFreeze = 1;
+    if (this.sm?.def.holdsStun) this.foeStun = { ...this.foeStun, hold: true };
     if (this.previewing) {
       // a hold's drawings go step for step with the thrower, who waits out a freeze too
       if (this.freezeFrames > 0) this.freezeFrames--;
@@ -1840,7 +1860,8 @@ export class Entity {
     }
     this.showVariant();
 
-    if (this.stun > 0) this.stun--;
+    this.stun = stunAfter(this.stun, this.stunAsk);
+    this.stunAsk = NO_ASK;
     // Below the freeze check with the stun clock: a hit pause freezes both
     // fighters equally and must not decide when the next hit of a multi-hit
     // move arrives.

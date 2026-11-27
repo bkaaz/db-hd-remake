@@ -10,6 +10,6 @@
     { "p2": { "does": [30, "up 3", 60] } },
     { "p2": { "does": ["attack 24"] } },
     { "p2": { "guard": "always", "does": [60] } },
-    { "p1": { "at": 0.4, "free": true, "does": [40, "attack 2", 10, "attack 2", 10, "back smash 70", 300] }, "p2": { "at": 0.47, "does": [900] } }
+    { "p1": { "at": 0.4, "free": true, "does": [40, "attack 2", 12, "attack 2", 12, "attack 2", 10, "back smash 40", 300] }, "p2": { "at": 0.47, "does": [900] } }
   ]
 }

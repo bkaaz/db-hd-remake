@@ -537,6 +537,51 @@ describe("a string goes on once the swing is seen whole, hit or miss", () => {
     expect(sm.current).toBe("kick");
   });
 
+  it("hands a kept press the blow taken did not use on to the next, there to cancel into its own blow", () => {
+    const f = chained();
+    f.states.punch.transitions = [
+      { when: ["cancelable", "pressed:guard"], to: "kick" },
+      { when: ["cancelable", "pressed:smash"], to: "slam" },
+      { when: "animEnd", to: "idle" },
+    ];
+    f.states.kick = { anim: "kick", cancelBy: 6, transitions: [{ when: ["cancelable", "pressed:smash"], to: "slam" }] };
+    f.states.slam = { anim: "slam", transitions: [] };
+    const sm = new StateMachine(f, { punch: PUNCH });
+    const hit = { ...QUIET, hitConfirmed: true };
+    sm.update(ATTACK, QUIET);
+    sm.update(MEDIUM, hit); // the next blow, pressed during the wind-up
+    sm.update({ ...NONE, smash: true }, hit); // and the one after, before the first is taken
+    for (let i = 0; i < 2; i++) sm.update(NONE, hit); // frames 3–4: the hit box is out
+    expect(sm.current).toBe("punch");
+    sm.update(NONE, hit); // the window: the first kept press wins
+    expect(sm.current).toBe("kick");
+    sm.update(NONE, hit); // the second, handed on, with no press of its own
+    expect(sm.current).toBe("slam");
+  });
+
+  it("hands a press on one state only: one the next did not use either is gone", () => {
+    const f = chained();
+    f.states.punch.transitions = [
+      { when: ["cancelable", "pressed:guard"], to: "kick" },
+      { when: ["cancelable", "pressed:smash"], to: "slam" },
+      { when: "animEnd", to: "idle" },
+    ];
+    f.states.kick = { anim: "kick", cancelBy: 6, transitions: [{ when: ["cancelable", "pressed:attack"], to: "jab" }] };
+    f.states.jab = { anim: "jab", cancelBy: 6, transitions: [{ when: ["cancelable", "pressed:smash"], to: "slam" }] };
+    f.states.slam = { anim: "slam", transitions: [] };
+    const sm = new StateMachine(f, { punch: PUNCH });
+    const hit = { ...QUIET, hitConfirmed: true };
+    sm.update(ATTACK, QUIET);
+    sm.update(MEDIUM, hit);
+    sm.update({ ...NONE, smash: true }, hit);
+    for (let i = 0; i < 4; i++) sm.update(NONE, hit);
+    expect(sm.current).toBe("kick");
+    sm.update(ATTACK, hit); // the kick goes on to a jab: the smash, handed on once, is not handed again
+    expect(sm.current).toBe("jab");
+    sm.update(NONE, hit);
+    expect(sm.current).toBe("jab");
+  });
+
   it("keeps nothing when nothing was pressed", () => {
     const sm = new StateMachine(chained(), { punch: PUNCH });
     sm.update(ATTACK, QUIET);

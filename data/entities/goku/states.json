@@ -5049,7 +5049,8 @@
           "when": "frames:5",
           "to": "smash_1_charge_2"
         }
-      ]
+      ],
+      "holdsStun": true
     },
     "smash_1_charge_2": {
       "anim": "b_116",
@@ -5078,7 +5079,8 @@
           "when": "frames:20",
           "to": "smash_1_charge_3"
         }
-      ]
+      ],
+      "stunsAtLeast": 6
     },
     "smash_1_charge_3": {
       "anim": "b_116",
@@ -5733,7 +5735,8 @@
           "when": "frames:5",
           "to": "smash_2_charge_2"
         }
-      ]
+      ],
+      "holdsStun": true
     },
     "smash_2_charge_2": {
       "anim": "b_a1",
@@ -5762,7 +5765,8 @@
           "when": "frames:20",
           "to": "smash_2_charge_3"
         }
-      ]
+      ],
+      "stunsAtLeast": 6
     },
     "smash_2_charge_3": {
       "anim": "b_a1",
@@ -6056,7 +6060,8 @@
           "when": "frames:5",
           "to": "smash_3_charge_2"
         }
-      ]
+      ],
+      "holdsStun": true
     },
     "smash_3_charge_2": {
       "anim": "b_80",
@@ -6085,7 +6090,8 @@
           "when": "frames:20",
           "to": "smash_3_charge_3"
         }
-      ]
+      ],
+      "stunsAtLeast": 6
     },
     "smash_3_charge_3": {
       "anim": "b_80",
@@ -6438,7 +6444,8 @@
           "when": "frames:5",
           "to": "smash_charge_2"
         }
-      ]
+      ],
+      "holdsStun": true
     },
     "smash_charge_2": {
       "anim": "m9f",
@@ -6467,7 +6474,8 @@
           "when": "frames:20",
           "to": "smash_charge_3"
         }
-      ]
+      ],
+      "stunsAtLeast": 6
     },
     "smash_charge_3": {
       "anim": "m9f",

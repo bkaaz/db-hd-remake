@@ -139,7 +139,9 @@ Each level begins with a flash, and he blinks into his `charge`
 colours from there, faster each level; the second begins with Saiyan
 Meteor's ball charging too, the only sound of it. Begun while the opponent is still reeling from a hit
 (the `combo` trigger) it starts at the first level and reaches the second in
-a few frames, so a charged S3 can end the rush; held past that the combo is
+a few frames, his stun standing still till then and leaving him enough to be
+hit by that level let go on its cue (`combat/stunHold.ts`; owner,
+2026-11-27), so a charged S3 can end the rush; held past that the combo is
 his to drop. It can be blocked. The first level is free and each past it
 costs 5 ki; where he cannot pay for the next he lets go at once, with the
 level he has — every charge so (`ki:N`). Once stopped in the pose he cannot be stopped: every

@@ -498,6 +498,10 @@ export interface StateDef {
   rises?: number;
   /** The opponent stands still while he is in this state, until its blow has landed: a vanish's chase. */
   stillsFoe?: boolean;
+  /** A stunned opponent's stun stands still while he is in this state: a charge begun in a combo (`combat/stunHold.ts`). */
+  holdsStun?: boolean;
+  /** Entering it, a stunned opponent is left at least this much stun: the charge's second level, let go at once, still lands. */
+  stunsAtLeast?: number;
   /** Its blow's reaction is taken whatever he is in, no `ifHitAgain` of his turning it: a chase's, off S3's high reel too. */
   forces?: boolean;
   /** Where its blow lands it opens a vanish's chase (`chase`), whatever it sends him into: S3's and Smash's. */
@@ -1403,6 +1407,12 @@ export class StateMachine {
    * every press during a blow is one more blow (owner, 2026-11-24).
    */
   private kept = new Set<string>();
+  /**
+   * Of `kept`, what the state before kept and did not use: one state on, no
+   * further. A, A, A, back + S mashed: the S comes while the third A waits,
+   * and is A3's to cancel into, not lost with A2 (owner, 2026-11-27).
+   */
+  private handedOn = new Set<string>();
 
   /**
    * `anims` is only read for when a swing misses; without them a miss is
@@ -1443,6 +1453,7 @@ export class StateMachine {
     this.released = new Set();
     this.queued = null;
     this.kept = new Set();
+    this.handedOn = new Set();
   }
 
   /**
@@ -1562,7 +1573,10 @@ export class StateMachine {
   }
 
   private take(t: Transition, press: string | null): string {
+    const unused = [...this.kept].filter((b) => b !== press && !this.handedOn.has(b));
     this.enter(t.to);
+    this.kept = new Set(unused);
+    this.handedOn = new Set(unused);
     this.startedByCommand = triggersOf(t.when).some((k) => k.startsWith("command:"));
     if (this.startedByCommand) this.commandPress = press;
     this.pressSpent = press;

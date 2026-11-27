@@ -293,6 +293,14 @@ describe("withCharge on S1", () => {
     expect([lit.smash_1_lv0.hitLight, s1.states.smash_1_lv3.hitLight]).toEqual([undefined, undefined]);
   });
 
+  it("holds a stunned opponent to the second level when begun in a combo, and leaves him enough to land it let go at once", () => {
+    expect(s1.states.smash_1_charge_1_combo.holdsStun).toBe(true);
+    // the fixture's blow is out the frame after the pose it charges on; 6 more to let go on the cue
+    expect(s1.states.smash_1_charge_2.stunsAtLeast).toBe(0 + 6);
+    // past the second level, and out of a combo, nothing holds him
+    expect([s1.states.smash_1_charge_1.holdsStun, s1.states.smash_1_charge_3.stunsAtLeast, s1.states.smash_1_charge_3.holdsStun]).toEqual([undefined, undefined, undefined]);
+  });
+
   it("starts the ender's animation over though the blow before played it: no charge is skipped", () => {
     expect(s1.states.smash_1.replays).toBe(true);
     // what follows it hands the animation over, the pose held where the charge stopped it
