@@ -416,7 +416,7 @@ and a budget of two re-launches closes the uppercut loop.
 
 **There is still no round.** Behind the debug scene's intro switch the fight
 opens with both intros and READY, FIGHT!; behind its KO switch a fighter whose
-health runs out is knocked out and the other strikes his pose, and X starts the
+health runs out is knocked out and the other strikes his pose, and any button starts the
 same scene again — no second round, no second screen. That, and a second
 player, is what the game is missing before it is one.
 

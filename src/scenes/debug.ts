@@ -8,6 +8,7 @@ import { stepOf, withRush } from "../combat/rushSlots";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
 import type { Controls } from "../input/controls";
+import { ACTIONS } from "../input/layout";
 import { Fighters } from "../match/fighters";
 import { Round, type RoundWorld } from "../match/round";
 import { Opening } from "../match/opening";
@@ -39,7 +40,7 @@ import { showMessage, showPrompt, type Notice } from "../ui/notices";
 const SPRITE_SCALE = 1;
 
 /**
- * Frames of the winner's pose before X may fight again: a moment of it, not
+ * Frames of the winner's pose before a button may fight again: a moment of it, not
  * the 304 the original plays before its next round (owner) — this scene is
  * for trying things again.
  */
@@ -102,6 +103,9 @@ export class DebugScene implements Scene {
 
   /** A pick that only changes player one's rush or its tempo is tried on him where he stands; any other builds the scene again. */
   take(request: SceneRequest): boolean {
+    // once the prompt is up the fight is over: nothing to try a pick on, and its
+    // own request — this one, unchanged — has to build the scene again
+    if (this.again) return false;
     if (request.scene !== "debug" || !sameBut(request, this.req, "rush1", "tempo1", "hitstop")) return false;
     const def = tryRush(this.own, request);
     if (typeof def === "string" || !def.states) return false;
@@ -114,7 +118,7 @@ export class DebugScene implements Scene {
 
   /** Frames since the scene began: half speed skips the odd ones. */
   private frame = 0;
-  /** Once the round is done: X fights it again, which this says. */
+  /** Once the round is done: any button fights it again, which this says. */
   private again: Notice | null = null;
   /** A sender's journey under way: the fight waits for it. */
   private journeying: Journey | null = null;
@@ -259,7 +263,7 @@ export class DebugScene implements Scene {
       this.waiting.prompt.destroy();
       this.waiting = null;
     }
-    // the pose plays on while X is awaited
+    // the pose plays on while a button is awaited
     const again = this.round.done || this.round.posed >= AGAIN_AFTER ? this.fightAgain(controls) : null;
     if (again) return again;
     // a KO's half speed: an odd frame only draws ($0E:821C)
@@ -323,15 +327,18 @@ export class DebugScene implements Scene {
   }
 
   /**
-   * The round done, or a moment into the pose: X builds the scene again as
-   * it was asked for — health, places, intro and all. The press is the first
-   * taken after the prompt, so a button held through the pose cannot start
-   * the next fight at once.
+   * The round done, or a moment into the pose: any button of the fight, on
+   * the keyboard or a pad, builds the scene again as it was asked for —
+   * health, places, intro and all. Not a direction: those count while held,
+   * so one held through the pose would start the next fight at once. A button
+   * counts only on the frame it goes down, and the press is the first taken
+   * after the prompt.
    */
   private fightAgain(controls: Controls): SceneRequest | null {
-    const pressed = controls.frame().blast;
+    const input = controls.frame();
+    const pressed = ACTIONS.some((a) => input[a]);
     if (this.again) return pressed ? { ...this.req } : null;
-    this.again = this.prompt("press X to fight again");
+    this.again = this.prompt("press any button to fight again");
     return null;
   }
 

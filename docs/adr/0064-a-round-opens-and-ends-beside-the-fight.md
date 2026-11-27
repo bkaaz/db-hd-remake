@@ -1,14 +1,15 @@
 # 0064 — A round opens and ends in modules of its own, behind debug switches
 
 **Status:** accepted 2026-11-17 · consolidates 0064, 0066, 0067, 0068, 0073 and
-0089 (2026-11-03 – 2026-11-07), which it replaces · there is no second round yet
+0089 (2026-11-03 – 2026-11-07), which it replaces · any button fights again
+2026-11-27 · there is no second round yet
 
 `Opening` (`match/opening.ts`) puts both fighters into their intros on the arena
 at once; READY drops as each intro's first state ends, and no button or KO
 counts until FIGHT! is gone. `Round` (`match/round.ts`) forces a fighter at zero
 health into his KO, half-speeds the scene to the floor, announces it, and puts the
-winner in one of his win poses at random; the debug scene then offers X to fight
-again. Each is behind the debug scene's switch (`I`, `K`).
+winner in one of his win poses at random; the debug scene then offers any button
+of the fight, not a direction, to fight again. Each is behind the debug scene's switch (`I`, `K`).
 
 **Rejected:**
 
@@ -20,5 +21,6 @@ again. Each is behind the debug scene's switch (`I`, `K`).
 - **The win pose by arena**, as the original — the arena it needs will not exist.
 - **The opening inside `Round`** — the start and the end share nothing but the
   screen.
-- **Any button to fight again** — one held through the pose would start the next
-  fight at once.
+- **One named button to fight again** (X, until 2026-11-27) — the keyboard and
+  the pad name it differently, and a press counts only once it goes down, so
+  any button is as safe.
