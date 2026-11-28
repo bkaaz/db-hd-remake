@@ -19,8 +19,3 @@ Severity in plain words — *cosmetic*, *annoying*, *breaks play*, *loses work* 
 because a number would only need translating back.
 
 ---
-
-
-
-- **Buu's charge is broken: its animation and its sound** — *annoying*. Hold
-  Charge (RB) as Buu.

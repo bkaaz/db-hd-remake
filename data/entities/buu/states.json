@@ -1588,14 +1588,6 @@
       "glow": 2,
       "transitions": [
         {
-          "when": "!held:attack",
-          "to": "idle"
-        },
-        {
-          "when": "!held:smash",
-          "to": "idle"
-        },
-        {
           "when": "animEnd",
           "to": "charge_first"
         }
@@ -4701,16 +4693,15 @@
       },
       "transitions": [
         {
-          "when": "!held:attack",
-          "to": "idle"
-        },
-        {
-          "when": "!held:smash",
-          "to": "idle"
+          "when": [
+            "animEnd",
+            "held:charge"
+          ],
+          "to": "charge"
         },
         {
           "when": "animEnd",
-          "to": "charge"
+          "to": "idle"
         }
       ],
       "fromTop": true
@@ -4728,16 +4719,15 @@
       "muted": true,
       "transitions": [
         {
-          "when": "!held:attack",
-          "to": "idle"
-        },
-        {
-          "when": "!held:smash",
-          "to": "idle"
+          "when": [
+            "animEnd",
+            "held:charge"
+          ],
+          "to": "charge"
         },
         {
           "when": "animEnd",
-          "to": "charge"
+          "to": "idle"
         }
       ],
       "fromTop": true

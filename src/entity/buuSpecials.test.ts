@@ -67,12 +67,14 @@ describe("Buu's Energy Sphere", () => {
 });
 
 describe("Buu's charge", () => {
-  it("lasts as long as both buttons are held, its line said once ($10:D155, recorded)", () => {
+  it("lasts as long as Charge is held, a pass at a time, its line said once ($10:D155, recorded)", () => {
     expect(states.charge_start.muted).toBeUndefined();
     for (const name of ["charge_first", "charge"]) {
       expect(states[name].muted).toBe(true);
       expect(states[name].fromTop).toBe(true);
     }
-    expect(states.charge.transitions?.map((t) => t.when)).toEqual(["!held:attack", "!held:smash", "animEnd"]);
+    for (const name of ["charge_first", "charge"]) {
+      expect(states[name].transitions?.map((t) => [t.when, t.to])).toEqual([[["animEnd", "held:charge"], "charge"], ["animEnd", "idle"]]);
+    }
   });
 });
