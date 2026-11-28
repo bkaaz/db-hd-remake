@@ -376,8 +376,8 @@ no boxes; it stands in the heavy reel's body (`boxesOf`), or nothing could
 hit it.
 
 **The counter** (owner, 2026-11-28; Burst Limit's ready stance and its
-attack, `inspiration.md`) is built from neutral; from a reaction and against
-a chase it is not yet. Guard pressed with a direction held, or a direction
+attack, `inspiration.md`) is built from neutral and from a reaction; the
+exchange against a chase is not yet. Guard pressed with a direction held, or a direction
 pressed with guard held — guarding, a direction as the blow comes (owner,
 2026-11-28) — arms it for 9 frames, and a blow landing in them teleports him
 behind the attacker (`combat/counter.ts`):
@@ -387,14 +387,15 @@ falling in behind him as from a jump and no more, for two bars (20). Early,
 or without the ki, it is an ordinary block.
 It also costs fatigue (§8): 15 from neutral, walking, crouching, guarding,
 blockstun and the air, its window 9 frames before the blow; **25 from a
-reaction**, its window 3 frames — an escape costs about a combo's worth of
+reaction**, its window 8 frames — an escape costs about a combo's worth of
 fatigue, and whoever escapes too often is spent — as he comes out, the
 teleport made, standing tired (`tired`) where he came out, not thrown down. Gone, he leaves the drawing he had as the blow came. **Never from the rush's
 flinch** (A1–A3): a rush that lands always lands whole, and the escape opens
 where the attacker extends it — an ender, A4, a charge, a chase, a juggle,
 the crumple. Never from the floor or getting up, nor from one's own attack.
-In the corner it lands behind and swaps sides; against a projectile it lands
-behind the shooter.
+A blow countered holds him no longer: a chase's, whose maker is then held by
+the counter's. In the corner it lands behind and swaps sides; against a
+projectile it lands behind the shooter.
 
 **Against a chase it is an exchange**: the one chased counters the vanish's
 blow as it comes, his own appears behind its maker, who may counter it in

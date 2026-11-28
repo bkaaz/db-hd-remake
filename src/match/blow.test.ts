@@ -41,6 +41,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     attackSounds: { hit: "hit_1", block: "block_1" },
     markHit: vi.fn(),
     markBlocked: vi.fn(),
+    markCountered: vi.fn(),
     lightHit: vi.fn(),
     travels: false,
     turnToward: vi.fn(),
@@ -130,6 +131,7 @@ describe("landBlow", () => {
     const defender = body("hurt", { counters: vi.fn(() => true) } as Partial<Entity>);
     expect(landBlow(attacker, defender, context())).toMatchObject({ countered: true, damage: 0, blocked: false });
     expect(attacker.markHit).not.toHaveBeenCalled();
+    expect(attacker.markCountered).toHaveBeenCalled();
     expect(defender.gotHit).not.toHaveBeenCalled();
     expect(defender.hurtBy).not.toHaveBeenCalled();
   });

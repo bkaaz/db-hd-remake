@@ -24,7 +24,7 @@ import { Combo } from "../combat/combo";
 import { chaseLaunch, jumpPeak } from "../combat/chaseLaunch";
 import { appearAt } from "../combat/appearAt";
 import { Fatigue } from "../combat/fatigue";
-import { COUNTER_FATIGUE, CounterWindow, mayCounterFrom } from "../combat/counter";
+import { COUNTER_FATIGUE, counterFrom, CounterWindow } from "../combat/counter";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { shoveAfter } from "../combat/knockback";
@@ -119,6 +119,8 @@ export interface Opponent {
   outOfReachSoon?: boolean;
   /** Frames he has flown so, none when not (`flown:N`). */
   flown?: number;
+  /** Gone in a vanish or a counter: nothing holds him still. */
+  hidden?: boolean;
   /** Which way he moved last frame, −1, 0 or 1: past him is the way he goes, not away from the attacker. */
   goes?: number;
   /** The screen's edge he met since the last blow, −1 left or 1 right, 0 none: off it, a vanish comes out between it and him and sends him across. */
@@ -503,6 +505,8 @@ export class Entity {
   private readonly counterWindow = new CounterWindow();
   /** A counter's fatigue spent him: he collapses once he is out of it, not before. */
   private spentByCounter = false;
+  /** His blow in this state met a counter (`markCountered`). */
+  private countered = false;
 
   constructor(
     private def: EntityDef,
@@ -1211,6 +1215,11 @@ export class Entity {
     this.swing.block();
   }
 
+  /** His blow met a counter: it holds the opponent no longer, who now holds him. */
+  markCountered(): void {
+    this.countered = true;
+  }
+
   /** The last 30 frames of the stick, if a button went down this frame — why a command was missed. */
   private padPress(): string | null {
     const pressed = this.pad.at(0).pressed;
@@ -1370,7 +1379,7 @@ export class Entity {
     if (!to || !def || this.ki < (def.cost ?? 0)) return false;
     this.counterWindow.clear();
     this.forceState(to);
-    if (this.fatigue.add(COUNTER_FATIGUE)) this.spentByCounter = true;
+    if (this.fatigue.add(COUNTER_FATIGUE[this.counterWindow.from])) this.spentByCounter = true;
     return true;
   }
 
@@ -1648,6 +1657,7 @@ export class Entity {
     this.flipsOnLeaving = !!this.sm.def.flipsOnLeaving;
     if (!this.sm.def.keepsApproach) this.approaching = null;
     this.arrived = false;
+    this.countered = false;
     this.freed = false;
     this.finaleSaid = { ballLanded: false, finaleDone: false };
     this.clockHeld = false;
@@ -1844,7 +1854,8 @@ export class Entity {
     // a chase holds him still until its blow lands
     // a state with no blow of its own holds him for good: a vanish's coming out, whose last blow did land
     const blowless = this.attackReaction === undefined && this.attackDamage === 0;
-    if (this.sm?.def.stillsFoe && (blowless || !this.swing.spent)) this.foeFreeze = 1;
+    // not one gone in a counter of it: he holds this one, and neither would move again
+    if (this.sm?.def.stillsFoe && (blowless || !this.swing.spent) && !this.countered && !opponent?.hidden) this.foeFreeze = 1;
     if (this.sm?.def.holdsStun) this.foeStun = { ...this.foeStun, hold: true };
     if (this.previewing) {
       // a hold's drawings go step for step with the thrower, who waits out a freeze too
@@ -1870,7 +1881,7 @@ export class Entity {
     const ahead = this.facing > 0;
     this.counterWindow.read(
       { guardPressed: input.guard, guardHeld: input.holding.guard, towards: ahead ? input.right : input.left, away: ahead ? input.left : input.right },
-      mayCounterFrom(this.sm?.def) && !!this.def.states?.states.counter,
+      this.def.states?.states.counter && this.sm ? counterFrom(this.sm.current, this.sm.def) : null,
     );
     // the cartridge records the pad in a hit pause too ($0E:829C), so a
     // command's windows count the frames the pause took

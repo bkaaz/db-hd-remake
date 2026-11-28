@@ -7,16 +7,20 @@ import type { StateDef, StatesFile, Transition } from "../entity/states";
  * fighter's own, and the window a press opens. Pure.
  */
 
-/** Frames a press stays armed: a blow landing in them is countered. */
-export const COUNTER_WINDOW = 9;
+/** Where a counter is armed from: on his feet, guarding or in the air; or reeling from a blow. */
+export type CounterFrom = "neutral" | "reaction";
+/** Frames a press stays armed, by where from: a blow landing in them is countered. Shorter reeling (owner, 2026-11-28). */
+export const COUNTER_WINDOW: Record<CounterFrom, number> = { neutral: 9, reaction: 8 };
+/** Fatigue a counter costs (`combat/fatigue.ts`): about a combo's worth, escaping one. */
+export const COUNTER_FATIGUE: Record<CounterFrom, number> = { neutral: 15, reaction: 25 };
 /** Frames he is gone before he comes out behind the attacker. */
 const GONE = 6;
 /** What each costs, in ki: a bar towards, two away. */
 const COST = { counter: 10, counter_away: 20 } as const;
-/** Fatigue a counter costs (`combat/fatigue.ts`), from neutral. */
-export const COUNTER_FATIGUE = 15;
 /** How far behind him he comes out, sprite px, where no blow of his own says. */
 const BEHIND = 40;
+/** The rush's flinch, standing and crouching: a rush that lands lands whole, no counter out of it. */
+const RUSH_FLINCH = new Set(["hurt_chain", "hurt_crouch"]);
 
 /** The state a counter starts in: towards him, or away. */
 export type CounterState = keyof typeof COST;
@@ -31,22 +35,24 @@ export interface CounterHands {
 
 /**
  * Guard pressed with a direction held, or a direction pressed with guard held
- * (owner, 2026-11-28: guarding, a direction as the blow comes), armed for
- * `COUNTER_WINDOW` frames: the state a blow landing meanwhile sends him into,
- * or none.
+ * (owner, 2026-11-28: guarding, a direction as the blow comes), armed for its
+ * window: the state a blow landing meanwhile sends him into, or none.
  */
 export class CounterWindow {
   private to: CounterState | null = null;
   private left = 0;
   private was = { towards: false, away: false };
+  /** Where the armed one was armed from, for what it costs. */
+  from: CounterFrom = "neutral";
 
-  /** This frame's hands; nothing without one direction, or where he may not. */
-  read({ guardPressed, guardHeld, towards, away }: CounterHands, may: boolean): void {
+  /** This frame's hands; nothing without one direction, or where he may not (`from` null). */
+  read({ guardPressed, guardHeld, towards, away }: CounterHands, from: CounterFrom | null): void {
     const newly = (towards && !this.was.towards) || (away && !this.was.away);
     this.was = { towards, away };
-    if (!may || towards === away || !(guardPressed || (guardHeld && newly))) return;
+    if (from === null || towards === away || !(guardPressed || (guardHeld && newly))) return;
     this.to = towards ? "counter" : "counter_away";
-    this.left = COUNTER_WINDOW;
+    this.left = COUNTER_WINDOW[from];
+    this.from = from;
   }
 
   /** One frame of the window gone; shut once it has run out. */
@@ -66,9 +72,16 @@ export class CounterWindow {
   }
 }
 
-/** Whether a body in `def` may arm a counter: on his feet or in the air, guarding or not, but in no reaction, attack or vanish. */
-export function mayCounterFrom(def: StateDef | undefined): boolean {
-  return !!def && (def.rank ?? 0) === 0 && !def.damage && def.type === undefined && !def.hidden && !def.invulnerable;
+/**
+ * Where a body in state `name` may arm a counter from, or null: on his feet
+ * or in the air, guarding or not; reeling, but not from the rush's flinch;
+ * never in an attack or a vanish, nor down or getting up (untouchable).
+ */
+export function counterFrom(name: string, def: StateDef | undefined): CounterFrom | null {
+  if (!def || def.hidden || def.invulnerable) return null;
+  const rank = def.rank ?? 0;
+  if (rank === 0) return !def.damage && def.type === undefined ? "neutral" : null;
+  return rank <= 3 && !RUSH_FLINCH.has(name) ? "reaction" : null;
 }
 
 /**
