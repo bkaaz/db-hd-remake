@@ -60,7 +60,7 @@ export class Recorder {
     // show is what the defender was in *before* the blow, because by now it has
     // already been forced into the reaction — or refused one, in which case
     // `was` and the column agree and the refusal is visible at a glance.
-    const verb = result.blocked ? "BLOCKED by" : "HITS";
+    const verb = result.countered ? "COUNTERED by" : result.blocked ? "BLOCKED by" : "HITS";
     this.say(
       fighters,
       `${from} ${verb} ${to} (was ${result.took}) · ${result.damage} dmg · gap ${Math.round(gap)}`,

@@ -16,10 +16,10 @@ hold for every fighter, not only one.
    rush; a rush for each other fighter, accepted by the owner; enders on Smash, a launcher
    and a ki follow-up after it, once the owner picks their animations; what
    punishes a string thrown at nothing.
-2. **The counter** (`combat.md` §5), in steps: fatigue as a gauge of 100;
-   the counter from neutral, both directions; from a reaction; the exchange
-   against a chase. *Done when:* a recording shows each, and guard too early
-   or without the ki blocks.
+2. **The counter** (`combat.md` §5), what is left of it: from a reaction (its
+   window 3 frames, 25 fatigue, never from the rush's flinch); the exchange
+   against a chase; against a projectile, behind the shooter. *Done when:* a
+   recording shows each.
 3. **Launch scaling:** each lift raises less, so a juggle ends by the body
    falling out of it (`Combo.lifts`).
 4. **The aura.**

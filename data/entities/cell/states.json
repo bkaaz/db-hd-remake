@@ -5582,6 +5582,125 @@
           "to": "idle"
         }
       ]
+    },
+    "counter": {
+      "anim": "m93",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "damage": 0,
+      "hidden": true,
+      "invulnerable": true,
+      "pushless": true,
+      "cost": 10,
+      "sound": "teleport_29",
+      "stillsFoe": true,
+      "transitions": [
+        {
+          "when": "frames:6",
+          "to": "counter_strike"
+        }
+      ]
+    },
+    "counter_away": {
+      "anim": "m93",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "airborne": true,
+      "air": [
+        [
+          0,
+          {
+            "vx": 0,
+            "vy": 0,
+            "gravity": 0
+          }
+        ]
+      ],
+      "damage": 0,
+      "hidden": true,
+      "invulnerable": true,
+      "pushless": true,
+      "cost": 20,
+      "sound": "teleport_29",
+      "transitions": [
+        {
+          "when": "frames:6",
+          "to": "counter_behind"
+        }
+      ]
+    },
+    "counter_strike": {
+      "anim": "m93",
+      "vel": [
+        0,
+        0
+      ],
+      "turn": false,
+      "type": "knockback",
+      "damage": 32,
+      "hitSound": "hit_09",
+      "blockSound": "block_17",
+      "appears": 40,
+      "appearsNear": 40,
+      "appearsBehind": true,
+      "replays": true,
+      "forces": true,
+      "stillsFoe": true,
+      "transitions": [
+        {
+          "when": "animEnd",
+          "to": "idle"
+        }
+      ]
+    },
+    "counter_behind": {
+      "anim": "m05_2",
+      "airborne": true,
+      "turn": false,
+      "transitions": [
+        {
+          "when": [
+            "held:fwd",
+            "!held:down",
+            "!held:up",
+            "pressed:smash"
+          ],
+          "to": "negative_arrow"
+        },
+        {
+          "when": "pressed:attack",
+          "to": "jump_y"
+        },
+        {
+          "when": "pressed:smash",
+          "to": "jump_b"
+        },
+        {
+          "when": "landed",
+          "to": "land"
+        }
+      ],
+      "holdStep": 0,
+      "appears": 40,
+      "appearsNear": 40,
+      "appearsBehind": true
     }
   }
 }

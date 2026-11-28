@@ -50,6 +50,7 @@ function body(type: "hit" | "hurt", extra: Partial<Entity> = {}): Entity {
     gotHit: vi.fn(),
     tire: vi.fn(),
     guardHit: vi.fn(() => true),
+    counters: vi.fn(() => false),
     freeze: vi.fn(),
     shoveBeforePause: vi.fn(),
     sound: vi.fn(),
@@ -122,6 +123,15 @@ describe("landBlow", () => {
     const out = body("hurt", { health: 0 });
     landBlow(body("hit"), out, context());
     expect(out.tire).not.toHaveBeenCalled();
+  });
+
+  it("lands nothing on a defender whose counter meets it, the swing not spent", () => {
+    const attacker = body("hit");
+    const defender = body("hurt", { counters: vi.fn(() => true) } as Partial<Entity>);
+    expect(landBlow(attacker, defender, context())).toMatchObject({ countered: true, damage: 0, blocked: false });
+    expect(attacker.markHit).not.toHaveBeenCalled();
+    expect(defender.gotHit).not.toHaveBeenCalled();
+    expect(defender.hurtBy).not.toHaveBeenCalled();
   });
 
   it("turns the defender to face whoever landed the blow", () => {

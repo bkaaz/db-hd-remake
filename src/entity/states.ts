@@ -494,6 +494,8 @@ export interface StateDef {
   appears?: number;
   /** With `appears`: how far from him on his near side, where the edge leaves no room past him — the blow's middle on him, as he is pinned and drifts into nothing (owner, 2026-11-27). */
   appearsNear?: number;
+  /** With `appears`: behind the attacker, whichever way he goes — a counter's coming out (`combat/counter.ts`). */
+  appearsBehind?: boolean;
   /** With `appears`: this many sprite px above the opponent's feet, to strike down at him (owner, 2026-11-26). */
   rises?: number;
   /** The opponent stands still while he is in this state, until its blow has landed: a vanish's chase. */

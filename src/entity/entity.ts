@@ -24,6 +24,7 @@ import { Combo } from "../combat/combo";
 import { chaseLaunch, jumpPeak } from "../combat/chaseLaunch";
 import { appearAt } from "../combat/appearAt";
 import { Fatigue } from "../combat/fatigue";
+import { COUNTER_FATIGUE, CounterWindow, mayCounterFrom } from "../combat/counter";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { shoveAfter } from "../combat/knockback";
@@ -496,6 +497,8 @@ export class Entity {
     return this.combo.hits > 0;
   }
   private readonly fatigue = new Fatigue();
+  /** Guard pressed with a direction, armed a few frames against a blow (`combat/counter.ts`). */
+  private readonly counterWindow = new CounterWindow();
 
   constructor(
     private def: EntityDef,
@@ -1352,6 +1355,21 @@ export class Entity {
     return this.maxHealth > 0 ? this.hp / this.maxHealth : 0;
   }
 
+  /**
+   * A blow about to land meets a counter armed and paid for: he is gone into it
+   * and the blow is not taken. Its fatigue may spend him, and then he collapses.
+   */
+  counters(): boolean {
+    const to = this.counterWindow.armed;
+    const def = to && this.def.states?.states[to];
+    if (!to || !def || this.ki < (def.cost ?? 0)) return false;
+    this.counterWindow.clear();
+    this.forceState(to);
+    const tired = this.def.states?.onTired;
+    if (this.fatigue.add(COUNTER_FATIGUE) && tired) this.forceState(tired);
+    return true;
+  }
+
   /** How tired he is, 0..1 — what the HUD's fatigue line draws. */
   get fatigueFraction(): number {
     return this.fatigue.fraction;
@@ -1798,7 +1816,9 @@ export class Entity {
     if (def.vanishes) this.chases++;
     if (def.appears !== undefined && this.foe) {
       const reach = { past: def.appears * this.scale, near: (def.appearsNear ?? def.appears) * this.scale };
-      ({ x: this.x, facing: this.facing } = appearAt(this.x, this.foe, reach, this.bounds, this.facing));
+      // behind him: his side away from where this one was, whichever way he goes
+      const foe = def.appearsBehind ? { x: this.foe.x } : this.foe;
+      ({ x: this.x, facing: this.facing } = appearAt(this.x, foe, reach, this.bounds, this.facing));
       // at his height, flying or not, never below the floor
       if (this.foe.y !== undefined) this.y = Math.min(this.foe.y, this.groundY) - (def.rises ?? 0) * this.scale;
     }
@@ -1833,6 +1853,12 @@ export class Entity {
     if (input.blast) this.buffer.press("blast");
     if (input.strike) this.buffer.press("strike");
     if (input.dash) this.buffer.press("dash");
+    // guard with a direction arms a counter, read before a hit pause as every press is
+    this.counterWindow.tick();
+    if (input.guard) {
+      const ahead = this.facing > 0;
+      this.counterWindow.press(ahead ? input.right : input.left, ahead ? input.left : input.right, mayCounterFrom(this.sm?.def) && !!this.def.states?.states.counter);
+    }
     // the cartridge records the pad in a hit pause too ($0E:829C), so a
     // command's windows count the frames the pause took
     const ahead = this.facing > 0;

@@ -15,6 +15,8 @@ export interface BlowResult {
   attack: string;
   damage: number;
   blocked: boolean;
+  /** Met by the defender's counter: nothing landed. */
+  countered?: boolean;
   /** The state the defender was in when it arrived. */
   took: string;
   /** Frames of white screen it asks for (`hitFlash`); none when blocked. */
@@ -64,6 +66,8 @@ export function landBlow(
 
   const attack = attacker.state;
   const took = defender.state;
+  // a counter armed meets it: he is gone and nothing lands, the swing not spent (`combat/counter.ts`)
+  if (!attacker.travels && defender.counters()) return { attack, damage: 0, blocked: false, countered: true, took, flash: 0 };
   attacker.markHit();
   // Before anything is applied: a blow turns the fighter taking it. Every
   // reaction's knockback is facing-relative and no airborne state keeps facing

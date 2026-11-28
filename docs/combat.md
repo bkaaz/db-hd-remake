@@ -375,11 +375,14 @@ is the chase's last. Its flight is drawn as a body sent to another arena, which 
 no boxes; it stands in the heavy reel's body (`boxesOf`), or nothing could
 hit it.
 
-**The counter is not built yet** (owner, 2026-11-28; Burst Limit's ready
-stance and its attack, `inspiration.md`). Guard with a direction, just before
-a blow lands, teleports behind the attacker: **towards** him, vanishing and
-striking him as he is reached, for a bar (10 ki); **away**, behind him and no
-more, for two bars (20). Early, or without the ki, it is an ordinary block.
+**The counter** (owner, 2026-11-28; Burst Limit's ready stance and its
+attack, `inspiration.md`) is built from neutral; from a reaction and against
+a chase it is not yet. Guard with a direction arms it for 6 frames, and a
+blow landing in them teleports him behind the attacker (`combat/counter.ts`):
+gone 6 frames, the attacker held meanwhile; **towards** him, out striking
+with his chase's blow (his S1 without one), for a bar (10 ki); **away**,
+falling in behind him as from a jump and no more, for two bars (20). Early,
+or without the ki, it is an ordinary block.
 It also costs fatigue (§8): 15 from neutral, walking, crouching, guarding,
 blockstun and the air, its window 6 frames before the blow; **25 from a
 reaction**, its window 3 frames — an escape costs about a combo's worth of
