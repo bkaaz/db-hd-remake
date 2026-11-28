@@ -10,6 +10,6 @@
     { "p2": { "does": [30, "up 3", 60] } },
     { "p2": { "does": ["attack 24"] } },
     { "p2": { "guard": "always", "does": [60] } },
-    {"p1": {"at": 0.4, "free": true, "does": [40, "fwd smash 14", 12, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, 600]}, "p2": {"at": 0.47, "does": [900]}}
+    {"p1": {"at": 0.42, "free": true, "does": [40, "up fwd 3", 20, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, "attack 1", 1, 300]}, "p2": {"at": 0.5, "does": [900]}}
   ]
 }

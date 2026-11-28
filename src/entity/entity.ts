@@ -1916,10 +1916,11 @@ export class Entity {
     if (this.clockHeld) this.sm.setFrame(this.stateFrames);
     // What the state machine reads, built again for a state just entered: the
     // buffer has spent a press by then, and the animation has begun.
+    // forward and back as he faces when it is read: a state just entered may have turned him
     const snapshot = (): InputSnapshot => (
       {
-        fwd,
-        back,
+        fwd: this.facing > 0 ? input.right : input.left,
+        back: this.facing > 0 ? input.left : input.right,
         up: input.up,
         down: input.down,
         attack: this.buffer.has("attack"),
@@ -1975,6 +1976,13 @@ export class Entity {
     if (changed) this.enterState(changed === before || !!this.sm.def.fromTop);
     // every move begun by a button arms, a blow in it or not: a throw, a shot (recorded)
     if (changed && this.sm.startedByButton) this.armed = true;
+    // A state that turns him and has no move to turn in turns him as it begins,
+    // before what it takes on that frame: landing past the opponent, an attack
+    // pressed as he lands faces him, not the way the jump went.
+    if (changed) {
+      const turn = faceOpponent(this.sm.def, 0, this.x, opponentX, this.facing);
+      if (!turn.turnsBy) this.facing = turn.facing;
+    }
     // the state just entered takes what is asked on its first frame (`StateMachine.entered`)
     const next = changed ? this.sm.entered(snapshot(), signals()) : null;
     if (next) {
