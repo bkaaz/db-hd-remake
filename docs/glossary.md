@@ -21,7 +21,7 @@ change.
 - **Defence** — an attribute taken off every blow a fighter takes, before scaling. → ADR 0019
 - **Depth** — how many blows landed before a link, by the longest route into it. → `combat.md` §3
 - **Double tap** — forward or back tapped twice and held: the dash without its button. → `input/doubleTap.ts`
-- **Fatigue** — hits taken, each counting one, blocked ones none; the twentieth collapses him and leaves him tired (`onTired`). → `combat.md` §8
+- **Fatigue** — a gauge of 100: a hit taken counts 5, a blocked one none, a counter its own; full, it collapses him and leaves him tired (`onTired`). → `combat.md` §8
 - **Finale** — a ball thrown at the floor, swelling into an explosion, then the arena white. → `match/finale.ts`, ADR 0035
 - **Frame advantage** — hitstun less the attacker's remaining recovery: who acts first after a blow. → `combat.md` §1
 - **Frees / freed** — one body's state letting the other's held step go on. → ADR 0035

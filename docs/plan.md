@@ -16,8 +16,10 @@ hold for every fighter, not only one.
    rush; a rush for each other fighter, accepted by the owner; enders on Smash, a launcher
    and a ki follow-up after it, once the owner picks their animations; what
    punishes a string thrown at nothing.
-2. **Vanish** (`combat.md` §5). *Done when:* a recording shows a vanish out of
-   blockstun, and a tap without ki blocks.
+2. **The counter** (`combat.md` §5), in steps: fatigue as a gauge of 100;
+   the counter from neutral, both directions; from a reaction; the exchange
+   against a chase. *Done when:* a recording shows each, and guard too early
+   or without the ki blocks.
 3. **Launch scaling:** each lift raises less, so a juggle ends by the body
    falling out of it (`Combo.lifts`).
 4. **The aura.**
@@ -50,6 +52,10 @@ hold for every fighter, not only one.
 - **A fighter's character as parameters** of the common states (walk, dash,
   jump, gravity, the get-up frame) in place of the same number overridden in
   several states — when tuning them gets in the way.
+- **A shockwave out of a combo** (owner, 2026-11-28): the one being hit
+  pushes the attacker off with a wave around him — no timing, no damage, back
+  to neutral, dear (ki or fatigue); the sure way out beside the counter's
+  timed and cheaper one (`combat.md` §5).
 - A second player, and round rules.
 - A remapping screen.
 - Combos authored in the editor, as a view of the states, never a second format.

@@ -375,12 +375,25 @@ is the chase's last. Its flight is drawn as a body sent to another arena, which 
 no boxes; it stands in the heavy reel's body (`boxesOf`), or nothing could
 hit it.
 
-**The counter is not built yet.** Guard tapped just before a blow lands teleports behind the
-attacker, for ki; early, or without the ki, it is an ordinary block. From
-neutral, walking, crouching, guarding, blockstun and the air — **never** from a
-reaction or from one's own attack, so it never breaks a combo, and scaling and
-the relaunch budget stay the only things that end one. In the corner it lands
-behind and swaps sides; against a projectile it lands behind the shooter.
+**The counter is not built yet** (owner, 2026-11-28; Burst Limit's ready
+stance and its attack, `inspiration.md`). Guard with a direction, just before
+a blow lands, teleports behind the attacker: **towards** him, vanishing and
+striking him as he is reached, for a bar (10 ki); **away**, behind him and no
+more, for two bars (20). Early, or without the ki, it is an ordinary block.
+It also costs fatigue (§8): 15 from neutral, walking, crouching, guarding,
+blockstun and the air, its window 6 frames before the blow; **25 from a
+reaction**, its window 3 frames — an escape costs about a combo's worth of
+fatigue, and whoever escapes too often collapses. **Never from the rush's
+flinch** (A1–A3): a rush that lands always lands whole, and the escape opens
+where the attacker extends it — an ender, A4, a charge, a chase, a juggle,
+the crumple. Never from the floor or getting up, nor from one's own attack.
+In the corner it lands behind and swaps sides; against a projectile it lands
+behind the shooter.
+
+**Against a chase it is an exchange**: the one chased counters the vanish's
+blow as it comes, his own appears behind its maker, who may counter it in
+turn — each counter of the exchange with a shorter window, 6, 4, then 2
+frames, three at most, ki and fatigue paid for each.
 
 ### 6. The corner
 
@@ -402,10 +415,11 @@ is `invulnerable`.
 
 ### 8. Fatigue
 
-Hits taken, counted (owner, 2026-11-24): every hit counts one — a blow, a
-shot, a throw, a scene's last blow — and a blocked one none, as the
-original's does; nothing wears it off (`combat/fatigue.ts`). The twentieth
-spends him, and the count starts again. Simpler than the original's stun
+Hits taken, counted (owner, 2026-11-24): every hit counts 5 of a gauge of 100
+(owner, 2026-11-28) — a blow, a shot, a throw, a scene's last blow — and a
+blocked one none, as the original's does; a counter costs its own (§5);
+nothing wears it off (`combat/fatigue.ts`). A full gauge spends him, and it
+starts again from nothing. Simpler than the original's stun
 gauge, where each blow takes its own amount and the gauge refills, and it
 leaves blocking alone: a guard that wears out is a guard break (`plan.md`).
 

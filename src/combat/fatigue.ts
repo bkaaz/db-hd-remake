@@ -1,26 +1,35 @@
 /**
- * Fatigue: hits taken, counted toward a collapse. Every hit counts the same —
- * a blow, a throw, a scene's last blow — and a blocked one does not count
+ * Fatigue: a gauge of 100 counted toward a collapse. Every hit counts the same
+ * — a blow, a throw, a scene's last blow — and a blocked one does not count
  * (owner, 2026-11-24): simpler than the original's stun gauge (field `0x68`),
- * where each blow takes its own amount and the gauge refills by itself. What
+ * where each blow takes its own amount and the gauge refills by itself. Points
+ * rather than hits so a counter can cost its own (owner, 2026-11-28). What
  * being spent does is the entity's (`onTired`), not this.
  */
 
-/** Hits until he is spent. */
-export const FATIGUE_HITS = 20;
+/** The gauge full: he is spent. */
+export const FATIGUE_FULL = 100;
+/** What a hit taken adds: twenty spend him. */
+export const PER_HIT = 5;
 
 export class Fatigue {
-  private hits = 0;
+  private points = 0;
 
-  /** One more hit; true when it is the one that spends him, and the count starts again. */
+  /** One more hit; true when it is the one that spends him, and the gauge starts again. */
   hit(): boolean {
-    if (++this.hits < FATIGUE_HITS) return false;
-    this.hits = 0;
+    return this.add(PER_HIT);
+  }
+
+  /** `points` more; true when the gauge is full, and it starts again from nothing. */
+  add(points: number): boolean {
+    this.points += points;
+    if (this.points < FATIGUE_FULL) return false;
+    this.points = 0;
     return true;
   }
 
   /** How full, 0..1 — what the HUD's line draws. */
   get fraction(): number {
-    return this.hits / FATIGUE_HITS;
+    return this.points / FATIGUE_FULL;
   }
 }
