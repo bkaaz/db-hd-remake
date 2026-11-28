@@ -1603,7 +1603,7 @@ export class Entity {
     // what it came in with, before it is stopped ($0F:B1EC: fields 0x80, 0x82)
     if (this.sm.def.savesFlight) this.savedFlight = [this.vx, this.vy];
     // a special starts stopped, whatever it was started from ($0D:D7A0)
-    if (this.sm.startedByCommand) [this.vx, this.vy, this.shove] = [0, 0, 0];
+    if (this.sm.startsStopped) [this.vx, this.vy, this.shove] = [0, 0, 0];
     const sounds = this.quietEntry ? undefined : this.sm.def.sound;
     for (const id of typeof sounds === "string" ? [sounds] : (sounds ?? [])) {
       this.audio?.play(id);

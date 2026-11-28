@@ -1100,6 +1100,9 @@ export const TRIGGERS = [
   "finaleDone",
 ] as const;
 
+/** A direction held with Ki pressed: a special's way in, as a command was (`startsStopped`). */
+const DIRECTED = new Set(["held:fwd", "held:back", "held:down"]);
+
 const FALLBACK_STATE: StateDef = { anim: "", vel: [0, 0], turn: false, transitions: [] };
 
 const warned = new Set<string>();
@@ -1394,6 +1397,13 @@ export class StateMachine {
    */
   startedByCommand = false;
 
+  /**
+   * The state just entered starts him stopped: a special, by a command or by a
+   * direction + Ki, which stands in for the commands (`combat.md`) — Galactic
+   * Gunfire out of a jump would otherwise rise along it.
+   */
+  startsStopped = false;
+
   /** The button of the last command taken: it stays through the states the move goes on in. */
   commandPress: string | null = null;
 
@@ -1460,6 +1470,7 @@ export class StateMachine {
 
   private enter(name: string): void {
     this.startedByCommand = false;
+    this.startsStopped = false;
     this.current = name;
     this.elapsed = 0;
     this.animAt = 0;
@@ -1595,7 +1606,9 @@ export class StateMachine {
     this.enter(t.to);
     this.kept = new Set(unused);
     this.handedOn = new Set(unused);
-    this.startedByCommand = triggersOf(t.when).some((k) => k.startsWith("command:"));
+    const triggers = triggersOf(t.when);
+    this.startedByCommand = triggers.some((k) => k.startsWith("command:"));
+    this.startsStopped = this.startedByCommand || (triggers.includes("pressed:blast") && triggers.some((k) => DIRECTED.has(k)));
     if (this.startedByCommand) this.commandPress = press;
     this.pressSpent = press;
     return this.current;

@@ -15,6 +15,7 @@ import {
   StateMachine,
   validateStates,
   type AnimInfo,
+  type InputSnapshot,
   type StateDef,
   type StatesFile,
 } from "./states";
@@ -1798,6 +1799,25 @@ describe("command:<move>", () => {
     sm.update({ ...NONE, commands: new Map([["a4", "smash"]]) }, QUIET);
     sm.force("idle");
     expect(sm.startedByCommand).toBe(false);
+  });
+
+  it("starts stopped a special begun by its command or by a direction + Ki, not a plain Ki", () => {
+    const f = special();
+    f.states.idle.transitions = [
+      { when: ["held:down", "pressed:blast"], to: "ultimate" },
+      { when: "pressed:blast", to: "ki" },
+      ...(f.states.idle.transitions ?? []),
+    ];
+    f.states.ultimate = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
+    f.states.ki = { anim: "punch", transitions: [{ when: "animEnd", to: "idle" }] };
+    const after = (input: InputSnapshot) => {
+      const sm = new StateMachine(f);
+      sm.update(input, QUIET);
+      return [sm.current, sm.startsStopped, sm.startedByCommand];
+    };
+    expect(after({ ...NONE, commands: new Map([["a4", "smash"]]) })).toEqual(["slide", true, true]);
+    expect(after({ ...NONE, down: true, blast: true })).toEqual(["ultimate", true, false]);
+    expect(after({ ...NONE, blast: true })).toEqual(["ki", false, false]);
   });
 
   it("is a trigger the validator knows, by its two hex digits", () => {
