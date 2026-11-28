@@ -9,7 +9,7 @@
     ] } },
     { "p2": { "does": [30, "up 3", 60] } },
     { "p2": { "does": ["attack 24"] } },
-    { "p1": { "at": 0.4 }, "p2": { "at": 0.47, "does": [40, "fwd 20", "back smash 2", 22, "attack 2", 60] } },
-    {"p1": {"at": 0.4, "free": true, "does": [40, "fwd smash 14", 12, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, 600]}, "p2": {"at": 0.47, "free": true, "does": [78, "fwd guard 1", 600]}}
+    {"p1": {"at": 0.4}, "p2": {"at": 0.47, "free": true, "counters": "towards", "does": [40, "fwd smash 14", 12, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, 200]}},
+    {"p1": {"at": 0.4, "free": true, "does": [40, "fwd smash 14", 12, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, "boost 2", 4, 600]}, "p2": {"at": 0.47, "free": true, "does": [60, "guard 1", 17, "guard 1", 600]}}
   ]
 }

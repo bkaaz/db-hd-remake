@@ -25,6 +25,13 @@ export interface Script {
   loop?: boolean;
   /** The clock runs through a hit pause, as a player's hands do: what is entered during one (`input`). */
   free?: boolean;
+  /**
+   * Guard held and a direction pressed every other frame, on top of `does`:
+   * a counter always armed, towards the opponent or away (`combat/counter.ts`)
+   * — every blow that reaches him is countered, as far as his ki goes. Not a
+   * reaction: the same hands every frame. Wants `free`, or a pause drops them.
+   */
+  counters?: "towards" | "away";
 }
 
 /**
@@ -53,7 +60,11 @@ export class Dummy {
     private readonly guarding: boolean,
     private readonly loops: boolean,
     private readonly free: boolean,
+    private readonly counters: "towards" | "away" | undefined,
   ) {}
+
+  /** Frames played, for `counters`' every other one. */
+  private played = 0;
 
   /** Build one from a mode's script, or say what is wrong with the script. */
   static from(script: Script = {}): Dummy | string {
@@ -63,7 +74,7 @@ export class Dummy {
       if (typeof step === "string") return step;
       steps.push(step);
     }
-    return new Dummy(steps, script.guard === "always", script.loop ?? true, script.free ?? false);
+    return new Dummy(steps, script.guard === "always", script.loop ?? true, script.free ?? false, script.counters);
   }
 
   /**
@@ -106,6 +117,12 @@ export class Dummy {
     // for a step that swings, because a fighter in guard cannot attack.
     const swings = step?.tokens.some((token) => BUTTONS.includes(token));
     if (this.guarding && !swings) world.holding.guard = true;
+    // a direction pressed anew every other frame, guard held: a counter armed all the time
+    if (this.counters && !swings) {
+      world.holding.guard = true;
+      if (this.played % 2 === 0) press(world, this.counters === "towards" ? "fwd" : "back", facing);
+    }
+    this.played++;
     return world;
   }
 

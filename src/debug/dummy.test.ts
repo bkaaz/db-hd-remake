@@ -22,6 +22,14 @@ describe("the debug dummy", () => {
     expect(frames.map((f) => f.attack)).toEqual([true, false, false, false, false]);
   });
 
+  it("keeps a counter armed: guard held, a direction pressed anew every other frame, towards or away", () => {
+    // facing left: towards is left, away is right
+    const towards = run(built({ does: [10], counters: "towards" }), 4);
+    expect(towards.map((f) => [f.holding.guard, f.left, f.right])).toEqual([[true, true, false], [true, false, false], [true, true, false], [true, false, false]]);
+    const away = run(built({ does: [10], counters: "away" }), 2);
+    expect(away.map((f) => [f.left, f.right])).toEqual([[false, true], [false, false]]);
+  });
+
   it("presses strike and dash too, together when one step names both", () => {
     // R + Y is Vegeta's Driving Elbow: both on the same frame
     const [first] = run(built({ does: ["dash attack", "strike"], loop: false }), 1);

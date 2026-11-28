@@ -16,10 +16,8 @@ hold for every fighter, not only one.
    rush; a rush for each other fighter, accepted by the owner; enders on Smash, a launcher
    and a ki follow-up after it, once the owner picks their animations; what
    punishes a string thrown at nothing.
-2. **The counter** (`combat.md` §5), what is left of it: the exchange against
-   a chase (its maker countering the counter, windows shorter each time);
-   against a projectile, behind the shooter. *Done when:* a recording shows
-   each.
+2. **The counter against a projectile** (`combat.md` §5): behind the
+   shooter. *Done when:* a recording shows it.
 3. **Launch scaling:** each lift raises less, so a juggle ends by the body
    falling out of it (`Combo.lifts`).
 4. **The aura.**

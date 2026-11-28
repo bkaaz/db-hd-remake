@@ -80,6 +80,8 @@ export interface DebugRequest {
   hitstop?: number;
   /** Ki each fighter gains a second by himself (`Entity.kiRegen`), none unless asked: the debug panel's, for testing. */
   kiregen?: number;
+  /** Frames a counter's window run out unmet locks the next press out (`CounterWindow.lockout`), its own unless asked: the debug panel's. */
+  lockout?: number;
 }
 
 /** Whether a colours pick names a set of ours rather than "1" or "2". */
@@ -134,6 +136,7 @@ export function queryFor(request: SceneRequest): string {
     if (request.tempo1 !== undefined) q.set("tempo1", String(request.tempo1));
     if (request.hitstop !== undefined) q.set("hitstop", String(request.hitstop));
     if (request.kiregen !== undefined) q.set("kiregen", String(request.kiregen));
+    if (request.lockout !== undefined) q.set("lockout", String(request.lockout));
   }
   return `?${q.toString()}`;
 }
@@ -178,6 +181,8 @@ export function requestFromUrl(url: URL): SceneRequest | string {
     if (stop !== null && !(Number(stop) >= 0 && Number(stop) <= 2)) return `hitstop "${stop}" is not a share of the hitstop, 0 to 2`;
     const regen = q.get("kiregen");
     if (regen !== null && !(Number(regen) > 0 && Number(regen) <= 600)) return `kiregen "${regen}" is not ki a second, above 0 to 600`;
+    const lockout = q.get("lockout");
+    if (lockout !== null && !(Number.isInteger(Number(lockout)) && Number(lockout) >= 0 && Number(lockout) <= 120)) return `lockout "${lockout}" is not a whole number of frames, 0 to 120`;
     if (rush1 !== null && !/^[AS][1-4]c?=[a-z0-9_]+(:[a-z]+)?(,[AS][1-4]c?=[a-z0-9_]+(:[a-z]+)?)*$/.test(rush1)) return `rush1 "${rush1}" is not slots and their blows, as A1=m90,S1=m93:knockback`;
     return {
       scene: "debug",
@@ -192,6 +197,7 @@ export function requestFromUrl(url: URL): SceneRequest | string {
       ...(tempo !== null && { tempo1: Number(tempo) }),
       ...(stop !== null && { hitstop: Number(stop) }),
       ...(regen !== null && { kiregen: Number(regen) }),
+      ...(lockout !== null && { lockout: Number(lockout) }),
     };
   }
   return `unknown scene "${scene}" — try select or debug`;

@@ -6,6 +6,7 @@ import { withTempo } from "../combat/rushTempo";
 import { HIT_TYPES } from "../combat/hitTypes";
 import { stepOf, withRush, type RushFile } from "../combat/rushSlots";
 import { withCharges } from "../combat/smashCharge";
+import { COUNTER_LOCKOUT } from "../combat/counterWindow";
 import { readData } from "../data/files";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
@@ -110,13 +111,14 @@ export class DebugScene implements Scene {
     // once the prompt is up the fight is over: nothing to try a pick on, and its
     // own request — this one, unchanged — has to build the scene again
     if (this.again) return false;
-    if (request.scene !== "debug" || !sameBut(request, this.req, "rush1", "tempo1", "hitstop", "kiregen")) return false;
+    if (request.scene !== "debug" || !sameBut(request, this.req, "rush1", "tempo1", "hitstop", "kiregen", "lockout")) return false;
     const def = tryRush(this.own, request, this.ownCharge);
     if (typeof def === "string" || !def.states) return false;
     if (request.rush1 !== this.req.rush1 || request.tempo1 !== this.req.tempo1) this.fighters.player.playStates(def.states, def.animations);
     for (const body of this.fighters.bodies) {
       body.hitstopScale = request.hitstop ?? 1;
       body.kiRegen = request.kiregen ?? 0;
+      body.counterLockout = request.lockout ?? COUNTER_LOCKOUT;
     }
     this.req = request;
     describes(this.situation(request));
@@ -194,6 +196,7 @@ export class DebugScene implements Scene {
     for (const body of fighters.bodies) {
       body.hitstopScale = req.hitstop ?? 1;
       body.kiRegen = req.kiregen ?? 0;
+      body.counterLockout = req.lockout ?? COUNTER_LOCKOUT;
     }
     if (req.hp2 !== undefined) fighters.opponent?.setHealth(req.hp2);
     // colours asked for override the original's rule, which Fighters applied
@@ -436,7 +439,8 @@ function situationOf(r: DebugRequest, mode: unknown): string[] {
       (r.rush1 !== undefined ? ` rush1=${r.rush1}` : "") +
       (r.tempo1 !== undefined ? ` tempo1=${r.tempo1}` : "") +
       (r.hitstop !== undefined ? ` hitstop=${r.hitstop}` : "") +
-      (r.kiregen !== undefined ? ` kiregen=${r.kiregen}` : ""),
+      (r.kiregen !== undefined ? ` kiregen=${r.kiregen}` : "") +
+      (r.lockout !== undefined ? ` lockout=${r.lockout}` : ""),
   ];
 }
 

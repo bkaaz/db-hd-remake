@@ -41,6 +41,12 @@ describe("scene requests", () => {
     expect(read("?scene=debug&tempo1=9")).toMatch(/not a tempo/);
   });
 
+  it("takes a counter's lockout in frames, none too, and refuses one out of reason", () => {
+    expect(read("?scene=debug&lockout=0")).toMatchObject({ lockout: 0 });
+    expect(read("?scene=debug&lockout=30")).toMatchObject({ lockout: 30 });
+    expect(read("?scene=debug&lockout=-1")).toMatch(/not a whole number/);
+  });
+
   it("takes the ki a second, and refuses none or less", () => {
     expect(read("?scene=debug&kiregen=5")).toMatchObject({ kiregen: 5 });
     expect(read("?scene=debug&kiregen=0")).toMatch(/not ki a second/);
@@ -56,7 +62,7 @@ describe("scene requests", () => {
   });
 
   it("writes a request back to the same address", () => {
-    for (const query of ["?scene=debug&p1=goku&p2=goku&mode=2", "?scene=debug&p1=goku&p2=goku&mode=0&arena=tournament&time=evening", "?scene=debug&p1=goku&p2=goku&mode=0&hp1=100&hp2=50", "?scene=debug&p1=goku&p2=vegeta&mode=0&pal1=2&pal2=gold", "?scene=debug&p1=goku&p2=goku&mode=0&rush1=A1%3Dm90%2CA2%3Dm91&tempo1=1.2&hitstop=0.5&kiregen=2"]) {
+    for (const query of ["?scene=debug&p1=goku&p2=goku&mode=2", "?scene=debug&p1=goku&p2=goku&mode=0&arena=tournament&time=evening", "?scene=debug&p1=goku&p2=goku&mode=0&hp1=100&hp2=50", "?scene=debug&p1=goku&p2=vegeta&mode=0&pal1=2&pal2=gold", "?scene=debug&p1=goku&p2=goku&mode=0&rush1=A1%3Dm90%2CA2%3Dm91&tempo1=1.2&hitstop=0.5&kiregen=2&lockout=10"]) {
       const request = read(query);
       if (typeof request === "string") throw new Error(request);
       expect(queryFor(request)).toBe(query);

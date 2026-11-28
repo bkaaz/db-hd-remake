@@ -376,11 +376,11 @@ no boxes; it stands in the heavy reel's body (`boxesOf`), or nothing could
 hit it.
 
 **The counter** (owner, 2026-11-28; Burst Limit's ready stance and its
-attack, `inspiration.md`) is built from neutral and from a reaction; the
-exchange against a chase is not yet. Guard pressed with a direction held, or a direction
+attack, `inspiration.md`) is built from neutral, from a reaction and as an
+exchange; against a projectile it is not yet. Guard pressed with a direction held, or a direction
 pressed with guard held — guarding, a direction as the blow comes (owner,
 2026-11-28) — arms it for 9 frames, and a blow landing in them teleports him
-behind the attacker (`combat/counter.ts`):
+behind the attacker (`combat/counterWindow.ts`, `combat/counter.ts`):
 gone 6 frames, the attacker held meanwhile; **towards** him, out striking
 with his chase's blow (his S1 without one), for a bar (10 ki); **away**,
 falling in behind him as from a jump and no more, for two bars (20). Early,
@@ -393,14 +393,21 @@ teleport made, standing tired (`tired`) where he came out, not thrown down. Gone
 flinch** (A1–A3): a rush that lands always lands whole, and the escape opens
 where the attacker extends it — an ender, A4, a charge, a chase, a juggle,
 the crumple. Never from the floor or getting up, nor from one's own attack.
-A blow countered holds him no longer: a chase's, whose maker is then held by
+**Reeling, and in an exchange, guard alone** arms it, whatever the
+direction, and it always strikes: sides change too fast there to tell
+towards from away (owner, 2026-11-28). A window that runs out unmet locks
+the next press out for 20 frames, and a press while armed draws nothing
+out: a counter is timed, not mashed (the debug bar's `lockout` tries
+another). A blow countered holds him no longer: a chase's, whose maker is then held by
 the counter's. In the corner it lands behind and swaps sides; against a
 projectile it lands behind the shooter.
 
-**Against a chase it is an exchange**: the one chased counters the vanish's
-blow as it comes, his own appears behind its maker, who may counter it in
-turn — each counter of the exchange with a shorter window, 6, 4, then 2
-frames, three at most, ki and fatigue paid for each.
+**A counter may be countered — an exchange**: the one whose blow was
+countered may counter the counter's as it comes, from the blow he is still
+in, and so on — a chase's blow countered from the flight it sent him on is
+the exchange the owner asked for. Each counter after the first has a
+shorter window, 6, then 4 frames; three at most; ki and 15 fatigue paid for
+each (`armFor`).
 
 ### 6. The corner
 

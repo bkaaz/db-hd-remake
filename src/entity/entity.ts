@@ -24,7 +24,8 @@ import { Combo } from "../combat/combo";
 import { chaseLaunch, jumpPeak } from "../combat/chaseLaunch";
 import { appearAt } from "../combat/appearAt";
 import { Fatigue } from "../combat/fatigue";
-import { COUNTER_FATIGUE, counterFrom, CounterWindow } from "../combat/counter";
+import { isCounter } from "../combat/counter";
+import { armFor, COUNTER_FATIGUE, CounterWindow } from "../combat/counterWindow";
 import { withHitTypes } from "../combat/hitTypes";
 import { Swing } from "../combat/swing";
 import { shoveAfter } from "../combat/knockback";
@@ -121,6 +122,8 @@ export interface Opponent {
   flown?: number;
   /** Gone in a vanish or a counter: nothing holds him still. */
   hidden?: boolean;
+  /** In a counter, which of an exchange it is (1 the first); 0 in none. */
+  counterDepth?: number;
   /** Which way he moved last frame, −1, 0 or 1: past him is the way he goes, not away from the attacker. */
   goes?: number;
   /** The screen's edge he met since the last blow, −1 left or 1 right, 0 none: off it, a vanish comes out between it and him and sends him across. */
@@ -507,6 +510,8 @@ export class Entity {
   private spentByCounter = false;
   /** His blow in this state met a counter (`markCountered`). */
   private countered = false;
+  /** Which counter of an exchange his last was (`counterDepth`). */
+  private counterNo = 0;
 
   constructor(
     private def: EntityDef,
@@ -1378,9 +1383,21 @@ export class Entity {
     const def = to && this.def.states?.states[to];
     if (!to || !def || this.ki < (def.cost ?? 0)) return false;
     this.counterWindow.clear();
+    // a counter of his counter is the next of their exchange
+    this.counterNo = (this.foe?.counterDepth ?? 0) + 1;
     this.forceState(to);
     if (this.fatigue.add(COUNTER_FATIGUE[this.counterWindow.from])) this.spentByCounter = true;
     return true;
+  }
+
+  /** Frames a counter's window run out unmet locks his next press out — the debug panel's. */
+  set counterLockout(frames: number) {
+    this.counterWindow.lockout = frames;
+  }
+
+  /** In a counter, which of an exchange it is (1 the first); 0 in none. */
+  get counterDepth(): number {
+    return this.sm && isCounter(this.sm.current) ? this.counterNo : 0;
   }
 
   /** How tired he is, 0..1 — what the HUD's fatigue line draws. */
@@ -1881,7 +1898,7 @@ export class Entity {
     const ahead = this.facing > 0;
     this.counterWindow.read(
       { guardPressed: input.guard, guardHeld: input.holding.guard, towards: ahead ? input.right : input.left, away: ahead ? input.left : input.right },
-      this.def.states?.states.counter && this.sm ? counterFrom(this.sm.current, this.sm.def) : null,
+      this.def.states?.states.counter && this.sm ? armFor(this.sm.current, this.sm.def, this.countered, opponent?.counterDepth ?? 0) : null,
     );
     // the cartridge records the pad in a hit pause too ($0E:829C), so a
     // command's windows count the frames the pause took
