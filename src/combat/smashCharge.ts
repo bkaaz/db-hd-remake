@@ -170,6 +170,11 @@ const CUES = [undefined, undefined, CHARGE_SOUND, undefined];
 /** What a fighter's own about an ender's charge (`rush.json`'s `charge`). */
 export type ChargeOptions = Omit<Charged, "ender">;
 
+/** `file` with every ender of `rush.json`'s `charge` charged, each from the state the rush made it — after `withRush`, or a new pick keeps the old holds. */
+export function withCharges(file: StatesFile, anims: Record<string, AnimSteps>, charge: readonly (string | Charged)[] = []): StatesFile {
+  return charge.reduce((f, c) => (typeof c === "string" ? withCharge(f, anims, c) : withCharge(f, anims, c.ender, c)), file);
+}
+
 /** `file` with `ender` charged: its holds, its releases, and its way into them. */
 export function withCharge(file: StatesFile, anims: Record<string, AnimSteps>, ender: string, { stopOn, fullCry, chargeLight, chargeShake, chaseAnim, chaseRises, chaseFalls, chaseDownAnim, chaseDownRises }: ChargeOptions = {}): StatesFile {
   const sending = SENDING[ender];

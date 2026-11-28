@@ -104,6 +104,21 @@ export interface Step {
 export const AIMS: Record<(typeof ENDERS)[number], Aim> = { smash_1: "fwd", smash_2: "back", smash_3: "down" };
 
 /**
+ * Where a blow of the line goes when its animation ends: idle, but for his own
+ * blow picked again, which goes on as it did — Buu's A1 into its second part.
+ */
+function endOf(state: StateDef | undefined, anim: string): Transition {
+  return (goesOn(state, anim) && state!.transitions!.find(partEnd)) || { when: "animEnd", to: "idle" };
+}
+
+/** `state` plays `anim` and is the first part of a blow of several: its animation's end goes on to the next. */
+function goesOn(state: StateDef | undefined, anim: string): boolean {
+  return state?.anim === anim && !!state.transitions?.some(partEnd);
+}
+
+const partEnd = (t: Transition): boolean => t.when === "animEnd" && t.to !== "idle";
+
+/**
  * `file` with its rush made of `picks`: Attack walks the line, a direction +
  * Smash leaves it for the ender it asks for at any depth, Smash alone for
  * Smash; Attack's blows step forward by `step`; each cancel window is the
@@ -120,14 +135,17 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
   const make = (slot: Slot, base: StateDef, type: string | undefined, exits: Transition[]) => {
     const { anim, type: picked } = picks[slot]!;
     const startup = startupOf(anims[anim]);
-    const { cancelBy: _old, velAt: _step, ...rest } = base;
+    const { cancelBy: _old, velAt: own, ...rest } = base;
+    // his own blow of several parts picked again keeps its own step, none if it had none
+    const made: StateDef["velAt"] = startup === 0 ? [[0, step.hit]] : [[0, step.windup], [startup, step.hit]];
+    const velAt = goesOn(base, anim) ? own : STEPS.has(slot) ? made : undefined;
     // a window only where a way out asks for one: a charge's own ways are not cancels
     const cancels = exits.some((t) => [t.when].flat().includes("cancelable"));
     states[slot] = {
       ...rest,
       anim,
       ...((picked ?? type) !== undefined && { type: picked ?? type }),
-      ...(STEPS.has(slot) && { velAt: startup === 0 ? [[0, step.hit]] : [[0, step.windup], [startup, step.hit]] }),
+      ...(velAt && { velAt }),
       ...(cancels && { cancelBy: framesOf(anims[anim]) }),
       transitions: exits,
     };
@@ -142,7 +160,7 @@ export function withRush(file: StatesFile, anims: Record<string, BlowAnim>, base
       ...enders.map((e) => ({ when: ["cancelable", ...aimed(AIMS[e])], to: e })),
       ...(states.smash ? [PLAIN_SMASH] : []),
       ...followUps(states[slot] ?? states[line[i - 1]]),
-      { when: "animEnd", to: "idle" },
+      endOf(states[slot], picks[slot]!.anim),
     ];
     const type = next ? "flinch" : (EFFECTS[slot] ?? states[slot]?.type);
     make(slot, states[slot] ?? states[line[i - 1]], type, exits);

@@ -1,6 +1,9 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { StatesFile } from "../entity/states";
-import { withCharge } from "./smashCharge";
+import { picksOf } from "./rushAddress";
+import { stepOf, withRush } from "./rushSlots";
+import { withCharge, withCharges } from "./smashCharge";
 import type { AnimSteps } from "./swing";
 
 const hit = { type: "hit", x: 20, w: 20 };
@@ -363,5 +366,20 @@ describe("withCharge on S1", () => {
 
   it("charges only the enders it knows how to send", () => {
     expect(() => withCharge(s1File, anims, "rush_1")).toThrow(/does not charge/);
+  });
+});
+
+describe("withCharges after a rush tried", () => {
+  it("holds and lets go in the new pick's animation, as npm run states would make it", () => {
+    const read = (f: string) => JSON.parse(readFileSync(`data/entities/goku/${f}`, "utf8"));
+    const states = read("states.json") as StatesFile;
+    const animations = read("animations.json") as Record<string, AnimSteps & { steps: { frame: string; dur: number }[] }>;
+    const { charge } = read("rush.json");
+    const picks = { ...picksOf(states), smash_1: { anim: "b_80" } };
+    const rushed = withRush(states, animations, read("attributes.json").hitstun, picks, stepOf(states));
+    const charged = withCharges(rushed, animations, charge);
+    expect(["smash_1", "smash_1_charge_1", "smash_1_lv1", "smash_1_lv3"].map((s) => charged.states[s].anim)).toEqual(["b_80", "b_80", "b_80", "b_80"]);
+    // withRush alone: the ender new, its levels still the old blow's
+    expect(rushed.states.smash_1_lv1.anim).not.toBe("b_80");
   });
 });

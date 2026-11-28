@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import type { AnimInfo, StatesFile } from "../entity/states";
 import { DEFAULT_STEP, withRush, type BlowAnim, type RushFile } from "../combat/rushSlots";
-import { withCharge } from "../combat/smashCharge";
+import { withCharges } from "../combat/smashCharge";
 import type { CommandsFile } from "../input/command";
 import { inTableOrder } from "./entries";
 import { withOverrides, type Overrides } from "./overrides";
@@ -40,7 +40,7 @@ export function composeStates(name: string): StatesFile {
   const blows = animations as unknown as Record<string, BlowAnim>;
   const withPicks = rush ? withRush(merged, blows, hitstun, rush.picks, rush.step ?? DEFAULT_STEP) : merged;
   // the enders he holds to charge, from each as the rush made it
-  const rushed = (rush?.charge ?? []).reduce((f, c) => (typeof c === "string" ? withCharge(f, blows, c) : withCharge(f, blows, c.ender, c)), withPicks);
+  const rushed = withCharges(withPicks, blows, rush?.charge);
   // his commands tried as the cartridge tries them, the table's last row first
   const commands = (optional<CommandsFile>(`${dir}/commands.json`)?.commands ?? []).map((c) => ({ move: parseInt(c.move, 16) }));
   const file = inTableOrder(rushed, commands);

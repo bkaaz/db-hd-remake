@@ -564,12 +564,13 @@ if (command === "tiles") {
     // his own: the script writes objects-rec.txt, kept as objects-<name>.txt
     // once it is his, so recording the next fighter leaves this one's alone
     const recording = `logs/objects-${name}.txt`;
-    const needed = own.some((o) => !o.ticks && !o.animations);
-    if (needed && !existsSync(recording)) throw new Error(`${recording} is missing: record his objects (tools/re/record-objects.lua) and keep logs/objects-rec.txt as it`);
-    const lives = existsSync(recording) ? readLives(readFileSync(recording, "utf8")) : [];
     // one exported before is kept: a later recording may show it for less
     // time, and the frames it misses would be dropped (Final Flash, 2026-11-02)
     const kept = own.filter((o) => existsSync(`data/spawns/${o.name}/animations.json`));
+    // asked for only by one still to export that its code does not time
+    const needed = own.some((o) => !kept.includes(o) && !o.ticks && !o.animations);
+    if (needed && !existsSync(recording)) throw new Error(`${recording} is missing: record his objects (tools/re/record-objects.lua) and keep logs/objects-rec.txt as it`);
+    const lives = existsSync(recording) ? readLives(readFileSync(recording, "utf8")) : [];
     for (const o of kept) console.log(`${o.name}: kept as exported before — delete data/spawns/${o.name} to export it again`);
     const { recorded, missed } = inRecording(own.filter((o) => !kept.includes(o)), lives);
     if (missed.length > 0) throw new Error(`not in ${recording}: ${missed.map((o) => o.name).join(", ")}`);

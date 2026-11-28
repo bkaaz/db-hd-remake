@@ -1,5 +1,7 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { StatesFile } from "../entity/states";
+import { picksOf } from "./rushAddress";
 import { framesOf } from "./chains";
 import { HIT_TYPES } from "./hitTypes";
 import { DEFAULT_STEP, rushLinks, stepOf, withRush, type BlowAnim, type Picks } from "./rushSlots";
@@ -177,5 +179,15 @@ describe("stepOf", () => {
     const file = (velAt?: [number, number][]): StatesFile => ({ initial: "idle", states: { rush_1: { anim: "a", velAt, transitions: [] } } });
     expect(stepOf(file([[0, 2], [6, 1]]))).toEqual({ windup: 2, hit: 1 });
     expect(stepOf(file())).toEqual(DEFAULT_STEP);
+  });
+});
+
+describe("his own blow of several parts, picked again", () => {
+  it("goes on into its next part and steps as it did: Buu's A1, as the panel tries it", () => {
+    const read = (f: string) => JSON.parse(readFileSync(`data/entities/buu/${f}`, "utf8"));
+    const states = read("states.json") as StatesFile;
+    const made = withRush(states, read("animations.json"), read("attributes.json").hitstun, picksOf(states), stepOf(states));
+    expect(made.states.rush_1.transitions?.find((t) => t.when === "animEnd")?.to).toBe("rush_1_2");
+    expect(made.states.rush_1.velAt).toEqual(states.states.rush_1.velAt);
   });
 });

@@ -4,7 +4,9 @@ import { loadEntityDef, type EntityDef } from "../entity/entityDef";
 import { picksOf, readPicks } from "../combat/rushAddress";
 import { withTempo } from "../combat/rushTempo";
 import { HIT_TYPES } from "../combat/hitTypes";
-import { stepOf, withRush } from "../combat/rushSlots";
+import { stepOf, withRush, type RushFile } from "../combat/rushSlots";
+import { withCharges } from "../combat/smashCharge";
+import { readData } from "../data/files";
 import { effectsNamed, spawnsNamed, validateStates } from "../entity/states";
 import { Effects } from "../fx/effects";
 import type { Controls } from "../input/controls";
@@ -97,6 +99,8 @@ export class DebugScene implements Scene {
     private readonly music: Music,
     /** Player one as his data has him, before any rush tried from the panel. */
     private readonly own: EntityDef,
+    /** His enders charged (`rush.json`'s `charge`), to charge again a rush tried. */
+    private readonly ownCharge: Charges,
     /** What a recording says this scene is, for a request (`describes`). */
     private readonly situation: (req: DebugRequest) => string[],
   ) {}
@@ -107,7 +111,7 @@ export class DebugScene implements Scene {
     // own request — this one, unchanged — has to build the scene again
     if (this.again) return false;
     if (request.scene !== "debug" || !sameBut(request, this.req, "rush1", "tempo1", "hitstop", "kiregen")) return false;
-    const def = tryRush(this.own, request);
+    const def = tryRush(this.own, request, this.ownCharge);
     if (typeof def === "string" || !def.states) return false;
     if (request.rush1 !== this.req.rush1 || request.tempo1 !== this.req.tempo1) this.fighters.player.playStates(def.states, def.animations);
     for (const body of this.fighters.bodies) {
@@ -154,7 +158,8 @@ export class DebugScene implements Scene {
     if (typeof rules === "string") return rules;
     const own = await loadFighter(req.p1);
     if (typeof own === "string") return own;
-    const p1 = tryRush(own, req);
+    const ownCharge = (await readData<RushFile>(`entities/${req.p1}/rush.json`))?.charge;
+    const p1 = tryRush(own, req, ownCharge);
     if (typeof p1 === "string") return p1;
     const p2 = req.p2 === req.p1 ? own : await loadFighter(req.p2);
     if (typeof p2 === "string") return p2;
@@ -250,6 +255,7 @@ export class DebugScene implements Scene {
       travel,
       ctx.music,
       own,
+      ownCharge,
       situation,
     );
   }
@@ -439,13 +445,18 @@ function situationOf(r: DebugRequest, mode: unknown): string[] {
  * rush when it picks none (`combat/rushSlots.ts`, `rushTempo.ts`) — or why it
  * cannot. Untouched when the panel asks for nothing.
  */
-function tryRush(def: EntityDef, req: DebugRequest): EntityDef | string {
+/** The enders a fighter charges, as his `rush.json` has them; none without one. */
+type Charges = RushFile["charge"];
+
+function tryRush(def: EntityDef, req: DebugRequest, charge: Charges): EntityDef | string {
   if (req.rush1 === undefined && req.tempo1 === undefined) return def;
   if (!def.states) return `${def.name}: no states.json to try a rush on`;
   const picks = req.rush1 === undefined ? picksOf(def.states) : readPicks(req.rush1, def.animations, HIT_TYPES);
   if (typeof picks === "string") return `${def.name}: ${picks}`;
   const animations = withTempo(def.animations, picks, req.tempo1 ?? 1);
-  return { ...def, animations, states: withRush(def.states, animations, def.attributes.hitstun, picks, stepOf(def.states)) };
+  // his enders charged again from the new picks, or a charge holds the pose the old one had
+  const rushed = withRush(def.states, animations, def.attributes.hitstun, picks, stepOf(def.states));
+  return { ...def, animations, states: withCharges(rushed, animations, charge) };
 }
 
 /** A fighter's definition, or why it cannot fight. */
