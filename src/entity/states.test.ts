@@ -526,6 +526,20 @@ describe("a string goes on once the swing is seen whole, hit or miss", () => {
     expect(pressAfter(4, undefined, true)).toBe("kick");
   });
 
+  it("counts from where the swing stood when a state took it over: a charge's level off its ender", () => {
+    const after = (frames: number, takenAt: number): string => {
+      const sm = new StateMachine(chained(), { punch: PUNCH });
+      sm.update(ATTACK, QUIET);
+      sm.tookOverAt(takenAt);
+      for (let i = 0; i < frames; i++) sm.update(NONE, QUIET);
+      sm.update(MEDIUM, QUIET);
+      return sm.current;
+    };
+    // two frames of the wind-up played before: open two frames sooner, and shut as much sooner
+    expect([after(2, 0), after(2, 2)]).toEqual(["punch", "kick"]);
+    expect([after(5, 0), after(5, 2)]).toEqual(["kick", "punch"]);
+  });
+
   it("keeps a press made early in the swing until the window opens: each press is one more blow", () => {
     const sm = new StateMachine(chained(), { punch: PUNCH });
     const hit = { ...QUIET, hitConfirmed: true };

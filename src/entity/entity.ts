@@ -1612,7 +1612,10 @@ export class Entity {
     // resetting the clock would put an audible hitch at the seam.
     const wanted = this.sm.def.loopSound ?? "";
     if (wanted !== this.hum.id) this.hum = { id: wanted, left: 0 };
+    const takesOver = this.sm.def.anim === this.animName && !restart && !this.sm.def.replays;
     this.setAnim(this.sm.def.anim, restart || !!this.sm.def.replays);
+    // its cancel window counts from where the animation stands, not from 0
+    if (takesOver) this.sm.tookOverAt(this.animPlayed());
     if (!this.sm.def.sameSwing) this.swing.reset();
     // a throw or a scene: the mover is drawn over the body he holds ($20:DF66, $20:E31F)
     if (this.sm.def.type !== undefined || this.sm.def.grab || this.sm.def.seize) this.armed = true;
@@ -2136,6 +2139,13 @@ export class Entity {
   private currentStep(): Step | null {
     if (!this.anim || this.anim.steps.length === 0) return null;
     return this.anim.steps[Math.min(this.stepIndex, this.anim.steps.length - 1)];
+  }
+
+  /** Frames of the running animation played so far: the steps before this one, and this one's spent part. */
+  private animPlayed(): number {
+    const steps = this.anim?.steps ?? [];
+    const before = steps.slice(0, this.stepIndex).reduce((n, s) => n + s.dur, 0);
+    return before + Math.max(0, (steps[this.stepIndex]?.dur ?? 0) - this.remaining);
   }
 
   private setAnim(name: string, restart = false): void {

@@ -1402,6 +1402,12 @@ export class StateMachine {
    * here rather than in the entity so the rule can be tested without a renderer.
    */
   private elapsed = 0;
+  /**
+   * Frames its animation had played when this state took it over where it stood
+   * (a charge's level off its ender): the cancel window is the animation's, so
+   * it counts from there. Nothing else does — `frames:N` is the state's own.
+   */
+  private animAt = 0;
   /** Buttons let go since this state began — `released:`. */
   private released = new Set<string>();
   /** A `queued` transition whose `when` has held in this state, waiting for animEnd. */
@@ -1456,6 +1462,7 @@ export class StateMachine {
     this.startedByCommand = false;
     this.current = name;
     this.elapsed = 0;
+    this.animAt = 0;
     this.released = new Set();
     this.queued = null;
     this.kept = new Set();
@@ -1468,6 +1475,11 @@ export class StateMachine {
    */
   setFrame(frame: number): void {
     this.elapsed = frame - 1;
+  }
+
+  /** This state took its animation over `frames` in, where the last one left it (`animAt`). */
+  tookOverAt(frames: number): void {
+    this.animAt = frames;
   }
 
   /**
@@ -1596,8 +1608,9 @@ export class StateMachine {
   private cancelable(connected: boolean): boolean {
     const by = this.def.cancelBy;
     const window = cancelWindow(this.anims[this.def.anim], by);
-    if (window === null) return connected && (by === undefined || this.elapsed <= by);
-    return this.elapsed >= window[0] && this.elapsed <= window[1];
+    const at = this.elapsed + this.animAt;
+    if (window === null) return connected && (by === undefined || at <= by);
+    return at >= window[0] && at <= window[1];
   }
 }
 
