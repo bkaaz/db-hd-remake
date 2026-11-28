@@ -76,7 +76,9 @@ export class RushPicks {
       return field(labelOf(slot), row);
     });
     const order = (l: Link) => `${labelOf(l.from as Slot).slice(1)}${labelOf(l.to as Slot)}`;
-    const broken = rushLinks(made, anims, f.hitstun).filter((l) => l.opens > l.closes || (!l.launcher && l.margin < 0));
+    // off A4 nothing is a combo, by rule (`combat.md`): its drops are not news
+    const last = RUSH[RUSH.length - 1];
+    const broken = rushLinks(made, anims, f.hitstun).filter((l) => l.opens > l.closes || (!l.launcher && l.from !== last && l.margin < 0));
     const links = text(broken.length ? broken.sort((a, b) => order(a).localeCompare(order(b))).map(verdict).join(" · ") : "all combo");
     const pace = segmented(String(tempo), TEMPOS.map((t): Choice => [String(t), `${Math.round(t * 100)}`]), (v) => go({ ...asking, tempo: Number(v) === 1 ? undefined : Number(v) }));
     const handOver = copyButton(picksLine(name, picks));
@@ -148,7 +150,7 @@ function copyButton(line: string): HTMLButtonElement {
   return element;
 }
 
-/** A link that does not combo, and why: margins that hold, and links off a knockdown, are not shown (owner, 2026-11-27). */
+/** A link that does not combo, and why: margins that hold, and links off a knockdown or A4, are not shown (owner, 2026-11-27). */
 function verdict(l: Link): string {
   const how = l.opens > l.closes ? "never opens" : `drops ${l.margin}`;
   return `${labelOf(l.from as Slot)}→${labelOf(l.to as Slot)} ${how}`;

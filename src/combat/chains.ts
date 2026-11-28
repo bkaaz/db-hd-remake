@@ -1,4 +1,4 @@
-import { pressIn, type StatesFile } from "../entity/states";
+import { pressIn, type StateDef, type StatesFile } from "../entity/states";
 import { scaledHitstun } from "./scaling";
 import { cancelWindow, startupOf, type AnimSteps } from "./swing";
 
@@ -41,7 +41,7 @@ export interface Link {
   hitstun: number;
   /** Frames to spare. Negative means the defender is up before the next blow. */
   margin: number;
-  /** The reaction is a knockdown: the chain ends here either way, so margin is moot. */
+  /** The reaction is a knockdown — in the air at rank 3, out of the chain (`floors`): it ends here either way, so margin is moot. */
   launcher: boolean;
 }
 
@@ -210,7 +210,16 @@ export function chainLinks(
       depth: at,
       hitstun,
       margin: hitstun - (window + startup),
-      launcher: !states[attack.onHit ?? ""]?.vel,
+      launcher: floors(states[attack.onHit ?? ""]),
     };
   });
+}
+
+/**
+ * A reaction that takes him out of the chain: thrown or knocked into the air,
+ * rank 3. Not one on his feet, pushed by `shove` (the crumple, a reel), and
+ * not a lift, airborne at rank 1 — a juggle goes on from it.
+ */
+function floors(reaction: StateDef | undefined): boolean {
+  return !!reaction?.airborne && (reaction.rank ?? 0) >= 3;
 }

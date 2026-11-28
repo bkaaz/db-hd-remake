@@ -20,16 +20,6 @@ because a number would only need translating back.
 
 ---
 
-- **Gohan, Piccolo, Freeza and Buu cannot be hit in the air** — *breaks
-  play*, in `hurt_air`, `hurt_heavy_air`, `juggle`, `launched`, `blown`,
-  `slam`, `slam_air`: their `m24` has no hurt box, and those states have no
-  `boxesOf` (only `wall_bounce`, `spiked`, `ground_bounce` take `m16`'s).
-  Seen by reading their `animations.json`, not yet in a fight: launch one and
-  hit him on the way down.
-- **`npm run chains` calls every link a launcher** — *annoying*: "(launcher —
-  chain ends here)" on a light blow too. `chainLinks` (`combat/chains.ts`)
-  takes a reaction with no `vel` for a knockdown, and the reactions push with
-  `shove` now. The margins are right; only the label is wrong.
 - **An attack right after jumping over the opponent faces the wrong way** —
   *breaks play*. Jump over P2 and attack soon after landing: P1 does not turn
   round and swings at the air, his back to the opponent.

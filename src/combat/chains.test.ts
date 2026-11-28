@@ -27,7 +27,9 @@ function file(): StatesFile {
     states: {
       idle: { anim: "idle", transitions: [] },
       hurt: { anim: "hurt", rank: 1, vel: [-1, 0] },
-      floored: { anim: "hurt", rank: 3 },
+      floored: { anim: "hurt", rank: 3, airborne: true },
+      // stunned on his feet, pushed back by `shove` and not `vel`: the crumple
+      reeling: { anim: "hurt", rank: 1, shove: -2.5 },
       a: {
         anim: "attack",
         hitstun: 20,
@@ -117,6 +119,8 @@ describe("chainLinks", () => {
     const f = file();
     f.states.b.onHit = "floored";
     expect(chainLinks(f, anims, 12).map((l) => l.launcher)).toEqual([false, true]);
+    f.states.b.onHit = "reeling";
+    expect(chainLinks(f, anims, 12).map((l) => l.launcher)).toEqual([false, false]);
   });
 
   it("survives a chain authored as a loop", () => {

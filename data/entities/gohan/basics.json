@@ -1,6 +1,7 @@
 {
   "bk1": { "from": "ma7", "steps": [0, 1] },
   "bk2": { "parts": [{ "from": "ma7", "steps": [2, 3] }, { "from": "ma7_2", "steps": [0, 0] }] },
+  "bk2s": { "parts": [{ "from": "ma7", "steps": [2, 3], "durs": { "2": 4 } }, { "from": "ma7_2", "steps": [0, 0] }] },
   "bk3": { "parts": [{ "from": "ma7_2", "steps": [1, 1] }, { "from": "ma7_3", "steps": [0, 0] }] },
   "bk4": { "parts": [{ "from": "ma7_3", "steps": [1, 2] }, { "from": "ma7_4", "steps": [0, 2] }] },
   "a0": { "from": "ma0", "steps": [0, 7], "durs": { "0": 4, "1": 2, "2": 2 } },

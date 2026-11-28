@@ -63,7 +63,8 @@ Bakuretsu's four punches. **A fighter brought over** takes his senders for
 his Smashes where they fit (owner, 2026-11-26): the up sender for Smash
 alone, the side one for S1, the down one for S2 — Gohan's is a dive from the
 air, nothing a charge can stop on, so his S2 is a punch, to try, his A2's
-own (`b_bk2`): the role is S2's, the stun, only the way in his (owner,
+own (`b_bk2s`, its wind-up 2 frames shorter, for A3 into it: owner,
+2026-11-28): the role is S2's, the stun, only the way in his (owner,
 2026-11-27; which punch is picked per fighter, not by a rule) — and
 his S3 the Rushing Uppercut. Gohan's Smash alone is the Zankuu Kyaku, a
 leaping kick he charges crouched as the original starts it (`stopOn` in his

@@ -4773,7 +4773,7 @@
       }
     },
     "smash_2": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -4793,8 +4793,8 @@
         },
         {
           "when": [
-            "frames:10",
-            "!frames:12",
+            "frames:8",
+            "!frames:10",
             "held:smash",
             "combo"
           ],
@@ -4802,8 +4802,8 @@
         },
         {
           "when": [
-            "frames:10",
-            "!frames:12",
+            "frames:8",
+            "!frames:10",
             "held:smash"
           ],
           "to": "smash_2_charge_0"
@@ -4824,12 +4824,12 @@
         }
       ],
       "type": "crumple_0",
-      "cancelBy": 22,
+      "cancelBy": 20,
       "replays": true,
       "pushes": 0,
       "delaysStep": {
         "step": 1,
-        "at": 12
+        "at": 10
       },
       "boosts": {
         "hold": "smash",
@@ -4838,22 +4838,22 @@
         "needs": 20
       },
       "holdStep": 2,
-      "holdFrames": 20,
+      "holdFrames": 18,
       "velAt": [
         [
-          12,
+          10,
           0.6
         ],
         [
-          20,
+          18,
           0
         ]
       ],
       "trail": {
         "fx": "dust",
         "every": 4,
-        "from": 12,
-        "to": 20
+        "from": 10,
+        "to": 18
       }
     },
     "smash_3": {
@@ -5698,7 +5698,7 @@
       ]
     },
     "smash_2_charge_0": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -5717,13 +5717,13 @@
           "to": "smash_2_lv0"
         },
         {
-          "when": "frames:0",
+          "when": "frames:2",
           "to": "smash_2_charge_1"
         }
       ]
     },
     "smash_2_charge_1": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -5753,7 +5753,7 @@
       ]
     },
     "smash_2_charge_1_combo": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -5784,7 +5784,7 @@
       "holdsStun": true
     },
     "smash_2_charge_2": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -5817,7 +5817,7 @@
       "stunsAtLeast": 6
     },
     "smash_2_charge_3": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -5845,7 +5845,7 @@
       "sound": "line_04"
     },
     "smash_2_lv0": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -5855,7 +5855,7 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "crumple_0",
-      "cancelBy": 22,
+      "cancelBy": 20,
       "delaysStep": {
         "step": 1,
         "at": 0
@@ -5897,7 +5897,7 @@
       ]
     },
     "smash_2_lv1": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -5907,7 +5907,7 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "crumple",
-      "cancelBy": 22,
+      "cancelBy": 20,
       "delaysStep": {
         "step": 1,
         "at": 0
@@ -5949,7 +5949,7 @@
       ]
     },
     "smash_2_lv2": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -5959,7 +5959,7 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "crumple_2",
-      "cancelBy": 22,
+      "cancelBy": 20,
       "delaysStep": {
         "step": 1,
         "at": 0
@@ -6007,7 +6007,7 @@
       ]
     },
     "smash_2_lv3": {
-      "anim": "b_bk2",
+      "anim": "b_bk2s",
       "vel": [
         0,
         0
@@ -6017,7 +6017,7 @@
       "hitSound": "hit_09",
       "blockSound": "block_17",
       "type": "crumple_3",
-      "cancelBy": 22,
+      "cancelBy": 20,
       "delaysStep": {
         "step": 1,
         "at": 0
