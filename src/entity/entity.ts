@@ -219,6 +219,8 @@ const ATTACK_LABELS = [
 const HUM_EVERY = 8;
 /** Ki every fighter enters a fight with, of his meter's `attributes.ki` (owner, 2026-11-24). */
 const START_KI = 30;
+/** Where a counter that spends him leaves him: bent over, panting — the collapse's end, without the fall. */
+const SPENT_POSE = "tired";
 /** Half the width of a finale's band, world px: the screen's 256 and more, whoever stands where. */
 const BAND_REACH = 512;
 
@@ -499,6 +501,8 @@ export class Entity {
   private readonly fatigue = new Fatigue();
   /** Guard pressed with a direction, armed a few frames against a blow (`combat/counter.ts`). */
   private readonly counterWindow = new CounterWindow();
+  /** A counter's fatigue spent him: he collapses once he is out of it, not before. */
+  private spentByCounter = false;
 
   constructor(
     private def: EntityDef,
@@ -1357,7 +1361,8 @@ export class Entity {
 
   /**
    * A blow about to land meets a counter armed and paid for: he is gone into it
-   * and the blow is not taken. Its fatigue may spend him, and then he collapses.
+   * and the blow is not taken. Its fatigue may spend him: he collapses as he
+   * comes out (owner, 2026-11-28), the teleport made.
    */
   counters(): boolean {
     const to = this.counterWindow.armed;
@@ -1365,8 +1370,7 @@ export class Entity {
     if (!to || !def || this.ki < (def.cost ?? 0)) return false;
     this.counterWindow.clear();
     this.forceState(to);
-    const tired = this.def.states?.onTired;
-    if (this.fatigue.add(COUNTER_FATIGUE) && tired) this.forceState(tired);
+    if (this.fatigue.add(COUNTER_FATIGUE)) this.spentByCounter = true;
     return true;
   }
 
@@ -1630,6 +1634,8 @@ export class Entity {
     // resetting the clock would put an audible hitch at the seam.
     const wanted = this.sm.def.loopSound ?? "";
     if (wanted !== this.hum.id) this.hum = { id: wanted, left: 0 };
+    // gone, he leaves the drawing he had, not the first of the state he hides in
+    if (this.sm.def.hidden && !this.vanished) this.ghosts.push(new Afterimage(this.view, this.sprite));
     const takesOver = this.sm.def.anim === this.animName && !restart && !this.sm.def.replays;
     this.setAnim(this.sm.def.anim, restart || !!this.sm.def.replays);
     // its cancel window counts from where the animation stands, not from 0
@@ -1805,7 +1811,6 @@ export class Entity {
     // only his own hiding, his drawing and not his view: a scene hides that,
     // and what he leaves behind is in it; gone as the SNES goes, thinning out
     if (def.hidden && !this.vanished) {
-      this.ghosts.push(new Afterimage(this.view, this.sprite));
       this.vanished = true;
       this.sprite.visible = this.shadow.visible = false;
     } else if (!def.hidden && this.vanished) {
@@ -1828,6 +1833,13 @@ export class Entity {
   private step(input: WorldInput, opponent: Opponent | null, bounds: { min: number; max: number }): void {
     const opponentX = opponent?.x ?? null;
     this.foe = opponent;
+    // out of the counter that spent him: panting where he came out, not thrown
+    // down as a blow's last hit throws him (owner, 2026-11-28)
+    if (this.spentByCounter && !this.sm?.def.hidden) {
+      this.spentByCounter = false;
+      const tired = this.def.states?.states[SPENT_POSE] ? SPENT_POSE : this.def.states?.onTired;
+      if (tired) this.forceState(tired);
+    }
     if (!opponent?.inCombo) this.chases = 0;
     // a chase holds him still until its blow lands
     // a state with no blow of its own holds him for good: a vanish's coming out, whose last blow did land
@@ -1853,15 +1865,15 @@ export class Entity {
     if (input.blast) this.buffer.press("blast");
     if (input.strike) this.buffer.press("strike");
     if (input.dash) this.buffer.press("dash");
-    // guard with a direction arms a counter, read before a hit pause as every press is
+    // guard and a direction arm a counter, read before a hit pause as every press is
     this.counterWindow.tick();
-    if (input.guard) {
-      const ahead = this.facing > 0;
-      this.counterWindow.press(ahead ? input.right : input.left, ahead ? input.left : input.right, mayCounterFrom(this.sm?.def) && !!this.def.states?.states.counter);
-    }
+    const ahead = this.facing > 0;
+    this.counterWindow.read(
+      { guardPressed: input.guard, guardHeld: input.holding.guard, towards: ahead ? input.right : input.left, away: ahead ? input.left : input.right },
+      mayCounterFrom(this.sm?.def) && !!this.def.states?.states.counter,
+    );
     // the cartridge records the pad in a hit pause too ($0E:829C), so a
     // command's windows count the frames the pause took
-    const ahead = this.facing > 0;
     this.pad.record(
       padFrame({ fwd: ahead ? input.right : input.left, back: ahead ? input.left : input.right, up: input.up, down: input.down }, input, input.holding),
     );

@@ -377,16 +377,19 @@ hit it.
 
 **The counter** (owner, 2026-11-28; Burst Limit's ready stance and its
 attack, `inspiration.md`) is built from neutral; from a reaction and against
-a chase it is not yet. Guard with a direction arms it for 6 frames, and a
-blow landing in them teleports him behind the attacker (`combat/counter.ts`):
+a chase it is not yet. Guard pressed with a direction held, or a direction
+pressed with guard held — guarding, a direction as the blow comes (owner,
+2026-11-28) — arms it for 9 frames, and a blow landing in them teleports him
+behind the attacker (`combat/counter.ts`):
 gone 6 frames, the attacker held meanwhile; **towards** him, out striking
 with his chase's blow (his S1 without one), for a bar (10 ki); **away**,
 falling in behind him as from a jump and no more, for two bars (20). Early,
 or without the ki, it is an ordinary block.
 It also costs fatigue (§8): 15 from neutral, walking, crouching, guarding,
-blockstun and the air, its window 6 frames before the blow; **25 from a
+blockstun and the air, its window 9 frames before the blow; **25 from a
 reaction**, its window 3 frames — an escape costs about a combo's worth of
-fatigue, and whoever escapes too often collapses. **Never from the rush's
+fatigue, and whoever escapes too often is spent — as he comes out, the
+teleport made, standing tired (`tired`) where he came out, not thrown down. Gone, he leaves the drawing he had as the blow came. **Never from the rush's
 flinch** (A1–A3): a rush that lands always lands whole, and the escape opens
 where the attacker extends it — an ender, A4, a charge, a chase, a juggle,
 the crumple. Never from the floor or getting up, nor from one's own attack.

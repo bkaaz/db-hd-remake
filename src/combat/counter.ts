@@ -8,7 +8,7 @@ import type { StateDef, StatesFile, Transition } from "../entity/states";
  */
 
 /** Frames a press stays armed: a blow landing in them is countered. */
-export const COUNTER_WINDOW = 6;
+export const COUNTER_WINDOW = 9;
 /** Frames he is gone before he comes out behind the attacker. */
 const GONE = 6;
 /** What each costs, in ki: a bar towards, two away. */
@@ -21,17 +21,30 @@ const BEHIND = 40;
 /** The state a counter starts in: towards him, or away. */
 export type CounterState = keyof typeof COST;
 
+/** This frame's hands, as the counter reads them: guard, and the direction towards or away from him. */
+export interface CounterHands {
+  guardPressed: boolean;
+  guardHeld: boolean;
+  towards: boolean;
+  away: boolean;
+}
+
 /**
- * A press of guard with a direction, armed for `COUNTER_WINDOW` frames: the
- * state a blow landing meanwhile sends him into, or none.
+ * Guard pressed with a direction held, or a direction pressed with guard held
+ * (owner, 2026-11-28: guarding, a direction as the blow comes), armed for
+ * `COUNTER_WINDOW` frames: the state a blow landing meanwhile sends him into,
+ * or none.
  */
 export class CounterWindow {
   private to: CounterState | null = null;
   private left = 0;
+  private was = { towards: false, away: false };
 
-  /** Guard pressed this frame, `towards` or away from him; nothing without a direction or where he may not. */
-  press(towards: boolean, away: boolean, may: boolean): void {
-    if (!may || towards === away) return;
+  /** This frame's hands; nothing without one direction, or where he may not. */
+  read({ guardPressed, guardHeld, towards, away }: CounterHands, may: boolean): void {
+    const newly = (towards && !this.was.towards) || (away && !this.was.away);
+    this.was = { towards, away };
+    if (!may || towards === away || !(guardPressed || (guardHeld && newly))) return;
     this.to = towards ? "counter" : "counter_away";
     this.left = COUNTER_WINDOW;
   }

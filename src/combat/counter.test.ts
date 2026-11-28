@@ -1,31 +1,45 @@
 import { describe, expect, it } from "vitest";
 import type { StatesFile } from "../entity/states";
-import { COUNTER_WINDOW, CounterWindow, mayCounterFrom, withCounter } from "./counter";
+import { COUNTER_WINDOW, CounterWindow, mayCounterFrom, withCounter, type CounterHands } from "./counter";
+
+const hands = (h: Partial<CounterHands>): CounterHands => ({ guardPressed: false, guardHeld: false, towards: false, away: false, ...h });
 
 describe("the counter's window", () => {
-  it("arms towards or away for its frames, then shuts", () => {
+  it("arms towards or away for its frames as guard is pressed with a direction, then shuts", () => {
     const w = new CounterWindow();
-    w.press(true, false, true);
+    w.read(hands({ guardPressed: true, guardHeld: true, towards: true }), true);
     expect(w.armed).toBe("counter");
     for (let i = 1; i < COUNTER_WINDOW; i++) w.tick();
     expect(w.armed).toBe("counter");
     w.tick();
     expect(w.armed).toBeNull();
-    w.press(false, true, true);
+    w.read(hands({ guardPressed: true, guardHeld: true, away: true }), true);
     expect(w.armed).toBe("counter_away");
   });
 
-  it("arms nothing without one direction, or where he may not", () => {
+  it("arms as a direction is pressed while guard is held, not while it stays held", () => {
     const w = new CounterWindow();
-    w.press(false, false, true);
-    w.press(true, true, true);
-    w.press(true, false, false);
+    w.read(hands({ guardHeld: true }), true);
+    expect(w.armed).toBeNull();
+    w.read(hands({ guardHeld: true, away: true }), true);
+    expect(w.armed).toBe("counter_away");
+    w.clear();
+    w.read(hands({ guardHeld: true, away: true }), true);
+    expect(w.armed).toBeNull();
+  });
+
+  it("arms nothing without one direction, without guard, or where he may not", () => {
+    const w = new CounterWindow();
+    w.read(hands({ guardPressed: true }), true);
+    w.read(hands({ guardPressed: true, towards: true, away: true }), true);
+    w.read(hands({ towards: true }), true);
+    w.read(hands({ guardHeld: true, away: true }), false);
     expect(w.armed).toBeNull();
   });
 
   it("is spent by the blow it meets", () => {
     const w = new CounterWindow();
-    w.press(true, false, true);
+    w.read(hands({ guardPressed: true, towards: true }), true);
     w.clear();
     expect(w.armed).toBeNull();
   });

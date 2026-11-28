@@ -9,7 +9,7 @@
     ] } },
     { "p2": { "does": [30, "up 3", 60] } },
     { "p2": { "does": ["attack 24"] } },
-    { "p2": { "guard": "always", "does": [60] } },
-    { "p1": { "at": 0.4, "free": true, "does": [64, "back guard 1", 400] }, "p2": { "at": 0.47, "does": [60, "attack 2", 300] } }
+    { "p1": { "at": 0.4 }, "p2": { "at": 0.47, "does": [40, "fwd 20", "attack 2", 40] } },
+    { "p1": { "at": 0.4, "free": true, "does": [64, "back guard 1", 55] }, "p2": { "at": 0.47, "does": [60, "attack 2", 58] } }
   ]
 }
